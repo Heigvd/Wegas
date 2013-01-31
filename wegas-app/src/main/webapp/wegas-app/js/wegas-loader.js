@@ -515,8 +515,13 @@ YUI().use(function(Y) {
                     },
                     'wegas-crimesim-resultsdisplay': {
                         path: 'wegas-crimesim/js/wegas-crimesim-resultsdisplay-min.js',
-                        requires: ['wegas-widget', 'wegas-crimesim-treeble' ],
+                        requires: ['wegas-widget', 'wegas-crimesim-treeble'],
                         ws_provides: "ResultsDisplay"
+                    },
+                    'wegas-crimesim-choicesrepliesunreadcount': {
+                        path: 'wegas-crimesim/js/wegas-crimesim-choicesrepliesunreadcount-min.js',
+                        requires: ['wegas-button'],
+                        ws_provides: "ChoicesRepliesUnreadCount"
                     },
 
                     'wegas-crimesim-treeble': {

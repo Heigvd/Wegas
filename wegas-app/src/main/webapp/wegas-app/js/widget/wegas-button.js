@@ -16,8 +16,8 @@ YUI.add("wegas-button", function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-    BOUNDINGBOX = 'boundingBox',
-    Button;
+            BOUNDINGBOX = 'boundingBox',
+            Button;
 
     /* @fixme So we can display html tag inside a button */
     Y.Button.prototype._uiSetLabel = function (value) {
@@ -37,7 +37,6 @@ YUI.add("wegas-button", function (Y) {
      *
      */
     Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-
         /** @lends Y.Wegas.Button */
         // *** Private fields *** //
 
@@ -85,18 +84,18 @@ YUI.add("wegas-button", function (Y) {
                 _inputex: {
                     _type: "editablelist",
                     items: [{
-                        type: "Button",
-                        label: "Tooltip",
-                        data: "Tooltip"
-                    }, {
-                        type: "Button",
-                        label: "Impact",
-                        data: "ExecuteScriptAction"
-                    }, {
-                        type: "Button",
-                        label: "Open page",
-                        data: "OpenPageAction"
-                    }]
+                            type: "Button",
+                            label: "Tooltip",
+                            data: "Tooltip"
+                        }, {
+                            type: "Button",
+                            label: "Impact",
+                            data: "ExecuteScriptAction"
+                        }, {
+                            type: "Button",
+                            label: "Open page",
+                            data: "OpenPageAction"
+                        }]
                 }
             }
         }
@@ -114,7 +113,7 @@ YUI.add("wegas-button", function (Y) {
         /** @lends Y.Wegas.UnreadCount# */
         initializer: function () {
             this.vdHandler = // If data changes, refresh
-            Y.Wegas.app.VariableDescriptorFacade.after("update", this.syncUI, this);
+                    Y.Wegas.app.VariableDescriptorFacade.after("update", this.syncUI, this);
 
             this.afterHostEvent("render", this.syncUI, this);
         },
@@ -123,8 +122,8 @@ YUI.add("wegas-button", function (Y) {
         },
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),
-            target = cb.one(".unread-count"),
-            unreadCount = this.getUnreadCount();
+                    target = cb.one(".unread-count"),
+                    unreadCount = this.getUnreadCount();
 
             if (!target) {                                                      // If the counter span has not been rendered, do it
                 cb.append('<span class="unread-count"></span>');
@@ -139,7 +138,7 @@ YUI.add("wegas-button", function (Y) {
         },
         getUnreadCount: function () {
             var i, instance, messages, count = 0,
-            descriptor = this.get('variable.evaluated');
+                    descriptor = this.get('variable.evaluated');
 
             if (!descriptor) {
                 return 0;
@@ -182,9 +181,41 @@ YUI.add("wegas-button", function (Y) {
         }
     });
     Y.namespace('Plugin').UnreadCount = UnreadCount;
+    
+    /**
+     * Plugin which count replies from choices and adds an unread message
+     * counter to a widget.
+     *
+     * @class Y.Wegas.ChoicesRepliesUnreadCount
+     * @extends Y.Plugin.UnreadCount
+     * @borrows Y.Wegas.Editable
+     */
+    var ChoicesRepliesUnreadCount = Y.Base.create("wegas-crimesim-choicesRepliesUnreadCount", Y.Plugin.UnreadCount, [Y.Wegas.Plugin], {
+        syncUI: function () {
+            ChoicesRepliesUnreadCount.superclass.syncUI.apply(this);
+        },
+        getUnreadCount: function () {
+            var i, j, count = 0, questionInstance, reply,
+                    questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items");
+            for (i = 0; i < questions.length; i = i + 1) {
+                questionInstance = questions[i].getInstance();
+                for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
+                    reply = questionInstance.get("replies")[j];
+                    if (reply.getAttrs() && reply.getAttrs().unread) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+    }, {
+        NS: "ChoicesRepliesUnreadCount",
+        NAME: "ChoicesRepliesUnreadCount"
+    });
+    Y.namespace('Plugin').ChoicesRepliesUnreadCount = ChoicesRepliesUnreadCount;
 
     /**
-     * Shortcut to create a Button with an OpenPageAction plugin
+     * Shortcut to create a Button with an OpenPageAction plugin 
      */
     Y.Wegas.OpenPageButton = Y.Base.create("button", Y.Wegas.Button, [], {
         initializer: function (cfg) {
