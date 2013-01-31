@@ -190,6 +190,8 @@
                 }
             }]
         }, {
+            "type": "GoogleTranslate"
+        },{
             "type": "LoginButton",
             "cssClass": "editor-login-button",
             "labelIsUser": true,
