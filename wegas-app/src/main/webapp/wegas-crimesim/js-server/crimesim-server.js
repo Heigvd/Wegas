@@ -69,6 +69,7 @@ function nextWeek() {
         for (var j = 0; j< questionInstance.replies.size(); j += 1) {
             var reply = questionInstance.replies.get(j);
             if (+reply.startTime + +reply.result.choiceDescriptor.duration + 1 === period.value) {
+                reply.setUnread(true);
                 qdf.validateReply(self, reply);
             }
 

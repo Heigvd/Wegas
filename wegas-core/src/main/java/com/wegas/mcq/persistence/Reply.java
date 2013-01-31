@@ -39,7 +39,7 @@ public class Reply extends AbstractEntity {
     /**
      *
      */
-    private Boolean unread = true;
+    private Boolean unread = false;
     /**
      *
      */
@@ -61,7 +61,7 @@ public class Reply extends AbstractEntity {
     public void merge(AbstractEntity a) {
         Reply other = (Reply) a;
         this.setUnread(other.getUnread());
-        this.setResult(other.getResult());
+        //this.setResult(other.getResult());
         this.setStartTime(other.getStartTime());
     }
 

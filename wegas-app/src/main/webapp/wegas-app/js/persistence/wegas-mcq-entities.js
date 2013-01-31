@@ -592,7 +592,8 @@ YUI.add('wegas-mcq-entities', function (Y) {
             result: {
                 _inputex: {
                     _type: 'hidden'
-                }
+                },
+                "transient" : true
             }
         }
     });
