@@ -8,6 +8,7 @@
  * Copyright (C) 2012
  */
 YUI.add("wegas-content-entities", function(Y){
+    "use strict";
 
     Y.Wegas.persistence.Content = Y.Base.create("Content", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS:{

@@ -7,7 +7,6 @@
  *
  * Copyright (C) 2012
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
