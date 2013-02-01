@@ -76,6 +76,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
+    @JsonView(Views.EditorI.class)
     private String editorLabel;
     /**
      *
@@ -227,6 +228,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public GameModel getGameModel() {
         return this.gameModel;
     }
+
     @XmlTransient
     public int getGameModelId() {
         return this.gameModel.getId().intValue();

@@ -198,3 +198,29 @@ input[type="submit"], input[type="reset"] {
     -moz-box-shadow: 0 0 0 1px rgba(0,0,0, 0.25) inset;
     box-shadow: 0 0 0 1px rgba(0,0,0, 0.25) inset;
 }
+
+/* Google translate */
+.wegas-translate {
+    float: right;
+    padding: 14px 10px 0;
+}
+body{
+    top: 0px !important;
+}
+.goog-te-gadget-simple {
+    border:none !important;
+}
+.goog-te-menu-value span {
+    color: black !important;
+    border-left: none !important;
+    font-weight: bold !important;
+    font-size: 11px !important;
+    color: #6E6E6E !important;
+}
+/*.goog-te-banner-frame,.goog-te-balloon-frame{
+    display:none !important;
+}*/
+font{
+    background: transparent !important;
+    color: inherit !important;
+}

@@ -36,7 +36,7 @@
 .wegas-group-administrator .editor-player-button,
 .wegas-group-administrator .editor-restart-button, .wegas-group-administrator .editor-preview .wegas-toolbar .yui3-button,
 .wegas-group-administrator .editor-newGame-button, .wegas-group-administrator .editor-newGameModel-button,
-.wegas-group-administrator .editor-newVariable-button, .wegas-group-administrator {
+.wegas-group-administrator .editor-newVariable-button {
     display: inline-block;
 }
 .yui3-menu .editor-shareGameModel-button,
