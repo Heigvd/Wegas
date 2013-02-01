@@ -129,7 +129,7 @@ YUI.add('wegas-inbox', function (Y) {
                             if (e.response.entity.get("attachements") && e.response.entity.get("attachements").length > 0) {
                                 for (i = 0; i < e.response.entity.get("attachements").length; i++) {
                                     attachement = e.response.entity.get("attachements")[i];
-                                    attachements.push("<a href='" + attachement + "'>" + attachement + "</a>");
+                                    attachements.push("<a href='" + attachement + "' data-file='" + attachement + "'>" + attachement + "</a>");
                                 }
                                 if (!this.get("panelNode").one(".msg-header .msg-attachement")) {
                                     this.get("panelNode").one(".msg-header").append("<div class='msg-attachement'></div>");

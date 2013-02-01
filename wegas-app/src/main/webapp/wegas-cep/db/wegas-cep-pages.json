@@ -206,7 +206,6 @@
         "id": 3,
         "type": "CEPFolder",
         "listVariables": "employees",
-        "plugins": [{"fn": "Injector"}],
         "searchInProperties": [
             "properties"
         ],
