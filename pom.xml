@@ -35,6 +35,11 @@
     </developers>
     <url>http://www.albasim.com/Wegas/</url>
 
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/Heigvd/Wegas/issues</url>
+    </issueManagement>
+
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -107,6 +112,7 @@
 
     <build>
         <plugins>
+
             <!-- Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -162,9 +168,8 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.7</version>
+                            <version>2.8</version>
                         </plugin>
-
 
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
@@ -175,11 +180,14 @@
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>jdepend-maven-plugin</artifactId>
+                            <version>2.0-beta-2</version>
                         </plugin>
+
 
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>findbugs-maven-plugin</artifactId>
+                            <version>2.4.0</version>
                             <configuration>
                                 <threshold>Normal</threshold>
                                 <effort>Min</effort>
@@ -227,12 +235,6 @@
                         </plugin>
 
                         <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-jxr-plugin</artifactId>
-                            <version>2.3</version>
-                        </plugin>
-
-                        <plugin>
                             <groupId>nl.windgazer</groupId>
                             <artifactId>jsdoctk-plugin</artifactId>
                             <version>2.3.2</version>
@@ -275,18 +277,12 @@
                             </dependencies>
                         </plugin>-->
 
-                        <!--<plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-jxr-plugin</artifactId>
-                            <version>2.3</version>
-                        </plugin>-->
-
                     </reportPlugins>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    
+
     <repositories>
         <repository>
             <id>maven2-repository.dev.java.net</id>

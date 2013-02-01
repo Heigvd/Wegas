@@ -95,7 +95,7 @@ public class RequestController implements Serializable {
         return userFacade.getCurrentUser();
     }
 
-    public String getCurrentRole(){
+    public String getCurrentRoles(){
         String cssClass = "";
         for (Role r : userFacade.getCurrentUser().getMainAccount().getRoles()){
             cssClass += " wegas-group-" +r.getName();

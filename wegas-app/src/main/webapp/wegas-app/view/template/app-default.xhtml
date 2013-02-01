@@ -10,7 +10,7 @@
         <ui:define name="title">#{wegasAppBundle["LobbyPage.Title"]}</ui:define>
 
         <ui:define name="page">
-            <h:body class="yui3-skin-sam yui-skin-sam wegas-loading-overlay #{requestController.currentRole}">
+            <h:body class="yui3-skin-sam yui-skin-sam wegas-loading-overlay #{requestController.currentRoles}">
 
                 <ui:fragment rendered="#{!wegasConfig.debug}">
 
@@ -65,7 +65,7 @@
                     <script type="text/javascript" src="#{request.contextPath}/lib/yui3/build/yui/yui-min.js"></script>
                 </ui:fragment>
 
-                <!-- InputEx Loader -->
+                <!-- inputEx Loader -->
                 <script src="#{request.contextPath}/lib/inputex/src/loader-min.js"  type='text/javascript'></script>
 
                 <!-- Wegas Loader -->
@@ -104,25 +104,16 @@
                         YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
                         YUI_config.groups[groupName].comboBase = comboBase;
                     }
-                    setupLocalPath("wegas");
                     YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
+                    YUI_config.groups.inputex.combine = #{!wegasConfig.debug};
+                    YUI_config.groups.wegas.combine = #{!wegasConfig.debug};
+                    YUI_config.groups.wegas.filter = (#{wegasConfig.debug}) ? "raw" : "min";// Select raw files
+                    setupLocalPath("wegas");
                     setupLocalPath("inputex");
                     setupLocalPath("ace");                                      // Set up ace path
                     setupLocalPath("jsplumb");                                  // Set up jsplumb path
                     setupLocalPath("libraries");                                // Set up libraries path
                 </script>
-
-                <ui:fragment rendered="#{!wegasConfig.debug}">
-                    <script>
-                        YUI_config.groups.inputex.combine = true;
-                    </script>
-                </ui:fragment>
-                <ui:fragment rendered="#{wegasConfig.debug}">
-                    <script>
-                        YUI_config.groups.wegas.filter = "raw";             // Allows to select normal or minified version of dependencies
-                        YUI_config.groups.wegas.combine = false;
-                    </script>
-                </ui:fragment>
 
                 <ui:fragment rendered="#{wegasConfig.assets_local}">
                     <!-- local assets -->

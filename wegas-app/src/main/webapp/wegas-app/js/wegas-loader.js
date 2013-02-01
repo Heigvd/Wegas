@@ -202,7 +202,7 @@ YUI().use(function(Y) {
                     },
                     'wegas-googletranslate': {
                         path: 'wegas-app/js/widget/wegas-googletranslate-min.js',
-                        requires: ["googletranslate"],
+                        //requires: ["googletranslate"],
                         ws_provides: "GoogleTranslate"
                     },
 
@@ -671,10 +671,11 @@ YUI().use(function(Y) {
                         path: 'crafty/crafty-min.js'
                     },
                     'googletranslate': {
+                        async: false,
+                        fullpath: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
                         //fullpath: "//translate.google.com/translate_a/element.js?cb=googleSectionalElementInit&"
                         //fullpath: "//translate.google.com/translate_a/element.js?ug=section&hl=en&cb=googleSectionalElementInit"
                         //fullpath: "//translate.google.com/translate_a/element.js?hl=en"
-                        fullpath: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
                     }
                 }
             }
