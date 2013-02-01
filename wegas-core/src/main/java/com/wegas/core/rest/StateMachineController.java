@@ -1,12 +1,9 @@
 /*
- * Wegas.
- *
+ * Wegas
  * http://www.albasim.com/wegas/
  *
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem
- *
- * Copyright (C) 2012
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
  */
 package com.wegas.core.rest;
 
@@ -14,11 +11,11 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.ejb.statemachine.StateMachineDescriptorFacade;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.ejb.statemachine.StateMachineDescriptorFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.exception.WegasException;
 import com.wegas.leaderway.persistence.DialogueTransition;

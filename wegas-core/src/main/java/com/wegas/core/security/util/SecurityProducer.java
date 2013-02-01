@@ -1,18 +1,12 @@
 /*
- * Wegas.
+ * Wegas
+ * http://www.albasim.com/wegas/
  *
- * http://www.albasim.com/wegas/  *
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem
- *
- * Copyright (C) 2012
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
@@ -22,8 +16,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Instantantiate a security manager and a subject, once per request. currently
- * not in use nowhere.
+ * Instantantiate a security manager and a subject, once per request.
+ *
+ * Not in use.
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
