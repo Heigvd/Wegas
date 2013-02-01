@@ -114,6 +114,9 @@
                         "cssClass": "menu-button",
                         "plugins": [
                             {
+                                "fn": "ChoicesRepliesUnreadCount",
+                                "cfg": {}
+                            }, {
                                 "fn": "OpenPageAction",
                                 "cfg": {
                                     "subpageId": 6,
@@ -185,7 +188,7 @@
         "id": 1000,
         "type": "Form",
         "plugins": [{
-            "fn": "UserPreferences"
-        }]
+                "fn": "UserPreferences"
+            }]
     }
 }

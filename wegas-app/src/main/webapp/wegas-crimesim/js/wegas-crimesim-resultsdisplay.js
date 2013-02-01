@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
+YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -29,13 +29,14 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         gallery: null,
         datatable: null,
         // *** Lifecycle Methods *** //
-        initializer: function() {
+        initializer: function () {
             this.handlers = {};
         },
-        renderUI: function() {
+        renderUI: function () {
             this.renderDetailsPanel(this.get(CONTENTBOX));
+            this.setUnread();
         },
-        bindUI: function() {
+        bindUI: function () {
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
 
@@ -43,17 +44,17 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     Y.Wegas.app.dataSources.VariableDescriptor.after("response",
                     this.syncUI, this);
         },
-        destructor: function() {
+        destructor: function () {
             this.datatable.destroy();
             for (var i in this.handlers) {
                 this.handlers[i].detach();
             }
         },
-        syncUI: function() {
+        syncUI: function () {
             var data = this.genData();
             this.datatable.syncUI(data);
         },
-        renderDetailsPanel: function(node) {
+        renderDetailsPanel: function (node) {
             var columns = [{
                     key: "choiceDescriptorId",
                     className: "hidden"
@@ -90,7 +91,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
             });
             this.datatable.render(this.get(CONTENTBOX));
         },
-        genData: function() {
+        genData: function () {
             var i, j, k, questionInstance, reply, replyData, status,
                     questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items"),
                     data = [],
@@ -142,6 +143,29 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                 data = data.concat(responsesByStartTime[i]);
             }
             return data;
+        },
+        setUnread: function () {
+            var i, j, questionInstance, reply,
+                    questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items");
+            for (i = 0; i < questions.length; i = i + 1) {
+                questionInstance = questions[i].getInstance();
+                for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
+                    reply = questionInstance.get("replies")[j];
+                    if (reply.get("unread")) {
+                        reply.set("unread", false);
+                        Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                            request: "/" + reply.getAttrs().id + "/Reply/" + reply.getAttrs().id,
+                            headers: {
+                                'Content-Type': 'application/json; charset=ISO-8859-1'
+                            },
+                            cfg: {
+                                method: "PUT",
+                                data: reply
+                            }
+                        });
+                    }
+                }
+            }
         }
     });
 
