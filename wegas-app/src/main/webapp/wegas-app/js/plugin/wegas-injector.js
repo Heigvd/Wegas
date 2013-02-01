@@ -21,7 +21,7 @@ YUI.add("wegas-injector", function(Y) {
                 }
                 break;
             default:
-                if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(http://)")) {
+                if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(https?://)")) {
                     element.setAttribute("href", Y.Wegas.FileFacade.get("source")  + "read" + element.getAttribute("data-file"));
                     element.removeAttribute("data-file");
                 }
