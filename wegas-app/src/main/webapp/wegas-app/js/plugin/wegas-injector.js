@@ -2,10 +2,8 @@
  * Wegas
  * http://www.albasim.com/wegas/
  *
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem
- *
- * Copyright (C) 2012
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
  */
 YUI.add("wegas-injector", function(Y) {
     "use strict";
@@ -23,7 +21,7 @@ YUI.add("wegas-injector", function(Y) {
                 }
                 break;
             default:
-                if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(http://)")) {
+                if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(https?://)")) {
                     element.setAttribute("href", Y.Wegas.FileFacade.get("source")  + "read" + element.getAttribute("data-file"));
                     element.removeAttribute("data-file");
                 }

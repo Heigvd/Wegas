@@ -25,8 +25,8 @@
 
         <ui:define name="body">
             <script type="text/javascript">
-                var Y = YUI().use( "wegas-app", function (Y) {
-                    var cfg = {
+                YUI().use( "wegas-app", function (Y) {
+                    var app = new Y.Wegas.App({
                         currentUser: #{requestController.getCurrentUser().toJson()},
                         layoutSrc: 'wegas-app/db/wegas-login-layout.json',
                         dataSources: {
@@ -37,12 +37,8 @@
                                     }]
                             }
                         }
-                    };
-
-                    Y.on('domready', function() {                               // When dom is ready,
-                        var app = new Y.Wegas.App(cfg);                         // Launch the editor as soon as Dom is ready
-                        app.render();
                     });
+                    app.render();                                               // launch app
                 });
             </script>
         </ui:define>

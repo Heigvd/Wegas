@@ -10,9 +10,10 @@
         <ui:define name="title">#{wegasAppBundle["LobbyPage.Title"]}</ui:define>
 
         <ui:define name="page">
-            <h:body class="yui3-skin-sam yui-skin-sam wegas-loading-overlay #{requestController.currentRole}">
+            <h:body class="yui3-skin-sam yui-skin-sam wegas-loading-overlay #{requestController.currentRoles}">
 
                 <ui:fragment rendered="#{!wegasConfig.debug}">
+
                     <!-- Muscula error tracking -->
                     <script type='text/javascript'>
                         window.Muscula = {settings: {
@@ -38,47 +39,21 @@
                             }
                         })();
                     </script>
+
+                    <!-- Google Analytics -->
+                    <!--<script type="text/javascript">
+                            var _gaq = _gaq || [];
+                            _gaq.push(['_setAccount', 'UA-36197008-1']);
+                            _gaq.push(['_setLocalRemoteServerMode']);
+                            _gaq.push(['_trackPageview']);
+
+                            (function() {
+                                    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                            })();
+                    </script>-->
                 </ui:fragment>
-
-                <!-- JSLogger error tracking -->
-                <!--<script type="text/javascript">
-                        (function () {
-                                var jsl=document.createElement('script');jsl.type='text/javascript';jsl.async=true;
-                                jsl.src=('https:'==document.location.protocol?'https:':'http:')+'//jslogger.com/jslogger.js';
-                                jsl.onload=function(){jslogger=new JSLogger();};
-                                var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(jsl,s);
-                        })();
-                </script>-->
-                <!-- Proxino error tracking -->
-                <!--<script type="text/javascript" src="https://www.proxino.com/p.js"></script>
-                <script type="text/javascript">
-                    Proxino.key = "yv9rIk-i4Jh7htO2KYDBhw";
-                    Proxino.track_errors();
-                    //Proxino.log("Hello World!");
-                </script>-->
-
-                <!-- Errorception error tracking -->
-                <!--<script>
-                    var _errs=["509a6af366e7b72724008580"];(function(a,b){a.onerror=function(){_errs.push(arguments)};
-                        var d=function(){var a=b.createElement("script"),c=b.getElementsByTagName("script")[0];
-                            a.src="//d15qhc0lu1ghnk.cloudfront.net/beacon.js";a.async=!0;
-                            c.parentNode.insertBefore(a,c)};a.addEventListener?a.addEventListener("load",d,!1):
-                           a.attachEvent("onload",d)})(window,document);
-                </script>-->
-
-                <!-- Google Analytics -->
-                <!--<script type="text/javascript">
-                        var _gaq = _gaq || [];
-                        _gaq.push(['_setAccount', 'UA-36197008-1']);
-                        _gaq.push(['_setLocalRemoteServerMode']);
-                        _gaq.push(['_trackPageview']);
-
-                        (function() {
-                                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                        })();
-                </script>-->
 
                 <!-- YUI Base -->
                 <ui:fragment rendered="#{!wegasConfig.assets_local}">
@@ -90,7 +65,7 @@
                     <script type="text/javascript" src="#{request.contextPath}/lib/yui3/build/yui/yui-min.js"></script>
                 </ui:fragment>
 
-                <!-- InputEx Loader -->
+                <!-- inputEx Loader -->
                 <script src="#{request.contextPath}/lib/inputex/src/loader-min.js"  type='text/javascript'></script>
 
                 <!-- Wegas Loader -->
@@ -105,27 +80,23 @@
                     // Set up some YUI3 default parameters. Will be use for every call to
                     // the YUI(cfg) function. Can be overridden by the cfg parameter.
                     YUI_config.useBrowserConsole = true;
-                    YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
                     YUI_config.insertBefore = 'customstyles';
+                    YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
                     YUI_config.charset = "#{wegasConfig.encoding}";
                     YUI_config.debug = #{wegasConfig.debug};
-                    YUI_config.throwFail = true;                                // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
+                    YUI_config.throwFail = true;                                // If throwFail is set, Y.error will generate or re-throw
+                    // a JS Error. Otherwise the failure is logged.
                     YUI_config.errorFn = function (msg, e, src) {
-                        //console.log("ERRORFN", msg, e, src);
-                        //Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", 'Wegas.App');
-                        //jslogger.log({error: {msg: msg, e: e, src: src}});  //
-                        //_gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
-                        //throw msg;
-                        return false;                                           // Returning true from this function will stop the Error from being thrown.
+                        // console.log("ERRORFN", msg, e, src);
+                        // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", 'Wegas.App');
+                        // jslogger.log({error: {msg: msg, e: e, src: src}});    // Js logger msg
+                        // _gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
+                        // throw msg;
+                        return false;                           // Returning true from this function will stop the Error from being thrown.
                     };
                     //YUI_config.gallery = 'gallery-2011.02.18-23-10';
-                    //YUI_config.filter = 'raw';                                // Allows to select normal or minified version of dependencies
                     //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
                     //YUI_config.loadOptional = true;
-                    //YUI_config.timeout = 10000;
-                    //YUI_config.logExclude = { event : true };
-                    //YUI_config.logInclude = { event : true };
-
 
                     var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
                     comboBase = base + '/rest/combo?';
@@ -133,30 +104,21 @@
                         YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
                         YUI_config.groups[groupName].comboBase = comboBase;
                     }
-                    setupLocalPath("wegas");
                     YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
+                    YUI_config.groups.inputex.combine = #{!wegasConfig.debug};
+                    YUI_config.groups.wegas.combine = #{!wegasConfig.debug};
+                    YUI_config.groups.wegas.filter = (#{wegasConfig.debug}) ? "raw" : "min";// Select raw files
+                    setupLocalPath("wegas");
                     setupLocalPath("inputex");
                     setupLocalPath("ace");                                      // Set up ace path
                     setupLocalPath("jsplumb");                                  // Set up jsplumb path
                     setupLocalPath("libraries");                                // Set up libraries path
                 </script>
 
-                <ui:fragment rendered="#{!wegasConfig.debug}">
-                    <script>
-                        YUI_config.groups.inputex.combine = true;
-                    </script>
-                </ui:fragment>
-                <ui:fragment rendered="#{wegasConfig.debug}">
-                    <script>
-                        YUI_config.groups.wegas.filter = "raw";
-                        YUI_config.groups.wegas.combine = false;
-                    </script>
-                </ui:fragment>
-
                 <ui:fragment rendered="#{wegasConfig.assets_local}">
                     <!-- local assets -->
                     <script>
-                        YUI_config.comboBase = comboBase;                                   // Force use combo with self hosted yui3
+                        YUI_config.comboBase = comboBase;                       // Force use of self hosted yui3
                         YUI_config.filter = "min";
                         YUI_config.combine = true;
                         YUI_config.root = "/lib/yui3/build/";
@@ -166,7 +128,7 @@
                 <ui:insert name="body">
                     <script type="text/javascript">
                         YUI().use('wegas-app', function (Y) {
-                            var cfg = {
+                            var app = new Y.Wegas.App({
                                 layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                                 debug: true,
                                 currentGameModel: #{gameController.currentGameModel.id},
@@ -249,12 +211,12 @@
                                  * Use the target class name as the key.
                                  */
                                 editorForms: {}
-                            };
-
-                            Y.once('domready', function () {                             // When dom is ready,
-                                var app = new Y.Wegas.App(cfg);                         // launch the app
-                                app.render();
                             });
+
+                            app.render();                                       // launch app
+                            Y.once('domready', function () {});                 // When dom is ready,
+
+
                         });
                     </script>
                 </ui:insert>
