@@ -7,8 +7,6 @@
  */
 package com.wegas.app.jsf.controllers;
 
-import com.wegas.core.ejb.exception.PersistenceException;
-import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -44,23 +42,7 @@ public class GameController extends AbstractGameController {
             
             SecurityUtils.getSubject().checkPermission("Game:View:g" + currentPlayer.getGame().getId());
             
-        } else if (this.gameModelId != null) {                                  // If we only have a gameModel id, we select the 1st player of the 1st team of the 1st game
-            
-            final GameModel gameModel = gameModelFacade.find(this.gameModelId);
-            currentPlayer = gameModel.getGames().get(0).getTeams().get(0).getPlayers().get(0);
-        
-        } else if (this.gameId != null) {                                       // If we only have a gameModel id,
-            
-//            SecurityUtils.getSubject().checkPermission("Game:View:g" + this.gameId);
-            
-            try {
-                currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId, // we try to check if current shiro user is registered to the target game
-                        userFacade.getCurrentUser().getId());
-            
-            } catch (PersistenceException e) {                                               // If we still have nothing                //Cas 1 player lobby
-                externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml");
-            }
-        }
+        } 
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             externalContext.dispatch("/wegas-app/view/error/gameerror.xhtml");
         }
