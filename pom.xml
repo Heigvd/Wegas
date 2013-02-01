@@ -39,6 +39,13 @@
         <system>GitHub</system>
         <url>https://github.com/Heigvd/Wegas/issues</url>
     </issueManagement>
+    
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
