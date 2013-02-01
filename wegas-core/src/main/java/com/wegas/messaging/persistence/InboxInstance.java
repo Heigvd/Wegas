@@ -1,11 +1,9 @@
 /*
- * Wegas.
+ * Wegas
  * http://www.albasim.com/wegas/
  *
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem
- *
- * Copyright (C) 2012
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
  */
 package com.wegas.messaging.persistence;
 
@@ -15,11 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 

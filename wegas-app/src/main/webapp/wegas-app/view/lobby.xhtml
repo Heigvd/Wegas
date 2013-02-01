@@ -22,8 +22,8 @@
 
         <ui:define name="body">
             <script type="text/javascript">
-                var Y = YUI().use("wegas-app", "wegas-rightcss", function (Y) {
-                    var cfg = {
+                YUI().use("wegas-app", "wegas-rightcss", function (Y) {
+                    var app = new Y.Wegas.App({
                         layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
                         debug : true,
                         currentUser: #{requestController.getCurrentUser().toJson()},
@@ -69,12 +69,9 @@
                                     }]
                             }
                         }
-                    };
-
-                    Y.on('domready', function() {                               // When dom is ready,
-                        var app = new Y.Wegas.App(cfg);                         // Launch the editor as soon as Dom is ready
-                        app.render();
                     });
+                    app.render();                                               // Launch the editor as soon as Dom is ready
+
                 });
             </script>
         </ui:define>

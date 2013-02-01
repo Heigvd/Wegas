@@ -1,19 +1,14 @@
 /*
- * Wegas.
- *
+ * Wegas
  * http://www.albasim.com/wegas/
  *
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem
- *
- * Copyright (C) 2012
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlRootElement;

@@ -5,7 +5,6 @@
 
     <ui:composition template="template/app-default.xhtml">
 
-
         <ui:define name="title">#{editorGameController.currentGameModel.name}</ui:define>
 
         <ui:define name="head">
@@ -29,8 +28,8 @@
 
         <ui:define name="body">
             <script type="text/javascript">
-                var Y = YUI().use("wegas-app",  'wegas-rightscss', /*'wegas-editorcss',*/ function (Y) {
-                    var cfg = {
+                YUI().use("wegas-app",  'wegas-rightscss', /*'wegas-editorcss',*/ function (Y) {
+                    var app = new Y.Wegas.App({
                         layoutSrc: 'wegas-app/db/wegas-editor-layout.json',
                         debug : true,
                         currentGameModel: #{editorGameController.currentGameModel.id},
@@ -125,32 +124,24 @@
                          * Use the target class name as the key.
                          */
                         editorForms: {}
-                    };
-
-                    Y.on('domready', function() {                               // When dom is ready,
-
-                        var editor = new Y.Wegas.App(cfg);                   // Launch the editor as soon as Dom is ready
-
-                        editor.after("render", function () {
-                            var gm = Y.Wegas.GameModelFacade.rest.getCurrentGameModel();
-                            Y.one(".wegas-title").setContent(gm.get("name"));
-                        });
-
-                        editor.on('currentPlayerChange', function (e) {          // Whenever the current player changes
-                            //"rest/Private/xx/GameModel/xx/VariableDescriptor",
-                            this.set('currentTeam',
-                            this.dataSources.Game.rest.getPlayerById(e.newVal).get("teamId")) // When current player is updated, we also update current team
-                            Y.Wegas.VariableDescriptorFacade.set("source",
-                            this.get("base") + "rest/Private/" + e.newVal + "/GameModel/" + this.get("currentGameModel") + "/VariableDescriptor");
-
-                            //Y.Wegas.VariableDescriptorFacade.fire("update");    // Fire an update event on the variable datasource
-                        });
-                        editor.render();
-
-//                        Y.Wegas.GameFacade.after("response", function(e) {      // Reload the variable descriptors as soon as the game is changed
-//                            Y.Wegas.VariableDescriptorFacade.sendInitialRequest();
-//                        }, this);
                     });
+
+                    app.after("render", function () {
+                        var gm = Y.Wegas.GameModelFacade.rest.getCurrentGameModel();
+                        Y.one(".wegas-title").setContent(gm.get("name"));
+                    });
+
+                    app.on('currentPlayerChange', function (e) {                // Whenever the current player changes
+                        //"rest/Private/xx/GameModel/xx/VariableDescriptor",
+                        this.set('currentTeam',
+                        this.dataSources.Game.rest.getPlayerById(e.newVal).get("teamId")) // Update current team
+                        Y.Wegas.VariableDescriptorFacade.set("source",
+                        this.get("base") + "rest/Private/" + e.newVal + "/GameModel/"
+                            + this.get("currentGameModel") + "/VariableDescriptor");
+
+                        //Y.Wegas.VariableDescriptorFacade.fire("update");      // Fire an update event on the variable datasource
+                    });
+                    app.render();
                 });
             </script>
         </ui:define>

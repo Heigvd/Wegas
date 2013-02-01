@@ -1,37 +1,29 @@
 /*
- * Wegas.
- *
+ * Wegas
  * http://www.albasim.com/wegas/
  *
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem
- *
- * Copyright (C) 2012
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
  */
 package com.wegas.core.ejb.statemachine;
 
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.exception.NoPlayerException;
 import com.wegas.exception.WegasException;
 import com.wegas.leaderway.persistence.DialogueTransition;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;

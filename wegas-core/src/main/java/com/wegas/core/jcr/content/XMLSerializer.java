@@ -1,12 +1,9 @@
 /*
- * Wegas.
- *
+ * Wegas
  * http://www.albasim.com/wegas/
  *
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem
- *
- * Copyright (C) 2012
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
 
@@ -16,15 +13,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
+import org.xml.sax.*;
 
 /**
  * Serilalize SAX Events to outputStream

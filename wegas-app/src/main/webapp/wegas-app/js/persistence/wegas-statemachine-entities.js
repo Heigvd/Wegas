@@ -1,4 +1,4 @@
-Y.add("wegas-statemachine-entities", function (Y) {
+YUI.add("wegas-statemachine-entities", function (Y) {
 
     /*******************************/
     /******** STATEMACHINE *********/

@@ -2,10 +2,8 @@
  * Wegas
  * http://www.albasim.com/wegas/
  *
- * School of Business and Engineering Vaud, http://www.heig-vd.ch/
- * Media Engineering :: Information Technology Managment :: Comem
- *
- * Copyright (C) 2012
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
  */
 package com.wegas.core.rest;
 
@@ -28,15 +26,18 @@ import org.slf4j.LoggerFactory;
  * This servlet allows to retrieve several resources in a single request. Used
  * to combine .js and .css files.
  *
+ * Resulting files should be cached. For example check
+ * https://github.com/smaring/javascript-combo-service/blob/master/src/main/java/org/maring/util/js/JavascriptComboService.java
+ *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
 @Path("combo")
-public class ResourceCombo {
+public class ComboController {
 
     final static private String MediaTypeCss = "text/css; charset=ISO-8859-1";
     final static private String MediaTypeJs = "text/javascript; charset=ISO-8859-1";
-    private static final Logger logger = LoggerFactory.getLogger(ResourceCombo.class);
+    private static final Logger logger = LoggerFactory.getLogger(ComboController.class);
     /**
      *
      */
