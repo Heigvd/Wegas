@@ -1,6 +1,5 @@
 /*
- * Wegas.
- *
+ * Wegas
  * http://www.albasim.com/wegas/
  *
  * School of Business and Engineering Vaud, http://www.heig-vd.ch/
@@ -11,6 +10,7 @@
 
 
 YUI.add("wegas-gallery", function(Y) {
+    "use strict";
 
     var WegasGallery,
             CONTENT_BOX = "contentBox",
