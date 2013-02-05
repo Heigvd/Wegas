@@ -5,7 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
@@ -14,32 +16,76 @@ YUI.add('wegas-inbox', function (Y) {
 
     var CONTENTBOX = 'contentBox', InboxDisplay;
 
+    /**
+     * @name Y.Wegas.InboxDisplay
+     * @extends Y.Widget
+     * @class  class to manage e-mail
+     * @constructor
+     * @description Display and allow to manage e-mail sent to the current player
+     */
     InboxDisplay = Y.Base.create("wegas-inbox", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        // *** Private Fields *** //
+        /**
+         * @lends Y.Wegas.InboxDisplay#
+         */
+        // ** Private fields ** //
+        /**
+         * TabView widget used to display message header and body
+         */
         tabView: null,
+        /**
+         * Reference to each used functions
+         */
         handlers: null,
+        /**
+         * datasource from Y.Wegas.app.VariableDescriptorFacade
+         */
         dataSource: null,
+        /**
+         * Button widget used to delete e-mail
+         */
         deleteButton: null,
+        /**
+         * Current selected message in tabview;
+         */
         msg: null,
         // *** Lifecycle Methods *** //
+        /**
+         * @function
+         * @private
+         * @description Set variable with initials values.
+         * Plug a toolbar widget (and add the delete button at this toolbar). 
+         */
         initializer: function () {
             this.dataSource = Y.Wegas.app.VariableDescriptorFacade;
             this.handlers = {};
             this.plug(Y.Plugin.WidgetToolbar);
-        },
-        renderUI: function () {
             this.deleteButton = new Y.Wegas.Button({
                 label: "<span class='wegas-icon wegas-icon-cancel'></span>Delete"
             });
             this.toolbar.add(this.deleteButton);
             this.tabView = new Y.TabView();
+        },
+        /**
+         * @function
+         * @private
+         * @description Render the TabView widget in the content box.
+         */
+        renderUI: function () {
             this.tabView.render(this.get(CONTENTBOX));
         },
+        /**
+         * @function
+         * @private
+         * @description bind function to events.
+         * When selection change on tabView, call function "onTabSelected"
+         * When dataSource is updated, do syncUI
+         * When deleteButton is clicked, show an alert which allow to delete selected message
+         */
         bindUI: function () {
             this.tabView.after("selectionChange", this.onTabSelected, this);
             this.handlers.dataUpdated = this.dataSource.after("update", this.syncUI, this);
             this.handlers.deleteEMail = this.deleteButton.on("click", function (e) {
-                if(!this.msg) {
+                if (!this.msg) {
                     return;
                 }
                 if (confirm('The e-mail "' + this.msg.get("subject") + '" will be deleted permanently. Continue ?')) {
@@ -47,6 +93,13 @@ YUI.add('wegas-inbox', function (Y) {
                 }
             }, this);
         },
+        /**
+         * @function
+         * @private
+         * @description Clear and re-fill th TabView with current player message.
+         * display a message if there is no message.
+         * Re-select the current selected msg;
+         */
         syncUI: function () {
             var i, msg, tab, from, indexCounter = 0,
                     inboxVariable = this.get('variable.evaluated').getInstance(),
@@ -88,11 +141,21 @@ YUI.add('wegas-inbox', function (Y) {
             this.isSyncing = false;
             this.tabView.selectChild(selectedIndex);
         },
+        /**
+         * @function
+         * @private
+         * @description Destroy TabView and all functions created by this widget
+         */
         destructor: function () {
             this.tabView.destroy();
             this.handlers.dataUpdated.detach();
         },
         // *** Private Methods *** //
+        /**
+         * @function
+         * @private
+         * @description Send a REST request to delete selected message
+         */
         deleteEmail: function (e) {
             if (!this.msg) {
                 return;
@@ -107,6 +170,12 @@ YUI.add('wegas-inbox', function (Y) {
                 }
             });
         },
+        /**
+         * @function
+         * @private
+         * @description retrieve selected message's body and set this as "read" if
+         * tab has been selected longer than 2000 miliseconde.
+         */
         onTabSelected: function (e) {
             var i, attachement, attachements = [];
             if (this.isSyncing) {
@@ -155,10 +224,23 @@ YUI.add('wegas-inbox', function (Y) {
         }
 
     }, {
+        /**
+         * @lends Y.Wegas.Inbox
+         */
+        /**
+         * @field
+         * @static
+         * @description
+         * <p><strong>Method</strong></p>
+         * <ul>
+         *    <li>variable: The target variable, returned either based on the name
+         *     attribute, and if absent by evaluating the expr attribute.</li>
+         * </ul>
+         */
         ATTRS: {
             /**
-             * The target variable, returned either based on the name attribute,
-             * and if absent by evaluating the expr attribute.
+             * The target variable, returned either based on the name
+             * attribute, and if absent by evaluating the expr attribute.
              */
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
