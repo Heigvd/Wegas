@@ -142,8 +142,7 @@
                 "type": "PageLoader",
                 "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
-                "defaultPageId": 2,
-                "plugins": [{"fn": "Injector"}]
+                "defaultPageId": 2
             }]
     },
     "2": {

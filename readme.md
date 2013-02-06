@@ -11,6 +11,7 @@ For more informations, check our [wiki pages](http://github.com/Heigvd/Wegas/wik
 ### Code Status
 * [![Build Status](https://travis-ci.org/Heigvd/Wegas.png?branch=master)](https://travis-ci.org/Heigvd/Wegas)
 * [Documentation]
+* [Getting started tutorial](https://github.com/Heigvd/Wegas/wiki)
 
 ### License
 Copyright (C) 2013, School of Business and Engineering Vaud, Comem  

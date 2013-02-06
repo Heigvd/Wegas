@@ -34,16 +34,6 @@ public class AbstractGameController implements Serializable {
     /**
      *
      */
-    @ManagedProperty("#{param.gameId}")
-    protected Long gameId;
-    /**
-     *
-     */
-    @ManagedProperty("#{param.gameModelId}")
-    protected Long gameModelId;
-    /**
-     *
-     */
     @EJB
     protected PlayerFacade playerFacade;
     /**
@@ -132,34 +122,6 @@ public class AbstractGameController implements Serializable {
      */
     public void setPlayerId(final Long playerId) {
         this.playerId = playerId;
-    }
-
-    /**
-     * @return the gameId
-     */
-    public Long getGameId() {
-        return gameId;
-    }
-
-    /**
-     * @param gameId the gameId to set
-     */
-    public void setGameId(final Long gameId) {
-        this.gameId = gameId;
-    }
-
-    /**
-     * @return the gameModelId
-     */
-    public Long getGameModelId() {
-        return gameModelId;
-    }
-
-    /**
-     * @param gameModelId the gameModelId to set
-     */
-    public void setGameModelId(Long gameModelId) {
-        this.gameModelId = gameModelId;
     }
 
 }
