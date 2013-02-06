@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -30,16 +30,7 @@ EvtTarget.prototype = {
         }
     }
 };
-
-function lookupBean(name) {
-    var ctx = new InitialContext();
-    return ctx.lookup("java:module/" + name);
-}
-
 var eventManager = new EvtTarget();
-/*eventManager.on("replyValidate", function(e) {
-    println("replyValidate"+ e.reply);
-});*/
 
 eventManager.on("replySelect", function(e) {
     if (e.reply.startTime - period.value === -1) {
@@ -53,6 +44,15 @@ eventManager.on("replyCancel", function (e) {
         humanResources.value += +e.reply.result.choiceDescriptor.cost;
     }
 });
+
+function lookupBean(name) {
+    var ctx = new InitialContext();
+    return ctx.lookup("java:module/" + name);
+}
+/*eventManager.on("replyValidate", function(e) {
+    println("replyValidate"+ e.reply);
+});*/
+
 
 function nextWeek() {
     period.value += 1;

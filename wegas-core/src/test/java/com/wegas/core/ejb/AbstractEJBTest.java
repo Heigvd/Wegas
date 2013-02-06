@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -45,7 +45,7 @@ public class AbstractEJBTest {
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
 
-    @BeforeClass
+//    @BeforeClass
     public static void setUp() throws NamingException {
         logger.info("Set up context...");
 
@@ -58,13 +58,13 @@ public class AbstractEJBTest {
         gameModelFacade = lookupBy(GameModelFacade.class, GameModelFacade.class);
     }
 
-    @AfterClass
+//    @AfterClass
     public static void tearDown() {
         ejbContainer.close();
         //logger.info("Closing the container");
     }
 
-    @Before
+//    @Before
     public void before() throws NamingException {
         gameModel = new GameModel();
         gameModel.setName("test-gamemodel");
@@ -84,7 +84,7 @@ public class AbstractEJBTest {
         gameModelFacade.create(gameModel);
     }
 
-    @After
+//    @After
     public void after() {
         gameModelFacade.remove(gameModel);
     }
