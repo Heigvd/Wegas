@@ -12,6 +12,8 @@ import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
@@ -38,6 +40,12 @@ public class ScriptManagerTest extends AbstractEJBTest {
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacade.class);
         VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
         ScriptFacade sm = lookupBy(ScriptFacade.class, ScriptFacade.class);
+
+
+        NumberDescriptor numberDescriptor = new NumberDescriptor("inttest");
+        numberDescriptor.setDefaultInstance(new NumberInstance(1));
+        numberDescriptor.setScope(new TeamScope());
+        vdf.create(gameModel.getId(), numberDescriptor);
 
         // Create a dummy descriptor
         StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);

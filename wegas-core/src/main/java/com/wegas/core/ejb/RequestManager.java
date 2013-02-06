@@ -55,6 +55,7 @@ public class RequestManager implements Serializable {
      */
     private Locale locale;
 
+
     /**
      *
      * @param instance
@@ -123,7 +124,6 @@ public class RequestManager implements Serializable {
     public void addException(Exception exception) {
         this.exceptions.add(exception);
     }
-
 
     /**
      * @return the view

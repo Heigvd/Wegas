@@ -66,8 +66,8 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     @Test
     public void testBooleanDescriptor() throws NamingException {
 
-        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacade.class);
-        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
         // Test the descriptor
         BooleanDescriptor booleanDescriptor = new BooleanDescriptor(VARIABLENAME);

@@ -250,7 +250,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Copy classes to test classes -->
+            <!-- Copy classes to test classes directory, for ejbcontainer to use -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.5</version>
@@ -262,16 +262,19 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>target/test-classes</outputDirectory>
-                            <overwrite>false</overwrite>
+                            <outputDirectory>target/embed-classes</outputDirectory>
+                            <overwrite>true</overwrite>
                             <resources>
                                 <resource>
                                     <directory>target/classes</directory>
                                 </resource>
+                                <resource>
+<!-- <directory>src/test/resources</directory>-->
+                                    <directory>target/test-classes/</directory>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
-
                 </executions>
             </plugin>
 
