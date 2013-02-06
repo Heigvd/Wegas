@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -154,7 +154,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      *
      */
-    @Column(name = "teamvariableinstances_key", nullable = false, insertable = false, updatable = false)
+    @Column(name = "teamvariableinstances_key", nullable = true, insertable = false, updatable = false)
     private Long teamScopeKey;
 
     /**
@@ -168,7 +168,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      *
      */
-    @Column(name = "variableinstances_key", nullable = false, insertable = false, updatable = false)
+    @Column(name = "variableinstances_key", nullable = true, insertable = false, updatable = false)
     private Long playerScopeKey;
 
     /**

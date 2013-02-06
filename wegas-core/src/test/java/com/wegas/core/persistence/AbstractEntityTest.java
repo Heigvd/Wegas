@@ -1,12 +1,13 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
 
+import com.wegas.core.ejb.TestHelper;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,13 +44,9 @@ public abstract class AbstractEntityTest<T extends AbstractEntity> {
     @BeforeClass
     public static void initContext() throws Exception {
         System.out.println("[WeGAS Entity Test] Set up context...");
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(EJBContainer.MODULES, new File[]{new File("target/classes")});
-        properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
-
-        ejbContainer = EJBContainer.createEJBContainer(properties);
+        ejbContainer = TestHelper.getEJBContainer();
         ctx = ejbContainer.getContext();
-        emf = Persistence.createEntityManagerFactory("wegasTestPU");
+        emf = Persistence.createEntityManagerFactory("wegasPU");
         em = emf.createEntityManager();
     }
 
