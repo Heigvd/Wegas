@@ -163,13 +163,6 @@
                 "cfg": {
                     "children": [{
                         "type": "OpenTabButton",
-                        "label": "Players",
-                        "wchildren": [{
-                            "type": "EditorTreeView",
-                            "dataSource": "Game"
-                        }]
-                    },{
-                        "type": "OpenTabButton",
                         "label": "Impact game",
                         "wchildren": [{
                             "type": "ImpactGame",

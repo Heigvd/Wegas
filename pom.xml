@@ -39,7 +39,7 @@
         <system>GitHub</system>
         <url>https://github.com/Heigvd/Wegas/issues</url>
     </issueManagement>
-    
+
     <licenses>
         <license>
             <name>MIT License</name>
@@ -57,7 +57,9 @@
         <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <netbeans.hint.license>wegas</netbeans.hint.license>
+        <resources.local>true</resources.local>
+        <wegas.debug>true</wegas.debug>
+        <build.optimize>false</build.optimize>
 
         <shiro.version>1.2.0</shiro.version>
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
@@ -71,13 +73,10 @@
         <jar.plugin.version>2.3.1</jar.plugin.version>
         <war.plugin.version>2.3</war.plugin.version>
         <compiler-plugin-version>2.5.1</compiler-plugin-version>
-        <skipTests>true</skipTests>
+
         <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
-
-        <resources.local>true</resources.local>
-        <wegas.debug>true</wegas.debug>
-        <build.optimize>false</build.optimize>
+        <netbeans.hint.license>wegas</netbeans.hint.license>
         
         <github.global.server>github</github.global.server>
     </properties>

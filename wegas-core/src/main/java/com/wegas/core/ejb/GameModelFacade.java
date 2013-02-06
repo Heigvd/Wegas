@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -12,8 +12,6 @@ import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel_;
-import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import javax.ejb.EJB;
@@ -27,7 +25,6 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *

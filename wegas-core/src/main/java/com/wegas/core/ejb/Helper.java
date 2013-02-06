@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -36,17 +36,20 @@ public class Helper {
      */
     public static <T> T lookupBy(Context context, Class<T> type, Class service) throws NamingException {
         try {
-            //   context.
             return (T) context.lookup("java:module/" + service.getSimpleName() + "!" + type.getName());
         } catch (NamingException ex) {
             try {
                 return (T) context.lookup("java:global/classes/" + service.getSimpleName() + "!" + type.getName());
-            } catch (NamingException ex1) {
+            } catch (NamingException ex3) {
                 try {
-                    return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
-                } catch (NamingException ex2) {
-                    logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
-                    throw ex2;
+                    return (T) context.lookup("java:global/embed-classes/" + service.getSimpleName() + "!" + type.getName());
+                } catch (NamingException ex1) {
+                    try {
+                        return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
+                    } catch (NamingException ex2) {
+                        logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
+                        throw ex2;
+                    }
                 }
             }
         }
