@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -31,6 +31,14 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      *
      */
     private Long maxValue;
+
+    public NumberDescriptor() {
+        super();
+    }
+
+    public NumberDescriptor(String name) {
+        super(name);
+    }
 
     /**
      *

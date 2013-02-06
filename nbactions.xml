@@ -58,7 +58,8 @@
         <actionName>CUSTOM-Build site</actionName>
         <displayName>Build site</displayName>
         <goals>
-            <goal>site</goal>
+            <goal>site</goal>           
+            <goal>site:stage</goal>
         </goals>
     </action>
     <action>
@@ -66,6 +67,14 @@
         <displayName>Run Cobertura</displayName>
         <goals>
             <goal>cobertura:cobertura</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-Install Site</actionName>
+        <displayName>Install Site</displayName>
+        <recursive>false</recursive>
+        <goals>
+            <goal>ghSite:site</goal>
         </goals>
     </action>
 

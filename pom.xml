@@ -13,7 +13,7 @@
         <module>wegas-resources</module>
         <!--        <module>wegas-mcq</module>-->
     </modules>
-    <description>Web Game Authoring System</description>
+    <description>Web Game Authoring system is a Jee-based framework for multiplayer web-games developement.</description>
     <developers>
         <developer>
             <name>Francois-Xavier Aeberhard</name>
@@ -39,18 +39,27 @@
         <system>GitHub</system>
         <url>https://github.com/Heigvd/Wegas/issues</url>
     </issueManagement>
-    
+
     <licenses>
         <license>
             <name>MIT License</name>
             <url>http://www.opensource.org/licenses/MIT</url>
         </license>
     </licenses>
+    <distributionManagement>
+        <site>
+            <id>localhost</id>
+            <url>file://./site</url>
+        </site>
+    </distributionManagement>
 
     <properties>
+        <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <netbeans.hint.license>wegas</netbeans.hint.license>
+        <resources.local>true</resources.local>
+        <wegas.debug>true</wegas.debug>
+        <build.optimize>false</build.optimize>
 
         <shiro.version>1.2.0</shiro.version>
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
@@ -64,13 +73,12 @@
         <jar.plugin.version>2.3.1</jar.plugin.version>
         <war.plugin.version>2.3</war.plugin.version>
         <compiler-plugin-version>2.5.1</compiler-plugin-version>
-        <skipTests>true</skipTests>
+
         <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
-
-        <resources.local>true</resources.local>
-        <wegas.debug>true</wegas.debug>
-        <build.optimize>false</build.optimize>
+        <netbeans.hint.license>wegas</netbeans.hint.license>
+        
+        <github.global.server>github</github.global.server>
     </properties>
 
     <profiles>
@@ -141,26 +149,59 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.6</version>
             </plugin>
 
             <!-- Site -->
             <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.7</version>                
+                <inherited>false</inherited>
+                <configuration>
+                    <repositoryName>Wegas</repositoryName>
+                    <repositoryOwner>Heigvd</repositoryOwner>
+                    <outputDirectory>${project.build.directory}/staging</outputDirectory>
+                    <message>${project.version} Site[${maven.build.timestamp}]</message>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>gitSite</id>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>site</phase>
+                    </execution>
+                </executions>
                 <configuration>
-                    <outputDirectory>site</outputDirectory>
+<!--                    <locales>en,fr</locales>-->
+                    <outputDirectory>${project.build.directory}/site</outputDirectory>
+                    <skipDeploy>true</skipDeploy>
+                    <generateReports>true</generateReports>
                     <reportPlugins>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-project-info-reports-plugin</artifactId>
-                            <version>2.4</version>
+                            <version>2.6</version>
                             <configuration>
                                 <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
                                 <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
                             </configuration>
                             <reports>
+                                <report>index</report>
                                 <report>summary</report>
                                 <report>dependencies</report>
                                 <report>project-team</report>
@@ -247,7 +288,7 @@
                             <version>2.3.2</version>
                             <configuration>
                                 <template>jsdoc</template> <!-- Alternatives are not pre-installed for version 2.x-->
-                                <directory>site/jsdoc</directory>
+                                <directory>${project.build.directory}/site/jsdoc</directory>
                                 <recurse>5</recurse>
                                 <ext>js</ext>
                                 <allfunctions>true</allfunctions>
@@ -287,6 +328,7 @@
                     </reportPlugins>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build>
 
@@ -304,7 +346,6 @@
             <layout>default</layout>
             <name>Repository for library Library[eclipselink]</name>
         </repository>
-
         <repository>
             <id>jsdoctk1</id>
             <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
