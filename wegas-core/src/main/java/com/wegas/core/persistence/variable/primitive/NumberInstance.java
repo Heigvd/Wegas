@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -28,6 +28,13 @@ public class NumberInstance extends VariableInstance {
      */
     private double val;
 
+    public NumberInstance() {
+    }
+
+    public NumberInstance(double value) {
+        this.val = value;
+    }
+
     /**
      * @return the value
      */
@@ -43,13 +50,12 @@ public class NumberInstance extends VariableInstance {
             if (this.getDescriptor() instanceof NumberDescriptor) {             // @fixme (Occurs when numberinstance are used for list descriptors)
 
                 NumberDescriptor desc = (NumberDescriptor) this.getDescriptor();
-                if (( ( desc.getMaxValue() != null && value > desc.getMaxValue().doubleValue() )
-                        || ( desc.getMinValue() != null && value < desc.getMinValue().doubleValue() ) )) {
+                if (((desc.getMaxValue() != null && value > desc.getMaxValue().doubleValue())
+                        || (desc.getMinValue() != null && value < desc.getMinValue().doubleValue()))) {
                     throw new ConstraintViolationException(desc.getLabel() + " is out of bound.");
                 }
             }
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             // @fixme (occurs when instance is a defaultInstance)
         }
 

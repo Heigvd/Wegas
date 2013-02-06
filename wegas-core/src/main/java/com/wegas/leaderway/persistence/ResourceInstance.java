@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -70,7 +70,9 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private List<Integer> confidenceHistory = new ArrayList<>();;
+    private List<Integer> confidenceHistory = new ArrayList<>();
+
+    ;
 
     /**
      *
@@ -115,6 +117,7 @@ public class ResourceInstance extends VariableInstance {
         this.assignments.add(assignment);
         assignment.setResourceInstance(this);
     }
+
     /**
      *
      * @param task
@@ -123,7 +126,6 @@ public class ResourceInstance extends VariableInstance {
     public void assign(Long startTime, TaskDescriptor task) {
         this.addAssignement(new Assignment(startTime, task));
     }
-
 
     /**
      * @return the active
@@ -239,12 +241,14 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * Set the confidence's value and add old confidence value in confidenceHistorique.
+     * Set the confidence's value and add old confidence value in
+     * confidenceHistorique.
+     *
      * @param moral the moral to set
      */
     public void setMoral(Integer moral) {
-            this.moral = moral;
-            this.moralHistory.add(moral);
+        this.moral = moral;
+        this.moralHistory.add(moral);
     }
 
     /**
@@ -269,14 +273,13 @@ public class ResourceInstance extends VariableInstance {
         return this.moralHistory.get(ref);
     }
 
-     /**
+    /**
      * @param ref a index value corresponding to a value
      * @param value the new value
      */
     public void setMoralHistory(Integer ref, Integer value) {
         this.moralHistory.set(ref, value);
     }
-
 
     /**
      * @return the confidence
@@ -286,12 +289,14 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * Set the confidence's value and add confidence value in confidenceHistorique.
+     * Set the confidence's value and add confidence value in
+     * confidenceHistorique.
+     *
      * @param confidence the confidence to set
      */
     public void setConfidence(Integer confidence) {
-            this.confidence = confidence;
-            this.confidenceHistory.add(confidence);
+        this.confidence = confidence;
+        this.confidenceHistory.add(confidence);
     }
 
     /**
@@ -310,17 +315,27 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      * @param ref a index value corresponding to a value
-     * @return the value corresponding at the 'ref' param in the confidenceHistory
+     * @return the value corresponding at the 'ref' param in the
+     * confidenceHistory
      */
     public int getConfidenceHistory(Integer ref) {
         return this.confidenceHistory.get(ref);
     }
 
-     /**
+    /**
      * @param ref a index value corresponding to a value
      * @param value the new value
      */
     public void setConfidenceHistory(Integer ref, Integer value) {
         this.confidenceHistory.set(ref, value);
+    }
+    @Embedded
+    private Requirement requirement;
+}
+
+@Embeddable
+class Requirement {
+
+    public Requirement() {
     }
 }

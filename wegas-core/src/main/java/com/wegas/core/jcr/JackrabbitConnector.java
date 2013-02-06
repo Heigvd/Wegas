@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -11,7 +11,6 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jcr.RepositoryException;
@@ -32,8 +31,8 @@ import org.slf4j.LoggerFactory;
 public class JackrabbitConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
-    final private ResourceBundle resourceBundle = ResourceBundle.getBundle("wegas");
-    final private String DIR = System.getProperty("file.dir") + "/" + resourceBundle.getString("jcr.repository.home");
+    final private ResourceBundle resourceBundle = ResourceBundle.getBundle("systemsettings");
+    final private String DIR = resourceBundle.getString("jcr.repository.basedir");
     private static JackrabbitRepository repo;
     private JackrabbitRepositoryFactory rf;
 
@@ -53,7 +52,7 @@ public class JackrabbitConnector {
         //this.runGC();
     }
 
-    @Schedule(minute = "0", hour = "3")
+    //@Schedule(minute = "0", hour = "3")
     private void runGC() {
         try {
             logger.info("Running Jackrabbit GarbageCollector");

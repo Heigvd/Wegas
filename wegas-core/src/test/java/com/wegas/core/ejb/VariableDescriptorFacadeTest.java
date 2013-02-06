@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -66,8 +66,8 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     @Test
     public void testBooleanDescriptor() throws NamingException {
 
-        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacade.class);
-        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
         // Test the descriptor
         BooleanDescriptor booleanDescriptor = new BooleanDescriptor(VARIABLENAME);

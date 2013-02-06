@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -9,6 +9,9 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import java.util.HashMap;
+import java.util.Map;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 
 /**
@@ -17,6 +20,13 @@ import javax.persistence.Entity;
  */
 @Entity
 public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
+
+
+    /**
+     *
+     */
+    @ElementCollection
+    private Map<String, String> properties = new HashMap<>();
 
     private static final long serialVersionUID = 1L;
     /**
@@ -48,4 +58,5 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }

@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -54,6 +54,7 @@ public class RequestManager implements Serializable {
      *
      */
     private Locale locale;
+
 
     /**
      *
@@ -123,7 +124,6 @@ public class RequestManager implements Serializable {
     public void addException(Exception exception) {
         this.exceptions.add(exception);
     }
-
 
     /**
      * @return the view
