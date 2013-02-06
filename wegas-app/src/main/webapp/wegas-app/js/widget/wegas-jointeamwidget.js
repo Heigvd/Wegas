@@ -19,6 +19,7 @@ YUI.add('wegas-jointeamwidget', function (Y) {
     /**
     * @name Y.Wegas.JoinTeamWidget
     * @extends Y.Wegas.JoinGameWidget
+    * @borrows Y.WidgetChild, Y.Wegas.Widget
     * @class  class for join a team
     * @constructor
     * @description Allows just to join a team
