@@ -139,8 +139,8 @@ public class RequestFacade {
                 // playerActionEvent.fire(action);
             }
             em.flush();
+            this.getUpdatedInstances().clear();
         }
-
     }
 
     /**

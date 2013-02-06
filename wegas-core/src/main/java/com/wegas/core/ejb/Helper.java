@@ -36,18 +36,20 @@ public class Helper {
      */
     public static <T> T lookupBy(Context context, Class<T> type, Class service) throws NamingException {
         try {
-            //   context.
             return (T) context.lookup("java:module/" + service.getSimpleName() + "!" + type.getName());
         } catch (NamingException ex) {
             try {
-                System.out.println("java:global/test-classes/" + service.getSimpleName() + "!" + type.getName());
-                return (T) context.lookup("java:global/test-classes/" + service.getSimpleName() + "!" + type.getName());
-            } catch (NamingException ex1) {
+                return (T) context.lookup("java:global/classes/" + service.getSimpleName() + "!" + type.getName());
+            } catch (NamingException ex3) {
                 try {
-                    return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
-                } catch (NamingException ex2) {
-                    logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
-                    throw ex2;
+                    return (T) context.lookup("java:global/embed-classes/" + service.getSimpleName() + "!" + type.getName());
+                } catch (NamingException ex1) {
+                    try {
+                        return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());
+                    } catch (NamingException ex2) {
+                        logger.error("Unable to retrieve to do jndi lookup on class: {}", type.getSimpleName());
+                        throw ex2;
+                    }
                 }
             }
         }

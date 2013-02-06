@@ -12,9 +12,6 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -40,12 +37,7 @@ public class GameModelFacadeTest {
 
     @BeforeClass
     public static void setUp() throws NamingException {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(EJBContainer.MODULES, new File[]{new File("target/test-classes")});
-        //properties.put(EJBContainer.APP_NAME,"class");
-        properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
-
-        ejbContainer = EJBContainer.createEJBContainer(properties);
+        ejbContainer = TestHelper.getEJBContainer();
         context = ejbContainer.getContext();
         gameModelFacade = lookupBy(GameModelFacade.class, GameModelFacade.class);
     }
@@ -69,7 +61,7 @@ public class GameModelFacadeTest {
         gameModel = gameModelFacade.find(gameModel.getId());
         Assert.assertEquals(gameModel.getName(), name);
 
-        gameModelFacade.remove(gameModel);
+        gameModelFacade.remove(gameModel.getId());
         Assert.assertEquals(0, gameModelFacade.findAll().size());
     }
 
@@ -112,7 +104,7 @@ public class GameModelFacadeTest {
         tf.createPlayer(t.getId(), p);
         Assert.assertNotNull(p.getId());
 
-        gameModelFacade.remove(gameModel);
+        gameModelFacade.remove(gameModel.getId());
     }
 
     public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {
