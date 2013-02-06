@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -41,7 +41,8 @@ public class GameModelFacadeTest {
     @BeforeClass
     public static void setUp() throws NamingException {
         Map<String, Object> properties = new HashMap<>();
-        properties.put(EJBContainer.MODULES, new File[]{new File("target/classes")});
+        properties.put(EJBContainer.MODULES, new File[]{new File("target/test-classes")});
+        //properties.put(EJBContainer.APP_NAME,"class");
         properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
 
         ejbContainer = EJBContainer.createEJBContainer(properties);

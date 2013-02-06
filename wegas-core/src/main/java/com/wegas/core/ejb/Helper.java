@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -40,7 +40,8 @@ public class Helper {
             return (T) context.lookup("java:module/" + service.getSimpleName() + "!" + type.getName());
         } catch (NamingException ex) {
             try {
-                return (T) context.lookup("java:global/classes/" + service.getSimpleName() + "!" + type.getName());
+                System.out.println("java:global/test-classes/" + service.getSimpleName() + "!" + type.getName());
+                return (T) context.lookup("java:global/test-classes/" + service.getSimpleName() + "!" + type.getName());
             } catch (NamingException ex1) {
                 try {
                     return (T) context.lookup("java:global/cobertura/" + service.getSimpleName() + "!" + type.getName());

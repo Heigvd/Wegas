@@ -22,7 +22,7 @@
             <property name="databaseName" value="wegas_test" />
             <property name="PortNumber" value="5432" />
             <property name="ServerName" value="localhost" />
-<!--            <property name="connectionAttributes" value=";create=true" />-->
+            <!--<property name="connectionAttributes" value=";create=true"/>-->
 
         </jdbc-connection-pool>
     </resources>
