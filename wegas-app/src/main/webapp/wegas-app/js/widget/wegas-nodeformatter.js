@@ -6,6 +6,7 @@
  * Licensed under the MIT License
  */
 /**
+ * @fileoverview
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 
@@ -14,7 +15,31 @@ YUI.add('wegas-nodeformatter', function (Y) {
 
     var CONTENTBOX = 'contentBox', NodeFormatter;
 
+    /**
+     * @name Y.Wegas.NodeFormatter
+     * @extends Y.Widget
+     * @borrows Y.Wegas.Widget
+     * @class return value in specifique node.
+     * @constructor
+     * @description returm value in specifique node. Available type:
+     * Text node, image node, value box node, and position node.
+     */
     NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
+        /**
+         * @lends Y.Wegas.NodeFormatter#
+         */
+        // ** Lifecycle Methods ** //
+        /**
+         * @function
+         * @private
+         * @param value
+         * @param label
+         * @param className
+         * @return node
+         * @description return a div node containing a node value and a node
+         *  label corresponding with the given parameters.
+         *  Returned node have the given class name.
+         */
         makeNodeText: function (value, label, className) {
             var node = Y.Node.create('<div class="nodeformatter-properties"></div>');
             value = (value !== null) ? value : 'undefine';
@@ -27,6 +52,17 @@ YUI.add('wegas-nodeformatter', function (Y) {
             node.append('<span class="value">' + value + '</span>');
             return node;
         },
+        /**
+         * @function
+         * @private
+         * @param value
+         * @param label
+         * @param className
+         * @return node
+         * @description return a div node containing an image node. This image
+         * will have the given attrs parameters as attribute.
+         * Returned node have the given class name.
+         */
         makeNodeImage: function (attrs, className) {
             var k, node = new Y.Node.create('<div class="nodeformatter-img"></div>');
             node.append('<img></img>');
@@ -41,6 +77,19 @@ YUI.add('wegas-nodeformatter', function (Y) {
             }
             return node;
         },
+        /**
+         * @function
+         * @private
+         * @param value
+         * @param maxVal
+         * @param label
+         * @param className
+         * @return node
+         * @description return a div node containing a node label, a node
+         *  containing as many nodes as shown in value and a node shown the
+         *  value and the max value.
+         *  Returned node have the given class name.
+         */
         makeNodeValueBox: function (value, maxVal, label, className) {
             var i, acc = [], node = new Y.Node.create('<div class="nodeformatter-valuebox"></div>');
             value = (typeof parseInt(value) === 'number') ? parseInt(value) : 0;
@@ -57,6 +106,24 @@ YUI.add('wegas-nodeformatter', function (Y) {
             node.append('<span class="box-value">(' + value + '<span class="box-valueMax">/' + maxVal + '</span>)</span>');
             return node;
         },
+        /**
+         * @function
+         * @private
+         * @param html
+         * @param selector
+         * @param value
+         * @param minVal
+         * @param invert
+         * @param className
+         * @return node
+         * @description return a div node containing the given html and
+         *  highlight a nodes according to the given values (a number).  
+         *  To highlight a node this function count same type node as the
+         *   "selector" parameter (like 'li', 'div', 'p', 'img', etc...).
+         * The first value depending of the given 'minVal'
+         * The 'invert' parameter allow to count reversely.
+         * Returned node have the given class name.
+         */
         makeNodePosition: function (html, selector, value, minVal, invert, className) {
             var node = new Y.Node.create('<div class="nodeformatter-position"></div>');
             minVal = (typeof parseInt(minVal) === 'number') ? parseInt(minVal) : 0;
@@ -81,6 +148,15 @@ YUI.add('wegas-nodeformatter', function (Y) {
         }
 
     }, {
+        /*
+         * @lends Y.Wegas.NodeFormatter#
+         */
+        /**
+         * @field
+         * @static
+         * @description
+         * <p><strong>Method (none)</strong></p>
+         */
         ATTRS: {}
     });
 

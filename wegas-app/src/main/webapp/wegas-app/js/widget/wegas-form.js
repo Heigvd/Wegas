@@ -5,27 +5,57 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-/**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+/**opera:speeddial
+ 
+ * @fileoverview
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>opera:speeddial
+ 
  */
 
 YUI.add('wegas-form', function (Y) {
     "use strict";
 
+    /**
+     * @name Y.Wegas.Form
+     * @extends Y.Widget
+     * @borrows Y.WidgetChild, Y.Wegas.Widget
+     * @class  class to submit a form 
+     * @constructor
+     * @description Add a toolbar with buttons "submit" and "cancel" to manger forms.
+     */
     var Form = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        // ** Private Fields ** //
+        /**
+         * @lends Y.Wegas.Form#
+         */
 
         // ** Lifecycle Methods ** //
+        /**
+         * @function
+         * @private
+         * @description plug a toolbar and publich "submit" event.
+         */
         initializer: function () {
             this.plug(Y.Plugin.WidgetToolbar);
             this.publish("submit", {
                 emitFacade: true
             });
         },
+        /**
+         * @function
+         * @private
+         * @description call function "renderToolbar".
+         */
         renderUI: function () {
             this.renderToolbar();
         },
         // ** Private Methods ** //
+        /**
+         * @function
+         * @private
+         * @description Add a submit button (with "afterValidation" and
+         *  "submit" events) and a cancel button (with "cancel" event).
+         * Render the Toolbar.
+         */
         renderToolbar: function () {
             var toolbarNode = this.toolbar.get('header');
 
@@ -59,13 +89,33 @@ YUI.add('wegas-form', function (Y) {
                 }
             }).render(toolbarNode);
         },
-
+        /**
+         * @function
+         * @private
+         * @description set the given form to null
+         */
         destroyForm: function () {
             this.set("form", null);
         }
-
+        /**
+         * @lends Y.Wegas.Form
+         */
+        /**
+         * @field
+         * @static
+         * @description
+         * <p><strong>Method</strong></p>
+         * <ul>
+         *    <li>values: values of fields of the form</li>
+         *    <li>form: the form to manage (see YUI Form)</li>
+         *    <li>cfg: configuation of the form (see YUI Form)</li>
+         * </ul>
+         */
     }, {
         ATTRS: {
+            /**
+             * Values of fields of the form
+             */
             values: {
                 value: {
                     setter: function (val) {
@@ -75,6 +125,9 @@ YUI.add('wegas-form', function (Y) {
                     }
                 }
             },
+            /**
+             * The form to manage
+             */
             form: {
                 setter: function (val) {
                     if (this.get("form")) {                                     // If there is alread a form instantiated, destroy it
@@ -83,6 +136,9 @@ YUI.add('wegas-form', function (Y) {
                     return val;
                 }
             },
+            /**
+             * Configuation of the form
+             */
             cfg: {
                 setter: function (val) {
                     val.parentEl = this.get("contentBox");                        // Set up the form parentEl attribute, so it knows where to render
