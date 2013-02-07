@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.facebook;
 
+import com.wegas.core.Helper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +15,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -29,10 +29,9 @@ import org.apache.shiro.subject.PrincipalCollection;
  */
 public class FacebookRealm extends AuthorizingRealm {
 
-    private static final ResourceBundle props = ResourceBundle.getBundle("wegas");
-    private static final String APP_SECRET = props.getString("facebook.appSecret").toString();
-    private static final String APP_ID = props.getString("facebook.appId").toString();
-    private static final String REDIRECT_URL = props.getString("facebook.redirectUrl").toString();
+    private static final String APP_SECRET = Helper.getWegasProperty("facebook.appSecret").toString();
+    private static final String APP_ID = Helper.getWegasProperty("facebook.appId").toString();
+    private static final String REDIRECT_URL = Helper.getWegasProperty("facebook.redirectUrl").toString();
 
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -98,7 +97,7 @@ public class FacebookRealm extends AuthorizingRealm {
 
     private Map<String, String> getPropsMap(String someString) {
         String[] pairs = someString.split("&");
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         for (String propPair : pairs) {
             String[] pair = propPair.split("=");
             props.put(pair[0], pair[1]);

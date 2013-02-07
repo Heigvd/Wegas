@@ -7,11 +7,11 @@
  */
 package com.wegas.messaging.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.messaging.persistence.Message;
 import java.util.Date;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.LocalBean;
@@ -46,21 +46,20 @@ public class EMailFacade {
             String subject, String body) {
 
         Properties props = new Properties();
-        final ResourceBundle res = ResourceBundle.getBundle("systemsettings");
-        final String username = res.getString("mail.smtp.username");
-        final String password = res.getString("mail.smtp.password");
+        final String username = Helper.getWegasProperty("mail.smtp.username");
+        final String password = Helper.getWegasProperty("mail.smtp.password");
 
-        props.put("mail.smtp.host", res.getString("mail.smtp.host"));           // Attaching to default Session, or we could start a new one
+        props.put("mail.smtp.host", Helper.getWegasProperty("mail.smtp.host"));           // Attaching to default Session, or we could start a new one
 
-        props.setProperty("mail.smtp.auth", res.getString("mail.smtp.auth"));
-        props.put("mail.smtp.port", res.getString("mail.smtp.port"));
-        if (res.getString("mail.smtp.starttls.enable").equals("true")) {        // TLS
+        props.setProperty("mail.smtp.auth", Helper.getWegasProperty("mail.smtp.auth"));
+        props.put("mail.smtp.port", Helper.getWegasProperty("mail.smtp.port"));
+        if (Helper.getWegasProperty("mail.smtp.starttls.enable").equals("true")) {        // TLS
             props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.ssl.trust", res.getString("mail.smtp.host"));
+            props.put("mail.smtp.ssl.trust", Helper.getWegasProperty("mail.smtp.host"));
         } else {                                                                // SSL
             props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.put("mail.smtp.socketFactory.port", res.getString("mail.smtp.port"));
-            props.put("mail.smtp.ssl.trust", res.getString("mail.smtp.host"));
+            props.put("mail.smtp.socketFactory.port", Helper.getWegasProperty("mail.smtp.port"));
+            props.put("mail.smtp.ssl.trust", Helper.getWegasProperty("mail.smtp.host"));
         }
 
 
