@@ -12,7 +12,6 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import java.io.IOException;
 import java.io.Serializable;
@@ -99,7 +98,7 @@ public class SingleLobbyController implements Serializable {
                     externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // no game
                 }
             }
-            
+
         } else {
             externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // no game
         }

@@ -15,6 +15,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.exception.WegasException;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -96,8 +97,9 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param game
      */
     public void create(Long gameModelId, Game game) {
-        if (game.getToken() == null || game.getToken().equals("") || this.findByToken(game.getToken()) != null || teamFacade.findByToken(game.getToken()) != null) {
-            game.setToken(Helper.genToken(10));
+        if (this.findByToken(game.getToken()) != null
+                || teamFacade.findByToken(game.getToken()) != null) {
+            throw new WegasException("This token is already in use.");
         }
         GameModel gameModel = gameModelEntityFacade.find(gameModelId);
         gameModel.addGame(game);
@@ -110,15 +112,16 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     @Override
     public Game update(final Long entityId, Game entity) {
-        if (entity.getToken() == null || entity.getToken().equals("") || (this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0) || teamFacade.findByToken(entity.getToken()) != null) {
-            entity.setToken(Helper.genToken(10));
+        if ((this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)
+                || teamFacade.findByToken(entity.getToken()) != null) {
+            throw new WegasException("This token is already in use.");
         }
         return super.update(entityId, entity);
     }
 
     @Override
     public void remove(Game entity) {
-        for(Team t : entity.getTeams()){
+        for (Team t : entity.getTeams()) {
             teamFacade.remove(t);
         }
         super.remove(entity);

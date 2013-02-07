@@ -103,10 +103,10 @@ public class Team extends AbstractEntity {
     @PrePersist
     @PreUpdate
     public void prePersist() {
-        if (this.getToken() == null) {
+        if (this.getToken() == null || this.getToken().equals("")) {
             this.setToken(Helper.genToken(10));
         }
-        this.token = this.token.replace(" ", "-");
+        //this.token = this.token.replace(" ", "-");
     }
 
     /**
