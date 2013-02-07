@@ -32,10 +32,17 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      */
     private Long maxValue;
 
+    /**
+     *
+     */
     public NumberDescriptor() {
         super();
     }
 
+    /**
+     *
+     * @param name
+     */
     public NumberDescriptor(String name) {
         super(name);
     }

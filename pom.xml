@@ -4,10 +4,11 @@
 
     <name>wegas-project</name>
     <description>Wegas (Web Game Authoring System) is an engine for web-based multiplayer games.</description>
+    <url>http://www.albasim.ch/Wegas/</url>
 
     <groupId>com.wegas</groupId>
     <artifactId>wegas-project</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>wegas-core</module>
@@ -35,7 +36,6 @@
             <email>lagger.yannick at gmail.com</email>
         </developer>
     </developers>
-    <url>http://www.albasim.com/Wegas/</url>
 
     <scm>
         <connection>scm:git:git@github.com:Heigvd/Wegas.git</connection>
@@ -45,7 +45,7 @@
 
     <ciManagement>
         <system>Travis-ci</system>
-        <url>https://travis-ci.org/Heigvd/Wegas</url>
+        <url>http://travis-ci.org/Heigvd/Wegas</url>
     </ciManagement>
 
     <issueManagement>

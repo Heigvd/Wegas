@@ -18,6 +18,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.GuestAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.exception.WegasException;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,6 +117,13 @@ public class UserFacade extends AbstractFacadeImpl<User> {
 
     @Override
     public void create(User user) {
+        try {
+            accountFacade.findByEmail(user.getMainAccount().getEmail());
+            throw new WegasException("This email is already associated with an?existing account.");
+        } catch (PersistenceException e) {
+            // GOTCHA
+        }
+
         super.create(user);
         try {
             user.getMainAccount().addRole(roleFacade.findByName("Public"));

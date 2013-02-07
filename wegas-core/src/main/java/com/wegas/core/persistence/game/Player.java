@@ -139,6 +139,10 @@ public class Player extends AbstractEntity {
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
     }
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     @JsonIgnore
     public int getGameModelId() {
@@ -155,6 +159,10 @@ public class Player extends AbstractEntity {
     public Game getGame() {
         return this.getTeam().getGame();
     }
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     @JsonIgnore
     public int getGameId() {
