@@ -175,8 +175,8 @@ YUI.add('wegas-editor-action', function(Y) {
                 label: entity.get("name") || "Unnamed"
             },
             tab = Y.Wegas.TabView.createTab(tabId, this.get("tabSelector"), tabCfg);
+            tab.set("visible", true);
             tab.set("selected", 2);
-
             tab.witem(0).set("emptyMessage", "This game model has no games.");
             tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
 
