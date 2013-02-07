@@ -7,6 +7,7 @@
  */
 
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
@@ -27,18 +28,25 @@ YUI.add("wegas-button", function (Y) {
     };
 
     /**
-     *  Custom Button implementation. Adds Y.WidgetChild and Y.Wegas.Widget extensions
-     *  to the original Y.Button
-     *
-     *  @class Y.Wegas.Button
-     *  @constructor
-     *
+     * @name Y.Wegas.Button
+     * @extends Y.Button
+     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
+     * @class Custom Button implementation.
+     * @constructor
+     * @description Custom Button implementation. Adds Y.WidgetChild and
+     * Y.Wegas.Widget extensions to the original Y.Button
      */
     Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.Button */
         // *** Private fields *** //
 
         // *** Lifecycle Methods *** //
+        /**
+         * @function
+         * @private
+         * @description Set variable with initials values.
+         * Plug tooltip add given (by ATTRS) css class to contentbox
+         */
         initializer: function () {
             Button.superclass.initializer.apply(this, arguments);
 
@@ -55,11 +63,34 @@ YUI.add("wegas-button", function (Y) {
                 });
             }
         },
+        /**
+         * @function
+         * @private
+         * @description Call widget parent to execute its proper render function.
+         * add "wegas-button" class to bounding box.
+         */
         renderUI: function () {
             Button.superclass.renderUI.apply(this, arguments);
             this.get(BOUNDINGBOX).addClass("wegas-button");
         }
     }, {
+        /**
+         * @lends Y.Wegas.Button
+         */
+        /**
+         * @field
+         * @static
+         * @description
+         * <p><strong>Method</strong></p>
+         * <ul>
+         *    <li>label: the label of the button</li>
+         *    <li>data: the data used by the button</li>
+         *    <li>tooltip: the tooltip of the button</li>
+         *    <li>disabled: boolean to choose state of the button</li>
+         *    <li>cssClass: cssClass of the button</li>
+         *    <li>plugins: impact to bind at the buttons</li>
+         * </ul>
+         */
         ATTRS: {
             label: {
                 type: "string"
@@ -107,17 +138,48 @@ YUI.add("wegas-button", function (Y) {
      * @extends Y.Plugin.Base
      * @borrows Y.Wegas.Plugin, Y.Wegas.Editable
      */
+    /**
+     * @name Y.Plugin.UnreadCount
+     * @extends  Y.Plugin.Base
+     * @borrows Y.Wegas.Plugin, Y.Wegas.Editable
+     * @class  plugin to show how number of element is "unread"
+     * @constructor
+     * @description Plugin to show how number of element is "unread". reanded
+     *  instance need a "reply" instance associate to count the unreads.
+     */
     var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
-        /** @lends Y.Wegas.UnreadCount# */
+        /** @lends Y.Plugin.UnreadCount# */
+        // *** Private fields *** //
+        /**
+         * Reference to each used functions
+         */
+        handlers: null,
+        // *** Lifecycle methods *** //
+        /**
+         * @function
+         * @private
+         * @description Set variable with initials values.
+         */
         initializer: function () {
-            this.vdHandler = // If data changes, refresh
-                    Y.Wegas.app.VariableDescriptorFacade.after("update", this.syncUI, this);
-
-            this.afterHostEvent("render", this.syncUI, this);
+            this.handlers = {};
         },
-        destructor: function () {
-            this.vdHandler.detach();
+        /**
+         * @function
+         * @private
+         * @description bind function to events.
+         * When VariableDescriptorFacade is updated, do sync.
+         * When plugin's host is render, do sync.
+         */
+        bindUI: function () {
+            this.handlers.update = Y.Wegas.app.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.handlers.render = this.afterHostEvent("render", this.syncUI, this);
         },
+        /**
+         * @function
+         * @private
+         * @description call function 'getUnreadCount' to set the number of
+         * unread on the host.
+         */
         syncUI: function () {
             var cb = this.get('host').get(CONTENTBOX),
                     target = cb.one(".unread-count"),
@@ -134,6 +196,23 @@ YUI.add("wegas-button", function (Y) {
                 target.setContent("");
             }
         },
+        /**
+         * @function
+         * @private
+         * @description Detach all functions created by this widget
+         */
+        destructor: function () {
+            for (var k in this.handlers) {
+                this.handlers[k].detach();
+            }
+        },
+        // *** Private methods *** //
+       /**
+         * @function
+         * @private
+         * @return Number of unread.
+         * @description Count the number of unread reply in given variable.
+         */
         getUnreadCount: function () {
             var i, instance, messages, count = 0,
                     descriptor = this.get('variable.evaluated');
@@ -164,6 +243,19 @@ YUI.add("wegas-button", function (Y) {
     }, {
         NS: "UnreadCount",
         NAME: "UnreadCount",
+        /**
+         * @lends Y.Plugin.UnreadCount
+         */
+        /**
+         * @field
+         * @static
+         * @description
+         * <p><strong>Method</strong></p>
+         * <ul>
+         *    <li>variable: The target variable, returned either based on the name
+         *     attribute, and if absent by evaluating the expr attribute.</li>
+         * </ul>
+         */
         ATTRS: {
             /**
              * The target variable, returned either based on the variableName attribute,
@@ -181,9 +273,20 @@ YUI.add("wegas-button", function (Y) {
     Y.namespace('Plugin').UnreadCount = UnreadCount;
 
     /**
-     * Shortcut to create a Button with an OpenPageAction plugin 
+     * @name Y.Wegas.OpenPageButton
+     * @extends Y.Wegas.Button
+     * @class Shortcut to create a Button with an OpenPageAction plugin 
+     * @constructor
+     * @description Shortcut to create a Button with an OpenPageAction plugin 
      */
     Y.Wegas.OpenPageButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        /**
+         * @function
+         * @private
+         * @param cfg
+         * @description plug the plugin "OpenPageAction" with a given
+         *  configuration.
+         */
         initializer: function (cfg) {
             this.plug(Y.Plugin.OpenPageAction, cfg);
         }

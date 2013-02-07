@@ -19,6 +19,7 @@ YUI.add('wegas-pageloader', function (Y) {
     /**
      * @name Y.Wegas.PageLoader
      * @extends Y.Widget
+     * @borrows Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable
      * @class  class loader of wegas's pages
      * @constructor
      * @description Load pages and request widget to render.
@@ -27,6 +28,7 @@ YUI.add('wegas-pageloader', function (Y) {
         /**
          * @lends Y.Wegas.InboxDisplay#
          */
+        // *** Private fields *** //
         /**
          * Current page id
          */
@@ -107,7 +109,7 @@ YUI.add('wegas-pageloader', function (Y) {
         /**
          * @function
          * @private
-         * @description Destroy widget and all functions created by this widget
+         * @description Destroy widget and detach all functions created by this widget
          * remove instance kept in PageLoader.pageLoaderInstances.
          */
         destructor: function () {

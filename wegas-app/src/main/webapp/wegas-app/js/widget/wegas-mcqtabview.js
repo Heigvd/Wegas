@@ -20,6 +20,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
     /**
      * @name Y.Wegas.MCQTabView
      * @extends Y.Widget
+     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class Class to view and reply to questions and choices.
      * @constructor
      * @description  Display and allow to reply at questions and choice sent
@@ -69,7 +70,6 @@ YUI.add('wegas-mcqtabview', function (Y) {
          * @description bind function to events.
          * When submit button is clicked, send the selected choice
          * When datasource is updated, do syncUI;
-         * When current player change, do syncUI;
          */
         bindUI: function () {
             this.get(CONTENTBOX).delegate("click", function (e) {
@@ -84,7 +84,6 @@ YUI.add('wegas-mcqtabview', function (Y) {
             }, "input[type=submit]", this);
 
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
-            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
         /**
          * @function
@@ -182,7 +181,8 @@ YUI.add('wegas-mcqtabview', function (Y) {
         /**
          * @function
          * @private
-         * @description Destroy TabView and all functions created by this widget
+         * @description Destroy TabView and detach all functions created
+         *  by this widget
          */
         destructor: function () {
             var i;

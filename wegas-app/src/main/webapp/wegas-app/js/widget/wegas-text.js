@@ -18,11 +18,15 @@ YUI.add("wegas-text", function (Y) {
     /**
      * @name Y.Wegas.Text
      * @extends Y.Widget
+     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class class to display simple String
      * @constructor
      * @description  Display a string (given as ATTRS) in content box
      */
     Text = Y.Base.create("wegas-text", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        /**
+         * @lends Y.Wegas.InboxDisplay#
+         */
         /**
          * @function
          * @private
