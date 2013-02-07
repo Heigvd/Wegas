@@ -141,6 +141,7 @@
                 "id": "gamesTreeViewTab",
                 "type": "Tab",
                 "label": "Games",
+                "visible": false,
                 "children": [{
                     "type": "EditorTreeView",
                     "dataSource": "Game",

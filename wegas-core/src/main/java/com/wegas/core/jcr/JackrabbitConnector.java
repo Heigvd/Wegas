@@ -7,8 +7,8 @@
  */
 package com.wegas.core.jcr;
 
+import com.wegas.core.Helper;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
 public class JackrabbitConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
-    final private ResourceBundle resourceBundle = ResourceBundle.getBundle("systemsettings");
-    final private String DIR = resourceBundle.getString("jcr.repository.basedir");
+    final private String DIR = Helper.getWegasProperty("jcr.repository.basedir");
     private static JackrabbitRepository repo;
     private JackrabbitRepositoryFactory rf;
 

@@ -5,9 +5,11 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb;
+package com.wegas.core;
 
 import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,9 +81,10 @@ public class Helper {
     }
 
     /**
+     * Encode a String to look like a JavaScript variable.
      *
-     * @param name
-     * @return
+     * @param name String to encode
+     * @return a String wich will be undestandable by JavaScript as a var
      */
     public static String encodeVariableName(String name) {
 
@@ -191,5 +194,21 @@ public class Helper {
             time = time / digitSize;
         }
         return sb.toString().substring(0, Math.min(sb.length(), maxLength));
+    }
+
+    /**
+     * Return a wegas property from wegas-override.properties or from
+     * wegas.properties if wegas-override or it's respective property is
+     * missing.
+     *
+     * @param propertyName the property to read
+     * @return Property's value
+     */
+    public static String getWegasProperty(String propertyName) {
+        try {
+            return ResourceBundle.getBundle("wegas-override").getString(propertyName);
+        } catch (MissingResourceException ex) {
+            return ResourceBundle.getBundle("wegas").getString(propertyName);
+        }
     }
 }

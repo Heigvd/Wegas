@@ -8,13 +8,12 @@
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.ejb.exception.PersistenceException;
+import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -53,9 +52,17 @@ public class EditorGameController extends AbstractGameController {
      *
      */
     @EJB
-    protected TeamFacade teamFacade;
+    private TeamFacade teamFacade;
+    @EJB
+    private GameFacade gameFacade;
+    @EJB
+    private PlayerFacade playerFacade;
+    @EJB
+    private GameModelFacade gameModelFacade;
+    @EJB
+    private UserFacade userFacade;
     @Inject
-    private ErrorContainer errorContainer;
+    ErrorController errorController;
 
     /**
      *
@@ -68,51 +75,42 @@ public class EditorGameController extends AbstractGameController {
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
             currentPlayer = playerFacade.find(this.getPlayerId());
 
-        } else if (this.getTeamId() != null) {                                       // If a playerId is provided, we use it
+        } else if (this.teamId != null) {                                       // If a team id is provided
             try {
-                currentPlayer = teamFacade.find(this.getTeamId()).getPlayers().get(0);
+                currentPlayer = teamFacade.find(this.teamId).getPlayers().get(0); // Return the first player
+
             } catch (ArrayIndexOutOfBoundsException ex) {
-                errorContainer.setErrorMessage("Team [" + teamFacade.find(this.getTeamId()).getName() + "] has no player.");
+                errorController.setErrorMessage("Team " + teamFacade.find(this.teamId).getName() + " has no player.");
+
             }
 
-        } else if (this.getGameModelId() != null) {                                  // If we only have a gameModel id, we select the 1st player of the 1st team of the 1st game
-            final GameModel gameModel = gameModelFacade.find(this.getGameModelId());
-            Game game;
-            Team team;
+        } else if (this.gameModelId != null) {                                  // If we only have a gameModel id
             try {
-                game = gameModel.getGames().get(0);
+                currentPlayer = playerFacade.findByGameModelId(this.gameModelId);// Select any player in this game model
+
+            } catch (PersistenceException e) {
+                errorController.setErrorMessage("Game model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
+
+            }
+
+        } else if (this.gameId != null) {                                       // If a game id is provided
+            try {
+                currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,
+                        userFacade.getCurrentUser().getId());               // Try to check if current shiro user is registered to the target game
+
+            } catch (PersistenceException e) {                                     // If we still have nothing
+
                 try {
-                    team = game.getTeams().get(0);
-                    try {
-                        currentPlayer = team.getPlayers().get(0);
-                    } catch (ArrayIndexOutOfBoundsException exc) {
-                        errorContainer.setErrorMessage("Team [" + team.getName() + "] has no player.");
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    errorContainer.setErrorMessage("Game [" + game.getName() + "] has no team.");
-                }
+                    currentPlayer = playerFacade.findByGameId(this.gameId);     // Select any player in that game
 
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                errorContainer.setErrorMessage("GameModel [" + gameModel.getName() + "] has no game.");
-            }
+                } catch (PersistenceException e2) {
+                    errorController.setErrorMessage("Game " + gameFacade.find(this.gameId).getName() + " has no players.");
 
-
-
-        } else if (this.getGameId() != null) {
-            try {
-                currentPlayer = playerFacade.findByGameIdAndUserId(this.getGameId(),
-                        userFacade.getCurrentUser().getId());   // Try to check if current shiro user is registered to the target game
-            } catch (Exception e) {                                             // If we still have nothing
-                List<Player> players = playerFacade.findByGameId(this.getGameId());
-                if (!players.isEmpty()) {
-                    currentPlayer = players.get(0);                             // we take the first player we find
-                }else{
-                    errorContainer.setErrorMessage("That game has no player.");
                 }
             }
         }
-        if (currentPlayer == null) {                                           // If no player could be found, we redirect to an error page
-            externalContext.dispatch("/wegas-app/view/error.xhtml");
+        if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
+            externalContext.dispatch("/wegas-app/view/error/error.xhtml");
         } else {
 
             try {

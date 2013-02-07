@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
@@ -17,8 +18,13 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.GuestAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.exception.WegasException;
 import com.wegas.messaging.ejb.EMailFacade;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -88,7 +94,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             return accountFacade.find((Long) subject.getPrincipal()).getUser();
         } else {
             User newUser = new User(new GuestAccount());                        // return a Guest user
-            if (ResourceBundle.getBundle("wegas").getString("guestallowed").equals("true")) {
+            if (Helper.getWegasProperty("guestallowed").equals("true")) {
                 //userFacade.create(newUser);                                   // @fixme For now we do not persist this new user
             }
             return newUser;
@@ -111,6 +117,13 @@ public class UserFacade extends AbstractFacadeImpl<User> {
 
     @Override
     public void create(User user) {
+        try {
+            accountFacade.findByEmail(user.getMainAccount().getEmail());
+            throw new WegasException("This email is already associated with an?existing account.");
+        } catch (PersistenceException e) {
+            // GOTCHA
+        }
+
         super.create(user);
         try {
             user.getMainAccount().addRole(roleFacade.findByName("Public"));

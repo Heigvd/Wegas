@@ -135,8 +135,8 @@ public class GameModel extends NamedEntity {
         if (this.games.isEmpty()) {
             Team t = new Team("Default");
             t.addPlayer(new Player("Test player"));
-            
-            Game g = new Game(this.getName() + " Test game");
+
+            Game g = new Game("Test game");
             g.addTeam(t);
             this.addGame(g);
         }

@@ -1,8 +1,14 @@
+/*
+ * Wegas
+ * http://www.albasim.ch/wegas/
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 package com.wegas.app.jsf.controllers;
 
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -12,13 +18,9 @@ import javax.faces.context.FacesContext;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @ManagedBean(name = "error")
-@RequestScoped
-public class ErrorContainer implements Serializable {
+public class ErrorController implements Serializable {
 
     final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-
-    public ErrorContainer() {
-    }
 
     public String getErrorMessage() {
         return (String) externalContext.getSessionMap().remove("errorMessage");

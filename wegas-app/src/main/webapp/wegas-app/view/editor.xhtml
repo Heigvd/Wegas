@@ -5,7 +5,7 @@
 
     <ui:composition template="template/app-default.xhtml">
 
-        <ui:define name="title">#{editorGameController.currentGameModel.name}</ui:define>
+        <ui:define name="title">#{editorGameController.currentGameModel.name} - #{editorGameController.currentGame.name}</ui:define>
 
         <ui:define name="head">
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
@@ -25,7 +25,7 @@
                 }
             </style>
         </ui:define>
-        
+
         <ui:define name="body">
             <script type="text/javascript">
               YUI().use("wegas-app",  'wegas-rightscss', /*'wegas-editorcss',*/ function (Y) {

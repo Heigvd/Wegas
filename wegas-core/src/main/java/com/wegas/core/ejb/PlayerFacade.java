@@ -83,6 +83,11 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         return (Player) findByGameIdAndUserId.getSingleResult();
     }
 
+    /**
+     * 
+     * @param player
+     * @return
+     */
     public List<VariableInstance> getAssociatedInstances(Player player) {
         Query findPlayerInstance = em.createNamedQuery("findPlayerInstances");
         return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
@@ -102,10 +107,46 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
      * @param gameId
      * @return
      */
-    public List<Player> findByGameId(Long gameId) {
+    public List<Player> getByGameId(Long gameId) {
         Query findByGameId = em.createNamedQuery("findPlayerByGameId");
         findByGameId.setParameter("gameId", gameId);
         return findByGameId.getResultList();
+    }
+
+    /**
+     * Returns the first available player in the target game.
+     *
+     * @param gameId
+     * @return
+     */
+    public Player findByGameId(Long gameId) {
+        Query getByGameId = em.createQuery("SELECT player FROM Player player WHERE player.team.game.id = :gameId");
+        getByGameId.setParameter("gameId", gameId);
+        return (Player) getByGameId.setMaxResults(1).getSingleResult();
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @return
+     */
+    public List<Player> getByGameModelId(Long gameModelId) {
+        Query findByGameId = em.createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId");
+        findByGameId.setParameter("gameModelId", gameModelId);
+        return findByGameId.getResultList();
+    }
+
+    /**
+     *
+     * Returns the first available player in the target game model.
+     *
+     * @param gameModelId
+     * @return
+     */
+    public Player findByGameModelId(Long gameModelId) {
+        Query getByGameId = em.createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId");
+        getByGameId.setParameter("gameModelId", gameModelId);
+        return (Player) getByGameId.setMaxResults(1).getSingleResult();
     }
 
     /**
