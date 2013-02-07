@@ -39,7 +39,6 @@ public class PlayerController {
 
     /**
      *
-     * @param gameId
      * @param playerId
      * @return
      */
@@ -66,7 +65,6 @@ public class PlayerController {
 
     /**
      *
-     * @param gameId
      * @param entity
      * @param teamId
      * @return
@@ -80,7 +78,6 @@ public class PlayerController {
 
     /**
      *
-     * @param gameId
      * @param playerId
      * @param entity
      * @return

@@ -75,6 +75,7 @@ public class Game extends NamedEntity {
 
     /**
      *
+     * @param name
      */
     public Game(String name) {
         this.name = name;

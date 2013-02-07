@@ -12,7 +12,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -60,6 +59,11 @@ public class UserController {
         return userFacade.findAll();
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     public User get(@PathParam("entityId") Long entityId) {
@@ -70,6 +74,11 @@ public class UserController {
         return userFacade.find(entityId);
     }
 
+    /**
+     *
+     * @param user
+     * @return
+     */
     @POST
     public User create(User user) {
         SecurityUtils.getSubject().checkPermission("User:Edit");
@@ -78,6 +87,12 @@ public class UserController {
         return user;
     }
 
+    /**
+     *
+     * @param entityId
+     * @param entity
+     * @return
+     */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public User update(@PathParam("entityId") Long entityId, User entity) {
@@ -90,6 +105,11 @@ public class UserController {
     }
 
 
+    /**
+     *
+     * @param accountId
+     * @return
+     */
     @DELETE
     @Path("{accountId: [1-9][0-9]*}")
     public User delete(@PathParam("accountId") Long accountId) {

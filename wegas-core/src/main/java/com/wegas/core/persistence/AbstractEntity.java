@@ -104,7 +104,9 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
     /**
      * Duplicate an entity by using Jackson Mapper and provided view
      *
+     * @param view
      * @return
+     * @throws IOException
      */
     public AbstractEntity duplicate(Class view) throws IOException {
         //AnonymousEntity ae = (AnonymousEntity)super.clone();
@@ -117,6 +119,10 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
         return mapper.readValue(serialized, AbstractEntity.class);              // and deserialize it
     }
 
+    /**
+     *
+     * @return @throws IOException
+     */
     public AbstractEntity duplicate() throws IOException {
         return this.duplicate(Views.Export.class);
     }

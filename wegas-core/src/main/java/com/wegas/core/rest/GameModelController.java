@@ -45,6 +45,11 @@ public class GameModelController {
     @Inject
     private RequestManager requestManager;
 
+    /**
+     *
+     * @param gm
+     * @return
+     */
     @POST
     public GameModel create(GameModel gm) {
         // logger.info(Level.INFO, "POST GameModel");
@@ -55,6 +60,11 @@ public class GameModelController {
         return gm;
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     public GameModel get(@PathParam("entityId") Long entityId) {
@@ -64,6 +74,12 @@ public class GameModelController {
         return gameModelFacade.find(entityId);
     }
 
+    /**
+     *
+     * @param entityId
+     * @param entity
+     * @return
+     */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public GameModel update(@PathParam("entityId") Long entityId, GameModel entity) {
@@ -73,6 +89,12 @@ public class GameModelController {
         return gameModelFacade.update(entityId, entity);
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     * @throws IOException
+     */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     public GameModel duplicate(@PathParam("entityId") Long entityId) throws IOException {
@@ -82,6 +104,11 @@ public class GameModelController {
         return gameModelFacade.duplicate(entityId);
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     public GameModel delete(@PathParam("entityId") Long entityId) {
@@ -93,6 +120,10 @@ public class GameModelController {
         return entity;
     }
 
+    /**
+     *
+     * @return
+     */
     @GET
     public Collection<GameModel> index() {
 
