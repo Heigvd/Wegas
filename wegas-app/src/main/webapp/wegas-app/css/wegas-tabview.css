@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.com/wegas/
+ * http://www.albasim.ch/wegas/
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -13,6 +13,9 @@
 /*  TabView Styles */
 .yui3-skin-sam .yui3-tab {
     position: relative;
+}
+.yui3-skin-sam .yui3-tab-hidden {
+    display: none;
 }
 .yui3-skin-sam .yui3-tabview-panel {
     border: none;

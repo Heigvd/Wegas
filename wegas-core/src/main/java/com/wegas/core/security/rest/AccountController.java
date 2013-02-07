@@ -55,6 +55,11 @@ public class AccountController {
         return entity.getUser();
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     public User get(@PathParam("entityId") Long entityId) {
@@ -70,7 +75,6 @@ public class AccountController {
      * @param accountId
      * @param entity
      * @return
-     * @throws IOException
      */
     @PUT
     @Path("{accountId: [1-9][0-9]*}")
@@ -83,6 +87,11 @@ public class AccountController {
         return accountFacade.update(accountId, entity).getUser();
     }
 
+    /**
+     *
+     * @param accountId
+     * @return
+     */
     @DELETE
     @Path("{accountId: [1-9][0-9]*}")
     public User delete(@PathParam("accountId") Long accountId) {

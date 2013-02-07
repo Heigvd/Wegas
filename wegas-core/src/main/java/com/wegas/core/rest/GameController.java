@@ -78,6 +78,7 @@ public class GameController {
 
     /**
      *
+     * @param gameModelId
      * @return
      */
     @GET
@@ -91,9 +92,14 @@ public class GameController {
             }
         }
         return games;
-        //return gameModel.getGames();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param entity
+     * @return
+     */
     @POST
     public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) {
 
@@ -103,6 +109,12 @@ public class GameController {
         return entity;
     }
 
+    /**
+     *
+     * @param entityId
+     * @param entity
+     * @return
+     */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public Game update(@PathParam("entityId") Long entityId, Game entity) {
@@ -112,6 +124,11 @@ public class GameController {
         return gameFacade.update(entityId, entity);
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     public Game delete(@PathParam("entityId") Long entityId) {
@@ -149,6 +166,7 @@ public class GameController {
         try {                                        // We check if logged user is already registered in the target game
             playerFacade.findByGameIdAndUserId(
                     game.getId(), userFacade.getCurrentUser().getId());
+            
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
         } catch (PersistenceException e) {           // If there is no NoResultException, everything is ok, we can return the game
 

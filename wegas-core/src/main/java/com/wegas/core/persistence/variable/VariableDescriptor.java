@@ -227,6 +227,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return this.gameModel;
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     public int getGameModelId() {
         return this.gameModel.getId().intValue();

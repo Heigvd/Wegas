@@ -7,21 +7,34 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import org.apache.shiro.SecurityUtils;
 
 /**
+ *
+ * Controls player access to games
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @ManagedBean(name = "gameController")
 @RequestScoped
 public class GameController extends AbstractGameController {
+
+    @EJB
+    private PlayerFacade playerFacade;
+    @EJB
+    private UserFacade userFacade;
+    @Inject
+    ErrorController errorController;
 
     /**
      *
@@ -32,19 +45,16 @@ public class GameController extends AbstractGameController {
         final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
-           
             currentPlayer = playerFacade.find(this.getPlayerId());
-            if (currentPlayer == null){
-                externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml");
-            } else if (!userFacade.matchCurrentUser(currentPlayer.getId())) {
+            if (!userFacade.matchCurrentUser(currentPlayer.getId())
+                    && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {
                 externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml");
             }
-            
-            SecurityUtils.getSubject().checkPermission("Game:View:g" + currentPlayer.getGame().getId());
-            
-        } 
+        }
+
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            externalContext.dispatch("/wegas-app/view/error/gameerror.xhtml");
+            errorController.setErrorMessage("The game you are looking for could not be found, maybe it has been deleted.");
+            externalContext.dispatch("/wegas-app/view/error/error.xhtml");
         }
     }
 }

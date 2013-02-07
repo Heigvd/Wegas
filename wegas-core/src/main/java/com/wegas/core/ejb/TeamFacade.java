@@ -126,6 +126,11 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         }
     }
 
+    /**
+     *
+     * @param team
+     * @return
+     */
     public List<VariableInstance> getAssociatedInstances(Team team) {
         Query findInstances = em.createNamedQuery("findTeamInstances");
         findInstances.setParameter("teamid", team.getId());

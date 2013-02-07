@@ -95,12 +95,16 @@ public class Reply extends AbstractEntity {
     /*
      * @return the unread
      */
+    /**
+     *
+     * @return
+     */
     public Boolean getUnread() {
         return unread;
     }
 
     /**
-     * @param answer the answer to set
+     * @param unread
      */
     public void setUnread(Boolean unread) {
         this.unread = unread;
