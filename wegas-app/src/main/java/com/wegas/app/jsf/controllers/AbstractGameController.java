@@ -8,15 +8,11 @@
 package com.wegas.app.jsf.controllers;
 
 import com.sun.faces.util.Util;
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.security.ejb.UserFacade;
 import java.io.Serializable;
 import java.util.Locale;
-import javax.ejb.EJB;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 
@@ -31,21 +27,6 @@ public class AbstractGameController implements Serializable {
      */
     @ManagedProperty("#{param.id}")
     protected Long playerId;
-    /**
-     *
-     */
-    @EJB
-    protected PlayerFacade playerFacade;
-    /**
-     *
-     */
-    @EJB
-    protected GameModelFacade gameModelFacade;
-    /**
-     *
-     */
-    @EJB
-    protected UserFacade userFacade;
     /**
      *
      */
@@ -100,7 +81,7 @@ public class AbstractGameController implements Serializable {
      * @return
      */
     public GameModel getCurrentGameModel() {
-        return this.getCurrentPlayer().getTeam().getGame().getGameModel();
+        return this.getCurrentGame().getGameModel();
     }
 
     /**
@@ -123,5 +104,4 @@ public class AbstractGameController implements Serializable {
     public void setPlayerId(final Long playerId) {
         this.playerId = playerId;
     }
-
 }
