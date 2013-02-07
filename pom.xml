@@ -3,6 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>wegas-project</name>
+    <description>Wegas (Web Game Authoring System) is an engine for web-based multiplayer games.</description>
+
     <groupId>com.wegas</groupId>
     <artifactId>wegas-project</artifactId>
     <version>0.2-SNAPSHOT</version>
@@ -11,9 +13,9 @@
         <module>wegas-core</module>
         <module>wegas-app</module>
         <module>wegas-resources</module>
-        <!--        <module>wegas-mcq</module>-->
+        <!--<module>wegas-mcq</module>-->
     </modules>
-    <description>Web Game Authoring system is a Jee-based framework for multiplayer web-games developement.</description>
+
     <developers>
         <developer>
             <name>Francois-Xavier Aeberhard</name>
@@ -35,6 +37,17 @@
     </developers>
     <url>http://www.albasim.com/Wegas/</url>
 
+    <scm>
+        <connection>scm:git:git@github.com:Heigvd/Wegas.git</connection>
+        <url>scm:git:git@github.com:Heigvd/Wegas.git</url>
+        <developerConnection>scm:git:git@github.com:Heigvd/Wegas.git</developerConnection>
+    </scm>
+
+    <ciManagement>
+        <system>Travis-ci</system>
+        <url>https://travis-ci.org/Heigvd/Wegas</url>
+    </ciManagement>
+
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/Heigvd/Wegas/issues</url>
@@ -46,6 +59,7 @@
             <url>http://www.opensource.org/licenses/MIT</url>
         </license>
     </licenses>
+
     <distributionManagement>
         <site>
             <id>localhost</id>
@@ -77,7 +91,7 @@
         <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
         <netbeans.hint.license>wegas</netbeans.hint.license>
-        
+
         <github.global.server>github</github.global.server>
     </properties>
 
@@ -156,7 +170,7 @@
             <plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>
-                <version>0.7</version>                
+                <version>0.7</version>
                 <inherited>false</inherited>
                 <configuration>
                     <repositoryName>Wegas</repositoryName>
@@ -202,14 +216,14 @@
                             </configuration>
                             <reports>
                                 <report>index</report>
-                                <report>summary</report>
-                                <report>dependencies</report>
-                                <report>project-team</report>
-                                <report>mailing-list</report>
-                                <report>cim</report>
-                                <report>issue-tracking</report>
                                 <report>license</report>
+                                <report>project-team</report>
                                 <report>scm</report>
+                                <report>issue-tracking</report>
+                                <report>cim</report>
+                                <report>dependencies</report>
+                                <!--<report>mailing-list</report>
+                                <report>summary</report>-->
                             </reports>
                         </plugin>
 
@@ -328,7 +342,7 @@
                     </reportPlugins>
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
 
