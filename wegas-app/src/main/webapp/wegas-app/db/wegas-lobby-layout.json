@@ -9,6 +9,7 @@
         }, {
             "type": "Button",
             "label": "Administrator",
+            "cssClass": "editor-administrator-button",
             "plugins": [{
                 "fn": "WidgetMenu",
                 "cfg": {
