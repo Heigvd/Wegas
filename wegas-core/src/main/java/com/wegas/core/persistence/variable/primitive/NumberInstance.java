@@ -28,9 +28,16 @@ public class NumberInstance extends VariableInstance {
      */
     private double val;
 
+    /**
+     *
+     */
     public NumberInstance() {
     }
 
+    /**
+     *
+     * @param value
+     */
     public NumberInstance(double value) {
         this.val = value;
     }

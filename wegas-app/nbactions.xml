@@ -3,7 +3,7 @@
 
     <action>
         <actionName>run</actionName>
-<!--        <preAction>build-with-dependencies</preAction>-->
+        <!--<preAction>build-with-dependencies</preAction>-->
         <goals>
             <goal>package</goal>
             <!--<goal>prepare-package</goal>
@@ -14,7 +14,7 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
-<!--    <action>
+    <!--<action>
         <actionName>debug</actionName>
         <goals>
             <goal>package</goal>

@@ -47,6 +47,7 @@ public class VariableDescriptorController {
 
     /**
      *
+     * @param gameModelId
      * @return
      */
     @GET
@@ -58,6 +59,11 @@ public class VariableDescriptorController {
         return gameModel.getChildVariableDescriptors();
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     public VariableDescriptor get(@PathParam("entityId") Long entityId) {
@@ -68,6 +74,12 @@ public class VariableDescriptorController {
         return vd;
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param entity
+     * @return
+     */
     @POST
     public VariableDescriptor create(@PathParam("gameModelId") Long gameModelId,
             VariableDescriptor entity) {
@@ -80,7 +92,7 @@ public class VariableDescriptorController {
 
     /**
      *
-     * @param variableDescriptorId
+     * @param entityId
      * @param entity
      * @return
      */
@@ -94,6 +106,12 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.createChild(entityId, entity);
     }
 
+    /**
+     *
+     * @param entityId
+     * @param entity
+     * @return
+     */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public VariableDescriptor update(@PathParam("entityId") Long entityId, VariableDescriptor entity) {
@@ -103,6 +121,12 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.update(entityId, entity);
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     * @throws IOException
+     */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     public VariableDescriptor duplicate(@PathParam("entityId") Long entityId) throws IOException {
@@ -112,6 +136,11 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.duplicate(entityId);
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     public VariableDescriptor delete(@PathParam("entityId") Long entityId) {
