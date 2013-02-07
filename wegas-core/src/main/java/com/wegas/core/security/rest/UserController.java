@@ -150,11 +150,11 @@ public class UserController {
 
         Subject currentUser = SecurityUtils.getSubject();
 
-        if (!currentUser.isAuthenticated()) {
+        //if (!currentUser.isAuthenticated()) {
             UsernamePasswordToken token = new UsernamePasswordToken(email, password);
             token.setRememberMe(remember);
             currentUser.login(token);
-        }
+        //}
     }
 
     /**
