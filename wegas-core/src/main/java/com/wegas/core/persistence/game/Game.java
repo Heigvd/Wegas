@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.wegas.core.ejb.Helper;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;

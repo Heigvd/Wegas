@@ -11,7 +11,7 @@ package com.wegas.core.security.jparealm;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-import com.wegas.core.ejb.Helper;
+import com.wegas.core.Helper;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
