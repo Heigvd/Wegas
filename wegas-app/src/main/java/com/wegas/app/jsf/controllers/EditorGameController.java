@@ -12,10 +12,8 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -24,7 +22,6 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 
@@ -65,7 +62,7 @@ public class EditorGameController extends AbstractGameController {
     @EJB
     private UserFacade userFacade;
     @Inject
-    private ErrorContainer errorContainer;
+    ErrorController errorController;
 
     /**
      *
@@ -83,7 +80,7 @@ public class EditorGameController extends AbstractGameController {
                 currentPlayer = teamFacade.find(this.teamId).getPlayers().get(0); // Return the first player
 
             } catch (ArrayIndexOutOfBoundsException ex) {
-                errorContainer.setErrorMessage("Team " + teamFacade.find(this.teamId).getName() + " has no player.");
+                errorController.setErrorMessage("Team " + teamFacade.find(this.teamId).getName() + " has no player.");
 
             }
 
@@ -92,7 +89,7 @@ public class EditorGameController extends AbstractGameController {
                 currentPlayer = playerFacade.findByGameModelId(this.gameModelId);// Select any player in this game model
 
             } catch (PersistenceException e) {
-                errorContainer.setErrorMessage("Game model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
+                errorController.setErrorMessage("Game model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
 
             }
 
@@ -107,13 +104,13 @@ public class EditorGameController extends AbstractGameController {
                     currentPlayer = playerFacade.findByGameId(this.gameId);     // Select any player in that game
 
                 } catch (PersistenceException e2) {
-                    errorContainer.setErrorMessage("Game " + gameFacade.find(this.gameId).getName() + " has no players.");
+                    errorController.setErrorMessage("Game " + gameFacade.find(this.gameId).getName() + " has no players.");
 
                 }
             }
         }
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            externalContext.dispatch("/wegas-app/view/error.xhtml");
+            externalContext.dispatch("/wegas-app/view/error/error.xhtml");
         } else {
 
             try {
