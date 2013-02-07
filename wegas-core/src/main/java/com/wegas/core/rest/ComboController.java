@@ -7,9 +7,9 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.Helper;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ResourceBundle;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
@@ -91,8 +91,8 @@ public class ComboController {
         for (String fileName : fileList) {
             try {
                 InputStream fis = (InputStream) servletContext.getResourceAsStream(fileName);
-                String content = IOUtils.toString(fis, ResourceBundle.getBundle("wegas").getString("encoding"));
-                //String content = new Scanner(fis, ResourceBundle.getBundle("wegas").getString("encoding")).useDelimiter("\\A").next();   // Use a fake delimiter to read all lines at once
+                String content = IOUtils.toString(fis, Helper.getWegasProperty("encoding"));
+                //String content = new Scanner(fis, Helper.getWegasProperty("encoding")).useDelimiter("\\A").next();   // Use a fake delimiter to read all lines at once
                 if (mediaType.equals(MediaTypeCss)) {                             // @hack for css files, we correct the path
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
                     content = content.replaceAll("url\\(([^:\\)]+\\))",

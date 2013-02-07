@@ -7,9 +7,9 @@
  */
 package com.wegas.core.jcr;
 
+import com.wegas.core.Helper;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 import javax.annotation.PreDestroy;
 import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
@@ -22,13 +22,11 @@ import javax.jcr.SimpleCredentials;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-
 @Singleton
 @DependsOn("JackrabbitConnector")
 public class SessionHolder {
 
-    final static private ResourceBundle resourceBundle = ResourceBundle.getBundle("wegas");
-    final static private SimpleCredentials admin = new SimpleCredentials(resourceBundle.getString("jcr.admin.username"), resourceBundle.getString("jcr.admin.password").toCharArray());
+    final static private SimpleCredentials admin = new SimpleCredentials(Helper.getWegasProperty("jcr.admin.username"), Helper.getWegasProperty("jcr.admin.password").toCharArray());
     private static Map<String, Session> sessionMap = new HashMap<>();
 
     /**
