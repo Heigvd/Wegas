@@ -19,6 +19,7 @@ YUI.add('wegas-inbox', function (Y) {
     /**
      * @name Y.Wegas.InboxDisplay
      * @extends Y.Widget
+     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class  class to manage e-mail
      * @constructor
      * @description Display and allow to manage e-mail sent to the current player

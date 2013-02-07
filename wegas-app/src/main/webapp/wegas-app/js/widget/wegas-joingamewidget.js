@@ -20,6 +20,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
      * @name Y.Wegas.JoinGameWidget
      * @extends Y.Widget
      * @class  class for join a game and a team
+     * @borrows Y.WidgetChild, Y.Wegas.Widget
      * @constructor
      * @description Allows to join a game by token or a public game. Then you can
      * join or create a new team
