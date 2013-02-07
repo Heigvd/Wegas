@@ -20,7 +20,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @JsonIgnoreProperties({"cause", "stackTrace", "suppressed"})
 @XmlType(name = "WegasScriptException")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class WegasScriptException extends WegasException {
+public class ScriptException extends WegasException {
 
     private String script;
     private Integer lineNumber;
@@ -28,14 +28,14 @@ public class WegasScriptException extends WegasException {
     /**
      *
      */
-    public WegasScriptException() {
+    public ScriptException() {
     }
 
     /**
      *
      * @param message
      */
-    public WegasScriptException(String message) {
+    public ScriptException(String message) {
         super(message);
     }
 
@@ -44,7 +44,7 @@ public class WegasScriptException extends WegasException {
      * @param script
      * @param lineNumber
      */
-    public WegasScriptException(String script, Integer lineNumber) {
+    public ScriptException(String script, Integer lineNumber) {
         this.script = script;
         this.lineNumber = lineNumber;
     }
@@ -55,7 +55,7 @@ public class WegasScriptException extends WegasException {
      * @param lineNumber
      * @param message
      */
-    public WegasScriptException(String script, Integer lineNumber, String message) {
+    public ScriptException(String script, Integer lineNumber, String message) {
         super(message);
         this.script = script;
         this.lineNumber = lineNumber;
@@ -68,7 +68,7 @@ public class WegasScriptException extends WegasException {
      * @param message
      * @param cause
      */
-    public WegasScriptException(String script, Integer lineNumber, String message, Throwable cause) {
+    public ScriptException(String script, Integer lineNumber, String message, Throwable cause) {
         super(message, cause);
         this.script = script;
         this.lineNumber = lineNumber;
@@ -79,7 +79,7 @@ public class WegasScriptException extends WegasException {
      * @param message
      * @param cause
      */
-    public WegasScriptException(String message, Throwable cause) {
+    public ScriptException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -88,7 +88,7 @@ public class WegasScriptException extends WegasException {
      * @param script
      * @param message
      */
-    public WegasScriptException(String script, String message) {
+    public ScriptException(String script, String message) {
         super(message);
         this.script = script;
     }
@@ -99,7 +99,7 @@ public class WegasScriptException extends WegasException {
      * @param message
      * @param cause
      */
-    public WegasScriptException(String script, String message, Throwable cause) {
+    public ScriptException(String script, String message, Throwable cause) {
         super(message, cause);
         this.script = script;
     }

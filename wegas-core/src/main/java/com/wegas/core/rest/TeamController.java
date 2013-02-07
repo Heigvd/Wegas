@@ -41,6 +41,11 @@ public class TeamController {
     @EJB
     private GameFacade gameFacade;
 
+    /**
+     *
+     * @param teamId
+     * @return
+     */
     @GET
     @Path("{teamId : [1-9][0-9]*}")
     public Team get(@PathParam("teamId") Long teamId) {
@@ -49,12 +54,23 @@ public class TeamController {
         return t;
     }
 
+    /**
+     *
+     * @param gameId
+     * @return
+     */
     @GET
     public Collection<Team> index(@PathParam("gameId") Long gameId) {
         SecurityUtils.getSubject().checkPermission("Game:View:g" + gameId);
         return gameFacade.find(gameId).getTeams();
     }
 
+    /**
+     *
+     * @param gameId
+     * @param entity
+     * @return
+     */
     @POST
     public Team create(@PathParam("gameId") Long gameId, Team entity) {
         SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
@@ -62,6 +78,12 @@ public class TeamController {
         return entity;
     }
 
+    /**
+     *
+     * @param teamId
+     * @param entity
+     * @return
+     */
     @PUT
     @Path("{teamId : [1-9][0-9]*}")
     public Team update(@PathParam("teamId") Long teamId, Team entity) {
@@ -69,6 +91,11 @@ public class TeamController {
         return teamFacade.update(teamId, entity);
     }
 
+    /**
+     *
+     * @param teamId
+     * @return
+     */
     @DELETE
     @Path("{teamId: [1-9][0-9]*}")
     public Team delete(@PathParam("teamId") Long teamId) {
