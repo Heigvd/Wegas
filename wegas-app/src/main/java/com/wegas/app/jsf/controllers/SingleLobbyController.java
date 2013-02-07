@@ -12,6 +12,7 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import java.io.IOException;
 import java.io.Serializable;
@@ -77,29 +78,28 @@ public class SingleLobbyController implements Serializable {
             currentGame = gameFacade.findByToken(token);
             if (currentGame != null) {
                 try {
-                    playerFacade.findCurrentPlayer(currentGame);
                     // display game page
-                    externalContext.dispatch("/wegas-app/view/play.html?gameId=" + currentGame.getId());
-                } catch (PersistenceException egp) {
+                    externalContext.dispatch("/wegas-app/view/play.html?id=" + playerFacade.findCurrentPlayer(currentGame).getId());
+                } catch (PersistenceException e) {
                     // Nothing to do. stay on current page
                 }
-            } else {
 
+            } else {
                 currentTeam = teamFacade.findByToken(token);
                 if (currentTeam != null) {
                     try {
                         playerFacade.findCurrentPlayer(currentTeam.getGame());
-                        // display game page
-                        externalContext.dispatch("/wegas-app/view/play.html?gameId=" + currentTeam.getGame().getId());
                     } catch (PersistenceException etp) {
-                        // join automatically the team and display game page
-                        gameController.joinTeam(currentTeam.getId());
-                        externalContext.dispatch("/wegas-app/view/play.html?gameId=" + currentTeam.getGame().getId());
+                        gameController.joinTeam(currentTeam.getId());           // Player has not joined yet, force join
                     }
+                    externalContext.dispatch("/wegas-app/view/play.html?id="
+                            + playerFacade.findCurrentPlayer(currentTeam.getGame()).getId());// display game page
+
                 } else {
                     externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // no game
                 }
             }
+            
         } else {
             externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // no game
         }

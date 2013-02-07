@@ -71,6 +71,14 @@ public class Player extends AbstractEntity {
         this.name = name;
     }
 
+    @PrePersist
+    @PreUpdate
+    public void preUpdate() {
+        if (this.getName() == null || this.getName().equals("")) {
+            this.name = this.getUser().getName();
+        }
+    }
+
     /**
      *
      * @param a
@@ -139,6 +147,7 @@ public class Player extends AbstractEntity {
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
     }
+
     /**
      *
      * @return
@@ -149,7 +158,6 @@ public class Player extends AbstractEntity {
         return this.getTeam().getGame().getGameModel().getId().intValue();
     }
 
-
     /**
      *
      * @return
@@ -159,6 +167,7 @@ public class Player extends AbstractEntity {
     public Game getGame() {
         return this.getTeam().getGame();
     }
+
     /**
      *
      * @return
