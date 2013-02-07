@@ -7,20 +7,38 @@
  */
 
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-list', function(Y) {
+YUI.add('wegas-list', function (Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
             CONTENTBOX = 'contentBox',
             List;
-
+    /**
+     * @name Y.Wegas.ItemSelector
+     * @extends Y.Widget
+     * @borrows Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
+     * @class class to serialize widgets
+     * @constructor
+     * @description class to serialize widgets
+     */
     List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        // ** Lifecycle Methods ** //
-
-        syncUI: function() {
+        /**
+         * @lends Y.Wegas.List#
+         */
+        // *** Private fields *** //
+        // -
+        // ** Lifecycle Methods ** /
+        /**
+         * @function
+         * @private
+         * @description set class of the contentbox (vertical or horizontal)
+         * add class with "clear:both" style after the contentbox.
+         */
+        syncUI: function () {
             var cb = this.get(CONTENTBOX);
 
             if (this.get('direction') === 'vertical') {
@@ -33,7 +51,13 @@ YUI.add('wegas-list', function(Y) {
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
         },
         //Children serialization
-        toObject: function() {
+        /**
+         * @function
+         * @private
+         * @return object
+         * @description Children serialization
+         */
+        toObject: function () {
             var i, object, children = [];
             object = Y.Wegas.Editable.prototype.toObject.apply(this, Array.prototype.slice.call(arguments));
             for (i = 0; i < this.size(); i = i + 1) {
@@ -43,6 +67,21 @@ YUI.add('wegas-list', function(Y) {
             return object;
         }
     }, {
+        /**
+         * @lends Y.Wegas.List#
+         */
+        /**
+         * @field
+         * @static
+         * @description
+         * <p><strong>Method</strong></p>
+         * <ul>
+         *    <li>defaultChildType: default value for children. Transient.</li>
+         *    <li>children: list of widget. Transient.</li>
+         *    <li>direction: string-helper to add class and set style of the
+         *     list (vertical or horizontal). Vertical by default</li>
+         * </ul>
+         */
         ATTRS: {
             defaultChildType: {
                 value: "Text",
@@ -59,9 +98,6 @@ YUI.add('wegas-list', function(Y) {
                     }, {
                         value: 'horizontal'
                     }]
-            },
-            multiple: {
-                "transient": true
             }
 
             /**

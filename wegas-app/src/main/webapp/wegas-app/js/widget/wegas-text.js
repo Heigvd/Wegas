@@ -25,7 +25,7 @@ YUI.add("wegas-text", function (Y) {
      */
     Text = Y.Base.create("wegas-text", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /**
-         * @lends Y.Wegas.InboxDisplay#
+         * @lends Y.Wegas.Text#
          */
         /**
          * @function

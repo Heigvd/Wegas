@@ -15,7 +15,9 @@ YUI.add('wegas-itemselector', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', ItemSelector;
-
+    /**
+     * @lends Y.Wegas.ItemSelector#
+     */
     /**
      * @name Y.Wegas.ItemSelector
      * @extends Y.Widget
