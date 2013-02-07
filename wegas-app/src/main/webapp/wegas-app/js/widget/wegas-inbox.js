@@ -226,7 +226,7 @@ YUI.add('wegas-inbox', function (Y) {
 
     }, {
         /**
-         * @lends Y.Wegas.Inbox
+         * @lends Y.Wegas.InboxDisplay
          */
         /**
          * @field

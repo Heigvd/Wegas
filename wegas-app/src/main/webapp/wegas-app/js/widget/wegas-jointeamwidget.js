@@ -26,7 +26,7 @@ YUI.add('wegas-jointeamwidget', function (Y) {
     */
     JoinTeamWidget = Y.Base.create("wegas-jointeamwidget", Y.Wegas.JoinGameWidget, [Y.WidgetChild, Y.Wegas.Widget], {
         /**
-         * @lends Y.Wegas.JoinTeamWidget.prototype
+         * @lends Y.Wegas.JoinTeamWidget
          */
         /**
          * @function
