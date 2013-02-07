@@ -224,6 +224,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.2</version>
+                <inherited>true</inherited>
                 <executions>
                     <execution>
                         <goals>
@@ -237,7 +238,7 @@
                     <outputDirectory>${project.build.directory}/site</outputDirectory>
                     <skipDeploy>true</skipDeploy>
                     <generateReports>true</generateReports>
-                    <reportPlugins>
+                    <reportPlugins combine.children="append">
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -325,26 +326,7 @@
                             </configuration>
                         </plugin>
 
-                        <plugin>
-                            <groupId>nl.windgazer</groupId>
-                            <artifactId>jsdoctk-plugin</artifactId>
-                            <version>2.3.2</version>
-                            <configuration>
-                                <template>jsdoc</template> <!-- Alternatives are not pre-installed for version 2.x-->
-                                <directory>${project.build.directory}/site/jsdoc</directory>
-                                <recurse>5</recurse>
-                                <ext>js</ext>
-                                <allfunctions>true</allfunctions>
-                                <Allfunctions>false</Allfunctions>
-                                <privateOption>true</privateOption>
-                                <!-- If you're using the maven default setup this alternative is sometimes required
-                                to make the plugin work: ${basedir}/src/main/webapp/ -->
-                                <srcDir>${basedir}/src/main/webapp</srcDir>
-                                <exclude><!-- Since jsdoctk 2.3.2 -->
-                                    <param>lib</param><!--Multiple param entries allowed-->
-                                </exclude>
-                            </configuration>
-                        </plugin>
+                        
 
                         <!-- Code complexity -->
                         <!-- @fixme removed because it is not compatible w/ java 1.7 -->
