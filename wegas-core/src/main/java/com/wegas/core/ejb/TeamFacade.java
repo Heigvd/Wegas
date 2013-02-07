@@ -14,7 +14,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import java.util.HashMap;
+import com.wegas.exception.WegasException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -60,12 +60,12 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     public void create(Long gameId, Team t) {
         Game g = gameFacade.find(gameId);
-        if (t.getToken() == null || t.getToken().equals("") || gameFacade.findByToken(t.getToken()) != null || this.findByToken(t.getToken()) != null) {
-            t.setToken(Helper.genToken(10));
+        if (gameFacade.findByToken(t.getToken()) != null
+                || this.findByToken(t.getToken()) != null) {
+            throw new WegasException("This token is already in use.");
         }
         g.addTeam(t);
 
-        //Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
         this.addRights(g);
         em.flush();
         em.refresh(t);
@@ -74,8 +74,8 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
 
     @Override
     public Team update(final Long gameId, Team entity) {
-        if (entity.getToken() == null || entity.getToken().equals("") || (this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0) || gameFacade.findByToken(entity.getToken()) != null) {
-            entity.setToken(Helper.genToken(10));
+        if ((this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0) || gameFacade.findByToken(entity.getToken()) != null) {
+            throw new WegasException("This token is already in use.");
         }
         return super.update(gameId, entity);
     }
@@ -117,7 +117,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     public void remove(Team entity) {
         List<VariableInstance> instancesToRemove = this.getAssociatedInstances(entity);
         List<Player> players = entity.getPlayers();
-        for(Player p : players){
+        for (Player p : players) {
             instancesToRemove.addAll(playerFacade.getAssociatedInstances(p));
         }
         this.em.remove(entity);

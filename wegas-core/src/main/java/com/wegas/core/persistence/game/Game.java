@@ -58,7 +58,7 @@ public class Game extends NamedEntity {
      */
     @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("game-team")
-    private List<Team> teams = new ArrayList<Team>();
+    private List<Team> teams = new ArrayList<>();
     /**
      *
      */
@@ -97,10 +97,11 @@ public class Game extends NamedEntity {
     @PrePersist
     @PreUpdate
     public void prePersist() {
-        if (this.getToken() == null) {
+        if (this.getToken() == null || this.getToken().equals("")) {
             this.setToken(Helper.genToken(10));
         }
-        if ( this.teams.isEmpty()) {
+        //this.token = this.token.replace(" ", "-");
+        if (this.teams.isEmpty()) {
             this.addTeam(new Team("Default"));
         }
     }
