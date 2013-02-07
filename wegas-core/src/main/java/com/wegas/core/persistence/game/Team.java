@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.wegas.core.ejb.Helper;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;

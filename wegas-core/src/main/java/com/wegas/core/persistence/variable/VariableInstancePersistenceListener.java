@@ -4,7 +4,7 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.ejb.Helper;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import javax.naming.NamingException;
 import javax.persistence.PostPersist;
