@@ -57,7 +57,6 @@ YUI.add('wegas-widgetmenu', function (Y) {
         },*/
 
         // *** Private methods *** //
-
         getMenu: function () {
             if (!this.menu) {
                 var cfg = this.get("menuCfg"),
@@ -109,10 +108,9 @@ YUI.add('wegas-widgetmenu', function (Y) {
     /**
      *  Menu Widget, an positionnalbe overlay, intendend to be used by the menu plugin.
      */
-    Y.namespace('Wegas').Menu = Y.Base.create("menu", Y.Widget, [ Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetParent, Y.WidgetPositionConstrain ], {
+    Y.namespace('Wegas').Menu = Y.Base.create("menu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetParent, Y.WidgetPositionConstrain], {
 
         // *** private fields *** //
-
         timer: null,
 
         // *** Lifecycle methods *** //
@@ -136,9 +134,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
         },
 
         bindUI: function () {
-            this.on("*:click", function (e) {                                   // @hack in order for event to be bubbled up
-                //Y.log("fix");
-                }, this);
+            this.on("*:click", function (e) { /*Y.log("fix");*/}, this);        // @hack in order for event to be bubbled up
         },
 
         hide: function () {
@@ -220,5 +216,3 @@ YUI.add('wegas-widgetmenu', function (Y) {
         }
     });
 });
-
-
