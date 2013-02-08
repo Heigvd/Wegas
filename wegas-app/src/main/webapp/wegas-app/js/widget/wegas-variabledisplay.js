@@ -159,7 +159,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>variable: The target variable, returned either based on the variableName attribute,
          *    and if absent by evaluating the expr attribute.</li>

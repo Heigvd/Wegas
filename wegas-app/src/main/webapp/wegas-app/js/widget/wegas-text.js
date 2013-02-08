@@ -43,7 +43,7 @@ YUI.add("wegas-text", function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>content: the string to display, the content of this widget's
          *     contentbox. Format html.</li>

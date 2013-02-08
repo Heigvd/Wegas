@@ -64,7 +64,7 @@ YUI.add("wegas-gallery", function (Y) {
          */
         handlers: null,
         /**
-         * image loaded in the widget 
+         * image loaded in the widget
          */
         images: null,
         /**
@@ -209,7 +209,7 @@ YUI.add("wegas-gallery", function (Y) {
          * @description bind function to events.
          * When full screen change, if it's the light gallery, show the
          *  scrollView (fullscreen) or hide it. if it's not the light Gallery,
-         *  just do sync. 
+         *  just do sync.
          * When node ".gallery-mask-left" is clicked, stop loading and display previous picture.
          * When node ".gallery-mask-right" is clicked, stop loading and display next picture.
          * When node ".gallery-toggle" is clicked, toggle fullscreen
@@ -447,14 +447,13 @@ YUI.add("wegas-gallery", function (Y) {
             }
         }
     }, {
-        /**
-         * @lends Y.Wegas.WegasGallery#
-         */
+        /** @lends Y.Wegas.WegasGallery */
+        
         /**
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>gallery: contains list of pictures</li>
          *    <li>selectedWidth: width of the gallery</li>
@@ -543,7 +542,7 @@ YUI.add("wegas-gallery", function (Y) {
          * @private
          * @param i
          * @description create a loader-image and remove them when wanted image
-         *  is loaded. If an error occur, display an error image. 
+         *  is loaded. If an error occur, display an error image.
          */
         loadImage: function (i) {
             var img, imgLoader;

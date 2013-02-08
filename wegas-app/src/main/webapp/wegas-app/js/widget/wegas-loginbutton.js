@@ -101,7 +101,7 @@ YUI.add("wegas-loginbutton", function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>labelIsUser: Select what kind of label you want (user/team  or team/player)</li>
          *    <li>preferencePageId: Id of the the page which contains widget userPreferences</li>

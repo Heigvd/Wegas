@@ -48,7 +48,7 @@ YUI.add('wegas-panelwidget', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>chlidren: All children widget used</li>
          *    <li>zIndex : define a default zIndex</li>

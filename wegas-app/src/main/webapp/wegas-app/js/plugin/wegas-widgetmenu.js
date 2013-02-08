@@ -14,8 +14,11 @@ YUI.add('wegas-widgetmenu', function (Y) {
     "use strict";
 
     /**
-     *  @class WidgetMenu
-     *  @module Wegas
+     * @name Y.Plugin.WidgetMenu
+     * @extends Y.Plugin.Base
+     * @class Plugin to be attached to a Y.Widget, adds a menu
+     *  that shows up when the target event is triggered (by default click). Uses
+     *  a Y.Wegas.Menu to display the menu.
      *  @constructor
      */
     var  WidgetMenu = function () {
@@ -23,8 +26,13 @@ YUI.add('wegas-widgetmenu', function (Y) {
     };
 
     Y.extend(WidgetMenu, Y.Plugin.Base, {
+        /** @lends Y.Plugin.WidgetMenu# */
 
         // *** Lifecycle methods *** //
+        /**
+         * @function
+         * @private
+         */
         initializer: function () {
             this.afterHostEvent("render", function () {
                 var bb = this.get("host").get("boundingBox");
@@ -46,6 +54,11 @@ YUI.add('wegas-widgetmenu', function (Y) {
                 }
             });
         },
+
+        /**
+         * @function
+         * @private
+         */
         show: function () {
             var menu = this.getMenu();                                          // Get a menu instance
             menu.attachTo(
@@ -57,6 +70,10 @@ YUI.add('wegas-widgetmenu', function (Y) {
         },*/
 
         // *** Private methods *** //
+        /**
+         * @function
+         * @private
+         */
         getMenu: function () {
             if (!this.menu) {
                 var cfg = this.get("menuCfg"),
@@ -85,6 +102,8 @@ YUI.add('wegas-widgetmenu', function (Y) {
             return this.menu;
         }
     }, {
+        /** @lends Y.Plugin.WidgetMenu */
+
         NS: "menu",
         NAME: "widgetmenu",
         ATTRS: {
@@ -106,7 +125,9 @@ YUI.add('wegas-widgetmenu', function (Y) {
     Y.namespace('Plugin').WidgetMenu = WidgetMenu;
 
     /**
-     *  Menu Widget, an positionnalbe overlay, intendend to be used by the menu plugin.
+     * @class Menu Widget, an positionnalbe overlay, intendend to be used by the menu plugin.
+     * @extends Y.Widget
+     * @borrows Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetParent, Y.WidgetPositionConstrain
      */
     Y.namespace('Wegas').Menu = Y.Base.create("menu", Y.Widget, [Y.WidgetPosition,  Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetParent, Y.WidgetPositionConstrain], {
 

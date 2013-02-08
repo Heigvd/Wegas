@@ -259,7 +259,7 @@ YUI.add('wegas-layout', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>left: configuration and childrens of the left section.</li>
          *    <li>right: configuration and childrens of the right section.</li>

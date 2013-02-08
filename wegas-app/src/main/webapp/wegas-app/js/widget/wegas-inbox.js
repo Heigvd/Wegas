@@ -232,7 +232,7 @@ YUI.add('wegas-inbox', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>variable: The target variable, returned either based on the name
          *     attribute, and if absent by evaluating the expr attribute.</li>

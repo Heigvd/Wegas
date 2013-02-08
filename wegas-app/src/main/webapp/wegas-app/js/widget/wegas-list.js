@@ -74,7 +74,7 @@ YUI.add('wegas-list', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>defaultChildType: default value for children. Transient.</li>
          *    <li>children: list of widget. Transient.</li>
