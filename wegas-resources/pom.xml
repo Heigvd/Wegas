@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wegas</groupId>
     <artifactId>wegas-resources</artifactId>
-    <version>0.2</version>
+    <version>1.0</version>
     <packaging>war</packaging>
 
     <properties>
