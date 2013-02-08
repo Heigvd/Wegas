@@ -24,7 +24,7 @@ YUI.add('wegas-loginwidget', function (Y) {
      * @class class to manage the login of a user.
      * @constructor
      * @description Widget to display some forms relative to 'login' like
-     *  login itself, forgot password and create a new user.  
+     *  login itself, forgot password and create a new user.
      */
     LoginWidget = Y.Base.create("wegas-loginwidget", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         /**
@@ -35,26 +35,32 @@ YUI.add('wegas-loginwidget', function (Y) {
          * Default link to redirect user
          */
         defaultRedirect: "wegas-app/view/lobby.html",
+
         /**
          * form group to login
          */
         loginForm: null,
+
         /**
          * form group to create account
          */
         createAccountForm: null,
+
         /**
          * form group to send a new password
          */
         sendNewPasswordForm: null,
+
         /**
          * Button to submit form
          */
         submitButton: null,
+
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -145,6 +151,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                 parentEl: cb
             });
         },
+
         /**
          * @function
          * @private
@@ -167,6 +174,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                     + '<p><a class="send-new-password" href="#">Forgot your password?</a></p>'
                     + '</div>');
         },
+
         /**
          * @function
          * @private
@@ -192,6 +200,7 @@ YUI.add('wegas-loginwidget', function (Y) {
             });
             this.handlers.render = this.after("render", inputNode.focus, inputNode);
         },
+
         /**
          * @function
          * @private
@@ -200,6 +209,7 @@ YUI.add('wegas-loginwidget', function (Y) {
         syncUI: function () {
             this.set("mode", this.get("mode"));
         },
+
         /**
          * @function
          * @private
@@ -210,6 +220,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                 this.handlers[i].detach();
             }
         },
+
         // *** Private methods *** //
         /**
          * @function
@@ -223,6 +234,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                 this.set("mode", "login");
             }
         },
+
         /**
          * @function
          * @private
@@ -235,6 +247,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                 this.set("mode", "login");
             }
         },
+
         /**
          * @function
          * @private
@@ -269,6 +282,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                     break;
             }
         },
+
         /**
          * @function
          * @private
@@ -298,6 +312,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -324,6 +339,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -350,6 +366,7 @@ YUI.add('wegas-loginwidget', function (Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -358,16 +375,18 @@ YUI.add('wegas-loginwidget', function (Y) {
         redirect: function () {
             window.location = this.getRedirect();
         },
+
         /**
          * @function
          * @private
-         * @return url to redirect 
+         * @return url to redirect
          * @description return redirection given by the function
          *  'getQueryParameter' or by the default redirection.
          */
         getRedirect: function () {
             return this.getQueryParameter("redirect") || (Y.Wegas.app.get("base") + this.defaultRedirect);
         },
+
         /**
          * @function
          * @private
@@ -390,14 +409,13 @@ YUI.add('wegas-loginwidget', function (Y) {
         }
 
     }, {
-        /**
-         * @lends Y.Wegas.LoginWidget#
-         */
+        /**  @lends Y.Wegas.LoginWidget# */
+
         /**
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>Mode: login, createaccount or sendNewPassword, setter change
          *     the mode and thus, the displayed form</li>
@@ -437,6 +455,6 @@ YUI.add('wegas-loginwidget', function (Y) {
             }
         }
     });
-
     Y.namespace('Wegas').LoginWidget = LoginWidget;
+
 });

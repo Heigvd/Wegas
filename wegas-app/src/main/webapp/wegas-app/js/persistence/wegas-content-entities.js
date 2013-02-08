@@ -79,6 +79,7 @@ YUI.add("wegas-content-entities", function(Y){
                     _type:"uneditable"
                 }
             },
+
             dataLastModified:{
                 writeOnce:"initOnly",
                 setter: function(d){

@@ -8,7 +8,7 @@
 
 /**
  * @module editbutton
- * @main editbutton
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
@@ -16,13 +16,21 @@ YUI.add('wegas-editor-buttons', function (Y) {
     "use strict";
 
     /**
+     * A button that display all current game's player and that sets the
+     * Y.Wegas.app.set("currentPlayer") on click.
+     *
      * @class Y.Wegas.SelectPlayerButton
      * @constructor
-     * @extends Widget
+     * @extends Y.Wegas.Button
      * @param {Object} cfg The button config object
      */
     var SelectPlayerButton = Y.Base.create("button", Y.Wegas.Button, [], {
         /** @lends Y.Wegas.SelectPlayerButton# */
+
+        /**
+         *  @function
+         *  @private
+         */
         bindUI: function () {
             SelectPlayerButton.superclass.bindUI.apply(this, arguments);
             this.plug(Y.Plugin.WidgetMenu);
@@ -35,6 +43,10 @@ YUI.add('wegas-editor-buttons', function (Y) {
             Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
         },
 
+        /**
+         *  @function
+         *  @private
+         */
         syncUI: function () {
             SelectPlayerButton.superclass.bindUI.apply(this, arguments);
             var j, k, cTeam, menuItems = [],
@@ -68,21 +80,25 @@ YUI.add('wegas-editor-buttons', function (Y) {
             this.menu.set("children", menuItems);
         }
     }, {
+        /** @lends Y.Wegas.SelectPlayerButton */
         ATTS: {
             entity: {}
         }
     });
-
     Y.namespace("Wegas").SelectPlayerButton = SelectPlayerButton;
 
     /**
-     * @class SelectGameButton
+     * A button that display all current game's player and that sets the
+     * Y.Wegas.app.set("currentPlayer") on click.
+     *
+     * @class Y.Wegas.SelectGameButton
      * @constructor
-     * @extends Widget
+     * @extends Y.Wegas.Button
      * @param {Object} cfg The button config object
      */
     var SelectGameButton= Y.Base.create("button", Y.Wegas.Button, [], {
 
+        /** @lends Y.Wegas.SelectGameButton# */
         bindUI: function () {
             SelectGameButton.superclass.bindUI.apply(this, arguments);
             this.plug(Y.Plugin.WidgetMenu);
@@ -115,6 +131,6 @@ YUI.add('wegas-editor-buttons', function (Y) {
             this.menu.set("children", menuItems);
         }
     });
-
     Y.namespace("Wegas").SelectGameButton = SelectGameButton;
+
 });

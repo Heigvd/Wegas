@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-inbox', function (Y) {
     "use strict";
 
@@ -33,18 +31,22 @@ YUI.add('wegas-inbox', function (Y) {
          * TabView widget used to display message header and body
          */
         tabView: null,
+
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         /**
          * datasource from Y.Wegas.app.VariableDescriptorFacade
          */
         dataSource: null,
+
         /**
          * Button widget used to delete e-mail
          */
         deleteButton: null,
+
         /**
          * Current selected message in tabview;
          */
@@ -54,7 +56,7 @@ YUI.add('wegas-inbox', function (Y) {
          * @function
          * @private
          * @description Set variable with initials values.
-         * Plug a toolbar widget (and add the delete button at this toolbar). 
+         * Plug a toolbar widget (and add the delete button at this toolbar).
          */
         initializer: function () {
             this.dataSource = Y.Wegas.app.VariableDescriptorFacade;
@@ -66,6 +68,7 @@ YUI.add('wegas-inbox', function (Y) {
             this.toolbar.add(this.deleteButton);
             this.tabView = new Y.TabView();
         },
+
         /**
          * @function
          * @private
@@ -74,6 +77,7 @@ YUI.add('wegas-inbox', function (Y) {
         renderUI: function () {
             this.tabView.render(this.get(CONTENTBOX));
         },
+
         /**
          * @function
          * @private
@@ -94,6 +98,7 @@ YUI.add('wegas-inbox', function (Y) {
                 }
             }, this);
         },
+
         /**
          * @function
          * @private
@@ -142,6 +147,7 @@ YUI.add('wegas-inbox', function (Y) {
             this.isSyncing = false;
             this.tabView.selectChild(selectedIndex);
         },
+
         /**
          * @function
          * @private
@@ -171,6 +177,7 @@ YUI.add('wegas-inbox', function (Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -232,7 +239,7 @@ YUI.add('wegas-inbox', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>variable: The target variable, returned either based on the name
          *     attribute, and if absent by evaluating the expr attribute.</li>

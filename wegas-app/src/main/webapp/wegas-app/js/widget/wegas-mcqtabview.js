@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-mcqtabview', function (Y) {
     "use strict";
 
@@ -27,22 +25,24 @@ YUI.add('wegas-mcqtabview', function (Y) {
      *  to the current player
      */
     MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /**
-         * @lends Y.Wegas.MCQTabView#
-         */
+        /** @lends Y.Wegas.MCQTabView# */
+
         // *** Private fields *** //
         /**
          * TabView widget used to display question/choices and corresponding reply
          */
         tabView: null,
+
         /**
          * datasource from Y.Wegas.app.VariableDescriptorFacade
          */
         dataSource: null,
+
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -54,6 +54,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
             this.tabView = new Y.TabView();
             this.handlers = {};
         },
+
         /**
          * @function
          * @private
@@ -64,6 +65,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
             this.tabView.render(cb);
             cb.append("<div style='clear:both'></div>");
         },
+
         /**
          * @function
          * @private
@@ -85,6 +87,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
 
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
         },
+
         /**
          * @function
          * @private
@@ -178,6 +181,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
             this.tabView.selectChild(lastSelection);
             this.hideOverlay();
         },
+
         /**
          * @function
          * @private
@@ -192,14 +196,13 @@ YUI.add('wegas-mcqtabview', function (Y) {
             }
         }
     }, {
-        /**
-         * @lends Y.Wegas.MCQTabView
-         */
+        /** @lends Y.Wegas.MCQTabView */
+
         /**
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>variable: The target variable, returned either based on the name
          *     attribute, and if absent by evaluating the expr attribute.</li>
@@ -218,6 +221,6 @@ YUI.add('wegas-mcqtabview', function (Y) {
             }
         }
     });
-
     Y.namespace('Wegas').MCQTabView = MCQTabView;
+
 });

@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-variabledisplay', function (Y) {
     "use strict";
 
@@ -26,14 +24,14 @@ YUI.add('wegas-variabledisplay', function (Y) {
      * specifique shape : text, title, box, fraction and valuebox.
      */
     VariableDisplay = Y.Base.create("wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /**
-         * @lends Y.Wegas.VariableDisplay#
-         */
+        /** @lends Y.Wegas.VariableDisplay# */
+        
         // *** Private fields *** //
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         // ** Lifecycle Methods ** //
         /**
          * @function
@@ -43,6 +41,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
         initializer: function () {
             this.handlers = [];
         },
+
         /**
          * @function
          * @private
@@ -52,6 +51,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
         bindUI: function () {
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this));
         },
+
         /**
          * @function
          * @private
@@ -72,6 +72,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
             this.get(CONTENTBOX).setHTML(this.genMarkup(variableDescriptor));   // Display the variable
 
         },
+
         /**
          * @function
          * @private
@@ -82,6 +83,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
                 this.handlers[i].detach();
             }
         },
+
         // *** Private Methods *** //
         /**
          * @function
@@ -91,12 +93,12 @@ YUI.add('wegas-variabledisplay', function (Y) {
          * text : Display "as is" the value with the label.
          * title : Display "as is" he public label with the label.
          * box : Display the label, so many div as shown by the number
-         *  from variable descriptor and the number. 
+         *  from variable descriptor and the number.
          * fraction : Display the label, the min val of the descriptor, a
          *  separator, the value, a other separator and the max value.
          * valuebox : Display the label and so many div as shown from the min
          *  value to the max value. On each created div indicate if the div is
-         *  under value, on value or over the value. 
+         *  under value, on value or over the value.
          */
         genMarkup: function (variableDescriptor) {
             var acc, i, maxVal = variableDescriptor.get("maxValue"),
@@ -152,14 +154,13 @@ YUI.add('wegas-variabledisplay', function (Y) {
 
         }
     }, {
-        /**
-         * @lends Y.Wegas.VariableDisplay#
-         */
+        /** @lends Y.Wegas.VariableDisplay# */
+
         /**
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>variable: The target variable, returned either based on the variableName attribute,
          *    and if absent by evaluating the expr attribute.</li>
@@ -209,6 +210,6 @@ YUI.add('wegas-variabledisplay', function (Y) {
             }
         }
     });
-
     Y.namespace('Wegas').VariableDisplay = VariableDisplay;
+
 });

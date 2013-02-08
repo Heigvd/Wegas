@@ -6,15 +6,16 @@
  * Licensed under the MIT License
  */
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-action', function(Y) {
     "use strict";
 
     /**
-     *  Extension that adds editable capacities to plugins
-     *
-     *  @class Y.Wegas.Plugin
+     *  @name Y.Wegas.Plugin
+     *  @class Extension that adds editable capacities to plugins
+     *  @extends Y.Plugin
      *  @constructor
      */
     function Plugin() {}
@@ -35,12 +36,16 @@ YUI.add('wegas-action', function(Y) {
     Y.namespace("Wegas").Plugin = Plugin;
 
     /**
-     *  @class Y.Plugin.Action
+     *  @name Y.Plugin.Action
      *  @extends Y.Plugin.Base
+     *  @augments Y.Wegas.Plugin
+     *  @augments Y.Wegas.Editable
+     *  @class
      *  @constructor
      */
     var Action = Y.Base.create("wegas-actionplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.Action */
+
         /**
          * @function
          * @private
@@ -48,6 +53,7 @@ YUI.add('wegas-action', function(Y) {
         initializer: function() {
             this.onHostEvent(this.get("targetEvent"), this.execute, this);
         },
+
         /**
          * @function
          * @protected
@@ -67,16 +73,17 @@ YUI.add('wegas-action', function(Y) {
     Y.namespace("Plugin").Action = Action;
 
     /**
-     *  @class OpenGameAction
-     *  @module Wegas
-     *  @constructor
+     *  @class
+     *  @name Y.Plugin.OpenGameAction
      *  @extends Y.Plugin.Action
+     *  @constructor
      */
     var OpenUrlAction = function() {
         OpenUrlAction.superclass.constructor.apply(this, arguments);
     };
 
     Y.extend(OpenUrlAction, Action, {
+
         execute: function() {
             var targetUrl = Y.Wegas.app.get("base") + this.get("url");
 
@@ -103,7 +110,8 @@ YUI.add('wegas-action', function(Y) {
 
 
     /**
-     *  @class Y.Plugin.OpenPageAction
+     *  @class
+     *  @name Y.Plugin.OpenPageAction
      *  @extends Y.Plugin.Action
      *  @module Wegas
      *  @constructor
@@ -112,6 +120,7 @@ YUI.add('wegas-action', function(Y) {
         OpenPageAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(OpenPageAction, Action, {
+
         initializer: function() {
             OpenPageAction.superclass.initializer.apply(this, arguments);
             this.afterHostEvent("render", function() {
@@ -121,6 +130,7 @@ YUI.add('wegas-action', function(Y) {
                 }
             }, this);
         },
+
         execute: function() {
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             targetPageLoader.set("pageId", this.get("subpageId"));
@@ -146,19 +156,19 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-
     Y.namespace("Plugin").OpenPageAction = OpenPageAction;
 
     /**
-     *  @class ExecuteScriptAction
-     *  @module Wegas
+     *  @class
+     *  @name Y.Plugin.PopupPlg
+     *  @extends Y.Plugin.Action
      *  @constructor
      */
     var ExecuteScriptAction = function() {
         ExecuteScriptAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(ExecuteScriptAction, Action, {
+
         execute: function() {
             var host = this.get("host"), overlayGuest, guest = host.get("root");
             if (guest.showOverlay && guest.hideOverlay) {
@@ -200,10 +210,18 @@ YUI.add('wegas-action', function(Y) {
     });
     Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
 
+    /**
+     *  @class Show a message when the host widget is rendered, useful for welcome
+     *  messages
+     *  @name Y.Plugin.PopupPlg
+     *  @extends Y.Plugin.Base
+     *  @constructor
+     */
     var PopupPlg = function() {
         PopupPlg.superclass.constructor.apply(this, arguments);
     };
     Y.extend(PopupPlg, Y.Plugin.Base, {
+
         initializer: function() {
             this.afterHostEvent("render", function() {
                 this.get("host").showMessage("info", this.get("content"));

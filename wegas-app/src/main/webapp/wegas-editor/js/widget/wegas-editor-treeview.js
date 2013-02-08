@@ -5,22 +5,34 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-editor-treeview', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', EditorTreeView,
     EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>";
 
+    /**
+     * @name Y.Wegas.EditorTreeView
+     * @extends Y.Widget
+     * @augments Y.WidgetChild
+     * @augments Y.Wegas.Widget
+     * @constructor
+     * @class Widget that renders the content of a Y.Wegas.Datasource in a Y.Treeview.Widget,
+     * generating requires nodes.
+     */
     EditorTreeView = Y.Base.create("wegas-editor-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+        /** @lends Y.Wegas.EditorTreeView# */
         // *** Private fields ** //
         treeView: null,
 
         // ** Lifecycle methods ** //
+        /**
+         *
+         */
         renderUI: function () {
             this.treeView = new Y.TreeView();
             this.treeView.render(this.get(CONTENTBOX));
@@ -29,6 +41,11 @@ YUI.add('wegas-editor-treeview', function (Y) {
             this.plug(Y.Plugin.EditorTVAdminMenu);
             this.plug(Y.Plugin.RememberExpandedTreeView);
         },
+
+        /**
+         * @function
+         * @private
+         */
         bindUI: function () {
             var ds = this.get("dataSource"),
             request = this.get("request");
@@ -43,6 +60,11 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 }
             }
         },
+
+        /**
+         * @function
+         * @private
+         */
         syncUI: function () {
             if (!this.get("dataSource")) {
                 this.get(CONTENTBOX).append("Unable to find datasource");
@@ -65,7 +87,12 @@ YUI.add('wegas-editor-treeview', function (Y) {
             this.treeView.add(this.genTreeViewElements(entities));
             this.treeView.syncUI();
         },
+
         // *** Private Methods *** //
+        /**
+         * @function
+         * @private
+         */
         genTreeViewElements: function (elements) {
             var ret = [], i, el, elClass, text, collapsed, selected,
             l, result, children = [];
@@ -294,6 +321,11 @@ YUI.add('wegas-editor-treeview', function (Y) {
             }
             return ret;
         },
+
+        /**
+         * @function
+         * @private
+         */
         genScopeTreeViewElements: function (el) {
             var children = [], i, label, team, player, instance;
 
@@ -326,6 +358,11 @@ YUI.add('wegas-editor-treeview', function (Y) {
             }
             return children;
         },
+
+        /**
+         * @function
+         * @private
+         */
         genVariableInstanceElements: function (label, el) {
             var l,
             selected = (this.currentSelection == el.get("id")) ? 2 : 0;
@@ -383,6 +420,11 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     };
             }
         },
+
+        /**
+         * @function
+         * @private
+         */
         genPageTreeViewElements: function (elts) {
             var ret = [], j, text, el;
             if (!Y.Lang.isArray(elts)) {
@@ -441,10 +483,32 @@ YUI.add('wegas-editor-treeview', function (Y) {
             }
             return ret;
         },
+
+        /**
+         * @function
+         * @private
+         */
         isNodeExpanded: function (entity) {
             return this.RememberExpandedTreeView.expandedIds[entity.get("id")] || false;
         }
     }, {
+        /** @lends Y.Wegas.EditorTreeView */
+
+        /**
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>includeClasses a list of entity classes names that will be included</li>
+         *    <li>excludeClasses a list of entity classes that will be excluded</li>
+         *    <li>emptyMessage string message to display if there are no entity
+         *    to display <i>default: No data to display</i></li>
+         *    <li>dataSelector</li>
+         *    <li>dataSource</li>
+         *    <li>request</li>
+         * </ul>
+         *
+         * @field
+         * @static
+         */
         ATTRS: {
             includeClasses: {},
             excludeClasses: {},

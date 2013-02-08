@@ -11,23 +11,25 @@
  */
 YUI.add('wegas-editor-action', function(Y) {
     "use strict";
-    /**
-     *  @class Action
-     *  @module Wegas
-     *  @constructor
-     */
-    var Action = Y.Plugin.Action;
+
+    var Linkwidget, EditFSMAction, Action = Y.Plugin.Action, CONTENTBOX = 'contentBox';
 
     /**
-     *  @class EditFSMAction
-     *  @module Wegas
+     *  @name Y.Plugin.EditFSMAction
+     *  @extends Y.Plugin.EntityAction
+     *  @class Open a state machine viewer in the edition tab
      *  @constructor
      */
-    var EditFSMAction = function() {
+    EditFSMAction = function() {
         EditFSMAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(EditFSMAction, Y.Plugin.EntityAction, {
+        /** @lends Y.Plugin.EditFSMAction# */
+
+        /**
+         * @private
+         * @function
+         */
         execute: function() {
             Y.Wegas.TabView.findTabAndLoadWidget("State machine editor", // Load and display the editor in a new tab
                     "#centerTabView", null, {
@@ -39,23 +41,29 @@ YUI.add('wegas-editor-action', function(Y) {
                 widget.set("entity", entity);
             }, this, this.get("entity")));
         }
+
     }, {
         NS: "wegas",
         NAME: "EditFSMAction"
     });
-
     Y.namespace("Plugin").EditFSMAction = EditFSMAction;
 
     /**
-     *  @class ResetAction
-     *  @module Wegas
+     *  @name Y.Plugin.ResetAction
+     *  @extends Y.Plugin.Action
+     *  @class Reset the target game model
      *  @constructor
      */
     var ResetAction = function() {
         ResetAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(ResetAction, Action, {
+        /** @lends Y.Plugin.ResetAction# */
+
+        /**
+         * @function
+         * @private
+         */
         execute: function() {
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                 request: '/Reset/'
@@ -65,27 +73,47 @@ YUI.add('wegas-editor-action', function(Y) {
         NS: "wegas",
         NAME: "ResetAction"
     });
-
     Y.namespace("Plugin").ResetAction = ResetAction;
 
     /**
-     *  @class OpenTabAction
-     *  @module Wegas
+     *  @name Y.Plugin.OpenTabAction
+     *  @extends Y.Plugin.Action
+     *  @class Reset the target game model
      *  @constructor
      */
     var OpenTabAction = function() {
         OpenTabAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(OpenTabAction, Action, {
+        /** @lends Y.Plugin.OpenTabAction# */
+
+        /**
+         * @function
+         * @private
+         */
         execute: function() {
             var childCfg = this.get("wchildren")[0];                             // @fixme currently we only render the first child
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
                     this.get("tabSelector"), {}, childCfg);                         // Forward plugin data to the target widget
         }
+
     }, {
+        /** @lends Y.Plugin.OpenTabAction */
+
         NS: "wegas",
         NAME: "OpenTabAction",
+
+        /**
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>tabSelector: the id of a Y.Wegas.TabView where a new tab will be created if none
+         *    was found <i>default: #centerTabView</i></li>
+         *    <li>wchildren: the element to render in the opened tab</li>
+         * </ul>
+         *
+         * @field
+         * @static
+         */
         ATTRS: {
             tabSelector: {
                 value: '#centerTabView'
@@ -98,15 +126,21 @@ YUI.add('wegas-editor-action', function(Y) {
     Y.namespace("Plugin").OpenTabAction = OpenTabAction;
 
     /**
-     *  @class OpenGameAction
-     *  @module Wegas
+     *  @name Y.Plugin.OpenGameAction
+     *  @extends Y.Plugin.OpenUrlAction
+     *  @class Open a game in the editor
      *  @constructor
      */
     var OpenGameAction = function() {
         OpenGameAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(OpenGameAction, Y.Plugin.OpenUrlAction, {
+        /** @lends Y.Plugin.OpenGameAction# */
+
+        /**
+         * @function
+         * @private
+         */
         execute: function() {
             var params,
                     entity = this.get("entity"),
@@ -146,8 +180,21 @@ YUI.add('wegas-editor-action', function(Y) {
             OpenGameAction.superclass.execute.call(this);
         }
     }, {
+        /** @lends Y.Wegas.OpenGameAction */
+
         NS: "wegas",
         NAME: "OpenGameAction",
+
+        /**
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>editorUrl: url of the editor page<i>default: wegas-app/view/editor.html?</i></li>
+         *    <li>entity: the team, game, gamemodel or player entity that will be opened</li>
+         * </ul>
+         *
+         * @field
+         * @static
+         */
         ATTRS: {
             editorUrl: {
                 value: 'wegas-app/view/editor.html?'
@@ -155,19 +202,24 @@ YUI.add('wegas-editor-action', function(Y) {
             entity: {}
         }
     });
-
     Y.namespace("Plugin").OpenGameAction = OpenGameAction;
 
     /**
-     *  @class LoadTreeviewNodeAction
-     *  @module Wegas
+     *  @name Y.Plugin.LoadTreeviewNodeAction
+     *  @extends Y.Plugin.Action
+     *  @class Open a game in the editor
      *  @constructor
      */
     var LoadTreeviewNodeAction = function() {
         LoadTreeviewNodeAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(LoadTreeviewNodeAction, Action, {
+        /** @lends Y.Plugin.LoadTreeviewNodeAction# */
+
+        /**
+         * @function
+         * @private
+         */
         execute: function() {
             var entity = this.get("entity"),
                     tabId = this.get("tabId") || this.get("host").get("label"),
@@ -188,8 +240,23 @@ YUI.add('wegas-editor-action', function(Y) {
             });
         }
     }, {
+        /** @lends Y.Plugin.LoadTreeviewNodeAction */
+
         NS: "LoadTreeviewNodeAction",
         NAME: "LoadTreeviewNodeAction",
+
+        /**
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>tabId: the id of the Y.Wegas.Tab widget that will bo opened.</li>
+         *    <li>tabSelector: the id of a Y.Wegas.TabView where a new tab will be created if none
+         *    was found <i>default: #centerTabView</i></li>
+         *    <li>entity: the entity, which the link will point to.</li>
+         * </ul>
+         *
+         * @field
+         * @static
+         */
         ATTRS: {
             tabId: {},
             tabSelector: {
@@ -198,44 +265,46 @@ YUI.add('wegas-editor-action', function(Y) {
             entity: {}
         }
     });
-
     Y.namespace("Plugin").LoadTreeviewNodeAction = LoadTreeviewNodeAction;
 
     // *** Buttons *** //
-
     /**
-     * Shortcut to create a Button with an OpenTabAction plugin
+     * @name Y.Wegas.OpenTabButton
+     * @extends Y.Wegas.Button
+     * @class Shortcut to create a Button with an OpenTabAction plugin
+     * @constructor
      */
     Y.Wegas.OpenTabButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        /** @lends Y.Wegas.OpenTabButton# */
+
+        /**
+         * @function
+         * @private
+         */
         initializer: function(cfg) {
             this.plug(OpenTabAction, cfg);
         }
     });
 
     /**
+     * Class for display the player link in menu's
+     *
      * @name Y.Wegas.Linkwidget
      * @extends Y.Widget
-     * @class  class for display the player link in menu's
+     * @class  Allows to display the player link in a menu.
+     * the link is in a textField. For this field inputEx is used.
      * @constructor
      * @param Object Will be used to fill attributes field
-     * @description Allows to display the player link in a menu.
-     * the link is in a textField. For this field inputEx is used
      */
-    var CONTENTBOX = 'contentBox',
-            Linkwidget;
-
     Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        /**
-         * @lends Y.Wegas.Linkwidget#
-         */
+        /** @lends Y.Wegas.Linkwidget# */
 
         /**
-         * @function
-         * @private
-         * @description
          * 1) Add a <div class="playerlink-label"><p>Player link</p><div> node fordisplay a label in the menu
          * 2) Add the inputeExStringField
          * 3) Stop the click event on this contentbox
+         * @function
+         * @private
          */
         renderUI: function() {
             Linkwidget.superclass.renderUI.apply(this);
@@ -251,31 +320,32 @@ YUI.add('wegas-editor-action', function(Y) {
                 this.textField.el.select();
             }, this);
         },
+
         /**
+         * Add the new url
          * @function
          * @private
-         * @description Add the new url
          */
         syncUI: function() {
             var url = Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token");
             this.textField.setValue(url);
         }
     }, {
+        /** @lends Y.Wegas.Linkwidget */
+
         /**
-         * @lends Y.Wegas.Linkwidget
-         */
-        /**
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>entity: the gamemodel or team entity, which the link will point to.</li>
+         * </ul>
+         *
          * @field
          * @static
-         * @description
-         * <p><strong>Method</strong></p>
-         * <ul>
-         *    <li>entity: get the entity</li>
-         * </ul>
          */
         ATTRS: {
             entity: {}
         }
     });
     Y.namespace("Wegas").Linkwidget = Linkwidget;
+
 });

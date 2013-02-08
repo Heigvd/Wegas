@@ -102,7 +102,9 @@ public class Game extends NamedEntity {
         }
         //this.token = this.token.replace(" ", "-");
         if (this.teams.isEmpty()) {
-            this.addTeam(new Team("Default"));
+            Team t = new Team("Default");
+            t.addPlayer(new Player("Test player"));
+            this.addTeam(t);
         }
     }
 
