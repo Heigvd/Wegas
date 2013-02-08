@@ -22,9 +22,8 @@ YUI.add('wegas-layout', function (Y) {
      * @description Show/hide a page with a slid (tween) effect
      */
     Layout = Y.Base.create("wegas-layout", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.WidgetStdMod], {
-        /**
-         * @lends Y.Wegas.Layout#
-         */
+        /** @lends Y.Wegas.Layout# */
+
         // *** Private fields *** //
         /**
          * Reference to Y.Resize left object of the panel
@@ -328,7 +327,7 @@ YUI.add('wegas-layout', function (Y) {
                 value: "100%"
             }
         },
-        
+
         TEMPLATES: {
             header: '<div class="yui-widget-hd wegas-layout-top"></div>',
             body: '<div class="yui-widget-bd wegas-layout-bd"><div class="wegas-layout-left"></div><div class="wegas-layout-center"></div><div class="wegas-layout-right"></div></div>',

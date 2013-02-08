@@ -23,9 +23,7 @@ YUI.add("wegas-text", function (Y) {
      * @description  Display a string (given as ATTRS) in content box
      */
     Text = Y.Base.create("wegas-text", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /**
-         * @lends Y.Wegas.Text#
-         */
+        /** @lends Y.Wegas.Text# */
 
         /**
          * @function
@@ -37,9 +35,7 @@ YUI.add("wegas-text", function (Y) {
         }
 
     }, {
-        /**
-         * @lends Y.Wegas.Text#
-         */
+        /** @lends Y.Wegas.Text# */
 
         /**
          * @field

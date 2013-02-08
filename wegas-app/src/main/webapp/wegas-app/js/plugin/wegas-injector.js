@@ -14,6 +14,7 @@ YUI.add("wegas-injector", function(Y) {
     };
 
     Y.extend(Injector, Y.Plugin.Base, {
+
         initializer: function() {
             Y.mix(Y.Node.DOM_EVENTS, {
                 DOMNodeInserted: true,
@@ -69,6 +70,7 @@ YUI.add("wegas-injector", function(Y) {
                 this.gallery = true;
             }
         },
+
         destructor: function() {
             this.insertEvent.detach();
             if (this.gallery && Injector.GALLERY) {

@@ -31,18 +31,22 @@ YUI.add('wegas-inbox', function (Y) {
          * TabView widget used to display message header and body
          */
         tabView: null,
+
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         /**
          * datasource from Y.Wegas.app.VariableDescriptorFacade
          */
         dataSource: null,
+
         /**
          * Button widget used to delete e-mail
          */
         deleteButton: null,
+
         /**
          * Current selected message in tabview;
          */
@@ -64,6 +68,7 @@ YUI.add('wegas-inbox', function (Y) {
             this.toolbar.add(this.deleteButton);
             this.tabView = new Y.TabView();
         },
+
         /**
          * @function
          * @private
@@ -72,6 +77,7 @@ YUI.add('wegas-inbox', function (Y) {
         renderUI: function () {
             this.tabView.render(this.get(CONTENTBOX));
         },
+
         /**
          * @function
          * @private
@@ -92,6 +98,7 @@ YUI.add('wegas-inbox', function (Y) {
                 }
             }, this);
         },
+
         /**
          * @function
          * @private
@@ -140,6 +147,7 @@ YUI.add('wegas-inbox', function (Y) {
             this.isSyncing = false;
             this.tabView.selectChild(selectedIndex);
         },
+
         /**
          * @function
          * @private
@@ -169,6 +177,7 @@ YUI.add('wegas-inbox', function (Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private

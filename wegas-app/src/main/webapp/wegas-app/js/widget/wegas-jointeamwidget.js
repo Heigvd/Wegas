@@ -11,9 +11,7 @@
  */
 YUI.add('wegas-jointeamwidget', function (Y) {
     "use strict";
-
-    var JoinTeamWidget;
-
+    
     /**
     * @name Y.Wegas.JoinTeamWidget
     * @extends Y.Wegas.JoinGameWidget
@@ -23,10 +21,9 @@ YUI.add('wegas-jointeamwidget', function (Y) {
     * @constructor
     * @description Allows just to join a team
     */
-    JoinTeamWidget = Y.Base.create("wegas-jointeamwidget", Y.Wegas.JoinGameWidget, [Y.WidgetChild, Y.Wegas.Widget], {
-        /**
-         * @lends Y.Wegas.JoinTeamWidget
-         */
+    var JoinTeamWidget = Y.Base.create("wegas-jointeamwidget", Y.Wegas.JoinGameWidget, [Y.WidgetChild, Y.Wegas.Widget], {
+        /** @lends Y.Wegas.JoinTeamWidget */
+
         /**
          * @function
          * @private

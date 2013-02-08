@@ -12,7 +12,7 @@
 YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
-    var Action = Y.Plugin.Action,
+    var Linkwidget, EditFSMAction, Action = Y.Plugin.Action, CONTENTBOX = 'contentBox';
 
     /**
      *  @name Y.Plugin.EditFSMAction
@@ -46,7 +46,6 @@ YUI.add('wegas-editor-action', function(Y) {
         NS: "wegas",
         NAME: "EditFSMAction"
     });
-
     Y.namespace("Plugin").EditFSMAction = EditFSMAction;
 
     /**
@@ -58,7 +57,6 @@ YUI.add('wegas-editor-action', function(Y) {
     var ResetAction = function() {
         ResetAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(ResetAction, Action, {
         /** @lends Y.Plugin.ResetAction# */
 
@@ -71,12 +69,10 @@ YUI.add('wegas-editor-action', function(Y) {
                 request: '/Reset/'
             });
         }
-
     }, {
         NS: "wegas",
         NAME: "ResetAction"
     });
-
     Y.namespace("Plugin").ResetAction = ResetAction;
 
     /**
@@ -88,7 +84,6 @@ YUI.add('wegas-editor-action', function(Y) {
     var OpenTabAction = function() {
         OpenTabAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(OpenTabAction, Action, {
         /** @lends Y.Plugin.OpenTabAction# */
 
@@ -101,7 +96,7 @@ YUI.add('wegas-editor-action', function(Y) {
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
                     this.get("tabSelector"), {}, childCfg);                         // Forward plugin data to the target widget
         }
-        
+
     }, {
         /** @lends Y.Plugin.OpenTabAction */
 
@@ -139,7 +134,6 @@ YUI.add('wegas-editor-action', function(Y) {
     var OpenGameAction = function() {
         OpenGameAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(OpenGameAction, Y.Plugin.OpenUrlAction, {
         /** @lends Y.Plugin.OpenGameAction# */
 
@@ -185,11 +179,12 @@ YUI.add('wegas-editor-action', function(Y) {
             this.set("url", this.get("editorUrl") + params);
             OpenGameAction.superclass.execute.call(this);
         }
-
     }, {
         /** @lends Y.Wegas.OpenGameAction */
+
         NS: "wegas",
         NAME: "OpenGameAction",
+
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -207,7 +202,6 @@ YUI.add('wegas-editor-action', function(Y) {
             entity: {}
         }
     });
-
     Y.namespace("Plugin").OpenGameAction = OpenGameAction;
 
     /**
@@ -219,9 +213,9 @@ YUI.add('wegas-editor-action', function(Y) {
     var LoadTreeviewNodeAction = function() {
         LoadTreeviewNodeAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(LoadTreeviewNodeAction, Action, {
         /** @lends Y.Plugin.LoadTreeviewNodeAction# */
+
         /**
          * @function
          * @private
@@ -271,12 +265,9 @@ YUI.add('wegas-editor-action', function(Y) {
             entity: {}
         }
     });
-
     Y.namespace("Plugin").LoadTreeviewNodeAction = LoadTreeviewNodeAction;
 
     // *** Buttons *** //
-
-
     /**
      * @name Y.Wegas.OpenTabButton
      * @extends Y.Wegas.Button
@@ -284,7 +275,12 @@ YUI.add('wegas-editor-action', function(Y) {
      * @constructor
      */
     Y.Wegas.OpenTabButton = Y.Base.create("button", Y.Wegas.Button, [], {
-        /** @lends
+        /** @lends Y.Wegas.OpenTabButton# */
+
+        /**
+         * @function
+         * @private
+         */
         initializer: function(cfg) {
             this.plug(OpenTabAction, cfg);
         }
@@ -300,8 +296,6 @@ YUI.add('wegas-editor-action', function(Y) {
      * @constructor
      * @param Object Will be used to fill attributes field
      */
-    var CONTENTBOX = 'contentBox', Linkwidget;
-
     Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         /** @lends Y.Wegas.Linkwidget# */
 
@@ -326,6 +320,7 @@ YUI.add('wegas-editor-action', function(Y) {
                 this.textField.el.select();
             }, this);
         },
+
         /**
          * Add the new url
          * @function
@@ -337,6 +332,7 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.Linkwidget */
+
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -351,4 +347,5 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     });
     Y.namespace("Wegas").Linkwidget = Linkwidget;
+
 });

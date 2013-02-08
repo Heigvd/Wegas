@@ -24,9 +24,8 @@ YUI.add('wegas-variabledisplay', function (Y) {
      * specifique shape : text, title, box, fraction and valuebox.
      */
     VariableDisplay = Y.Base.create("wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /**
-         * @lends Y.Wegas.VariableDisplay#
-         */
+        /** @lends Y.Wegas.VariableDisplay# */
+        
         // *** Private fields *** //
         /**
          * Reference to each used functions
@@ -212,5 +211,5 @@ YUI.add('wegas-variabledisplay', function (Y) {
         }
     });
     Y.namespace('Wegas').VariableDisplay = VariableDisplay;
-    
+
 });
