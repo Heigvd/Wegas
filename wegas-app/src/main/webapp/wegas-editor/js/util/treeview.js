@@ -5,21 +5,25 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+/**
+ * @fileoverview
+ * @author Cyril Junod
+ */
 YUI.add('treeview', function(Y) {
     var getClassName = Y.ClassNameManager.getClassName,
-    TREEVIEW = 'treeview',
-    TREENODE = 'treenode',
-    TREELEAF = 'treeleaf',
-    CONTENT_BOX = "contentBox",
-    BOUNDING_BOX = "boundingBox",
-    classNames = {
+            TREEVIEW = 'treeview',
+            TREENODE = 'treenode',
+            TREELEAF = 'treeleaf',
+            CONTENT_BOX = "contentBox",
+            BOUNDING_BOX = "boundingBox",
+            classNames = {
         loading: getClassName(TREENODE, "loading"),
         collapsed: getClassName(TREENODE, "collapsed"),
         visibleRightWidget: getClassName(TREEVIEW, "visible-right")
     },
     RIGHTWIDGETSETTERFN = function(v) {
         var rightWidget = this.get("rightWidget"),
-        targetNode = this.get(BOUNDING_BOX).one(".yui3-tree-rightwidget");
+                targetNode = this.get(BOUNDING_BOX).one(".yui3-tree-rightwidget");
         if (rightWidget !== v && rightWidget) {                             // Remove existing child
             if (rightWidget instanceof Y.Node) {                            // Case 1: Y.Node
                 rightWidget.remove();
@@ -45,9 +49,28 @@ YUI.add('treeview', function(Y) {
         return v;
     };
 
+    /**
+     * TreeView main class
+     * <p><strong>Attributes</strong></p>
+     * <ul>
+     *    <li>visibleRightWidget {Boolean} should right widget be shown.</li>
+     * </ul>
+     * @name Y.TreeView
+     * @class TreeView class
+     * @extends Y.Widget#
+     * @constructor
+     * @param Object Will be used to fill attributes field
+     */
     Y.TreeView = Y.Base.create("treeview", Y.Widget, [Y.WidgetParent], {
+        /** @lends Y.TreeView# */
         BOUNDING_TEMPLATE: "<div></div>",
         CONTENT_TEMPLATE: "<ul></ul>",
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined} 
+         */
         bindUI: function() {
             this.on("*:click", function(e) {
                 if (e.node && e.node !== this) {
@@ -56,11 +79,23 @@ YUI.add('treeview', function(Y) {
                 }
             });
         },
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined} 
+         */
         renderUI: function() {
             if (this.get("visibleRightWidget")) {
                 this.get(CONTENT_BOX).addClass(classNames.visibleRightWidget);
             }
         },
+        /**
+         * Expand all children
+         * @public
+         * @function
+         * @returns {undefined}
+         */
         expandAll: function() {
             this.each(function(item) {
                 if (item.expandAll) {
@@ -68,6 +103,12 @@ YUI.add('treeview', function(Y) {
                 }
             });
         },
+        /**
+         * Collapse all children
+         * @public
+         * @function
+         * @returns {undefined}
+         */
         collapseAll: function() {
             this.each(function(item) {
                 if (item.collapseAll) {
@@ -76,6 +117,9 @@ YUI.add('treeview', function(Y) {
             });
         }
     }, {
+        /**
+         * @lends Y.TreeView 
+         */
         NAME: 'treeview',
         ATTRS: {
             visibleRightWidget: {
@@ -91,15 +135,31 @@ YUI.add('treeview', function(Y) {
         }
     });
 
+    /**
+     * TreeView's TreeNode
+     * <p><strong>Attributes</strong></p>
+     * <ul>
+     *    <li>label {String} The TreeNode's label</li>
+     *    <li>collapsed {Boolean} Define if the node is collased. <i>Default:</i> false</li>
+     *    <li>rightWidget {Widget} TreeNode's right widget</li>
+     *    <li>loading {Boolean} is the node loading, will replace left icon. <i>Default:</i> false</li>
+     *    <li>iconCSS {String} left icon's CSS class</li>
+     * </ul>
+     * @name Y.TreeNode
+     * @class Base TreeNode class
+     * @extends Y.Widget
+     * @constructor
+     * @param Object Will be used to fill attributes field
+     */
     Y.TreeNode = Y.Base.create("treenode", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
+        /** @lends Y.TreeNode# */
         BOUNDING_TEMPLATE: "<li></li>",
         CONTENT_TEMPLATE: "<ul></ul>",
-        toggleNode: null,
-        labelNode: null,
-        iconNode: null,
-        currentIconCSS: null,
-        menuNode: null,
-        eventInstances: null,
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         */
         initializer: function() {
             this.eventInstances = {};
             this.publish("toggleClick", {
@@ -123,6 +183,12 @@ YUI.add('treeview', function(Y) {
                 bubbles: true
             });
         },
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined} 
+         */
         renderUI: function() {
             var bb = this.get(BOUNDING_BOX), header;
             header = Y.Node.create("<div class='content-header " + this.getClassName("content", "header") + "'></div>");
@@ -138,6 +204,12 @@ YUI.add('treeview', function(Y) {
                 bb.addClass(classNames.collapsed);
             }
         },
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined} 
+         */
         bindUI: function() {
             /*
              * Force event firing for an exisiting and none 0 attribute
@@ -163,7 +235,7 @@ YUI.add('treeview', function(Y) {
                     node: this
                 });
             },
-            this);
+                    this);
             this.eventInstances.fullClick = this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).on("click", function(e) {
                 var node = e.target;
                 e.stopPropagation();
@@ -187,6 +259,12 @@ YUI.add('treeview', function(Y) {
                 e.stopPropagation();
             });
         },
+        /**
+         * Lifecycle method, sync attributes
+         * @public
+         * @function
+         * @returns {undefined} 
+         */
         syncUI: function() {
             this.set("loading", this.get("loading"));
             this.set("iconCSS", this.get("iconCSS"));
@@ -194,6 +272,12 @@ YUI.add('treeview', function(Y) {
             this.set("rightWidget", this.get("rightWidget"));
             this.set("collapsed", this.get("collapsed"));
         },
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined} 
+         */
         destructor: function() {
             var event;
             this.blur();                                                        //remove a focused node generates some errors
@@ -204,6 +288,12 @@ YUI.add('treeview', function(Y) {
                 this.get("rightWidget").destroy();
             }
         },
+        /**
+         * Toggle treeNode between collapsed and expanded. Fires an event "nodeCollapsed" / "nodeExpanded"
+         * @public
+         * @function
+         * @returns {undefined}
+         */
         toggleTree: function() {
             this.get(BOUNDING_BOX).toggleClass(classNames.collapsed);
             if (this.get(BOUNDING_BOX).hasClass(classNames.collapsed)) {
@@ -216,6 +306,13 @@ YUI.add('treeview', function(Y) {
                 });
             }
         },
+        /**
+         * Expand the treeNode
+         * @public
+         * @function
+         * @param {Boolean} fireEvent specifies if an event should be fired. <i>Default:</i> true
+         * @returns {undefined}
+         */
         expand: function(fireEvent) {
             this.set("collapsed", false);
             fireEvent = (fireEvent === undefined) ? true : fireEvent;
@@ -225,6 +322,13 @@ YUI.add('treeview', function(Y) {
                 });
             }
         },
+        /**
+         * Collapse the treeNode
+         * @public
+         * @function
+         * @param {Boolean} fireEvent specifies if an event should be fired. <i>Default:</i> true
+         * @returns {undefined}
+         */
         collapse: function(fireEvent) {
             this.set("collapsed", true);
             fireEvent = (fireEvent === undefined) ? true : fireEvent;
@@ -234,6 +338,12 @@ YUI.add('treeview', function(Y) {
                 });
             }
         },
+        /**
+         * Expand all subtree
+         * @public
+         * @function
+         * @returns {undefined}
+         */
         expandAll: function() {
             this.expand(false);
             this.each(function(item) {
@@ -242,6 +352,12 @@ YUI.add('treeview', function(Y) {
                 }
             });
         },
+        /**
+         * Collapse all subtree
+         * @public
+         * @function
+         * @returns {undefined}
+         */
         collapseAll: function() {
             this.collapse(false);
             this.each(function(item) {
@@ -250,13 +366,27 @@ YUI.add('treeview', function(Y) {
                 }
             });
         },
+        /**
+         * Destroy subtree
+         * @public
+         * @function
+         * @returns {undefined}
+         */
         destroyChildren: function() {
             this.removeAll().each(this.destroyChild, this);
         },
-        destroyChild: function(item, index) {
+        /**
+         * Destroy a specific child and it's subchild
+         * @private
+         * @function
+         * @param {TreeNode|TreeLeaf} item to destroy
+         * @returns {undefined}
+         */
+        destroyChild: function(item) {
             item.destroy();
         }
     }, {
+        /** @lends Y.TreeNode */
         NAME: "TreeNode",
         ATTRS: {
             label: {
@@ -331,21 +461,41 @@ YUI.add('treeview', function(Y) {
     /**
      * TreeLeaf widget. Default child type for TreeView.
      * It extends  WidgetChild, please refer to it's documentation for more info.
-     * @class TreeLeaf
+     * <p><strong>Attributes</strong></p>
+     * <ul>
+     *    <li>label {String} The TreeNode's label</li>
+     *    <li>rightWidget {Widget} TreeNode's right widget</li>
+     *    <li>loading {Boolean} is the node loading, will replace left icon. <i>Default:</i> false</li>
+     *    <li>iconCSS {String} left icon's CSS class</li>
+     *    <li>editable {Boolean} label is editable. <i>Default:</i> false</li>
+     * </ul>
+     * @name Y.TreeLeaf
+     * @class TreeView's TreeLeaf
      * @constructor
-     * @uses WidgetChild
-     * @extends Widget
+     * @uses Y.WidgetChild
+     * @extends Y.Widget
      * @param {Object} config User configuration object.
      */
     Y.TreeLeaf = Y.Base.create("treeleaf", Y.Widget, [Y.WidgetChild], {
+        /** @lends Y.TreeLeaf# */
+        /**
+         * @field
+         * @private
+         */
         CONTENT_TEMPLATE: "<div></div>",
+        /**
+         * @field
+         * @private
+         */
         BOUNDING_TEMPLATE: "<li></li>",
-        menuNode: null,
-        iconNode: null,
-        currentIconCSS: null,
-        labelNode: null,
-        events: {},
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined}
+         */
         initializer: function() {
+            this.events = {};
             this.publish("iconClick", {
                 bubbles: true
             });
@@ -356,6 +506,12 @@ YUI.add('treeview', function(Y) {
                 bubbles: true
             });
         },
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined}
+         */
         renderUI: function() {
             var cb = this.get(CONTENT_BOX), header;
             header = Y.Node.create("<div class='content-header " + this.getClassName("content", "header") + "'></div>");
@@ -366,6 +522,12 @@ YUI.add('treeview', function(Y) {
             header.append(this.labelNode);
             header.append("<div class=\"" + this.getClassName("content", "rightwidget") + " yui3-tree-rightwidget\">");
         },
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined}
+         */
         bindUI: function() {
             this.onceAfter("renderedChange", function(e) {
                 var val = this.get("selected");
@@ -405,6 +567,12 @@ YUI.add('treeview', function(Y) {
                 e.target.setContent(e.target.getContent().replace(/&[^;]*;/gm, "").replace(/(\r\n|\n|\r|<br>|<br\/>)/gm, "").replace(/(<|>|\|\\|:|;)/gm, "").replace(/^\s+/g, '').replace(/\s+$/g, ''));
             }, this);
         },
+        /**
+         * Lifecycle method, sync attributes
+         * @public
+         * @function
+         * @returns {undefined} 
+         */
         syncUI: function() {
             this.set("label", this.get("label"));
             this.set("iconCSS", this.get("iconCSS"));
@@ -412,6 +580,12 @@ YUI.add('treeview', function(Y) {
             this.set("loading", this.get("loading"));
             this.set("rightWidget", this.get("rightWidget"));
         },
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined}
+         */
         destructor: function() {
             this.blur();                                                        //remove a focused node generates some errors
             if (this.get("rightWidget") && this.get("rightWidget").destroy) {
@@ -424,6 +598,7 @@ YUI.add('treeview', function(Y) {
             this.labelNode.remove(true);
         }
     }, {
+        /** @lends Y.TreeLeaf */
         NAME: "TreeLeaf",
         ATTRS: {
             label: {
