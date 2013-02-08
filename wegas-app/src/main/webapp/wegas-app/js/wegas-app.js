@@ -15,6 +15,27 @@ YUI.add('wegas-app', function (Y) {
     /**
      * Create a new wegas-app
      *
+     * <p><strong>Attributes</strong></p>
+     * <ul>
+     *    <li>base {String} base Url for app</li>
+     *    <li>layoutSrc {String} location for the json config of the current page</li>
+     *    <li>dataSources {Object[]} the list of datasource to be loaded on startup</li>
+     *    <li>cssStylesheets {String[]} a list of stylesheets to be loaded<i>default: []</i></li>
+     *    <li>currentGameModel {Number} current game model id</li>
+     *    <li>currentGame {Number} current game  id</li>
+     *    <li>currentTeam {Number} current team id</li>
+     *    <li>currentPlayer {Number} current player id</li>
+     *    <li>currentUse {Number} current game model idObject litteral representing current user</li>
+     *    <li>editorMenus {Object[]}
+     *        This field is used to globally override Entities edition menus.
+     *        Use the target class name as the key.
+     *    </li>
+     *    <li>editorForms {Object[]}
+     *         This field is used to globally override Entities edition forms.
+     *        Use the target class name as the key.
+     *   </li>
+     * </ul>
+     * 
      * @name Y.Wegas.App
      * @class Base class for wegas, handle initialisation of datasources and rendering
      * @extends Y.Base
@@ -165,26 +186,6 @@ YUI.add('wegas-app', function (Y) {
     }, {
         /** @lends Y.Wegas.App */
         /**
-         * <p><strong>Attributes</strong></p>
-         * <ul>
-         *    <li>base {String} base Url for app</li>
-         *    <li>layoutSrc {String} location for the json config of the current page</li>
-         *    <li>dataSources {Object[]} the list of datasource to be loaded on startup</li>
-         *    <li>cssStylesheets {String[]} a list of stylesheets to be loaded<i>default: []</i></li>
-         *    <li>currentGameModel {Number} current game model id</li>
-         *    <li>currentGame {Number} current game  id</li>
-         *    <li>currentTeam {Number} current team id</li>
-         *    <li>currentPlayer {Number} current player id</li>
-         *    <li>currentUse {Number} current game model idObject litteral representing current user</li>
-         *    <li>editorMenus {Object[]}
-         *        This field is used to globally override Entities edition menus.
-         *        Use the target class name as the key.
-         *    </li>
-         *    <li>editorForms {Object[]}
-         *        This field is used to globally override Entities edition forms.
-         *        Use the target class name as the key.
-         *    </li>
-         * </ul>
          * @field
          * @static
          */
@@ -243,7 +244,7 @@ YUI.add('wegas-app', function (Y) {
          * Generate ID an unique id based on current time.
          * @function
          * @static
-         * @return {integer} time
+         * @return {Number} time
          * @description
          */
         genId: function () {
