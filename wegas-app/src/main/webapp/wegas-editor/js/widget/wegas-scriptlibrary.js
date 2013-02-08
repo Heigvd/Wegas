@@ -7,21 +7,41 @@
  */
 
 /**
- * @module wegas-scriptlibrary
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-scriptlibrary', function (Y) {
     var CONTENTBOX = 'contentBox',
     ScriptLibrary;
-
+    /**
+     * @name Y.Wegas.ScriptLibrary
+     * @class Display a script edition field, using a Y.inputEx.AceField
+     * @constructor
+     * @extends Y.Widget
+     * @augments Y.WidgetChild
+     * @augments Y.Wegas.Widget
+     */
     ScriptLibrary = Y.Base.create("wegas-scriptlibrary", Y.Widget, [Y.WidgetChild,  Y.Wegas.Widget], {
+        /** @lends Y.Wegas.ScriptLibrary# */
 
+        /**
+         * @field
+         * @private
+         */
         currentScript: null,
 
+        /**
+         * @function
+         * @private
+         */
         destructor: function () {
             this.responseHandler.detach();
         },
 
+        /**
+         * @function
+         * @private
+         */
         renderUI: function () {
             this.aceField = new Y.inputEx.AceField({
                 parentEl: this.get(CONTENTBOX),
@@ -34,6 +54,10 @@ YUI.add('wegas-scriptlibrary', function (Y) {
             this.renderToolbar();
         },
 
+        /**
+         * @function
+         * @private
+         */
         bindUI: function () {
             this.responseHandler = Y.Wegas.app.dataSources.GameModel.after("response", this.syncUI, this);
 
@@ -47,6 +71,10 @@ YUI.add('wegas-scriptlibrary', function (Y) {
             }, this);
         },
 
+        /**
+         * @function
+         * @private
+         */
         syncUI: function () {
             var i, cGameModel = Y.Wegas.GameModelFacade.rest.getCurrentGameModel(),
             isEmpty = true;
@@ -86,6 +114,10 @@ YUI.add('wegas-scriptlibrary', function (Y) {
 
         // *** Private Methods *** //
 
+        /**
+         * @function
+         * @private
+         */
         renderToolbar: function () {
             this.plug(Y.Plugin.WidgetToolbar);
 
@@ -177,6 +209,10 @@ YUI.add('wegas-scriptlibrary', function (Y) {
             }).render(toolbarNode);
         },
 
+        /**
+         * @function
+         * @private
+         */
         syncEditor: function () {
             var cGameModel = Y.Wegas.GameModelFacade.rest.getCurrentGameModel(),
             val = cGameModel.get("scriptLibrary")[this.selectField.getValue()] || "";
@@ -184,6 +220,6 @@ YUI.add('wegas-scriptlibrary', function (Y) {
             this.aceField.setValue(val, false);
         }
     });
-
     Y.namespace('Wegas').ScriptLibrary = ScriptLibrary;
+
 });

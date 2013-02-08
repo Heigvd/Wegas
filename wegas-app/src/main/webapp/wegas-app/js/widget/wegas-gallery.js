@@ -448,7 +448,7 @@ YUI.add("wegas-gallery", function (Y) {
         }
     }, {
         /** @lends Y.Wegas.WegasGallery */
-        
+
         /**
          * @field
          * @static
@@ -575,6 +575,6 @@ YUI.add("wegas-gallery", function (Y) {
 
         }
     });
-
     Y.namespace("Wegas").FileExplorerGallery = FileExplorerGallery;
+    
 });
