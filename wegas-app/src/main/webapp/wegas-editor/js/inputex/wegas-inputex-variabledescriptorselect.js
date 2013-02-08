@@ -22,10 +22,12 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
     unesacapeJSString = function (str) {
         return str.replace(/\\"/g, '"');
     };
+
     /**
-     * @class Y.Wegas.VariableDescriptorSelect
+     * @name Y.inputEx.Wegas.VariableDescriptorSelect
+     * @class
      * @constructor
-     * @extends
+     * @extends Y.inpuEx.Group
      * @param {Object} options InputEx definition object
      */
     VariableDescriptorSelect = function (options) {
@@ -38,18 +40,25 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
         /** @lends Y.Wegas.VariableDescriptorSelect# */
         /**
 	 * Setup the options.fields from the availableFields option
+         * @function
 	 */
         setOptions: function (options) {
             options.fields = options.fields || [];
             VariableDescriptorSelect.superclass.setOptions.call(this, options);
         },
 
+        /**
+         * @function
+	 */
         render: function () {
             VariableDescriptorSelect.superclass.render.call(this);
             this.divEl.classList.add("wegas-inputex-variabledescriptorselect");
             this.syncUI();
         },
 
+        /**
+         * @function
+	 */
         setValue: function (val) {
             // Set value should not ba called directly
             //Y.log("VariableDescriptorSelect.setValue", val);
@@ -58,10 +67,16 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
             this.syncUI();
         },
 
+        /**
+         * @function
+	 */
         getValue: function () {
             return "VariableDescriptorFacade.find(" + this.currentEntityField.getValue() + ")";
         },
 
+        /**
+         * @function
+	 */
         syncUI: function () {
             this.empty();
 
@@ -84,6 +99,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
             }
             this.currentEntityField = this.inputs[this.inputs.length - 1];
         },
+
         /**
          *
          * @overrride Y.inputEx.Group.onChange()
@@ -110,6 +126,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
             this.fireUpdatedEvt();
         },
 
+        /**
+         * @function
+	 */
         empty: function () {
             while (this.inputs.length > 0) {
                 this.inputs.pop().destroy();
@@ -118,15 +137,18 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
         },
 
         /**
-         *  Overriden to add reference to parententity
+         * Overriden to add reference to parententity
+         * @function
          */
         addField: function (fieldOptions) {
             VariableDescriptorSelect.superclass.addField.call(this, fieldOptions);
             this.inputs[this.inputs.length - 1].options.parentEntity = fieldOptions.parentEntity;
         },
+
         /**
          * Generate
-         */
+         * @function
+	 */
         generateSelectConfig: function (entity, selectedEntity, items) {
             var value;
 
@@ -143,6 +165,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
                 parentEntity: entity
             };
         },
+
+        /**
+         * @function
+	 */
         genChoices: function (entity, items) {
             var i, choices = [];
 
@@ -157,15 +183,22 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
             return choices;
         }
     });
-
     inputEx.registerType("variabledescriptorselect", VariableDescriptorSelect, {});
 
-
+    /**
+     * @name Y.inputEx.Wegas.VariableDescriptorGetter
+     * @class
+     * @constructor
+     * @extends Y.inputEx.Wegas.VariableDescriptorSelect
+     * @param {Object} options InputEx definition object
+     */
     VariableDescriptorGetter = function (options) {
         VariableDescriptorMethod.superclass.constructor.call(this, options);
     };
 
     Y.extend(VariableDescriptorGetter, VariableDescriptorSelect, {
+        /** @lends Y.inputEx.Wegas.VariableDescriptorGetter# */
+
         syncUI: function () {
             VariableDescriptorGetter.superclass.syncUI.call(this);
 
@@ -187,13 +220,13 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
             return choices.concat(VariableDescriptorGetter.superclass.genChoices.apply(this, arguments));
         }
     });
-
     inputEx.registerType("variabledescriptorgetter", VariableDescriptorGetter, {});
+
     /**
-     * @class Y.Wegas.VariableDescriptorMethod
-     * @extends Y.Wegas.VariableDescriptorSelect
+     * @name Y.inputEx.Wegas.VariableDescriptorMethod
+     * @class
      * @constructor
-     * @extends VariableDescriptorSelect
+     * @extends Y.inputEx.Wegas.VariableDescriptorSelect
      * @param {Object} options InputEx definition object
      */
     VariableDescriptorMethod = function (options) {
@@ -201,6 +234,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
     };
 
     Y.extend(VariableDescriptorMethod, VariableDescriptorSelect, {
+        /** @lends Y.inputEx.Wegas.VariableDescriptorMethod# */
 
         syncUI: function () {
             var i, args, methods, cMethod,
@@ -324,10 +358,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
     inputEx.registerType("variabledescriptormethod", VariableDescriptorMethod, {});
 
     /**
-     * @class Y.Wegas.VariableDescriptorSetter
-     * @extends Y.Wegas.VariableDescriptorMethod
+     * @name Y.inputEx.Wegas.VariableDescriptorSetter
+     * @class
      * @constructor
-     * @extends
+     * @extends Y.inputEx.Wegas.VariableDescriptorMethod
      * @param {Object} options InputEx definition object
      */
     VariableDescriptorSetter = function (options) {
@@ -335,7 +369,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
     };
 
     Y.extend(VariableDescriptorSetter, VariableDescriptorMethod, {
-        /** @lends Y.Wegas.VariableDescriptorSelect# */
+        /** @lends Y.Wegas.VariableDescriptorSetter# */
+
         setOptions: function (options) {
             VariableDescriptorSetter.superclass.setOptions.call(this, options);
             this.options.returnsFilter = ["void"];
@@ -344,12 +379,11 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
 
     inputEx.registerType("variabledescriptorsetter", VariableDescriptorSetter, {});
 
-
     /**
-     * @class Y.Wegas.VariableDescriptorCondition
-     * @extends Y.Wegas.VariableDescriptorMethod
+     * @name Y.inputEx.Wegas.VariableDescriptorCondition
+     * @class
      * @constructor
-     * @extends VariableDescriptorMethod
+     * @extends Y.inputEx.Wegas.VariableDescriptorMethod
      * @param {Object} options InputEx definition object
      */
     VariableDescriptorCondition = function (options) {
@@ -357,6 +391,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
     };
 
     Y.extend(VariableDescriptorCondition, VariableDescriptorMethod, {
+        /** @lends Y.inputEx.Wegas.VariableDescriptorCondition# */
 
         setOptions: function (options) {
             VariableDescriptorCondition.superclass.setOptions.call(this, options);
@@ -430,7 +465,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
     inputEx.registerType("variabledescriptorcondition", VariableDescriptorCondition, {});
 
     /**
-     * @class Y.Wegas.EntityArrayFieldSelect
+     * @name Y.inputEx.Wegas.EntityArrayFieldSelect
+     * @class
      * @constructor
      * @extends Y.inputEx.SelectField
      * @param {Object} options InputEx definition object
@@ -460,6 +496,6 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
             this.options.entity = options.entity;
         }
     });
-
     inputEx.registerType("entityarrayfieldselect", EntityArrayFieldSelect);     // Register this class as "list" type
+
 });

@@ -19,9 +19,8 @@ YUI.add('wegas-tabview', function (Y) {
      * @name Y.Wegas.TabView
      * @extends Y.TabView
      * @borrows Y.WidgetChild, Y.Wegas.Widget
-     * @class class to manage a tabview specific to Wegas
+     * @class Manage a tabview specific to Wegas
      * @constructor
-     * @description Manage a tabview specific to Wegas
      */
     TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
         /**
@@ -59,9 +58,9 @@ YUI.add('wegas-tabview', function (Y) {
             });
         },
         /**
+         * Detach all functions created by this widget.
          * @function
          * @private
-         * @description Detach all functions created by this widget.
          */
         destructor: function () {
             for (var k in this.handlers) {
@@ -81,11 +80,11 @@ YUI.add('wegas-tabview', function (Y) {
          */
         tabs: {},
         /**
+         * Return A tab from tabview selected by id.
          * @function
          * @private
          * @param id
          * @return A tab from tabview
-         * @description return A tab from tabview selected by id.
          */
         getTab: function (id) {
             return TabView.tabs[id];
@@ -301,7 +300,7 @@ YUI.add('wegas-tabview', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>Content: Overrides the panelNode management</li>
          * </ul>
@@ -348,7 +347,7 @@ YUI.add('wegas-tabview', function (Y) {
          * @private
          * @param config
          * @description Create a clickable node (in host's bounding box).
-         * If this node is clicked, remove host (Tab) and this plugin. 
+         * If this node is clicked, remove host (Tab) and this plugin.
          */
         initializer: function (config) {
             var tab = this.get('host'),

@@ -18,15 +18,6 @@ YUI.add("wegas-button", function (Y) {
             BOUNDINGBOX = 'boundingBox',
             Button;
 
-    /* @fixme So we can display html tag inside a button */
-    Y.Button.prototype._uiSetLabel = function (value) {
-        var node = this._host;
-        //attr = (node.get('tagName').toLowerCase() === 'input') ? 'value' : 'text';
-        // node.set(attr, value);
-        node.setContent(value);
-        return value;
-    };
-
     /**
      * @name Y.Wegas.Button
      * @extends Y.Button
@@ -37,7 +28,7 @@ YUI.add("wegas-button", function (Y) {
      * Y.Wegas.Widget extensions to the original Y.Button
      */
     Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /** @lends Y.Wegas.Button */
+        /** @lends Y.Wegas.Button# */
         // *** Private fields *** //
 
         // *** Lifecycle Methods *** //
@@ -63,6 +54,7 @@ YUI.add("wegas-button", function (Y) {
                 });
             }
         },
+
         /**
          * @function
          * @private
@@ -81,7 +73,7 @@ YUI.add("wegas-button", function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>label: the label of the button</li>
          *    <li>data: the data used by the button</li>
@@ -131,6 +123,16 @@ YUI.add("wegas-button", function (Y) {
     });
     Y.namespace('Wegas').Button = Button;
 
+
+    /* @fixme @hack So we can display html tag inside a button */
+    Y.Button.prototype._uiSetLabel = function (value) {
+        var node = this._host;
+        //attr = (node.get('tagName').toLowerCase() === 'input') ? 'value' : 'text';
+        // node.set(attr, value);
+        node.setContent(value);
+        return value;
+    };
+
     /**
      * Plugin which adds an unread message counter to a widget.
      *
@@ -138,22 +140,15 @@ YUI.add("wegas-button", function (Y) {
      * @extends Y.Plugin.Base
      * @borrows Y.Wegas.Plugin, Y.Wegas.Editable
      */
-    /**
-     * @name Y.Plugin.UnreadCount
-     * @extends  Y.Plugin.Base
-     * @borrows Y.Wegas.Plugin, Y.Wegas.Editable
-     * @class  plugin to show how number of element is "unread"
-     * @constructor
-     * @description Plugin to show how number of element is "unread". reanded
-     *  instance need a "reply" instance associate to count the unreads.
-     */
     var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.UnreadCount# */
+
         // *** Private fields *** //
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         // *** Lifecycle methods *** //
         /**
          * @function
@@ -164,6 +159,7 @@ YUI.add("wegas-button", function (Y) {
             this.handlers = {};
             this.bindUI();
         },
+
         /**
          * @function
          * @private
@@ -175,6 +171,7 @@ YUI.add("wegas-button", function (Y) {
             this.handlers.update = Y.Wegas.app.VariableDescriptorFacade.after("update", this.syncUI, this);
             this.handlers.render = this.afterHostEvent("render", this.syncUI, this);
         },
+
         /**
          * @function
          * @private
@@ -197,6 +194,7 @@ YUI.add("wegas-button", function (Y) {
                 target.setContent("");
             }
         },
+
         /**
          * @function
          * @private
@@ -207,6 +205,7 @@ YUI.add("wegas-button", function (Y) {
                 this.handlers[k].detach();
             }
         },
+
         // *** Private methods *** //
        /**
          * @function
@@ -251,7 +250,7 @@ YUI.add("wegas-button", function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>variable: The target variable, returned either based on the name
          *     attribute, and if absent by evaluating the expr attribute.</li>
@@ -276,11 +275,12 @@ YUI.add("wegas-button", function (Y) {
     /**
      * @name Y.Wegas.OpenPageButton
      * @extends Y.Wegas.Button
-     * @class Shortcut to create a Button with an OpenPageAction plugin 
+     * @class Shortcut to create a Button with an OpenPageAction plugin
      * @constructor
-     * @description Shortcut to create a Button with an OpenPageAction plugin 
+     * @description Shortcut to create a Button with an OpenPageAction plugin
      */
     Y.Wegas.OpenPageButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        /** @lends Y.Wegas.OpenPageButton# */
         /**
          * @function
          * @private

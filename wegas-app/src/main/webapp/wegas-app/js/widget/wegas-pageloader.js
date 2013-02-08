@@ -152,7 +152,7 @@ YUI.add('wegas-pageloader', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>pageLoaderId: the id of this pageLoader</li>
          *    <li>defaultPageId: the id of the default page to load</li>

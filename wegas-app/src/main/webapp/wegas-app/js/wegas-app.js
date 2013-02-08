@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -14,12 +13,13 @@ YUI.add('wegas-app', function (Y) {
     "use strict";
 
     /**
-    * @name Y.Wegas.App
-    * @class  Base class for wegas, handle initialisation of datasources and rendering
-    * @constructor
-    * @param Object Will be used to fill attributes field
-    * @description create a new wegas-app
-    */
+     * Create a new wegas-app
+     *
+     * @name Y.Wegas.App
+     * @class Base class for wegas, handle initialisation of datasources and rendering
+     * @constructor
+     * @param Object Will be used to fill attributes field
+     */
     var App = Y.Base.create("wegas-app", Y.Base, [], {
 
         /**
@@ -165,12 +165,9 @@ YUI.add('wegas-app', function (Y) {
          * @lends Y.Wegas.App
          */
         /**
-         * @field
-         * @static
-         * @description
-         * <p><strong>Method</strong></p>
+         * <p><strong>Config attributes</strong></p>
          * <ul>
-         *    <li>base: Base Url for app, <i>default: /</i></li>
+         *    <li>base: Base Url for app</li>
          *    <li>layoutSrc : xxxxxxxxxxxxxxx</li>
          *    <li>dataSources : xxxxxxxxxxxxxxx</li>
          *    <li>cssStylesheets : xxxxxxxxxxxxxxx<i>default: []</i></li>
@@ -188,6 +185,8 @@ YUI.add('wegas-app', function (Y) {
          *        Use the target class name as the key.
          *    </li>
          * </ul>
+         * @field
+         * @static
          */
         ATTRS: {
             /**

@@ -397,7 +397,7 @@ YUI.add('wegas-loginwidget', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>Mode: login, createaccount or sendNewPassword, setter change
          *     the mode and thus, the displayed form</li>

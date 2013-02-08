@@ -224,7 +224,7 @@ YUI.add("wegas-widget", function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         ** <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>@pageId: Number of the page</li>
          *    <li>type: Type of the widget</li>

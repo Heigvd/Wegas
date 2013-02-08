@@ -21,16 +21,15 @@ YUI.add('wegas-datasourcerest', function (Y) {
     };
 
     /**
-     * @class Y.Wegas.DataSource
+     * @name Y.Wegas.DataSource
+     * @extends Y.DataSource.IO
+     * @class Custom implementation of a datasource,
+     * @constructor
      * @extends Y.DataSource.IO
      */
     Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
         /** @lends Y.Wegas.DataSource# */
         initializer: function () {
-            this.publish("EntityUpdatedEvent", {
-                broadcast: true,
-                bubbles: false
-            });
             this.after("sourceChange", this.sendInitialRequest);
         },
         sendInitialRequest: function () {
@@ -50,8 +49,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     /**
-     *  @class Y.Plugin.DataSourceREST
-     *  @module Wegas
+     *  @name Y.Plugin.DataSourceREST
+     *  @class Plugin that add cache management for entites from wegas server.
      *  @extends Y.Plugin.Base
      *  @constructor
      */
@@ -65,17 +64,28 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.extend(DataSourceREST, Y.Plugin.Base, {
+        /** @lends Y.Plugin.DataSourceREST# */
+        /**
+         * @function
+         * @private
+         */
         initializer: function () {
             var host = this.get('host');
             host.data = [];
 
+            this.publish("EntityUpdatedEvent", {
+                broadcast: true,
+                bubbles: false
+            });
+
             this.doBefore("_defDataFn", this.onData, this);                     // When the host receives some data, we parse the result
             this.afterHostEvent("sourceChange", this.clearCache, this);         // When the source changes, clear the cache
         },
+
         /**
          * Server requests methods
          *
-         * @method sendRequest
+         * @function
          */
         sendRequest: function (request) {
             request.on = request.on || {
@@ -92,7 +102,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.get('host').sendRequest(request);
         },
         /**
-         * @method beforeResponse
+         * @function
          * @private
          */
         onData: function (e) {
@@ -117,6 +127,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         },
+        /**
+         * @function
+         * @private
+         */
         onResponseRevived: function (e) {
             var i, entity, evtPayload, response = e.serverResponse;
 
@@ -150,11 +164,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
         },
         /**
-         *  @method updateCache
+         *  @function updateCache
+         *  @private
          *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
          *  @param {entity} entity The entity to update in the cache
          *  @return {Boolean} `true` if object could be located and method applied
-         *  @for DataSourceREST
          */
         updateCache: function (method, entity) {
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.DataSourceRest");
@@ -179,27 +193,45 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.addToCache(entity);                                            // In case we still have not found anything
             return true;
         },
+        /**
+         * @function
+         * @private
+         */
         addToCache: function (entity) {
             this.getCache().push(entity);
         },
+
+        /**
+         * @function
+         * @private
+         */
         _successHandler: function (e) {
             Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
         },
+
+        /**
+         * @function
+         * @private
+         */
         _failureHandler: function (e) {
             //console.log("DataSourceRest._failureHandler", e);
             Y.log("Exception while sending request \"" + (e.request || "") + "\": "
                 + (e.response.results.message || e.response.results.exception || e), "error", 'Y.Wegas.DataSourceRest');
         },
-        /// *** Cache methods *** //
 
+        /// *** Cache methods *** //
         /**
          * Retrieves all entities stored in the cache.
+         * @function
+         * @private
          */
         getCache: function () {
             return this.get('host').data;
         },
+
         /**
-         *
+         * @function
+         * @private
          */
         clearCache: function () {
             var i, cache = this.getCache();
@@ -209,22 +241,26 @@ YUI.add('wegas-datasourcerest', function (Y) {
             cache.length = 0;
         },
         /**
-         * Retrieves an entity from the cache
-         *
-         *  @method find
-         *  @for DataSourceREST
-         */
+          * Retrieves an entity from the cache
+          *
+          * @function
+          * @private
+          */
         find: function (key, val, onFindFn) {
             return this.doFind(key, val, onFindFn, this.getCache());
         },
         /**
          * Retrieves an entity from the cache
+         * @function
+         * @private
          */
         findById: function (id) {
             return this.find("id", id * 1);                                    // Cast to number
         },
         /**
          * Retrieves a list of entities from the cache
+         * @function
+         * @private
          */
         filter: function (key, val) {
             var data = this.getCache(), ret = [], i;
@@ -240,11 +276,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
          *  Recuresivly walk the provided stack, looking for an object with an
          *  id corresponing to needle's and apply an operation based method.
          *
-         *  @method doFind
+         *  @function
+         *  @private
          *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
          *  @param {entity} The entity to update in the cache
          *  @return {Boolean} `true` if object could be located and method applied
-         *  @for DataSourceREST
          */
         doFind: function (key, needle, onFindFn, stack) {
             //Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.DataSourceRest');
@@ -268,20 +304,33 @@ YUI.add('wegas-datasourcerest', function (Y) {
          * This method is used to walke down an entity hierarchy, can be overriden
          * by childrn to extend look capacities. Used in Y.Wegas.GameModelDataSourceRest
          * and Y.Wegas.VariableDescriptorDataSourceRest
+         * @function
+         * @private
          */
         walkEntity: function (entity, callback) {
             //Y.log("walkEntity(" + entity + ")", 'log', 'Y.Wegas.DataSourceRest');
             return false;
         },
         /**
-         *
+         * @function
+         * @private
          */
         testEntity: function (entity, key, needle) {
             return this.get("testFn")(entity, key, needle);
         },
+
+        /**
+         * @function
+         * @private
+         */
         generateRequest: function (data) {
             return "/" + data.id;
         },
+
+        /**
+         * @function
+         * @private
+         */
         post: function (data, parentData, callback) {
             var request = (parentData) ? "/" + parentData.id + "/" + data["@class"] : "/";
 
@@ -294,9 +343,19 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 on: callback
             });
         },
+
+        /**
+         * @function
+         * @private
+         */
         getObject: function (data) {
             this.sendRequest(this.generateRequest(data));
         },
+
+        /**
+         * @function
+         * @private
+         */
         put: function (data, callback) {
             this.sendRequest({
                 request: this.generateRequest(data),
@@ -307,6 +366,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 on: callback
             });
         },
+
+        /**
+         * @function
+         * @private
+         */
         duplicateObject: function (entity) {
             this.sendRequest({
                 request: this.generateRequest(entity.toObject()) + "/Duplicate/",
@@ -315,6 +379,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             });
         },
+
+        /**
+         * @function
+         * @private
+         */
         deleteObject: function (entity) {
             this.sendRequest({
                 request: this.generateRequest(entity.toObject()),
@@ -323,11 +392,17 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             });
         },
+
+        /**
+         * @function
+         * @private
+         */
         clone: function (id, parentData, callbacks) {
             var entity = this.findById(id).clone();
             this.post(entity, parentData, callbacks);
         }
     }, {
+        /** @lends Y.Plugin.DataSourceREST */
         ATTRS: {
             schema: {
                 value: {
@@ -628,7 +703,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return false;
         },
-        
+
         //updateCache: function ( method, entity ) {},
 
         put: function (data, callback) {
