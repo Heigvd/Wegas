@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-inbox', function (Y) {
     "use strict";
 
@@ -54,7 +52,7 @@ YUI.add('wegas-inbox', function (Y) {
          * @function
          * @private
          * @description Set variable with initials values.
-         * Plug a toolbar widget (and add the delete button at this toolbar). 
+         * Plug a toolbar widget (and add the delete button at this toolbar).
          */
         initializer: function () {
             this.dataSource = Y.Wegas.app.VariableDescriptorFacade;
@@ -232,7 +230,7 @@ YUI.add('wegas-inbox', function (Y) {
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>variable: The target variable, returned either based on the name
          *     attribute, and if absent by evaluating the expr attribute.</li>

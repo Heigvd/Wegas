@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-layout', function (Y) {
     "use strict";
 
@@ -32,14 +30,17 @@ YUI.add('wegas-layout', function (Y) {
          * Reference to Y.Resize left object of the panel
          */
         resizeLeft: null,
+
         /**
          * Reference to Y.Resize right object of the panel
          */
         resizeRight: null,
+
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -49,6 +50,7 @@ YUI.add('wegas-layout', function (Y) {
         initializer: function(){
             this.handlers = [];
         },
+
         /**
          * @function
          * @private
@@ -65,6 +67,7 @@ YUI.add('wegas-layout', function (Y) {
 
             this._syncUIStdMod();
         },
+
         /**
          * @function
          * @private
@@ -77,6 +80,7 @@ YUI.add('wegas-layout', function (Y) {
             //this.get("boundingBox").on("resize", this._syncUIStdMod, this);
             Y.on('domready', this.syncUI, this);
         },
+
         /**
          * @function
          * @private
@@ -86,6 +90,7 @@ YUI.add('wegas-layout', function (Y) {
             this.syncCenterNode();
             this._syncUIStdMod();
         },
+
         /**
          * @function
          * @private
@@ -96,6 +101,7 @@ YUI.add('wegas-layout', function (Y) {
                 this.handlers[i].detach();
             }
         },
+
         // ** Private Methods ** //
         /**
          * @function
@@ -126,6 +132,7 @@ YUI.add('wegas-layout', function (Y) {
             }
             return target;
         },
+
         /**
          * @function
          * @private
@@ -145,6 +152,7 @@ YUI.add('wegas-layout', function (Y) {
             //anim.on('end', this.syncCenterNode, this );
             anim.run();
         },
+
         /**
          * @function
          * @private
@@ -169,11 +177,12 @@ YUI.add('wegas-layout', function (Y) {
                 anim.run();
             }
         },
+
         /**
          * @function
          * @private
          * @param position
-         * @description 
+         * @description
          */
         renderPosition: function (position) {
             var i, cWidget,
@@ -209,6 +218,7 @@ YUI.add('wegas-layout', function (Y) {
                 target.setStyle("width", "0");
             }
         },
+
         /**
          * @function
          * @private
@@ -233,6 +243,7 @@ YUI.add('wegas-layout', function (Y) {
             });
             Y.Wegas.app.fire("layout:resize");
         },
+
         /**
          * @function
          * @private
@@ -242,6 +253,7 @@ YUI.add('wegas-layout', function (Y) {
         _syncUIStdMod: function () {
             this._uiSetFillHeight(this.get("fillHeight"));
         },
+
         /**
          * @function
          * @private
@@ -255,11 +267,12 @@ YUI.add('wegas-layout', function (Y) {
         /**
          * @lends Y.Wegas.Layout#
          */
+
         /**
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>left: configuration and childrens of the left section.</li>
          *    <li>right: configuration and childrens of the right section.</li>
@@ -315,6 +328,7 @@ YUI.add('wegas-layout', function (Y) {
                 value: "100%"
             }
         },
+        
         TEMPLATES: {
             header: '<div class="yui-widget-hd wegas-layout-top"></div>',
             body: '<div class="yui-widget-bd wegas-layout-bd"><div class="wegas-layout-left"></div><div class="wegas-layout-center"></div><div class="wegas-layout-right"></div></div>',

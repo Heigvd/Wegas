@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-
 YUI.add('wegas-jointeamwidget', function (Y) {
     "use strict";
 
@@ -19,8 +17,9 @@ YUI.add('wegas-jointeamwidget', function (Y) {
     /**
     * @name Y.Wegas.JoinTeamWidget
     * @extends Y.Wegas.JoinGameWidget
-    * @borrows Y.WidgetChild, Y.Wegas.Widget
-    * @class  class for join a team
+    * @augments Y.WidgetChild
+    * @augments Y.Wegas.Widget
+    * @class class for join a team
     * @constructor
     * @description Allows just to join a team
     */

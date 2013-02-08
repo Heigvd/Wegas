@@ -12,23 +12,22 @@
 YUI.add('wegas-tooltip', function (Y) {
     "use strict";
 
-    var Lang = Y.Lang,
+    var TooltipPlg, Tooltip, Lang = Y.Lang,
     Node = Y.Node,
     OX = -10000,
-    OY = -10000,
-    TooltipPlg,
-    Tooltip;
+    OY = -10000;
 
     /**
+     *  @class To be pluged on a Y.Widget to display a tooltip on mouseover
      *  @name Y.Plugin.Tooltip
      *  @extends Y.Plugin.Base
      *  @augments Y.Wegas.Plugin
      *  @augments Y.Wegas.Editable
-     *  @class To be pluged on a Y.Widget to display a tooltip on mouseover
      *  @constructor
      */
     TooltipPlg = Y.Base.create("wegas-tooltipplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.Tooltip# */
+
         /**
          * @function
          * @private
@@ -38,10 +37,13 @@ YUI.add('wegas-tooltip', function (Y) {
             tt.addTriggerNode(this.get("host").get("boundingBox"),
                 this.get("content"));
         }
+
     }, {
         /** @lends Y.Plugin.Tooltip */
+
         NS: "tooltip",
         NAME: "tooltip",
+
         /*
          * <p><strong>Config attributes</strong></p>
          * <ul>
@@ -77,7 +79,7 @@ YUI.add('wegas-tooltip', function (Y) {
          * properties, and publishes the events Tooltip introduces
          * @function
          * @private
-         * @argument widget attribute litteral
+         * @param {Object} widget attribute litteral
          */
         initializer : function (config) {
             this._currTrigger = {                                               // Currently bound trigger node information
@@ -168,6 +170,10 @@ YUI.add('wegas-tooltip', function (Y) {
             }
         },
 
+        /**
+         * @function
+         * @private
+         */
         addTriggerNode: function (node, content) {
             this.get("content")[node.get("id")] = content;
             this.get("triggerNodes").push(node);

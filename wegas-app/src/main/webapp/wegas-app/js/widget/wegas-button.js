@@ -73,7 +73,7 @@ YUI.add("wegas-button", function (Y) {
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>label: the label of the button</li>
          *    <li>data: the data used by the button</li>
@@ -250,7 +250,7 @@ YUI.add("wegas-button", function (Y) {
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>variable: The target variable, returned either based on the name
          *     attribute, and if absent by evaluating the expr attribute.</li>

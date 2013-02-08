@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add("wegas-loginbutton", function (Y) {
     "use strict";
 
@@ -25,9 +23,8 @@ YUI.add("wegas-loginbutton", function (Y) {
      * options : set user preferences or logout
      */
     LoginButton = Y.Base.create("wegas-login", Y.Wegas.Button, [], {
-        /**
-         * @lends Y.Wegas.LoginButton#
-         */
+        /** @lends Y.Wegas.LoginButton# */
+
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -47,29 +44,29 @@ YUI.add("wegas-loginbutton", function (Y) {
 
             this.plug(Y.Plugin.WidgetMenu, {
                 children: [{
-                        type: "Button",
-                        label: "Preferences",
-                        plugins: [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": this.get("preferencePageId"), // @fixme
-                                    "targetPageLoaderId": this.get("targetPageLoader")
-                                }
-                            }]
-                    }, {
-                        type: "Button",
-                        label: "Logout",
-                        "plugins": [{
-                                fn: "OpenUrlAction",
-                                cfg: {
-                                    url: "wegas-app/logout",
-                                    target: "self"
-                                }
-                            }
-                        ]
+                    type: "Button",
+                    label: "Preferences",
+                    plugins: [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": this.get("preferencePageId"), // @fixme
+                            "targetPageLoaderId": this.get("targetPageLoader")
+                        }
                     }]
+                }, {
+                    type: "Button",
+                    label: "Logout",
+                    plugins: [{
+                        fn: "OpenUrlAction",
+                        cfg: {
+                            url: "wegas-app/logout",
+                            target: "self"
+                        }
+                    }]
+                }]
             });
         },
+
         /**
          * @function
          * @private
@@ -80,9 +77,9 @@ YUI.add("wegas-loginbutton", function (Y) {
             Y.Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
             var cUser = Y.Wegas.app.get("currentUser"),
-                    cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer(),
-                    cTeam = Y.Wegas.GameFacade.rest.getCurrentTeam(),
-                    name = cUser.name || "undefined";
+            cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer(),
+            cTeam = Y.Wegas.GameFacade.rest.getCurrentTeam(),
+            name = cUser.name || "undefined";
             if (!this.get('labelIsUser')) {
                 if (cPlayer) {
                     name = cPlayer.get("name");
@@ -97,11 +94,12 @@ YUI.add("wegas-loginbutton", function (Y) {
         /**
          * @lends Y.Wegas.LoginButton
          */
+
         /**
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>labelIsUser: Select what kind of label you want (user/team  or team/player)</li>
          *    <li>preferencePageId: Id of the the page which contains widget userPreferences</li>

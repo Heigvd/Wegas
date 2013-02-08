@@ -5,11 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-datasourcerest', function (Y) {
     "use strict";
 
@@ -25,15 +24,24 @@ YUI.add('wegas-datasourcerest', function (Y) {
      * @extends Y.DataSource.IO
      * @class Custom implementation of a datasource,
      * @constructor
-     * @extends Y.DataSource.IO
      */
     Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
         /** @lends Y.Wegas.DataSource# */
+
+        /**
+         * @function
+         * @private
+         */
         initializer: function () {
             this.after("sourceChange", this.sendInitialRequest);
         },
+
+        /**
+         * @function
+         * @private
+         */
         sendInitialRequest: function () {
-            if (this.get("initialRequest") !== undefined) {                     // Use this condition so we allow empty strin e.g. ""
+            if (this.get("initialRequest") !== undefined) {                // Use this condition so we allow empty strin e.g. ""
                 var sender = this.rest || this;
                 return sender.sendRequest({
                     request: this.get("initialRequest")
@@ -43,6 +51,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
         }
     }, {
+        /** @lends Y.Wegas.DataSource */
+
+        /**
+         * @field
+         * @static
+         */
         ATTRS: {
             initialRequest: {}
         }
@@ -163,8 +177,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 this.get("host").fire("update", e);
             }
         },
+
         /**
-         *  @function updateCache
+         *  @function
          *  @private
          *  @param {String} method Possible values for method are: POST, PUT, DELETE, default being PUT.
          *  @param {entity} entity The entity to update in the cache
@@ -193,6 +208,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             this.addToCache(entity);                                            // In case we still have not found anything
             return true;
         },
+
         /**
          * @function
          * @private
@@ -240,6 +256,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             cache.length = 0;
         },
+
         /**
           * Retrieves an entity from the cache
           *
@@ -249,6 +266,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         find: function (key, val, onFindFn) {
             return this.doFind(key, val, onFindFn, this.getCache());
         },
+
         /**
          * Retrieves an entity from the cache
          * @function
@@ -257,6 +275,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         findById: function (id) {
             return this.find("id", id * 1);                                    // Cast to number
         },
+
         /**
          * Retrieves a list of entities from the cache
          * @function
@@ -271,6 +290,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return ret;
         },
+
         /**
          *
          *  Recuresivly walk the provided stack, looking for an object with an
@@ -300,6 +320,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }, this);
             return this.ret;
         },
+
         /**
          * This method is used to walke down an entity hierarchy, can be overriden
          * by childrn to extend look capacities. Used in Y.Wegas.GameModelDataSourceRest
@@ -311,6 +332,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             //Y.log("walkEntity(" + entity + ")", 'log', 'Y.Wegas.DataSourceRest');
             return false;
         },
+
         /**
          * @function
          * @private
@@ -401,6 +423,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             var entity = this.findById(id).clone();
             this.post(entity, parentData, callbacks);
         }
+
     }, {
         /** @lends Y.Plugin.DataSourceREST */
         ATTRS: {
@@ -420,18 +443,20 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
         }
     });
-
     Y.namespace('Plugin').DataSourceREST = DataSourceREST;
 
     /**
-     * Content repository dataSource REST plugin.
+     *  @name Y.Plugin.CRDataSource
+     *  @class Content repository dataSource REST plugin.
+     *  @extends Y.Plugin.DataSourceREST
+     *  @constructor
      */
-
     var CRDataSource = function () {
         CRDataSource.superclass.constructor.apply(this, arguments);
     };
 
     Y.extend(CRDataSource, DataSourceREST, {}, {
+        /** @lends Y.Plugin.CRDataSource */
         NS: "rest",
         NAME: "CRDataSource",
         ATTRS: {
@@ -447,7 +472,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
     Y.namespace('Plugin').CRDataSource = CRDataSource;
 
     /**
-     *
+     *  @name Y.Plugin.VariableDescriptorDataSourceREST
+     *  @class adds management of entities of type Y.Wegas.persistence.VariableDescriptor
+     *  @extends Y.Plugin.DataSourceREST
+     *  @constructor
      */
     VariableDescriptorDataSourceREST = function () {
         VariableDescriptorDataSourceREST.superclass.constructor.apply(this, arguments);
@@ -459,6 +487,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
+        /** @lends Y.Plugin.VariableDescriptorDataSourceREST# */
+
+        /**
+         * @function
+         * @private
+         */
         initializer: function () {
             /**
              * Server event, triggered through the managed-mode response events.
@@ -470,6 +504,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             }, this);
         },
+
+        /**
+         * @function
+         * @private
+         */
         walkEntity: function (entity, callback) {
             if (entity.get && entity.get("items")) {
                 if (callback(entity.get("items"))) {
@@ -483,6 +522,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
             //            }
             return false;
         },
+
+        /**
+         * @function
+         */
         updateCache: function (method, entity) {
             if (entity instanceof Y.Wegas.persistence.VariableInstance) {
                 return this.find("id", entity.get("descriptorId") * 1, function (found, needle) {
@@ -500,6 +543,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return false;
         },
+
+        /**
+         * @function
+         */
         put: function (data, callback) {
             if (data['@class'].indexOf("Instance") !== -1) {
                 this.sendRequest({
@@ -541,7 +588,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
     Y.namespace('Plugin').VariableDescriptorDataSourceREST = VariableDescriptorDataSourceREST;
 
-
+    /**
+     *  @name Y.Plugin.GameModelDataSourceREST
+     *  @class adds management of entities of type Y.Wegas.persistence.GameModel
+     *  @extends Y.Plugin.DataSourceREST
+     *  @constructor
+     */
     GameModelDataSourceREST = function () {
         GameModelDataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -565,9 +617,14 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return this.findById(Y.Wegas.app.get('currentGameModel'));
         }
     });
-
     Y.namespace('Plugin').GameModelDataSourceREST = GameModelDataSourceREST;
 
+    /**
+     *  @name Y.Plugin.GameDataSourceREST
+     *  @class adds management of entities of type Y.Wegas.persistence.Game
+     *  @extends Y.Plugin.DataSourceREST
+     *  @constructor
+     */
     GameDataSourceREST = function () {
         GameDataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -685,10 +742,13 @@ YUI.add('wegas-datasourcerest', function (Y) {
             return null;
         }
     });
-
     Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
+
     /**
-     *
+     *  @name Y.Plugin.UserDataSourceREST
+     *  @class adds management of entities of type Y.Wegas.persistence.User
+     *  @extends Y.Plugin.DataSourceREST
+     *  @constructor
      */
     var UserDataSourceREST = function () {
         UserDataSourceREST.superclass.constructor.apply(this, arguments);
@@ -758,10 +818,14 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
         }
     });
-
     Y.namespace('Plugin').UserDataSourceREST = UserDataSourceREST;
 
-
+    /**
+     * @name Y.Plugin.PageDataSourceREST
+     * @extends Y.Plugin.Base
+     * @class
+     * @constructor
+     */
     PageDataSourceREST = function () {
         PageDataSourceREST.superclass.constructor.apply(this, arguments);
     };
@@ -772,6 +836,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
     });
 
     Y.extend(PageDataSourceREST, Y.Plugin.Base, {
+        /** @lends Y.Plugin.PageDataSourceREST# */
+
+        /**
+         * @function
+         * @private
+         */
         initializer: function (cfg) {
             this.get("host").data = {};
             this.pageQuery = {};
@@ -782,7 +852,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         /**
          * Server requests methods
          *
-         * @method sendRequest
+         * @function
          */
         sendRequest: function (requestCfg) {
             requestCfg.callback = requestCfg.callback || {
@@ -798,6 +868,11 @@ YUI.add('wegas-datasourcerest', function (Y) {
 
             return this.get('host').sendRequest(requestCfg);
         },
+
+        /**
+         * @function
+         * @private
+         */
         beforeResponse: function (e) {
             var result = e.response.results,
             page = e.data ? (e.data.getResponseHeader("Page") || '') : null,
@@ -814,9 +889,12 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 this.pageQuery[page] = false;
                 this.setCache(page, result);
             }
-
-
         },
+
+        /**
+         * @function
+         * @private
+         */
         setCache: function (pageId, object) {
             var old = JSON.stringify(this.getCache(pageId));
             if (JSON.stringify(object) !== old) {
@@ -826,12 +904,24 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 });
             }
         },
+
+        /**
+         * @function
+         */
         getCache: function (pageId) {
             return this.get("host").data["" + pageId] || null;
         },
+
+        /**
+         * @function
+         */
         destroyCache: function () {
             this.get("host").data = {};
         },
+
+        /**
+         * @function
+         */
         put: function (entity) {
             var pageId = entity["@pageId"], pe = Y.clone(entity);
             delete pe["@pageId"];
@@ -843,6 +933,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             });
         },
+
+        /**
+         * @function
+         */
         post: function (entity) {
             var pe = Y.clone(entity);
             delete pe["@pageId"];
@@ -854,6 +948,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             });
         },
+
+        /**
+         * @function
+         */
         patch: function (o) {
             var dmp = new diff_match_patch(),
             oldPage = this.getCache(o["@pageId"]),
@@ -873,6 +971,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             });
         },
+
+        /**
+         * @function
+         */
         deletePage: function (pageId) {
             this.sendRequest({
                 request: "" + pageId,
@@ -930,11 +1032,10 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
         }
     });
-
     Y.namespace('Plugin').PageDataSourceREST = PageDataSourceREST;
 
     /**
-     * FIXME We redefine this so we can use a "." selector and a "@..." field name
+     * @FIXME We redefine this so we can use a "." selector and a "@..." field name
      */
     Y.DataSchema.JSON.getPath = function (locator) {
         var path = null,
@@ -1005,7 +1106,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
         return e.tId;
     };
 
-    // @FIXME We rewrite this function, should be overriden
+    /*
+     * @FIXME We rewrite this function, should be overriden
+     */
     Y.DataSchema.JSON._parseResults = function (schema, json_in, data_out) {
         var results = [],
         path,

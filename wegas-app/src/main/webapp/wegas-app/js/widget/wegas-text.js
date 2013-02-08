@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -27,6 +26,7 @@ YUI.add("wegas-text", function (Y) {
         /**
          * @lends Y.Wegas.Text#
          */
+
         /**
          * @function
          * @private
@@ -35,15 +35,17 @@ YUI.add("wegas-text", function (Y) {
         syncUI: function () {
             this.set("content", this.get("content"));
         }
+
     }, {
         /**
          * @lends Y.Wegas.Text#
          */
+
         /**
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>content: the string to display, the content of this widget's
          *     contentbox. Format html.</li>
@@ -64,6 +66,6 @@ YUI.add("wegas-text", function (Y) {
             }
         }
     });
-
     Y.namespace("Wegas").Text = Text;
+
 });

@@ -5,11 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-entity', function(Y) {
     "use strict";
 
@@ -22,14 +21,14 @@ YUI.add('wegas-entity', function(Y) {
     }, Editable = Y.Wegas.Editable, Entity;
 
     /**
-     * Entity is used to represent db objects.
+     * @class Entity is used to represent db objects
+     * @name Y.Wegas.persistence.Entity
+     * @extends Y.Base
+     * @augments Y.Wegas.Editable
+     * @constructor
      */
-    Entity = Y.Base.create("Entity", Y.Base, [Editable], {
-        initializer: function() {
+    Entity = Y.Base.create("Entity", Y.Base, [Editable], {}, {
 
-        }
-
-    }, {
         _buildCfg: {
             //statics: ["EDITMENU"],
             custom: {
@@ -45,6 +44,7 @@ YUI.add('wegas-entity', function(Y) {
         //}
         }
         },
+
         ATTRS: {
             initialized: {
                 "transient": true
@@ -66,23 +66,25 @@ YUI.add('wegas-entity', function(Y) {
                     _type: 'hidden'
                 }
             },
-            "label": {
+            label: {
                 "transient": true,
                 getter: function(val) {
                     return val || this.get("name");
                 }
             },
-            "editorLabel": {
+            editorLabel: {
                 "transient": true,
                 getter: function(val) {
                     return val || this.get("name");
                 }
             }
         },
+
         /**
          *  Defines edition menu to be used in editor
          */
         EDITMENU: [],
+
         /**
          * Defines methods available in wysiwyge script editor
          */
@@ -99,8 +101,8 @@ YUI.add('wegas-entity', function(Y) {
             val: {}
         }
     });
-
     Y.Wegas.persistence.RestException = Y.Wegas.persistence.DefaultEntity;
+
     /**
      * Page response mapper
      */

@@ -24,25 +24,27 @@ YUI.add('wegas-pageloader', function (Y) {
      * @constructor
      * @description Load pages and request widget to render.
      */
-    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /**
-         * @lends Y.Wegas.PageLoader#
-         */
+    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget,
+        [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable], {
+        /** @lends Y.Wegas.PageLoader# */
+
         // *** Private fields *** //
         /**
          * Current page id
          */
         currentPageId: null,
+
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         // *** Lifecycle Methods ***/
         /**
          * @function
          * @private
          * @description Set variable with initials values.
-         * Set page to default page 
+         * Set page to default page
          * Keep a references of all loaded PageLoaders in PageLoader.pageLoaderInstances.
          */
         initializer: function () {
@@ -53,6 +55,7 @@ YUI.add('wegas-pageloader', function (Y) {
             }
 
         },
+
         /**
          * @function
          * @private
@@ -92,11 +95,12 @@ YUI.add('wegas-pageloader', function (Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
          * @description Set pageId and displayed new page if the id is
-         *  different that the current page id 
+         *  different that the current page id
          */
         syncUI: function () {
             var val = this.get("variable.evaluated");
@@ -106,6 +110,7 @@ YUI.add('wegas-pageloader', function (Y) {
                 this.set("pageId", this.get("pageId"));
             }
         },
+
         /**
          * @function
          * @private
@@ -122,11 +127,12 @@ YUI.add('wegas-pageloader', function (Y) {
             }
             delete PageLoader.pageLoaderInstances[this.get("pageLoaderId")];
         },
+
         // *** Private Methods ***/
         /**
          * @function
          * @private
-         * @return boolean 
+         * @return boolean
          * @description Return true if this pageLoader try to load itself by
          * loading a page which contain itself or one of its "ancestor" page.
          */
@@ -144,15 +150,15 @@ YUI.add('wegas-pageloader', function (Y) {
             }
             return isALoop;
         }
+
     }, {
-        /**
-         * @lends Y.Wegas.PageLoader
-         */
+        /** @lends Y.Wegas.PageLoader */
+
         /**
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>pageLoaderId: the id of this pageLoader</li>
          *    <li>defaultPageId: the id of the default page to load</li>
@@ -236,11 +242,13 @@ YUI.add('wegas-pageloader', function (Y) {
                 "transient": true
             }
         },
+
         pageLoaderInstances: [],
+
         find: function (id) {
             return PageLoader.pageLoaderInstances[id];
         }
     });
-
     Y.namespace('Wegas').PageLoader = PageLoader;
+    
 });

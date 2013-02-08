@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add("wegas-widget", function (Y) {
     "use strict";
 
@@ -49,8 +47,7 @@ YUI.add("wegas-widget", function (Y) {
 
     /**
      * @name Y.Wegas.Widget
-     * @class Y.Wegas.Widget
-     * @description Extension common to all wegas widgets
+     * @class Extension common to all wegas widgets
      */
     function Widget () {
         this.after("render", function () {
@@ -61,7 +58,7 @@ YUI.add("wegas-widget", function (Y) {
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
-                || this.constructor.NAME.toLowerCase();                                 // the usual "yui3-" prefix)
+                || this.constructor.NAME.toLowerCase();                         // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
 
         this.publish("exception", {
@@ -71,6 +68,7 @@ YUI.add("wegas-widget", function (Y) {
 
     Y.mix(Widget.prototype, {
         /** @lends Y.Wegas.Widget# */
+
         /**
          * @function
          * @private
@@ -79,6 +77,7 @@ YUI.add("wegas-widget", function (Y) {
         defaultExceptionHandler: function (e) {
             this.fire("exception", e.response.results);
         },
+
         /**
          * @function
          * @private
@@ -89,6 +88,7 @@ YUI.add("wegas-widget", function (Y) {
                     .addClass("wegas-loading")
                     .prepend("<div class='wegas-loading-overlay'></div>");
         },
+
         /**
          * @function
          * @private
@@ -99,6 +99,7 @@ YUI.add("wegas-widget", function (Y) {
                     .removeClass("wegas-loading")
                     .all("> .wegas-loading-overlay").remove(true);
         },
+
         /**
          * @function
          * @private
@@ -111,21 +112,23 @@ YUI.add("wegas-widget", function (Y) {
             }
             msgNode.empty();
         },
+
         /**
+         * Display a closable message with a status-image.
+         * Status-image of message depends of level parameters
+         * Txt parameters is the displayed text.
+         * Timeout is the displaying time of this message.
          * @function
          * @private
          * @param level
          * @param txt
          * @param timeout
-         * @description Display a closable message with a status-image.
-         * Status-image of message depends of level parameters
-         * Txt parameters is the displayed text.
-         * Timeout is the displaying time of this message.
+         * @description
          */
         showMessage: function (level, txt, timeout) {
             var msgNode = this.getMessageNode(),
                     message = Y.Node.create("<div class='" + (LEVEL[level] || "") + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
-            if (level === "success" && !timeout) {                              // @hack successful messages disapear automatically
+            if (level === "success" && !timeout) {                          // @hack successful messages disapear automatically
                 if (this.toolbar instanceof Y.Plugin.WidgetToolbar) {
                     this.setStatusMessage(txt);
                     return;
@@ -140,6 +143,7 @@ YUI.add("wegas-widget", function (Y) {
                 message.timeout = Y.later(timeout, message, destroySelf);
             }
         },
+
         /**
          * @function
          * @private
@@ -154,6 +158,7 @@ YUI.add("wegas-widget", function (Y) {
             }
             return msgNode;
         },
+
         /**
          * @function
          * @private
@@ -169,6 +174,7 @@ YUI.add("wegas-widget", function (Y) {
             statusNode.setContent(txt);
             return true;
         },
+
         /**
          * @function
          * @private
@@ -189,6 +195,7 @@ YUI.add("wegas-widget", function (Y) {
             }
             return statusNode;
         },
+
         /**
          * @function
          * @private
@@ -205,7 +212,6 @@ YUI.add("wegas-widget", function (Y) {
             }
             return undefined;
         }
-
     });
 
     Y.mix(Widget, {
@@ -224,7 +230,7 @@ YUI.add("wegas-widget", function (Y) {
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>@pageId: Number of the page</li>
          *    <li>type: Type of the widget</li>
@@ -472,6 +478,7 @@ YUI.add("wegas-widget", function (Y) {
 
             return child;
         },
+
         /**
          * @function
          * @private
@@ -481,6 +488,7 @@ YUI.add("wegas-widget", function (Y) {
         use: function (cfg, cb) {
             Y.Wegas.Editable.use(cfg, cb);
         },
+
         /**
          *
          *  This getter is to be used for any object attribute that references a VariableDescriptor and

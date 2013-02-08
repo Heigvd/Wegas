@@ -270,7 +270,7 @@ YUI.add('wegas-itemselector', function (Y) {
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>listVariables: A variable reference to a list of variable descriptor.</li>
          *    <li>searchInProperties: Name of list (like properties) to seacrch in.</li>

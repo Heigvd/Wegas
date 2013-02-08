@@ -25,6 +25,7 @@ YUI.add('wegas-editor-action', function(Y) {
     };
     Y.extend(EditFSMAction, Y.Plugin.EntityAction, {
         /** @lends Y.Plugin.EditFSMAction# */
+
         /**
          * @private
          * @function
@@ -40,6 +41,7 @@ YUI.add('wegas-editor-action', function(Y) {
                 widget.set("entity", entity);
             }, this, this.get("entity")));
         }
+
     }, {
         NS: "wegas",
         NAME: "EditFSMAction"
@@ -59,6 +61,7 @@ YUI.add('wegas-editor-action', function(Y) {
 
     Y.extend(ResetAction, Action, {
         /** @lends Y.Plugin.ResetAction# */
+
         /**
          * @function
          * @private
@@ -68,6 +71,7 @@ YUI.add('wegas-editor-action', function(Y) {
                 request: '/Reset/'
             });
         }
+
     }, {
         NS: "wegas",
         NAME: "ResetAction"
@@ -87,7 +91,7 @@ YUI.add('wegas-editor-action', function(Y) {
 
     Y.extend(OpenTabAction, Action, {
         /** @lends Y.Plugin.OpenTabAction# */
-        
+
         /**
          * @function
          * @private
@@ -97,7 +101,7 @@ YUI.add('wegas-editor-action', function(Y) {
             Y.Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
                     this.get("tabSelector"), {}, childCfg);                         // Forward plugin data to the target widget
         }
-
+        
     }, {
         /** @lends Y.Plugin.OpenTabAction */
 
