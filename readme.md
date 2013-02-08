@@ -12,7 +12,7 @@ Web Game Authoring system is a Jee-based framework for multiplayer web-games dev
 * [Website](http://www.albasim.ch/wegas/)
 * [Documentation](http://heigvd.github.com/Wegas/)
 * [Tutorials](https://github.com/Heigvd/Wegas/wiki)
-* Build status [![Build Status](https://travis-ci.org/Heigvd/Wegas.png?branch=master)](https://travis-ci.org/Heigvd/Wegas)
+* [![Build Status](https://travis-ci.org/Heigvd/Wegas.png?branch=master)](https://travis-ci.org/Heigvd/Wegas)
 
 ### License
 Copyright (C) 2013, School of Business and Engineering Vaud, Comem

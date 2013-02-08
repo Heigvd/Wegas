@@ -1,6 +1,9 @@
 {
     "id": 2003,
     "type": "Layout",
+    "plugins": [{
+        "fn": "Injector"
+    }],
     "top": {
         "height": 25,
         "scroll": null,
@@ -325,8 +328,6 @@
                         "fn": "PageEditor"
                     }, {
                         "fn": "CSSLoader"
-                    }, {
-                        "fn": "Injector"
                     }]
                 }]
             }]
