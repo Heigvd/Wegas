@@ -26,7 +26,7 @@ YUI.add('wegas-pageloader', function (Y) {
      */
     PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable], {
         /**
-         * @lends Y.Wegas.InboxDisplay#
+         * @lends Y.Wegas.PageLoader#
          */
         // *** Private fields *** //
         /**
@@ -146,7 +146,7 @@ YUI.add('wegas-pageloader', function (Y) {
         }
     }, {
         /**
-         * @lends Y.Wegas.Inbox
+         * @lends Y.Wegas.PageLoader
          */
         /**
          * @field

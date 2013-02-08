@@ -28,7 +28,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
      */
     MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /**
-         * @lends Y.Wegas.InboxDisplay#
+         * @lends Y.Wegas.MCQTabView#
          */
         // *** Private fields *** //
         /**
@@ -193,7 +193,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
         }
     }, {
         /**
-         * @lends Y.Wegas.Inbox
+         * @lends Y.Wegas.MCQTabView
          */
         /**
          * @field
