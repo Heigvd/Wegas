@@ -64,6 +64,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
             }
             return null;
         },
+
         /**
          *  Succession of State - transition representing the path
          *  for current user.
@@ -511,6 +512,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
     Y.Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Y.Wegas.persistence.State, [], {
         initializer: function () {
         },
+
         /*
          *
          */
@@ -543,6 +545,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 callback(ctrlObj.availableActions);
             }
         },
+
         /**
          * Get an array of texts from the state's text, split by a token
          * @param {String} token The token to split by
@@ -550,6 +553,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
         getTexts: function (token) {
             return this.get("text").split(token);
         },
+
         /**
          * Set the text with an array and a token
          *

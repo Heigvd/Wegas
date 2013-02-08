@@ -6,12 +6,26 @@
  * Licensed under the MIT License
  */
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-cssloader', function(Y) {
     "use strict";
 
+    /**
+     *  @class Uses Y.StyleSheet to load the list of stylesheets contained in the
+     *  Y.Wegas.app cssStylesheets attribute
+     *  @name Y.Plugin.CSSLoader
+     *  @extends Y.Plugin.Base
+     *  @constructor
+     */
     var CSSLoader = Y.Base.create("wegas-cssloader", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+        /** @lends Y.Plugin.CSSLoader */
+
+        /**
+         * @function
+         * @private
+         */
         initializer: function() {
             var i, css = Y.Wegas.app.get('cssStylesheets'),
                 cfg = {

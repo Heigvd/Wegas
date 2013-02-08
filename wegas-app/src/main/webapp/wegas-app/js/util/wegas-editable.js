@@ -7,9 +7,9 @@
  */
 
 /**
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-editable', function (Y) {
     "use strict";
 
@@ -18,43 +18,45 @@ YUI.add('wegas-editable', function (Y) {
     /**
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
-    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format", "choices", "items", "enum", "default", "transient");
+    Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format",
+        "choices", "items", "enum", "default", "transient");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
-     /**
-     * Extension allowing edition on wegas entities.
-     *
-     * @class Y.Wegas.Editable
+    /**
+     * @name Y.Wegas.Editable
+     * @class Extension to be added to a Y.Widget, allowing edition on wegas entities.
+     * @constructor
      */
-    function Editable () {
-    }
+    function Editable() {}
 
     Y.mix(Editable.prototype, {
         /** @lends Y.Wegas.Editable# */
+
         /**
          * Serialize to a json object. Method used <b>recursively</b> by JSON.stringify
          *
-         * @method toJSON
-         * @return {object}
+         * @function
+         * @returns {Object}
          */
         toJSON: function () {
             var k, ret = this.getAttrs(),
             attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
-                if (attrCfgs[k] && attrCfgs[k]["transient"]) {                           // Remove any transient attribute
+                if (attrCfgs[k] && attrCfgs[k]["transient"]) {                  // Remove any transient attribute
                     delete ret[k];
                 }
             }
             return ret;                                                         // Return a copy of this's fields.
         },
+
         /**
          * Create a new JSON Object from this entity, filtered out by mask
          *
          * @fixme This method will parse the field and the clone it
          *
-         * @method toObject
-         * @param {Array} mask or {String}* a list of params
+         * @function
+         * @param {Array|String} mask or a list of string parameters
          * @return {Object} a filtered out clone
          */
         toObject: function (mask) {
@@ -67,8 +69,8 @@ YUI.add('wegas-editable', function (Y) {
                     return true;
                 }
             }) : e;
-
         },
+
         /**
          * Create a new Object from this entity
          * may be used by revive
@@ -78,9 +80,10 @@ YUI.add('wegas-editable', function (Y) {
         clone: function () {
             return this.toObject(["id", "variableInstances"]);
         },
+
         /**
-         * @param {Array} fieldsToIgnore (optional), don't create these inputs.
          * Returns the form configuration associated to this object, to be used a an inputex object.
+         * @param {Array} fieldsToIgnore (optional), don't create these inputs.
          */
         getFormCfg: function (fieldsToIgnore) {
             var i, form, schemaMap, attrCfgs, builder;
@@ -88,13 +91,13 @@ YUI.add('wegas-editable', function (Y) {
             // forms = Y.Wegas.app.get('editorForms'),                          // Select first server defined forms, based on the @class or the type attribute
             // form = forms[this.get('@class')] || forms[this.get("type")]
 
-            form = form || this.constructor.EDITFORM;                          // And if no form is defined we check if there is a default one defined in the entity
+            form = form || this.constructor.EDITFORM;                           // And if no form is defined we check if there is a default one defined in the entity
 
-            if (!form) {                                                        // If no edit form could be found, we generate one based on the ATTRS parameter.
+            if (!form) {                          // If no edit form could be found, we generate one based on the ATTRS parameter.
                 attrCfgs = this.getAttrCfgs();
 
                 for (i in attrCfgs) {
-                    attrCfgs[i]["default"] = attrCfgs[i].value;                 // Use the value as default (useful form json object serialization)
+                    attrCfgs[i]["default"] = attrCfgs[i].value;// Use the value as default (useful form json object serialization)
 
                     if (attrCfgs[i]["transient"] || fieldsToIgnore.indexOf(i) > -1) {
                         delete attrCfgs[i];
@@ -116,23 +119,23 @@ YUI.add('wegas-editable', function (Y) {
                 form = builder.schemaToInputEx(schemaMap.Entity);
             }
             return form || [];
-        }
-        ,
+        },
+
         /**
          * Returns the edition menu associated to this object, to be used a an inputex object.
+         *
+         * @function
          */
         getMenuCfg: function (data) {
-            var menus = Y.Wegas.app.get('editorMenus'),
+            var menu, menus = Y.Wegas.app.get('editorMenus');
             //    staticMenus =
-            menu;
 
             if (menus) {
-                menu = menus[ this.get('@class')] || menus[this.get("type")];   // Select first server defined forms, based on the @class or the type attribute
+                menu = menus[this.get('@class')] || menus[this.get("type")];    // Select first server defined forms, based on the @class or the type attribute
             }
-            menu = menu || this.getStatic("EDITMENU")[0] || [];                 // And if no form is defined we return the default one defined in the entity
+            menu = menu || this.getStatic("EDITMENU")[0] || [];                // And if no form is defined we return the default one defined in the entity
 
-
-            function mixMenuCfg (elts, data) {
+            function mixMenuCfg(elts, data) {
                 var i, j;
                 for (i = 0; i < elts.length; i += 1) {
                     Y.mix(elts[i], data, true);                                 // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
@@ -153,20 +156,30 @@ YUI.add('wegas-editable', function (Y) {
             mixMenuCfg(menu, data);
             return menu;
         },
+
         /**
          * Returns the edition menu associated to this object, to be used a an wysiwyg editor.
+         * @function
          */
         getMethodCfgs: function (data) {
             var menu = this.getStatic("METHODS")[0] || {};
             return menu;
         },
+
         /**
          *  Helper function that walks the class hierarchy and returns it's attributes
          *  cfg (ATTRS), used in Y.Wegas.Entity.getFormCfg().
+         *  @function
+         *  @private
          */
         getAttrCfgs: function () {
             return this._aggregateAttrs(this.getStatic("ATTRS"));
         },
+
+        /**
+         *  @function
+         *  @private
+         */
         getStatic: function (key) {
             var c = this.constructor, ret = [];
 
@@ -180,16 +193,26 @@ YUI.add('wegas-editable', function (Y) {
         }
     });
     Y.mix(Editable, {
+        /** @lends Y.Wegas.Editable */
+
         /**
          * Load the modules from an Wegas widget definition
+         * @function
+         * @static
+         * @param {Object}
+         * @param {Function} cb callback to be called when modules are loaded
          */
         use: function (cfg, cb) {
             var modules = Editable.getModulesFromDefinition(cfg);
             modules.push(cb);
             Y.use.apply(Y, modules);
         },
+
         /**
          * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
+         * @function
+         * @static
+         * @private
          */
         getRawModulesFromDefinition: function (cfg) {
             var i, props, type = cfg.type || cfg["@class"],
@@ -228,21 +251,25 @@ YUI.add('wegas-editable', function (Y) {
 
             return modules;
         },
+
         /**
          * Return unique modules definitions
+         * @function
+         * @static
+         * @private
          */
         getModulesFromDefinition: function (cfg) {
             var modules = Editable.getRawModulesFromDefinition(cfg);
             return Y.Object.keys(Y.Array.hash(modules));
         },
+
         /**
          *  This method takes a js object and recuresively instantiate it based on
          *  on their @class attribute. Target class are found in namespace
          *  Y.Wegas.persistence.
          *
-         *  @methodOf Y.Wegas.Editable
          *  @static
-         *  @augments o Object the object to revive
+         *  @param {Object} data the object to revive
          *  @return Y.Wegas.Widget the resulting entity
          */
         revive: function (data) {
@@ -261,7 +288,7 @@ YUI.add('wegas-editable', function (Y) {
                         return Editable.reviver(value);
                     }
                 }
-                return value;                                                   // If no value was returned before, return raw original object
+                return value;                                      // If no value was returned before, return raw original object
             };
 
             //return typeof reviver === 'function' ? walk({'':data},'') : data;
@@ -269,14 +296,15 @@ YUI.add('wegas-editable', function (Y) {
                 '': data
             }, '');
         },
+
         /**
          *  Takes an js object and lookup the corresponding entity in the
          *  Y.Wegas.persistence package, based on its @class or type attributes.
          *
-         *  @methodOf Y.Wegas.Editable
+         *  @function
          *  @static
-         *  @augments o Object the object to revive
-         *  @return Y.Wegas.Widget the resulting entity
+         *  @param {Object} o the object to revive
+         *  @return {Y.Wegas.Widget} the resulting entity
          */
         reviver: function (o) {
             var classDef = Y.Wegas.persistence.DefaultEntity;
@@ -290,6 +318,14 @@ YUI.add('wegas-editable', function (Y) {
             }
             return new classDef(o);
         },
+        
+        /**
+         *
+         * Combine use and revive function to get a revived entity.
+         *
+         * @function
+         * @static
+         */
         useAndRevive: function (cfg, cb) {
             Editable.use(cfg, Y.bind(function (cb) {                            // Load target class dependencies
                 cb(Editable.revive(this));

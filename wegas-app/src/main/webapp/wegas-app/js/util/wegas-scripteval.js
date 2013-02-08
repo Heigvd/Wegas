@@ -8,11 +8,13 @@
 YUI.add('wegas-scripteval', function(Y) {
     "use strict";
 
-    var ScriptEval;
 
-    ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
+    var ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
+
         context: null,
+
         upToDate: false,
+
         initializer: function() {
             this.context = {};
             this.upToDate = false;
@@ -22,6 +24,7 @@ YUI.add('wegas-scripteval', function(Y) {
             this.publish("evaluated");
             this.publish("failure");
         },
+
         /**
          *  the id should be generated and returned  by the function, not passed as a
          *  a parameter
@@ -69,16 +72,18 @@ YUI.add('wegas-scripteval', function(Y) {
                 });
             }
         },
+
         /**
          * Tries to evaluate the script locally, using variables cache
          * @param {String} script The script to eval localy
          */
         localEval: function(script) {
-            if (!this.upToDate) {                                                 //Only compute if new value
+            if (!this.upToDate) {                                               //Only compute if new value
                 this.buildContext();
             }
             return (new Function("with(this) { return " + script + ";}")).call(this.context);
         },
+
         buildContext: function() {
             var i, j, data = this.get("host").data;
             this.upToDate = true;
@@ -104,8 +109,6 @@ YUI.add('wegas-scripteval', function(Y) {
         NS: "script",
         NAME: "scriptEval"
     });
-
     Y.namespace('Plugin').ScriptEval = ScriptEval;
 
 });
-

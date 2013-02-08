@@ -9,12 +9,11 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-joingamewidget', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-            JoinGameWidget;
+        JoinGameWidget;
 
     /**
      * @name Y.Wegas.JoinGameWidget
@@ -87,6 +86,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
 
             this.showPublicGames();
         },
+
         /**
          * @function
          * @private
@@ -145,6 +145,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 }
             }, this);
         },
+
         /**
          * @function
          * @private
@@ -157,9 +158,9 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         if (e.response.entity                               // If the returned value is a Team enity
-                                instanceof Y.Wegas.persistence.Team) {
+                            instanceof Y.Wegas.persistence.Team) {
                             this.sendJoinTeamRequest(// it means we can join this team directly
-                                    e.response.entity.get("id"));
+                                e.response.entity.get("id"));
                         } else {
                             this.currentGame = e.response.entity;
                             this.showTeams();                               // otherwise the player can choose or create its team
@@ -171,6 +172,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -203,6 +205,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 });
             }
         },
+
         /**
          * @function
          * @private
@@ -233,6 +236,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -251,6 +255,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -288,7 +293,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                         value: this.teams[i].get("id")
                     });
                 } catch (e) {
-                    //tried to remove an inexistant team. Certainly after having created one
+                //tried to remove an inexistant team. Certainly after having created one
                 }
             }
         }

@@ -5,25 +5,23 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-editor-entityaction', function (Y) {
     "use strict";
     var Action = Y.Plugin.Action, EntityAction;
 
     /**
-     *  @class Y.Wegas.EntityAction
-     *  @module Wegas
-     *  @constructor
+     * @class
+     * @name Y.Plugin.EntityAction
+     * @extends Y.Plugin.Action
+     * @constructor
      */
     EntityAction = function () {
         EntityAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(EntityAction, Action, {}, {
         /** @lends Y.Wegas.EntityAction */
         NS: "entityaction",
@@ -49,17 +47,14 @@ YUI.add('wegas-editor-entityaction', function (Y) {
     });
     Y.namespace("Plugin").EntityAction = EntityAction;
 
-
-
     /**
-     *  @class EditEntityAction
-     *  @module Wegas
-     *  @constructor
+     * @name Y.Plugin.EditEntityAction
+     * @extends Y.Plugin.EntityAction
+     * @constructor
      */
     var EditEntityAction = function () {
         EditEntityAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(EditEntityAction, EntityAction, {
         execute: function () {
             EditEntityAction.showUpdateForm(this.get("entity"), this.get("dataSource"));
@@ -173,18 +168,17 @@ YUI.add('wegas-editor-entityaction', function (Y) {
             });
         }
     });
-
     Y.namespace("Plugin").EditEntityAction = EditEntityAction;
 
     /**
-     *  @class NewEntityAction
-     *  @module Wegas
-     *  @constructor
+     * @class
+     * @name Y.Plugin.NewEntityAction
+     * @extends Y.Plugin.EntityAction
+     * @constructor
      */
     var NewEntityAction = function () {
         NewEntityAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(NewEntityAction, EntityAction, {
         execute: function () {
             Y.Wegas.Editable.useAndRevive({                                     // Load target class dependencies
@@ -214,9 +208,10 @@ YUI.add('wegas-editor-entityaction', function (Y) {
     Y.namespace("Plugin").NewEntityAction = NewEntityAction;
 
     /**
-     *  @class EditEntityArrayFieldAction
-     *  @module Wegas
-     *  @constructor
+     * @class
+     * @name Y.Plugin.EditEntityArrayFieldAction
+     * @extends Y.Plugin.EntityAction
+     * @constructor
      */
     var EditEntityArrayFieldAction = function () {
         EditEntityArrayFieldAction.superclass.constructor.apply(this, arguments);
@@ -306,14 +301,14 @@ YUI.add('wegas-editor-entityaction', function (Y) {
     Y.namespace("Plugin").EditEntityArrayFieldAction = EditEntityArrayFieldAction;
 
     /**
-     *  @class AddEntityChildAction
-     *  @module Wegas
-     *  @constructor
+     * @class
+     * @name Y.Plugin.AddEntityChildAction
+     * @extends Y.Plugin.EntityAction
+     * @constructor
      */
     var AddEntityChildAction = function () {
         AddEntityChildAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(AddEntityChildAction, EntityAction, {
         execute: function () {
             Y.Wegas.Editable.useAndRevive({                                     // Load target class dependencies
@@ -332,14 +327,14 @@ YUI.add('wegas-editor-entityaction', function (Y) {
     Y.namespace("Plugin").AddEntityChildAction = AddEntityChildAction;
 
     /**
-     *  @class DuplicateEntityAction
-     *  @module Wegas
-     *  @constructor
+     * @class
+     * @name Y.Plugin.DuplicateEntityAction
+     * @extends Y.Plugin.EntityAction
+     * @constructor
      */
     var DuplicateEntityAction = function () {
         DuplicateEntityAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(DuplicateEntityAction, EntityAction, {
         execute: function () {
             this.get("dataSource").rest.duplicateObject(this.get("entity"));
@@ -348,18 +343,18 @@ YUI.add('wegas-editor-entityaction', function (Y) {
         NS: "DuplicateEntityAction",
         NAME: "DuplicateEntityAction"
     });
-
     Y.namespace("Plugin").DuplicateEntityAction = DuplicateEntityAction;
 
+
     /**
-     *  @class DeleteEntityAction
-     *  @module Wegas
-     *  @constructor
+     * @class
+     * @name Y.Plugin.DeleteEntityAction
+     * @extends Y.Plugin.EntityAction
+     * @constructor
      */
     var DeleteEntityAction = function () {
         DeleteEntityAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(DeleteEntityAction, EntityAction, {
         execute: function() {
             if (confirm("Are your sure your want to delete this item ?")) {
@@ -370,7 +365,6 @@ YUI.add('wegas-editor-entityaction', function (Y) {
         NS: "wegas",
         NAME: "DeleteEntityAction"
     });
-
     Y.namespace("Plugin").DeleteEntityAction = DeleteEntityAction;
 
     // *** Buttons *** //
@@ -426,9 +420,11 @@ YUI.add('wegas-editor-entityaction', function (Y) {
      * Shortcut to create a Button with an DeleteEntityAction plugin
      */
     Y.Wegas.DeleteEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        
         initializer: function (cfg) {
             this.plug(DeleteEntityAction, cfg);
         },
+
         bindUI: function () {
             if (!this.get("label")) {
                 this.set("label", "Delete");                                    // @fixme hack because the ATTR's value is not taken into account

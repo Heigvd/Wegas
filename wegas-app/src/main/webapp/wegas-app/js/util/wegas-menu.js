@@ -12,7 +12,6 @@ YUI.add('wegas-menu', function (Y) {
     CONTENT_BOX="contentBox",
     tooltipTrigger = "wegas-tooltip-trigger";
 
-
     WegasMenu = Y.Base.create("wegas-menu", Y.Widget, [],{
         BOUNDING_TEMPLATE: "<div></div>",
         CONTENT_TEMPLATE:null,
@@ -28,12 +27,14 @@ YUI.add('wegas-menu', function (Y) {
                 bubbles: true
             });
         },
+
         renderUI: function () {
             this.buildMenu(this.get("items"), this.get(CONTENT_BOX));
 
         },
+
         bindUI: function () {
-            this.clickHandler = this.get(CONTENT_BOX).delegate('click', function(e) {					// Listen for click events on the table
+            this.clickHandler = this.get(CONTENT_BOX).delegate('click', function(e) {// Listen for click events on the table
                 e.stopImmediatePropagation();
                 this.fire("itemClick", {
                     data:  e.currentTarget.item.data,
@@ -51,6 +52,7 @@ YUI.add('wegas-menu', function (Y) {
                 this.nodeInstances[n].destroy();
             }
         },
+
         buildMenu: function(items, node){
             var listItem, item, content = Y.Node.create("<ul></ul>");
             for (var i in items){
@@ -65,6 +67,7 @@ YUI.add('wegas-menu', function (Y) {
             }
             node.append(content);
         },
+
         itemCreator: function (item) {
             //TODO: Tooltip
             var node = Y.Node.create("<li><div>" + (item.cssClass ? "<span class='menu-icon "+ item.cssClass +"'></span>" : "") + "<span>"+(item.label ? item.label : "")+"</span></div></li>"),
@@ -77,9 +80,12 @@ YUI.add('wegas-menu', function (Y) {
             }
             return node;
         }
+
     },{
         NAME:"wegas-menu",
+
         CSS_PREFIX: "wegas-menu",
+
         ATTRS:{
             eventTarget:{
                 value:null
@@ -90,7 +96,7 @@ YUI.add('wegas-menu', function (Y) {
             horizontal:{
                 value:false
             },
-            params:{                                                            // Given input params returned with the click event, a reference for instance
+            params:{                                // Given input params returned with the click event, a reference for instance
                 value: null
             }
         }

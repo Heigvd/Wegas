@@ -32,14 +32,17 @@ YUI.add('wegas-gaugedisplay', function (Y) {
          * Content box of this widget, static
          */
         CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas height="50px" width="100px"></canvas><center class="label"></center><center class="percent"></center></div>',
+
         /**
          * Maximum value displayed by the gauge, static
          */
         MAXVAL: 200,
+
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         /**
          * reference to the gauge object
          */
@@ -53,6 +56,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
         initializer: function () {
             this.handlers = [];
         },
+
         /**
          * @function
          * @private
@@ -80,6 +84,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
             this.gauge.maxValue = this.MAXVAL;                                  // set max gauge value
             this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)
         },
+
         /**
          * @function
          * @private
@@ -89,6 +94,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
         bindUI: function () {
             this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this));
         },
+
         /**
          * @function
          * @private
@@ -115,6 +121,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").setContent(Math.round(value / this.MAXVAL * 100) + "%");
         },
+
         /**
          * @function
          * @private
@@ -133,7 +140,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>variable: The target variable, returned either based on the name attribute,
          * and if absent by evaluating the expr attribute.</li>

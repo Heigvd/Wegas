@@ -66,6 +66,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 ]
             });
         },
+
         /**
          * Render the widget.
          * Hide node corresponding used only with the "picking mode" of this widget
@@ -79,6 +80,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             cb.one('.footer').hide();
             cb.one('.footer .buttonOK').hide();
         },
+
         /**
          * Bind some function at nodes of this widget
          */
@@ -108,6 +110,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }, '.buttonCancel', this);
 
         },
+
         /**
          * Synchronise the content of this widget.
          */
@@ -126,6 +129,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
             this.goToFinalPage();// ! hack function
         },
+
         /*
          * Destroy all child widget and all function
          */
@@ -159,6 +163,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 cb.one('.footer').show();
             }
         },
+
         /**
          * Add rows to the datatable. Get informations on the valide tasks
          * @param ListDescriptor listTasksDescriptor, A list of all tasks.
@@ -205,6 +210,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 }
             }
         },
+
         /**
          * @param TaskInstance taskInstance, the task to get skillsets
          * @return String, a texte including all the skillset of the given task.
@@ -216,12 +222,14 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
             return temp.join("");
         },
+
         /**
          * @return the current selected task.
          */
         getSelectedTaskDescriptor: function () {
             return this.selectedTaskDescriptor;
         },
+
         /**
          * This function must be called by a click event.
          * set the current selected task
@@ -251,6 +259,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 cb.one('.footer .buttonOK').show();
             }
         },
+
         /**
          * Assign the given task to the given ressource.
          * @param ResourceDescriptor resourceDescriptor, the resource to assign a task.
@@ -280,6 +289,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
             this.syncUI();
         },
+
         /**
          * Display a feedback on the operation "add task to a resource"
          * This feedback will disappear after 5 seconde.

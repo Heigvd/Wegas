@@ -11,24 +11,10 @@ YUI.add("wegas-injector", function(Y) {
     var MATCHER = "[data-file]",
     Injector = function(cfg) {
         Injector.superclass.constructor.apply(this, arguments);
-    },
-    parser = function(element) {
-        switch (element.getDOMNode().nodeName) {
-            case "IMG":
-                if (!element.hasAttribute("src") || !element.getAttribute("src").match("^(https?://)")) {
-                    element.setAttribute("src", Y.Wegas.FileFacade.get("source") + "read" + element.getAttribute("data-file"));
-                    element.removeAttribute("data-file");
-                }
-                break;
-            default:
-                if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(https?://)")) {
-                    element.setAttribute("href", Y.Wegas.FileFacade.get("source")  + "read" + element.getAttribute("data-file"));
-                    element.removeAttribute("data-file");
-                }
-        }
     };
 
     Y.extend(Injector, Y.Plugin.Base, {
+
         initializer: function() {
             Y.mix(Y.Node.DOM_EVENTS, {
                 DOMNodeInserted: true,
@@ -39,7 +25,7 @@ YUI.add("wegas-injector", function(Y) {
 
             this.insertEvent = this.get("host").get("boundingBox").delegate("DOMNodeInserted", function(e) {
                 e.halt(true);
-                e.currentTarget.all(MATCHER).each(parser);
+                e.currentTarget.all(MATCHER).each(this.parser);
                 this.instanciateGallery(e.currentTarget);
             }, function(item) {
                 return (item.all(MATCHER).size() > 0);
@@ -47,10 +33,29 @@ YUI.add("wegas-injector", function(Y) {
 
             this.afterHostEvent("*:render", function(e) {
                 var bb = e.currentTarget.get("boundingBox");
-                bb.all(MATCHER).each(parser);
+                bb.all(MATCHER).each(this.parser);
                 this.instanciateGallery(bb);
             }, this);
         },
+
+        parser: function(element) {
+            switch (element.getDOMNode().nodeName) {
+                case "IMG":
+                    if (!element.hasAttribute("src") || !element.getAttribute("src").match("^(https?://)")) {
+                        element.setAttribute("src",
+                            Y.Wegas.FileFacade.get("source") + "read" + element.getAttribute("data-file"));
+                        element.removeAttribute("data-file");
+                    }
+                    break;
+                default:
+                    if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(https?://)")) {
+                        element.setAttribute("href",
+                            Y.Wegas.FileFacade.get("source")  + "read" + element.getAttribute("data-file"));
+                        element.removeAttribute("data-file");
+                    }
+            }
+        },
+
         instanciateGallery: function(element) {
             /* Check for gallery elements and loads it*/
             if (!this.gallery && (element.one(".light-picture") || element.one(".light-gallery"))) {
@@ -65,6 +70,7 @@ YUI.add("wegas-injector", function(Y) {
                 this.gallery = true;
             }
         },
+
         destructor: function() {
             this.insertEvent.detach();
             if (this.gallery && Injector.GALLERY) {
@@ -84,4 +90,3 @@ YUI.add("wegas-injector", function(Y) {
     Y.Plugin.Injector = Injector;
 
 });
-

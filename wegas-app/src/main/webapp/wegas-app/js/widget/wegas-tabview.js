@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-tabview', function (Y) {
     "use strict";
 
@@ -18,20 +16,20 @@ YUI.add('wegas-tabview', function (Y) {
     /**
      * @name Y.Wegas.TabView
      * @extends Y.TabView
-     * @borrows Y.WidgetChild, Y.Wegas.Widget
-     * @class class to manage a tabview specific to Wegas
+     * @augments Y.WidgetChild
+     * @augments Y.Wegas.Widget
+     * @class Manage a tabview specific to Wegas
      * @constructor
-     * @description Manage a tabview specific to Wegas
      */
     TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
-        /**
-         * @lends Y.Wegas.TabView#
-         */
+        /** @lends Y.Wegas.TabView# */
+
         // *** Private fields *** //
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         /**
          * @function
          * @private
@@ -43,6 +41,7 @@ YUI.add('wegas-tabview', function (Y) {
             TabView.superclass.initializer.apply(this, arguments);
             //this.plug(Removeable);
         },
+
         /**
          * @function
          * @private
@@ -58,38 +57,42 @@ YUI.add('wegas-tabview', function (Y) {
                 Y.Wegas.app.fire("layout:resize");
             });
         },
+
         /**
+         * Detach all functions created by this widget.
          * @function
          * @private
-         * @description Detach all functions created by this widget.
          */
         destructor: function () {
             for (var k in this.handlers) {
                 this.handlers[k].detach();
             }
         }
+
     }, {
-        /**
-         * @lends Y.Wegas.TabView#
-         */
+        /** @lends Y.Wegas.TabView# */
+
         /**
          * Prefix css. Static
          */
         CSS_PREFIX: "yui3-tabview",
+
         /**
          * References to tab
          */
         tabs: {},
+
         /**
+         * Return A tab from tabview selected by id.
          * @function
          * @private
          * @param id
          * @return A tab from tabview
-         * @description return A tab from tabview selected by id.
          */
         getTab: function (id) {
             return TabView.tabs[id];
         },
+
         /**
          * @function
          * @private
@@ -116,6 +119,7 @@ YUI.add('wegas-tabview', function (Y) {
             }
             return TabView.tabs[id];
         },
+
         /**
          * @function
          * @private
@@ -137,6 +141,7 @@ YUI.add('wegas-tabview', function (Y) {
             nTab.set("selected", 2);
             nTab.plug(Removeable);
         }
+
     });
     Y.namespace('Wegas').TabView = TabView;
 
@@ -203,11 +208,14 @@ YUI.add('wegas-tabview', function (Y) {
      * @description Manage a tabspecific to Wegas
      */
     Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget, Parent, Y.WidgetChild], {
+        /** @lends Y.Wegas.Tab# */
+
         // *** Private Fields *** //
         /**
          * Array of widget items.
          */
         _witems: null,
+
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -223,6 +231,7 @@ YUI.add('wegas-tabview', function (Y) {
 
             //this.plug(Closable);
         },
+
         /**
          * @function
          * @private
@@ -231,6 +240,7 @@ YUI.add('wegas-tabview', function (Y) {
         renderUI: function () {
             Tab.superclass.renderUI.apply(this, arguments);
         },
+
         /**
          * @function
          * @private
@@ -239,6 +249,7 @@ YUI.add('wegas-tabview', function (Y) {
         syncUI: function () {
             Tab.superclass.syncUI.apply(this, arguments);
         },
+
         /**
          * @function
          * @private
@@ -249,6 +260,7 @@ YUI.add('wegas-tabview', function (Y) {
             delete TabView.tabs[this.get("id")];
             Tab.superclass.destructor.apply(this, arguments);
         },
+
         // *** Private Methods *** //
         /**
          * @function
@@ -266,6 +278,7 @@ YUI.add('wegas-tabview', function (Y) {
                 }
             }, this, cfg, callback));
         },
+
         /**
          * @function
          * @private
@@ -282,6 +295,7 @@ YUI.add('wegas-tabview', function (Y) {
                 child.render(renderTo);
             }, this);
         },
+
         /**
          * @function
          * @private
@@ -294,14 +308,14 @@ YUI.add('wegas-tabview', function (Y) {
 
     }, {
         CSS_PREFIX: "yui3-tab",
-        /**
-         * @lends Y.Wegas.Tab#
-         */
+
+        /** @lends Y.Wegas.Tab */
+
         /**
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>Content: Overrides the panelNode management</li>
          * </ul>
@@ -319,36 +333,31 @@ YUI.add('wegas-tabview', function (Y) {
     Y.namespace('Wegas').Tab = Tab;
 
     /**
-     * @function
-     * @private
-     * @description Removable plugin for tabview
+     * Removable plugin for tabview
+     *
+     * @name Y.Plugin.Removeable
+     * @extends Y.Plugin.Base
+     * @class plugin to remove a tab in one click.
+     * @constructor
      */
     var Removeable = function () {
         Removeable.superclass.constructor.apply(this, arguments);
     };
 
-    /**
-     * @name Y.Plugin.Removeable
-     * @extends Y.Plugin.Base
-     * @class plugin to remove a tab in one click.
-     * @constructor
-     * @description Remove a tab in one click.
-     */
     Y.extend(Removeable, Y.Plugin.Base, {
-        /**
-         * @lends Y.Wegas.Removeable#
-         */
+        /** @lends Y.Wegas.Removeable# */
         // *** Private fields *** //
         /**
          * Html template added in host's contentbox
          */
         REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
+
         /**
          * @function
          * @private
          * @param config
          * @description Create a clickable node (in host's bounding box).
-         * If this node is clicked, remove host (Tab) and this plugin. 
+         * If this node is clicked, remove host (Tab) and this plugin.
          */
         initializer: function (config) {
             var tab = this.get('host'),
@@ -370,9 +379,11 @@ YUI.add('wegas-tabview', function (Y) {
             //// Tab events bubble to TabView
             //tabview.after('tab:render', this.afterTabRender, this);
         },
+
         //afterTabRender: function(e) {
         //    e.target.get('boundingBox').append(this.REMOVE_TEMPLATE);           // boundingBox is the Tab's LI
         //},
+
         /**
          * @function
          * @private
@@ -395,25 +406,26 @@ YUI.add('wegas-tabview', function (Y) {
     });
     Y.namespace("Plugin").Removeable = Removeable;
 
-    var LayoutToggleTab = function () {
-        LayoutToggleTab.superclass.constructor.apply(this, arguments);
-    };
     /**
+     * Plugin to toggle visibility of a tab
+     *
      * @name Y.Plugin.LayoutToggleTab
      * @extends Y.Plugin.Base
      * @class plugin to toggle visibility of a tab
      * @constructor
-     * @description plugin to toggle visibility of a tab
      */
+    var LayoutToggleTab = function () {
+        LayoutToggleTab.superclass.constructor.apply(this, arguments);
+    };
     Y.extend(LayoutToggleTab, Y.Plugin.Base, {
-        /**
-         * @lends Y.Wegas.LayoutToggleTab#
-         */
+        /** @lends Y.Wegas.LayoutToggleTab# */
+
         // *** Private fields *** //
         /**
          * Html template added in host's contentbox
          */
         REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
+
         /**
          * @function
          * @private
@@ -436,6 +448,6 @@ YUI.add('wegas-tabview', function (Y) {
         NS: "LayoutToggleTab",
         NAME: "LayoutToggleTab"
     });
-
     Y.namespace("Plugin").LayoutToggleTab = LayoutToggleTab;
+
 });

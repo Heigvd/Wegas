@@ -1,20 +1,27 @@
+/*
+ * Wegas
+ * http://www.albasim.ch/wegas/
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-
 YUI.add('wegas-leaderway-score', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', Score;
+    var CONTENTBOX = 'contentBox', Score = Y.Base.create("wegas-score", Y.Widget, [Y.Wegas.Widget], {
 
-    Score = Y.Base.create("wegas-score", Y.Widget, [Y.Wegas.Widget], {
         // *** Fields *** /
         table: null,
         data: null,
+
         // *** Lifecycle Methods *** //
         initializer: function () {
             this.data = [];
         },
+
         /**
          * Render the widget.
          * Create the child widget "table"
@@ -42,6 +49,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
                 <div class="datatable"></div>');
             this.table.render(cb.one(".datatable"));
         },
+
         /**
          * Synchronise the content of this widget.
          */
@@ -56,12 +64,14 @@ YUI.add('wegas-leaderway-score', function (Y) {
             }
             this.goToFinalPage();// ! hack function
         },
+
         /*
          * Destroy all child widget
          */
         destructor: function () {
             this.table.destroy();
         },
+
         //*** Particular Methods ***/
         /**
          * Add rows to the datatable. Create the hall of fame from team of all time.

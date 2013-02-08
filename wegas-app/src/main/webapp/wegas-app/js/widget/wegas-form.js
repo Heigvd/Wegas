@@ -5,11 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-/**opera:speeddial
- 
+/**
  * @fileoverview
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>opera:speeddial
- 
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
 YUI.add('wegas-form', function (Y) {
@@ -18,12 +16,14 @@ YUI.add('wegas-form', function (Y) {
     /**
      * @name Y.Wegas.Form
      * @extends Y.Widget
-     * @borrows Y.WidgetChild, Y.Wegas.Widget
-     * @class  class to submit a form 
+     * @augments Y.WidgetChild
+     * @augments Y.Wegas.Widget
      * @constructor
-     * @description Add a toolbar with buttons "submit" and "cancel" to manger forms.
+     * @class  Class to submit a form, add a toolbar with buttons "submit" and "cancel" to manger forms.
      */
-    var Form = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    var inputEx = Y.inputEx,
+    lang = Y.Lang,
+    Form = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         /**
          * @lends Y.Wegas.Form#
          */
@@ -40,6 +40,7 @@ YUI.add('wegas-form', function (Y) {
                 emitFacade: true
             });
         },
+
         /**
          * @function
          * @private
@@ -48,13 +49,14 @@ YUI.add('wegas-form', function (Y) {
         renderUI: function () {
             this.renderToolbar();
         },
+
         // ** Private Methods ** //
         /**
+         * Add a submit button (with "afterValidation" and
+         * "submit" events) and a cancel button (with "cancel" event).
+         * Render the Toolbar.
          * @function
          * @private
-         * @description Add a submit button (with "afterValidation" and
-         *  "submit" events) and a cancel button (with "cancel" event).
-         * Render the Toolbar.
          */
         renderToolbar: function () {
             var toolbarNode = this.toolbar.get('header');
@@ -64,7 +66,7 @@ YUI.add('wegas-form', function (Y) {
                 on: {
                     click: Y.bind(function () {
                         var form = this.get("form"),
-                                val = form.getValue();
+                        val = form.getValue();
 
                         if (!form.validate()) {
                             return;
@@ -89,6 +91,7 @@ YUI.add('wegas-form', function (Y) {
                 }
             }).render(toolbarNode);
         },
+
         /**
          * @function
          * @private
@@ -97,21 +100,20 @@ YUI.add('wegas-form', function (Y) {
         destroyForm: function () {
             this.set("form", null);
         }
-        /**
-         * @lends Y.Wegas.Form
-         */
+
+    }, {
+        /** @lends Y.Wegas.Form */
         /**
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>values: values of fields of the form</li>
          *    <li>form: the form to manage (see YUI Form)</li>
          *    <li>cfg: configuation of the form (see YUI Form)</li>
          * </ul>
          */
-    }, {
         ATTRS: {
             /**
              * Values of fields of the form
@@ -156,23 +158,20 @@ YUI.add('wegas-form', function (Y) {
 
     Y.namespace("Wegas").Form = Form;
 
-    var inputEx = Y.inputEx,
-            lang = Y.Lang;
-
     /**
      *  @hack So we can easily change classs on inputex fields
      */
-    Y.inputEx.Field.prototype.addClassName = function (className) {
+    inputEx.Field.prototype.addClassName = function (className) {
         Y.one(this.divEl).addClass(className);
     };
-    Y.inputEx.Field.prototype.removeClassName = function (className) {
+    inputEx.Field.prototype.removeClassName = function (className) {
         Y.one(this.divEl).removeClass(className);
     };
     /*
      * @hack Automatically add the "optional" message when necessary
      */
-    Y.inputEx.StringField.prototype.setOptions = function (options) {
-        Y.inputEx.StringField.superclass.setOptions.call(this, options);
+    inputEx.StringField.prototype.setOptions = function (options) {
+        inputEx.StringField.superclass.setOptions.call(this, options);
 
         this.options.regexp = options.regexp;
         this.options.size = options.size;
@@ -184,22 +183,22 @@ YUI.add('wegas-form', function (Y) {
         }
         this.options.readonly = options.readonly;
         this.options.autocomplete = lang.isUndefined(options.autocomplete) ?
-                inputEx.browserAutocomplete :
-                (options.autocomplete === false || options.autocomplete === "off") ? false : true;
+        inputEx.browserAutocomplete :
+        (options.autocomplete === false || options.autocomplete === "off") ? false : true;
         this.options.trim = (options.trim === true) ? true : false;
     };
     /**
      * @hack Let inputex also get requirement from selectfields, lists
      */
-    Y.inputEx.getRawModulesFromDefinition = function (inputexDef) {
+    inputEx.getRawModulesFromDefinition = function (inputexDef) {
 
         var type = inputexDef.type || 'string',
-                module = YUI_config.groups.inputex.modulesByType[type],
-                modules = [module || type],
-                //set fields if they exist
-                fields = inputexDef.fields
-                //else see if we have elementType for lists - if neither then we end up with null
-                || inputexDef.availableFields || [];
+        module = YUI_config.groups.inputex.modulesByType[type],
+        modules = [module || type],
+        //set fields if they exist
+        fields = inputexDef.fields
+        //else see if we have elementType for lists - if neither then we end up with null
+        || inputexDef.availableFields || [];
 
         if (inputexDef.elementType) {
             fields.push(inputexDef.elementType);

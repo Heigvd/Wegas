@@ -5,18 +5,17 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-list', function (Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
             CONTENTBOX = 'contentBox',
             List;
+
     /**
      * @name Y.Wegas.ItemSelector
      * @extends Y.Widget
@@ -26,11 +25,11 @@ YUI.add('wegas-list', function (Y) {
      * @description class to serialize widgets
      */
     List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /**
-         * @lends Y.Wegas.List#
-         */
+        /** @lends Y.Wegas.List# */
+
         // *** Private fields *** //
         // -
+
         // ** Lifecycle Methods ** /
         /**
          * @function
@@ -50,6 +49,7 @@ YUI.add('wegas-list', function (Y) {
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
         },
+
         //Children serialization
         /**
          * @function
@@ -67,14 +67,13 @@ YUI.add('wegas-list', function (Y) {
             return object;
         }
     }, {
-        /**
-         * @lends Y.Wegas.List#
-         */
+        /** @lends Y.Wegas.List */
+
         /**
          * @field
          * @static
          * @description
-         * <p><strong>Method</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>defaultChildType: default value for children. Transient.</li>
          *    <li>children: list of widget. Transient.</li>
@@ -109,6 +108,6 @@ YUI.add('wegas-list', function (Y) {
             //}
         }
     });
-
     Y.namespace('Wegas').List = List;
+
 });

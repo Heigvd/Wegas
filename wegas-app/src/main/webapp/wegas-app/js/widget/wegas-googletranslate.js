@@ -13,8 +13,11 @@ YUI.add('wegas-googletranslate', function (Y) {
     "use strict";
 
     /**
-     *  @class NewEntityAction
-     *  @module Wegas
+     *  @name Y.Wegas.GoogleTranslate
+     *  @class
+     *  @extend Y.Widget
+     *  @augments Y.Wegas.Widget
+     *  @augemtns Y.Wegas.Editable
      *  @constructor
      */
     var GoogleTranslate = Y.Base.create("wegas-translate", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
@@ -47,6 +50,6 @@ YUI.add('wegas-googletranslate', function (Y) {
         //}, 'google_sectional_element');
         }
     });
-
     Y.namespace("Wegas").GoogleTranslate = GoogleTranslate;
+    
 });
