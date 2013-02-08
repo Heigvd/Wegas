@@ -15,7 +15,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;

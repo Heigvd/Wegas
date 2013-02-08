@@ -8,7 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.exception.PersistenceException;
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;

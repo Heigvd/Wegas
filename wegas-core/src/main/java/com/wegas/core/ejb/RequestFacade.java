@@ -105,6 +105,10 @@ public class RequestFacade {
         }
     }
 
+//    public void reset() {
+//        this.getUpdatedInstances().clear();
+//    }
+
     /**
      *
      */
@@ -140,7 +144,6 @@ public class RequestFacade {
                 // playerActionEvent.fire(action);
             }
             em.flush();
-            this.getUpdatedInstances().clear();
         }
     }
 

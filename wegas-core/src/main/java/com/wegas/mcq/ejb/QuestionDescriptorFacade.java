@@ -14,7 +14,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import com.wegas.mcq.persistence.*;
 import java.util.HashMap;
 import javax.ejb.EJB;

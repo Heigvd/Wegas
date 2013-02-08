@@ -11,7 +11,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.ejb.exception.PersistenceException;
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import javax.annotation.PostConstruct;

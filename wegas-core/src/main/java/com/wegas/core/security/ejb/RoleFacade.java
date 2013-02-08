@@ -8,7 +8,7 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
-import com.wegas.core.ejb.exception.PersistenceException;
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.Role_;
 import javax.ejb.LocalBean;

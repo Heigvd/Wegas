@@ -8,9 +8,9 @@
 package com.wegas.core.rest.exception;
 
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.exception.ConstraintViolationException;
-import com.wegas.core.ejb.exception.PersistenceException;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.ConstraintViolationException;
+import com.wegas.core.exception.PersistenceException;
+import com.wegas.core.exception.WegasException;
 import java.sql.SQLException;
 import java.util.Iterator;
 import javax.ejb.EJBException;

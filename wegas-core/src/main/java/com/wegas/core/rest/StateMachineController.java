@@ -17,7 +17,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import com.wegas.leaderway.persistence.DialogueTransition;
 import java.util.List;
 import javax.ejb.EJB;

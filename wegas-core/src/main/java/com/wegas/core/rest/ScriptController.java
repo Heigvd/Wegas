@@ -11,7 +11,7 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.script.ScriptException;
