@@ -52,6 +52,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
             node.append('<span class="value">' + value + '</span>');
             return node;
         },
+
         /**
          * @function
          * @private
@@ -77,6 +78,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
             }
             return node;
         },
+
         /**
          * @function
          * @private
@@ -106,6 +108,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
             node.append('<span class="box-value">(' + value + '<span class="box-valueMax">/' + maxVal + '</span>)</span>');
             return node;
         },
+
         /**
          * @function
          * @private
@@ -117,7 +120,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
          * @param className
          * @return node
          * @description return a div node containing the given html and
-         *  highlight a nodes according to the given values (a number).  
+         *  highlight a nodes according to the given values (a number).
          *  To highlight a node this function count same type node as the
          *   "selector" parameter (like 'li', 'div', 'p', 'img', etc...).
          * The first value depending of the given 'minVal'

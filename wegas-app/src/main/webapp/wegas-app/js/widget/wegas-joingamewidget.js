@@ -9,7 +9,6 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-joingamewidget', function(Y) {
     "use strict";
 
@@ -87,6 +86,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
 
             this.showPublicGames();
         },
+
         /**
          * @function
          * @private
@@ -145,6 +145,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 }
             }, this);
         },
+
         /**
          * @function
          * @private
@@ -171,6 +172,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -203,6 +205,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 });
             }
         },
+
         /**
          * @function
          * @private
@@ -233,6 +236,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -251,6 +255,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private

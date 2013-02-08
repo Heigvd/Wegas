@@ -5,18 +5,17 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-list', function (Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
             CONTENTBOX = 'contentBox',
             List;
+
     /**
      * @name Y.Wegas.ItemSelector
      * @extends Y.Widget
@@ -50,6 +49,7 @@ YUI.add('wegas-list', function (Y) {
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
         },
+
         //Children serialization
         /**
          * @function
@@ -70,11 +70,12 @@ YUI.add('wegas-list', function (Y) {
         /**
          * @lends Y.Wegas.List#
          */
+
         /**
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>defaultChildType: default value for children. Transient.</li>
          *    <li>children: list of widget. Transient.</li>
@@ -109,6 +110,6 @@ YUI.add('wegas-list', function (Y) {
             //}
         }
     });
-
     Y.namespace('Wegas').List = List;
+
 });

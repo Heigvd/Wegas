@@ -43,30 +43,37 @@ YUI.add("wegas-gallery", function (Y) {
          * Content box of this widget, static
          */
         CONTENT_TEMPLATE: "<ul></ul>",
+
         /**
          * Reference to the ScrollView widget
          */
         scrollView: null,
+
         /**
          * Node to render gallery in full screen
          */
         fullScreenNode: null,
+
         /**
          * Default styleSheet of this widget
          */
         styleSheet: null,
+
         /**
          * Current display mode of this widget (boolean fullscreen)
          */
         isFullScreen: false,
+
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         /**
          * image loaded in the widget
          */
         images: null,
+
         /**
          * @function
          * @private
@@ -101,8 +108,8 @@ YUI.add("wegas-gallery", function (Y) {
             }
 
             this.scrollView.plug(Y.Plugin.ScrollViewScrollbars);
-
         },
+
         /**
          * @function
          * @private
@@ -120,8 +127,8 @@ YUI.add("wegas-gallery", function (Y) {
                 this.loadImage(0);
             }
             this.fullScreenNode.appendTo(Y.one("body"));
-
         },
+
         /**
          * @function
          * @private
@@ -203,6 +210,7 @@ YUI.add("wegas-gallery", function (Y) {
                 this.scrollView.hide();
             }
         },
+
         /**
          * @function
          * @private
@@ -339,6 +347,7 @@ YUI.add("wegas-gallery", function (Y) {
                 }, '.light-picture', this));
             }
         },
+
         /**
          * @function
          * @private
@@ -354,6 +363,7 @@ YUI.add("wegas-gallery", function (Y) {
                 this.handlers[i].detach();
             }
         },
+
         // *** Private Methods *** //
         /**
          * @function
@@ -367,6 +377,7 @@ YUI.add("wegas-gallery", function (Y) {
                 this.scrollView.show();
             }
         },
+
         /**
          * @function
          * @private
@@ -375,6 +386,7 @@ YUI.add("wegas-gallery", function (Y) {
         next: function () {
             this.scrollView.pages.next();
         },
+
         /**
          * @function
          * @private
@@ -383,6 +395,7 @@ YUI.add("wegas-gallery", function (Y) {
         prev: function () {
             this.scrollView.pages.prev();
         },
+
         /**
          * @function
          * @private
@@ -417,6 +430,7 @@ YUI.add("wegas-gallery", function (Y) {
             }
 
         },
+
         /**
          * @function
          * @private
@@ -453,7 +467,7 @@ YUI.add("wegas-gallery", function (Y) {
          * @field
          * @static
          * @description
-         ** <p><strong>Attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>gallery: contains list of pictures</li>
          *    <li>selectedWidth: width of the gallery</li>
@@ -524,18 +538,19 @@ YUI.add("wegas-gallery", function (Y) {
 
         }
     });
-
     Y.namespace("Wegas").WegasGallery = WegasGallery;
 
     /**
      * @name Y.Wegas.FileExplorerGallery
-     * @extends Y.WegasGallery
+     * @extends Y.Wegas.WegasGallery
      * @class class to create a loader-image
      * @constructor
      * @description create a loader-image and remove them when wanted image
      *  is loaded.
      */
     var FileExplorerGallery = Y.Base.create("wegas-gallery", WegasGallery, [], {
+        /** @lends Y.Wegas.FileExplorerGallery */
+        
         // *** Private Methods *** //
         /**
          * @function
@@ -576,5 +591,5 @@ YUI.add("wegas-gallery", function (Y) {
         }
     });
     Y.namespace("Wegas").FileExplorerGallery = FileExplorerGallery;
-    
+
 });

@@ -17,40 +17,41 @@ YUI.add('wegas-app', function (Y) {
      *
      * @name Y.Wegas.App
      * @class Base class for wegas, handle initialisation of datasources and rendering
+     * @extends Y.Base
      * @constructor
      * @param Object Will be used to fill attributes field
      */
     var App = Y.Base.create("wegas-app", Y.Base, [], {
+        /** @lends Y.Wegas.App# */
 
-        /**
-         * @lends Y.Wegas.App#
-         */
         // ** Private fields ** //
         /**
          * Holds a reference to all the dataSources used.
+         * @field
+         * @private
          */
         dataSources: [],
 
         /**
+         * Lifecycle methods
          * @function
          * @private
-         * @description Lifecycle methods
          */
         initializer: function () {
             Y.Wegas.app = this;
             /**
-             * @memberOf Y.Wegas.App#
+             * @name Cocktail#shake
              * @event
-             * @name render
-             * @description render event
+             * @param {MyEventObject} e
+             * @param {Boolean} [e.withIce=false]
              */
             this.publish("render", {});
         },
 
         /**
+         * Destructor methods.
          * @function
          * @private
-         * @description destructor methods.
          */
         destructor : function () {
             var i;
@@ -60,8 +61,9 @@ YUI.add('wegas-app', function (Y) {
         },
 
         /**
+         * Render function
          * @function
-         * @description render function
+         * @private
          */
         render: function () {
             Y.io.header("Accept-Language", Y.config.lang);                      // Set the language for all requests
@@ -98,7 +100,7 @@ YUI.add('wegas-app', function (Y) {
             onInitialRequest = function () {
                 this.requestCounter -= 1;
                 if (this.requestCounter === 0) {
-                    this.initPage();                                            // Run the initPage() method when they all arrived.
+                    this.initPage();                                       // Run the initPage() method when they all arrived.
                 }
             };
 
@@ -140,10 +142,10 @@ YUI.add('wegas-app', function (Y) {
                             return;
                         }
 
-                        Y.Wegas.Widget.use(cfg, Y.bind(function (cfg) {          // Load the subwidget dependencies
+                        Y.Wegas.Widget.use(cfg, Y.bind(function (cfg) {         // Load the subwidget dependencies
                             this.widget = Y.Wegas.Widget.create(cfg);           // Render the subwidget
                             this.widget.render();
-                            this.fire("render");                                // Fire a render event for some eventual post processing
+                            this.fire("render");                         // Fire a render event for some eventual post processing
                         }, this, cfg));
 
                     //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
@@ -161,26 +163,24 @@ YUI.add('wegas-app', function (Y) {
             });
         }
     }, {
+        /** @lends Y.Wegas.App */
         /**
-         * @lends Y.Wegas.App
-         */
-        /**
-         * <p><strong>Config attributes</strong></p>
+         * <p><strong>Attributes</strong></p>
          * <ul>
-         *    <li>base: Base Url for app</li>
-         *    <li>layoutSrc : xxxxxxxxxxxxxxx</li>
-         *    <li>dataSources : xxxxxxxxxxxxxxx</li>
-         *    <li>cssStylesheets : xxxxxxxxxxxxxxx<i>default: []</i></li>
-         *    <li>currentGameModel : xxxxxxxxxxxxxxx</li>
-         *    <li>currentGame : xxxxxxxxxxxxxxx</li>
-         *    <li>currentTeam : xxxxxxxxxxxxxxx</li>
-         *    <li>currentPlayer : xxxxxxxxxxxxxx</li>
-         *    <li>currentUser : Object litteral representing current user</li>
-         *    <li>editorMenus :
+         *    <li>base {String} base Url for app</li>
+         *    <li>layoutSrc {String} location for the json config of the current page</li>
+         *    <li>dataSources {Object[]} the list of datasource to be loaded on startup</li>
+         *    <li>cssStylesheets {String[]} a list of stylesheets to be loaded<i>default: []</i></li>
+         *    <li>currentGameModel {Number} current game model id</li>
+         *    <li>currentGame {Number} current game  id</li>
+         *    <li>currentTeam {Number} current team id</li>
+         *    <li>currentPlayer {Number} current player id</li>
+         *    <li>currentUse {Number} current game model idObject litteral representing current user</li>
+         *    <li>editorMenus {Object[]}
          *        This field is used to globally override Entities edition menus.
          *        Use the target class name as the key.
          *    </li>
-         *    <li>editorForms :
+         *    <li>editorForms {Object[]}
          *        This field is used to globally override Entities edition forms.
          *        Use the target class name as the key.
          *    </li>
@@ -223,7 +223,6 @@ YUI.add('wegas-app', function (Y) {
                     }
                 }
             },
-
             /**
             * This field is used to globally override Entities edition menus.
             * Use the target class name as the key.
@@ -239,22 +238,26 @@ YUI.add('wegas-app', function (Y) {
                 value: {}
             }
         },
+
         /**
+         * Generate ID an unique id based on current time.
          * @function
          * @static
          * @return {integer} time
-         * @description generate ID
+         * @description
          */
         genId: function () {
             var now = new Date();
             return now.getHours() + now.getMinutes() + now.getSeconds();
         },
+
         /**
+         * Escape a html string by replacing <, > and " by their html entities.
+         *
          * @function
          * @static
-         * @param str String
+         * @param {String}
          * @return {String} Escaped string
-         * @description Escape all necessary character
          */
         htmlEntities: function (str) {
             return String(str).replace(/&/g, '&amp;')
@@ -262,12 +265,18 @@ YUI.add('wegas-app', function (Y) {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;');
         },
-        nl2br: function (str, is_xhtml) {
-            var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
-            return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+
+        /**
+         * Replace any text line return by a \<br \/\>
+         * @function
+         * @static
+         * @param str {String}
+         * @return {String} Escaped string
+         */
+        nl2br: function (str) {
+            return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br />$2');
         }
     });
-
     Y.namespace('Wegas').App = App;
 
     /**
