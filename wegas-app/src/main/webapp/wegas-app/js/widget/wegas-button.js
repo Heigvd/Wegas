@@ -162,6 +162,7 @@ YUI.add("wegas-button", function (Y) {
          */
         initializer: function () {
             this.handlers = {};
+            this.bindUI();
         },
         /**
          * @function
