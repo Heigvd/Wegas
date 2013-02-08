@@ -235,7 +235,7 @@ body {
     color: #6E6E6E;
     box-shadow: none;
     padding: 3px 20px 3px 10px;
-    background: url(../../wegas-app/images/wegas-submenuindicator.png) right center no-repeat;
+    background: none;
     margin-top: 12px;
 }
 

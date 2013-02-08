@@ -25,11 +25,11 @@ YUI.add('wegas-list', function (Y) {
      * @description class to serialize widgets
      */
     List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /**
-         * @lends Y.Wegas.List#
-         */
+        /** @lends Y.Wegas.List# */
+
         // *** Private fields *** //
         // -
+
         // ** Lifecycle Methods ** /
         /**
          * @function
@@ -67,9 +67,7 @@ YUI.add('wegas-list', function (Y) {
             return object;
         }
     }, {
-        /**
-         * @lends Y.Wegas.List#
-         */
+        /** @lends Y.Wegas.List */
 
         /**
          * @field

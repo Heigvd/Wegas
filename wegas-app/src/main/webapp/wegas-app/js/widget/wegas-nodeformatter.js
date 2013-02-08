@@ -25,9 +25,8 @@ YUI.add('wegas-nodeformatter', function (Y) {
      * Text node, image node, value box node, and position node.
      */
     NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
-        /**
-         * @lends Y.Wegas.NodeFormatter#
-         */
+        /** @lends Y.Wegas.NodeFormatter# */
+
         // ** Lifecycle Methods ** //
         /**
          * @function

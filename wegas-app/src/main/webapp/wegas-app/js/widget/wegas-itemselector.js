@@ -27,22 +27,24 @@ YUI.add('wegas-itemselector', function (Y) {
      * @description Display a given list of descriptor, each is selectable to display desired variables from it.
      */
     ItemSelector = Y.Base.create("wegas-itemselector", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.Wegas.NodeFormatter], {
-        /**
-         * @lends Y.Wegas.ItemSelector#
-         */
+        /** @lends Y.Wegas.ItemSelector# */
+
         // *** Private fields *** //
         /**
          * Reference to each used functions
          */
         handlers: null,
+
         /**
          * The selected variable descriptor
          */
         currentItem: null,
+
         /**
          * The reference to the ScrollView widget
          */
         scrollView: null,
+
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -52,6 +54,7 @@ YUI.add('wegas-itemselector', function (Y) {
         initializer: function () {
             this.handlers = {};
         },
+
         /**
          * @function
          * @private
@@ -86,12 +89,13 @@ YUI.add('wegas-itemselector', function (Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
          * @description bind function to events.
          * When VariableDescriptorFacade is updated, do syncUI
-         * When a "selector" div is clicked, set current item. PreventDevault to 
+         * When a "selector" div is clicked, set current item. PreventDevault to
          * prevent problem between click action and slide action (on SlidePanel)
          */
         bindUI: function () {
@@ -119,6 +123,7 @@ YUI.add('wegas-itemselector', function (Y) {
             }, '.selector', this);
 
         },
+
         /**
          * @function
          * @private
@@ -134,6 +139,7 @@ YUI.add('wegas-itemselector', function (Y) {
             this.createSelector(cb, variables.get('items'));
             this.createInformations(cb);
         },
+
         /**
          * @function
          * @private
@@ -168,11 +174,12 @@ YUI.add('wegas-itemselector', function (Y) {
             }
             this.scrollView.render();
         },
+
         /**
          * @function
          * @private
          * @param cb
-         * @description Delete all values relative to the selected 
+         * @description Delete all values relative to the selected
          * instance and re-create them with the niew selected instance.
          */
         createInformations: function (cb) {
@@ -180,6 +187,7 @@ YUI.add('wegas-itemselector', function (Y) {
             node.empty();
             this.createDOMProperties(node, this.currentItem, this.get('informations'));
         },
+
         /**
          * @function
          * @private
@@ -191,7 +199,7 @@ YUI.add('wegas-itemselector', function (Y) {
          * image: put the value as source (src) of the image.
          * position: Use value to highlight a line in a given DOM list
          * valuebox: Display equivalent number of div than the number indicates
-         *  by the value 
+         *  by the value
          * default : Display value as a simple text
          * Label and classname can be added for each variable.
          */
@@ -231,6 +239,7 @@ YUI.add('wegas-itemselector', function (Y) {
                 }
             }
         },
+
         /**
          * @function
          * @private
@@ -238,7 +247,7 @@ YUI.add('wegas-itemselector', function (Y) {
          * @param varName
          * @return value
          * @description return a value corresponding to its name
-         *  from a given variable 
+         *  from a given variable
          */
         getVariableValue: function (variable, varName) {
             var i, prop = this.get('searchInProperties'), value = null;

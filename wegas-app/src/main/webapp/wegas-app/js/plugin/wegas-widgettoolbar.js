@@ -80,6 +80,7 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             widget.addTarget(this.get("host"));
             return widget;
         },
+        
         /**
          * Returns a toolbar widget based on its index
          * @function

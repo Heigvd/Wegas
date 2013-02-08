@@ -91,9 +91,7 @@ YUI.add("wegas-loginbutton", function (Y) {
             this.set("label", name);
         }
     }, {
-        /**
-         * @lends Y.Wegas.LoginButton
-         */
+        /** @lends Y.Wegas.LoginButton */
 
         /**
          * @field

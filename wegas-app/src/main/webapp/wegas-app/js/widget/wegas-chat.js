@@ -77,8 +77,8 @@ YUI.add('wegas-chat', function (Y) {
                 });
                 event.preventDefault();
             }, 'enter');
-        }/*,
-        bindUI: function() {}*/
+        }
+
     }, {
         ATTRS : {
             classTxt: {

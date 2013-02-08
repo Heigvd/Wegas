@@ -318,6 +318,7 @@ YUI.add('wegas-editable', function (Y) {
             }
             return new classDef(o);
         },
+        
         /**
          *
          * Combine use and revive function to get a revived entity.

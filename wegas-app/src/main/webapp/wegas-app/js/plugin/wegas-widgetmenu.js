@@ -5,11 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-widgetmenu', function (Y) {
     "use strict";
 
@@ -46,7 +44,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
                 }, this.get("selector"), this);
 
 
-                bb.append('<span class="wegas-widgetmenu-submenuindicator"></span>');      // Add submenu indicator
+//                bb.append('<span class="wegas-widgetmenu-submenuindicator"></span>');      // Add submenu indicator
                 bb.addClass("wegas-widgetmenu-hassubmenu");
                 //bb.all(this.get("selector")).addClass("wegas-widgetmenu-hassubmenu");
                 if (this.get("menuCfg.points") && this.get("menuCfg.points")[0].indexOf("b") < 0) {
@@ -213,6 +211,7 @@ YUI.add('wegas-widgetmenu', function (Y) {
                 this.fire("timerStarted");
             }
         },
+
         cancelMenuTimer: function () {
             //console.log("cancelMenuTimer", this.get("contentBox").one("button").getHTML());
             if (this.timer) {

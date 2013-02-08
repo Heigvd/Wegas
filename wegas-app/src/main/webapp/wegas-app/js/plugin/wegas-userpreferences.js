@@ -12,6 +12,7 @@ YUI.add("wegas-userpreferences", function (Y) {
     "use strict";
 
     var UserPreferences = Y.Base.create("wegas-userpreferences", Y.Plugin.Base, [Y.Wegas.Plugin], {
+
         initializer: function () {
             this.afterHostEvent("render", function () {
                 var k, entity = Y.Wegas.UserFacade.rest.get("currentUser").getMainAccount(),
@@ -24,7 +25,7 @@ YUI.add("wegas-userpreferences", function (Y) {
                         fieldsToIgnore.push(k);
                     }
                 }
-                
+
                 host.cancelButton.hide();
                 host.set("cfg", entity.getFormCfg(fieldsToIgnore));
                 host.set("values", entity.toObject());
