@@ -74,7 +74,8 @@ public class Player extends AbstractEntity {
     @PrePersist
     @PreUpdate
     public void preUpdate() {
-        if (this.getName() == null || this.getName().equals("")) {
+        if ((this.getName() == null || this.getName().equals(""))
+                && this.getUser() != null) {                                    // User may be null for test players
             this.name = this.getUser().getName();
         }
     }
