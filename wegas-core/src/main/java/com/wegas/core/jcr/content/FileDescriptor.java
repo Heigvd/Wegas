@@ -7,7 +7,7 @@
  */
 package com.wegas.core.jcr.content;
 
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

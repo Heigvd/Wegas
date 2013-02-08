@@ -36,10 +36,10 @@ public class AbstractEJBTest {
     protected static EJBContainer ejbContainer;
     protected static GameModelFacade gameModelFacade;
     // *** Fields *** //
-    protected GameModel gameModel;
-    protected Game game;
-    protected Team team;
-    protected Player player;
+    protected static GameModel gameModel;
+    protected static Game game;
+    protected static Team team;
+    protected static Player player;
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
@@ -49,16 +49,6 @@ public class AbstractEJBTest {
     public static void setUp() throws NamingException {
         ejbContainer = TestHelper.getEJBContainer();
         gameModelFacade = lookupBy(GameModelFacade.class, GameModelFacade.class);
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        ejbContainer.close();
-        //logger.info("Closing the container");
-    }
-
-    @Before
-    public void before() throws NamingException {
 
         //ejbContainer.getContext().rebind("inject", this);
 
@@ -80,9 +70,11 @@ public class AbstractEJBTest {
         gameModelFacade.create(gameModel);
     }
 
-    @After
-    public void after() {
+    @AfterClass
+    public static void tearDown() {
         gameModelFacade.remove(gameModel.getId());
+        ejbContainer.close();
+        //logger.info("Closing the container");
     }
 
     public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {

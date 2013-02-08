@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.ejb.exception.ConstraintViolationException;
+import com.wegas.core.exception.ConstraintViolationException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.Entity;

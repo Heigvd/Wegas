@@ -9,7 +9,7 @@ package com.wegas.proggame.rest;
 
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.script.ScriptException;

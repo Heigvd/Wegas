@@ -11,7 +11,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.ejb.exception.PersistenceException;
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
@@ -166,7 +166,7 @@ public class GameController {
         try {                                        // We check if logged user is already registered in the target game
             playerFacade.findByGameIdAndUserId(
                     game.getId(), userFacade.getCurrentUser().getId());
-            
+
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
         } catch (PersistenceException e) {           // If there is no NoResultException, everything is ok, we can return the game
 

@@ -14,7 +14,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;

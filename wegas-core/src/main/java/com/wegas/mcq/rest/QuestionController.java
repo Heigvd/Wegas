@@ -10,7 +10,7 @@ package com.wegas.mcq.rest;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
@@ -62,7 +62,7 @@ public class QuestionController {
             @PathParam("choiceId") Long choiceId) throws ScriptException, WegasException {
 
         checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
-        
+
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
         //Reply reply =
         //    questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), new Long(0));
@@ -85,9 +85,9 @@ public class QuestionController {
     public QuestionInstance cancelReply(
             @PathParam("playerId") Long playerId,
             @PathParam("replyId") Long replyId) throws ScriptException {
-        
+
         checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
-        
+
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
         requestFacade.commit();
         return reply.getQuestionInstance();
@@ -110,12 +110,12 @@ public class QuestionController {
             @PathParam("startTime") Long startTime) throws WegasException {
 
         checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
-        
+
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
         requestFacade.commit();
         return reply.getQuestionInstance();
     }
-    
+
     private void checkPermissions(Long gameId, Long playerId) throws UnauthorizedException {
         if (!SecurityUtils.getSubject().isPermitted("Game:Edit:g" + gameId) && !userFacade.matchCurrentUser(playerId)) {
             throw new UnauthorizedException();

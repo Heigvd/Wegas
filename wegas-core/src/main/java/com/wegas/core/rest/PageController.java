@@ -10,7 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import java.io.IOException;
 import java.util.Map;
 import javax.ejb.EJB;

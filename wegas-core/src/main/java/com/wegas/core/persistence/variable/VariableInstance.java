@@ -93,13 +93,6 @@ abstract public class VariableInstance extends AbstractEntity {
     }
 
     /**
-     * @return the id
-     */
-//    @Override
-//    public Long getId() {
-//        return id;
-//    }
-    /**
      * @return the scope
      */
     @XmlTransient

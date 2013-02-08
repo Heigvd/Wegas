@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.exception.PersistenceException;
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.ejb.statemachine.StateMachineRunner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -84,7 +84,7 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return
      */

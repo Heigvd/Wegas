@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb.exception;
+package com.wegas.core.exception;
 
 import javax.ejb.ApplicationException;
 

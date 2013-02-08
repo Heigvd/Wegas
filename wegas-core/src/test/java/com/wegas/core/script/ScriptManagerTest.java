@@ -17,7 +17,7 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.exception.WegasException;
+import com.wegas.core.exception.WegasException;
 import javax.naming.NamingException;
 import javax.script.ScriptException;
 import junit.framework.Assert;
