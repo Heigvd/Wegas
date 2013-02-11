@@ -130,15 +130,17 @@
                         Y.one(".wegas-title").setContent(gm.get("name"));
                     });
 
-                    app.on('currentPlayerChange', function (e) {                // Whenever the current player changes
+                    app.after('currentPlayerChange', function (e) {                // Whenever the current player changes
                         //"rest/Private/xx/GameModel/xx/VariableDescriptor",
                         this.set('currentTeam',
-                        this.dataSources.Game.rest.getPlayerById(e.newVal).get("teamId")) // Update current team
+                            this.dataSources.Game.rest.getPlayerById(e.newVal).get("teamId"));// Update current team
+
                         Y.Wegas.VariableDescriptorFacade.set("source",
                         this.get("base") + "rest/PrivateEditor/" + e.newVal + "/GameModel/"
                             + this.get("currentGameModel") + "/VariableDescriptor");
 
                         //Y.Wegas.VariableDescriptorFacade.fire("update");      // Fire an update event on the variable datasource
+                        Y.Wegas.UserFacade.fire("update");      // Fire an update event on the variable datasource
                     });
                     app.render();
                 });
