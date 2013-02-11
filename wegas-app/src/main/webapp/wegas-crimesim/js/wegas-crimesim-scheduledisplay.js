@@ -5,11 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
     "use strict";
 
@@ -31,6 +29,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         datatable: null,
         data: null,
         currentQuestionId: null,
+
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.data = [];
@@ -39,6 +38,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 width: "250px"
             });
         },
+
         renderUI: function() {
             // cb.on("clickoutside", this.hideMenu, this);
             this.menu.on("button:mouseenter", function(e) {
@@ -70,6 +70,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 selectedWidth: 235
             });
         },
+
         bindUI: function() {
             var cb = this.get(CONTENTBOX);
             this.handlers = {};
@@ -106,6 +107,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
+
         /**
          *
          */
@@ -117,6 +119,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.hideOverlay();
             this.datatable.syncUI();
         },
+
         /**
          *
          */
@@ -126,9 +129,10 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 this.handlers[i].detach();
             }
         },
+        
         // *** Rendering methods *** //
         syncSchedule: function() {
-            var perPeriodBudget = 15, perPeriodLoad = [], cIndex, choiceDescriptor, choiceInstance,
+            var perPeriodLoad = [], cIndex, choiceDescriptor, choiceInstance,
                     questionInstance, reply, i, j, k, question, cols, replies, names,
                     questionsVarDesc = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items"),
                     questionInstances = [],
@@ -154,7 +158,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             }
             acc.push("</tr>");
 
-            for (i = 0; i < questionsVarDesc.length; i += 1) {                  // First pass to compute remaining time budget per period
+            for (i = 0; i < questionsVarDesc.length; i += 1) {            // First pass to compute remaining time budget per period
                 question = questionsVarDesc[i];
                 questionInstance = question.getInstance();
                 for (j = 0; j < questionInstance.get("replies").length; j += 1) {
@@ -198,7 +202,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     cols[cIndex] = ["schedule-unavailable", "schedule-task",
                         "schedule-unavailable-" + choiceDescriptor.get("duration")];
 
-                    if (currentTime >= reply.get("startTime") && currentTime < reply.get("startTime") + choiceDescriptor.get("duration")) {
+                    if (currentTime >= reply.get("startTime")
+                        && currentTime < reply.get("startTime") + choiceDescriptor.get("duration")) {
                         cols[cIndex].push("schedule-ongoingtask");
                     }
 
@@ -332,7 +337,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 overflowX: "auto"
             });
             /* gallery : [{srcUrl:'url', description:'text'},{}, ...]*/
-            this.gallery.set("gallery", question.get("pictures"));
+            this.gallery.set("gallery",
+                Y.clone(question.get("pictures")));                 // @hack clone since Gallery will replay the string by an object
         },
         renderDetails: function(reply) {
             var choiceDescriptor = reply.getChoiceDescriptor(),

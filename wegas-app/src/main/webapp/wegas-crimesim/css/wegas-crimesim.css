@@ -198,7 +198,7 @@
 }
 
 .schedule-table .schedule-available div:hover .icon {
-    background: transparent url(../../wegas-editor/images/wegas-editor-sprite.png) no-repeat 25px 3px;
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) no-repeat 25px 3px;
     cursor:pointer;
 }
 
