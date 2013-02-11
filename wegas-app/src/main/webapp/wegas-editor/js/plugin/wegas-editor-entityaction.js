@@ -56,6 +56,11 @@ YUI.add('wegas-editor-entityaction', function (Y) {
         EditEntityAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(EditEntityAction, EntityAction, {
+
+        /**
+         * @function
+         * @private
+         */
         execute: function () {
             EditEntityAction.showUpdateForm(this.get("entity"), this.get("dataSource"));
         }
@@ -420,7 +425,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
      * Shortcut to create a Button with an DeleteEntityAction plugin
      */
     Y.Wegas.DeleteEntityButton = Y.Base.create("button", Y.Wegas.Button, [], {
-        
+
         initializer: function (cfg) {
             this.plug(DeleteEntityAction, cfg);
         },

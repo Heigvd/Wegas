@@ -9,17 +9,17 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-form', function (Y) {
     "use strict";
 
     /**
      * @name Y.Wegas.Form
+     * @class  Class to submit a form, add a toolbar with buttons "submit" and
+     * "cancel" to mangae forms.
      * @extends Y.Widget
      * @augments Y.WidgetChild
      * @augments Y.Wegas.Widget
      * @constructor
-     * @class  Class to submit a form, add a toolbar with buttons "submit" and "cancel" to manger forms.
      */
     var inputEx = Y.inputEx,
     lang = Y.Lang,
@@ -71,7 +71,6 @@ YUI.add('wegas-form', function (Y) {
                         if (!form.validate()) {
                             return;
                         }
-                        form.fire("afterValidation");
                         if (val.valueselector) {
                             val = val.valueselector;
                         }
@@ -103,16 +102,17 @@ YUI.add('wegas-form', function (Y) {
 
     }, {
         /** @lends Y.Wegas.Form */
+
         /**
-         * @field
-         * @static
-         * @description
          * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>values: values of fields of the form</li>
          *    <li>form: the form to manage (see YUI Form)</li>
          *    <li>cfg: configuation of the form (see YUI Form)</li>
          * </ul>
+         *
+         * @field
+         * @static
          */
         ATTRS: {
             /**

@@ -38,7 +38,6 @@ eventManager.on("replySelect", function(e) {
     }
 });
 
-
 eventManager.on("replyCancel", function (e) {
     if (e.reply.startTime - period.value === -1) {
         humanResources.value += +e.reply.result.choiceDescriptor.cost;
@@ -52,7 +51,6 @@ function lookupBean(name) {
 /*eventManager.on("replyValidate", function(e) {
     println("replyValidate"+ e.reply);
 });*/
-
 
 function nextWeek() {
     period.value += 1;
@@ -77,6 +75,3 @@ function nextWeek() {
         }
     }
 }
-
-
-
