@@ -16,5 +16,5 @@ Web Game Authoring system is a Jee-based framework for multiplayer web-games dev
 * [![Build Status](https://travis-ci.org/Heigvd/Wegas.png?branch=master)](https://travis-ci.org/Heigvd/Wegas)
 
 ### License
-Copyright (C) 2013, School of Business and Engineering Vaud, Comem
-Wegas is released under the [MIT License](http://www.opensource.org/licenses/MIT).
+Copyright (C) 2013, School of Business and Engineering Vaud, Comem  
+Wegas is released under the [MIT License](http://www.opensource.org/licenses/MIT)

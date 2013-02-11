@@ -27,7 +27,7 @@ public class ConstraintViolationException extends RuntimeException {
      *
      * @param cause
      */
-    public ConstraintViolationException(Throwable cause) {
+    public ConstraintViolationException(final Throwable cause) {
         super(cause);
     }
 
@@ -36,7 +36,7 @@ public class ConstraintViolationException extends RuntimeException {
      * @param msg
      * @param cause
      */
-    public ConstraintViolationException(String msg, Throwable cause) {
+    public ConstraintViolationException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 
@@ -44,7 +44,7 @@ public class ConstraintViolationException extends RuntimeException {
      *
      * @param msg
      */
-    public ConstraintViolationException(String msg) {
+    public ConstraintViolationException(final String msg) {
         super(msg);
     }
 }

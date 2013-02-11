@@ -11,6 +11,9 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.ejb.event.PlayerAction;
+import com.wegas.core.exception.NoPlayerException;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -19,8 +22,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.exception.NoPlayerException;
-import com.wegas.core.exception.WegasException;
 import com.wegas.leaderway.persistence.DialogueTransition;
 import java.io.Serializable;
 import java.util.*;
@@ -67,7 +68,7 @@ public class StateMachineRunner implements Serializable {
      *
      * @param playerAction
      */
-    public void entityUpdateListener(@Observes RequestManager.PlayerAction playerAction) {
+    public void entityUpdateListener(@Observes PlayerAction playerAction) {
         this.playerUpdated(playerAction.getPlayer());
     }
 
@@ -88,7 +89,9 @@ public class StateMachineRunner implements Serializable {
         //gameManager.clearUpdatedInstances();
         //TODO: lock SMInstance (concurrency)
 
-        /* Find players for each instance */
+        /*
+         * Find players for each instance
+         */
         //List<Player> players = new ArrayList<>();
         Map<Player, HashSet<Transition>> playerTransitions = new HashMap<>();   // store passed transitions.
         if (player != null) {
@@ -96,7 +99,9 @@ public class StateMachineRunner implements Serializable {
         } else {
             for (VariableInstance instance : requestManager.getUpdatedInstances()) {
                 try {
-                    /* Setup player's passed transitions */
+                    /*
+                     * Setup player's passed transitions
+                     */
                     playerTransitions.put(variableInstanceFacade.findAPlayer(instance), new HashSet<Transition>());
                 } catch (NoPlayerException e) {
                     logger.warn("{} : {}", e.getClass().getSimpleName(), e.getMessage());
@@ -107,7 +112,10 @@ public class StateMachineRunner implements Serializable {
             logger.warn("No players found");
             return;
         }
-        /* build a list with each statemachine instance relevant to players (MAP) */
+        /*
+         * build a list with each statemachine instance relevant to players
+         * (MAP)
+         */
         Map<StateMachineInstance, Player> statemachinesPlayerMap = new HashMap<>();
         GameModel gamemodel = ((Player) playerTransitions.keySet().toArray()[0]).getGameModel();
         List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel, StateMachineDescriptor.class);
@@ -129,7 +137,8 @@ public class StateMachineRunner implements Serializable {
         }
     }
 
-    private Boolean run(Map<StateMachineInstance, Player> statemachinesPlayerMap, Map<Player, HashSet<Transition>> playerTransitions) {
+    private Boolean run(Map<StateMachineInstance, Player> statemachinesPlayerMap,
+            Map<Player, HashSet<Transition>> playerTransitions) {
 
         Boolean transitionTriggered = false;
         Map<Player, List<Script>> playerImpacts = new HashMap<>();
@@ -138,7 +147,9 @@ public class StateMachineRunner implements Serializable {
         HashSet<Transition> passedTransitions;
 
         for (StateMachineInstance stateMachine : statemachinesPlayerMap.keySet()) {
-            /* Skip disabled Statemachines */
+            /*
+             * Skip disabled Statemachines
+             */
             if (!stateMachine.getEnabled()) {
                 continue;
             }
@@ -146,7 +157,9 @@ public class StateMachineRunner implements Serializable {
             passedTransitions = playerTransitions.get(currentPlayer);
 
 
-            /* Setup player's impact list */
+            /*
+             * Setup player's impact list
+             */
             if (playerImpacts.get(currentPlayer) == null) {
                 impacts = new ArrayList<>();
                 playerImpacts.put(currentPlayer, impacts);
@@ -154,7 +167,9 @@ public class StateMachineRunner implements Serializable {
                 impacts = playerImpacts.get(currentPlayer);
             }
             List<Transition> transitions = stateMachine.getCurrentState().getTransitions();
-            /* Loop on each state's transtions until a valid transition is found */
+            /*
+             * Loop on each state's transtions until a valid transition is found
+             */
             for (Transition transition : transitions) {
                 Boolean validTransition = false;
 
@@ -172,9 +187,14 @@ public class StateMachineRunner implements Serializable {
                     throw new WegasException("Please review condition [" + stateMachine.getDescriptor().getName() + "]:\n"
                             + transition.getTriggerCondition().getContent());
                 } else if (validTransition) {
-                    /* A valid transition has been found */
+                    /*
+                     * A valid transition has been found
+                     */
                     if (passedTransitions.contains(transition)) {
-                        /* Loop prevention : that player already passed through this transiton */
+                        /*
+                         * Loop prevention : that player already passed through
+                         * this transiton
+                         */
                         logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
                     } else {
                         passedTransitions.add(transition);                      //Store transition to avoid doing it again

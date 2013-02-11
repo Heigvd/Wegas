@@ -4,14 +4,12 @@
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
-*/
-
+ */
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
-*/
+ */
 
 /** Toolbar styles **/
-.wegas-hastoolbar {}
 .wegas-toolbar {
     vertical-align: top;
     min-height: 26px;
@@ -85,7 +83,6 @@
 .wegas-toolbar div.inputEx-label {
     padding: 4px 1px 0 0;
 }
-
 .yui3-skin-sam .wegas-inbox .wegas-toolbar,
 .yui3-skin-sam .wegas-userpreferences .wegas-toolbar{
     background-color:rgba(255, 255, 255, 0.4);
