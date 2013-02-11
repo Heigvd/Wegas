@@ -58,7 +58,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      * @param entity
      */
     @Override
-    public void create(T entity) {
+    public void create(final T entity) {
         getEntityManager().persist(entity);
         // getEntityManager().flush();
     }
@@ -79,7 +79,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      */
     @Override
     public T update(final Long entityId, final T entity) {
-        T oldEntity = this.find(entityId);
+        final T oldEntity = this.find(entityId);
         oldEntity.merge(entity);
         return oldEntity;
     }
@@ -95,8 +95,8 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      */
     @Override
     public T duplicate(final Long entityId) throws IOException {
-        T oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
-        T newEntity = (T) oldEntity.duplicate();
+        final T oldEntity = this.find(entityId);                                      // Retrieve the entity to duplicate
+        final T newEntity = (T) oldEntity.duplicate();
         this.create(newEntity);                                                 // Store it in db
         return newEntity;
     }
@@ -106,7 +106,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      * @param entity
      */
     @Override
-    public void remove(T entity) {
+    public void remove(final T entity) {
         getEntityManager().remove(entity);
     }
 
@@ -115,8 +115,8 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      * @param id
      */
     @Override
-    public void remove(final Long id) {
-        this.remove(this.find(id));
+    public void remove(final Long entityId) {
+        this.remove(this.find(entityId));
     }
 
     /**
@@ -125,8 +125,8 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      * @return
      */
     @Override
-    public T find(final Long id) {
-        return getEntityManager().find(entityClass, id);
+    public T find(final Long entityId) {
+        return getEntityManager().find(entityClass, entityId);
     }
 
     /**
@@ -135,10 +135,9 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      */
     @Override
     public List<T> findAll() {
-        CriteriaQuery cq =
-                getEntityManager().getCriteriaBuilder().createQuery();
-        cq.select(cq.from(entityClass));
-        return getEntityManager().createQuery(cq).getResultList();
+        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
+        query.select(query.from(entityClass));
+        return getEntityManager().createQuery(query).getResultList();
     }
 
     /**
@@ -148,10 +147,9 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      */
     @Override
     public List<T> findRange(int[] range) {
-        CriteriaQuery cq =
-                getEntityManager().getCriteriaBuilder().createQuery();
-        cq.select(cq.from(entityClass));
-        Query q = getEntityManager().createQuery(cq);
+        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
+        query.select(query.from(entityClass));
+        Query q = getEntityManager().createQuery(query);
         q.setMaxResults(range[1] - range[0]);
         q.setFirstResult(range[0]);
         return q.getResultList();
@@ -163,10 +161,10 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      */
     @Override
     public int count() {
-        CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
-        Root<T> rt = cq.from(entityClass);
-        cq.select(getEntityManager().getCriteriaBuilder().count(rt));
-        Query q = getEntityManager().createQuery(cq);
+        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
+        final Root<T> rt = query.from(entityClass);
+        query.select(getEntityManager().getCriteriaBuilder().count(rt));
+        final Query q = getEntityManager().createQuery(query);
         return ((Long) q.getSingleResult()).intValue();
     }
 
@@ -177,14 +175,14 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      * @throws Exception
      */
     @AroundInvoke
-    public Object interceptor(InvocationContext ic) throws Exception {
+    public Object interceptor(final InvocationContext ic) throws Exception {
         Object o = null;
         try {
             o = ic.proceed();
             //if (!sessionContext.getRollbackOnly()) {
             //    entityManager.flush();
             //}
-        } catch (NoResultException e) {                                           // NoResultException are caught and wrapped exception
+        } catch (NoResultException e) {                                         // NoResultException are caught and wrapped exception
             throw new PersistenceException(e);                                  // so they do not cause transaction rollback
             //throw e;
         }

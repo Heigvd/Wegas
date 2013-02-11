@@ -65,8 +65,8 @@
     top: 2px;
     width: 15px;
     height: 8px;
-    content: url(../images/wegas-submenuindicator.png) left center no-repeat;
+    content: url("../images/wegas-submenuindicator.png");
 }
 .yui3-skin-sam .wegas-widgetmenu-hassubmenu.wegas-widgetmenu-hassubmenuright:after{
-    content: url(../images/wegas-submenuindicator-right.png) left center no-repeat;
+    content: url("../images/wegas-submenuindicator-right.png");
 }

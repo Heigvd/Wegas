@@ -61,7 +61,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     }
 
     @Override
-    public void create(GameModel entity) {
+    public void create(final GameModel entity) {
         super.create(entity);
         if (entity.getId() != null) {
             userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Edit:gm" + entity.getId());
@@ -88,8 +88,8 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
 
-        GameModel oldEntity = this.find(entityId);                              // Retrieve the entity to duplicate
-        GameModel newEntity = (GameModel) oldEntity.duplicate();
+        final GameModel oldEntity = this.find(entityId);                              // Retrieve the entity to duplicate
+        final GameModel newEntity = (GameModel) oldEntity.duplicate();
 
         boolean added = false;
         int suffix = 1;
@@ -118,7 +118,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     }
 
     @Override
-    public void remove(GameModel gameModel) {
+    public void remove(final GameModel gameModel) {
         super.remove(gameModel);
         //Remove jcr repo.
         //TODO : in fact, removes all files but not the workspace.
@@ -136,12 +136,12 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
      * @return
      * @throws NoResultException
      */
-    public GameModel findByName(String name) throws NoResultException {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery();
-        Root<GameModel> gameModel = cq.from(GameModel.class);
+    public GameModel findByName(final String name) throws NoResultException {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<GameModel> gameModel = cq.from(GameModel.class);
         cq.where(cb.equal(gameModel.get(GameModel_.name), name));
-        Query q = em.createQuery(cq);
+        final Query q = em.createQuery(cq);
         return (GameModel) q.getSingleResult();
     }
 
@@ -149,8 +149,8 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
      *
      * @param gameModelId
      */
-    public void reset(Long gameModelId) {
-        GameModel gm = this.find(gameModelId);
+    public void reset(final Long gameModelId) {
+        final GameModel gm = this.find(gameModelId);
         gm.propagateDefaultInstance(true);
         em.flush();
         em.refresh(gm);

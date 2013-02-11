@@ -27,7 +27,7 @@ public class PersistenceException extends RuntimeException {
      *
      * @param cause
      */
-    public PersistenceException(Throwable cause) {
+    public PersistenceException(final Throwable cause) {
         super(cause);
     }
 }

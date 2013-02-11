@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.event.PlayerAction;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -54,7 +55,6 @@ public class RequestManager implements Serializable {
      *
      */
     private Locale locale;
-
 
     /**
      *
@@ -162,42 +162,4 @@ public class RequestManager implements Serializable {
         this.locale = local;
     }
 
-    /**
-     *
-     */
-    public class PlayerAction implements Serializable {
-
-        /**
-         *
-         */
-        private Player player;
-
-        /**
-         *
-         */
-        public PlayerAction() {
-        }
-
-        /**
-         *
-         * @param p
-         */
-        public PlayerAction(Player p) {
-            this.player = p;
-        }
-
-        /**
-         * @return the player
-         */
-        public Player getPlayer() {
-            return player;
-        }
-
-        /**
-         * @param player the player to set
-         */
-        public void setPlayer(Player player) {
-            this.player = player;
-        }
-    }
 }

@@ -7,8 +7,8 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.ejb.statemachine.StateMachineRunner;
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -59,8 +59,8 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
      * @param teamId
      * @param player
      */
-    public void create(Long teamId, Player player) {
-        Team team = teamEntityFacade.find(teamId);
+    public void create(final Long teamId, final Player player) {
+        final Team team = teamEntityFacade.find(teamId);
         team.addPlayer(player);
         em.flush();
         em.refresh(player);
@@ -76,8 +76,8 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
      * @return
      * @throws PersistenceException
      */
-    public Player findByGameIdAndUserId(Long gameId, Long userId) throws PersistenceException {
-        Query findByGameIdAndUserId = em.createNamedQuery("findPlayerByGameIdAndUserId");
+    public Player findByGameIdAndUserId(final Long gameId, final Long userId) throws PersistenceException {
+        final Query findByGameIdAndUserId = em.createNamedQuery("findPlayerByGameIdAndUserId");
         findByGameIdAndUserId.setParameter("gameId", gameId);
         findByGameIdAndUserId.setParameter("userId", userId);
         return (Player) findByGameIdAndUserId.getSingleResult();
@@ -88,13 +88,13 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
      * @param player
      * @return
      */
-    public List<VariableInstance> getAssociatedInstances(Player player) {
-        Query findPlayerInstance = em.createNamedQuery("findPlayerInstances");
+    public List<VariableInstance> getAssociatedInstances(final Player player) {
+        final  Query findPlayerInstance = em.createNamedQuery("findPlayerInstances");
         return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
     }
 
     @Override
-    public void remove(Player player) {
+    public void remove(final Player player) {
         List<VariableInstance> instances = this.getAssociatedInstances(player);
         this.em.remove(player);
         for (VariableInstance i : instances) {

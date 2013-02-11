@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Game_;
@@ -15,7 +15,6 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
-import com.wegas.core.exception.WegasException;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -73,10 +72,10 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param token
      * @return first game found or null
      */
-    public Game findByToken(String token) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery();
-        Root<Game> game = cq.from(Game.class);
+    public Game findByToken(final String token) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<Game> game = cq.from(Game.class);
         cq.where(cb.equal(game.get(Game_.token), token));
         Query q = em.createQuery(cq);
         Game g;

@@ -48,6 +48,9 @@ public class RequestFacade {
      */
     @EJB
     private PlayerFacade playerFacade;
+    /**
+     *
+     */
     @EJB
     StateMachineRunner stateMachineRunner;
 
@@ -108,7 +111,6 @@ public class RequestFacade {
 //    public void reset() {
 //        this.getUpdatedInstances().clear();
 //    }
-
     /**
      *
      */
@@ -123,24 +125,24 @@ public class RequestFacade {
                 stateMachineRunner.playerUpdated(this.requestManager.getPlayer());
 
             } else {
+                stateMachineRunner.playerUpdated(null);
 
                 //PlayerAction action = new PlayerAction();
                 //playerActionEvent.fire(action);
 
-                stateMachineRunner.playerUpdated(null);
-//                for (VariableInstance instance : this.getUpdatedInstances()) {
-//                    System.out.println(variableInstanceFacade.findAPlayer(instance) + ", ");
-//
-//                    Player p = variableInstanceFacade.findAPlayer(instance);
-//                    List<Player> players = variableInstanceFacade.findAllPlayer(instance);
-//
-//                    System.out.println("This player has an update: " + p.getName());
-//
-//                    //PlayerAction action = new PlayerAction();
-//                    //action.setPlayer(variableInstanceFacade.findAPlayer(instance));
-//                    //playerActionEvent.fire(action);
-//                }
-                //  PlayerAction action = new PlayerAction();
+                // for (VariableInstance instance : this.getUpdatedInstances()) {
+                // System.out.println(variableInstanceFacade.findAPlayer(instance) + ", ");
+                //
+                // Player p = variableInstanceFacade.findAPlayer(instance);
+                // List<Player> players = variableInstanceFacade.findAllPlayer(instance);
+                //
+                // System.out.println("This player has an update: " + p.getName());
+                //
+                // //PlayerAction action = new PlayerAction();
+                // //action.setPlayer(variableInstanceFacade.findAPlayer(instance));
+                // //playerActionEvent.fire(action);
+                // }
+                // PlayerAction action = new PlayerAction();
                 // playerActionEvent.fire(action);
             }
             em.flush();
