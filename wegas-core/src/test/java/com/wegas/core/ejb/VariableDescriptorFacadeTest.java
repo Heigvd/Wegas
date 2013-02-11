@@ -8,10 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
-import com.wegas.core.persistence.variable.primitive.BooleanInstance;
-import com.wegas.core.persistence.variable.primitive.StringDescriptor;
-import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import javax.naming.NamingException;
 import junit.framework.Assert;
@@ -26,20 +23,56 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     // *** Constants *** //
     final static private String VARIABLENAME = "test-variable";
     final static private String VARIABLENAME2 = "test-variable2";
-    final static private String VALUE = "test-value";
-    final static private String VALUE2 = "test-value2";
-    final static private String VALUE3 = "test-value3";
-
 
     @Test
-    public void testVariableDescriptor() throws NamingException {
+    public void testNumberDescriptor() throws NamingException {
+        final double VAL1 = 0;
+        final double VAL2 = 1;
+        final double VAL3 = 2;
 
-        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacade.class);
-        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+
+        // Test the descriptor
+        NumberDescriptor desc1 = new NumberDescriptor(VARIABLENAME);
+        desc1.setDefaultInstance(new NumberInstance(VAL1));
+        desc1.setScope(new TeamScope());
+
+        NumberDescriptor desc2 = new NumberDescriptor(VARIABLENAME2);
+        desc2.setDefaultInstance(new NumberInstance(VAL2));
+        this.testVariableDescriptor(desc1, desc2);
+
+        // Check its value
+        NumberInstance instance = (NumberInstance) vif.find(desc1.getId(), player);
+        Assert.assertEquals(VAL2, instance.getValue());
+
+        // Edit the variable instance
+        vif.update(desc1.getId(), player.getId(), new NumberInstance(VAL3));
+
+        // Verify the new value
+        instance = (NumberInstance) vif.find(desc1.getId(), player.getId());
+        Assert.assertEquals(VAL3, instance.getValue());
+
+        // Reset the game and test
+        gameModelFacade.reset(gameModel.getId());
+        instance = (NumberInstance) vif.find(desc1.getId(), player);
+        Assert.assertEquals(VAL2, instance.getValue());
+
+        vdf.remove(desc1.getId());
+    }
+
+    @Test
+    public void testStringDescriptor() throws NamingException {
+        final String VALUE1 = "test-value";
+        final String VALUE2 = "test-value2";
+        final String VALUE3 = "test-value3";
+
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
         // Test the descriptor
         StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);
-        stringDescriptor.setDefaultInstance(new StringInstance(VALUE));
+        stringDescriptor.setDefaultInstance(new StringInstance(VALUE1));
         stringDescriptor.setScope(new TeamScope());
 
         StringDescriptor stringDescriptor2 = new StringDescriptor(VARIABLENAME2);
@@ -61,6 +94,8 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         gameModelFacade.reset(gameModel.getId());
         instance = (StringInstance) vif.find(stringDescriptor.getId(), player);
         Assert.assertEquals(VALUE2, instance.getValue());
+
+        vdf.remove(stringDescriptor.getId());
     }
 
     @Test
@@ -92,15 +127,17 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         gameModelFacade.reset(gameModel.getId());
         instance = (BooleanInstance) vif.find(booleanDescriptor.getId(), player);
         Assert.assertEquals(false, instance.getValue());
+
+        vdf.remove(booleanDescriptor.getId());
     }
 
     public <T extends VariableDescriptor> T testVariableDescriptor(T descriptor1, T descriptor2)
             throws NamingException {
-        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacade.class);
-        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
         // Create the descriptor
-        logger.info(""+descriptor1+"*"+descriptor2);
+        logger.info("" + descriptor1 + "*" + descriptor2);
         vdf.create(gameModel.getId(), descriptor1);
 
         // Edit this descriptor
@@ -115,13 +152,12 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
         // Check the findByClass Function
         T findByClass = (T) vdf.findByClass(gameModel, descriptor1.getClass()).get(0);
-        Assert.assertEquals(VALUE, descriptor1.getId(), findByClass.getId());
+        Assert.assertEquals(descriptor1.getId(), findByClass.getId());
 
         // Check the findByGameModel function
         T findByRootGameModelId = (T) vdf.findByGameModelId(gameModel.getId()).get(0);
-        Assert.assertEquals(VALUE, descriptor1.getId(), findByRootGameModelId.getId());
+        Assert.assertEquals(descriptor1.getId(), findByRootGameModelId.getId());
 
         return descriptor1;
     }
-
 }
