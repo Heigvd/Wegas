@@ -37,7 +37,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
             this.treeView = new Y.TreeView();
             this.treeView.render(this.get(CONTENTBOX));
 
-            this.plug(Y.Plugin.EditorTVAdminAction);
+            this.plug(Y.Plugin.EditorTVNodeLoader);
             this.plug(Y.Plugin.EditorTVAdminMenu);
             this.plug(Y.Plugin.RememberExpandedTreeView);
         },
@@ -169,14 +169,10 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
                             case 'ChoiceDescriptor':
                                 text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                                children = [];
 
-                                var l, result, children = [];
                                 for (l = 0; l < el.get("results").length; l += 1) {
                                     result = el.get("results")[l];
-                                    //TODO : result should be an entity
-                                    if (!(result instanceof Y.Wegas.persistence.Entity)) {
-                                        result = Y.Wegas.Editable.reviver(result);
-                                    }
                                     children.push({
                                         label: "Result: " + result.get("name"),
                                         selected: (result.get("id") === this.currentSelection) ? 2 : 0,
@@ -596,13 +592,18 @@ YUI.add('wegas-editor-treeview', function (Y) {
     });
     Y.namespace('Wegas').LobbyTreeView = LobbyTreeView;
 
-
+    /**
+     * @class To be plugged on a an EditorTreeview, keeps track of the
+     * collapsed nodes.
+     * @constructor
+     */
     Y.Plugin.RememberExpandedTreeView = Y.Base.create("wegas-rememberexpandedtreeview", Y.Plugin.Base, [], {
         expandedIds: null,
         initializer: function () {
             this.expandedIds = {};
             this.afterHostEvent("render", function () {
                 var host = this.get("host");
+
                 host.treeView.before("*:nodeExpanded", function (e) {
                     this.expandedIds[e.node.get("data").entity.get("id")] = true;
                 }, this);
@@ -617,40 +618,61 @@ YUI.add('wegas-editor-treeview', function (Y) {
         NAME: "RememberExpandedTreeView"
     });
 
-    Y.Plugin.EditorTVAdminAction = Y.Base.create("admin-action", Y.Plugin.Base, [], {
+    /**
+     * @class When a descriptor node is toggled, expand it
+     * @constructor
+     */
+    Y.Plugin.EditorTVNodeLoader = Y.Base.create("admin-action", Y.Plugin.Base, [], {
         expandedIds: {},
         lastOpenedNode: null,
         initializer: function () {
             this.afterHostEvent("render", function () {
                 this.get("host").treeView.before("*:nodeExpanded",
-                    this.fillsLeaf, this);                                      //if treeleaf is empty, load elements (all instances)
+                    this.fillsLeaf, this);                              //if treeleaf is empty, load elements from sever
             });
+
+            //this.afterHostMethod("syncUI", function () {
+            //    var i, doExpand = function (e) {
+            //        for (i = 0; i < e.size(); i += 1) {
+            //            if (!e.item(i).get("collapsed")) {
+            //                this.fillsLeaf(e.item(i));
+            //                doExpand.call(this, e.item(i));
+            //            }
+            //        }
+            //    };
+            //
+            //    doExpand.call(this, this.get("host").treeView);         // Recursively walk treeview to reload expanded nodes
+            //});
         },
         fillsLeaf: function (e) {
             var node = e.node,
-            id = node.get("data").entity.get("id");
+            id = node.get("data").entity.get("id"),
+            entity = node.get("data").entity;
 
-            if (node.get("data").entity instanceof Y.Wegas.persistence.VariableDescriptor) {
+            if (entity instanceof Y.Wegas.persistence.VariableDescriptor
+                && !(entity instanceof Y.Wegas.persistence.ListDescriptor)      // @hack
+                && !(entity instanceof Y.Wegas.persistence.ChoiceDescriptor)) { // @hack
+
                 if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
                     return;
                 }
                 node.removeAll();
-
                 node.set("loading", true);
-                //node.add({
-                //    label: '<span style="font-style:italic">loading</span>',
-                //    iconCSS: 'loading-icon'
-                //});
+
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                     request: "/" + id + "?view=Editor"
                 });
             }
         }
     }, {
-        NS: "EditorTVAction",
-        NAME: "EditorTVAdminAction"
+        NS: "EditorTVNodeLoader",
+        NAME: "EditorTVNodeLoader"
     });
 
+    /**
+     * @class Open a menu on click, containing the admin edition field
+     * @constructor
+     */
     Y.Plugin.EditorTVAdminMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
         initializer: function () {
             this.menu = new Y.Wegas.Menu();

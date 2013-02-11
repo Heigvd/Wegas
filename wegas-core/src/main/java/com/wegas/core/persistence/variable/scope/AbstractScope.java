@@ -27,7 +27,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity                                                                         // Database serialization
-@Inheritance(strategy = InheritanceType.JOINED)                                           // JSon Serialisation
+@Inheritance(strategy = InheritanceType.JOINED)                                 // JSon Serialisation
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
     @JsonSubTypes.Type(name = "GameScope", value = GameModelScope.class),
@@ -76,7 +76,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      * @return The variable instance associated to the current player, which is
      * stored in the RequestManager.
      */
-    @JsonView(Views.Private.class)
+    @JsonView(Views.SinglePlayerI.class)
     //@XmlAttribute(name = "variableInstances")
     public Map<Long, VariableInstance> getPrivateInstances() {
         Map<Long, VariableInstance> ret = new HashMap<>();
