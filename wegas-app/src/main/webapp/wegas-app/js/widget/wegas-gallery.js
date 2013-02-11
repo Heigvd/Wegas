@@ -66,6 +66,8 @@ YUI.add("wegas-gallery", function (Y) {
 
         /**
          * Reference to each used functions
+         * @private
+         * @field
          */
         handlers: null,
 
@@ -550,7 +552,7 @@ YUI.add("wegas-gallery", function (Y) {
      */
     var FileExplorerGallery = Y.Base.create("wegas-gallery", WegasGallery, [], {
         /** @lends Y.Wegas.FileExplorerGallery */
-        
+
         // *** Private Methods *** //
         /**
          * @function

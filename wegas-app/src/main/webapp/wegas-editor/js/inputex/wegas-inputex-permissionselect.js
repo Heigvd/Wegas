@@ -10,125 +10,7 @@
  */
 YUI.add("wegas-inputex-permissionselect", function(Y) {
 
-    var inputEx = Y.inputEx;
-
-    /**
-     *
-     * @name Y.inputEx.Wegas.PermissionSelect
-     * @class
-     * @extends Y.inputEx.Field
-     * @constructor
-     */
-    Y.namespace("inputEx.Wegas").PermissionSelect = function (options) {
-        inputEx.Wegas.PermissionSelect.superclass.constructor.call(this, options);
-    };
-
-    Y.extend(inputEx.Wegas.PermissionSelect, inputEx.Field,  {
-        /** @lends Y.inputEx.Wegas.PermissionSelect# */
-
-        setOptions: function (options) {
-            inputEx.Wegas.PermissionSelect.superclass.setOptions.call(this, options);
-            this.options.permissions = options.permissionsChoices;
-            this.options.roles = options.roles;
-            this.options.targetEntityId = options.targetEntityId;
-            this.value = {};
-        },
-
-        renderComponent: function () {
-            this.fireUpdatedEvt();
-
-            this.roleSelect = new Y.inputEx.Wegas.RoleSelect({
-                parentEl: this.fieldContainer
-            });
-
-            this.roleSelect.on("updated", function (val) {
-
-                if (this.value.id !== val.id) {
-                    Y.Wegas.UserFacade.rest.deleteAllRolePermissions(this.value.id, this.options.targetEntityId);
-                }
-
-                this.value.id = val.id;
-                this.value.permissions = [];
-                this.checkboxValue();
-                this.fireUpdatedEvt();
-            }, this);
-
-            var logDiv = Y.Node.create('<div class="permissionList"></div>');
-            this.fieldContainer.div = this.fieldContainer.appendChild(logDiv.getDOMNode());
-            this.permissionsCheckBoxes = [];
-            Y.Array.forEach(this.options.permissions, function (item, i) {
-                var splitedPermissions = item.name.split(":"),
-                box = new Y.inputEx.CheckBox({
-                    rightLabel: splitedPermissions[1],
-                    name: splitedPermissions[0] + ":" + splitedPermissions[1],
-                    value: false,
-                    parentEl: this.fieldContainer.div,
-                    className: "eachPermissions"
-                });
-
-                box.on("updated", function (e, field) {
-                    if (field.getValue()) {
-                        Y.Wegas.UserFacade.rest.sendRequest({
-                            request: "/AddPermission/" + this.roleSelect.getValue().id + "/" + field.options.name +":" + this.options.targetEntityId,
-                            cfg: {
-                                method: "POST"
-                            }
-                        });
-                    } else {
-                        Y.Wegas.UserFacade.rest.sendRequest({
-                            request: "/DeletePermission/" + this.roleSelect.getValue().id + "/" + field.options.name +":" + this.options.targetEntityId,
-                            cfg: {
-                                method: "POST"
-                            }
-                        });
-                    }
-                    this.fireUpdatedEvt();
-                }, this);
-                this.permissionsCheckBoxes.push(box);
-            }, this);
-
-            this.checkboxValue();
-        },
-
-        getValue: function () {
-            this.value.id = this.roleSelect.getValue().id;
-            return this.value;
-        },
-
-        setValue: function (val, sendUpdatedEvent) {
-            inputEx.Wegas.PermissionSelect.superclass.setValue.call(this, val, sendUpdatedEvent);
-            this.roleSelect.setValue(val, false);
-            this.value = val;
-            this.checkboxValue();
-        },
-
-        checkboxValue: function () {
-            Y.Array.forEach(this.permissionsCheckBoxes, function(box) {
-                box.setValue(false, false);
-            });
-
-            //this.roleSelect.setValue(this.getValue(), false);
-            Y.Array.forEach(this.getValue().permissions, function (perm) {
-                var splitedPermissions = perm.split(":");
-                Y.Array.forEach(this.permissionsCheckBoxes, function (box) {
-                    if (box.options.rightLabel === splitedPermissions[1]) {
-                        box.setValue(true, false);
-                    }
-                }, this);
-            }, this);
-        },
-
-        destroy: function () {
-            inputEx.Wegas.PermissionSelect.superclass.destroy.call(this);
-            this.roleSelect.destroy();
-            var i;
-            for (i = 0; i < this.permissionsCheckBoxes.length; i += 1) {
-                this.permissionsCheckBoxes[i].destroy();
-            }
-        }
-
-    });
-    inputEx.registerType("permissionsselect", inputEx.Wegas.PermissionSelect);  // Register this class as "wegasurl" type
+    var inputEx = Y.inputEx, CONTENTBOX = "contentBox", RolePermissionList;
 
     /**
      * @name Y.Wegas.RolePermissionList
@@ -140,7 +22,6 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
      * @constructor
      * @param {Object} options
      */
-    var CONTENTBOX = "contentBox", RolePermissionList;
 
     RolePermissionList = Y.Base.create("wegas-permissionlist", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
         /** @lends Y.Wegas.RolePermissionList# */
@@ -166,16 +47,15 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
 
             var e = this.get("entity"),
             gmId = e.get("id");
+
             if (e instanceof Y.Wegas.persistence.GameModel) {
                 this.targetEntityId = "gm" + gmId;
             } else {
                 this.targetEntityId = "g" + gmId;
             }
+
             Y.Wegas.UserFacade.rest.sendRequest({
                 request: "/GameModelPermissions/" + this.targetEntityId,
-                cfg: {
-                    method: "GET"
-                },
                 on: {
                     success: Y.bind(function (e) {
                         var data = e.response.results.entities,
@@ -250,6 +130,126 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
     Y.namespace("Wegas").RolePermissionList = RolePermissionList;
 
     /**
+     *
+     * @name Y.inputEx.Wegas.PermissionSelect
+     * @class
+     * @extends Y.inputEx.Field
+     * @constructor
+     */
+    Y.namespace("inputEx.Wegas").PermissionSelect = function (options) {
+        inputEx.Wegas.PermissionSelect.superclass.constructor.call(this, options);
+    };
+
+    Y.extend(inputEx.Wegas.PermissionSelect, inputEx.Field,  {
+        /** @lends Y.inputEx.Wegas.PermissionSelect# */
+
+        setOptions: function (options) {
+            inputEx.Wegas.PermissionSelect.superclass.setOptions.call(this, options);
+            this.options.permissions = options.permissionsChoices;
+            this.options.roles = options.roles;
+            this.options.targetEntityId = options.targetEntityId;
+            this.value = {};
+        },
+
+        renderComponent: function () {
+            this.fireUpdatedEvt();
+
+            this.roleSelect = new inputEx.Wegas.RoleSelect({
+                parentEl: this.fieldContainer
+            });
+
+            this.roleSelect.on("updated", function (val) {
+
+                if (this.value.id !== val.id) {
+                    Y.Wegas.UserFacade.rest.deleteAllRolePermissions(this.value.id, this.options.targetEntityId);
+                }
+
+                this.value.id = val.id;
+                this.value.permissions = [];
+                this.checkboxValue();
+                this.fireUpdatedEvt();
+            }, this);
+
+            var logDiv = Y.Node.create('<div class="permissionList"></div>');
+            this.fieldContainer.div = this.fieldContainer.appendChild(logDiv.getDOMNode());
+            this.permissionsCheckBoxes = [];
+            Y.Array.forEach(this.options.permissions, function (item, i) {
+                var splitedPermissions = item.name.split(":"),
+                box = new inputEx.CheckBox({
+                    rightLabel: splitedPermissions[1],
+                    name: splitedPermissions[0] + ":" + splitedPermissions[1],
+                    value: false,
+                    parentEl: this.fieldContainer.div,
+                    className: "eachPermissions"
+                });
+
+                box.on("updated", function (e, field) {
+                    if (field.getValue()) {
+                        Y.Wegas.UserFacade.rest.sendRequest({
+                            request: "/AddPermission/" + this.roleSelect.getValue().id
+                            + "/" + field.options.name +":" + this.options.targetEntityId,
+                            cfg: {
+                                method: "POST"
+                            }
+                        });
+                    } else {
+                        Y.Wegas.UserFacade.rest.sendRequest({
+                            request: "/DeletePermission/" + this.roleSelect.getValue().id
+                            + "/" + field.options.name +":" + this.options.targetEntityId,
+                            cfg: {
+                                method: "POST"
+                            }
+                        });
+                    }
+                    this.fireUpdatedEvt();
+                }, this);
+                this.permissionsCheckBoxes.push(box);
+            }, this);
+
+            this.checkboxValue();
+        },
+
+        getValue: function () {
+            this.value.id = this.roleSelect.getValue().id;
+            return this.value;
+        },
+
+        setValue: function (val, sendUpdatedEvent) {
+            inputEx.Wegas.PermissionSelect.superclass.setValue.call(this, val, sendUpdatedEvent);
+            this.roleSelect.setValue(val, false);
+            this.value = val;
+            this.checkboxValue();
+        },
+
+        checkboxValue: function () {
+            Y.Array.forEach(this.permissionsCheckBoxes, function(box) {
+                box.setValue(false, false);
+            });
+
+            //this.roleSelect.setValue(this.getValue(), false);
+            Y.Array.forEach(this.getValue().permissions, function (perm) {
+                var splitedPermissions = perm.split(":");
+                Y.Array.forEach(this.permissionsCheckBoxes, function (box) {
+                    if (box.options.rightLabel === splitedPermissions[1]) {
+                        box.setValue(true, false);
+                    }
+                }, this);
+            }, this);
+        },
+
+        destroy: function () {
+            inputEx.Wegas.PermissionSelect.superclass.destroy.call(this);
+            this.roleSelect.destroy();
+            var i;
+            for (i = 0; i < this.permissionsCheckBoxes.length; i += 1) {
+                this.permissionsCheckBoxes[i].destroy();
+            }
+        }
+
+    });
+    inputEx.registerType("permissionsselect", inputEx.Wegas.PermissionSelect);  // Register this class as "wegasurl" type
+
+    /**
      * @fixme @hack override to receive events.
      *
      * @name Y.inputEx.Wegas.PermissionList
@@ -261,7 +261,6 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
     var PermissionList = function(options) {
         PermissionList.superclass.constructor.call(this, options);
     };
-
     Y.extend(PermissionList, inputEx.ListField,  {
         /** @lends Y.inputEx.Wegas.PermissionList# */
 

@@ -145,7 +145,10 @@ YUI.add('wegas-editable', function (Y) {
                             elts[i].plugins[j].cfg = elts[i].plugins[j].cfg || {};
                             Y.mix(elts[i].plugins[j].cfg, data, true);
                             if (elts[i].plugins[j].cfg.children) {
-                                mixMenuCfg(elts[i].plugins[j].cfg.children, data);
+                                mixMenuCfg(elts[i].plugins[j].cfg.children, data); // push data in children arg
+                            }
+                            if (elts[i].plugins[j].cfg.wchildren) {
+                                mixMenuCfg(elts[i].plugins[j].cfg.wchildren, data);// push data in wchildren
                             }
                         }
                     }
@@ -318,7 +321,7 @@ YUI.add('wegas-editable', function (Y) {
             }
             return new classDef(o);
         },
-        
+
         /**
          *
          * Combine use and revive function to get a revived entity.
