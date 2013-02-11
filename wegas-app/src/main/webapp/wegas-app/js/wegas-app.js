@@ -257,7 +257,7 @@ YUI.add('wegas-app', function (Y) {
          *
          * @function
          * @static
-         * @param {String}
+         * @param {String} str
          * @return {String} Escaped string
          */
         htmlEntities: function (str) {

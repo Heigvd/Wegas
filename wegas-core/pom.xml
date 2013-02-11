@@ -257,7 +257,7 @@
                 <executions>
                     <execution>
                         <id>copy-classes-to-embedded</id>
-                        <phase>compile</phase>
+                        <phase>process-test-classes</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
