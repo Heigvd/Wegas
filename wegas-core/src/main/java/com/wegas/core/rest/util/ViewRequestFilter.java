@@ -20,11 +20,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * This filters takes the first path segment and uses it as the current View in
- * the
+ * This filters takes the first path segment (first line of code) and uses it as the
+ * current View in for jackson serialization.
  *
  * @see com.wegas.core.ejb.RequestManager . Available view are "Index",
- * "Public", "Private" and "Export".
+ * "Public", "Private" and "Export", "Editor" and "PrivatEditor"
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -33,7 +33,7 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
     /**
-     *
+     * Handle view parameter
      *
      * @param cr
      * @return
@@ -52,18 +52,20 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
             rmf.setLocale(Locale.getDefault());
         }
 
-        // Handle view parameter
+
         String newUri = cr.getRequestUri().toString();
         String firstPathSeg = cr.getPathSegments().get(0).getPath();
 
         switch (firstPathSeg) {
 
             case "Private":
+            case "PrivateEditor":
                 String id = cr.getPathSegments().get(1).getPath();
                 rmf.setView(this.stringToView(firstPathSeg));
                 rmf.setPlayer(new Long(id));
-                newUri = newUri.replace("Private/" + id + "/", "");
+                newUri = newUri.replace(firstPathSeg + "/" + id + "/", "");
                 break;
+
             case "Index":
             case "Public":
             case "Export":
@@ -98,6 +100,9 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
 
             case "Private":
                 return Views.Private.class;
+
+            case "PrivateEditor":
+                return Views.PrivateEditor.class;
 
             case "Export":
                 return Views.Export.class;

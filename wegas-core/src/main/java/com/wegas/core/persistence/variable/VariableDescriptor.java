@@ -38,9 +38,10 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-    //    @UniqueConstraint(columnNames = {"gamemodel_id", "name"})             // Name has to be unique for the whole game model
-    @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"}) // Names have to be unique at the base of a game model (root elements)
-//    @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})        // Names have to be unique within a list
+    @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})               // Names have to be unique at the base of a
+                                                                                // game model (root elements)
+// @UniqueConstraint(columnNames = {"gamemodel_id", "name"})                    // Name has to be unique for the whole game model
+// @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Names have to be unique within a list
 })
 @NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptor variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
 @JsonSubTypes(value = {
@@ -147,6 +148,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void propagateDefaultInstance(boolean force) {
         this.getScope().propagateDefaultInstance(force);
+    }
+
+    /**
+     *
+     */
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        if ((this.editorLabel == null || !this.editorLabel.isEmpty()) && this.label != null) {
+            this.editorLabel = this.label;
+        }
     }
 
     /**
@@ -293,16 +305,5 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    /**
-     *
-     */
-    @PrePersist
-    @PreUpdate
-    public void prePersist() {
-        if ((this.editorLabel == null || !this.editorLabel.isEmpty()) && this.label != null) {
-            this.editorLabel = this.label;
-        }
     }
 }

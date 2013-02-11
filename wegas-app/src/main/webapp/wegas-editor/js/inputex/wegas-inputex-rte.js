@@ -191,7 +191,10 @@ YUI.add("wegas-inputex-rte", function (Y) {
         setValue: function (value) {
             var tmceI = tinyMCE.get(this.el.id);
 
-            value = value.replace(new RegExp("data-file=\"([^\"]*)\"", "gi"), "src=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\"");
+            if (value) {
+                value = value.replace(
+                    new RegExp("data-file=\"([^\"]*)\"", "gi"), "src=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\"");
+            }
             RTEField.superclass.setValue.call(this, value);
 
             if (tmceI) {

@@ -98,7 +98,7 @@ public class VariableDescriptorController {
      */
     @POST
     @Path("{variableDescriptorId : [1-9][0-9]*}")
-    public ListDescriptor createChild(@PathParam("entityId") Long entityId, VariableDescriptor entity) {
+    public ListDescriptor createChild(@PathParam("variableDescriptorId") Long entityId, VariableDescriptor entity) {
 
         SecurityUtils.getSubject().
                 checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());

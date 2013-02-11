@@ -276,7 +276,7 @@ YUI.add('wegas-entity', function(Y) {
             cssClass: "editor-gameProperties-button"
         }, {
             type: "Button",
-            label: "View as",
+            label: "View",
             plugins: [{
                 fn: "OpenGameAction"
             }]
