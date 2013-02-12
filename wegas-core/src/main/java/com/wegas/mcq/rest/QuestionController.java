@@ -7,10 +7,10 @@
  */
 package com.wegas.mcq.rest;
 
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.WegasException;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
@@ -63,9 +63,9 @@ public class QuestionController {
 
         checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
 
-        Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, new Long(0));
+        Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, Long.valueOf(0));
         //Reply reply =
-        //    questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), new Long(0));
+        //    questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), Long.valueOf(0));
 
         questionDescriptorFacade.validateReply(playerId, reply.getId());
         requestFacade.commit();

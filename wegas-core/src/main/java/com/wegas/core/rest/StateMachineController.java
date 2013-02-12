@@ -12,12 +12,12 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.ejb.statemachine.StateMachineDescriptorFacade;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.exception.WegasException;
 import com.wegas.leaderway.persistence.DialogueTransition;
 import java.util.List;
 import javax.ejb.EJB;
@@ -58,7 +58,7 @@ public class StateMachineController {
 
 //    @Override
 //    public StateMachineDescriptor create(AbstractEntity entity) {
-//        Long gameModelId = new Long(this.getPathParam("gameModelId"));
+//        Long gameModelId = Long.valueOf(this.getPathParam("gameModelId"));
 //        this.stateMachineDescriptorFacade.create(gameModelId, (StateMachineDescriptor) entity);
 //        return (StateMachineDescriptor) entity;
 //    }

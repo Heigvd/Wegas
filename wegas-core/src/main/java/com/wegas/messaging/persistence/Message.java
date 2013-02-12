@@ -12,6 +12,7 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.persistence.*;
@@ -135,15 +136,30 @@ public class Message extends NamedEntity {
     @PostPersist
     @PostUpdate
     @PostRemove
-    private void onUpdate() {
+    public void onUpdate() {
         this.getInboxInstanceEntity().onInstanceUpdate();
     }
 
     @Override
     public boolean equals(Object o) {
-        Message vd = (Message) o;
-        // @fixme is null variable returning false the right thing ?
-        return vd.getId() == null || this.getId() == null || this.getId().equals(vd.getId());
+        if (o instanceof Message) {
+            Message vd = (Message) o;
+            // @fixme is null variable returning false the right thing ?
+            return vd.getId() == null || this.getId() == null || this.getId().equals(vd.getId());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.id);
+        hash = 53 * hash + Objects.hashCode(this.subject);
+        hash = 53 * hash + Objects.hashCode(this.sentTime);
+        hash = 53 * hash + Objects.hashCode(this.unread);
+        hash = 53 * hash + Objects.hashCode(this.from);
+        return hash;
     }
 
     /**
@@ -211,14 +227,14 @@ public class Message extends NamedEntity {
      * @return the startTime
      */
     public Date getTime() {
-        return sentTime;
+        return (Date)sentTime.clone();
     }
 
     /**
      * @param time
      */
     public void setTime(Date time) {
-        this.sentTime = time;
+        this.sentTime.setTime(time.getTime());
     }
 
     /**

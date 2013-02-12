@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * @todo refactor so assignements points to task instances
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -33,6 +34,10 @@ public class Assignment extends AbstractEntity {
      *
      */
     private Long startTime;
+    /*
+     *
+     */
+    private Long completness = Long.valueOf(0);
     /**
      *
      */
@@ -155,5 +160,19 @@ public class Assignment extends AbstractEntity {
      */
     public Long setTaskDescriptorId(long newTaskDescriptorId) {
         return this.taskDescriptorId = newTaskDescriptorId;
+    }
+
+    /**
+     * @return the completness
+     */
+    public Long getCompletness() {
+        return completness;
+    }
+
+    /**
+     * @param completness the completness to set
+     */
+    public void setCompletness(Long completness) {
+        this.completness = completness;
     }
 }

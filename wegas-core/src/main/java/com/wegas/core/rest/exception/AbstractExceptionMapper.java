@@ -53,8 +53,8 @@ public abstract class AbstractExceptionMapper {
             return processException(dbe.getInternalException());
 
         } else if (exception instanceof javax.script.ScriptException) {
-            logger.error(exception.getLocalizedMessage());
             javax.script.ScriptException scriptException = (javax.script.ScriptException) exception;
+            logger.error(exception.getLocalizedMessage());
 
             if (scriptException.getCause() instanceof ConstraintViolationException) {
                 return processException(scriptException.getCause());
@@ -65,34 +65,36 @@ public abstract class AbstractExceptionMapper {
             }
 
         } else if (exception instanceof SQLException) {
-            logger.error(exception.getLocalizedMessage());
             SQLException sqlException = (SQLException) exception;
+            logger.error(exception.getLocalizedMessage());
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(new ExceptionWrapper("400", sqlException.getClass(), sqlException.getLocalizedMessage())).build();
 
         } else if (exception instanceof WegasException) {
-            logger.error(exception.getLocalizedMessage());
             WegasException wegasException = (WegasException) exception;
+            logger.error(exception.getLocalizedMessage());
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(new ExceptionWrapper("400", wegasException.getClass(), wegasException.getLocalizedMessage())).build();
 
         } else if (exception instanceof javax.validation.ConstraintViolationException) {
             javax.validation.ConstraintViolationException constraintViolationException = (javax.validation.ConstraintViolationException) exception;
 
-            String msg = RequestFacade.lookup().getBundle("com.wegas.app.errors").getString("constraint"); //internationalised error (sample)
+            StringBuilder sb = new StringBuilder(
+                    RequestFacade.lookup().getBundle("com.wegas.app.errors").getString("constraint")); //internationalised error (sample)
             Iterator it = constraintViolationException.getConstraintViolations().iterator();
+
             while (it.hasNext()) {
                 javax.validation.ConstraintViolation violation = (javax.validation.ConstraintViolation) it.next();
-                msg += "\n" + violation.getLeafBean() + ":" + violation.getRootBean() + violation.getPropertyPath();
+                sb.append("\n").append(violation.getLeafBean()).append(":").append(violation.getRootBean()).append(violation.getPropertyPath());
             }
-            logger.error(msg);
+            logger.error(sb.toString());
             // constraintViolationException.getMessage()
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
 
-
         } else {
-            logger.error(RequestFacade.lookup().getBundle("com.wegas.app.errors").getString("unexpected"), exception); //internationalised error (sample)
+            logger.error(RequestFacade.lookup().
+                    getBundle("com.wegas.app.errors").getString("unexpected"), exception); //internationalised error (sample)
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
         }
