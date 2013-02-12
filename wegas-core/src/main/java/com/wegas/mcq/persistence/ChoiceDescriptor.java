@@ -57,11 +57,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      */
-    private Long duration = new Long(1);
+    private Long duration = Long.valueOf(1);
     /**
      *
      */
-    private Long cost = new Long(0);
+    private Long cost = Long.valueOf(0);
 
     /**
      *

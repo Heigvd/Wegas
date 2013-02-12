@@ -61,7 +61,7 @@ public class Pages implements Serializable {
             if (n.hasProperty("pageName")) {
                 name = n.getProperty("pageName").getString();
             }
-            ret.put(new Integer(n.getName()), name);
+            ret.put(Integer.valueOf(n.getName()), name);
         }
         return ret;
     }
@@ -80,7 +80,7 @@ public class Pages implements Serializable {
         while (it.hasNext()) {
             Node n = (Node) it.next();
             try {
-                Page p = new Page(new Integer(n.getName()), n.getProperty("content").getString());
+                Page p = new Page(Integer.valueOf(n.getName()), n.getProperty("content").getString());
                 //pageMap.put(p.getId().toString(),  p.getContent());
                 ret.put(p.getId(), p.getContent());
             } catch (IOException ex) {
@@ -105,7 +105,7 @@ public class Pages implements Serializable {
         Page ret = null;
         try {
             if (n != null) {
-                ret = new Page(new Integer(n.getName()), n.getProperty("content").getString());
+                ret = new Page(Integer.valueOf(n.getName()), n.getProperty("content").getString());
             }
         } catch (IOException ex) {
             //Well Stored String is wrong
