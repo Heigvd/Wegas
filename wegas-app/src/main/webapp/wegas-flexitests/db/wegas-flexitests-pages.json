@@ -1,0 +1,22 @@
+{
+    "1": {
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "Text",
+                "content": "Test text",
+                "plugins": [{
+                        "fn": "Position",
+                        "cfg": {
+                            "x": "50",
+                            "y": "50"
+                        }
+                    }]
+            }]
+    },
+    "1000": {
+        "type": "Form",
+        "plugins": [{
+                "fn": "UserPreferences"
+            }]
+    }
+}
