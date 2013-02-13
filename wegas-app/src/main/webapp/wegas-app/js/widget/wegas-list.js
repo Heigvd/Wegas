@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-list', function (Y) {
+YUI.add('wegas-list', function(Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
@@ -37,7 +37,7 @@ YUI.add('wegas-list', function (Y) {
          * @description set class of the contentbox (vertical or horizontal)
          * add class with "clear:both" style after the contentbox.
          */
-        syncUI: function () {
+        syncUI: function() {
             var cb = this.get(CONTENTBOX);
 
             if (this.get('direction') === 'vertical') {
@@ -49,7 +49,6 @@ YUI.add('wegas-list', function (Y) {
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
         },
-
         //Children serialization
         /**
          * @function
@@ -57,11 +56,11 @@ YUI.add('wegas-list', function (Y) {
          * @return object
          * @description Children serialization
          */
-        toObject: function () {
-            var i, object, children = [];
-            object = Y.Wegas.Editable.prototype.toObject.apply(this, Array.prototype.slice.call(arguments));
+        toObject: function() {
+            var i, object, children = [], args = Array.prototype.slice.call(arguments);
+            object = Y.Wegas.Editable.prototype.toObject.apply(this, args);
             for (i = 0; i < this.size(); i = i + 1) {
-                children.push(this.item(i).toObject());
+                children.push(this.item(i).toObject(args));
             }
             object.children = children;
             return object;

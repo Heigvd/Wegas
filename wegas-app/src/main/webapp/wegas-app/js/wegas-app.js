@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-app', function (Y) {
+YUI.add('wegas-app', function(Y) {
     "use strict";
 
     /**
@@ -52,13 +52,12 @@ YUI.add('wegas-app', function (Y) {
          * @private
          */
         dataSources: [],
-
         /**
          * Lifecycle methods
          * @function
          * @private
          */
-        initializer: function () {
+        initializer: function() {
             Y.Wegas.app = this;
             /**
              * @name Cocktail#shake
@@ -68,40 +67,38 @@ YUI.add('wegas-app', function (Y) {
              */
             this.publish("render", {});
         },
-
         /**
          * Destructor methods.
          * @function
          * @private
          */
-        destructor : function () {
+        destructor: function() {
             var i;
             for (i = 0; i < this.dataSources.length; i = i + 1) {
                 this.dataSources[i].destroy();
             }
         },
-
         /**
          * Render function
          * @function
          * @private
          */
-        render: function () {
+        render: function() {
             Y.io.header("Accept-Language", Y.config.lang);                      // Set the language for all requests
             Y.JSON.useNativeParse = true;                                       // @todo Shall we use browser native parser ?
 
-            this.on("render", function () {                                     // Remove loading overlay on render
+            this.on("render", function() {                                     // Remove loading overlay on render
                 Y.one("body").removeClass("wegas-loading-overlay");
             });
 
-            Y.on("io:failure", function (tId, e) {
+            Y.on("io:failure", function(tId, e) {
                 if (!e) {
                     return;
                 }
                 var exception = e.responseText.substring(e.responseText.indexOf('"exception'), e.responseText.length);
                 exception = exception.split(",");
                 if (e.status === 400 && exception[0] === '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
-                    exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {
+                        exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {
                     // Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login
                     alert("You have been logged out or does not have permissions");
                 }
@@ -109,16 +106,15 @@ YUI.add('wegas-app', function (Y) {
 
             this.initDataSources();
         },
-
         // *** Private methods ** //
         /**
          * @function
          * @private
          * @description initilize DataSources
          */
-        initDataSources: function () {
+        initDataSources: function() {
             var k, dataSource, dataSources = this.get('dataSources'),
-            onInitialRequest = function () {
+                    onInitialRequest = function() {
                 this.requestCounter -= 1;
                 if (this.requestCounter === 0) {
                     this.initPage();                                       // Run the initPage() method when they all arrived.
@@ -143,17 +139,16 @@ YUI.add('wegas-app', function (Y) {
                 this.initPage();
             }
         },
-
         /**
          * @function
          * @private
          * @description initPage methods
          */
-        initPage: function () {
+        initPage: function() {
             Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + App.genId(), {
                 context: this,
                 on: {
-                    success: function (id, o, args) {
+                    success: function(id, o, args) {
                         var cfg;
                         try {
                             cfg = Y.JSON.parse(o.responseText);		// Process the JSON data returned from the server
@@ -163,21 +158,21 @@ YUI.add('wegas-app', function (Y) {
                             return;
                         }
 
-                        Y.Wegas.Widget.use(cfg, Y.bind(function (cfg) {         // Load the subwidget dependencies
+                        Y.Wegas.Widget.use(cfg, Y.bind(function(cfg) {         // Load the subwidget dependencies
                             this.widget = Y.Wegas.Widget.create(cfg);           // Render the subwidget
                             this.widget.render();
                             this.fire("render");                         // Fire a render event for some eventual post processing
                         }, this, cfg));
 
-                    //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
-                    //this.pageLoader.render();
-                    // cfg.id = -100;
-                    // this.dataSources.Page.data.push(cfg);
-                    //try {
-                    //    this.pageLoader.set("pageId", -100);
-                    //} catch (renderException) {
-                    //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
-                    //}
+                        //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
+                        //this.pageLoader.render();
+                        // cfg.id = -100;
+                        // this.dataSources.Page.data.push(cfg);
+                        //try {
+                        //    this.pageLoader.set("pageId", -100);
+                        //} catch (renderException) {
+                        //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
+                        //}
 
                     }
                 }
@@ -194,7 +189,7 @@ YUI.add('wegas-app', function (Y) {
              * Base url for app
              */
             base: {
-                getter: function () {
+                getter: function() {
                     return Y.config.groups.wegas.base;
                 }
             },
@@ -212,34 +207,41 @@ YUI.add('wegas-app', function (Y) {
             /**
              * Object litteral representing current user.
              */
-            currentUser: { },
+            currentUser: {},
             /**
              *
              */
             devMode: {
                 value: false,
-                setter: function (val) {
+                setter: function(val) {
                     if (val) {
                         Y.one("body").addClass("wegas-devmode");
+                        //if (YUI_config.debug) {
+                        window.Y = Y;
+                        //}
+                    } else {
+                        Y.one("body").removeClass("wegas-devmode");
+                        // if (YUI_config.debug) {
+                        delete window.Y;
+                        //}
                     }
                 }
             },
             /**
-            * This field is used to globally override Entities edition menus.
-            * Use the target class name as the key.
-            */
+             * This field is used to globally override Entities edition menus.
+             * Use the target class name as the key.
+             */
             editorMenus: {
                 value: {}
             },
             /**
-            * This field is used to globally override Entities edition forms.
-            * Use the target class name as the key.
-            */
+             * This field is used to globally override Entities edition forms.
+             * Use the target class name as the key.
+             */
             editorForms: {
                 value: {}
             }
         },
-
         /**
          * Generate ID an unique id based on current time.
          * @function
@@ -247,11 +249,10 @@ YUI.add('wegas-app', function (Y) {
          * @return {Number} time
          * @description
          */
-        genId: function () {
+        genId: function() {
             var now = new Date();
             return now.getHours() + now.getMinutes() + now.getSeconds();
         },
-
         /**
          * Escape a html string by replacing <, > and " by their html entities.
          *
@@ -260,13 +261,12 @@ YUI.add('wegas-app', function (Y) {
          * @param {String} str
          * @return {String} Escaped string
          */
-        htmlEntities: function (str) {
+        htmlEntities: function(str) {
             return String(str).replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
         },
-
         /**
          * Replace any text line return by a \<br \/\>
          * @function
@@ -274,16 +274,19 @@ YUI.add('wegas-app', function (Y) {
          * @param str {String}
          * @return {String} Escaped string
          */
-        nl2br: function (str) {
+        nl2br: function(str) {
             return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br />$2');
         }
     });
     Y.namespace('Wegas').App = App;
 
     /**
-     * Shortcut to activate developper mode
+     * Shortcut to activate developper mode. Allow access to Y instance. Toggle.
+     * Event keypress '°'
      */
-    Y.devMode = function () {
-        Y.Wegas.app.set("devMode", true);
-    };
+    Y.one("body").on("keypress", function(e) {
+        if (e.charCode === 176 && e.target === this) {
+            Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
+        }
+    });
 });

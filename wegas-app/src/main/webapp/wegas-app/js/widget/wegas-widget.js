@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-widget", function (Y) {
+YUI.add("wegas-widget", function(Y) {
     "use strict";
 
     var Lang = Y.Lang,
@@ -25,7 +25,7 @@ YUI.add("wegas-widget", function (Y) {
      * @private
      * @description Destroy itself and detach all function closed.
      */
-    destroySelf = function () {
+    destroySelf = function() {
         if (!this._node) {
             return;                                                             // The node has already been destroyed
         }
@@ -49,8 +49,8 @@ YUI.add("wegas-widget", function (Y) {
      * @name Y.Wegas.Widget
      * @class Extension common to all wegas widgets
      */
-    function Widget () {
-        this.after("render", function () {
+    function Widget() {
+        this.after("render", function() {
             var bb = this.get(BOUNDING_BOX);
             bb.addClass("wegas-widget");
             if (this.get("cssClass")) {
@@ -74,45 +74,41 @@ YUI.add("wegas-widget", function (Y) {
          * @private
          * @description function to fire an exception (event 'exception').
          */
-        defaultExceptionHandler: function (e) {
+        defaultExceptionHandler: function(e) {
             this.fire("exception", e.response.results);
         },
-
         /**
          * @function
          * @private
          * @description show an loading - overlay on all the screen.
          */
-        showOverlay: function () {
+        showOverlay: function() {
             this.get(BOUNDING_BOX)
                     .addClass("wegas-loading")
                     .prepend("<div class='wegas-loading-overlay'></div>");
         },
-
         /**
          * @function
          * @private
          * @description hide overlay (see function showOverlay).
          */
-        hideOverlay: function () {
+        hideOverlay: function() {
             this.get(BOUNDING_BOX)
                     .removeClass("wegas-loading")
                     .all("> .wegas-loading-overlay").remove(true);
         },
-
         /**
          * @function
          * @private
          * @description clear message (see function 'showMessage')
          */
-        emptyMessage: function () {						// Form msgs logic
+        emptyMessage: function() {						// Form msgs logic
             var msgNode = this.get(BOUNDING_BOX).one(".wegas-systemmessage");
             if (!msgNode) {
                 return;
             }
             msgNode.empty();
         },
-
         /**
          * Display a closable message with a status-image.
          * Status-image of message depends of level parameters
@@ -125,7 +121,7 @@ YUI.add("wegas-widget", function (Y) {
          * @param timeout
          * @description
          */
-        showMessage: function (level, txt, timeout) {
+        showMessage: function(level, txt, timeout) {
             var msgNode = this.getMessageNode(),
                     message = Y.Node.create("<div class='" + (LEVEL[level] || "") + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
             if (level === "success" && !timeout) {                          // @hack successful messages disapear automatically
@@ -143,14 +139,13 @@ YUI.add("wegas-widget", function (Y) {
                 message.timeout = Y.later(timeout, message, destroySelf);
             }
         },
-
         /**
          * @function
          * @private
          * @description get the message node of the current page.
          * If '.wegas-systemmessage' doesn't exist, create it.
          */
-        getMessageNode: function () {
+        getMessageNode: function() {
             var msgNode = this.get(BOUNDING_BOX).one(".wegas-systemmessage");
             if (!msgNode) {
                 this.get(BOUNDING_BOX).append("<div class='wegas-systemmessage'></div>");
@@ -158,7 +153,6 @@ YUI.add("wegas-widget", function (Y) {
             }
             return msgNode;
         },
-
         /**
          * @function
          * @private
@@ -166,7 +160,7 @@ YUI.add("wegas-widget", function (Y) {
          * @return boolean true is status is set.
          * @description set content of the message.
          */
-        setStatusMessage: function (txt) {
+        setStatusMessage: function(txt) {
             var statusNode = this._getStatusNode();
             if (statusNode === null) {
                 return false;
@@ -174,7 +168,6 @@ YUI.add("wegas-widget", function (Y) {
             statusNode.setContent(txt);
             return true;
         },
-
         /**
          * @function
          * @private
@@ -183,7 +176,7 @@ YUI.add("wegas-widget", function (Y) {
          * @description get the status node of the message.
          * if 'wegas-status-message' doesn't exist, create and return it
          */
-        _getStatusNode: function () {
+        _getStatusNode: function() {
             var statusNode;
             if (!(this.toolbar instanceof Y.Plugin.WidgetToolbar)) {
                 return null;
@@ -195,7 +188,6 @@ YUI.add("wegas-widget", function (Y) {
             }
             return statusNode;
         },
-
         /**
          * @function
          * @private
@@ -203,7 +195,7 @@ YUI.add("wegas-widget", function (Y) {
          * @return Status node
          * @description Get Class From plugin name. Hopefully a unique name ...
          */
-        _getPluginFromName: function (name) {
+        _getPluginFromName: function(name) {
             var i;
             for (i in Y.Plugin) {
                 if (Y.Plugin[i].NAME === name) {
@@ -273,7 +265,7 @@ YUI.add("wegas-widget", function (Y) {
                     _type: "hidden",
                     value: undefined
                 },
-                validator: function (s) {
+                validator: function(s) {
                     return (s === undefined || (Y.Lang.isString(s) && s.lenght > 0) || Y.Lang.isNumber(s));
                 }
             },
@@ -432,14 +424,14 @@ YUI.add("wegas-widget", function (Y) {
              * Plugins attached to the widget
              */
             plugins: {//For serialization purpose, get plugin configs
-                getter: function () {
+                getter: function() {
                     var i, p = [], plg;
                     for (i in this._plugins) {
                         plg = this[this._plugins[i].NS];
                         if (plg.toObject) {
                             p.push({
                                 "fn": this._getPluginFromName(this._plugins[i].NAME), //TODO: find an other referencing way
-                                "cfg": plg.toObject()
+                                "cfg": plg.toObject("type")
                             });
                         }
                     }
@@ -447,7 +439,7 @@ YUI.add("wegas-widget", function (Y) {
                 },
                 optional: true,
                 type: "array",
-                "transient": true,
+                "transient": false,
                 _inputex: {
                     useButtons: true,
                     _type: "editablelist",
@@ -463,7 +455,7 @@ YUI.add("wegas-widget", function (Y) {
          * @description function to create and return a widget with the given
          *  configuration. Log an exception if creation isn't possible.
          */
-        create: function (config) {
+        create: function(config) {
             var child, Fn, type = config.childType || config.type;
 
             if (type) {
@@ -478,17 +470,15 @@ YUI.add("wegas-widget", function (Y) {
 
             return child;
         },
-
         /**
          * @function
          * @private
          * @param cfg, cb
          * @description Load the modules from an Wegas widget definition
          */
-        use: function (cfg, cb) {
+        use: function(cfg, cb) {
             Y.Wegas.Editable.use(cfg, cb);
         },
-
         /**
          *
          *  This getter is to be used for any object attribute that references a VariableDescriptor and
@@ -504,7 +494,7 @@ YUI.add("wegas-widget", function (Y) {
          *  that references a VariableDescriptor and has either an name, id
          *  or expr parameter.
          */
-        VARIABLEDESCRIPTORGETTER: function (val, fullName) {
+        VARIABLEDESCRIPTORGETTER: function(val, fullName) {
             var ds = Y.Wegas.VariableDescriptorFacade;
             if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
 
@@ -532,7 +522,7 @@ YUI.add("wegas-widget", function (Y) {
     /**
      * @hack We override this function so widget are looked for in Wegas ns.
      */
-    Y.WidgetParent.prototype._createChild = function (config) {
+    Y.WidgetParent.prototype._createChild = function(config) {
         var defaultType = this.get("defaultChildType"),
                 altType = config.childType || config.type,
                 child,
@@ -562,7 +552,7 @@ YUI.add("wegas-widget", function (Y) {
      * @hack Override so plugin host accepts string definition of classes and
      * look it up in the Y.Wegas.* package.
      */
-    Y.DataSource.IO.prototype.plug = function (Plugin, config) {
+    Y.DataSource.IO.prototype.plug = function(Plugin, config) {
         var i, ln, ns;
 
         if (Lang.isArray(Plugin)) {

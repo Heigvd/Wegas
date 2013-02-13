@@ -1,0 +1,10 @@
+{
+    "@class":"GameModel",
+    "name":"FlexiTests",
+    "childVariableDescriptors":[],
+    "scriptLibrary": {
+        "default": ""
+    },
+    "cssUri":"wegas-flexitests/css/wegas-flexitests.css",
+    "widgetsUri":"wegas-flexitests/db/wegas-flexitests-pages.json#"
+}
