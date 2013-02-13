@@ -11,7 +11,8 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.exception.PersistenceException;
+import com.wegas.core.exception.NoResultException;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
@@ -151,27 +152,23 @@ public class GameController {
      */
     @GET
     @Path("/JoinGame/{token : .*}/")
-    @TransactionAttribute()
     public Object tokenJoinGame(@PathParam("token") String token) throws Exception {
         Game game = gameFacade.findByToken(token);
         Team team = null;
         if (game == null) {                                                     // We check if there is game with given token
             team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
             if (team == null) {
-                throw new Exception("Could not find any game associated with this token.");
+                throw new WegasException("Could not find any game associated with this token.");
             }
             game = team.getGame();
         }
 
-        try {                                        // We check if logged user is already registered in the target game
-            playerFacade.findByGameIdAndUserId(
-                    game.getId(), userFacade.getCurrentUser().getId());
-
+        try {                                       // We check if logged user is already registered in the target game
+            playerFacade.findByGameIdAndUserId(game.getId(), userFacade.getCurrentUser().getId());
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
-        } catch (PersistenceException e) {           // If there is no NoResultException, everything is ok, we can return the game
 
+        } catch (NoResultException e) {             // If there is no NoResultException, everything is ok, we can return the game
             SecurityUtils.getSubject().checkPermission("Game:Token:g" + game.getId());
-
             return (team != null) ? team : game;
         }
     }

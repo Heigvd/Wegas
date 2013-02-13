@@ -7,21 +7,19 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.exception.WegasException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.apache.shiro.SecurityUtils;
@@ -74,7 +72,8 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
 
     @Override
     public Team update(final Long gameId, Team entity) {
-        if ((this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0) || gameFacade.findByToken(entity.getToken()) != null) {
+        if ((this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)
+                || gameFacade.findByToken(entity.getToken()) != null) {
             throw new WegasException("This token is already in use.");
         }
         return super.update(gameId, entity);
@@ -99,18 +98,14 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      * @param token
      * @return first team found or null
      */
-    public Team findByToken(String token) {
-        Query findByToken = em.createNamedQuery("findTeamByToken");
+    public Team findByToken(final String token) {
+        final Query findByToken = em.createNamedQuery("findTeamByToken");
         findByToken.setParameter("token", token);
-        Team team;
         try {
-            team = (Team) findByToken.getSingleResult();
+            return (Team) findByToken.getSingleResult();
         } catch (NoResultException ex) {
-            team = null;
-        } catch (NonUniqueResultException ex) {
-            team = (Team) findByToken.getResultList().get(0);
+            return null;
         }
-        return team;
     }
 
     @Override

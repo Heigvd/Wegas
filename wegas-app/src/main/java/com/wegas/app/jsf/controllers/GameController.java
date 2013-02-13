@@ -8,12 +8,14 @@
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.exception.NoResultException;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -29,10 +31,25 @@ import org.apache.shiro.SecurityUtils;
 @RequestScoped
 public class GameController extends AbstractGameController {
 
+    /**
+     *
+     */
+    @ManagedProperty("#{param.gameId}")
+    private Long gameId;
+
+    /**
+     *
+     */
     @EJB
     private PlayerFacade playerFacade;
+    /**
+     *
+     */
     @EJB
     private UserFacade userFacade;
+    /**
+     *
+     */
     @Inject
     ErrorController errorController;
 
@@ -46,15 +63,38 @@ public class GameController extends AbstractGameController {
 
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
             currentPlayer = playerFacade.find(this.getPlayerId());
-            if (!userFacade.matchCurrentUser(currentPlayer.getId())
-                    && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {
-                externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml");
+        }
+
+        if (this.gameId != null) {                                              // If a playerId is provided, we use it
+            try {
+                currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,
+                        userFacade.getCurrentUser().getId());           // Try to check if current shiro user is registered to the target game
+
+            } catch (NoResultException e) {                                     // If we still have nothing
+                errorController.dispatch("You are not registered to this game.");
             }
         }
 
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            errorController.setErrorMessage("The game you are looking for could not be found, maybe it has been deleted.");
-            externalContext.dispatch("/wegas-app/view/error/error.xhtml");
+            errorController.dispatch("The game you are looking for could not be found, maybe it has been deleted.");
+
+        } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
+                && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {
+            externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml");
         }
+    }
+
+    /**
+     * @return the gameId
+     */
+    public Long getGameId() {
+        return gameId;
+    }
+
+    /**
+     * @param gameId the gameId to set
+     */
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
     }
 }
