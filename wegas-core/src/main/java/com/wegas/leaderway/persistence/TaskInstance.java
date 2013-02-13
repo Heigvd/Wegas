@@ -9,10 +9,13 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
+import javax.persistence.*;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
  *
@@ -40,6 +43,13 @@ public class TaskInstance extends VariableInstance {
      */
     @ElementCollection
     private Map<String, String> skillset = new HashMap<>();
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @JsonIgnore
+    private List<Assignment> assignements = new ArrayList<>();
 
     /**
      *
@@ -147,5 +157,19 @@ public class TaskInstance extends VariableInstance {
     public String getSkillset(String key) {
         return this.skillset.get(key);
         //return this.getDescriptor().getSk
+    }
+
+    /**
+     * @return the assignements
+     */
+    public List<Assignment> getAssignements() {
+        return assignements;
+    }
+
+    /**
+     * @param assignements the assignements to set
+     */
+    public void setAssignements(List<Assignment> assignements) {
+        this.assignements = assignements;
     }
 }

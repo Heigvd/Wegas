@@ -122,7 +122,7 @@ public class ResourceInstance extends VariableInstance {
      * @param task
      * @param startTime
      */
-    public void assign(Long startTime, TaskDescriptor task) {
+    public void assign(Double startTime, TaskInstance task) {
         this.addAssignement(new Assignment(startTime, task));
     }
 
