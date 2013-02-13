@@ -2,15 +2,45 @@
     "1": {
         "type": "AbsoluteLayout",
         "children": [{
-                "type": "Text",
-                "content": "Test text",
+                "type": "ChoiceList",
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "Male"
+                    },
+                    {
+                        "type": "Text",
+                        "content": "Male2"
+                    }
+                ],
                 "plugins": [{
                         "fn": "Position",
                         "cfg": {
-                            "x": "50",
-                            "y": "50"
+                            "left": "50",
+                            "top": "50"
                         }
                     }]
+            }, {
+                "type": "ChoiceList",
+                "plugins": [
+                    {
+                        "fn": "Position",
+                        "cfg": {
+                            "right": "50",
+                            "top": "50"
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "Female"
+                    },
+                    {
+                        "type": "Text",
+                        "content": "Female2"
+                    }
+                ]
             }]
     },
     "1000": {

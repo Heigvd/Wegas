@@ -585,6 +585,14 @@ YUI().use(function(Y) {
                     path: 'wegas-proggame/js/wegas-proggame-display-min.js',
                     requires: ['wegas-widget', 'crafty'],
                     ws_provides: 'ProgGameDisplay'
+                },
+                'wegas-choicelist': {
+                    path: "wegas-app/js/widget/wegas-choicelist-min.js",
+                    requires: ["wegas-list", "wegas-choicelistcss"],
+                    ws_provides: "ChoiceList"
+                },
+                'wegas-choicelistcss': {
+                    path: "wegas-app/css/wegas-choicelist.css"
                 }
             }
         },
