@@ -38,8 +38,8 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})               // Names have to be unique at the base of a
-                                                                                // game model (root elements)
+    @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"}) // Names have to be unique at the base of a
+// game model (root elements)
 // @UniqueConstraint(columnNames = {"gamemodel_id", "name"})                    // Name has to be unique for the whole game model
 // @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Names have to be unique within a list
 })
@@ -136,6 +136,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public void merge(AbstractEntity a) {
         super.merge(a);
         VariableDescriptor other = (VariableDescriptor) a;
+        this.setName(other.getName());
         this.setLabel(other.getLabel());
         this.setEditorLabel(other.getEditorLabel());
         this.defaultInstance.merge(other.getDefaultInstance());
@@ -153,13 +154,13 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    @PrePersist
-    @PreUpdate
-    public void prePersist() {
-        if ((this.editorLabel == null || !this.editorLabel.isEmpty()) && this.label != null) {
-            this.editorLabel = this.label;
-        }
-    }
+//    @PrePersist
+//    @PreUpdate
+//    public void prePersist() {
+//        if ((this.editorLabel == null || this.editorLabel.isEmpty()) && this.label != null) {
+//            this.editorLabel = this.label;
+//        }
+//    }
 
     /**
      *

@@ -17,6 +17,7 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -146,26 +147,16 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      */
     public Collection<Game> getPublicGames(Long userId) {
 
-        Role pRolle = roleFacade.findByName("Public");
-        Collection<Game> registerdGame = userFacade.registeredGames(userId);
+        final Role pRolle = roleFacade.findByName("Public");
+        final Set<String> permissions = pRolle.getPermissions();
+        final String PREFIX = "Game:View:g";
         Collection<Game> games = new ArrayList<>();
-        for (String permission : pRolle.getPermissions()) {
-            String splitedPermission[] = permission.split(":g");
-            String f = splitedPermission[1].substring(0, 1);
-            if (!f.equals("m") && splitedPermission[0].equals("Game:View")) {
-                Game g = this.find(Long.parseLong(splitedPermission[1]));
+
+        for (Game g: userFacade.registeredGames(userId)) {
+            if (permissions.contains(PREFIX+g.getId())) {
                 this.em.detach(g);
-                boolean registerd = false;
-                for (Game aRegisterdG : registerdGame) {
-                    if (g.equals(aRegisterdG)) {
-                        registerd = true;
-                        break;
-                    }
-                }
-                if (!registerd) {
-                    g.setName(g.getGameModel().getName() + " : " + g.getName());
-                    games.add(g);
-                }
+                g.setName(g.getGameModel().getName() + " : " + g.getName());
+                games.add(g);
             }
         }
         return games;

@@ -7,19 +7,20 @@
  */
 package com.wegas.core.security.servlet;
 
-import com.wegas.core.security.actions.Actions;
 import java.io.IOException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.shiro.ShiroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ *
+ *
+ * SAMPLE FILE NOT IN USE
+ *
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -49,43 +50,43 @@ public class PerformFunctionAndGoBackServlet extends HttpServlet implements Serv
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-        String actionResult = performAction(action);
-        request.setAttribute("actionResultMessage", actionResult);
-
-        // forward the request and response back to original page
-        String originalPage = request.getParameter("originalPage");
-        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(originalPage);
-        dispatcher.forward(request, response);
+//        String action = request.getParameter("action");
+//        String actionResult = performAction(action);
+//        request.setAttribute("actionResultMessage", actionResult);
+//
+//        // forward the request and response back to original page
+//        String originalPage = request.getParameter("originalPage");
+//        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(originalPage);
+//        dispatcher.forward(request, response);
     }
-
-    private String performAction(String actionName) {
-        try {
-            Actions action = findAction(actionName);
-            String result = action == null ? null : action.doIt();
-            log.debug("Performed function with result: " + result);
-            return result;
-        }
-        catch (ShiroException ex) {
-            log.debug("Function failed with " + ex.getMessage() + " message.");
-            return "Error: " + ex.getMessage();
-        }
-    }
-
-    private Actions findAction(String actionName) {
-        if (actionName == null) {
-            return null;
-        }
-
-        Actions[] values = Actions.values();
-
-        for (Actions action : values) {
-            if (actionName.equals(action.getName())) {
-                return action;
-            }
-        }
-        return null;
-    }
+//
+//    private String performAction(String actionName) {
+//        try {
+//            Actions action = findAction(actionName);
+//            String result = action == null ? null : action.doIt();
+//            log.debug("Performed function with result: " + result);
+//            return result;
+//        }
+//        catch (ShiroException ex) {
+//            log.debug("Function failed with " + ex.getMessage() + " message.");
+//            return "Error: " + ex.getMessage();
+//        }
+//    }
+//
+//    private Actions findAction(String actionName) {
+//        if (actionName == null) {
+//            return null;
+//        }
+//
+//        Actions[] values = Actions.values();
+//
+//        for (Actions action : values) {
+//            if (actionName.equals(action.getName())) {
+//                return action;
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      *

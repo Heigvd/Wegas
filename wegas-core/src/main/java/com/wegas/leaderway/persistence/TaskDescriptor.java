@@ -17,17 +17,16 @@ import javax.persistence.Entity;
 
 /**
  *
+ *
+ * @todo add predecessors @todo add requirements list<name, Object<grade, qty>
+ *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ *
+ * { "webdesigner": { limit: 100, levels: [{lvl: "junior", qty: 2}] }
+ *
  */
 @Entity
 public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
-
-
-    /**
-     *
-     */
-    @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
 
     private static final long serialVersionUID = 1L;
     /**
@@ -79,5 +78,4 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     public void setNo(int no) {
         this.no = no;
     }
-
 }

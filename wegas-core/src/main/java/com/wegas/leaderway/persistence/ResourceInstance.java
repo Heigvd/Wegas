@@ -327,13 +327,4 @@ public class ResourceInstance extends VariableInstance {
     public void setConfidenceHistory(Integer ref, Integer value) {
         this.confidenceHistory.set(ref, value);
     }
-    @Embedded
-    private Requirement requirement;
-}
-
-@Embeddable
-class Requirement {
-
-    public Requirement() {
-    }
 }

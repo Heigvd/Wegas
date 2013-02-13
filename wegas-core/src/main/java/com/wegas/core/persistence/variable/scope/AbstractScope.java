@@ -82,7 +82,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
         Map<Long, VariableInstance> ret = new HashMap<>();
         RequestFacade rmf = RequestFacade.lookup();
 
-        Long id = new Long(0);
+        Long id = Long.valueOf(0);
         if (this instanceof TeamScope) {
             id = rmf.getPlayer().getTeam().getId();
         } else if (this instanceof PlayerScope) {
