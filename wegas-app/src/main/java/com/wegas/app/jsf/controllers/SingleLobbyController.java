@@ -10,9 +10,11 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.exception.NoResultException;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
@@ -22,6 +24,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -55,7 +58,7 @@ public class SingleLobbyController implements Serializable {
      *
      */
     @EJB
-    private com.wegas.core.rest.GameController gameController;
+    private UserFacade userFacade;
     /**
      *
      */
@@ -67,6 +70,8 @@ public class SingleLobbyController implements Serializable {
 
     /**
      *
+     * @fixme rights management
+     *
      * @throws IOException if the target we dispatch to do not exist
      */
     @PostConstruct
@@ -77,10 +82,10 @@ public class SingleLobbyController implements Serializable {
             currentGame = gameFacade.findByToken(token);
             if (currentGame != null) {
                 try {
-                    // display game page
-                    externalContext.dispatch("/wegas-app/view/play.html?id=" + playerFacade.findCurrentPlayer(currentGame).getId());
+                    externalContext.dispatch(
+                            "/wegas-app/view/play.html?gameId=" + currentGame.getId());// display game page
                 } catch (PersistenceException e) {
-                    // Nothing to do. stay on current page
+                    // Nothing to do. stay on current page so player will choose his team
                 }
 
             } else {
@@ -88,11 +93,15 @@ public class SingleLobbyController implements Serializable {
                 if (currentTeam != null) {
                     try {
                         playerFacade.findCurrentPlayer(currentTeam.getGame());
-                    } catch (PersistenceException etp) {
-                        gameController.joinTeam(currentTeam.getId());           // Player has not joined yet, force join
+                    } catch (NoResultException etp) {
+                        if (SecurityUtils.getSubject().isPermitted("Game:Token:g" + currentTeam.getGame().getId())) {
+                            teamFacade.joinTeam(currentTeam, userFacade.getCurrentUser());// Player has not joined yet, force join
+                        } else {
+                            externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // not allowed
+                        }
                     }
-                    externalContext.dispatch("/wegas-app/view/play.html?id="
-                            + playerFacade.findCurrentPlayer(currentTeam.getGame()).getId());// display game page
+                    externalContext.dispatch(
+                            "/wegas-app/view/play.html?gameId=" + currentTeam.getGame().getId());// display game page
 
                 } else {
                     externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // no game
@@ -120,10 +129,16 @@ public class SingleLobbyController implements Serializable {
     }
 
     /**
-     *
-     * @return
+     * @return the currentGame
      */
-    public Game getCurrentGameByTocken() {
-        return gameFacade.findByToken(this.token);
+    public Game getCurrentGame() {
+        return currentGame;
+    }
+
+    /**
+     * @param currentGame the currentGame to set
+     */
+    public void setCurrentGame(Game currentGame) {
+        this.currentGame = currentGame;
     }
 }

@@ -11,7 +11,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.exception.PersistenceException;
+import com.wegas.core.exception.NoResultException;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
@@ -77,10 +77,10 @@ public class EditorGameController extends AbstractGameController {
 
         } else if (this.teamId != null) {                                       // If a team id is provided
             try {
-                currentPlayer = teamFacade.find(this.teamId).getPlayers().get(0); // Return the first player
+                currentPlayer = teamFacade.find(this.teamId).getPlayers().get(0);// Return the first player
 
             } catch (ArrayIndexOutOfBoundsException ex) {
-                errorController.setErrorMessage("Team " + teamFacade.find(this.teamId).getName() + " has no player.");
+                errorController.dispatch("Team " + teamFacade.find(this.teamId).getName() + " has no player.");
 
             }
 
@@ -88,23 +88,22 @@ public class EditorGameController extends AbstractGameController {
             try {
                 currentPlayer = playerFacade.findByGameModelId(this.gameModelId);// Select any player in this game model
 
-            } catch (PersistenceException e) {
-                errorController.setErrorMessage("Game model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
+            } catch (NoResultException e) {
+                errorController.dispatch("Game model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
 
             }
 
         } else if (this.gameId != null) {                                       // If a game id is provided
             try {
                 currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,
-                        userFacade.getCurrentUser().getId());               // Try to check if current shiro user is registered to the target game
+                        userFacade.getCurrentUser().getId());           // Try to check if current shiro user is registered to the target game
 
-            } catch (PersistenceException e) {                                     // If we still have nothing
-
+            } catch (NoResultException e) {                                     // If we still have nothing
                 try {
                     currentPlayer = playerFacade.findByGameId(this.gameId);     // Select any player in that game
 
-                } catch (PersistenceException e2) {
-                    errorController.setErrorMessage("Game " + gameFacade.find(this.gameId).getName() + " has no players.");
+                } catch (NoResultException e2) {
+                    errorController.dispatch("Game " + gameFacade.find(this.gameId).getName() + " has no players.");
 
                 }
             }

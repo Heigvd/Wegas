@@ -21,7 +21,10 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -79,16 +82,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         final Root<Game> game = cq.from(Game.class);
         cq.where(cb.equal(game.get(Game_.token), token));
         Query q = em.createQuery(cq);
-        Game g;
         try {
-            g = (Game) q.getSingleResult();
+            return (Game) q.getSingleResult();
         } catch (NoResultException ex) {
-            g = null;
-        } catch (NonUniqueResultException ex) {
-            g = (Game) q.getResultList().get(0);
+            return null;
         }
-        return g;                                     // If there is more than one game with this token, use the 1st one
-        //return (Game) q.getSingleResult();
     }
 
     /**
@@ -152,8 +150,8 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         final String PREFIX = "Game:View:g";
         Collection<Game> games = new ArrayList<>();
 
-        for (Game g: userFacade.registeredGames(userId)) {
-            if (permissions.contains(PREFIX+g.getId())) {
+        for (Game g : userFacade.registeredGames(userId)) {
+            if (permissions.contains(PREFIX + g.getId())) {
                 this.em.detach(g);
                 g.setName(g.getGameModel().getName() + " : " + g.getName());
                 games.add(g);
