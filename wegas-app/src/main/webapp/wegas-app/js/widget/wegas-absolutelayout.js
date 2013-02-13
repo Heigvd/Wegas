@@ -11,9 +11,7 @@
  */
 YUI.add('wegas-absolutelayout', function(Y) {
     "use strict";
-
     var CONTENTBOX = 'contentBox', AbsoluteLayout, PositionPlugin;
-
     /**
      * @name Y.Wegas.AbsoluteLayout
      * @extends Y.Widget
@@ -58,18 +56,20 @@ YUI.add('wegas-absolutelayout', function(Y) {
          * @lends Y.Wegas.AbsoluteLayout
          */
         NAME: "wegas-absolutelayout",
+        EDITORNAME: "Absolute Layout",
         ATTRS: {
         }
     });
-
     PositionPlugin = Y.Base.create("wegas-position", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /**
          * @lends Y.Plugin.Position#
          */
         initializer: function() {
             this.get("host").get("boundingBox").setStyle("position", "absolute");
-            this.set("x", this.get("x"));
-            this.set("y", this.get("y"));
+            this.set("left", this.get("left"));
+            this.set("top", this.get("top"));
+            this.set("right", this.get("right"));
+            this.set("bottom", this.get("bottom"));
         }
     }, {
         /**
@@ -78,23 +78,32 @@ YUI.add('wegas-absolutelayout', function(Y) {
         NAME: "position",
         NS: "position",
         ATTRS: {
-            x: {
-                value: 0,
+            left: {
                 setter: function(value) {
                     this.get("host").get("boundingBox").setStyle("left", +value + "px");
                     return value;
                 }
             },
-            y: {
-                value: 0,
+            top: {
                 setter: function(value) {
                     this.get("host").get("boundingBox").setStyle("top", +value + "px");
+                    return value;
+                }
+            },
+            right: {
+                setter: function(value) {
+                    this.get("host").get("boundingBox").setStyle("right", +value + "px");
+                    return value;
+                }
+            },
+            bottom: {
+                setter: function(value) {
+                    this.get("host").get("boundingBox").setStyle("bottom", +value + "px");
                     return value;
                 }
             }
         }
     });
-
     Y.namespace('Wegas').AbsoluteLayout = AbsoluteLayout;
     Y.namespace("Plugin").Position = PositionPlugin;
 });

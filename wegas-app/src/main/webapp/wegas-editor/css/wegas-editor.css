@@ -158,7 +158,8 @@ body {
 .wegas-editor-treeview .yui3-treeleaf-content-header {
     cursor:pointer;
 }
-.wegas-editor-treeview .wegas-treeview-editmenubutton {
+.wegas-editor-treeview .wegas-treeview-editmenubutton,
+.wegas-page-editor .wegas-treeview-editmenubutton{
     width: 20px;
     height: 20px;
     cursor: pointer;
@@ -254,8 +255,9 @@ body {
     position: relative;
     min-width: 20px;
     min-height: 20px;
-    margin: 2px !important;
+    margin: 1px !important;
     -webkit-transition: margin 2s;
+    cursor:pointer;
 }
 .wegas-pageeditor-designmode .wegas-list,
 .wegas-pageeditor-designmode .wegas-pageloader{
