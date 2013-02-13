@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * This filters takes the first path segment (first line of code) and uses it as the
- * current View in for jackson serialization.
+ * This filters takes the first path segment (first line of code) and uses it as
+ * the current View in for jackson serialization.
  *
  * @see com.wegas.core.ejb.RequestManager . Available view are "Index",
  * "Public", "Private" and "Export", "Editor" and "PrivatEditor"
@@ -62,7 +62,7 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
             case "PrivateEditor":
                 String id = cr.getPathSegments().get(1).getPath();
                 rmf.setView(this.stringToView(firstPathSeg));
-                rmf.setPlayer(new Long(id));
+                rmf.setPlayer(Long.valueOf(id));
                 newUri = newUri.replace(firstPathSeg + "/" + id + "/", "");
                 break;
 
@@ -72,6 +72,10 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
             case "Editor":
                 rmf.setView(this.stringToView(firstPathSeg));
                 newUri = newUri.replace(firstPathSeg + "/", "");
+                break;
+
+            default:
+                rmf.setView(Views.Public.class);
                 break;
         }
 

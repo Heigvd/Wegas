@@ -16,23 +16,27 @@ import javax.persistence.Entity;
 
 /**
  *
+ *
+ * @todo add predecessors @todo add requirements list<name, Object<grade, qty>
+ *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ *
+ * { "webdesigner": { limit: 100, levels: [{lvl: "junior", qty: 2}] }
+ *
  */
 @Entity
 public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
-
-
-    /**
-     *
-     */
-    @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
     private String description;
+    /**
+     *
+     */
+    @ElementCollection
+    private Map<String, String> properties = new HashMap<>();
 
     /**
      *
@@ -59,4 +63,17 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         this.description = description;
     }
 
+    /**
+     * @return the properties
+     */
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
 }

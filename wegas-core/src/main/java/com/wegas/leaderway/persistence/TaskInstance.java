@@ -36,7 +36,7 @@ public class TaskInstance extends VariableInstance {
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
     /**
-     *
+     * @deprecated
      */
     @ElementCollection
     private Map<String, String> skillset = new HashMap<>();
@@ -146,5 +146,6 @@ public class TaskInstance extends VariableInstance {
      */
     public String getSkillset(String key) {
         return this.skillset.get(key);
+        //return this.getDescriptor().getSk
     }
 }

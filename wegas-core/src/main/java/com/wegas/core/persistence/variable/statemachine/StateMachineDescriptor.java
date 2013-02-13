@@ -12,6 +12,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.leaderway.persistence.DialogueDescriptor;
 import java.util.*;
+import java.util.Map.Entry;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -68,7 +69,9 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
         super.merge(smDescriptor);
     }
 
-    /* script methods */
+    /*
+     * script methods
+     */
     /**
      *
      * @param p
@@ -95,26 +98,21 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     }
 
     private void mergeStates(HashMap<Long, State> newStates) {
-
-        for (Iterator<Long> it = this.states.keySet().iterator(); it.hasNext();) {
-            Long oldKeys = it.next();
+        for (Iterator<Entry<Long, State>> it = this.states.entrySet().iterator(); it.hasNext();) {
+            Entry<Long, State> oldState = it.next();
+            Long oldKeys = oldState.getKey();
             if (newStates.get(oldKeys) == null) {
                 it.remove();
             } else {
-                this.states.get(oldKeys).merge(newStates.get(oldKeys));
+                oldState.getValue().merge(newStates.get(oldKeys));
             }
         }
-
-        Set<Long> keys = new HashSet<>();
-
-        for (Iterator<Long> it = newStates.keySet().iterator(); it.hasNext();) {
-            Long newKey = it.next();
+        for (Iterator<Entry<Long, State>> it = newStates.entrySet().iterator(); it.hasNext();) {
+            Entry<Long, State> newState = it.next();
+            Long newKey = newState.getKey();
             if (this.states.get(newKey) == null) {
-                keys.add(newKey);
+                this.states.put(newKey, newState.getValue());
             }
-        }
-        for (Long modifiedKey : keys) {
-            this.states.put(modifiedKey, newStates.get(modifiedKey));
         }
     }
 }

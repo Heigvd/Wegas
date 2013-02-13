@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest.util;
 
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.RequestFacade;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -47,9 +46,9 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
      */
     @Override
     public ObjectMapper getContext(Class<?> aClass) {
-        RequestManager rm = RequestFacade.lookup().getRequestManager();
+        Class view  = RequestFacade.lookup().getView();
 
-        mapper.getSerializationConfig().setSerializationView(rm.getView());     // Set up which view to use
+        mapper.getSerializationConfig().setSerializationView(view);             // Set up which view to use
         //mapper.getSerializationConfig().withView(Views.Editor.class);         // This kind of declaration does not work with glassfish jersey 1.11
         //mapper.writerWithView(Views.Editor.class);
 
