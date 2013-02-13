@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * @todo refactor so assignements points to task instances
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */

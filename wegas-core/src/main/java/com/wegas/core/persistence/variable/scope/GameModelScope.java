@@ -57,7 +57,7 @@ public class GameModelScope extends AbstractScope {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
-            this.setVariableInstance(new Long("0"), vd.getDefaultInstance().clone());
+            this.setVariableInstance(Long.valueOf(0), vd.getDefaultInstance().clone());
         } else if (force) {
             vi.merge(vd.getDefaultInstance());
         }
@@ -70,7 +70,7 @@ public class GameModelScope extends AbstractScope {
     @Override
     public Map<Long, VariableInstance> getVariableInstances() {
         Map<Long, VariableInstance> ret = new HashMap<Long, VariableInstance>();
-        ret.put(new Long("0"), getVariableInstance());
+        ret.put(Long.valueOf("0"), getVariableInstance());
         return ret;
     }
 

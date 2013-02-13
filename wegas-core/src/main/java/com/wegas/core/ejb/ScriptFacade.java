@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.event.EngineInvocationEvent;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
@@ -146,7 +147,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public void onEngineInstantiation(@Observes ScriptFacade.EngineInvocationEvent evt) throws ScriptException, WegasException {
+    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException, WegasException {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
 
         List<String> errorVariable = new ArrayList<>();
@@ -286,52 +287,5 @@ public class ScriptFacade implements Serializable {
      */
     public Object eval(Script s) throws ScriptException, WegasException {
         return this.eval(s, new HashMap<String, AbstractEntity>());
-    }
-
-    /**
-     *
-     */
-    public class EngineInvocationEvent {
-
-        private Player player;
-        private ScriptEngine engine;
-
-        /**
-         *
-         * @param player
-         * @param engine
-         */
-        public EngineInvocationEvent(Player player, ScriptEngine engine) {
-            this.player = player;
-            this.engine = engine;
-        }
-
-        /**
-         * @return the engine
-         */
-        public ScriptEngine getEngine() {
-            return engine;
-        }
-
-        /**
-         * @param engine the engine to set
-         */
-        public void setEngine(ScriptEngine engine) {
-            this.engine = engine;
-        }
-
-        /**
-         * @return the player
-         */
-        public Player getPlayer() {
-            return player;
-        }
-
-        /**
-         * @param player the player to set
-         */
-        public void setPlayer(Player player) {
-            this.player = player;
-        }
     }
 }

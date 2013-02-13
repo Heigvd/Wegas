@@ -48,11 +48,11 @@ final public class WFSConfig {
     /**
      * File size limit in bytes
      */
-    protected static final Long MAX_FILE_SIZE = new Long(Helper.getWegasProperty("jcr.file.maxsize"));
+    protected static final Long MAX_FILE_SIZE = Long.valueOf(Helper.getWegasProperty("jcr.file.maxsize"));
     /**
      * Repository size limit in bytes
      */
-    protected static final Long MAX_REPO_SIZE = new Long(Helper.getWegasProperty("jcr.repository.maxsize"));
+    protected static final Long MAX_REPO_SIZE = Long.valueOf(Helper.getWegasProperty("jcr.repository.maxsize"));
     /**
      * Custom namespaces registered with JCR.
      */

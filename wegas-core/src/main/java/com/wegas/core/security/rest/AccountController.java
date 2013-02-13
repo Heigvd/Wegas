@@ -12,7 +12,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.Secured;
-import java.io.IOException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;

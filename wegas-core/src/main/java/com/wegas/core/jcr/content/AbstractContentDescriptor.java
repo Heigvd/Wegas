@@ -285,7 +285,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
      * @return
      */
     public Long getBytes() {
-        return new Long(0);
+        return Long.valueOf(0);
     }
 
     /**

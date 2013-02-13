@@ -8,11 +8,13 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
-import com.wegas.core.exception.WegasException;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.jcr.RepositoryException;
@@ -46,12 +48,12 @@ public class PageController {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPages(@PathParam("gameModelId") String gameModelId)
+    public Response getPages(@PathParam("gameModelId") Long gameModelId)
             throws RepositoryException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = getGameModelPages(new Long(gameModelId));
+        Pages pages = getGameModelPages(gameModelId);
         return Response.ok(pages.getPages(), MediaType.APPLICATION_JSON).header("Page", "*").build();
     }
 
@@ -67,10 +69,10 @@ public class PageController {
     @GET
     @Path("/{pageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId)
+    public Response getPage(@PathParam("gameModelId") Long gameModelId, @PathParam("pageId") Integer pageId)
             throws RepositoryException, WegasException {
-        Pages pages = getGameModelPages(new Long(gameModelId));
-        Page page = pages.getPage(new Integer(pageId));
+        Pages pages = getGameModelPages(gameModelId);
+        Page page = pages.getPage(pageId);
 
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
@@ -93,12 +95,12 @@ public class PageController {
     @GET
     @Path("/index")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getIndex(@PathParam("gameModelId") String gameModelId)
+    public Response getIndex(@PathParam("gameModelId") Long gameModelId)
             throws RepositoryException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = getGameModelPages(new Long(gameModelId));
+        Pages pages = getGameModelPages(gameModelId);
         return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON).header("Page", "index").build();
     }
 
@@ -118,16 +120,17 @@ public class PageController {
     @Path("/{pageId : [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response setPage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId, JsonNode content)
+    public Response setPage(@PathParam("gameModelId") Long gameModelId, @PathParam("pageId") Integer pageId, JsonNode content)
             throws RepositoryException, IOException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = getGameModelPages(new Long(gameModelId));
-        Page page = new Page(new Integer(pageId), content);
+        Pages pages = getGameModelPages(gameModelId);
+        Page page = new Page(pageId, content);
         pages.store(page);
-        return Response.ok(pages.getPage(new Integer(pageId)).getContent(), MediaType.APPLICATION_JSON).header("Page", pageId).build();
+        return Response.ok(pages.getPage(pageId).getContent(), MediaType.APPLICATION_JSON).header("Page", pageId).build();
     }
+
     /**
      *
      * @param gameModelId
@@ -141,12 +144,12 @@ public class PageController {
     @Path("/{pageId : [1-9][0-9]*}/meta")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response setMeta(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId, Page page) throws RepositoryException, WegasException{
+    public Response setMeta(@PathParam("gameModelId") Long gameModelId, @PathParam("pageId") Integer pageId, Page page) throws RepositoryException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = getGameModelPages(new Long(gameModelId));
-        page.setId(new Integer(pageId));
+        Pages pages = getGameModelPages(gameModelId);
+        page.setId(pageId);
         pages.setMeta(page);
         return this.getPage(gameModelId, pageId);
     }
@@ -165,24 +168,24 @@ public class PageController {
     @Path("/new")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createPage(@PathParam("gameModelId") String gameModelId, JsonNode content)
+    public Response createPage(@PathParam("gameModelId") Long gameModelId, JsonNode content)
             throws RepositoryException, IOException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = getGameModelPages(new Long(gameModelId));
+        Pages pages = getGameModelPages(gameModelId);
         Map<Integer, String> index = pages.getIndex();
         Integer pageId = 1;
         while (index.containsKey(pageId)) {
             pageId++;
         }
-        Page page = new Page(new Integer(pageId), content);
+        Page page = new Page(pageId, content);
         pages.store(page);
-        return Response.ok(pages.getPage(new Integer(pageId)).getContent(), MediaType.APPLICATION_JSON).header("Page", pageId).build();
+        return Response.ok(pages.getPage(pageId).getContent(), MediaType.APPLICATION_JSON).header("Page", pageId).build();
     }
 
     /**
-     * Merges exisiting gameModelId's pages with the provided content, replacing
+     * Merges existing gameModelId's pages with the provided content, replacing
      * existing pages with those given, storing new pages and keeping previous
      * pages.
      *
@@ -196,14 +199,15 @@ public class PageController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response setPages(@PathParam("gameModelId") String gameModelId, Map<Integer, JsonNode> pageMap)
+    public Response setPages(@PathParam("gameModelId") Long gameModelId, Map<Integer, JsonNode> pageMap)
             throws RepositoryException, JSONException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = getGameModelPages(new Long(gameModelId));
-        for (Integer key : pageMap.keySet()) {
-            Page page = new Page(key, pageMap.get(key));
+        Pages pages = getGameModelPages(gameModelId);
+        for (Iterator<Entry<Integer, JsonNode>> it = pageMap.entrySet().iterator(); it.hasNext();) {
+            Entry<Integer, JsonNode> p = it.next();
+            Page page = new Page(p.getKey(), p.getValue());
             pages.store(page);
         }
         return getPages(gameModelId);
@@ -219,11 +223,11 @@ public class PageController {
      */
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("gameModelId") String gameModelId) throws RepositoryException, WegasException {
+    public Response delete(@PathParam("gameModelId") Long gameModelId) throws RepositoryException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = getGameModelPages(new Long(gameModelId));
+        Pages pages = getGameModelPages(gameModelId);
         pages.delete();
         return Response.ok().header("Page", "*").build();
     }
@@ -240,13 +244,13 @@ public class PageController {
     @DELETE
     @Path("/{pageId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deletePage(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") String pageId)
+    public Response deletePage(@PathParam("gameModelId") Long gameModelId, @PathParam("pageId") Integer pageId)
             throws RepositoryException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = getGameModelPages(new Long(gameModelId));
-        pages.deletePage(pageId);
+        Pages pages = getGameModelPages(gameModelId);
+        pages.deletePage(pageId.toString());
         return Response.ok().header("Page", pageId).build();
     }
 
@@ -266,12 +270,12 @@ public class PageController {
     @Path("/{pageId : [1-9][0-9]*}")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response patch(@PathParam("gameModelId") String gameModelId, @PathParam("pageId") Integer pageId, String patch)
+    public Response patch(@PathParam("gameModelId") Long gameModelId, @PathParam("pageId") Integer pageId, String patch)
             throws RepositoryException, JSONException, IOException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = getGameModelPages(new Long(gameModelId));
+        Pages pages = getGameModelPages(gameModelId);
         Page page = pages.getPage(pageId);
         if (page == null) {
             return Response.status(404).header("Page", pageId).build();

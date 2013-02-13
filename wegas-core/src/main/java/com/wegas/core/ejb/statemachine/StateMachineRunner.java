@@ -11,7 +11,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.ejb.event.PlayerAction;
+import com.wegas.core.event.PlayerAction;
 import com.wegas.core.exception.NoPlayerException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
