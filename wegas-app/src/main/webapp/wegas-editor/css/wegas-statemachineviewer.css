@@ -181,6 +181,8 @@ yui3-wegas-script-content{
     display:none;
 }
 .yui3-wegas-statemachineviewer-content .yui3-dd-dragging{
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
     box-shadow: none;
     background-color: white;
     border-radius: 0;
