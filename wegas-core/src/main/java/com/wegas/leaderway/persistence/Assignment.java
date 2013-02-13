@@ -32,7 +32,11 @@ public class Assignment extends AbstractEntity {
     /**
      *
      */
-    private Long startTime;
+    private double startTime;
+    /**
+     *
+     */
+    private double duration;
     /**
      *
      */
@@ -63,8 +67,22 @@ public class Assignment extends AbstractEntity {
      * @param startTime
      * @param taskDescriptor
      */
-    public Assignment(Long startTime, TaskDescriptor taskDescriptor) {
+    public Assignment(double startTime, TaskDescriptor taskDescriptor) {
         this.startTime = startTime;
+        this.duration = 0;
+        this.taskDescriptor = taskDescriptor;
+        this.taskDescriptorId = taskDescriptor.getId();
+    }
+
+    /**
+     *
+     * @param startTime
+     * @param duration
+     * @param taskDescriptor
+     */
+    public Assignment(double startTime, double duration, TaskDescriptor taskDescriptor) {
+        this.startTime = startTime;
+        this.startTime = duration;
         this.taskDescriptor = taskDescriptor;
         this.taskDescriptorId = taskDescriptor.getId();
     }
@@ -79,6 +97,7 @@ public class Assignment extends AbstractEntity {
         this.setTaskDescriptor(other.getTaskDescriptor());
         this.setResourceInstance(other.getResourceInstance());
         this.setStartTime(other.getStartTime());
+        this.setDuration(other.getDuration());
         this.taskDescriptorId = this.getTaskDescriptor().getId();
     }
 
@@ -114,15 +133,29 @@ public class Assignment extends AbstractEntity {
     /**
      * @return the startTime
      */
-    public Long getStartTime() {
+    public double getStartTime() {
         return startTime;
     }
 
     /**
      * @param startTime the startTime to set
      */
-    public void setStartTime(Long startTime) {
+    public void setStartTime(double startTime) {
         this.startTime = startTime;
+    }
+
+    /**
+     * @return the duration
+     */
+    public double getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
     /**

@@ -26,7 +26,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     @Lob
     private String description;
-
+            
     /**
      *
      * @param a
