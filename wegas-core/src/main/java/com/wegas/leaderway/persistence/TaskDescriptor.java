@@ -11,6 +11,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 
@@ -33,7 +34,12 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      */
     private String description;
-
+    /**
+     *
+     */
+    @Column (name = "numero")
+    private Integer no;
+    
     /**
      *
      * @param a
@@ -43,6 +49,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         super.merge(a);
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
+        this.setNo(other.getNo());
     }
 
     /**
@@ -57,6 +64,20 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    /**
+     * @return the no
+     */
+    public int getNo() {
+        return no;
+    }
+
+    /**
+     * @param description the no to set
+     */
+    public void setNo(int no) {
+        this.no = no;
     }
 
 }

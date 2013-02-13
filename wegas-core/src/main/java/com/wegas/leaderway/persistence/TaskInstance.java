@@ -9,10 +9,16 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
@@ -39,8 +45,10 @@ public class TaskInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private Map<String, String> skillset = new HashMap<>();
+    private Map<String, WRequirement> skillset = new HashMap<>();
 
+    
+    
     /**
      *
      * @param a
@@ -119,23 +127,23 @@ public class TaskInstance extends VariableInstance {
     /**
      * @return the skillset
      */
-    public Map<String, String> getSkillset() {
+    public Map<String, WRequirement> getSkillset() {
         return this.skillset;
     }
 
     /**
      * @param skillset the skillset to set
      */
-    public void setSkillset(Map<String, String> skillset) {
+    public void setSkillset(Map<String, WRequirement> skillset) {
         this.skillset = skillset;
     }
 
     /**
      *
      * @param key
-     * @param val
+     * @param WRequirement
      */
-    public void setSkillset(String key, String val) {
+    public void setSkillset(String key, WRequirement val) {
         this.skillset.put(key, val);
     }
 
@@ -144,7 +152,7 @@ public class TaskInstance extends VariableInstance {
      * @param key
      * @return
      */
-    public String getSkillset(String key) {
+    public WRequirement getSkillset(String key) {
         return this.skillset.get(key);
     }
 }

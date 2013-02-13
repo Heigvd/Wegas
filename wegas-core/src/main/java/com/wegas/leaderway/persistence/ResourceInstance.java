@@ -72,8 +72,6 @@ public class ResourceInstance extends VariableInstance {
     @ElementCollection
     private List<Integer> confidenceHistory = new ArrayList<>();
 
-    ;
-
     /**
      *
      * @param a
