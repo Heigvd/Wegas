@@ -321,7 +321,7 @@
         "name": "employees",
         "items":[{
             "@class": "ResourceDescriptor",
-            "name": "Salmero",
+            "name": "Fernand",
             "description":"Description de Fernand.",
             "defaultInstance":{
                 "@class":"ResourceInstance",
@@ -329,8 +329,7 @@
                 "confidence":0,
                 "properties":{
                     "picture":"/fernandNeutre.png",
-                    "surname":"Fernand",
-                    "male":true,
+                    "male": true,
                     "salary":4000,
                     "leadershipLevel":2,
                     "experience":75
@@ -342,7 +341,7 @@
             }
         },{
             "@class": "ResourceDescriptor",
-            "name": "Brossard",
+            "name": "Daniela",
             "description":"Description de Daniela.",
             "defaultInstance":{
                 "@class":"ResourceInstance",
@@ -350,7 +349,6 @@
                 "confidence":0,
                 "properties":{
                     "picture":"/danielaNeutre.png",
-                    "surname":"Daniela",
                     "male":false,
                     "salary":3800,
                     "leadershipLevel":0,
@@ -363,7 +361,7 @@
             }
         },{
             "@class": "ResourceDescriptor",
-            "name": "Vogt",
+            "name": "Jessica",
             "description":"Description de Jessica.",
             "defaultInstance":{
                 "@class":"ResourceInstance",
@@ -371,7 +369,6 @@
                 "confidence":0,
                 "properties":{
                     "picture":"/jessicaNeutre.png",
-                    "surname":"Jessica",
                     "male":false,
                     "salary":3300,
                     "leadershipLevel":0,
@@ -384,7 +381,7 @@
             }
         },{
             "@class": "ResourceDescriptor",
-            "name": "Auguste",
+            "name": "Hector",
             "description":"Description d'Auguste",
             "defaultInstance":{
                 "@class":"ResourceInstance",
@@ -392,7 +389,6 @@
                 "confidence":0,
                 "properties":{
                     "picture":"/hectorNeutre.png",
-                    "surname":"Hector",
                     "male":true,
                     "salary":3400,
                     "leadershipLevel":1,
@@ -405,7 +401,7 @@
             }
         },{
             "@class": "ResourceDescriptor",
-            "name": "Torr",
+            "name": "Lucien",
             "description":"Description de Lucien.",
             "defaultInstance":{
                 "@class":"ResourceInstance",
@@ -413,7 +409,6 @@
                 "confidence":0,
                 "properties":{
                     "picture":"/lucienNeutre.png",
-                    "surname":"Lucien",
                     "male":true,
                     "salary":3500,
                     "leadershipLevel":0,
