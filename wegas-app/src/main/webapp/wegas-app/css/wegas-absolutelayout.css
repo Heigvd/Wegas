@@ -1,0 +1,11 @@
+
+.wegas-absolutelayout { 
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.wegas-absolutelayout-content{
+    width: 100%;
+    height: 100%;
+}
+
