@@ -11,7 +11,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlType;
@@ -25,7 +24,6 @@ import javax.xml.bind.annotation.XmlType;
 public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQDescriptorEntity");
     /**
      *
      */
