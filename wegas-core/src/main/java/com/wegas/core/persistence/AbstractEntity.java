@@ -17,13 +17,12 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -42,6 +41,8 @@ import org.codehaus.jackson.map.ObjectMapper;
     @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class)
 })
 public abstract class AbstractEntity implements Serializable, Cloneable {
+
+    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
 
     /**
      *
@@ -96,7 +97,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
             ae = this.getClass().newInstance();
             ae.merge(this);
         } catch (InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(AbstractEntity.class.getName()).log(Level.SEVERE, "Error during clone", ex);
+            logger.error("Error during clone", ex);
         }
         return ae;
     }

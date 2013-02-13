@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -31,9 +30,8 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Table(uniqueConstraints =
 @UniqueConstraint(columnNames = "name"))
 public class GameModel extends NamedEntity {
-
-    private static final Logger logger = Logger.getLogger("GameModelEntity");
     //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
+
     /**
      *
      */
