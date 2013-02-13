@@ -7,12 +7,11 @@
  */
 package com.wegas.leaderway.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.leaderway.persistence.ResourceDescriptor;
 import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskDescriptor;
+import com.wegas.leaderway.persistence.TaskInstance;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -27,9 +26,9 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class ResourceDescriptorFacade extends AbstractFacadeImpl<ResourceDescriptor> {
+public class ResourceFacade  {
 
-    static final private Logger logger = LoggerFactory.getLogger(ResourceDescriptorFacade.class);
+    static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
     /**
      *
      */
@@ -41,12 +40,6 @@ public class ResourceDescriptorFacade extends AbstractFacadeImpl<ResourceDescrip
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
 
-    /**
-     *
-     */
-    public ResourceDescriptorFacade() {
-        super(ResourceDescriptor.class);
-    }
 
     /**
      *
@@ -54,28 +47,7 @@ public class ResourceDescriptorFacade extends AbstractFacadeImpl<ResourceDescrip
      * @param startTime
      * @param task
      */
-    public void assign(ResourceInstance resourceInstance, Long startTime, TaskDescriptor task) {
+    public void assign(ResourceInstance resourceInstance, Double startTime, TaskInstance task) {
         resourceInstance.assign(startTime, task);
-    }
-
-    /**
-     *
-     * @param player
-     * @param resourceDescriptorId
-     * @param startTime
-     * @param taskId
-     */
-    public void assign(Player player, Long resourceDescriptorId, Long startTime, Long taskId) {
-        this.assign(this.find(resourceDescriptorId).getInstance(player),
-                startTime, (TaskDescriptor) variableDescriptorFacade.find(taskId));
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
 }

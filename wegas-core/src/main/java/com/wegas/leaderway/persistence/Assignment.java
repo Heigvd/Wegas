@@ -11,6 +11,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,28 +34,30 @@ public class Assignment extends AbstractEntity {
     /**
      *
      */
-    private Long startTime;
+    private Double startTime;
+    /**
+     *
+     */
+    private Double duration;
     /*
      *
      */
-    private Long completness = Long.valueOf(0);
+    @Column(name = "wcompletion")
+    private Long completion = Long.valueOf(0);
     /**
      *
      */
     @ManyToOne
-    @JoinColumn(name = "taskDescriptor_id")
-    private TaskDescriptor taskDescriptor;
-    /**
-     *
-     */
-    @Column(name = "taskDescriptor_id", nullable = false, insertable = false, updatable = false)
-    private Long taskDescriptorId;
+    @JoinColumn(name = "taskinstance_id")
+    @JsonBackReference
+    private TaskInstance taskInstance;
     /**
      *
      */
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
     @JsonBackReference
+    @JsonIgnore
     private ResourceInstance resourceInstance;
 
     /**
@@ -68,10 +71,10 @@ public class Assignment extends AbstractEntity {
      * @param startTime
      * @param taskDescriptor
      */
-    public Assignment(Long startTime, TaskDescriptor taskDescriptor) {
+    public Assignment(Double startTime, TaskInstance taskInstance) {
         this.startTime = startTime;
-        this.taskDescriptor = taskDescriptor;
-        this.taskDescriptorId = taskDescriptor.getId();
+        this.taskInstance = taskInstance;
+        // this.taskDescriptorId = taskDescriptor.getId();
     }
 
     /**
@@ -81,10 +84,10 @@ public class Assignment extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         Assignment other = (Assignment) a;
-        this.setTaskDescriptor(other.getTaskDescriptor());
+        this.setTaskInstance(other.getTaskInstance());
         this.setResourceInstance(other.getResourceInstance());
         this.setStartTime(other.getStartTime());
-        this.taskDescriptorId = this.getTaskDescriptor().getId();
+        //this.taskDescriptorId = this.getTaskDescriptor().getId();
     }
 
     @PostPersist
@@ -119,14 +122,14 @@ public class Assignment extends AbstractEntity {
     /**
      * @return the startTime
      */
-    public Long getStartTime() {
+    public Double getStartTime() {
         return startTime;
     }
 
     /**
      * @param startTime the startTime to set
      */
-    public void setStartTime(Long startTime) {
+    public void setStartTime(Double startTime) {
         this.startTime = startTime;
     }
 
@@ -134,15 +137,15 @@ public class Assignment extends AbstractEntity {
      * @return the choiceDescriptor
      */
     @XmlTransient
-    public TaskDescriptor getTaskDescriptor() {
-        return taskDescriptor;
+    public TaskInstance getTaskInstance() {
+        return taskInstance;
     }
 
     /**
      * @param taskDescriptor
      */
-    public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
+    public void setTaskInstance(TaskInstance taskInstance) {
+        this.taskInstance = taskInstance;
     }
 
     /**
@@ -150,29 +153,34 @@ public class Assignment extends AbstractEntity {
      * @return
      */
     public Long getTaskDescriptorId() {
-        return this.taskDescriptorId;
+        return this.taskInstance.getDescriptorId();
     }
 
     /**
-     *
-     * @param newTaskDescriptorId
-     * @return
+     * @return the completion
      */
-    public Long setTaskDescriptorId(long newTaskDescriptorId) {
-        return this.taskDescriptorId = newTaskDescriptorId;
+    public Long getCompletion() {
+        return completion;
     }
 
     /**
-     * @return the completness
+     * @param completion the completion to set
      */
-    public Long getCompletness() {
-        return completness;
+    public void setCompletion(Long completion) {
+        this.completion = completion;
     }
 
     /**
-     * @param completness the completness to set
+     * @return the duration
      */
-    public void setCompletness(Long completness) {
-        this.completness = completness;
+    public Double getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(Double duration) {
+        this.duration = duration;
     }
 }
