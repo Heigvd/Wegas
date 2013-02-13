@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.event.PlayerAction;
+import com.wegas.core.event.PlayerAction;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;

@@ -59,7 +59,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
                 serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getRequestManager().getUpdatedInstances()));
             }
-            if(!rmf.getRequestManager().getExceptions().isEmpty()){
+            if (!rmf.getRequestManager().getExceptions().isEmpty()) {
                 serverResponse.getEvents().add(new ExceptionEvent(rmf.getRequestManager().getExceptions()));
             }
         }
@@ -88,7 +88,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
     @XmlRootElement
     @XmlType(name = "")
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    private class ServerResponse {
+    private static class ServerResponse {
 
         /**
          *
