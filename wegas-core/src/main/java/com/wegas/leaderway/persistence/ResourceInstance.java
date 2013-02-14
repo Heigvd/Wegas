@@ -25,6 +25,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 public class ResourceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
+    public static final int HISTORYSIZE = 20;
     /**
      *
      */
@@ -56,7 +57,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    private int moral;
+    private Integer moral;
     /**
      *
      */
@@ -93,6 +94,23 @@ public class ResourceInstance extends VariableInstance {
         this.setConfidence(other.getConfidence());
     }
 
+    @PreUpdate
+    public void preUpdate() {
+       this.stepHistory();
+    }
+
+    public void stepHistory() {
+        capAdd(moral, moralHistory);
+        capAdd(confidence, confidenceHistory);
+    }
+
+    public static void capAdd(Object el, List target) {
+        target.add(el);
+        if (target.size() > HISTORYSIZE) {
+            target.remove(0);
+        }
+    }
+
     /**
      * @return the replies
      */
@@ -112,8 +130,13 @@ public class ResourceInstance extends VariableInstance {
      * @param assignment
      */
     public void addAssignement(Assignment assignment) {
-        this.assignments.add(assignment);
         assignment.setResourceInstance(this);
+    }
+
+    public Assignment assign(TaskInstance task) {
+        final Assignment assignment = new Assignment(task);
+        this.addAssignement(assignment);
+        return assignment;
     }
 
     /**
@@ -121,8 +144,10 @@ public class ResourceInstance extends VariableInstance {
      * @param task
      * @param startTime
      */
-    public void assign(Long startTime, TaskDescriptor task) {
-        this.addAssignement(new Assignment(startTime, task));
+    public Assignment assign(Long startTime, TaskInstance task) {
+        final Assignment assignment = this.assign(task);
+        assignment.setStartTime(startTime);
+        return assignment;
     }
 
     /**
@@ -234,7 +259,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      * @return the moral
      */
-    public int getMoral() {
+    public Integer getMoral() {
         return this.moral;
     }
 
@@ -267,7 +292,7 @@ public class ResourceInstance extends VariableInstance {
      * @param ref a index value corresponding to a value
      * @return the value corresponding at the 'ref' param in the moralHistory
      */
-    public int getMoralHistory(Integer ref) {
+    public Integer getMoralHistory(Integer ref) {
         return this.moralHistory.get(ref);
     }
 
@@ -282,7 +307,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      * @return the confidence
      */
-    public int getConfidence() {
+    public Integer getConfidence() {
         return this.confidence;
     }
 
@@ -294,7 +319,6 @@ public class ResourceInstance extends VariableInstance {
      */
     public void setConfidence(Integer confidence) {
         this.confidence = confidence;
-        this.confidenceHistory.add(confidence);
     }
 
     /**
@@ -316,7 +340,7 @@ public class ResourceInstance extends VariableInstance {
      * @return the value corresponding at the 'ref' param in the
      * confidenceHistory
      */
-    public int getConfidenceHistory(Integer ref) {
+    public Integer getConfidenceHistory(Integer ref) {
         return this.confidenceHistory.get(ref);
     }
 

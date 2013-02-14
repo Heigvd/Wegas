@@ -9,20 +9,18 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 
 /**
  *
  *
- * @todo add predecessors @todo add requirements list<name, Object<grade, qty>
+ * @todo add predecessors
+ * @todo add requirements list<name, Object<grade, qty>
+ *  { "webdesigner": { limit: 100, levels: [{lvl: "junior", qty: 2}] }
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  *
- * { "webdesigner": { limit: 100, levels: [{lvl: "junior", qty: 2}] }
  *
  */
 @Entity
@@ -38,7 +36,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     @Column (name = "numero")
     private Integer no;
-    
+
     /**
      *
      * @param a
@@ -64,7 +62,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
      * @return the no
      */
