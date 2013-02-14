@@ -237,6 +237,7 @@
                                     "wage": 7800
                                 },
                                 "skillset": {
+                                    "Business specialist": 9
                                 }
                             },
                             "scope": {
@@ -304,7 +305,7 @@
                                     "wage": 4200
                                 },
                                 "skillset": {
-                                    "Business specialist": 2
+                                    "Web designer": 2
                                 }
                             },
                             "scope": {
@@ -402,12 +403,13 @@
                         "skillset": {
                             "Web designer": {
                                 "limit": 100,
-                                "skills": {
-                                    "3": "1",
-                                    "11": "1",
+                                "needs": {
+                                    "4": 1,
+                                    "7": 1
                                 }
                             }
                         }
+
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -437,15 +439,15 @@
                         "skillset": {
                             "Fitter": {
                                 "limit": 100,
-                                "skills": {
-                                    "8": "1"
+                                "needs": {
+                                    "8": 1
                                 }
                             },
                             "Business Specialist": {
                                 "limit": 100,
-                                "skills": {
-                                    "8": "1",
-                                    "4": "1"
+                                "needs": {
+                                    "4": 2,
+                                    "8": 1
                                 }
                             }
                         }
@@ -455,7 +457,7 @@
                     },
                 }
             ]
-        },{
+        }, {
             "@class": "ListDescriptor",
             "name": "dontErase",
             "defaultInstance": {
