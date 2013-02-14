@@ -41,14 +41,10 @@ public class Assignment extends AbstractEntity {
     /**
      *
      */
-    @ManyToOne
-    @JoinColumn(name = "taskDescriptor_id")
-    private TaskDescriptor taskDescriptor;
-    /**
-     *
-     */
-    @Column(name = "taskDescriptor_id", nullable = false, insertable = false, updatable = false)
-    private Long taskDescriptorId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "taskinstance_id", nullable = false)
+    @XmlTransient
+    private TaskInstance taskInstance;
     /**
      *
      */
@@ -65,14 +61,22 @@ public class Assignment extends AbstractEntity {
 
     /**
      *
-     * @param startTime
-     * @param taskDescriptor
+     * @param taskInstance
      */
-    public Assignment(double startTime, TaskDescriptor taskDescriptor) {
+    public Assignment(TaskInstance taskInstance) {
+        this.duration = 0;
+        this.taskInstance = taskInstance;
+    }
+
+    /**
+     *
+     * @param startTime
+     * @param taskInstance
+     */
+    public Assignment(double startTime, TaskInstance taskInstance) {
         this.startTime = startTime;
         this.duration = 0;
-        this.taskDescriptor = taskDescriptor;
-        this.taskDescriptorId = taskDescriptor.getId();
+        this.taskInstance = taskInstance;
     }
 
     /**
@@ -81,11 +85,10 @@ public class Assignment extends AbstractEntity {
      * @param duration
      * @param taskDescriptor
      */
-    public Assignment(double startTime, double duration, TaskDescriptor taskDescriptor) {
+    public Assignment(double startTime, double duration, TaskInstance taskInstance) {
         this.startTime = startTime;
         this.startTime = duration;
-        this.taskDescriptor = taskDescriptor;
-        this.taskDescriptorId = taskDescriptor.getId();
+        this.taskInstance = taskInstance;
     }
 
     /**
@@ -95,11 +98,10 @@ public class Assignment extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         Assignment other = (Assignment) a;
-        this.setTaskDescriptor(other.getTaskDescriptor());
         this.setResourceInstance(other.getResourceInstance());
         this.setStartTime(other.getStartTime());
         this.setDuration(other.getDuration());
-        this.taskDescriptorId = this.getTaskDescriptor().getId();
+        //this.setTaskInstance(other.getTaskInstance());
     }
 
     @PostPersist
@@ -160,34 +162,25 @@ public class Assignment extends AbstractEntity {
     }
 
     /**
-     * @return the choiceDescriptor
-     */
-    @XmlTransient
-    public TaskDescriptor getTaskDescriptor() {
-        return taskDescriptor;
-    }
-
-    /**
-     * @param taskDescriptor
-     */
-    public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
-    }
-
-    /**
      *
      * @return
      */
     public Long getTaskDescriptorId() {
-        return this.taskDescriptorId;
+        return this.getTaskInstance().getDescriptorId();
     }
 
     /**
-     *
-     * @param newTaskDescriptorId
-     * @return
+     * @return the taskInstance
      */
-    public Long setTaskDescriptorId(long newTaskDescriptorId) {
-        return this.taskDescriptorId = newTaskDescriptorId;
+    @XmlTransient
+    public TaskInstance getTaskInstance() {
+        return taskInstance;
+    }
+
+    /**
+     * @param taskInstance the taskInstance to set
+     */
+    public void setTaskInstance(TaskInstance taskInstance) {
+        this.taskInstance = taskInstance;
     }
 }

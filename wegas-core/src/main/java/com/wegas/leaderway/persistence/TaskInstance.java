@@ -9,16 +9,15 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import javax.persistence.Column;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
  *
@@ -39,16 +38,21 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      */
+    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @XmlTransient
+    private List<Assignment> assignments;
+    /**
+     *
+     */
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
     /**
-     * @deprecated
+     *
      */
     @ElementCollection
     private Map<String, WRequirement> skillset = new HashMap<>();
 
-    
-    
     /**
      *
      * @param a
@@ -155,5 +159,19 @@ public class TaskInstance extends VariableInstance {
     public WRequirement getSkillset(String key) {
         return this.skillset.get(key);
         //return this.getDescriptor().getSk
+    }
+
+    /**
+     * @return the assignments
+     */
+    public List<Assignment> getAssignments() {
+        return assignments;
+    }
+
+    /**
+     * @param assignments the assignments to set
+     */
+    public void setAssignments(List<Assignment> assignments) {
+        this.assignments = assignments;
     }
 }

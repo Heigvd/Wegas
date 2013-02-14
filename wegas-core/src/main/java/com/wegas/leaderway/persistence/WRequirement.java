@@ -1,9 +1,7 @@
 package com.wegas.leaderway.persistence;
 
 import java.io.Serializable;
-import java.util.Map;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -27,8 +25,8 @@ public class WRequirement implements Serializable {
     /**
      *
      */
-    @ElementCollection
-    private Map<Long, Integer> skills;
+//    @ElementCollection
+//    private Map<Long, Integer> skills;
 
     public WRequirement() {
     }
@@ -36,16 +34,16 @@ public class WRequirement implements Serializable {
     /**
      * @return the skills
      */
-    public Map<Long, Integer> getSkills() {
-        return skills;
-    }
-
-    /**
-     * @param skills the skills to set
-     */
-    public void setSkills(Map<Long, Integer> skills) {
-        this.skills = skills;
-    }
+//    public Map<Long, Integer> getSkills() {
+//        return skills;
+//    }
+//
+//    /**
+//     * @param skills the skills to set
+//     */
+//    public void setSkills(Map<Long, Integer> skills) {
+//        this.skills = skills;
+//    }
 
     /**
      * @return the limit
