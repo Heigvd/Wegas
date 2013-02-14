@@ -593,6 +593,11 @@ YUI().use(function(Y) {
                 },
                 'wegas-choicelistcss': {
                     path: "wegas-app/css/wegas-choicelist.css"
+                },
+                'wegas-flexitests-simpleelement': {
+                    path: "wegas-flexitests/js/wegas-flexitests-simpleelement-min.js",
+                    requires: ["wegas-widget"],
+                    ws_provides: "SimpleElement"
                 }
             }
         },

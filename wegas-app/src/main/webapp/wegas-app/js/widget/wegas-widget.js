@@ -286,6 +286,13 @@ YUI.add("wegas-widget", function(Y) {
                 optional: true,
                 _inputex: {
                     label: "CSS class"
+                },
+                getter: function(val) {
+                    if (val === "") {
+                        return undefined;       // so this attr wont appear in serialization
+                    } else {
+                        return val;
+                    }
                 }
             },
             /**
