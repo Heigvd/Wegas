@@ -2,16 +2,19 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 
 /**
  *
  * @author Benjamin
  */
-@Entity                                                          
+@Entity
 public class WRequirement extends VariableInstance {
-    
+
     private static final long serialVersionUID = 1L;
     /**
      *
@@ -19,22 +22,18 @@ public class WRequirement extends VariableInstance {
     @Column(name = "wlimit")
     private Integer limit;
     /**
-     * 
-     */ 
-    private Integer quantity;
-    /**
-     * 
+     *
      */
-    @Column(name = "wlevel")
-    private Integer level;
+    @ElementCollection
+    private Map<Integer, Integer> needs = new HashMap<>();
 
     @Override
     public void merge(AbstractEntity a) {
         WRequirement other = (WRequirement) a;
         this.setLimit(other.getLimit());
-        this.setQuantity(other.getQuantity());
-        this.setLevel(other.getLevel());
+        this.setNeeds(other.getNeeds());
     }
+
     /**
      * @return the limit
      */
@@ -50,30 +49,16 @@ public class WRequirement extends VariableInstance {
     }
 
     /**
-     * @return the quantity
+     * @return the needs
      */
-    public Integer getQuantity() {
-        return quantity;
+    public Map getNeeds() {
+        return needs;
     }
 
     /**
-     * @param quantity the quantity to set
+     * @param needs the needs to set
      */
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    /**
-     * @return the level
-     */
-    public Integer getLevel() {
-        return level;
-    }
-
-    /**
-     * @param level the level to set
-     */
-    public void setLevel(Integer level) {
-        this.level = level;
+    public void setNeeds(Map needs) {
+        this.needs = needs;
     }
 }
