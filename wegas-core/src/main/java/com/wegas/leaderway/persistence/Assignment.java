@@ -180,11 +180,4 @@ public class Assignment extends AbstractEntity {
     public void setTaskInstance(TaskInstance taskInstance) {
         this.taskInstance = taskInstance;
     }
-
-    /**
-     * @param duration the duration to set
-     */
-    public void setDuration(Double duration) {
-        this.duration = duration;
-    }
 }

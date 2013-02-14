@@ -1023,5 +1023,204 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     });
+
+
+    Y.Wegas.persistence.InboxDescriptor = Y.Base.create("", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "InboxDescriptor"
+            },
+            defaultInstance: {
+                properties: {
+                    '@class': {
+                        type: 'InboxInstance',
+                        _inputex: {
+                            _type: 'hidden',
+                            value: 'TaskInstance'
+                        }
+                    },
+                    id: IDATTRDEF
+                }
+            }
+        },
+        METHODS: {
+            sendMessage: {
+                label: "send message",
+                className: "wegas-method-sendmessage",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }, {
+                    type: "string",
+                    label: "from",
+                    scriptType: "string"
+                }, {
+                    type: "string",
+                    label: "title",
+                    scriptType: "string"
+                }, {
+                    type: "text",
+                    label: "Content",
+                    scriptType: "string"
+                }, {
+                    type: "list",
+                    label: "Attachements",
+                    scriptType: "string",
+                    useButtons: true,
+                    /*sortable: true*/
+                    elementType: {
+                        type: "wegasurl",
+                        label: "",
+                        required: true
+                    }
+                }]
+            },
+            isEmpty: {
+                label: "is empty",
+                returns: "boolean",
+                arguments: [{
+                    type: "hidden",
+                    value: "self"
+                }]
+            }
+
+        }
+    });
     
+    /**
+     * InboxInstance mapper
+     */
+    Y.Wegas.persistence.InboxInstance = Y.Base.create("InboxInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "InboxInstance",
+                _inputex: {
+                    disabled: true,
+                    label: "Nothing to edit"
+                }
+            },
+            messages: {
+                type: "array",
+                "transient": true,
+                value: []
+            }
+        }
+    });
+
+    /**
+     * Message mapper
+     */
+    Y.Wegas.persistence.Message = Y.Base.create("Message", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "Message"
+            },
+            subject: {},
+            body: {},
+            unread: {
+                value: false,
+                type: "boolean"
+            },
+            from: {},
+            attachements: {}
+        }
+    });
+
+    /**
+     * Script mapper
+     */
+    Y.Wegas.persistence.Script = Y.Base.create("Script", Y.Wegas.persistence.Entity, [], {
+        initializer: function() {
+            this.publish("evaluated");
+            this._inProgress = false;
+            this._result = null;
+        },
+        isValid: function() {
+        // @todo : FX a greffer :)
+        },
+        /*
+         * evaluated event contains response. true or false. False if script error.
+         */
+        localEval: function() {
+            if (Y.Wegas.VariableDescriptorFacade.script.scopedEval) {
+                if (this._result) {
+                    this.fire("evaluated", this._result);
+                    return;
+                }
+                if (!this._eHandler) {
+                    this._eHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:evaluated", function(e, o, id) {
+
+                        if (this._yuid !== id) {
+                            return;
+                        }
+                        e.halt(true);
+                        if (o === true) {
+                            this._result = true;
+                        } else {
+                            this._result = false;
+                        }
+                        this._inProgress = false;
+                        this.fire("evaluated", this._result);
+                    }, this);
+                }
+                if (!this._fHandler) {
+                    this._fHandler = Y.Wegas.VariableDescriptorFacade.script.on("ScriptEval:failure", function(e, o, id) {
+
+                        if (this._yuid !== id) {
+                            return;
+                        }
+                        e.halt(true);
+                        this._inProgress = false;
+                        this.fire("evaluated", false);
+
+                    }, this);
+                }
+
+                if (!this._inProgress) {
+                    this._inProgress = true;
+                    Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"), this._yuid);
+                } else {
+                    Y.log("evaluation in progress");
+                }
+            }
+        },
+        isEmpty: function() {
+            return (this.content === null || this.content === "");
+        },
+        destructor: function() {
+            this._fHandler.detach();
+            this._eHandler.detach();
+        }
+    }, {
+        ATTRS: {
+            id: {
+                value: undefined, // An Embeddable has no ID !!! Forcing it
+                readOnly: true,
+                "transient": true
+            },
+            "@class": {
+                value: "Script",
+                type: "string"
+            },
+            language: {
+                value: "JavaScript",
+                type: "string",
+                choices: [{
+                    value: "JavaScript"
+                }],
+                _inputex: {
+                    //type:"select",
+                    _type: "hidden"
+                }
+            },
+            content: {
+                type: "string",
+                format: "text",
+                setter: function(v) {
+                    this._result = null;
+                    return v;
+                }
+            }
+        }
+    });
 });
