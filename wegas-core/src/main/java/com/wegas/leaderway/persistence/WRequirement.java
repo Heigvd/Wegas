@@ -22,12 +22,12 @@ public class WRequirement implements Serializable {
      */
     @Column(name = "wlimit")
     private Integer limit;
+
     /**
      *
      */
 //    @ElementCollection
 //    private Map<Long, Integer> skills;
-
     public WRequirement() {
     }
 
@@ -44,7 +44,6 @@ public class WRequirement implements Serializable {
 //    public void setSkills(Map<Long, Integer> skills) {
 //        this.skills = skills;
 //    }
-
     /**
      * @return the limit
      */
