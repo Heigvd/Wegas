@@ -1,52 +1,40 @@
 package com.wegas.leaderway.persistence;
 
-import java.io.Serializable;
-import java.util.Map;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import javax.persistence.Entity;
 
 /**
  *
  * @author Benjamin
  */
-@Embeddable
-@XmlRootElement
-@XmlType(name = "")                                                             // This forces to use Class's short name as type
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class WRequirement implements Serializable {
-
+@Entity                                                          
+public class WRequirement extends VariableInstance {
+    
+    private static final long serialVersionUID = 1L;
     /**
      *
      */
     @Column(name = "wlimit")
     private Integer limit;
     /**
-     *
-     */
-    @ElementCollection
-    private Map<Long, Integer> skills;
-
-    public WRequirement() {
-    }
-
+     * 
+     */ 
+    private Integer quantity;
     /**
-     * @return the skills
+     * 
      */
-    public Map<Long, Integer> getSkills() {
-        return skills;
-    }
+    @Column(name = "wlevel")
+    private Integer level;
 
-    /**
-     * @param skills the skills to set
-     */
-    public void setSkills(Map<Long, Integer> skills) {
-        this.skills = skills;
+    @Override
+    public void merge(AbstractEntity a) {
+        WRequirement other = (WRequirement) a;
+        this.setLimit(other.getLimit());
+        this.setQuantity(other.getQuantity());
+        this.setLevel(other.getLevel());
     }
-
     /**
      * @return the limit
      */
@@ -59,5 +47,33 @@ public class WRequirement implements Serializable {
      */
     public void setLimit(Integer limit) {
         this.limit = limit;
+    }
+
+    /**
+     * @return the quantity
+     */
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    /**
+     * @param quantity the quantity to set
+     */
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    /**
+     * @return the level
+     */
+    public Integer getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 }

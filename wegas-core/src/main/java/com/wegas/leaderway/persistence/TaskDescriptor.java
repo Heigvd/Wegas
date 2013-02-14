@@ -9,20 +9,15 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.util.HashMap;
-import java.util.Map;
-import javax.persistence.Column;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 
 /**
  *
- *
- * @todo add predecessors @todo add requirements list<name, Object<grade, qty>
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- *
- * { "webdesigner": { limit: 100, levels: [{lvl: "junior", qty: 2}] }
  *
  */
 @Entity
@@ -36,9 +31,12 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
-    @Column (name = "numero")
-    private Integer no;
+    private Integer index;
     
+    @ElementCollection
+    @ManyToMany(cascade = {})
+    private List<TaskDescriptor> predecessors = new ArrayList<>();
+
     /**
      *
      * @param a
@@ -48,7 +46,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         super.merge(a);
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setNo(other.getNo());
+        this.setIndex(other.getIndex());
     }
 
     /**
@@ -64,18 +62,18 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
-     * @return the no
+     * @return the index
      */
-    public int getNo() {
-        return no;
+    public int getIndex() {
+        return index;
     }
 
     /**
-     * @param description the no to set
+     * @param index the index to set
      */
-    public void setNo(int no) {
-        this.no = no;
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 }
