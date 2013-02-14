@@ -544,6 +544,11 @@ YUI().use(function(Y) {
                     ws_provides: "CrimeSimTreeble"
                 },
                 /**Leaderway**/
+                'wegas-leaderway-entities': {
+                    path: 'wegas-leaderway/js/wegas-leaderway-entities.js',
+                    requires: ['wegas-entity'],
+                    ws_provides: ['ResourceDescriptor', 'TaskDescriptor']
+                },
                 'wegas-leaderway': {
                     path: 'wegas-leaderway/js/wegas-leaderway-hrlist-min.js',
                     requires: ['wegas-leaderway-folder', 'wegas-leaderway-tasklist',
