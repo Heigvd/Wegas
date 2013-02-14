@@ -8,6 +8,7 @@
 package com.wegas.leaderway.ejb;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskDescriptor;
@@ -26,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class ResourceFacade  {
+public class ResourceFacade {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
     /**
@@ -39,7 +40,8 @@ public class ResourceFacade  {
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
-
+    @EJB
+    private VariableInstanceFacade variableInstanceFacade;
 
     /**
      *
@@ -47,7 +49,12 @@ public class ResourceFacade  {
      * @param startTime
      * @param task
      */
-    public void assign(ResourceInstance resourceInstance, Double startTime, TaskInstance task) {
-        resourceInstance.assign(startTime, task);
+    public void assign(ResourceInstance resourceInstance, TaskInstance taskInstance) {
+        resourceInstance.assign(taskInstance);
+    }
+
+    public void assign(Player p, Long resourceDescriptorId, Long taskDescriptorId) {
+        this.assign((ResourceInstance) variableInstanceFacade.find(resourceDescriptorId, p),
+                (TaskInstance) variableInstanceFacade.find(taskDescriptorId, p));
     }
 }

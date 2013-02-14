@@ -12,19 +12,14 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * @todo refactor so assignements points to task instances
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
 public class Assignment extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(Assignment.class);
     /**
      *
      */
@@ -34,22 +29,17 @@ public class Assignment extends AbstractEntity {
     /**
      *
      */
-    private Double startTime;
+    private double startTime;
     /**
      *
      */
-    private Double duration;
-    /*
-     *
-     */
-    @Column(name = "wcompletion")
-    private Long completion = Long.valueOf(0);
+    private double duration;
     /**
      *
      */
-    @ManyToOne
-    @JoinColumn(name = "taskinstance_id")
-    @JsonBackReference
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "taskinstance_id", nullable = false)
+    @XmlTransient
     private TaskInstance taskInstance;
     /**
      *
@@ -68,13 +58,34 @@ public class Assignment extends AbstractEntity {
 
     /**
      *
+     * @param taskInstance
+     */
+    public Assignment(TaskInstance taskInstance) {
+        this.duration = 0;
+        this.taskInstance = taskInstance;
+    }
+
+    /**
+     *
      * @param startTime
+     * @param taskInstance
+     */
+    public Assignment(double startTime, TaskInstance taskInstance) {
+        this.startTime = startTime;
+        this.duration = 0;
+        this.taskInstance = taskInstance;
+    }
+
+    /**
+     *
+     * @param startTime
+     * @param duration
      * @param taskDescriptor
      */
-    public Assignment(Double startTime, TaskInstance taskInstance) {
+    public Assignment(double startTime, double duration, TaskInstance taskInstance) {
         this.startTime = startTime;
+        this.startTime = duration;
         this.taskInstance = taskInstance;
-        // this.taskDescriptorId = taskDescriptor.getId();
     }
 
     /**
@@ -84,10 +95,10 @@ public class Assignment extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         Assignment other = (Assignment) a;
-        this.setTaskInstance(other.getTaskInstance());
         this.setResourceInstance(other.getResourceInstance());
         this.setStartTime(other.getStartTime());
-        //this.taskDescriptorId = this.getTaskDescriptor().getId();
+        this.setDuration(other.getDuration());
+        //this.setTaskInstance(other.getTaskInstance());
     }
 
     @PostPersist
@@ -122,30 +133,29 @@ public class Assignment extends AbstractEntity {
     /**
      * @return the startTime
      */
-    public Double getStartTime() {
+    public double getStartTime() {
         return startTime;
     }
 
     /**
      * @param startTime the startTime to set
      */
-    public void setStartTime(Double startTime) {
+    public void setStartTime(double startTime) {
         this.startTime = startTime;
     }
 
     /**
-     * @return the choiceDescriptor
+     * @return the duration
      */
-    @XmlTransient
-    public TaskInstance getTaskInstance() {
-        return taskInstance;
+    public double getDuration() {
+        return duration;
     }
 
     /**
-     * @param taskDescriptor
+     * @param duration the duration to set
      */
-    public void setTaskInstance(TaskInstance taskInstance) {
-        this.taskInstance = taskInstance;
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
     /**
@@ -153,28 +163,22 @@ public class Assignment extends AbstractEntity {
      * @return
      */
     public Long getTaskDescriptorId() {
-        return this.taskInstance.getDescriptorId();
+        return this.getTaskInstance().getDescriptorId();
     }
 
     /**
-     * @return the completion
+     * @return the taskInstance
      */
-    public Long getCompletion() {
-        return completion;
+    @XmlTransient
+    public TaskInstance getTaskInstance() {
+        return taskInstance;
     }
 
     /**
-     * @param completion the completion to set
+     * @param taskInstance the taskInstance to set
      */
-    public void setCompletion(Long completion) {
-        this.completion = completion;
-    }
-
-    /**
-     * @return the duration
-     */
-    public Double getDuration() {
-        return duration;
+    public void setTaskInstance(TaskInstance taskInstance) {
+        this.taskInstance = taskInstance;
     }
 
     /**

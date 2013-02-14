@@ -195,9 +195,9 @@
             ]
         }, {
             "@class": "ListDescriptor",
-            "name": "resources",
-            "editorLabel": "resources",
-            "label": "",
+            "name": "employees",
+            "editorLabel": "Employees",
+            "label": "employees",
             "defaultInstance": {
                 "@class": "ListInstance"
             },

@@ -7,6 +7,9 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.exception.NoGameException;
+import com.wegas.core.exception.NoPlayerException;
+import com.wegas.core.exception.NoTeamException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -16,9 +19,6 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.exception.NoGameException;
-import com.wegas.core.exception.NoPlayerException;
-import com.wegas.core.exception.NoTeamException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -106,7 +106,6 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
         } else {
             throw new UnsupportedOperationException();
         }
-
     }
 
     /**

@@ -9,19 +9,18 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.util.HashMap;
-import java.util.Map;
-import javax.persistence.ElementCollection;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
  *
  *
- * @todo add predecessors @todo add requirements list<name, Object<grade, qty>
+ * @todo add predecessors
+ * @todo add requirements list<name, Object<grade, qty>
+ *  { "webdesigner": { limit: 100, levels: [{lvl: "junior", qty: 2}] }
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  *
- * { "webdesigner": { limit: 100, levels: [{lvl: "junior", qty: 2}] }
  *
  */
 @Entity
@@ -35,8 +34,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
-    @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
+    @Column (name = "numero")
+    private Integer no;
 
     /**
      *
@@ -47,6 +46,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         super.merge(a);
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
+        this.setNo(other.getNo());
     }
 
     /**
@@ -64,16 +64,16 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     /**
-     * @return the properties
+     * @return the no
      */
-    public Map<String, String> getProperties() {
-        return properties;
+    public int getNo() {
+        return no;
     }
 
     /**
-     * @param properties the properties to set
+     * @param description the no to set
      */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+    public void setNo(int no) {
+        this.no = no;
     }
 }
