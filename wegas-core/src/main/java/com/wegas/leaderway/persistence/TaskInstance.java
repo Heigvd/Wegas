@@ -9,16 +9,10 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.Column;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
@@ -41,9 +35,8 @@ public class TaskInstance extends VariableInstance {
      */
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
-    /**
-     * @deprecated
-     */
+
+    
     @ElementCollection
     private Map<String, WRequirement> skillset = new HashMap<>();
 

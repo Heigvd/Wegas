@@ -380,7 +380,7 @@
             "items": [{
                     "@class": "TaskDescriptor",
                     "name": "User-Interface Modeling",
-                    "no": 1,
+                    "numero": 1,
                     "description": "description tâche 1",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -415,7 +415,7 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Requirements Analysis",
-                    "no": 2,
+                    "numero": 2,
                     "description": "description tâche 2",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -467,7 +467,7 @@
             "items": [{
                     "@class": "TaskDescriptor",
                     "name": "defaultTask",
-                    "no": "-1",
+                    "numero": "-1",
                     "description": "Assign this task as sickness, holidays, etc.",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -480,7 +480,7 @@
                 }, {
                     "@class": "ResourceDescriptor",
                     "name": "defaultResource",
-                    "no": "-1",
+                    "numero": "-1",
                     "description": "Used to make task-Gantt in planification",
                     "defaultInstance": {
                         "@class": "ResourceInstance",
