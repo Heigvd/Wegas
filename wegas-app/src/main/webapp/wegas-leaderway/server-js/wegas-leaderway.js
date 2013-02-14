@@ -333,7 +333,7 @@ function checkAbsencesEnd () {
             resourceInstance.getAssignments().remove(assignmentToRemove[j]);
         }
         for (j = 0; j < assignmentToAdd.length; j++) {
-            resourceInstance.assign(0, assignmentToAdd[j]);
+            resourceInstance.assign(0, assignmentToAdd[j].getInstance(self));
         }
         this.calculateTeamMotivation();
     }
@@ -605,7 +605,7 @@ function sickenResource (resourceDescriptor, duration) {
         }
     }
     if (resInstance) {
-        resInstance.assign(0, taskDescriptor);
+        resInstance.assign(0, taskDescriptor.getInstance(self));
     }
     else {
         println('unknow id of resourceDescriptor in function sickenResource');
@@ -647,7 +647,7 @@ function assignTask (resourceDescriptorId, taskDescriptorId) {
         return;
     }
     // assign task to resource
-    resInstance.assign(0, taskDescriptor);
+    resInstance.assign(0, taskDescriptor.getInstance(self));
 }
 
 /**

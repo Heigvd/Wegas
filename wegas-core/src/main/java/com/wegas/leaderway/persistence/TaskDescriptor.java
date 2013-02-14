@@ -34,8 +34,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
-    @Column (name = "numero")
-    private Integer no;
+    private Integer index;
 
     /**
      *
@@ -46,7 +45,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         super.merge(a);
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setNo(other.getNo());
+        this.setIndex(other.getIndex());
     }
 
     /**
@@ -64,16 +63,16 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     /**
-     * @return the no
+     * @return the index
      */
-    public int getNo() {
-        return no;
+    public int getIndex() {
+        return index;
     }
 
     /**
-     * @param description the no to set
+     * @param description the index to set
      */
-    public void setNo(int no) {
-        this.no = no;
+    public void setIndex(int no) {
+        this.index = no;
     }
 }

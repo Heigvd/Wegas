@@ -8,9 +8,6 @@
 package com.wegas.core.persistence;
 
 import com.wegas.core.ejb.TestHelper;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.persistence.EntityManager;
