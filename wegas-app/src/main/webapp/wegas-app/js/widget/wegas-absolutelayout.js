@@ -32,7 +32,9 @@ YUI.add('wegas-absolutelayout', function(Y) {
          */
         bindUI: function() {
             this.after("addChild", function(e) {
-                console.log("ssss", e);
+                if (!e.child.position) {
+                    e.child.plug(Y.Plugin.Position);
+                }
             });
             this.onceAfter("render", function(e) {
                 this.each(function(item) {
