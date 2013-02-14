@@ -31,6 +31,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
     @Test
     public void testAssignment() throws NamingException {
 
+        // Lookup Ejb's
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
         final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
@@ -64,7 +65,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testResource() throws NamingException {
+    public void testResourceHistory() throws NamingException {
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
@@ -84,5 +85,8 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         resI = (ResourceInstance) vif.find(resI.getId());
         assertEquals(Integer.valueOf(ResourceInstance.HISTORYSIZE + 9), resI.getConfidence());
         assertEquals(ResourceInstance.HISTORYSIZE, resI.getConfidenceHistory().size());
+
+        // Clean
+        vdf.remove(res.getId());
     }
 }

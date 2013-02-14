@@ -17,7 +17,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;

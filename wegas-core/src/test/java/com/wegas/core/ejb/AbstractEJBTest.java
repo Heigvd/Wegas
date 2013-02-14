@@ -34,6 +34,8 @@ public class AbstractEJBTest {
     protected static Game game;
     protected static Team team;
     protected static Player player;
+    protected static Team team2;
+    protected static Player player2;
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
@@ -46,20 +48,25 @@ public class AbstractEJBTest {
 
         //ejbContainer.getContext().rebind("inject", this);
 
-        gameModel = new GameModel();
+        gameModel = new GameModel();                                            // Create a game model
         gameModel.setName("test-gamemodel");
 
-        game = new Game();
+        game = new Game();                                                      // Create a game
         game.setName(GAMENAME);
         game.setToken(GAMETOKEN);
         gameModel.addGame(game);
 
-        team = new Team();
+        team = new Team();                                                      // a team and a player
         team.setName("test-team");
         game.addTeam(team);
-
         player = new Player();
         team.addPlayer(player);
+
+        team2 = new Team();                                                   // a team and a player
+        team2.setName("test-team2");                                            // a second team and a player
+        game.addTeam(team2);
+        player2 = new Player();
+        team.addPlayer(player2);
 
         gameModelFacade.create(gameModel);
     }
