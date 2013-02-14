@@ -9,12 +9,14 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
@@ -36,20 +38,20 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      */
-    @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
-    /**
-     * @deprecated
-     */
-    @ElementCollection
-    private Map<String, String> skillset = new HashMap<>();
+    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @XmlTransient
+    private List<Assignment> assignments;
     /**
      *
      */
-    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @JsonIgnore
-    private List<Assignment> assignements = new ArrayList<>();
+    @ElementCollection
+    private Map<String, String> properties = new HashMap<>();
+    /**
+     *
+     */
+    @ElementCollection
+    private Map<String, WRequirement> skillset = new HashMap<>();
 
     /**
      *
@@ -129,23 +131,23 @@ public class TaskInstance extends VariableInstance {
     /**
      * @return the skillset
      */
-    public Map<String, String> getSkillset() {
+    public Map<String, WRequirement> getSkillset() {
         return this.skillset;
     }
 
     /**
      * @param skillset the skillset to set
      */
-    public void setSkillset(Map<String, String> skillset) {
+    public void setSkillset(Map<String, WRequirement> skillset) {
         this.skillset = skillset;
     }
 
     /**
      *
      * @param key
-     * @param val
+     * @param WRequirement
      */
-    public void setSkillset(String key, String val) {
+    public void setSkillset(String key, WRequirement val) {
         this.skillset.put(key, val);
     }
 
@@ -154,22 +156,22 @@ public class TaskInstance extends VariableInstance {
      * @param key
      * @return
      */
-    public String getSkillset(String key) {
+    public WRequirement getSkillset(String key) {
         return this.skillset.get(key);
         //return this.getDescriptor().getSk
     }
 
     /**
-     * @return the assignements
+     * @return the assignments
      */
-    public List<Assignment> getAssignements() {
-        return assignements;
+    public List<Assignment> getAssignments() {
+        return assignments;
     }
 
     /**
-     * @param assignements the assignements to set
+     * @param assignments the assignments to set
      */
-    public void setAssignements(List<Assignment> assignements) {
-        this.assignements = assignements;
+    public void setAssignments(List<Assignment> assignments) {
+        this.assignments = assignments;
     }
 }
