@@ -144,7 +144,7 @@ YUI().use(function(Y) {
                 'wegas-absolutelayout': {
                     path: 'wegas-app/js/widget/wegas-absolutelayout-min.js',
                     requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss"],
-                    ws_provides: 'AbsoluteLayout'
+                    ws_provides: ['AbsoluteLayout', 'Position']
                 },
                 'wegas-absolutelayoutcss': {
                     path: 'wegas-app/css/wegas-absolutelayout.css'
@@ -215,6 +215,14 @@ YUI().use(function(Y) {
                     //requires: ["googletranslate"],
                     ws_provides: "GoogleTranslate"
                 },
+                'wegas-choicelist': {
+                    path: "wegas-app/js/widget/wegas-choicelist-min.js",
+                    requires: ["wegas-list", "wegas-choicelistcss"],
+                    ws_provides: "ChoiceList"
+                },
+                'wegas-choicelistcss': {
+                    path: "wegas-app/css/wegas-choicelist.css"
+                },
                 /** Plugins **/
                 'wegas-userpreferences': {
                     path: 'wegas-app/js/plugin/wegas-userpreferences-min.js',
@@ -259,6 +267,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-cssloader-min.js',
                     requires: ['stylesheet'],
                     ws_provides: 'CSSLoader'
+                },
+                "wegas-visibilitytimer":{
+                    path: 'wegas-app/js/plugin/wegas-visibilitytimer-min.js',
+                    requires:["wegas-editable", "plugin", "wegas-action"],
+                    ws_provides:["ShowAfter", "HideAfter"]
                 },
                 /** Inputex Fields **/
                 'wegas-inputex': {
@@ -586,14 +599,9 @@ YUI().use(function(Y) {
                     requires: ['wegas-widget', 'crafty'],
                     ws_provides: 'ProgGameDisplay'
                 },
-                'wegas-choicelist': {
-                    path: "wegas-app/js/widget/wegas-choicelist-min.js",
-                    requires: ["wegas-list", "wegas-choicelistcss"],
-                    ws_provides: "ChoiceList"
-                },
-                'wegas-choicelistcss': {
-                    path: "wegas-app/css/wegas-choicelist.css"
-                },
+                /**
+                 * Flexitests
+                 */
                 'wegas-flexitests-simpleelement': {
                     path: "wegas-flexitests/js/wegas-flexitests-simpleelement-min.js",
                     requires: ["wegas-widget"],

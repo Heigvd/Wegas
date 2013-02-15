@@ -39,7 +39,7 @@ YUI.add("wegas-flexitests-simpleelement", function(Y) {
             this.fire("loaded");
         },
         genImg: function() {
-            this.get("contentBox").setContent("<img src='" + this.get("content") + "'></img>");
+            this.get("contentBox").setContent("<img src='" + this.get("content") + "' data-file='" + this.get("content") + "'></img>");
             this.imgEvent = this.get("contentBox").get("firstChild").onceAfter("load", function(e) {
                 this.fire("loaded");
             }, this);
@@ -63,7 +63,7 @@ YUI.add("wegas-flexitests-simpleelement", function(Y) {
                         label: 'Text'
                     }, {
                         value: "img",
-                        label: 'Image'
+                        label: 'Image url'
                     }],
                 _inputEx: {
                     label: "Type"

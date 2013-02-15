@@ -1,16 +1,18 @@
 {
     "1": {
         "type": "AbsoluteLayout",
+        "cssClass": "body",
         "children": [{
                 "type": "ChoiceList",
                 "children": [
                     {
-                        "type": "Text",
+                        "type": "SimpleElement",
                         "content": "Male"
                     },
                     {
-                        "type": "Text",
-                        "content": "Male2"
+                        "type": "SimpleElement",
+                        "contentType": "img",
+                        "content": "http://stereo.gsfc.nasa.gov/beacon/latest_256/ahead_euvi_195_latest.jpg"
                     }
                 ],
                 "plugins": [{
@@ -18,6 +20,15 @@
                         "cfg": {
                             "left": "50",
                             "top": "50"
+                        }
+                    },
+                    {
+                        "fn": "HideAfter"
+                    },
+                    {
+                        "fn": "ShowAfter",
+                        "cfg": {
+                            "time": "3000"
                         }
                     }]
             }, {
@@ -33,11 +44,11 @@
                 ],
                 "children": [
                     {
-                        "type": "Text",
+                        "type": "SimpleElement",
                         "content": "Female"
                     },
                     {
-                        "type": "Text",
+                        "type": "SimpleElement",
                         "content": "Female2"
                     }
                 ]
