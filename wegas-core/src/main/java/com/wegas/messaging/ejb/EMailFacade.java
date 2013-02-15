@@ -12,18 +12,13 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.messaging.persistence.Message;
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import javax.mail.Authenticator;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import org.slf4j.LoggerFactory;
 
 /**
  * @fixme @important The mail should be sent in an async queue, so they don't
@@ -34,6 +29,8 @@ import javax.mail.internet.MimeMessage;
 @Stateless
 @LocalBean
 public class EMailFacade {
+
+    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(EMailFacade.class);
 
     /**
      *
@@ -64,6 +61,7 @@ public class EMailFacade {
 
 
         Session session = Session.getInstance(props, new Authenticator() {
+
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);
@@ -87,7 +85,7 @@ public class EMailFacade {
             Transport.send(msg);                                                // Send the message
             System.out.println("Message sent OK.");
         } catch (MessagingException ex) {
-            Logger.getLogger(EMailFacade.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Error sending mail", ex);
         }
     }
 

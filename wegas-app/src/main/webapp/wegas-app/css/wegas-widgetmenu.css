@@ -33,7 +33,10 @@
     line-height: 1.9em;
     font-size: 11px;
     color: black;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
     box-shadow: none;
+
     padding: 3px 10px 3px 10px;
     width:100%;
     background: none;

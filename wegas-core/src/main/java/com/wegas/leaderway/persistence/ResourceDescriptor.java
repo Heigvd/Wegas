@@ -10,9 +10,6 @@ package com.wegas.leaderway.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.util.HashMap;
-import java.util.Map;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
@@ -29,11 +26,6 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     @Lob
     private String description;
-    /**
-     *
-     */
-    @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
 
     /**
      *
@@ -234,19 +226,5 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     public void desactivate(Player p) {
         this.setActive(p, false);
-    }
-
-    /**
-     * @return the properties
-     */
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
     }
 }

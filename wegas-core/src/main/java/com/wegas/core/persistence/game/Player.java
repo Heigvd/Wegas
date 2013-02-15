@@ -9,7 +9,6 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.persistence.User;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -29,7 +28,6 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Player extends AbstractEntity {
 
-    private static final Logger logger = Logger.getLogger("PlayerEntity");
     @Id
     @GeneratedValue
     private Long id;

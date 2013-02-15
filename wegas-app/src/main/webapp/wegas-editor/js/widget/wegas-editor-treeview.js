@@ -644,6 +644,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
             //    doExpand.call(this, this.get("host").treeView);         // Recursively walk treeview to reload expanded nodes
             //});
         },
+
         fillsLeaf: function (e) {
             var node = e.node,
             id = node.get("data").entity.get("id"),
@@ -651,7 +652,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
             if (entity instanceof Y.Wegas.persistence.VariableDescriptor
                 && !(entity instanceof Y.Wegas.persistence.ListDescriptor)      // @hack
-                && !(entity instanceof Y.Wegas.persistence.ChoiceDescriptor)) { // @hack
+                && !(Y.Wegas.persistence.ChoiceDescriptor && entity instanceof Y.Wegas.persistence.ChoiceDescriptor)) { // @hack
 
                 if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
                     return;

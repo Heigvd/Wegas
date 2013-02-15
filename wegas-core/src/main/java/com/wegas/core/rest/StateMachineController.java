@@ -7,11 +7,7 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.ejb.statemachine.StateMachineDescriptorFacade;
+import com.wegas.core.ejb.*;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
@@ -44,7 +40,7 @@ public class StateMachineController {
      */
 
     @EJB
-    private StateMachineDescriptorFacade stateMachineDescriptorFacade;
+    private VariableDescriptorFacade variableDescriptorFacade;
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
     @EJB
@@ -56,12 +52,6 @@ public class StateMachineController {
     @Inject
     private RequestManager requestManager;
 
-//    @Override
-//    public StateMachineDescriptor create(AbstractEntity entity) {
-//        Long gameModelId = Long.valueOf(this.getPathParam("gameModelId"));
-//        this.stateMachineDescriptorFacade.create(gameModelId, (StateMachineDescriptor) entity);
-//        return (StateMachineDescriptor) entity;
-//    }
     /**
      *
      * @param gameModelId
@@ -77,32 +67,34 @@ public class StateMachineController {
     @Produces(MediaType.APPLICATION_JSON)
     public StateMachineInstance doTransition(
             @PathParam("gameModelId") Long gameModelId,
-            @PathParam("playerId") Long playerId, @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId,
+            @PathParam("playerId") Long playerId,
+            @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId,
             @PathParam("transitionId") Long transitionId)
             throws ScriptException, WegasException {
 
         checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
 
-        StateMachineDescriptor stateMachineDescriptorEntity = (StateMachineDescriptor) stateMachineDescriptorFacade.find(stateMachineDescriptorId);
-        StateMachineInstance stateMachineInstanceEntity = (StateMachineInstance) stateMachineDescriptorEntity.getInstance(playerFacade.find(playerId));
-        State currentState = stateMachineInstanceEntity.getCurrentState();
+        StateMachineDescriptor stateMachineDescriptor =
+                (StateMachineDescriptor) variableDescriptorFacade.find(stateMachineDescriptorId);
+        StateMachineInstance stateMachineInstance = stateMachineDescriptor.getInstance(playerFacade.find(playerId));
+        State currentState = stateMachineInstance.getCurrentState();
         List<Transition> transitions = currentState.getTransitions();
 
         for (Transition transition : transitions) {
             if (transition instanceof DialogueTransition && transition.getId().equals(transitionId)) {
                 //TODO : eval attached script (AND)
-                stateMachineInstanceEntity.setCurrentStateId(transition.getNextStateId());
-                stateMachineInstanceEntity.transitionHistoryAdd(transitionId);
-                requestManager.addUpdatedInstance(stateMachineInstanceEntity);  /*
+                stateMachineInstance.setCurrentStateId(transition.getNextStateId());
+                stateMachineInstance.transitionHistoryAdd(transitionId);
+                requestManager.addUpdatedInstance(stateMachineInstance);  /*
                  * Force in case next state == current state
                  */
-                if (stateMachineInstanceEntity.getCurrentState().getOnEnterEvent() != null) {
-                    scriptManager.eval(playerId, stateMachineInstanceEntity.getCurrentState().getOnEnterEvent());
+                if (stateMachineInstance.getCurrentState().getOnEnterEvent() != null) {
+                    scriptManager.eval(playerId, stateMachineInstance.getCurrentState().getOnEnterEvent());
                 }
                 break;
             }
         }
-        return (StateMachineInstance) variableInstanceFacade.update(stateMachineInstanceEntity.getId(), stateMachineInstanceEntity);
+        return (StateMachineInstance) variableInstanceFacade.update(stateMachineInstance.getId(), stateMachineInstance);
     }
 
     private void checkPermissions(Long gameId, Long playerId) throws UnauthorizedException {

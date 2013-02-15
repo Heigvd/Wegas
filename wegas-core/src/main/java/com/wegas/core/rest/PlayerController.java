@@ -11,7 +11,6 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Player;
 import java.util.Collection;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -28,7 +27,6 @@ import org.apache.shiro.SecurityUtils;
 @Produces(MediaType.APPLICATION_JSON)
 public class PlayerController {
 
-    private static final Logger logger = Logger.getLogger("Authoring_GM");
     /**
      *
      */
