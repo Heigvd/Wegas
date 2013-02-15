@@ -32,7 +32,7 @@ YUI().use(function(Y) {
                     requires: [
                         'wegas-entity', 'wegas-datasourcerest', 'wegas-scripteval',
                         'wegas-pageloader', 'wegas-button'
-                                // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
+                        // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                     ]
                 },
                 'wegas-appcss': {
