@@ -51,7 +51,7 @@ public class TaskInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private Map<String, WRequirement> skillset = new HashMap<>();
+    private Map<String, WRequirement> requierements = new HashMap<>();
 
     /**
      *
@@ -64,8 +64,8 @@ public class TaskInstance extends VariableInstance {
         this.setDuration(other.getDuration());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
-        this.skillset.clear();
-        this.skillset.putAll(other.getSkillset());
+        this.requierements.clear();
+        this.requierements.putAll(other.getRequierements());
     }
 
     /**
@@ -129,17 +129,17 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * @return the skillset
+     * @return the requierements
      */
-    public Map<String, WRequirement> getSkillset() {
-        return this.skillset;
+    public Map<String, WRequirement> getRequierements() {
+        return this.requierements;
     }
 
     /**
-     * @param skillset the skillset to set
+     * @param requierement the requierement to set
      */
-    public void setSkillset(Map<String, WRequirement> skillset) {
-        this.skillset = skillset;
+    public void setSkillsets(Map<String, WRequirement> requierement) {
+        this.requierements = requierement;
     }
 
     /**
@@ -147,8 +147,8 @@ public class TaskInstance extends VariableInstance {
      * @param key
      * @param WRequirement
      */
-    public void setSkillset(String key, WRequirement val) {
-        this.skillset.put(key, val);
+    public void setRequierement(String key, WRequirement val) {
+        this.requierements.put(key, val);
     }
 
     /**
@@ -156,9 +156,8 @@ public class TaskInstance extends VariableInstance {
      * @param key
      * @return
      */
-    public WRequirement getSkillset(String key) {
-        return this.skillset.get(key);
-        //return this.getDescriptor().getSk
+    public WRequirement getRequierements(String key) {
+        return this.requierements.get(key);
     }
 
     /**

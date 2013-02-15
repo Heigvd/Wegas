@@ -61,4 +61,18 @@ public class WRequirement extends VariableInstance {
     public void setNeeds(Map needs) {
         this.needs = needs;
     }
+    
+    /**
+     * @return the need
+     */
+    public Integer getNeed(Integer key) {
+        return needs.get(key);
+    }
+
+    /**
+     * @param need the need to set
+     */
+    public void setNeed(Integer key, Integer value) {
+        this.needs.put(key, value);
+    }
 }
