@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -55,7 +56,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      */
     @Override
     public void create(final VariableDescriptor variableDescriptor) {
-        throw new RuntimeException("Unable to call create on Variable descriptor. Use create(gameModelId, variableDescriptor) instead.");
+        throw new WegasException("Unable to call create on Variable descriptor. Use create(gameModelId, variableDescriptor) instead.");
     }
 
     /**
@@ -103,7 +104,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         while (iterator.hasNext()) {
             usedNames.add(iterator.next().getName());
         }
-        if (entity.getName().isEmpty() || entity.getName() == null) {
+        if (entity.getName() == null || entity.getName().isEmpty()) {
             entity.setName(Helper.buildUniqueName(entity.getLabel(), usedNames));
         }
         //build a unique name
@@ -146,7 +147,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
             final String newLabel = this.findAvailableLabel(oldEntity.getGameModel(),
                     newEntity.getLabel());                                      // Look up for an available label
             newEntity.setLabel(newLabel);
-            if (newEntity.getEditorLabel() != null) {   // Use with the same suffix for the editor label as the one used for the label
+            if (newEntity.getEditorLabel() != null) {// Use with the same suffix for the editor label as the one used for the label
                 newEntity.setEditorLabel(
                         Helper.stripLabelSuffix(newEntity.getEditorLabel())
                         + "(" + Helper.getLabelSuffix(newLabel) + ")");

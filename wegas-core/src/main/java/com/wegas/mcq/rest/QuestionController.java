@@ -12,15 +12,13 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.mcq.ejb.ReplyFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.script.ScriptException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
@@ -32,6 +30,8 @@ import org.apache.shiro.authz.UnauthorizedException;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/QuestionDescriptor/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class QuestionController {
 
     /**
@@ -45,6 +45,8 @@ public class QuestionController {
     private UserFacade userFacade;
     @EJB
     private PlayerFacade playerFacade;
+    @EJB
+    private ReplyFacade replyFacade;
 
     /**
      *
@@ -55,17 +57,14 @@ public class QuestionController {
      * @throws WegasException
      */
     @GET
-    @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response selectChoice(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws ScriptException, WegasException {
 
         checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
 
-        Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, Long.valueOf(0));
-        //Reply reply =
-        //    questionDescriptorFacade.selectChoice(choiceId, requestManager.getPlayer(), Long.valueOf(0));
+        Reply reply = questionDescriptorFacade.selectAndValidateChoice(choiceId, playerId);
 
         questionDescriptorFacade.validateReply(playerId, reply.getId());
         requestFacade.commit();
@@ -81,7 +80,6 @@ public class QuestionController {
      */
     @GET
     @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
     public QuestionInstance cancelReply(
             @PathParam("playerId") Long playerId,
             @PathParam("replyId") Long replyId) throws ScriptException {
@@ -114,6 +112,15 @@ public class QuestionController {
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
         requestFacade.commit();
         return reply.getQuestionInstance();
+    }
+
+    @PUT
+    @Path("Reply/{entityId: [1-9][0-9]*}")
+    public Reply update(@PathParam("entityId") Long entityId, Reply entity) {
+
+        //SecurityUtils.getSubject().checkPermission("Game:Edit:g" + VariableInstanceFacade.findGame(entityId).getId());
+
+        return replyFacade.update(entityId, entity);
     }
 
     private void checkPermissions(Long gameId, Long playerId) throws UnauthorizedException {

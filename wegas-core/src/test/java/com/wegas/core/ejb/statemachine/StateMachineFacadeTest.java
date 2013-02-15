@@ -23,7 +23,7 @@ import org.junit.Test;
 
 /**
  *
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class StateMachineFacadeTest extends AbstractEJBTest {
 
@@ -31,16 +31,15 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
      * Test of entityUpdateListener method, of class StateMachineFacade.
      */
     @Test
-    public void testTrigger() throws NamingException  {
+    public void testTrigger() throws NamingException {
 
         // Lookup Ejb's
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final RequestFacade requestFacade = lookupBy(RequestFacade.class);
 
         // Create a number
         NumberDescriptor number = new NumberDescriptor();
-        number.setName("number");
+        number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));
         number.setScope(new TeamScope());
         vdf.create(gameModel.getId(), number);
@@ -49,25 +48,22 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setScope(new TeamScope());
-        trigger.setTriggerEvent(new Script("number.value == 10"));
-        trigger.setPostTriggerEvent(new Script("number.value = 20"));
+        trigger.setTriggerEvent(new Script("testnumber.value >= 0.9"));
+        trigger.setPostTriggerEvent(new Script("testnumber.value = 2"));
         vdf.create(gameModel.getId(), trigger);
 
         // Do an update
         NumberInstance numberI = number.getInstance(player);
-        numberI.setValue(10);
+        numberI.setValue(1);
         vif.update(numberI.getId(), numberI);
-        requestFacade.commit();
 
         // Test
-        numberI = (NumberInstance) vif.find(numberI.getId());
-        assertEquals(20.0, numberI.getValue(), .1);
+        assertEquals(2.0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
 
         // Clean up
         vdf.remove(number.getId());
         vdf.remove(trigger.getId());
     }
-
 
     /**
      * Same as above, but with a different script
@@ -75,7 +71,7 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
      * @throws NamingException
      */
     @Test
-    public void testMultipleTrigger() throws NamingException  {
+    public void testMultipleTrigger() throws NamingException {
 
         // Lookup Ejb's
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
@@ -84,30 +80,35 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
         // Create a number
         NumberDescriptor number = new NumberDescriptor();
-        number.setLabel("number");
-        number.setName("number");
-        number.setDefaultInstance(new NumberInstance(0));
+        number.setName("testnumber");
+        number.setDefaultInstance(new NumberInstance(5));
         number.setScope(new TeamScope());
         vdf.create(gameModel.getId(), number);
 
         // Create a resource
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setLabel("my trigger");
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setScope(new TeamScope());
         trigger.setTriggerEvent(new Script("true"));
-        trigger.setPostTriggerEvent(new Script("VariableDescriptorFacade.find("+number.getId()+").setValue(self, 20)"));
+        trigger.setPostTriggerEvent(new Script("VariableDescriptorFacade.find(" + number.getId() + ").setValue(self, 3)"));
         vdf.create(gameModel.getId(), trigger);
 
         // Do an update
         NumberInstance numberI = number.getInstance(player);
-        numberI.setValue(10);
+        numberI.setValue(4);
         vif.update(numberI.getId(), numberI);
         requestFacade.commit();
 
         // Test
-        assertEquals(20.0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
-        assertEquals(20.0, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
+        assertEquals(3.0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(3.0, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
+
+        // Reset
+        gameModelFacade.reset(gameModel.getId());
+
+        // Test
+        assertEquals(3.0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
+        assertEquals(3.0, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
 
         // Clean up
         vdf.remove(number.getId());
