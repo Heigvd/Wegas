@@ -11,4 +11,7 @@
 .wegas-pageeditor-designmode .wegas-choicelist{
     padding: 3px;
 }
+.wegas-choicelist-hidden{
+    visibility: hidden;
+}
 
