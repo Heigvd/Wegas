@@ -8,7 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.statemachine.StateMachineRunner;
+import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
@@ -52,7 +52,7 @@ public class RequestFacade {
      *
      */
     @EJB
-    StateMachineRunner stateMachineRunner;
+    StateMachineFacade stateMachineRunner;
 
     /**
      * @return the variableInstanceManager

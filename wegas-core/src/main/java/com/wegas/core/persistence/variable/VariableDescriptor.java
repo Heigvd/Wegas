@@ -80,7 +80,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    private String label;
+    private String label = "unnamed";
     /**
      *
      */
@@ -151,16 +151,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.getScope().propagateDefaultInstance(force);
     }
 
-    /**
-     *
-     */
-//    @PrePersist
-//    @PreUpdate
-//    public void prePersist() {
-//        if ((this.editorLabel == null || this.editorLabel.isEmpty()) && this.label != null) {
-//            this.editorLabel = this.label;
-//        }
-//    }
 
     /**
      *

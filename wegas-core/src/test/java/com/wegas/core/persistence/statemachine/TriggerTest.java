@@ -11,7 +11,8 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Testing Triggers, class TriggerInstance and class
@@ -25,17 +26,6 @@ public class TriggerTest {
     private TriggerDescriptor triggerDescriptor;
     private Script scriptEntity;
 
-    public TriggerTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
     @Before
     public void setUp() {
         this.trigger = new TriggerInstance();
@@ -48,10 +38,6 @@ public class TriggerTest {
         this.scriptEntity.setContent("var x=10; x+=2;");
         this.triggerDescriptor.setTriggerEvent(scriptEntity);
         this.triggerDescriptor.setPostTriggerEvent(scriptEntity);
-    }
-
-    @After
-    public void tearDown() {
     }
 
     /**

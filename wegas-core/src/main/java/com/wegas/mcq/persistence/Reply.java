@@ -23,7 +23,6 @@ import org.codehaus.jackson.annotate.JsonBackReference;
 public class Reply extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-//    private static final Logger logger = LoggerFactory.getLogger(MCQReplyInstanceEntity.class);
     /**
      *
      */

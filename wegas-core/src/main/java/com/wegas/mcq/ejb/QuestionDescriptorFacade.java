@@ -103,11 +103,21 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @return
      * @throws WegasException
      */
-    public Reply selectChoice(Long choiceId, Long playerId, Long startTime) throws WegasException {
+    public Reply selectChoice(Long choiceId, Long playerId) {
+        return this.selectChoice(choiceId, playerFacade.find(playerId), Long.valueOf(0));
+    }
+
+    public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
     }
 
-    private Result getCurrentResult(Player p, ChoiceDescriptor choice) throws WegasException {
+    public Reply selectAndValidateChoice(Long choiceId, Long playerId) throws ScriptException {
+        Reply reply = this.selectChoice(choiceId, playerFacade.find(playerId), Long.valueOf(0));
+        this.validateReply(playerId, reply.getId());
+        return reply;
+    }
+
+    private Result getCurrentResult(Player p, ChoiceDescriptor choice) {
         Result r = choice.getInstance(p).getCurrentResult();
         if (r == null) {
             try {

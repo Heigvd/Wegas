@@ -35,7 +35,7 @@ YUI.add('wegas-app', function(Y) {
      *        Use the target class name as the key.
      *   </li>
      * </ul>
-     * 
+     *
      * @name Y.Wegas.App
      * @class Base class for wegas, handle initialisation of datasources and rendering
      * @extends Y.Base
@@ -52,6 +52,7 @@ YUI.add('wegas-app', function(Y) {
          * @private
          */
         dataSources: [],
+
         /**
          * Lifecycle methods
          * @function
@@ -67,6 +68,7 @@ YUI.add('wegas-app', function(Y) {
              */
             this.publish("render", {});
         },
+
         /**
          * Destructor methods.
          * @function
@@ -78,6 +80,7 @@ YUI.add('wegas-app', function(Y) {
                 this.dataSources[i].destroy();
             }
         },
+
         /**
          * Render function
          * @function
@@ -106,6 +109,7 @@ YUI.add('wegas-app', function(Y) {
 
             this.initDataSources();
         },
+
         // *** Private methods ** //
         /**
          * @function
@@ -139,6 +143,7 @@ YUI.add('wegas-app', function(Y) {
                 this.initPage();
             }
         },
+
         /**
          * @function
          * @private
@@ -180,6 +185,7 @@ YUI.add('wegas-app', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.App */
+
         /**
          * @field
          * @static
@@ -242,6 +248,7 @@ YUI.add('wegas-app', function(Y) {
                 value: {}
             }
         },
+
         /**
          * Generate ID an unique id based on current time.
          * @function
@@ -253,6 +260,7 @@ YUI.add('wegas-app', function(Y) {
             var now = new Date();
             return now.getHours() + now.getMinutes() + now.getSeconds();
         },
+
         /**
          * Escape a html string by replacing <, > and " by their html entities.
          *
@@ -267,6 +275,7 @@ YUI.add('wegas-app', function(Y) {
                     .replace(/>/g, '&gt;')
                     .replace(/"/g, '&quot;');
         },
+
         /**
          * Replace any text line return by a \<br \/\>
          * @function
@@ -274,8 +283,9 @@ YUI.add('wegas-app', function(Y) {
          * @param str {String}
          * @return {String} Escaped string
          */
-        nl2br: function(str) {
-            return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br />$2');
+        nl2br: function(str, replaceBy) {
+            replaceBy = replaceBy || '<br />';
+            return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + replaceBy + '$2');
         }
     });
     Y.namespace('Wegas').App = App;

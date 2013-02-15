@@ -17,11 +17,13 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -79,16 +81,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         final Root<Game> game = cq.from(Game.class);
         cq.where(cb.equal(game.get(Game_.token), token));
         Query q = em.createQuery(cq);
-        Game g;
         try {
-            g = (Game) q.getSingleResult();
+            return (Game) q.getSingleResult();
         } catch (NoResultException ex) {
-            g = null;
-        } catch (NonUniqueResultException ex) {
-            g = (Game) q.getResultList().get(0);
+            return null;
         }
-        return g;                                     // If there is more than one game with this token, use the 1st one
-        //return (Game) q.getSingleResult();
     }
 
     /**
@@ -140,23 +137,25 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     /**
-     * Metod return all public games
+     * Returns all public games
      *
      * @param userId
      * @return Collection<Game>
      */
-    public Collection<Game> getPublicGames(Long userId) {
-
-        final Role pRolle = roleFacade.findByName("Public");
-        final Set<String> permissions = pRolle.getPermissions();
+    public Collection<Game> getPublicGames(final Long userId) {
         final String PREFIX = "Game:View:g";
+        final Role pRolle = roleFacade.findByName("Public");
+        final Collection<Game> registerdGame = userFacade.registeredGames(userId);
         Collection<Game> games = new ArrayList<>();
 
-        for (Game g: userFacade.registeredGames(userId)) {
-            if (permissions.contains(PREFIX+g.getId())) {
-                this.em.detach(g);
-                g.setName(g.getGameModel().getName() + " : " + g.getName());
-                games.add(g);
+        for (String permission : pRolle.getPermissions()) {
+            if (permission.startsWith(PREFIX)) {
+                Game g = this.find(Long.parseLong(permission.replace(PREFIX, "")));
+                if (!registerdGame.contains(g)) {                               // Only add games a player is not already registered in
+                    this.em.detach(g);
+                    g.setName(g.getGameModel().getName() + " : " + g.getName());
+                    games.add(g);
+                }
             }
         }
         return games;

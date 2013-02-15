@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class StateMachineRunner implements Serializable {
+public class StateMachineFacade implements Serializable {
 
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineRunner.class);
+    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
     @EJB
@@ -49,7 +49,7 @@ public class StateMachineRunner implements Serializable {
     @EJB
     private ScriptFacade scriptManager;
     /**
-     * StateMachineRunner is running
+     * StateMachineFacade is running
      */
     private Boolean run = false;
     /**
@@ -61,7 +61,7 @@ public class StateMachineRunner implements Serializable {
     /**
      *
      */
-    public StateMachineRunner() {
+    public StateMachineFacade() {
     }
 
     /**
@@ -232,4 +232,19 @@ public class StateMachineRunner implements Serializable {
             }
         }
     }
+    /**
+     *
+     * @param entity
+     * @throws ScriptException
+     * @throws WegasException
+     */
+//    public void step(StateMachineInstance entity) throws ScriptException, WegasException{
+//        List<Transition> transitions = entity.getCurrentState().getTransitions();
+//        for(Transition transition: transitions){
+//            Script script = transition.getTriggerCondition();
+//            //Get playerId, gameModelId and need an additional evalScript (true|false)
+//            scriptManager.eval(Long.MIN_VALUE, script);
+//
+//        }
+//    }
 }

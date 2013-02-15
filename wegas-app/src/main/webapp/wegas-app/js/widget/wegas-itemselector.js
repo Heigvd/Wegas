@@ -219,7 +219,6 @@ YUI.add('wegas-itemselector', function (Y) {
                         case 'image' :
                             child = this.makeNodeImage({
                                 "data-file": value,
-                                "src": value,
                                 "width": obj['height'],
                                 "height": obj['width']
                             }, className);

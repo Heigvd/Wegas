@@ -11,19 +11,15 @@ import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
- * @todo refactor so assignements points to task instances
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
 public class Assignment extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(Assignment.class);
     /**
      *
      */
@@ -33,28 +29,25 @@ public class Assignment extends AbstractEntity {
     /**
      *
      */
-    private Long startTime;
-    /*
-     *
-     */
-    private Long completness = Long.valueOf(0);
+    private double startTime;
     /**
      *
      */
-    @ManyToOne
-    @JoinColumn(name = "taskDescriptor_id")
-    private TaskDescriptor taskDescriptor;
+    private double duration;
     /**
      *
      */
-    @Column(name = "taskDescriptor_id", nullable = false, insertable = false, updatable = false)
-    private Long taskDescriptorId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "taskinstance_id", nullable = false)
+    @XmlTransient
+    private TaskInstance taskInstance;
     /**
      *
      */
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
     @JsonBackReference
+    @JsonIgnore
     private ResourceInstance resourceInstance;
 
     /**
@@ -65,13 +58,34 @@ public class Assignment extends AbstractEntity {
 
     /**
      *
+     * @param taskInstance
+     */
+    public Assignment(TaskInstance taskInstance) {
+        this.duration = 0;
+        this.taskInstance = taskInstance;
+    }
+
+    /**
+     *
      * @param startTime
+     * @param taskInstance
+     */
+    public Assignment(double startTime, TaskInstance taskInstance) {
+        this.startTime = startTime;
+        this.duration = 0;
+        this.taskInstance = taskInstance;
+    }
+
+    /**
+     *
+     * @param startTime
+     * @param duration
      * @param taskDescriptor
      */
-    public Assignment(Long startTime, TaskDescriptor taskDescriptor) {
+    public Assignment(double startTime, double duration, TaskInstance taskInstance) {
         this.startTime = startTime;
-        this.taskDescriptor = taskDescriptor;
-        this.taskDescriptorId = taskDescriptor.getId();
+        this.startTime = duration;
+        this.taskInstance = taskInstance;
     }
 
     /**
@@ -81,10 +95,10 @@ public class Assignment extends AbstractEntity {
     @Override
     public void merge(AbstractEntity a) {
         Assignment other = (Assignment) a;
-        this.setTaskDescriptor(other.getTaskDescriptor());
         this.setResourceInstance(other.getResourceInstance());
         this.setStartTime(other.getStartTime());
-        this.taskDescriptorId = this.getTaskDescriptor().getId();
+        this.setDuration(other.getDuration());
+        //this.setTaskInstance(other.getTaskInstance());
     }
 
     @PostPersist
@@ -119,30 +133,29 @@ public class Assignment extends AbstractEntity {
     /**
      * @return the startTime
      */
-    public Long getStartTime() {
+    public double getStartTime() {
         return startTime;
     }
 
     /**
      * @param startTime the startTime to set
      */
-    public void setStartTime(Long startTime) {
+    public void setStartTime(double startTime) {
         this.startTime = startTime;
     }
 
     /**
-     * @return the choiceDescriptor
+     * @return the duration
      */
-    @XmlTransient
-    public TaskDescriptor getTaskDescriptor() {
-        return taskDescriptor;
+    public double getDuration() {
+        return duration;
     }
 
     /**
-     * @param taskDescriptor
+     * @param duration the duration to set
      */
-    public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
     /**
@@ -150,29 +163,21 @@ public class Assignment extends AbstractEntity {
      * @return
      */
     public Long getTaskDescriptorId() {
-        return this.taskDescriptorId;
+        return this.getTaskInstance().getDescriptorId();
     }
 
     /**
-     *
-     * @param newTaskDescriptorId
-     * @return
+     * @return the taskInstance
      */
-    public Long setTaskDescriptorId(long newTaskDescriptorId) {
-        return this.taskDescriptorId = newTaskDescriptorId;
+    @XmlTransient
+    public TaskInstance getTaskInstance() {
+        return taskInstance;
     }
 
     /**
-     * @return the completness
+     * @param taskInstance the taskInstance to set
      */
-    public Long getCompletness() {
-        return completness;
-    }
-
-    /**
-     * @param completness the completness to set
-     */
-    public void setCompletness(Long completness) {
-        this.completness = completness;
+    public void setTaskInstance(TaskInstance taskInstance) {
+        this.taskInstance = taskInstance;
     }
 }

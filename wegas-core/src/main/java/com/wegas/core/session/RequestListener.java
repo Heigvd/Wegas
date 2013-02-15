@@ -7,7 +7,6 @@
  */
 package com.wegas.core.session;
 
-import java.util.logging.Logger;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 
@@ -16,8 +15,6 @@ import javax.servlet.ServletRequestListener;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class RequestListener implements ServletRequestListener {
-
-    private static final Logger logger = Logger.getLogger("RequestListener");
 
     /**
      *
@@ -49,8 +46,7 @@ public class RequestListener implements ServletRequestListener {
          * logger.log(Level.INFO, "OK"); // TODO Check that the provided WS
          * SESSION ID exists and belongs to the correct HTTP SESSION } } else {
          * logger.info("Effective Session Type is " +
-         * servletRequest.getClass().getSimpleName());
-        }
+         * servletRequest.getClass().getSimpleName()); }
          */
     }
 }

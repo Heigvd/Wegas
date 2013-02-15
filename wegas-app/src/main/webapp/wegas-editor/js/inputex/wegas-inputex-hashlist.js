@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -13,48 +12,87 @@
 YUI.add("wegas-inputex-hashlist", function (Y) {
     "uset strict";
 
-    var inputEx = Y.inputEx;
-
-    inputEx.HashList = function (options) {
-        inputEx.HashList.superclass.constructor.call(this, options);
+    /**
+     * @name Y.inputEx.Wegas.HashList
+     * @extends Y.inputEx.ListField
+     * @class
+     * @constructor
+     */
+    var inputEx = Y.inputEx, HashList = function (options) {
+        HashList.superclass.constructor.call(this, options);
     };
+    Y.extend(HashList, inputEx.ListField, {
+        /** @lends Y.inputEx.Wegas.HashList# */
 
-    Y.extend(inputEx.HashList, inputEx.ListField, {
+        /**
+         * @function
+         * @private
+         */
+        setOptions: function (options) {
+            HashList.superclass.setOptions.call(this, options);
+            this.options.keyField = options.keyField || "id";
+            this.options.valueField = options.valueField;
+        },
 
         /**
          * Convert the array of 2d elements to an javascript object
+         *
+         * @function
+         * @private
          */
         seq: 2000,
         getValue: function () {
-            var i, v = inputEx.HashList.superclass.getValue.call(this),
-            obj = {}, id;
+            var i, v = HashList.superclass.getValue.call(this),
+            ret = {}, id;
 
             for(i = 0; i < v.length; i++) {
-                id = v[i].id;
-                if (!id) {
+                id = v[i][this.options.keyField];
+
+                if (Y.Lang.isArray(v[i])) {
+                    ret[v[i][0]] = v[i][1];
+
+                }else if (!id) {
                     id = this.seq;
-                    obj[id] = this.seq;
+                    ret[id] = this.seq;
                     this.seq++;
+                } else {
+                    if (this.options.valueField) {
+                        ret[id] = v[i][this.options.valueField];
+
+                    } else {
+                        ret[id] = v[i];
+                    }
                 }
-                obj[id] = v[i];
             }
-            return obj;
+            return ret;
         },
 
         /**
          * Convert the object into a list of pairs
+         *
+         * @function
+         * @private
          */
         setValue: function (v) {
             var key, val = [];
 
-            for (key in v) {
-                if (v.hasOwnProperty(key)) {
-                    val.push(v[key]);
+            if (this.options.elementType.type == "combine") {
+                for (key in v) {
+                    if (v.hasOwnProperty(key)) {
+                        val.push([key, v[key]]);
+                    }
+                }
+            } else {
+                for (key in v) {
+                    if (v.hasOwnProperty(key)) {
+                        val.push(v[key]);
+                    }
                 }
             }
-            inputEx.HashList.superclass.setValue.call(this, val);
+
+            HashList.superclass.setValue.call(this, val);
         }
     });
 
-    inputEx.registerType('hashlist', inputEx.HashList);                         // Register this class as "object" type
+    inputEx.registerType('hashlist', HashList);                                 // Register this class as "object" type
 });

@@ -216,7 +216,7 @@
                 "height": 35,
                 "width": 35
             }, {
-                "name": "surname",
+                "name": "name",
                 "label": "Prénom : "
             }
         ],
@@ -233,9 +233,6 @@
             }, {
                 "name": "name",
                 "label": "Nom : "
-            }, {
-                "name": "surname",
-                "label": "Prénom : "
             }, {
                 "name": "salary",
                 "label": "Salaire : "

@@ -11,7 +11,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -24,7 +23,6 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Table(name = "users")
 public class User extends AbstractEntity {
 
-    private static final Logger logger = Logger.getLogger("UserEntity");
     /**
      *
      */
@@ -117,7 +115,7 @@ public class User extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @return
      */
     @XmlTransient

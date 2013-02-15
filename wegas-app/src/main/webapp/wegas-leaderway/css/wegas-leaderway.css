@@ -139,6 +139,8 @@
     background-repeat: no-repeat;
     background-position: center;
     border-width:0;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
     box-shadow: none;
     background-color:transparent;
     height:40px;
