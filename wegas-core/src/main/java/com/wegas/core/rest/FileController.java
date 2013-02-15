@@ -18,8 +18,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -194,7 +192,7 @@ public class FileController {
             try {
                 ((FileDescriptor) fileDescriptor).getBase64Data().close();
             } catch (IOException ex) {
-                Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error(null, ex);
             } finally {
                 if (connector != null) {
                     connector.save();
@@ -230,9 +228,9 @@ public class FileController {
                 return ret;
             }
         } catch (LoginException ex) {
-            Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         } catch (RepositoryException ex) {
-            Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
         return new ArrayList<>();
     }
@@ -260,10 +258,10 @@ public class FileController {
                     try {
                         connector.exportXML(output);
                     } catch (SAXException ex) {
-                        Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                        logger.error(null, ex);
                     }
                 } catch (RepositoryException ex) {
-                    Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.error(null, ex);
                 }
             }
         };
@@ -298,10 +296,10 @@ public class FileController {
                             }
                         }
                     } catch (SAXException ex) {
-                        Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                        logger.error(null, ex);
                     }
                 } catch (RepositoryException ex) {
-                    Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.error(null, ex);
                 }
             }
         };
@@ -329,7 +327,7 @@ public class FileController {
                 try (ZipOutputStream zipOutputStream = new ZipOutputStream(output)) {
                     connector.zipDirectory(zipOutputStream, "/");
                 } catch (RepositoryException ex) {
-                    Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.error(null, ex);
                 }
             }
         };
@@ -476,9 +474,9 @@ public class FileController {
             fileManager.deleteWorkspace();
             fileManager.save();
         } catch (LoginException ex) {
-            Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         } catch (RepositoryException ex) {
-            Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
     }
 }

@@ -13,7 +13,6 @@ import com.wegas.core.rest.util.Views;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
@@ -30,7 +29,6 @@ import org.codehaus.jackson.map.annotate.JsonView;
 public class Message extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("MCQReplyInstanceEntity");
     /**
      *
      */

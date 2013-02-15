@@ -12,7 +12,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -26,7 +25,6 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 public class InboxInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger("InboxInstanceEntity");
     /**
      *
      */

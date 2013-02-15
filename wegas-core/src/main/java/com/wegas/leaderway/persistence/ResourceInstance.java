@@ -22,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @Access(AccessType.FIELD)
-public class ResourceInstance extends VariableInstance {
+public class ResourceInstance extends VariableInstance  {
 
     private static final long serialVersionUID = 1L;
     public static final int HISTORYSIZE = 20;
@@ -86,7 +86,7 @@ public class ResourceInstance extends VariableInstance {
 
     @PreUpdate
     public void preUpdate() {
-       this.stepHistory();
+        this.stepHistory();
     }
 
     public void stepHistory() {

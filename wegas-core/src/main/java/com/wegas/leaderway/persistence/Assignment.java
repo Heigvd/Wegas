@@ -11,19 +11,15 @@ import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
- * @todo refactor so assignements points to task instances
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
 public class Assignment extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(Assignment.class);
     /**
      *
      */
@@ -47,6 +43,7 @@ public class Assignment extends AbstractEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "variableinstance_id", nullable = false)
     @JsonBackReference
+    @JsonIgnore
     private ResourceInstance resourceInstance;
 
     /**

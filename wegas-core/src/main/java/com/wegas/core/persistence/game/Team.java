@@ -11,7 +11,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -33,7 +32,6 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Team extends AbstractEntity {
 
-    private static final Logger logger = Logger.getLogger("GroupEntity");
     /**
      *
      */
