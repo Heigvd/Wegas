@@ -77,7 +77,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      * @return the index
      */
-    public int getIndex() {
+    public Integer getIndex() {
         return index;
     }
 

@@ -25,35 +25,13 @@ import org.junit.Test;
  */
 public class ResourceFacadeTest extends AbstractEJBTest {
 
-    @Test
-    public void testResource() throws NamingException {
-        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-
-        // Create a resource
-        final ResourceDescriptor res = new ResourceDescriptor();
-        res.setLabel("Paul");
-        res.setDefaultInstance(new ResourceInstance());
-        res.setScope(new TeamScope());
-        vdf.create(gameModel.getId(), res);
-
-        // Test history
-        ResourceInstance resI = res.getInstance(player);
-        for (int i = 0; i < ResourceInstance.HISTORYSIZE + 10; i++) {
-            resI.setConfidence(i);
-            vif.update(resI.getId(), resI);
-        }
-        resI = (ResourceInstance) vif.find(resI.getId());
-        assertEquals(Integer.valueOf(ResourceInstance.HISTORYSIZE + 9), resI.getConfidence());
-        assertEquals(ResourceInstance.HISTORYSIZE, resI.getConfidenceHistory().size());
-    }
-
     /**
      * Test of assign method, of class ResourceFacade.
      */
     @Test
     public void testAssignment() throws NamingException {
 
+        // Lookup Ejb's
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
         final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
@@ -74,13 +52,41 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 
         // Assign resource to task
         resourceFacade.assign(player, res.getId(), task.getId());
-
         assertEquals(
                 ((ResourceInstance) vif.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
                 task.getInstance(player));
+        assertEquals(
+                res.getInstance(player),
+                ((TaskInstance) vif.find(task.getId(), player)).getAssignments().get(0).getResourceInstance());
 
         // Clean
         vdf.remove(res.getId());
         vdf.remove(task.getId());
+    }
+
+    @Test
+    public void testResourceHistory() throws NamingException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+
+        // Create a resource
+        final ResourceDescriptor res = new ResourceDescriptor();
+        res.setLabel("Paul");
+        res.setDefaultInstance(new ResourceInstance());
+        res.setScope(new TeamScope());
+        vdf.create(gameModel.getId(), res);
+
+        // Test history
+        ResourceInstance resI = res.getInstance(player);
+        for (int i = 0; i < ResourceInstance.HISTORYSIZE + 10; i++) {
+            resI.setConfidence(i);
+            vif.update(resI.getId(), resI);
+        }
+        resI = (ResourceInstance) vif.find(resI.getId());
+        assertEquals(Integer.valueOf(ResourceInstance.HISTORYSIZE + 9), resI.getConfidence());
+        assertEquals(ResourceInstance.HISTORYSIZE, resI.getConfidenceHistory().size());
+
+        // Clean
+        vdf.remove(res.getId());
     }
 }

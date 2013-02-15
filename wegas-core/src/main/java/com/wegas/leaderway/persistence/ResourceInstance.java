@@ -120,6 +120,7 @@ public class ResourceInstance extends VariableInstance  {
      * @param assignment
      */
     public void addAssignement(Assignment assignment) {
+        assignments.add(assignment);
         assignment.setResourceInstance(this);
     }
 
