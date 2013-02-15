@@ -105,37 +105,62 @@
         </profile>
     </profiles>
 
-    <dependencies>
-        <dependency>
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-            <type>jar</type>
-            <version>1.1.1</version>
-            <!-- <scope>provided</scope>-->
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
 
-        <dependency>
+            <!-- slf4j -->
+            <dependency>
+                <artifactId>slf4j-api</artifactId>
+                <groupId>org.slf4j</groupId>
+                <type>jar</type>
+                <version>1.6.4</version>
+            </dependency>
+
+            <!-- logback (slf4j implementation) -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.0.2</version>
+            <!--<scope>runtime</scope>-->
+            </dependency>
+
+            <!--<dependency>
+                <artifactId>commons-logging</artifactId>
+                <groupId>commons-logging</groupId>
+                <type>jar</type>
+                <version>1.1.1</version>
+                <scope>provided</scope>
+            </dependency>-->
+
+            <!--<dependency>
+                <artifactId>commons-lang</artifactId>
+                <groupId>commons-lang</groupId>
+                <type>jar</type>
+                <version>2.2</version>
+            </dependency>-->
+
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+
+        <!--<dependency>
             <artifactId>commons-lang</artifactId>
             <groupId>commons-lang</groupId>
-            <type>jar</type>
-            <version>2.2</version>
-        </dependency>
+        </dependency>-->
 
         <!-- slf4j -->
         <dependency>
             <artifactId>slf4j-api</artifactId>
             <groupId>org.slf4j</groupId>
-            <type>jar</type>
-            <version>1.6.4</version>
         </dependency>
 
         <!-- logback (slf4j implementation) -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.2</version>
-            <!--<scope>runtime</scope>-->
         </dependency>
+        
     </dependencies>
 
     <build>
@@ -195,8 +220,6 @@
                 </configuration>
             </plugin>
 
-
-
             <!-- Site -->
             <plugin>
                 <groupId>com.github.github</groupId>
@@ -219,7 +242,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -325,8 +348,6 @@
                                 <targetJdk>${jdk.version}</targetJdk>
                             </configuration>
                         </plugin>
-
-                        
 
                         <!-- Code complexity -->
                         <!-- @fixme removed because it is not compatible w/ java 1.7 -->

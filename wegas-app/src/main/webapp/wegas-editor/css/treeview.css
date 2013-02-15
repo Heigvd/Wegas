@@ -16,7 +16,7 @@
     outline:none;
 }
 .yui3-treenode-content{
-    padding-left:20px;
+    margin-left: 20px;
     font-style: italic;
 }
 
@@ -40,7 +40,7 @@
     height:18px;
 }
 .yui3-treeleaf-content-icon {
-    margin-left: -20px;
+    margin: -4px 0 -6px;
 }
 .yui3-treenode-default-icon{
     background-image: url(../images/tree_view_icons_blue_01_arrow_beside_folders.gif);
@@ -60,7 +60,7 @@
 
 .yui3-treeleaf-default-icon {
     background-image: url(../images/tree_view_icons_blue_01_arrow_beside_folders.gif);
-    background-position: -17px -160px;
+    background-position: -14px -162px;
     text-decoration: none;
 }
 
@@ -72,10 +72,11 @@
 .yui3-treeleaf-content-rightwidget{
     position: absolute;
     right:5px;
-    display: inline-block;
+    top: 2px;
 }
 .yui3-treenode-content-header,
 .yui3-treeleaf-content-header{
+    position: relative;
     padding:2px 27px 2px 2px;
     white-space: nowrap;
     font-style: normal;

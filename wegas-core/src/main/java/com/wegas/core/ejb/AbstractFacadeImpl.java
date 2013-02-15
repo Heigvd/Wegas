@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.IOException;
 import java.util.List;
@@ -183,7 +182,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
             //    entityManager.flush();
             //}
         } catch (NoResultException e) {                                         // NoResultException are caught and wrapped exception
-            throw new PersistenceException(e);                                  // so they do not cause transaction rollback
+            throw new com.wegas.core.exception.NoResultException(e);            // so they do not cause transaction rollback
             //throw e;
         }
 

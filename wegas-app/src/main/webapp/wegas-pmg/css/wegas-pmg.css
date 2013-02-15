@@ -135,6 +135,8 @@
     width:120px;
     background:none;
     border-radius:0px;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
     box-shadow: none;
     border-style:solid;
     border-color:black;

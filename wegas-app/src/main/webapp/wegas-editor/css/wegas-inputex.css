@@ -16,7 +16,7 @@ div.inputEx-hidden {
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;
 }
-.inputEx-Group div.inputEx-fieldWrapper > div.inputEx-label:first-letter {
+div.inputEx-fieldWrapper > div.inputEx-label:first-letter {
     text-transform: uppercase;
 }
 div.inputEx-message {
@@ -149,6 +149,8 @@ img.inputEx-ListField-delButton {
 .yui3-skin-sam .inputEx-ListField .wegas-removebutton {
     background: none;
     border: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
     box-shadow: none;
     margin: -2px 0 0;
     background-color: transparent;

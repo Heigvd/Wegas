@@ -8,15 +8,18 @@
 package com.wegas.leaderway.ejb;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.leaderway.persistence.Assignment;
-import com.wegas.leaderway.persistence.ResourceDescriptor;
 import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.leaderway.persistence.TaskInstance;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,11 +29,19 @@ import javax.ejb.Stateless;
 @LocalBean
 public class ResourceFacade {
 
+    static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
+    /**
+     *
+     */
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
     /**
      *
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+    @EJB
+    private VariableInstanceFacade variableInstanceFacade;
 
     /**
      *
@@ -38,20 +49,12 @@ public class ResourceFacade {
      * @param startTime
      * @param task
      */
-    public Assignment assign(ResourceInstance resourceInstance, TaskInstance taskInstance) {
-        return resourceInstance.assign(taskInstance);
+    public void assign(ResourceInstance resourceInstance, TaskInstance taskInstance) {
+        resourceInstance.assign(taskInstance);
     }
 
-    /**
-     *
-     * @param player
-     * @param resourceDescriptorId
-     * @param startTime
-     * @param taskId
-     */
-    public Assignment assign(Player player, Long resourceDescriptorId, Long taskDescriptorId) {
-        return this.assign(
-                ((ResourceDescriptor) variableDescriptorFacade.find(resourceDescriptorId)).getInstance(player),
-                ((TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId)).getInstance(player));
+    public void assign(Player p, Long resourceDescriptorId, Long taskDescriptorId) {
+        this.assign((ResourceInstance) variableInstanceFacade.find(resourceDescriptorId, p),
+                (TaskInstance) variableInstanceFacade.find(taskDescriptorId, p));
     }
 }

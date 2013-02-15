@@ -1076,6 +1076,7 @@ YUI.add('wegas-entity', function(Y) {
                         }
                     },
                     skillset: {
+                        optional: false,
                         _inputex: {
                             _type: "object",
                             label: "Default skills"
@@ -1265,12 +1266,6 @@ YUI.add('wegas-entity', function(Y) {
             moral: {
                 type: "string"
             },
-            moralHistory: {
-                type: "array"
-            },
-            confidenceHistory: {
-                type: "array"
-            },
             confidence: {
                 type: "string"
             },
@@ -1290,6 +1285,12 @@ YUI.add('wegas-entity', function(Y) {
             assignments: {
                 type: "array",
                 value: []
+            },
+            moralHistory: {
+                type: "array"
+            },
+            confidenceHistory: {
+                type: "array"
             }
         }
     });
