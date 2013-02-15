@@ -21,6 +21,7 @@ public class WRequirement extends VariableInstance {
      */
     @Column(name = "wlimit")
     private Integer limit;
+
     /**
      *
      */

@@ -27,7 +27,7 @@ YUI.add('wegas-googletranslate', function (Y) {
                 if (this.loaded) return;
                 this.loaded = true;
                 new google.translate.TranslateElement({
-                    autoDisplay: true,
+                    autoDisplay: false,
                     multilanguagePage: true,
                     //pageLanguage: 'en',
                     layout: google.translate.TranslateElement.InlineLayout.SIMPLE
@@ -51,5 +51,5 @@ YUI.add('wegas-googletranslate', function (Y) {
         }
     });
     Y.namespace("Wegas").GoogleTranslate = GoogleTranslate;
-    
+
 });
