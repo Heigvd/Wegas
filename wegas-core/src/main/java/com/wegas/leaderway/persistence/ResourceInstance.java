@@ -40,20 +40,12 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    private Map<String, Long> skillset = new HashMap<>();
+    private Map<String, Long> skillsets = new HashMap<>();
     /**
      *
      */
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
-    /**
-     *
-     */
-    private String desiredSkill;
-    /**
-     *
-     */
-    private String undesiredSkillset;
     /**
      *
      */
@@ -84,12 +76,10 @@ public class ResourceInstance extends VariableInstance {
         if (other.getAssignments() != null) {
             this.setAssignments(other.getAssignments());
         }
-        this.skillset.clear();
-        this.skillset.putAll(other.getSkillset());
+        this.skillsets.clear();
+        this.skillsets.putAll(other.getSkillsets());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
-        this.setDesiredSkill(other.getDesiredSkill());
-        this.setUndesiredSkillset(other.getUndesiredSkillset());
         this.setMoral(other.getMoral());
         this.setConfidence(other.getConfidence());
     }
@@ -167,15 +157,15 @@ public class ResourceInstance extends VariableInstance {
     /**
      * @return the skillset
      */
-    public Map<String, Long> getSkillset() {
-        return this.skillset;
+    public Map<String, Long> getSkillsets() {
+        return this.skillsets;
     }
 
     /**
      * @param skillset the skillset to set
      */
-    public void setSkillset(Map<String, Long> skillset) {
-        this.skillset = skillset;
+    public void setSkillsets(Map<String, Long> skillsets) {
+        this.skillsets = skillsets;
     }
 
     /**
@@ -184,7 +174,7 @@ public class ResourceInstance extends VariableInstance {
      * @param val
      */
     public void setSkillset(String key, Long val) {
-        this.skillset.put(key, val);
+        this.skillsets.put(key, val);
     }
 
     /**
@@ -193,7 +183,7 @@ public class ResourceInstance extends VariableInstance {
      * @return
      */
     public Long getSkillset(String key) {
-        return this.skillset.get(key);
+        return this.skillsets.get(key);
     }
 
     /**
@@ -226,34 +216,6 @@ public class ResourceInstance extends VariableInstance {
      */
     public String getProperty(String key) {
         return this.properties.get(key);
-    }
-
-    /**
-     * @return the desiredSkill
-     */
-    public String getDesiredSkill() {
-        return desiredSkill;
-    }
-
-    /**
-     * @param desiredSkill the desiredSkill to set
-     */
-    public void setDesiredSkill(String desiredSkill) {
-        this.desiredSkill = desiredSkill;
-    }
-
-    /**
-     * @return the undesiredSkillset
-     */
-    public String getUndesiredSkillset() {
-        return undesiredSkillset;
-    }
-
-    /**
-     * @param undesiredSkillset the undesiredSkillset to set
-     */
-    public void setUndesiredSkillset(String undesiredSkillset) {
-        this.undesiredSkillset = undesiredSkillset;
     }
 
     /**

@@ -37,10 +37,6 @@ public class Assignment extends AbstractEntity {
     /**
      *
      */
-    private double duration;
-    /**
-     *
-     */
     @ManyToOne(optional = false)
     @JoinColumn(name = "taskinstance_id", nullable = false)
     @XmlTransient
@@ -64,7 +60,6 @@ public class Assignment extends AbstractEntity {
      * @param taskInstance
      */
     public Assignment(TaskInstance taskInstance) {
-        this.duration = 0;
         this.taskInstance = taskInstance;
     }
 
@@ -75,19 +70,6 @@ public class Assignment extends AbstractEntity {
      */
     public Assignment(double startTime, TaskInstance taskInstance) {
         this.startTime = startTime;
-        this.duration = 0;
-        this.taskInstance = taskInstance;
-    }
-
-    /**
-     *
-     * @param startTime
-     * @param duration
-     * @param taskDescriptor
-     */
-    public Assignment(double startTime, double duration, TaskInstance taskInstance) {
-        this.startTime = startTime;
-        this.startTime = duration;
         this.taskInstance = taskInstance;
     }
 
@@ -100,7 +82,6 @@ public class Assignment extends AbstractEntity {
         Assignment other = (Assignment) a;
         this.setResourceInstance(other.getResourceInstance());
         this.setStartTime(other.getStartTime());
-        this.setDuration(other.getDuration());
         //this.setTaskInstance(other.getTaskInstance());
     }
 
@@ -145,20 +126,6 @@ public class Assignment extends AbstractEntity {
      */
     public void setStartTime(double startTime) {
         this.startTime = startTime;
-    }
-
-    /**
-     * @return the duration
-     */
-    public double getDuration() {
-        return duration;
-    }
-
-    /**
-     * @param duration the duration to set
-     */
-    public void setDuration(double duration) {
-        this.duration = duration;
     }
 
     /**

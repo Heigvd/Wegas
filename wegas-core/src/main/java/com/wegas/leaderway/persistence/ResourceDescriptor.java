@@ -10,6 +10,9 @@ package com.wegas.leaderway.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import java.util.HashMap;
+import java.util.Map;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
@@ -26,7 +29,11 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     @Lob
     private String description;
-            
+    /**
+     *
+     */
+    @ElementCollection
+    private Map<String, String> properties = new HashMap<>();
     /**
      *
      * @param a
@@ -36,6 +43,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
         super.merge(a);
         ResourceDescriptor other = (ResourceDescriptor) a;
         this.setDescription(other.getDescription());
+        this.properties.clear();
+        this.properties.putAll(other.getProperties());
     }
 
     /**
@@ -50,6 +59,38 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    /**
+     * @return the properties
+     */
+    public Map<String, String> getProperties() {
+        return this.properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    /**
+     *
+     * @param key
+     * @param val
+     */
+    public void setProperty(String key, String val) {
+        this.properties.put(key, val);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public String getProperty(String key) {
+        return this.properties.get(key);
     }
 
     // **** Sugar for editor *** //
