@@ -192,7 +192,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
 
     /**
      *
-     * Update the variable instance entity fo the given descriptor and player.
+     * Update the variable instance entity of the given descriptor and player.
      *
      * @param variableDescriptorId
      * @param playerId
