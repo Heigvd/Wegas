@@ -1,7 +1,41 @@
 {
     "1": {
-        "type": "AbsoluteLayout",
+        "type": "PageLoader",
+        "pageLoaderId": "mainarea",
         "cssClass": "body",
+        "variable": {
+            "name": "currentPage"
+        }
+    },
+    "2": {
+        "type": "List",
+        "children": [{
+                "type": "Text",
+                "content": "FlexiTests",
+                "cssClass": "flexitests-title"
+            }, {
+                "type": "Text",
+                "content": "_INSTRUCTIONS_"
+            }, {
+                "type": "Text",
+                "content": "_FORMULAIRE_"
+            }, {
+                "type": "Button",
+                "label": "Submit",
+                "plugins": [{
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "currentPage.value = 3;"
+                            }
+                        }
+                    }]
+            }]
+    },
+    "3": {
+        "type": "AbsoluteLayout",
         "children": [{
                 "type": "ChoiceList",
                 "children": [
@@ -23,12 +57,15 @@
                         }
                     },
                     {
-                        "fn": "HideAfter"
+                        "fn": "HideAfter",
+                        "cfg": {
+                            "time": "0,500,1010,2500"
+                        }
                     },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
-                            "time": "3000"
+                            "time": "505,1000,2000,3000"
                         }
                     }]
             }, {

@@ -1,7 +1,27 @@
 /**
 *
 **/
+body > .wegas-pageloader{
+    background-color: rgb(77, 77, 77);
+}
 .body{
-    background-color: black;
-    color: white;
+    background-color: rgb(77, 77, 77);
+    color: whitesmoke;
+    width:1024px;
+    height: 768px;
+    margin: auto;
+    font-weight: bold;
+}
+.flexitests-title{
+    display: inline-block;
+    vertical-align: top;
+    font-weight: bolder;
+    font-size: 32px;
+    line-height: 42px;
+    text-shadow: 0px 0px 15px white;
+    margin: 0px 15px;
+    padding: 0;
+    margin: 0;
+    padding: 5px 25px 0px 10px;
+    letter-spacing: -2px;
 }

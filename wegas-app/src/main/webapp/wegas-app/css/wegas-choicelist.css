@@ -14,4 +14,7 @@
 .wegas-choicelist-hidden{
     visibility: hidden;
 }
+.wegas-choicelist-content > *{
+    clear:none;
+}
 
