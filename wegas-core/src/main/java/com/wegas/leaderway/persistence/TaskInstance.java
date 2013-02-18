@@ -49,12 +49,6 @@ public class TaskInstance extends VariableInstance {
     private Map<String, String> properties = new HashMap<>();
     /**
      *
-     */
-    @ElementCollection
-    private Map<String, WRequirement> requierements = new HashMap<>();
-
-    /**
-     *
      * @param a
      */
     @Override
@@ -64,8 +58,6 @@ public class TaskInstance extends VariableInstance {
         this.setDuration(other.getDuration());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
-        this.requierements.clear();
-        this.requierements.putAll(other.getRequierements());
     }
 
     /**
@@ -126,38 +118,6 @@ public class TaskInstance extends VariableInstance {
      */
     public String getProperty(String key) {
         return this.properties.get(key);
-    }
-
-    /**
-     * @return the requierements
-     */
-    public Map<String, WRequirement> getRequierements() {
-        return this.requierements;
-    }
-
-    /**
-     * @param requierement the requierement to set
-     */
-    public void setSkillsets(Map<String, WRequirement> requierement) {
-        this.requierements = requierement;
-    }
-
-    /**
-     *
-     * @param key
-     * @param WRequirement
-     */
-    public void setRequierement(String key, WRequirement val) {
-        this.requierements.put(key, val);
-    }
-
-    /**
-     *
-     * @param key
-     * @return
-     */
-    public WRequirement getRequierements(String key) {
-        return this.requierements.get(key);
     }
 
     /**

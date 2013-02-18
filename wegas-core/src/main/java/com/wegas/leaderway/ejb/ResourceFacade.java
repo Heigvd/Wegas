@@ -11,8 +11,8 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.leaderway.persistence.ResourceInstance;
-import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.leaderway.persistence.TaskInstance;
+import com.wegas.leaderway.persistence.WRequirement;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -44,17 +44,66 @@ public class ResourceFacade {
     private VariableInstanceFacade variableInstanceFacade;
 
     /**
-     *
+     * 
      * @param resourceInstance
-     * @param startTime
-     * @param task
+     * @param taskInstance 
      */
     public void assign(ResourceInstance resourceInstance, TaskInstance taskInstance) {
         resourceInstance.assign(taskInstance);
     }
 
+    /**
+     * 
+     * @param p
+     * @param resourceDescriptorId
+     * @param taskDescriptorId 
+     */
     public void assign(Player p, Long resourceDescriptorId, Long taskDescriptorId) {
         this.assign((ResourceInstance) variableInstanceFacade.find(resourceDescriptorId, p),
                 (TaskInstance) variableInstanceFacade.find(taskDescriptorId, p));
+    }
+    
+    /**
+     * 
+     * @param resourceInstance
+     * @param taskInstance 
+     */
+    public void assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance) {
+        resourceInstance.assignActivity(taskInstance);
+    }
+    
+    /**
+     * 
+     * @param resourceInstance
+     * @param taskInstance
+     * @param wrequirement 
+     */
+    public void assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance, WRequirement wrequirement) {
+        resourceInstance.assignActivity(taskInstance, wrequirement);
+    }
+    
+    /**
+     * 
+     * @param resourceInstance
+     * @param taskInstance
+     * @param startTime
+     * @param duration
+     * @param completion 
+     */
+    public void assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance, Double startTime, Double duration, Integer completion) {
+        resourceInstance.assignActivity(taskInstance, startTime, duration, completion);
+    }
+    
+    /**
+     * 
+     * @param resourceInstance
+     * @param taskInstance
+     * @param wrequirement
+     * @param startTime
+     * @param duration
+     * @param completion 
+     */
+    public void assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance, WRequirement wrequirement, Double startTime, Double duration, Integer completion) {
+        resourceInstance.assignActivity(taskInstance, wrequirement, startTime, duration, completion);
     }
 }
