@@ -22,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @Access(AccessType.FIELD)
-public class ResourceInstance extends VariableInstance  {
+public class ResourceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     public static final int HISTORYSIZE = 20;
@@ -32,6 +32,12 @@ public class ResourceInstance extends VariableInstance  {
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Assignment> assignments;
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Activity> activities;
     /**
      *
      */
@@ -76,6 +82,9 @@ public class ResourceInstance extends VariableInstance  {
         if (other.getAssignments() != null) {
             this.setAssignments(other.getAssignments());
         }
+        if (other.getActivities() != null) {
+            this.setActivities(other.getActivities());
+        }
         this.skillsets.clear();
         this.skillsets.putAll(other.getSkillsets());
         this.properties.clear();
@@ -102,7 +111,7 @@ public class ResourceInstance extends VariableInstance  {
     }
 
     /**
-     * @return the replies
+     * @return the assignements
      */
     public List<Assignment> getAssignments() {
         return assignments;
@@ -132,13 +141,77 @@ public class ResourceInstance extends VariableInstance  {
 
     /**
      *
+     * @param activities
+     */
+    public void addActivity(Activity activity) {
+        activities.add(activity);
+        activity.setResourceInstance(this);
+    }
+    
+    /**
+     * 
+     * @param task
+     * @return the Activity
+     */
+    public Activity assignActivity(TaskInstance task) {
+        final Activity activity = new Activity(task);
+        this.addActivity(activity);
+        return activity;
+    }
+    
+    /**
+     * 
+     * @param task
+     * @param wrequirement
+     * @return the Activity
+     */
+    public Activity assignActivity(TaskInstance task, WRequirement wrequirement) {
+        final Activity activity = new Activity(task, wrequirement);
+        this.addActivity(activity);
+        return activity;
+    }
+    
+    /**
+     * 
      * @param task
      * @param startTime
+     * @param duration
+     * @param completion
+     * @return the Activity
      */
-    public Assignment assign(Long startTime, TaskInstance task) {
-        final Assignment assignment = this.assign(task);
-        assignment.setStartTime(startTime);
-        return assignment;
+    public Activity assignActivity(TaskInstance task, Double startTime, Double duration, Integer completion) {
+        final Activity activity = new Activity(task, startTime, duration, completion);
+        this.addActivity(activity);
+        return activity;
+    }
+    
+    /**
+     * 
+     * @param task
+     * @param wrequirement
+     * @param startTime
+     * @param duration
+     * @param completion
+     * @return the activity
+     */
+    public Activity assignActivity(TaskInstance task, WRequirement wrequirement, Double startTime, Double duration, Integer completion) {
+        final Activity activity = new Activity(task, wrequirement, startTime, duration, completion);
+        this.addActivity(activity);
+        return activity;
+    }
+
+    /**
+     * @return the activities
+     */
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    /**
+     * @param activities
+     */
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 
     /**

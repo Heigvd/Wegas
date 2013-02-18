@@ -45,7 +45,11 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     @ElementCollection
     @ManyToMany(cascade = {})
     private List<TaskDescriptor> predecessors = new ArrayList<>();
-
+    /**
+     *
+     */
+    @ElementCollection
+    private Map<String, WRequirement> requierements = new HashMap<>();
     /**
      *
      * @param a
@@ -58,6 +62,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         this.setIndex(other.getIndex());
         this.predecessors.addAll(other.getPredecessors());
         this.properties.putAll(other.getProperties());
+        this.requierements.clear();
+        this.requierements.putAll(other.getRequierements());
     }
 
     /**
@@ -112,8 +118,40 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      * @param predecessors the predecessors to set
      */
-    public void setPredecessor (Integer index, TaskDescriptor taskDescriptor) {
+    public void setPredecessor(Integer index, TaskDescriptor taskDescriptor) {
         this.predecessors.set(index, taskDescriptor);
+    }
+    
+    /**
+     * @return the requierements
+     */
+    public Map<String, WRequirement> getRequierements() {
+        return this.requierements;
+    }
+
+    /**
+     * @param requierement the requierement to set
+     */
+    public void setSkillsets(Map<String, WRequirement> requierement) {
+        this.requierements = requierement;
+    }
+
+    /**
+     *
+     * @param key
+     * @param WRequirement
+     */
+    public void setRequierement(String key, WRequirement val) {
+        this.requierements.put(key, val);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public WRequirement getRequierements(String key) {
+        return this.requierements.get(key);
     }
 
     /**
