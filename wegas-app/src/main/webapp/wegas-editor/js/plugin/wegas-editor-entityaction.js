@@ -349,6 +349,27 @@ YUI.add('wegas-editor-entityaction', function (Y) {
         NAME: "DuplicateEntityAction"
     });
     Y.namespace("Plugin").DuplicateEntityAction = DuplicateEntityAction;
+    
+    /**
+     * @class
+     * @name Y.Plugin.PublishEntityAction
+     * @extends Y.Plugin.EntityAction
+     * @constructor
+     */
+    var PublishEntityAction = function () {
+        PublishEntityAction.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(PublishEntityAction, EntityAction, {
+        execute: function() {
+            if (confirm("Are your sure your want to publish this item ?")) {
+                this.get("dataSource").rest.publishObject(this.get("entity"));
+            }
+        }
+    }, {
+        NS: "PublishEntityAction",
+        NAME: "PublishEntityAction"
+    });
+    Y.namespace("Plugin").PublishEntityAction = PublishEntityAction;
 
 
     /**

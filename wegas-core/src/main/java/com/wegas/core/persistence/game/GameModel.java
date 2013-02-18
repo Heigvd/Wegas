@@ -93,6 +93,11 @@ public class GameModel extends NamedEntity {
      * @fixme temporary solutions to store widgets
      */
     private String widgetsUri;
+    /**
+     *
+     */
+    @ManyToOne(optional = true)
+    private GameModel parentGameModel;
 
     /**
      *
@@ -108,6 +113,14 @@ public class GameModel extends NamedEntity {
         this.name = name;
     }
 
+    public GameModel getParentGameModel() {
+        return parentGameModel;
+    }
+
+    public void setParentGameModel(GameModel parentGameModel) {
+        this.parentGameModel = parentGameModel;
+    }
+
     /**
      *
      * @param force
@@ -121,6 +134,7 @@ public class GameModel extends NamedEntity {
     @Override
     public void merge(AbstractEntity n) {
         super.merge(n);
+        this.setParentGameModel(((GameModel) n).getParentGameModel());
         this.setWidgetsUri(((GameModel) n).getWidgetsUri());
         this.setCssUri(((GameModel) n).getCssUri());
     }
