@@ -414,6 +414,19 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 }
             });
         },
+        
+        /**
+         * @function
+         * @private
+         */
+        publishObject: function (entity) {
+            this.sendRequest({
+                request: this.generateRequest(entity.toObject()) + "/Publish/",
+                cfg: {
+                    method: "POST"
+                }
+            });
+        },
 
         /**
          * @function
