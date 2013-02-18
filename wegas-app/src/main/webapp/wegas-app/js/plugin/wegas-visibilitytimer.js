@@ -18,7 +18,7 @@ YUI.add("wegas-visibilitytimer", function(Y) {
     };
     Y.extend(visibilityPlugin, Y.Plugin.Base, {
         initializer: function() {
-            this.timer = null;
+            this.timers = [];
             this.initialVisible = null;
             if (this.get("host") instanceof Y.Widget) {
                 this.initialVisible = this.get("host").get("visible");
@@ -30,7 +30,11 @@ YUI.add("wegas-visibilitytimer", function(Y) {
             }
         },
         reset: function() {
-            if (this.timer) {
+            var t;
+            if (this.timers.length > 0) {
+                for (t in this.timers) {
+                    t.cancel();
+                }
                 this.timer.cancel();
             }
             if (this.initialVisible) {
@@ -54,10 +58,13 @@ YUI.add("wegas-visibilitytimer", function(Y) {
     Y.mix(visibilityPlugin, {
         ATTRS: {
             time: {
-                value: 0,
-                type: "number",
+                value: "0",
+                type: "string",
                 _inputEx: {
                     label: "ms"
+                },
+                getter: function(v) {
+                    return v.split(",");
                 }
             },
             autoStart: {
@@ -74,12 +81,16 @@ YUI.add("wegas-visibilitytimer", function(Y) {
          */
 
         start: function() {
-            var host = this.get("host");
+            var host = this.get("host"), time;
             this.reset();
             if (host instanceof Y.Widget) {
-                this.timer = Y.later(this.get("time"), host, host.show);
+                for (time in this.get("time")) {
+                    this.timers.push(Y.later(+this.get("time")[time], host, host.show));
+                }
             } else if (host instanceof Y.Node) {
-                this.timer = Y.later(this.get("time"), host, host.removeClass, HIDDENNODECSSCLASS);
+                for (time in this.get("time")) {
+                    this.timers.push(Y.later(+this.get("time")[time], host, host.removeClass, HIDDENNODECSSCLASS));
+                }
             }
         }
 
@@ -99,12 +110,16 @@ YUI.add("wegas-visibilitytimer", function(Y) {
          */
 
         start: function() {
-            var host = this.get("host");
+            var host = this.get("host"), time;
             this.reset();
             if (host instanceof Y.Widget) {
-                this.timer = Y.later(this.get("time"), host, host.hide);
+                for (time in this.get("time")) {
+                    this.timers.push(Y.later(+this.get("time")[time], host, host.hide));
+                }
             } else if (host instanceof Y.Node) {
-                this.timer = Y.later(this.get("time"), host, host.addClass, HIDDENNODECSSCLASS);
+                for (time in this.get("time")) {
+                    this.timers.push(Y.later(+this.get("time")[time], host, host.addClass, HIDDENNODECSSCLASS));
+                }
             }
         }
     }, {
