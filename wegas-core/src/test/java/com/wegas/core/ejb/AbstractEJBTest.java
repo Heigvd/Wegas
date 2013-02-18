@@ -68,7 +68,7 @@ public class AbstractEJBTest {
         team2.setName("test-team2");                                            // a second team and a player
         game.addTeam(team2);
         player2 = new Player();
-        team.addPlayer(player2);
+        team2.addPlayer(player2);
 
         gameModelFacade.create(gameModel);                                      // Commit the game model
 
