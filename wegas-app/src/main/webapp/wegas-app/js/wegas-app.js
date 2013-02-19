@@ -101,7 +101,7 @@ YUI.add('wegas-app', function(Y) {
                 var exception = e.responseText.substring(e.responseText.indexOf('"exception'), e.responseText.length);
                 exception = exception.split(",");
                 if (e.status === 400 && exception[0] === '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
-                        exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {
+                    exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {
                     // Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login
                     alert("You have been logged out or does not have permissions");
                 }
@@ -118,7 +118,7 @@ YUI.add('wegas-app', function(Y) {
          */
         initDataSources: function() {
             var k, dataSource, dataSources = this.get('dataSources'),
-                    onInitialRequest = function() {
+            onInitialRequest = function() {
                 this.requestCounter -= 1;
                 if (this.requestCounter === 0) {
                     this.initPage();                                       // Run the initPage() method when they all arrived.
@@ -153,7 +153,7 @@ YUI.add('wegas-app', function(Y) {
             Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + App.genId(), {
                 context: this,
                 on: {
-                    success: function(id, o, args) {
+                    success: function(id, o) {
                         var cfg;
                         try {
                             cfg = Y.JSON.parse(o.responseText);		// Process the JSON data returned from the server
@@ -169,15 +169,15 @@ YUI.add('wegas-app', function(Y) {
                             this.fire("render");                         // Fire a render event for some eventual post processing
                         }, this, cfg));
 
-                        //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
-                        //this.pageLoader.render();
-                        // cfg.id = -100;
-                        // this.dataSources.Page.data.push(cfg);
-                        //try {
-                        //    this.pageLoader.set("pageId", -100);
-                        //} catch (renderException) {
-                        //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
-                        //}
+                    //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
+                    //this.pageLoader.render();
+                    // cfg.id = -100;
+                    // this.dataSources.Page.data.push(cfg);
+                    //try {
+                    //    this.pageLoader.set("pageId", -100);
+                    //} catch (renderException) {
+                    //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
+                    //}
 
                     }
                 }
@@ -224,12 +224,12 @@ YUI.add('wegas-app', function(Y) {
                         Y.one("body").addClass("wegas-devmode");
                         //if (YUI_config.debug) {
                         window.Y = Y;
-                        //}
+                    //}
                     } else {
                         Y.one("body").removeClass("wegas-devmode");
                         // if (YUI_config.debug) {
                         delete window.Y;
-                        //}
+                    //}
                     }
                 }
             },
@@ -271,9 +271,9 @@ YUI.add('wegas-app', function(Y) {
          */
         htmlEntities: function(str) {
             return String(str).replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;');
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
         },
 
         /**
@@ -286,6 +286,73 @@ YUI.add('wegas-app', function(Y) {
         nl2br: function(str, replaceBy) {
             replaceBy = replaceBy || '<br />';
             return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + replaceBy + '$2');
+        },
+
+        /**
+         * Format a date, using provided format string.
+         *
+         * @function
+         * @static
+         * @argument {Number} timestamp
+         * @argument {String} the format to apply, ex. '%d.%M.%Y at %H:%m:%s'
+         * @returns {String} formated date
+         */
+        formatDate: function(timestamp, fmt) {
+            var date = new Date(timestamp);
+
+            function pad(value) {
+                return (value.toString().length < 2) ? '0' + value : value;
+            }
+            return fmt.replace(/%([a-zA-Z])/g, function (_, fmtCode) {
+                switch (fmtCode) {
+                    case 'Y':
+                        return date.getFullYear();
+                    case 'M':
+                        return pad(date.getMonth() + 1);
+                    case 'd':
+                        return pad(date.getDate());
+                    case 'H':
+                        return pad(date.getHours());
+                    case 'm':
+                        return pad(date.getMinutes());
+                    case 's':
+                        return pad(date.getSeconds());
+                    default:
+                        throw new Error('Unsupported format code: ' + fmtCode);
+                }
+            });
+        },
+
+        /**
+         * Returns a time lapse between provided timestamp and now, e.g. "a month ago",
+         * "2 hours ago", "10 minutes ago"
+         * @function
+         * @static
+         * @argument {Number} timestamp
+         * @return {String} The formatted time
+         */
+        smartDate: function (timestamp) {
+            var date = new Date(date),
+            now = new Date(),
+            diff = new Date(now.getTime() - timestamp),
+            diffN = now.getTime() - timestamp,
+            monthFactor =  30 * 24 * 60 * 60 * 1000,
+            yearFactor =  365 * 24 * 60 * 60 * 1000;
+
+            if (diffN <  60 * 1000) {
+                return diff.getUTCSeconds() + " seconds ago";
+            } else if (diffN <  60 * 60 * 1000) {
+                return diff.getUTCMinutes() + " minutes ago";
+            } else if (diffN <  24 * 60 * 60 * 1000) {
+                return diff.getUTCHours() + " hours ago";
+            } else if (diffN <  30 * 24 * 60 * 60 * 1000) {
+                return diff.getUTCDays() + " days ago";
+            } else if (diffN <  monthFactor) {
+                return Math.round(diff / monthFactor) + " month ago";
+            } else {
+                return Math.round(diff / yearFactor) + " years ago";
+            }
+
         }
     });
     Y.namespace('Wegas').App = App;
