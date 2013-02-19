@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.script;
+package com.wegas.core.ejb;
 
 import com.wegas.core.ejb.AbstractEJBTest;
 import com.wegas.core.ejb.ScriptFacade;
@@ -27,7 +27,7 @@ import org.junit.Test;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class ScriptManagerTest extends AbstractEJBTest {
+public class ScriptFacadeTest extends AbstractEJBTest {
 
     // *** Constants *** //
     final static private String VARIABLENAME = "testvariable";

@@ -29,6 +29,7 @@ public class AbstractEJBTest {
     protected static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
     protected static EJBContainer ejbContainer;
     protected static GameModelFacade gameModelFacade;
+    protected static VariableDescriptorFacade descriptorFacade;
     // *** Fields *** //
     protected static GameModel gameModel;
     protected static Game game;
@@ -40,13 +41,11 @@ public class AbstractEJBTest {
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
 
-
     @BeforeClass
     public static void setUp() throws NamingException {
         ejbContainer = TestHelper.getEJBContainer();
         gameModelFacade = lookupBy(GameModelFacade.class, GameModelFacade.class);
-
-        //ejbContainer.getContext().rebind("inject", this);
+        descriptorFacade = lookupBy(VariableDescriptorFacade.class);
 
         gameModel = new GameModel();                                            // Create a game model
         gameModel.setName("test-gamemodel");
@@ -62,13 +61,14 @@ public class AbstractEJBTest {
         player = new Player();
         team.addPlayer(player);
 
-        team2 = new Team();                                                   // a team and a player
+        team2 = new Team();                                                     // a team and a player
         team2.setName("test-team2");                                            // a second team and a player
         game.addTeam(team2);
         player2 = new Player();
-        team.addPlayer(player2);
+        team2.addPlayer(player2);
 
-        gameModelFacade.create(gameModel);
+        gameModelFacade.create(gameModel);                                      // Commit the game model
+
     }
 
     @AfterClass

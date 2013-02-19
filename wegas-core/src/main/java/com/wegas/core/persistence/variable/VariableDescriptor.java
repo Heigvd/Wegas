@@ -80,7 +80,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    private String label;
+    private String label = "unnamed";
     /**
      *
      */

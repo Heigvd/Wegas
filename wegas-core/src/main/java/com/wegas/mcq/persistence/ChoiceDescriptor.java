@@ -84,7 +84,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     @PrePersist
     public void prePersist2() {
         if (this.getResults().isEmpty()) {
-            this.addResult(new Result("Default"));                              // When a choice is created, we automatically add a result by default
+            this.addResult(new Result("Default"));              // When a choice is created, we automatically add a result by default
         }
     }
 
