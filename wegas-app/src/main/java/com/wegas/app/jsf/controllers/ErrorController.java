@@ -26,20 +26,19 @@ import org.slf4j.LoggerFactory;
 public class ErrorController implements Serializable {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(RequestFacade.class);
-    private static final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 
     public String getErrorMessage() {
-        return (String) externalContext.getSessionMap().remove("errorMessage");
+        return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("errorMessage");
     }
 
     public void setErrorMessage(String errorMessage) {
-        externalContext.getSessionMap().put("errorMessage", errorMessage);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("errorMessage", errorMessage);
     }
 
     public void dispatch(String errorMsg) {
         this.setErrorMessage(errorMsg);
         try {
-            externalContext.dispatch("/wegas-app/view/error/error.xhtml");
+            FacesContext.getCurrentInstance().getExternalContext().dispatch("/wegas-app/view/error/error.xhtml");
         } catch (IOException ex) {
             logger.error("Unable to find error page", ex);
         }
