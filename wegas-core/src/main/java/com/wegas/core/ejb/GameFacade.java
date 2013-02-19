@@ -12,10 +12,8 @@ import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
-import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -146,25 +144,37 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     public List<Game> findRegisteredGames(final Long userId) {
+        final Query getByGameId =
+                em.createQuery("SELECT game, p FROM Game game "
+                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
+                + "WHERE t.gameId = game.id AND p.teamId = t.id "
+                + "AND p.user.id = :userId "
+                + "ORDER BY p.joinTime DESC");
+        getByGameId.setParameter("userId", userId);
 
-        //final Query getByGameId = em.createQuery("SELECT game FROM Game game ORDER BY game.createdTime ASC");
-
-        final User user = userFacade.find(userId);
-        final List<Game> ret = new ArrayList<>();
-        for (Player p : user.getPlayers()) {
-            ret.add(p.getGame());
-        }
-        return ret;
+        return this.findRegisterdGames(getByGameId);
     }
 
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
+        final Query getByGameId =
+                em.createQuery("SELECT game, p FROM Game game "
+                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
+                + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
+                + "ORDER BY p.joinTime DESC");
+        getByGameId.setParameter("userId", userId);
+        getByGameId.setParameter("gameModelId", gameModelId);
 
-        final List<Game> games = this.findRegisteredGames(userId);
-        for (Iterator<Game> it = games.iterator(); it.hasNext();) {
-            Game g = it.next();
-            if (!g.getGameModel().getId().equals(gameModelId)) {
-                it.remove();
-            }
+        return this.findRegisterdGames(getByGameId);
+    }
+
+    private List<Game> findRegisterdGames(Query q) {
+        final List<Game> games = new ArrayList<>();
+        for (Object ret : q.getResultList()) {                                  // @hack Replace created time by player joined time
+            final Object[] r = (Object[]) ret;
+            final Game game = (Game) r[0];
+            this.em.detach(game);
+            game.setCreatedTime(((Player) r[1]).getJoinTime());
+            games.add(game);
         }
         return games;
     }

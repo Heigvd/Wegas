@@ -9,6 +9,7 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.persistence.User;
+import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -40,6 +41,11 @@ public class Player extends AbstractEntity {
      *
      */
     private String name;
+    /**
+     *
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date joinTime = new Date();
     /**
      * The game model this belongs to
      */
@@ -189,5 +195,19 @@ public class Player extends AbstractEntity {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the joinTime
+     */
+    public Date getJoinTime() {
+        return joinTime;
+    }
+
+    /**
+     * @param joinTime the joinTime to set
+     */
+    public void setJoinTime(Date joinTime) {
+        this.joinTime = joinTime;
     }
 }

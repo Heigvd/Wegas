@@ -264,7 +264,10 @@ YUI.add('wegas-entity', function(Y) {
             },
             token: {
                 type: "string",
-                optional: true
+                optional: true,
+                _inputex: {
+                    description: "Leave blank for automatic generation"
+                }
             },
             teams: {
                 type: "array",
@@ -351,7 +354,10 @@ YUI.add('wegas-entity', function(Y) {
             },
             token: {
                 type: "string",
-                optional: true
+                optional: true,
+                _inputex: {
+                    description: "Leave blank for automatic generation"
+                }
             },
             players: {
                 value: [],
