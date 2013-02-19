@@ -64,7 +64,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 format: "html",
                 optional: true
             },
-            
+
             pictures: {
                 optional: true,
                 type: "array",
