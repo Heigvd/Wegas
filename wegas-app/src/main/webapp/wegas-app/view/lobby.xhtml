@@ -29,21 +29,22 @@
                         currentUser: #{requestController.getCurrentUser().toJson()},
                         dataSources: {
                             "GameModel": {
-                                source: "rest/Public/GameModel",                // Was Index in original lobby
+                                source: "rest/Public/GameModel",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "GameModelDataSourceREST"
                                     }]
                             },
                             "Game": {
-                                source: "rest/GameModel/1/Game",
+                                source: "rest/GameModel//Game",
+                                initialRequest: "",
                                 plugins: [{
                                         fn: "GameDataSourceREST"
                                     }]
                             },
                             "RegisteredGames": {
-                                source: "rest/RegisteredGames",
-                                initialRequest: "/#{requestController.currentUser.id}",
+                                source: "rest/RegisteredGames/#{requestController.currentUser.id}",
+                                initialRequest: "",
                                 plugins: [{
                                         fn: "GameDataSourceREST"
                                     }]
