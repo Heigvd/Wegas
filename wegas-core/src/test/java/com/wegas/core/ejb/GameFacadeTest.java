@@ -7,7 +7,8 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Game;
+import java.util.List;
 import javax.naming.NamingException;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -22,14 +23,12 @@ public class GameFacadeTest extends AbstractEJBTest {
 
     private static final Logger logger = LoggerFactory.getLogger(GameFacadeTest.class);
 
-    //@Test
+    @Test
     public void testFindRegisteredGames() throws NamingException {
         logger.info("testFindRegisteredGames()");
 
         final GameFacade gameFacade = lookupBy(GameFacade.class);
-
-        //gameFacade.findRegisteredGames(null);
-
-        //Assert.assertEquals(0, gameModelFacade.findAll().size());
+        final List<Game> registeredGames = gameFacade.findRegisteredGames(Long.valueOf(99999));
+        Assert.assertEquals(0, registeredGames.size());
     }
 }
