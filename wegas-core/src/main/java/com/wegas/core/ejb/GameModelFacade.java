@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.event.ResetEvent;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.Game;
@@ -17,6 +18,8 @@ import java.io.IOException;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -43,6 +46,8 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     private RequestFacade requestFacade;
     @EJB
     private UserFacade userFacade;
+    @Inject
+    private Event<ResetEvent> resetEvent;
 
     /**
      *
@@ -154,6 +159,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         gm.propagateDefaultInstance(true);
         em.flush();
         em.refresh(gm);
-        requestFacade.commit();
+        //requestFacade.commit();
+        resetEvent.fire(new ResetEvent(gm));
     }
 }
