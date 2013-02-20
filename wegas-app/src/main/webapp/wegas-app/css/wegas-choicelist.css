@@ -14,7 +14,7 @@
 .wegas-choicelist-hidden{
     visibility: hidden;
 }
-.wegas-choicelist-content > *{
-    clear:none;
+.wegas-choicelist{
+    text-align: center;
 }
 

@@ -31,6 +31,9 @@ YUI.add('wegas-choicelist', function(Y) {
         syncUI: function() {
             this.constructor.superclass.syncUI.apply(this);
             this.set("element", this.get("element"));
+        },
+        getActiveElement: function() {
+            return this.item(this.get("element"));
         }
 
     }, {
