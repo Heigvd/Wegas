@@ -12,11 +12,9 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
-import com.wegas.core.persistence.variable.primitive.NumberInstance;
-import com.wegas.core.persistence.variable.scope.TeamScope;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
@@ -79,6 +77,13 @@ public class AbstractEJBTest {
         gameModelFacade.remove(gameModel.getId());
         ejbContainer.close();
         //logger.info("Closing the container");
+    }
+
+    @After
+    public void clear() throws NamingException {
+        RequestFacade rm = AbstractEJBTest.lookupBy(RequestFacade.class);
+        rm.getRequestManager().setPlayer(null);
+        rm.getRequestManager().clearUpdatedInstances();
     }
 
     public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {
