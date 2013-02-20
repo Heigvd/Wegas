@@ -75,12 +75,12 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
     @Override
     public void remove(final Long id) {
-        userFacade.deleteUserPermissionByInstance("gm" + id);
-        userFacade.deleteAllRolePermissionsById("gm" + id);
+        userFacade.deleteAccountPermissionByInstance("gm" + id);
+        userFacade.deleteRolePermissionsByInstance("gm" + id);
 
         for (Game g : this.find(id).getGames()) {
-            userFacade.deleteUserPermissionByInstance("g" + g.getId());
-            userFacade.deleteAllRolePermissionsById("g" + g.getId());
+            userFacade.deleteAccountPermissionByInstance("g" + g.getId());
+            userFacade.deleteRolePermissionsByInstance("g" + g.getId());
         }
         super.remove(id);
     }
