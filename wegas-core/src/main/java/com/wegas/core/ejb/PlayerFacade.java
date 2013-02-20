@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
+import com.wegas.core.event.PlayerAction;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -18,6 +19,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -44,6 +47,11 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
     private TeamFacade teamEntityFacade;
     @EJB
     private UserFacade userFacade;
+    /**
+     *
+     */
+    @Inject
+    private Event<PlayerAction> playerActionEvent;
 
     /**
      *
@@ -65,7 +73,7 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
         em.flush();
         em.refresh(player);
         team.getGame().getGameModel().propagateDefaultInstance(false);
-        stateMachineRunner.playerUpdated(player);
+        playerActionEvent.fire(new PlayerAction(player));
         //this.create(player);
     }
 
@@ -89,7 +97,7 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
      * @return
      */
     public List<VariableInstance> getAssociatedInstances(final Player player) {
-        final  Query findPlayerInstance = em.createNamedQuery("findPlayerInstances");
+        final Query findPlayerInstance = em.createNamedQuery("findPlayerInstances");
         return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
     }
 
