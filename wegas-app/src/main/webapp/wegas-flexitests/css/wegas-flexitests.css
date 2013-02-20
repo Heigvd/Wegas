@@ -4,13 +4,15 @@
 body > .wegas-pageloader{
     background-color: rgb(77, 77, 77);
 }
-.body{
+.flexitests *{
     background-color: rgb(77, 77, 77);
     color: whitesmoke;
-    width:1024px;
-    height: 768px;
-    margin: auto;
+    margin:auto;
     font-weight: bold;
+    outline: none;
+}
+.wegas-absolutelayout > .wegas-loading-overlay{
+    background: rgb(77, 77, 77);
 }
 .flexitests-title{
     display: inline-block;
@@ -24,4 +26,18 @@ body > .wegas-pageloader{
     margin: 0;
     padding: 5px 25px 0px 10px;
     letter-spacing: -2px;
+}
+.test-page{
+    width:1024px;
+    height: 768px;
+    margin:auto;
+}
+.wegas-flexitests-controller-content{
+    width: 100%;
+    height: 200px;
+}
+.wegas-flexitests-controller-content > .feedback{
+    width: 50px;
+    height: 50px;
+    margin: auto;
 }

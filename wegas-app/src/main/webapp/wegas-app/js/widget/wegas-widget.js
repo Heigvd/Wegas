@@ -311,7 +311,14 @@ YUI.add("wegas-widget", function(Y) {
              * Id of the widget. Transient
              */
             id: {
-                "transient": true
+                "transient": false,
+                getter: function(v) {
+                    if (("" + v).indexOf("yui") === 0) {
+                        return undefined;
+                    } else {
+                        return v;
+                    }
+                }
             },
             /**
              * Informe if widget is rendered. Transient
