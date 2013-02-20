@@ -35,8 +35,8 @@ public class JpaAccount extends AbstractAccount {
      *
      */
     @Basic(optional = false)
-    @JsonIgnore
     @Column(length = 255)
+    @JsonIgnore
     private String passwordHex;
     /**
      *
@@ -61,7 +61,9 @@ public class JpaAccount extends AbstractAccount {
     public void prePersist() {
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
         this.setSalt(rng.nextBytes().toHex());
-
+        if (this.password == null) {
+            this.password = rng.nextBytes().toString().substring(0, 7);
+        }
         this.preUpdate();
     }
 

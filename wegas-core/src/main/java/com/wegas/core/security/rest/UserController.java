@@ -245,7 +245,7 @@ public class UserController {
             SecurityUtils.getSubject().checkPermission("Game:Edit:" + splitedPermission[2]);
         }
 
-        return this.userFacade.deletePermissionByInstance(roleId, permission);
+        return this.userFacade.deleteRolePermission(roleId, permission);
     }
 
     /**
@@ -266,7 +266,7 @@ public class UserController {
             SecurityUtils.getSubject().checkPermission("Game:Edit:" + splitedPermission[2]);
         }
 
-        return this.userFacade.addPermissionsByInstance(roleId, permission);
+        return this.userFacade.addRolePermission(roleId, permission);
     }
 
     /**
@@ -287,6 +287,6 @@ public class UserController {
             SecurityUtils.getSubject().checkPermission("Game:Edit:" + id);
         }
 
-        return this.userFacade.deleteAllRolePermissions(roleId, id);
+        return this.userFacade.deleteRolePermissionsByIdAndInstance(roleId, id);
     }
 }
