@@ -34,7 +34,7 @@ public class Player extends AbstractEntity {
     /**
      *
      */
-    @ManyToOne(cascade = {CascadeType.PERSIST})
+    @ManyToOne
     private User user;
     /**
      *
