@@ -101,19 +101,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
-    /**
-     *
-     * @param userId
-     * @return
-     */
-    public List<Game> registeredGames(Long userId) {
-        User user = this.find(userId);
-        List<Game> ret = new ArrayList<>();
-        for (Player p : user.getPlayers()) {
-            ret.add(p.getGame());
-        }
-        return ret;
-    }
 
     @Override
     public void create(User user) {
@@ -177,21 +164,25 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param permission
      * @return
      */
-    public boolean addPermissionsByInstance(Long roleId, String permission) {
-        boolean added = false;
-        boolean exist = false;
-        Role r = roleFacade.find(roleId);
-        for (String p : r.getPermissions()) {
-            if (p.equals(permission)) {
-                exist = true;
-            }
-        }
+    public boolean addRolePermission(final Long roleId, final String permission) {
+        final Role r = roleFacade.find(roleId);
 
-        if (!exist) {
-            added = r.getPermissions().add(permission);
+        if (!r.getPermissions().contains(permission)) {
+            r.getPermissions().add(permission);
+            return true;
+        } else {
+            return false;
         }
+    }
+    public boolean addAccountPermission(final Long abstractAccountId, final String permission) {
+        final AbstractAccount r = accountFacade.find(abstractAccountId);
 
-        return added;
+        if (!r.getPermissions().contains(permission)) {
+            r.getPermissions().add(permission);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -201,7 +192,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param permission
      * @return
      */
-    public boolean deletePermissionByInstance(Long roleId, String permission) {
+    public boolean deleteRolePermission(Long roleId, String permission) {
         String permissionToRemove = null;
         Role r = roleFacade.find(roleId);
         for (String p : r.getPermissions()) {
@@ -219,12 +210,12 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param gameModelId
      * @return
      */
-    public boolean deleteAllRolePermissions(Long roleId, String gameModelId) {
+    public boolean deleteRolePermissionsByIdAndInstance(Long roleId, String instance) {
         ArrayList<String> currentPermissions = new ArrayList<>();
         Role r = roleFacade.find(roleId);
         for (String p : r.getPermissions()) {
             String splitedPermission[] = p.split(":");
-            if (splitedPermission[2].equals(gameModelId)) {
+            if (splitedPermission[2].equals(instance)) {
                 currentPermissions.add(p);
             }
         }
@@ -236,7 +227,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      *
      * @param gOrGmId
      */
-    public void deleteAllRolePermissionsById(String gOrGmId) {
+    public void deleteRolePermissionsByInstance(String instance) {
         List<Role> roles = roleFacade.findAll();
         Iterator<Role> it = roles.iterator();
         Role role;
@@ -249,7 +240,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                 p = itP.next();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
-                    if (splitedPermission[2].equals(gOrGmId)) {
+                    if (splitedPermission[2].equals(instance)) {
                         itP.remove();
                     }
                 }
@@ -261,9 +252,9 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      *
      * @param gameOrGameModelId
      */
-    public void deleteUserPermissionByInstance(String gameOrGameModelId) {
+    public void deleteAccountPermissionByInstance(String instance) {
         Query findByToken = em.createNamedQuery("findUserPermissions");
-        findByToken.setParameter("gameId", "%:" + gameOrGameModelId);
+        findByToken.setParameter("gameId", "%:" + instance);
         List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
         for (AbstractAccount a : accounts) {
             em.detach(a);
@@ -271,7 +262,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                 String p = sit.next();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
-                    if (splitedPermission[2].equals(gameOrGameModelId)) {
+                    if (splitedPermission[2].equals(instance)) {
                         sit.remove();
                     }
                 }

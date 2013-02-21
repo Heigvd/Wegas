@@ -163,9 +163,44 @@ body {
     width: 20px;
     height: 20px;
     cursor: pointer;
-    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 2px -334px no-repeat;
+    background: transparent url("../../wegas-app/images/wegas-app-sprite.png") 2px -334px no-repeat;
     margin: 2px 5px;
     display: inline-block;
+}
+
+/** Styles for tree table (Games) */
+.wegas-editor-treeviewgame > .yui3-treeview > ul > li {
+    border-top: 1px solid lightgray;
+}
+.wegas-editor-treeview-table {
+    padding-right: 300px;
+}
+.wegas-editor-treeview-table .yui3-u-col1 {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.wegas-editor-treeview-table .yui3-u-col2 {
+    margin-right: -300px;
+    width: 300px;
+}
+.wegas-editor-treeview-table .yui3-u-col2 .yui3-u-1-3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.wegas-editor-treeview-tablehd {
+    font-weight: bolder;
+    font-size: 90%;
+    padding-left: 38px;
+}
+.wegas-editor-treeview-tablehd .yui3-u-col1 {
+    padding-top: 6px;
+}
+.wegas-editor-treeview-tablehd .yui3-u-col2 .yui3-u-1-3 {
+    padding-top: 6px;
+}
+.yui3-u-selected {
+    background: url("../../wegas-app/images/wegas-submenuindicator.png") no-repeat 46px 9px;
 }
 
 /* Editor treeview icons */

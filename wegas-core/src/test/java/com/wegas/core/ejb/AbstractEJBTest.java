@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
  * @author fx
  */
 public class AbstractEJBTest {
-    // *** Static *** //
 
-    protected static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
+    // *** Static *** //
+    private static final Logger logger = LoggerFactory.getLogger(AbstractEJBTest.class);
     protected static EJBContainer ejbContainer;
     protected static GameModelFacade gameModelFacade;
     protected static VariableDescriptorFacade descriptorFacade;
@@ -45,7 +45,7 @@ public class AbstractEJBTest {
     @BeforeClass
     public static void setUp() throws NamingException {
         ejbContainer = TestHelper.getEJBContainer();
-        gameModelFacade = lookupBy(GameModelFacade.class, GameModelFacade.class);
+        gameModelFacade = lookupBy(GameModelFacade.class);
         descriptorFacade = lookupBy(VariableDescriptorFacade.class);
 
         gameModel = new GameModel();                                            // Create a game model

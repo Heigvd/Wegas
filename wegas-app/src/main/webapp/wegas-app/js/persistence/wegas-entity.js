@@ -92,6 +92,9 @@ YUI.add('wegas-entity', function(Y) {
     });
     Y.namespace('Wegas.persistence').Entity = Entity;
 
+    /**
+     *
+     */
     Y.Wegas.persistence.DefaultEntity = Y.Base.create("DefaultEntity", Entity, [], {
         initializer: function(cfg) {
             this.set("val", cfg);
@@ -186,13 +189,14 @@ YUI.add('wegas-entity', function(Y) {
             label: "Properties",
             cssClass: "editor-exploreGameModel-button",
             plugins: [{
-                fn: "LoadTreeviewNodeAction",
-                cfg: {
-                    tabId: "gamesTreeViewTab"
-                }
-            }, {
                 fn: "EditEntityAction"
             }]
+        //    {
+        //    fn: "LoadTreeviewNodeAction",
+        //    cfg: {
+        //        tabId: "gamesTreeViewTab"
+        //    }
+        //},
         }, {
             type: "Button",
             label: "Edit",
@@ -260,11 +264,34 @@ YUI.add('wegas-entity', function(Y) {
             },
             token: {
                 type: "string",
-                optional: true
+                optional: true,
+                _inputex: {
+                    description: "Leave blank for automatic generation"
+                }
             },
             teams: {
                 type: "array",
                 value: [],
+                _inputex: {
+                    _type: "hidden"
+                }
+            },
+            createdTime: {
+                "transient": true,
+                type: "string",
+                _inputex: {
+                    _type: "hidden"
+                }
+            },
+            updatedTime: {
+                "transient": true,
+                type: "string",
+                _inputex: {
+                    _type: "hidden"
+                }
+            },
+            creator: {
+                "transient": true,
                 _inputex: {
                     _type: "hidden"
                 }
@@ -327,7 +354,10 @@ YUI.add('wegas-entity', function(Y) {
             },
             token: {
                 type: "string",
-                optional: true
+                optional: true,
+                _inputex: {
+                    description: "Leave blank for automatic generation"
+                }
             },
             players: {
                 value: [],
@@ -1086,7 +1116,7 @@ YUI.add('wegas-entity', function(Y) {
 
         }
     });
-    
+
     /**
      * InboxInstance mapper
      */

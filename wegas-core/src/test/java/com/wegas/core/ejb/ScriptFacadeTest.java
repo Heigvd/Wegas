@@ -7,10 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.AbstractEJBTest;
-import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -22,6 +18,8 @@ import javax.naming.NamingException;
 import javax.script.ScriptException;
 import junit.framework.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,39 +27,38 @@ import org.junit.Test;
  */
 public class ScriptFacadeTest extends AbstractEJBTest {
 
-    // *** Constants *** //
-    final static private String VARIABLENAME = "testvariable";
-    final static private String VALUE = "test-value";
-    final static private String VALUE2 = "test-value2";
+    private static final Logger logger = LoggerFactory.getLogger(ScriptFacadeTest.class);
 
     @Test
     public void testEval() throws NamingException, ScriptException, WegasException {
+        final String VARIABLENAME = "testvariable";
+        final String VALUE = "test-value";
+        final String VALUE2 = "test-value2";
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ScriptFacade sm = lookupBy(ScriptFacade.class);
 
-        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class, VariableDescriptorFacade.class);
-        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class, VariableInstanceFacade.class);
-        ScriptFacade sm = lookupBy(ScriptFacade.class, ScriptFacade.class);
 
-
-        NumberDescriptor numberDescriptor = new NumberDescriptor("inttest");
+        final NumberDescriptor numberDescriptor = new NumberDescriptor("inttest");
         numberDescriptor.setDefaultInstance(new NumberInstance(1));
         numberDescriptor.setScope(new TeamScope());
         vdf.create(gameModel.getId(), numberDescriptor);
 
         // Create a dummy descriptor
-        StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);
+        final StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);
         stringDescriptor.setDefaultInstance(new StringInstance(VALUE));
         stringDescriptor.setScope(new TeamScope());
         vdf.create(gameModel.getId(), stringDescriptor);
 
         // Eval a dummy script
-        Script s = new Script();
+        final Script s = new Script();
         s.setLanguage("JavaScript");
         s.setContent(VARIABLENAME + ".value = \"" + VALUE2 + "\"");
         sm.eval(player.getId(), s);
         logger.info("Tested " + sm);
 
         // Verify the new value
-        StringInstance instance = (StringInstance) vif.find(stringDescriptor.getId(), player.getId());
+        final StringInstance instance = (StringInstance) vif.find(stringDescriptor.getId(), player.getId());
         Assert.assertEquals(VALUE2, instance.getValue());
     }
 }
