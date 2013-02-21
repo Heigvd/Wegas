@@ -3,7 +3,7 @@
     <system-applications />
     <applications />
     <resources>
-        <jdbc-resource enable="false" pool-name="__TimerPool" jndi-name="jdbc/__TimerPool" object-type="system-admin" />
+        <jdbc-resource enable="true" pool-name="DerbyPool" jndi-name="jdbc/__TimerPool" object-type="system-admin" />
         <jdbc-resource enable="false" pool-name="DerbyPool" jndi-name="jdbc/__default" />
         <jdbc-resource enable="true" pool-name="PostgreSQLPool" jndi-name="jdbc/wegas_dev" />
 

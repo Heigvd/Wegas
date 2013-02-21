@@ -9,6 +9,8 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
+import com.wegas.core.event.PlayerAction;
+import com.wegas.core.event.ResetEvent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -53,6 +56,13 @@ public class RequestFacade {
      */
     @EJB
     StateMachineFacade stateMachineRunner;
+    /**
+     *
+     */
+    @Inject
+    private Event<PlayerAction> playerActionEvent;
+    @Inject
+    private Event<ResetEvent> resetEvent;
 
     /**
      * @return the variableInstanceManager
@@ -122,11 +132,13 @@ public class RequestFacade {
                 // RequestManager.PlayerAction action = new RequestManager.PlayerAction();
                 //action.setPlayer(this.getPlayer());
                 //playerActionEvent.fire(action);
-                stateMachineRunner.playerUpdated(this.requestManager.getPlayer());
+
+                playerActionEvent.fire(new PlayerAction(this.getPlayer()));
+                //stateMachineRunner.playerUpdated(this.requestManager.getPlayer());
 
             } else {
-                stateMachineRunner.playerUpdated(null);
-
+                //stateMachineRunner.playerUpdated(null);
+                 playerActionEvent.fire(new PlayerAction(this.getPlayer()));
                 //PlayerAction action = new PlayerAction();
                 //playerActionEvent.fire(action);
 
