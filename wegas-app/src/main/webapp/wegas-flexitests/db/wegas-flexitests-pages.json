@@ -57,13 +57,13 @@
                     {
                         "fn": "HideAfter",
                         "cfg": {
-                            "time": "0,500,1010,2500"
+                            "time": "0,1000"
                         }
                     },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
-                            "time": "505,1000,2000,3000"
+                            "time": "500"
                         }
                     }]
             }, {
@@ -75,6 +75,18 @@
                         "cfg": {
                             "right": "50",
                             "top": "50"
+                        }
+                    },
+                    {
+                        "fn": "HideAfter",
+                        "cfg": {
+                            "time": "0,1500"
+                        }
+                    },
+                    {
+                        "fn": "ShowAfter",
+                        "cfg": {
+                            "time": "1000"
                         }
                     }
                 ],
@@ -95,6 +107,18 @@
                             "left": "300",
                             "right": "300",
                             "top": "300"
+                        }
+                    },
+                    {
+                        "fn": "HideAfter",
+                        "cfg": {
+                            "time": "0"
+                        }
+                    },
+                    {
+                        "fn": "ShowAfter",
+                        "cfg": {
+                            "time": "1500"
                         }
                     }
                 ],
