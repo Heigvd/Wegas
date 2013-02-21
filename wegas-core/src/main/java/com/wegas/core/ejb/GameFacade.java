@@ -102,8 +102,8 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
         super.remove(entity);
 
-        userFacade.deleteUserPermissionByInstance("g" + entity.getId());
-        userFacade.deleteAllRolePermissionsById("g" + entity.getId());
+        userFacade.deleteAccountPermissionByInstance("g" + entity.getId());
+        userFacade.deleteRolePermissionsByInstance("g" + entity.getId());
     }
 
     /**

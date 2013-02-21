@@ -8,7 +8,10 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.AbstractEJBTest;
+import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Script;
@@ -40,8 +43,9 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         // Lookup Ejb's
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
-        final RequestFacade rf = lookupBy(RequestFacade.class);
+        RequestFacade rm = lookupBy(RequestFacade.class);
 
+        // rm.setPlayer(player.getId());  //uncomment to make the test fail ...
         // Create a number
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
@@ -53,19 +57,20 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setScope(new TeamScope());
-        trigger.setTriggerEvent(new Script("println('testnumber value: '+testnumber.value+ self);testnumber.value >= 0.9"));
-        trigger.setPostTriggerEvent(new Script("println('testnumber value set: '+testnumber.value+ self);testnumber.value = 2"));
+        trigger.setTriggerEvent(new Script("println('pretrigger testnumber value: ' + testnumber.value+ self);testnumber.value >= 0.9"));
+        trigger.setPostTriggerEvent(new Script("println('testnumber value set: ' + testnumber.value+ self);testnumber.value = 2;println('testnumber value set: ' + testnumber.value+ self)"));
         vdf.create(gameModel.getId(), trigger);
-
         // Test initial values
         assertEquals(0.0, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
         assertEquals(0.0, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
 
         // Do an update
-        logger.debug("Updating instace for player: " + player + ", 2nd player: " + player2);
+        logger.debug("Updating instance for player: " + player + ", 2nd player: " + player2);
+
         NumberInstance numberI = (NumberInstance) vif.find(number.getId(), player);
         numberI.setValue(1);
         vif.update(numberI.getId(), numberI);
+
 
         // Test
         System.out.println(player + "*" + player2);
@@ -88,6 +93,7 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         // Lookup Ejb's
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        RequestManager rm = lookupBy(RequestFacade.class).getRequestManager();
         final double INITIALVALUE = 5.0;
         final double INTERMEDIATEVALUE = 4.0;
         final double FINALVALUE = 3.0;
@@ -109,13 +115,14 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), trigger);
 
         // Do an update
+        rm.setPlayer(player);
         NumberInstance numberI = number.getInstance(player);
         numberI.setValue(INTERMEDIATEVALUE);
         vif.update(numberI.getId(), numberI);
 
         // Test
         assertEquals(FINALVALUE, ((NumberInstance) vif.find(number.getId(), player)).getValue(), .1);
-        assertEquals(3.0, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
+        assertEquals(INITIALVALUE, ((NumberInstance) vif.find(number.getId(), player2)).getValue(), .1);
 
         // Reset
         gameModelFacade.reset(gameModel.getId());
