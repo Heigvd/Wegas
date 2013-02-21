@@ -57,6 +57,9 @@ public class Helper {
         }
     }
 
+    public static <T> T lookupBy(Context context, Class<T> type) throws NamingException {
+        return lookupBy(context, type, type);
+    }
     /**
      *
      * @param <T>

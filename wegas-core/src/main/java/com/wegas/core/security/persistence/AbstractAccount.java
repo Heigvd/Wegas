@@ -26,8 +26,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @UniqueConstraint(columnNames = "email")
 })
 @NamedQueries({
-    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount WHERE abstractaccount.permissions LIKE :gameId"),
-})
+    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount WHERE abstractaccount.permissions LIKE :gameId"),})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
     @JsonSubTypes.Type(name = "GuestAccount", value = GuestAccount.class),
@@ -45,7 +44,7 @@ public class AbstractAccount extends AbstractEntity {
     /**
      *
      */
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.ALL}, optional = false)
     @JsonBackReference(value = "user-account")
     private User user;
     /**
@@ -221,14 +220,15 @@ public class AbstractAccount extends AbstractEntity {
      *
      * @param permission
      */
-    public void removePermission(String permission){
+    public void removePermission(String permission) {
         this.permissions.remove(permission);
     }
+
     /**
      *
      * @param permission
      */
-    public void addPermission(String permission){
+    public void addPermission(String permission) {
         this.permissions.add(permission);
     }
 }
