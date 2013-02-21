@@ -1,0 +1,20 @@
+/* 
+
+*/
+
+.wegas-choicelist .hiddenChild{
+    display: none;
+}
+.wegas-pageeditor-designmode .wegas-choicelist .hiddenChild{
+    display: inherit;
+}
+.wegas-pageeditor-designmode .wegas-choicelist{
+    padding: 3px;
+}
+.wegas-choicelist-hidden{
+    visibility: hidden;
+}
+.wegas-choicelist{
+    text-align: center;
+}
+

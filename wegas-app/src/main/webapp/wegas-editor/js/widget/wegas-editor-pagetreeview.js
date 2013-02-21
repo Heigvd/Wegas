@@ -87,7 +87,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             node.expand(false);
         },
         buildSubTree: function(node, widget) {
-            var treeNode, button = new Y.Button({label: "edit"});
+            var treeNode, button = new Y.Node.create("<span class=\"wegas-treeview-editmenubutton\"></span>");
 
             if (widget instanceof Y.Wegas.List) {
                 treeNode = new Y.TreeNode({
@@ -146,9 +146,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     }],
                 event: "click"
             });
-
-            treeNode.set("rightWidget", button);
             node.add(treeNode);
+            treeNode.set("rightWidget", button);
+            
         },
         buildIndex: function(index) {
             var i, page = this.get("pageLoader").get("pageId"),

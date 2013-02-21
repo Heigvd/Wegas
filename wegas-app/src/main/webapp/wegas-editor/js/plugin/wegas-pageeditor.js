@@ -225,7 +225,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             targetNode.prepend(this.highlightOverlay.get(BOUNDINGBOX));
             this.highlightOverlay.get(CONTENTBOX).setStyle("height", fullHeight);
             this.highlightOverlay.get(CONTENTBOX).setStyle("width", fullWidth);
-            this.highlightOverlay.get(CONTENTBOX).setContent("<div>" + widget.constructor.NAME + "</div>");
+            this.highlightOverlay.get(CONTENTBOX).setContent("<div>" + (widget.constructor.EDITORNAME || widget.constructor.NAME) + "</div>");
             this.highlightOverlay.align(targetNode, [Y.WidgetPositionAlign.CC, Y.WidgetPositionAlign.CC]);
             this.highlightOverlay.show();
         },
