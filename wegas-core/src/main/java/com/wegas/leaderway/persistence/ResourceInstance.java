@@ -29,8 +29,9 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Assignment.class)
     @JsonManagedReference
+    @OrderColumn
     private List<Assignment> assignments;
     /**
      *
@@ -71,6 +72,11 @@ public class ResourceInstance extends VariableInstance {
     @ElementCollection
     private List<Integer> confidenceHistory = new ArrayList<>();
 
+    public ResourceInstance (){
+        this.assignments = new ArrayList<>();
+        this.activities = new ArrayList<>();
+    }
+    
     /**
      *
      * @param a
@@ -147,55 +153,13 @@ public class ResourceInstance extends VariableInstance {
         activities.add(activity);
         activity.setResourceInstance(this);
     }
-    
     /**
      * 
      * @param task
-     * @return the Activity
+     * @return the activity
      */
     public Activity assignActivity(TaskInstance task) {
         final Activity activity = new Activity(task);
-        this.addActivity(activity);
-        return activity;
-    }
-    
-    /**
-     * 
-     * @param task
-     * @param wrequirement
-     * @return the Activity
-     */
-    public Activity assignActivity(TaskInstance task, WRequirement wrequirement) {
-        final Activity activity = new Activity(task, wrequirement);
-        this.addActivity(activity);
-        return activity;
-    }
-    
-    /**
-     * 
-     * @param task
-     * @param startTime
-     * @param duration
-     * @param completion
-     * @return the Activity
-     */
-    public Activity assignActivity(TaskInstance task, Double startTime, Double duration, Integer completion) {
-        final Activity activity = new Activity(task, startTime, duration, completion);
-        this.addActivity(activity);
-        return activity;
-    }
-    
-    /**
-     * 
-     * @param task
-     * @param wrequirement
-     * @param startTime
-     * @param duration
-     * @param completion
-     * @return the activity
-     */
-    public Activity assignActivity(TaskInstance task, WRequirement wrequirement, Double startTime, Double duration, Integer completion) {
-        final Activity activity = new Activity(task, wrequirement, startTime, duration, completion);
         this.addActivity(activity);
         return activity;
     }
@@ -386,5 +350,11 @@ public class ResourceInstance extends VariableInstance {
      */
     public void setConfidenceHistory(Integer ref, Integer value) {
         this.confidenceHistory.set(ref, value);
+    }
+
+    public List<Assignment> moveAssignemnt(Integer currentPosition, Integer nextPosition) {
+        Assignment assignment = this.assignments.remove(currentPosition.intValue());
+        this.assignments.add(nextPosition.intValue(), assignment);
+        return this.assignments;
     }
 }

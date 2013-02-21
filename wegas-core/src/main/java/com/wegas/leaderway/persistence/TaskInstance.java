@@ -42,6 +42,14 @@ public class TaskInstance extends VariableInstance {
     @JsonManagedReference
     @XmlTransient
     private List<Assignment> assignments;
+    
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @XmlTransient
+    private List<Activity> activities;
     /**
      *
      */
@@ -132,5 +140,19 @@ public class TaskInstance extends VariableInstance {
      */
     public void setAssignments(List<Assignment> assignments) {
         this.assignments = assignments;
+    }
+
+    /**
+     * @return the activity
+     */
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    /**
+     * @param activity the activity to set
+     */
+    public void setActivity(List<Activity> activities) {
+        this.activities = activities;
     }
 }

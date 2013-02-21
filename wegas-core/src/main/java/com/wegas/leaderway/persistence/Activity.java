@@ -78,49 +78,6 @@ public class Activity extends AbstractAssignement {
         this.duration = 0D;
         this.completion = 0;
     }
-    
-    /**
-     * 
-     * @param taskInstance
-     * @param wrequirement 
-     */
-    public Activity(TaskInstance taskInstance, WRequirement wrequirement) {
-        this.taskInstance = taskInstance;
-        this.wrequirement = wrequirement;
-        this.startTime = 0D;
-        this.duration = 0D;
-        this.completion = 0;
-    }
-    
-    /**
-     * 
-     * @param taskInstance
-     * @param startTime
-     * @param duration
-     * @param completion 
-     */
-    public Activity(TaskInstance taskInstance, Double startTime, Double duration, Integer completion) {
-        this.taskInstance = taskInstance;
-        this.startTime = startTime;
-        this.duration = duration;
-        this.completion = completion;
-    }
-    
-    /**
-     * 
-     * @param taskInstance
-     * @param wrequirement
-     * @param startTime
-     * @param duration
-     * @param completion 
-     */
-    public Activity(TaskInstance taskInstance, WRequirement wrequirement, Double startTime, Double duration, Integer completion) {
-        this.taskInstance = taskInstance;
-        this.wrequirement = wrequirement;
-        this.startTime = startTime;
-        this.duration = duration;
-        this.completion = completion;
-    }
 
     /**
      *
@@ -228,5 +185,19 @@ public class Activity extends AbstractAssignement {
      */
     public void setCompletion(Integer completion) {
         this.completion = completion;
+    }
+
+    /**
+     * @return the wrequirement
+     */
+    public WRequirement getWrequirement() {
+        return wrequirement;
+    }
+
+    /**
+     * @param wrequirement the wrequirement to set
+     */
+    public void setWrequirement(WRequirement wrequirement) {
+        this.wrequirement = wrequirement;
     }
 }

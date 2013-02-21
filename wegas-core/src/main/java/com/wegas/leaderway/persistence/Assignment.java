@@ -26,7 +26,7 @@ public class Assignment extends AbstractAssignement {
     @Id
     @GeneratedValue
     private Long id;
-    
+  
     @ManyToOne(optional = false)
     @JoinColumn(name = "taskinstance_id", nullable = false)
     @XmlTransient
@@ -62,7 +62,7 @@ public class Assignment extends AbstractAssignement {
     public void merge(AbstractEntity a) {
         Assignment other = (Assignment) a;
         this.setResourceInstance(other.getResourceInstance());
-        //this.setTaskInstance(other.getTaskInstance());
+        this.setTaskInstance(other.getTaskInstance());
     }
 
     @PostPersist
