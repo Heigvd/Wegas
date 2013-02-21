@@ -12,6 +12,7 @@ import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.PlayerAction;
+import com.wegas.core.event.ResetEvent;
 import com.wegas.core.exception.NoPlayerException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
@@ -57,6 +58,10 @@ public class StateMachineFacade implements Serializable {
      */
     @Inject
     private RequestManager requestManager;
+    /**
+     * Stores passed transitions
+     */
+    private Map<Player, HashSet<Transition>> playerTransitions = new HashMap<>();
 
     /**
      *
@@ -68,16 +73,26 @@ public class StateMachineFacade implements Serializable {
      *
      * @param playerAction
      */
-    public void entityUpdateListener(@Observes PlayerAction playerAction) {
+    public void PlayerActionListener(@Observes PlayerAction playerAction) {
+        logger.debug("Received PlayerAction event");
         this.playerUpdated(playerAction.getPlayer());
+        this.playerTransitions.clear();
+    }
+
+    public void resetEventListener(@Observes ResetEvent resetEvent) {
+        logger.debug("Received Reset event");
+        System.out.println("ResetEvent");
+        for (Player p : resetEvent.getConcernedPlayers()) {
+            this.playerUpdated(p);
+        }
+        this.playerTransitions.clear();
     }
 
     /**
      *
      * @param player
      */
-    public void playerUpdated(Player player) {
-
+    private void playerUpdated(Player player) {
         Integer steps = 0;
         logger.debug("Updated instances {}, transition done : {}", requestManager.getUpdatedInstances());
         if (run) {
@@ -92,8 +107,6 @@ public class StateMachineFacade implements Serializable {
         /*
          * Find players for each instance
          */
-        //List<Player> players = new ArrayList<>();
-        Map<Player, HashSet<Transition>> playerTransitions = new HashMap<>();   // store passed transitions.
         if (player != null) {
             playerTransitions.put(player, new HashSet<Transition>());
         } else {
