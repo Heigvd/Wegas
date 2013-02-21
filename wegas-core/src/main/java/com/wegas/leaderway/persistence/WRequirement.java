@@ -34,6 +34,9 @@ public class WRequirement extends VariableInstance {
         this.setLimit(other.getLimit());
         this.setNeeds(other.getNeeds());
     }
+    
+    public WRequirement () {
+    }
 
     /**
      * @return the limit

@@ -9,10 +9,10 @@ package com.wegas.leaderway.ejb;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.game.Player;
+import com.wegas.leaderway.persistence.Activity;
+import com.wegas.leaderway.persistence.Assignment;
 import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskInstance;
-import com.wegas.leaderway.persistence.WRequirement;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -31,79 +31,75 @@ public class ResourceFacade {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
     /**
-     *
+     * 
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+
+    /**
+     *
+     */
+    public ResourceFacade() {
+    }
     /**
      *
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+    /**
+     *
+     */
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
 
     /**
-     * 
+     *
      * @param resourceInstance
-     * @param taskInstance 
+     * @param taskInstance
      */
-    public void assign(ResourceInstance resourceInstance, TaskInstance taskInstance) {
-        resourceInstance.assign(taskInstance);
+    public Assignment assign(ResourceInstance resourceInstance, TaskInstance taskInstance) {
+        resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
+        return resourceInstance.assign(taskInstance);
+    }
+
+    /**
+     *
+     * @param p
+     * @param resourceDescriptorId
+     * @param taskDescriptorId
+     */
+    public Assignment assign(Long resourceInstanceId, Long taskInstanceId) {
+        return this.assign((ResourceInstance) variableInstanceFacade.find(resourceInstanceId), (TaskInstance) variableInstanceFacade.find(taskInstanceId));
+    }
+
+    /**
+     *
+     * @param resourceInstance
+     * @param taskInstance
+     */
+    public Activity assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance) {
+        resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
+        return resourceInstance.assignActivity(taskInstance);
+    }
+
+    /**
+     *
+     * @param resourceInstance
+     * @param taskInstance
+     */
+    public Activity assignActivity(Long resourceInstanceId, Long taskInstanceId) {
+        return this.assignActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
+                (TaskInstance) variableInstanceFacade.find(taskInstanceId));
     }
 
     /**
      * 
-     * @param p
-     * @param resourceDescriptorId
-     * @param taskDescriptorId 
+     * @param assignementId
+     * @param index 
      */
-    public void assign(Player p, Long resourceDescriptorId, Long taskDescriptorId) {
-        this.assign((ResourceInstance) variableInstanceFacade.find(resourceDescriptorId, p),
-                (TaskInstance) variableInstanceFacade.find(taskDescriptorId, p));
-    }
-    
-    /**
-     * 
-     * @param resourceInstance
-     * @param taskInstance 
-     */
-    public void assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance) {
-        resourceInstance.assignActivity(taskInstance);
-    }
-    
-    /**
-     * 
-     * @param resourceInstance
-     * @param taskInstance
-     * @param wrequirement 
-     */
-    public void assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance, WRequirement wrequirement) {
-        resourceInstance.assignActivity(taskInstance, wrequirement);
-    }
-    
-    /**
-     * 
-     * @param resourceInstance
-     * @param taskInstance
-     * @param startTime
-     * @param duration
-     * @param completion 
-     */
-    public void assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance, Double startTime, Double duration, Integer completion) {
-        resourceInstance.assignActivity(taskInstance, startTime, duration, completion);
-    }
-    
-    /**
-     * 
-     * @param resourceInstance
-     * @param taskInstance
-     * @param wrequirement
-     * @param startTime
-     * @param duration
-     * @param completion 
-     */
-    public void assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance, WRequirement wrequirement, Double startTime, Double duration, Integer completion) {
-        resourceInstance.assignActivity(taskInstance, wrequirement, startTime, duration, completion);
+    public void moveAssignment(final Long assignementId, final int index) {
+        final Assignment assignement = this.em.find(Assignment.class, assignementId);
+        assignement.getResourceInstance().getAssignments().remove(assignement);
+        assignement.getResourceInstance().getAssignments().add(index, assignement);
     }
 }
