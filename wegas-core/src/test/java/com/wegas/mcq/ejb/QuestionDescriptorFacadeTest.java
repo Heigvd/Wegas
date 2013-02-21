@@ -16,13 +16,13 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.mcq.persistence.*;
 import static org.junit.Assert.assertEquals;
-import org.junit.*;
+import org.junit.Test;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class QuestionFacadeTest extends AbstractEJBTest {
+public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
     /**
      * Test of selectChoice method, of class QuestionController.

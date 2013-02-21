@@ -9,7 +9,6 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.security.ejb.UserFacade;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -33,11 +32,6 @@ public class PublicGameController {
      */
     @EJB
     private GameFacade gameFacade;
-    /**
-     *
-     */
-    @EJB
-    private UserFacade userFacade;
 
     /**
      *
@@ -47,7 +41,18 @@ public class PublicGameController {
     @GET
     @Path("PublicGames/{userId : [1-9][0-9]*}")
     public Collection<Game> publicGame(@PathParam("userId") Long userId) {
-        return gameFacade.getPublicGames(userId);
+        return gameFacade.findPublicGames(userId);
+    }
+
+    /**
+     *
+     * @param userId
+     * @return
+     */
+    @GET
+    @Path("RegisteredGames/{userId : [1-9][0-9]*}/{gameModelId : [1-9][0-9]*}")
+    public Collection<Game> registeredGames(@PathParam("userId") Long userId, @PathParam("userId") Long gameModelId) {
+        return (Collection) gameFacade.findRegisteredGames(userId, gameModelId);
     }
 
     /**
@@ -58,6 +63,6 @@ public class PublicGameController {
     @GET
     @Path("RegisteredGames/{userId : [1-9][0-9]*}/")
     public Collection<Game> registeredGames(@PathParam("userId") Long userId) {
-        return (Collection) userFacade.registeredGames(userId);
+        return (Collection) gameFacade.findRegisteredGames(userId);
     }
 }
