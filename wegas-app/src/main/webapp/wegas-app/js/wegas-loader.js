@@ -298,7 +298,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-list': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-list-min.js',
-                    requires: ['inputex-group'],
+                    requires: ['inputex-group', 'wegas-text'],
                     ix_provides: ['listfield', "editablelist"]
                 },
                 'wegas-inputex-hashlist': {

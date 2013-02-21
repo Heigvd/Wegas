@@ -33,9 +33,8 @@ YUI.add("wegas-visibilitytimer", function(Y) {
             var t;
             if (this.timers.length > 0) {
                 for (t in this.timers) {
-                    t.cancel();
+                    this.timers[t].cancel();
                 }
-                this.timer.cancel();
             }
             if (this.initialVisible) {
                 if (this.get("host") instanceof Y.Widget) {
