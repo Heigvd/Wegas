@@ -108,6 +108,16 @@ YUI.add('wegas-app', function(Y) {
             }, this);
 
             this.initDataSources();
+
+            /**
+             * Shortcut to activate developper mode. Allow access to Y instance. Toggle.
+             * Event keypress '°'
+             */
+            Y.one("body").on("keypress", function(e) {
+                if (e.charCode === 176 && e.target === this) {
+                    Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
+                }
+            });
         },
 
         // *** Private methods ** //
@@ -176,7 +186,8 @@ YUI.add('wegas-app', function(Y) {
                     //try {
                     //    this.pageLoader.set("pageId", -100);
                     //} catch (renderException) {
-                    //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack) ? renderException.stack : renderException), 'error', 'Wegas.App');
+                    //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack)
+                    //     ? renderException.stack : renderException), 'error', 'Wegas.App');
                     //}
 
                     }
@@ -247,123 +258,8 @@ YUI.add('wegas-app', function(Y) {
             editorForms: {
                 value: {}
             }
-        },
-
-        /**
-         * Generate ID an unique id based on current time.
-         * @function
-         * @static
-         * @return {Number} time
-         * @description
-         */
-        genId: function() {
-            var now = new Date();
-            return now.getHours() + now.getMinutes() + now.getSeconds();
-        },
-
-        /**
-         * Escape a html string by replacing <, > and " by their html entities.
-         *
-         * @function
-         * @static
-         * @param {String} str
-         * @return {String} Escaped string
-         */
-        htmlEntities: function(str) {
-            return String(str).replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-        },
-
-        /**
-         * Replace any text line return by a \<br \/\>
-         * @function
-         * @static
-         * @param str {String}
-         * @return {String} Escaped string
-         */
-        nl2br: function(str, replaceBy) {
-            replaceBy = replaceBy || '<br />';
-            return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + replaceBy + '$2');
-        },
-
-        /**
-         * Format a date, using provided format string.
-         *
-         * @function
-         * @static
-         * @argument {Number} timestamp
-         * @argument {String} the format to apply, ex. '%d.%M.%Y at %H:%m:%s'
-         * @returns {String} formated date
-         */
-        formatDate: function(timestamp, fmt) {
-            var date = new Date(timestamp);
-
-            function pad(value) {
-                return (value.toString().length < 2) ? '0' + value : value;
-            }
-            return fmt.replace(/%([a-zA-Z])/g, function (_, fmtCode) {
-                switch (fmtCode) {
-                    case 'Y':
-                        return date.getFullYear();
-                    case 'M':
-                        return pad(date.getMonth() + 1);
-                    case 'd':
-                        return pad(date.getDate());
-                    case 'H':
-                        return pad(date.getHours());
-                    case 'm':
-                        return pad(date.getMinutes());
-                    case 's':
-                        return pad(date.getSeconds());
-                    default:
-                        throw new Error('Unsupported format code: ' + fmtCode);
-                }
-            });
-        },
-
-        /**
-         * Returns a time lapse between provided timestamp and now, e.g. "a month ago",
-         * "2 hours ago", "10 minutes ago"
-         * @function
-         * @static
-         * @argument {Number} timestamp
-         * @return {String} The formatted time
-         */
-        smartDate: function (timestamp) {
-            var date = new Date(date),
-            now = new Date(),
-            diff = new Date(now.getTime() - timestamp),
-            diffN = now.getTime() - timestamp,
-            monthFactor =  30 * 24 * 60 * 60 * 1000,
-            yearFactor =  365 * 24 * 60 * 60 * 1000;
-
-            if (diffN <  60 * 1000) {
-                return diff.getUTCSeconds() + " seconds ago";
-            } else if (diffN <  60 * 60 * 1000) {
-                return diff.getUTCMinutes() + " minutes ago";
-            } else if (diffN <  24 * 60 * 60 * 1000) {
-                return diff.getUTCHours() + " hours ago";
-            } else if (diffN <  30 * 24 * 60 * 60 * 1000) {
-                return diff.getUTCDays() + " days ago";
-            } else if (diffN <  monthFactor) {
-                return Math.round(diff / monthFactor) + " month ago";
-            } else {
-                return Math.round(diff / yearFactor) + " years ago";
-            }
-
         }
+
     });
     Y.namespace('Wegas').App = App;
-
-    /**
-     * Shortcut to activate developper mode. Allow access to Y instance. Toggle.
-     * Event keypress '°'
-     */
-    Y.one("body").on("keypress", function(e) {
-        if (e.charCode === 176 && e.target === this) {
-            Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
-        }
-    });
 });
