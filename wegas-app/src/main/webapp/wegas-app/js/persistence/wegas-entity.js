@@ -12,11 +12,12 @@
 YUI.add('wegas-entity', function(Y) {
     "use strict";
 
-    var IDATTRDEF = {
-        type: "string",
+    var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
+    IDATTRDEF = {
+        type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
         _inputex: {
-            _type: "hidden"
+            _type: HIDDEN
         }
     }, Editable = Y.Wegas.Editable, Entity;
 
@@ -61,9 +62,9 @@ YUI.add('wegas-entity', function(Y) {
             '@class': {
                 value: "null",
                 writeOnce: "initOnly",
-                type: 'string',
+                type: STRING,
                 _inputex: {
-                    _type: 'hidden'
+                    _type: HIDDEN
                 }
             },
             label: {
@@ -146,17 +147,17 @@ YUI.add('wegas-entity', function(Y) {
     Y.Wegas.persistence.GameModel = Y.Base.create("GameModel", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string"
+                type: STRING
             },
             games: {
-                type: "array",
+                type: ARRAY,
                 value: [],
                 _inputex: {
-                    _type: 'hidden'
+                    _type: HIDDEN
                 }
             },
             widgetsUri: {
-                type: "string",
+                type: STRING,
                 /* choices: [{
                  value: "wegas-leaderway/db/wegas-leaderway-pages.json",
                  label: "Leaderway"
@@ -172,7 +173,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             cssUri: {
-                type: "string",
+                type: STRING,
                 _inputex: {
                     label: "CSS Stylesheet"
                 }
@@ -180,7 +181,7 @@ YUI.add('wegas-entity', function(Y) {
             scriptLibrary: {
                 value: {},
                 _inputex: {
-                    _type: "hidden"
+                    _type: HIDDEN
                 }
             }
         },
@@ -260,40 +261,40 @@ YUI.add('wegas-entity', function(Y) {
     Y.Wegas.persistence.Game = Y.Base.create("Game", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string"
+                type: STRING
             },
             token: {
-                type: "string",
+                type: STRING,
                 optional: true,
                 _inputex: {
                     description: "Leave blank for automatic generation"
                 }
             },
+            createdBy: {
+                "transient": true
+            },
+            gameModelId: {
+                type: STRING
+            },
             teams: {
-                type: "array",
+                type: ARRAY,
                 value: [],
                 _inputex: {
-                    _type: "hidden"
+                    _type: HIDDEN
                 }
             },
             createdTime: {
                 "transient": true,
-                type: "string",
+                type: STRING,
                 _inputex: {
-                    _type: "hidden"
+                    _type: HIDDEN
                 }
             },
             updatedTime: {
                 "transient": true,
-                type: "string",
+                type: STRING,
                 _inputex: {
-                    _type: "hidden"
-                }
-            },
-            creator: {
-                "transient": true,
-                _inputex: {
-                    _type: "hidden"
+                    _type: HIDDEN
                 }
             }
         },
@@ -350,10 +351,10 @@ YUI.add('wegas-entity', function(Y) {
                 value: "Team"
             },
             name: {
-                type: "string"
+                type: STRING
             },
             token: {
-                type: "string",
+                type: STRING,
                 optional: true,
                 _inputex: {
                     description: "Leave blank for automatic generation"
@@ -362,7 +363,7 @@ YUI.add('wegas-entity', function(Y) {
             players: {
                 value: [],
                 _inputex: {
-                    _type: "hidden"
+                    _type: HIDDEN
                 }
             },
             gameId: IDATTRDEF
@@ -410,7 +411,7 @@ YUI.add('wegas-entity', function(Y) {
     Y.Wegas.persistence.Player = Y.Base.create("Player", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string"
+                type: STRING
             },
             teamId: IDATTRDEF
         },
@@ -440,7 +441,7 @@ YUI.add('wegas-entity', function(Y) {
     }, {
         ATTRS: {
             name: {
-                type: "string",
+                type: STRING,
                 "transient": true,
                 getter: function(val) {
                     if (this.getMainAccount()) {
@@ -450,10 +451,10 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             password: {
-                type: "string"
+                type: STRING
             },
             accounts: {
-                type: "array"
+                type: ARRAY
 
             }
         }
@@ -464,18 +465,18 @@ YUI.add('wegas-entity', function(Y) {
     Y.Wegas.persistence.Role = Y.Base.create("Role", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
-                type: "string"
+                type: STRING
             },
             description: {
-                type: "string",
+                type: STRING,
                 format: "text",
                 optional: true
             },
             permissions: {
                 optional: true,
-                type: "array",
+                type: ARRAY,
                 items: {
-                    type: "string",
+                    type: STRING,
                     _inputex: {
                         label: ""
                     }
@@ -508,34 +509,34 @@ YUI.add('wegas-entity', function(Y) {
     }, {
         ATTRS: {
             "@class": {
-                type: "string",
+                type: STRING,
                 value: "JpaAccount",
                 _inputex: {
-                    _type: 'hidden'
+                    _type: HIDDEN
                 }
             },
             firstname: {
-                type: "string",
+                type: STRING,
                 _inputex: {
                     label: "First name"
                 }
             },
             lastname: {
                 label: "Last name",
-                type: "string",
+                type: STRING,
                 _inputex: {
                     label: "Last name"
                 }
             },
             email: {
-                type: "string",
+                type: STRING,
                 _inputex: {
                     label: "Email",
                     _type: "email"
                 }
             },
             password: {
-                type: "string",
+                type: STRING,
                 optional: true,
                 _inputex: {
                     _type: "password",
@@ -548,7 +549,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             passwordConfirm: {
-                type: "string",
+                type: STRING,
                 //"transient": true,
                 optional: true,
                 _inputex: {
@@ -561,9 +562,9 @@ YUI.add('wegas-entity', function(Y) {
             },
             roles: {
                 optional: true,
-                type: "array",
+                type: ARRAY,
                 items: {
-                    type: "string",
+                    type: STRING,
                     choices: [{
                         value: 1,
                         label: 'Administrator'
@@ -613,14 +614,14 @@ YUI.add('wegas-entity', function(Y) {
     }, {
         ATTRS: {
             label: {
-                type: "string",
+                type: STRING,
                 "transient": false,
                 getter: function(val) {
                     return val || this.get("name");
                 }
             },
             editorLabel: {
-                type: "string",
+                type: STRING,
                 optional: true,
                 "transient": false,
                 _inputex: {
@@ -635,7 +636,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             name: {
                 value: null,
-                type: "string",
+                type: STRING,
                 optional: true,
                 _inputex: {
                     label: "Script alias"
@@ -654,7 +655,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: "object",
                 properties: {
                     "@class": {
-                        type: "string",
+                        type: STRING,
                         choices: [{
                             value: "TeamScope",
                             label: 'different for each team'
@@ -780,9 +781,9 @@ YUI.add('wegas-entity', function(Y) {
     Y.Wegas.persistence.VariableInstance = Y.Base.create("VariableInstance", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             descriptorId: {
-                type: "string",
+                type: STRING,
                 _inputex: {
-                    _type: "hidden"
+                    _type: HIDDEN
                 }
             }
         },
@@ -801,15 +802,15 @@ YUI.add('wegas-entity', function(Y) {
             defaultInstance: {
                 properties: {
                     "@class": {
-                        type: "string",
+                        type: STRING,
                         _inputex: {
                             value: 'StringInstance',
-                            _type: 'hidden'
+                            _type: HIDDEN
                         }
                     },
                     id: IDATTRDEF,
                     value: {
-                        type: "string",
+                        type: STRING,
                         _inputex: {
                             label: 'Default value'
                         }
@@ -828,7 +829,7 @@ YUI.add('wegas-entity', function(Y) {
                 value: "StringInstance"
             },
             value: {
-                type: "string"
+                type: STRING
             }
         }
     });
@@ -841,14 +842,14 @@ YUI.add('wegas-entity', function(Y) {
                 value: "NumberDescriptor"
             },
             minValue: {
-                type: "string",
+                type: STRING,
                 optional: true,
                 _inputex: {
                     label: 'Minimum'
                 }
             },
             maxValue: {
-                type: "string",
+                type: STRING,
                 optional: true,
                 _inputex: {
                     label: 'Maximum'
@@ -857,15 +858,15 @@ YUI.add('wegas-entity', function(Y) {
             defaultInstance: {
                 properties: {
                     "@class": {
-                        type: "string",
+                        type: STRING,
                         _inputex: {
                             value: 'NumberInstance',
-                            _type: 'hidden'
+                            _type: HIDDEN
                         }
                     },
                     id: IDATTRDEF,
                     value: {
-                        type: "string",
+                        type: STRING,
                         _inputex: {
                             label: 'Default value',
                             regexp: /^[0-9]*$/
@@ -881,20 +882,20 @@ YUI.add('wegas-entity', function(Y) {
         METHODS: {
             add: {
                 arguments: [{
-                    type: "hidden",
+                    type: HIDDEN,
                     value: "self"
                 }, {
-                    type: "string",
+                    type: STRING,
                     value: 1
                 }]
             },
             setValue: {
                 label: "set",
                 arguments: [{
-                    type: "hidden",
+                    type: HIDDEN,
                     value: "self"
                 }, {
-                    type: "string",
+                    type: STRING,
                     value: 1
                 }]
             },
@@ -902,7 +903,7 @@ YUI.add('wegas-entity', function(Y) {
                 label: "value",
                 returns: "number",
                 arguments: [{
-                    type: "hidden",
+                    type: HIDDEN,
                     value: "self"
                 }]
             }
@@ -917,7 +918,7 @@ YUI.add('wegas-entity', function(Y) {
                 value: "NumberInstance"
             },
             value: {
-                type: "string",
+                type: STRING,
                 _inputex: {
                     regexp: /^[0-9]*$/
                 }
@@ -946,11 +947,11 @@ YUI.add('wegas-entity', function(Y) {
                 value: "ListDescriptor"
             },
             items: {
-                type: "array",
+                type: ARRAY,
                 value: [],
                 "transient": true,
                 _inputex: {
-                    _type: "hidden"
+                    _type: HIDDEN
                 },
                 setter: function(val) {
                     var i;
@@ -976,10 +977,10 @@ YUI.add('wegas-entity', function(Y) {
             defaultInstance: {
                 properties: {
                     "@class": {
-                        type: "string",
+                        type: STRING,
                         _inputex: {
                             value: 'ListInstance',
-                            _type: "hidden"
+                            _type: HIDDEN
                         }
                     },
                     id: IDATTRDEF
@@ -1004,7 +1005,7 @@ YUI.add('wegas-entity', function(Y) {
                         "targetClass": "NumberDescriptor"
                     }, {
                         "type": "AddEntityChildButton",
-                        "label": "String",
+                        "label": STRING,
                         "targetClass": "StringDescriptor"
                     }, {
                         "type": "AddEntityChildButton",
@@ -1065,7 +1066,7 @@ YUI.add('wegas-entity', function(Y) {
                     '@class': {
                         type: 'InboxInstance',
                         _inputex: {
-                            _type: 'hidden',
+                            _type: HIDDEN,
                             value: 'TaskInstance'
                         }
                     },
@@ -1078,24 +1079,24 @@ YUI.add('wegas-entity', function(Y) {
                 label: "send message",
                 className: "wegas-method-sendmessage",
                 arguments: [{
-                    type: "hidden",
+                    type: HIDDEN,
                     value: "self"
                 }, {
-                    type: "string",
+                    type: STRING,
                     label: "from",
-                    scriptType: "string"
+                    scriptType: STRING
                 }, {
-                    type: "string",
+                    type: STRING,
                     label: "title",
-                    scriptType: "string"
+                    scriptType: STRING
                 }, {
                     type: "text",
                     label: "Content",
-                    scriptType: "string"
+                    scriptType: STRING
                 }, {
                     type: "list",
                     label: "Attachements",
-                    scriptType: "string",
+                    scriptType: STRING,
                     useButtons: true,
                     /*sortable: true*/
                     elementType: {
@@ -1109,7 +1110,7 @@ YUI.add('wegas-entity', function(Y) {
                 label: "is empty",
                 returns: "boolean",
                 arguments: [{
-                    type: "hidden",
+                    type: HIDDEN,
                     value: "self"
                 }]
             }
@@ -1130,7 +1131,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             messages: {
-                type: "array",
+                type: ARRAY,
                 "transient": true,
                 value: []
             }
@@ -1230,21 +1231,21 @@ YUI.add('wegas-entity', function(Y) {
             },
             "@class": {
                 value: "Script",
-                type: "string"
+                type: STRING
             },
             language: {
                 value: "JavaScript",
-                type: "string",
+                type: STRING,
                 choices: [{
                     value: "JavaScript"
                 }],
                 _inputex: {
                     //type:"select",
-                    _type: "hidden"
+                    _type: HIDDEN
                 }
             },
             content: {
-                type: "string",
+                type: STRING,
                 format: "text",
                 setter: function(v) {
                     this._result = null;

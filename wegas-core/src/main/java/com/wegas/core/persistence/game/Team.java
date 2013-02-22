@@ -53,22 +53,21 @@ public class Team extends AbstractEntity {
      */
     @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference(value = "player-team")
-    private List<Player> players = new ArrayList<Player>();
-    /**
-     *
-     */
-    @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
-    private int gameId;
+    private List<Player> players = new ArrayList<>();
     /**
      * The game model this belongs to
      */
-    @ManyToOne
-    @NotNull
+    @ManyToOne(optional = false)
     @JoinColumn(name = "parentgame_id")
     @XmlTransient
     //@XmlInverseReference(mappedBy = "teams")
     @JsonBackReference(value = "game-team")
     private Game game;
+    /**
+     *
+     */
+    @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
+    private int gameId;
 
     /**
      *

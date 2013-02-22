@@ -426,8 +426,12 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-treeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-treeview-min.js',
-                    requires: ['wegas-widget', "treeview", "wegas-widgetmenu"],
+                    requires: ['wegas-widget', "treeview", "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
                     ws_provides: ['EditorTreeView', "LobbyTreeView"]
+                },
+                'wegas-editor-treeviewcss': {
+                    path: 'wegas-editor/css/wegas-editor-treeview.css',
+                    type: "css"
                 },
                 'wegas-datatable': {
                     path: 'wegas-editor/js/widget/wegas-datatable-min.js',
