@@ -35,7 +35,7 @@
             }]
     },
     "3": {
-        "type": "AbsoluteLayout",
+        "type": "FlexitestsController",
         "cssClass": "test-page",
         "children": [{
                 "type": "ChoiceList",
@@ -149,19 +149,6 @@
                         "contentType": "img",
                         "content": "/fernandPensif.png",
                         "response": "male"
-                    }
-                ]
-            },
-            {
-                "type": "FlexitestsController",
-                "plugins": [
-                    {
-                        "fn": "Position",
-                        "cfg": {
-                            "right": "300",
-                            "left": "300",
-                            "bottom": "10"
-                        }
                     }
                 ]
             }]

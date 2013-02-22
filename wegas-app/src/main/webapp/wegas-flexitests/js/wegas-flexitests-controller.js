@@ -11,7 +11,7 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-controller", function(Y) {
-    Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetChild], {
+    Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [], {
         initializer: function() {
             this.leftElement = null;
             this.rightElement = null;
@@ -29,8 +29,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.get("contentBox").append("<div class='input'></div>");
         },
         bindUI: function() {
-            this.get("root").set("tabIndex", -1);
-            this.events.push(this.get("root").get("boundingBox").after("keypress", function(e) {
+            this.set("tabIndex", -1);
+            this.events.push(this.get("boundingBox").after("keypress", function(e) {
                 if (this.awaitedKeypress && this.ongoing) {
                     this.keyPressed(String.fromCharCode(e.keyCode));
                 }
@@ -49,9 +49,9 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             });
         },
         syncUI: function() {
-            this.leftElement = this.getWidgetById("leftElement");
-            this.rightElement = this.getWidgetById("rightElement");
-            this.centerElement = this.getWidgetById("centerElement");
+            this.leftElement = this.getChildById("leftElement");
+            this.rightElement = this.getChildById("rightElement");
+            this.centerElement = this.getChildById("centerElement");
             this.maxSize = Math.max(this.leftElement.size(), this.rightElement.size(), this.centerElement.size());
             for (var i = 0; i < this.maxSize; i += 1) {
                 this.questionToDo[i] = i;
@@ -117,7 +117,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         },
         startStimuli: function() {
             this.awaitedKeypress = this.get("keyPress");
-            this.get("root").get("boundingBox").focus();
+            this.get("boundingBox").focus();
             this.restartTimer(this.leftElement);
             this.restartTimer(this.rightElement);
             this.restartTimer(this.centerElement);
@@ -128,10 +128,10 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             widget.fire("visibility-timer:restart");
         },
         mask: function() {
-            this.get("root").showOverlay();
+            this.showOverlay();
         },
         unmask: function() {
-            this.get("root").hideOverlay();
+            this.hideOverlay();
             this.startTime = Y.Lang.now();
         },
         success: function(message) {
@@ -144,8 +144,15 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 this.showMessage("error", message || "", 500);
             }
         },
-        getWidgetById: function(id) {
-            return Y.Widget.getByNode(this.get("root").get("contentBox").one("#" + id));
+        getChildById: function(id) {
+            var returnItem = null;
+            this.some(function(item) {
+                if (item.get("id") === id) {
+                    returnItem = item;
+                    return true;
+                }
+            });
+            return returnItem;
         },
         destructor: function() {
             var i;
