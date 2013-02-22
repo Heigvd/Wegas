@@ -12,13 +12,13 @@ body > .wegas-pageloader, html{
     margin:auto;
     font-weight: bold;
 }
-.flexitests .wegas-absolutelayout{
+.flexitests .wegas-flexitests-controller{
     outline: none;
 }
 .flexitests .wegas-button{
     background-color: rgb(176, 176, 176);
 }
-.wegas-absolutelayout > .wegas-loading-overlay{
+.wegas-flexitests-controller > .wegas-loading-overlay{
     background-color: rgb(77, 77, 77);
     background-image: url(../../wegas-flexitests/images/FixPoint.png);
 }
