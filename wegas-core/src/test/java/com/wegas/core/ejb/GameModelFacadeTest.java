@@ -40,7 +40,7 @@ public class GameModelFacadeTest {
     public static void setUp() throws NamingException {
         ejbContainer = TestHelper.getEJBContainer();
         context = ejbContainer.getContext();
-        gameModelFacade = lookupBy(GameModelFacade.class, GameModelFacade.class);
+        gameModelFacade = lookupBy(GameModelFacade.class);
     }
 
     @AfterClass
@@ -51,7 +51,7 @@ public class GameModelFacadeTest {
     @Test
     public void createGameModel() throws NamingException {
         logger.info("createGameModel()");
-        String name = "test";
+        final String name = "test";
 
         GameModel gameModel = new GameModel();
         gameModel.setName(name);
@@ -73,12 +73,9 @@ public class GameModelFacadeTest {
         final String GAMENAME2 = "test-gamemodel2";
         final String NAME = "test-game";
         final String TOKEN = "test-game-token";
-        final String NAME2 = "test-game2";
-        final String TOKEN2 = "test-game-token2";
-        final String VALUE = "test-value";
 
-        GameFacade gf = lookupBy(GameFacade.class, GameFacade.class);
-        TeamFacade tf = lookupBy(TeamFacade.class, TeamFacade.class);
+        GameFacade gf = lookupBy(GameFacade.class);
+        TeamFacade tf = lookupBy(TeamFacade.class);
 
         // Create a game model
         GameModel gameModel = new GameModel(GAMENAME);
@@ -108,7 +105,7 @@ public class GameModelFacadeTest {
         gameModelFacade.remove(gameModel.getId());
     }
 
-    public static <T> T lookupBy(Class<T> type, Class service) throws NamingException {
-        return Helper.lookupBy(context, type, service);
+    public static <T> T lookupBy(Class<T> type) throws NamingException {
+        return Helper.lookupBy(context, type);
     }
 }

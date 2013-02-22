@@ -48,7 +48,7 @@ public class GameModel extends NamedEntity {
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date creationTime = new Date();
+    private Date createdTime = new Date();
     /**
      *
      */
@@ -76,7 +76,7 @@ public class GameModel extends NamedEntity {
     /**
      * Holds all the scripts contained in current game model.
      *
-     * @FIXME the @Lob annotation has no effect on ElementCollection and
+     * @FIXME the @Lob annotation has no effect on ElementCollection with
      * Postgresql
      *
      */
@@ -306,5 +306,19 @@ public class GameModel extends NamedEntity {
             players.addAll(g.getPlayers());
         }
         return players;
+    }
+
+    /**
+     * @return the createdTime
+     */
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    /**
+     * @param createdTime the createdTime to set
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
     }
 }

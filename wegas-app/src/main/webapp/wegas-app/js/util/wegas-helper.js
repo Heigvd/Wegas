@@ -60,6 +60,15 @@ YUI.add('wegas-helper', function(Y) {
             return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + replaceBy + '$2');
         },
 
+        escapeJSString: function (str) {
+            return str.replace(/"/g, '\\"').replace(/(\r\n|\n\r|\r|\n)/g, "\\n");
+        //return Helper.nl2br(str.replace(/"/g, '\\"'), "\\n");
+        },
+
+        unesacapeJSString: function (str) {
+            return str.replace(/\\"/g, '"');
+        },
+
         /**
          * Format a date, using provided format string.
          *
@@ -119,16 +128,16 @@ YUI.add('wegas-helper', function(Y) {
             diffN = now.getTime() - timestamp,
             oneMinute = 60 * 1000,
             oneHour = 60 * oneMinute,
-            oneDay =24 * oneHour,
-            oneMonth =  30 * oneDay,
-            oneYear =  365 * oneDay;
+            oneDay =24 * oneHour;
+            // oneMonth =  30 * oneDay,
+            // oneYear =  365 * oneDay;
 
             if (!date.getTime()) {
                 return "undefined";
             }
 
             if (diffN <  oneMinute) {                                           // last minute
-                return diffN / oneSecond + " seconds ago";
+                return Math.round(diffN / 1000) + " seconds ago";
 
             } else if (diffN <  oneHour) {                                      // last hour
                 return  Math.round(diffN / oneMinute) + " minutes ago";
@@ -140,7 +149,7 @@ YUI.add('wegas-helper', function(Y) {
             } else if (date.getYear() === now.getYear()) {                      // This year
                 return Helper.formatDate(timestamp, "%d %M");
 
-            }else {
+            }else {                                                             // Older
                 return Helper.formatDate(timestamp, "%d %M %Y");
             }
 

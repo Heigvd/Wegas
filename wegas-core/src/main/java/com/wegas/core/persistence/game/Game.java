@@ -67,8 +67,7 @@ public class Game extends NamedEntity {
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @XmlTransient
-    private User creator;
+    private User createdBy;
     /**
      *
      */
@@ -78,10 +77,15 @@ public class Game extends NamedEntity {
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "gamemodelid")
     // @JsonBackReference
     private GameModel gameModel;
+    /**
+     *
+     */
+    @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
+    private Long gameModelId;
 
     /**
      *
@@ -268,14 +272,28 @@ public class Game extends NamedEntity {
     /**
      * @return the creator
      */
-    public User getCreator() {
-        return creator;
+    public User getCreatedBy() {
+        return createdBy;
     }
 
     /**
      * @param creator the creator to set
      */
-    public void setCreator(User creator) {
-        this.creator = creator;
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    /**
+     * @return the gameModelId
+     */
+    public Long getGameModelId() {
+        return gameModelId;
+    }
+
+    /**
+     * @param gameModelId the gameModelId to set
+     */
+    public void setGameModelId(Long gameModelId) {
+        this.gameModelId = gameModelId;
     }
 }

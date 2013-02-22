@@ -104,221 +104,220 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     collapsed = !this.isNodeExpanded(el);
                     selected = (this.currentSelection === el.get("id")) ? 2 : 0;
 
-                    if ((!this.get("excludeClasses")
-                        || !this.get('excludeClasses').hasOwnProperty(elClass))
-                    && (!this.get('includeClasses')
-                        || this.get('includeClasses').hasOwnProperty(elClass))) {
+                    switch (elClass) {
+                        case 'StringDescriptor':
+                        case 'NumberDescriptor':
+                        case 'InboxDescriptor':
+                        case 'TriggerDescriptor':
+                        case 'TaskDescriptor':
+                        case 'ResourceDescriptor':
+                        case 'DialogueDescriptor':
+                            text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                            var els = this.genScopeTreeViewElements(el);
+                            ret.push({
+                                type: 'TreeNode',
+                                label: text,
+                                children: els,
+                                //children: (els.length >= 1) ? els : null, //no children now, loaded on expands
+                                //children: null, //no children now, loaded on expands
+                                data: {
+                                    entity: el
+                                },
+                                collapsed: collapsed,
+                                selected: selected,
+                                rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                iconCSS: "wegas-icon-variabledescriptor"
+                            //iconCSS: "wegas-icon-" + el.get('@class')
+                            });
+                            break;
 
-                        switch (elClass) {
-                            case 'StringDescriptor':
-                            case 'NumberDescriptor':
-                            case 'InboxDescriptor':
-                            case 'TriggerDescriptor':
-                            case 'TaskDescriptor':
-                            case 'ResourceDescriptor':
-                            case 'DialogueDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
-                                var els = this.genScopeTreeViewElements(el);
-                                ret.push({
-                                    type: 'TreeNode',
-                                    label: text,
-                                    children: els,
-                                    //children: (els.length >= 1) ? els : null, //no children now, loaded on expands
-                                    //children: null, //no children now, loaded on expands
+                        case 'ListDescriptor':
+                            text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                            ret.push({
+                                type: 'TreeNode',
+                                label: text,
+                                collapsed: collapsed,
+                                selected: selected,
+                                children: this.genTreeViewElements(el.get("items")),
+                                data: {
+                                    entity: el
+                                },
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
+
+                        case 'QuestionDescriptor':
+                            text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                            ret.push({
+                                type: 'TreeNode',
+                                label: text,
+                                collapsed: collapsed,
+                                selected: selected,
+                                children: this.genTreeViewElements(el.get("items")),
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: "wegas-icon-variabledescriptor",
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
+
+                        case 'ChoiceDescriptor':
+                            text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                            children = [];
+
+                            for (l = 0; l < el.get("results").length; l += 1) {
+                                result = el.get("results")[l];
+                                children.push({
+                                    label: "Result: " + result.get("name"),
+                                    selected: (result.get("id") === this.currentSelection) ? 2 : 0,
                                     data: {
-                                        entity: el
-                                    },
-                                    collapsed: collapsed,
-                                    selected: selected,
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL),
-                                    iconCSS: "wegas-icon-variabledescriptor"
-                                //iconCSS: "wegas-icon-" + el.get('@class')
-                                });
-                                break;
-
-                            case 'ListDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
-                                ret.push({
-                                    type: 'TreeNode',
-                                    label: text,
-                                    collapsed: collapsed,
-                                    selected: selected,
-                                    children: this.genTreeViewElements(el.get("items")),
-                                    data: {
-                                        entity: el
-                                    },
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                                break;
-
-                            case 'QuestionDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
-                                ret.push({
-                                    type: 'TreeNode',
-                                    label: text,
-                                    collapsed: collapsed,
-                                    selected: selected,
-                                    children: this.genTreeViewElements(el.get("items")),
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: "wegas-icon-variabledescriptor",
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                                break;
-
-                            case 'ChoiceDescriptor':
-                                text = el.get('@class').replace("Descriptor", "") + ': ' + el.getPrivateLabel();
-                                children = [];
-
-                                for (l = 0; l < el.get("results").length; l += 1) {
-                                    result = el.get("results")[l];
-                                    children.push({
-                                        label: "Result: " + result.get("name"),
-                                        selected: (result.get("id") === this.currentSelection) ? 2 : 0,
-                                        data: {
-                                            entity: result,
-                                            parentEntity: el
-                                        },
-                                        rightWidget: Y.Node.create(EDITBUTTONTPL),
-                                        iconCSS: "wegas-icon-variabledescriptor"
-                                    });
-                                }
-
-                                ret.push({
-                                    type: 'TreeNode',
-                                    label: text,
-                                    children: children,
-                                    data: {
-                                        entity: el
-                                    },
-                                    collapsed: collapsed,
-                                    selected: selected,
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL),
-                                    iconCSS: "wegas-icon-variabledescriptor"
-                                });
-                                break;
-
-                            case 'SingleResultChoiceDescriptor':
-                                text = 'Choice: ' + el.getPrivateLabel();
-                                ret.push({
-                                    type: 'TreeLeaf',
-                                    label: text,
-                                    selected: selected,
-                                    data: {
-                                        entity: el
+                                        entity: result,
+                                        parentEntity: el
                                     },
                                     rightWidget: Y.Node.create(EDITBUTTONTPL),
                                     iconCSS: "wegas-icon-variabledescriptor"
                                 });
-                                break;
+                            }
 
-                            case 'Game':
-                                ret.push({
-                                    type: 'TreeNode',
-                                    //label: 'Game: ' + el.get("name") + ' (token:' + el.get("token") + ')',
-                                    label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                    + '<div class="yui3-u yui3-u-col1">' + el.get("name") + '</div>'
-                                    + '<div class="yui3-u yui3-u-col2 yui3-g"><div class="yui3-u-1-3">' + el.get("token") + '</div>'
-                                    + '<div class="yui3-u-1-3">'
-                                    + Y.Wegas.Helper.smartDate(el.get("createdTime"))
-                                    + '</div>'
-                                    + '<div class="yui3-u-1-3">' + '</div></div>'
-                                    + '</div>',
-                                    collapsed: collapsed,
-                                    selected: selected,
-                                    children: this.genTreeViewElements(el.get("teams")),
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-game',
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                                break;
+                            ret.push({
+                                type: 'TreeNode',
+                                label: text,
+                                children: children,
+                                data: {
+                                    entity: el
+                                },
+                                collapsed: collapsed,
+                                selected: selected,
+                                rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                iconCSS: "wegas-icon-variabledescriptor"
+                            });
+                            break;
 
-                            case 'Team':
-                                text = 'Team: ' + el.get("name") + ' (token: ' + el.get("token") + ")";
-                                ret.push({
-                                    type: 'TreeNode',
-                                    collapsed: collapsed,
-                                    selected: selected,
-                                    label: text,
-                                    children: this.genTreeViewElements(el.get("players")),
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-team',
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                                break;
+                        case 'SingleResultChoiceDescriptor':
+                            text = 'Choice: ' + el.getPrivateLabel();
+                            ret.push({
+                                type: 'TreeLeaf',
+                                label: text,
+                                selected: selected,
+                                data: {
+                                    entity: el
+                                },
+                                rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                iconCSS: "wegas-icon-variabledescriptor"
+                            });
+                            break;
 
-                            case 'Player':
-                                ret.push({
-                                    label: 'Player: ' + el.get("name"),
-                                    selected: selected,
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-player',
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                                break;
+                        case 'Game':
+                            var createdBy = el.get("createdBy"),
+                            gameModel = Y.Wegas.GameModelFacade.rest.findById(el.get("gameModelId"));
 
-                            case 'GameModel':
-                                text = el.get("name") || "no name";
-                                ret.push({
-                                    label: text,
-                                    selected: selected,
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-gamemodel',
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                                break;
+                            ret.push({
+                                type: 'TreeNode',
+                                //label: 'Game: ' + el.get("name") + ' (token:' + el.get("token") + ')',
+                                label: '<div class="yui3-g wegas-editor-treeview-table">'
+                                + '<div class="yui3-u yui3-u-col1">' + el.get("name") + '</div>'
+                                + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                + '<div class="yui3-u-1-4">'
+                                + Y.Wegas.Helper.smartDate(el.get("createdTime"))
+                                + '</div>'
+                                + '<div class="yui3-u-1-4">' + ((createdBy) ? createdBy.get("name") : "undefined") + '</div>'
+                                + '<div class="yui3-u-1-4">' + el.get("token") + '</div>'
+                                + '<div class="yui3-u-1-4">' + gameModel.get("name") + '</div></div>'
+                                + '</div>',
+                                collapsed: collapsed,
+                                selected: selected,
+                                children: this.genTreeViewElements(el.get("teams")),
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-game',
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
 
-                            case 'User':
-                                ret.push({
-                                    label: 'User:' + el.get("name"),
-                                    selected: selected,
-                                    data: {
-                                        entity: el.getMainAccount()
-                                    },
-                                    iconCSS: 'wegas-icon-player',
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                                break;
+                        case 'Team':
+                            text = 'Team: ' + el.get("name") + ' (token: ' + el.get("token") + ")";
+                            ret.push({
+                                type: 'TreeNode',
+                                collapsed: collapsed,
+                                selected: selected,
+                                label: text,
+                                children: this.genTreeViewElements(el.get("players")),
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-team',
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
 
-                            case 'Role':
-                                ret.push({
-                                    label: 'Group:' + el.get("name"),
-                                    selected: selected,
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-team',
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                                break;
+                        case 'Player':
+                            ret.push({
+                                label: 'Player: ' + el.get("name"),
+                                selected: selected,
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-player',
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
 
-                            case 'List':
-                            case 'Folder':
-                            case "TaskList":
-                            case "InboxDisplay":
-                            case "Score":
-                            case "Layout":
-                            case "Dialogue":
-                                ret = ret.concat(this.genPageTreeViewElements(el));
-                                break;
+                        case 'GameModel':
+                            text = el.get("name") || "no name";
+                            ret.push({
+                                label: text,
+                                selected: selected,
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-gamemodel',
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
 
-                            default:
-                                text = el.get('@class') + ': ' + el.get("name");
-                                ret.push({
-                                    label: text,
-                                    data: el
-                                });
-                                break;
-                        }
+                        case 'User':
+                            ret.push({
+                                label: 'User:' + el.get("name"),
+                                selected: selected,
+                                data: {
+                                    entity: el.getMainAccount()
+                                },
+                                iconCSS: 'wegas-icon-player',
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
+
+                        case 'Role':
+                            ret.push({
+                                label: 'Group:' + el.get("name"),
+                                selected: selected,
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-team',
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
+
+                        case 'List':
+                        case 'Folder':
+                        case "TaskList":
+                        case "InboxDisplay":
+                        case "Score":
+                        case "Layout":
+                        case "Dialogue":
+                            ret = ret.concat(this.genPageTreeViewElements(el));
+                            break;
+
+                        default:
+                            text = el.get('@class') + ': ' + el.get("name");
+                            ret.push({
+                                label: text,
+                                data: el
+                            });
+                            break;
                     }
                 }
             }
@@ -514,8 +513,6 @@ YUI.add('wegas-editor-treeview', function (Y) {
          * @static
          */
         ATTRS: {
-            includeClasses: {},
-            excludeClasses: {},
             emptyMessage: {
                 value: "No data to display"
             },
@@ -562,13 +559,12 @@ YUI.add('wegas-editor-treeview', function (Y) {
          * @private
          */
         bindUI: function () {
-            this.treeView.on("*:click", function (e) {              // If click on "All game models" node
-                var data = e.node.get("data"), sourceUri,
+            this.treeView.on("*:click", function (e) {
+                var data = e.node.get("data"),
+                sourceUri = "rest/GameModel//Game",                             // If click on "All game models" node
                 registeredGamesUri = "rest/RegisteredGames/" + Y.Wegas.app.get("currentUser.id");
 
-                if (!data) {
-                    sourceUri = "rest/GameModel//Game";
-                } else {
+                if (data) {                                                     // If click on a particular game model
                     sourceUri = "rest/GameModel/" + data.entity.get("id") + "/Game";
                     registeredGamesUri += "/" + data.entity.get("id");
                 }
@@ -608,11 +604,14 @@ YUI.add('wegas-editor-treeview', function (Y) {
      *
      */
     var GameTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
-        CONTENT_TEMPLATE: '<div class="wegas-editor-treeviewgame"><div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd">'
+        CONTENT_TEMPLATE: '<div class="wegas-editor-treeviewgame">'
+    + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd">'
     + '<div class="yui3-u yui3-u-col1">Name</div>'
-    + '<div class="yui3-u yui3-u-col2 yui3-g"><div class="yui3-u-1-3 yui3-u-selected">Token</div>'
-    + '<div class="yui3-u-1-3">Creation</div>'
-    + '<div class="yui3-u-1-3">Game model</div></div>'
+    + '<div class="yui3-u yui3-u-col2 yui3-g">'
+    + '<div class="yui3-u-1-4 yui3-u-selected">Created</div>'
+    + '<div class="yui3-u-1-4">Created by</div>'
+    + '<div class="yui3-u-1-4">Token</div>'
+    + '<div class="yui3-u-1-4">Game model</div></div>'
     + '</div></div>'
     });
     Y.namespace("Wegas").GameTreeView = GameTreeView;
@@ -620,7 +619,16 @@ YUI.add('wegas-editor-treeview', function (Y) {
     /**
      *
      */
-    var LobbyTreeView = Y.Base.create("wegas-editor-treeview", GameTreeView, [], {
+    var LobbyTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
+
+        CONTENT_TEMPLATE: '<div class="wegas-editor-treeviewgame">'
+        + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
+        + '<div class="yui3-u yui3-u-col1">Name</div>'
+        + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
+        + '<div class="yui3-u-1-3 yui3-u-selected">Joined</div>'
+        + '<div class="yui3-u-1-3">Created by</div>'
+        + '<div class="yui3-u-1-3">Game model</div></div>'
+        + '</div></div>',
 
         // ** Lifecycle methods ** //
         renderUI: function () {
@@ -648,8 +656,20 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
                     switch (el.get('@class')) {
                         case 'Game':
+                            var createdBy = el.get("createdBy"),
+                            gameModel = Y.Wegas.GameModelFacade.rest.findById(el.get("gameModelId"));
+
                             ret.push({
-                                label: el.get("name"),
+                                //label: el.get("name"),
+                                label: '<div class="yui3-g wegas-editor-treeview-table">'
+                                + '<div class="yui3-u yui3-u-col1">' + el.get("name") + '</div>'
+                                + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                + '<div class="yui3-u-1-3">'
+                                + Y.Wegas.Helper.smartDate(el.get("createdTime"))
+                                + '</div>'
+                                + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get("name") : "undefined") + '</div>'
+                                + '<div class="yui3-u-1-3">' + gameModel.get("name") + '</div></div>'
+                                + '</div>',
                                 data: {
                                     entity: el
                                 },
