@@ -226,6 +226,3 @@ font{
 .timed-hidden-node{
     visibility: hidden;
 }
-.wegas-pageeditor-designmode .timed-hidden-node{
-    visibility: visible;
-}
