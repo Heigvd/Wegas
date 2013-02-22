@@ -42,7 +42,7 @@ YUI.add('wegas-cssloader', function(Y) {
                 };
 
             for (i = 0; i < css.length; i += 1) {
-                Y.io(Y.Wegas.app.get('base') + css[i] + '?id=' + Y.Wegas.App.genId(), cfg);  // Load the page css
+                Y.io(Y.Wegas.app.get('base') + css[i] + '?id=' + Y.Wegas.Helper.genId(), cfg);  // Load the page css
             }
         }
     }, {

@@ -221,8 +221,8 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                     + '<div class="yui3-u yui3-u-col1">' + el.get("name") + '</div>'
                                     + '<div class="yui3-u yui3-u-col2 yui3-g"><div class="yui3-u-1-3">' + el.get("token") + '</div>'
                                     + '<div class="yui3-u-1-3">'
-                                   // + Y.Wegas.App.smartDate(el.get("createdTime"))
-                                    //+ Y.Wegas.App.formatDate(el.get("createdTime"), '%d.%M.%Y at %H:%m:%s')
+                                    + Y.Wegas.Helper.smartDate(el.get("createdTime"))+"*"
+                                    + Y.Wegas.Helper.formatDate(el.get("createdTime"), '%d.%M.%Y at %H:%m:%s')
                                     + '</div>'
                                     + '<div class="yui3-u-1-3">' + '</div></div>'
                                     + '</div>',

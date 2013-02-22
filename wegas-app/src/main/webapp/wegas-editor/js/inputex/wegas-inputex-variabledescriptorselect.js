@@ -18,7 +18,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
     EntityArrayFieldSelect,
     escapeJSString = function (str) {
         return str.replace(/"/g, '\\"').replace(/(\r\n|\n\r|\r|\n)/g, "\\n");
-        //return Y.Wegas.App.nl2br(str.replace(/"/g, '\\"'), "\\n");
+        //return Y.Wegas.Helper.nl2br(str.replace(/"/g, '\\"'), "\\n");
     },
     unesacapeJSString = function (str) {
         return str.replace(/\\"/g, '"');
