@@ -125,12 +125,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.ongoing = true;
         },
         restartTimer: function(widget) {
-            if (widget.showafter) {
-                widget.showafter.start();
-            }
-            if (widget.hideafter) {
-                widget.hideafter.start();
-            }
+            widget.fire("visibility-timer:restart");
         },
         mask: function() {
             this.get("root").showOverlay();

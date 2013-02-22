@@ -3,20 +3,23 @@
 **/
 body > .wegas-pageloader, html{
     background-color: rgb(77, 77, 77);
-}
-.flexitests *{
-    background-color: rgb(77, 77, 77);
-    color: whitesmoke;
-    
     margin:auto;
     font-weight: bold;
+}
+.flexitests{
+    background-color: rgb(77, 77, 77);
+    color: whitesmoke;
+    margin:auto;
+    font-weight: bold;
+}
+.flexitests .wegas-absolutelayout{
     outline: none;
 }
 .flexitests .wegas-button{
     background-color: rgb(176, 176, 176);
 }
 .wegas-absolutelayout > .wegas-loading-overlay{
-    background-color: inherit;
+    background-color: rgb(77, 77, 77);
     background-image: url(../../wegas-flexitests/images/FixPoint.png);
 }
 .flexitests-title{

@@ -25,6 +25,9 @@ YUI.add("wegas-visibilitytimer", function(Y) {
             } else if (this.get("host") instanceof Y.Node) {
                 this.initialVisible = this.get("host").hasClass(HIDDENNODECSSCLASS);
             }
+            this.onHostEvent("visibility-timer:restart", function(e){
+                this.start();
+            });
             if (this.get("autoStart")) {
                 this.start();
             }
