@@ -147,7 +147,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      *
      */
-    @Column(name = "teamvariableinstances_key", nullable = false, insertable = false, updatable = false)
+    @Column(name = "teamvariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long teamScopeKey;
 
     /**
@@ -161,7 +161,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      *
      */
-    @Column(name = "variableinstances_key", nullable = false, insertable = false, updatable = false)
+    @Column(name = "variableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long playerScopeKey;
 
     /**

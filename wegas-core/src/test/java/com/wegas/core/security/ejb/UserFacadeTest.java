@@ -15,14 +15,17 @@ import com.wegas.core.security.persistence.User;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.embeddable.EJBContainer;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
  * @author Yannick Lagger
  */
 public class UserFacadeTest {
-    
+
     private static UserFacade userFacade;
     private static RoleFacade roleFacade;
     private static AccountFacade accountFacade;
@@ -33,8 +36,7 @@ public class UserFacadeTest {
     private static User u;
     private static Role roleP;
     private static Role roleR;
-    private static Game g;
-    
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         EJBContainer container = TestHelper.getEJBContainer();
@@ -54,22 +56,14 @@ public class UserFacadeTest {
         abstractAccount.addRole(roleR);
         u = new User();
         u.addAccount(abstractAccount);
-        userFacade.create(u);        
+        userFacade.create(u);
     }
-    
+
     @AfterClass
     public static void tearDownClass() throws Exception {
         userFacade.remove(u.getId());
         roleFacade.remove(roleP.getId());
         roleFacade.remove(roleR.getId());
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
     }
 
     /**
@@ -100,7 +94,7 @@ public class UserFacadeTest {
         List<Map> rolePermissions = userFacade.findPermissionByInstance("gm1");
         Assert.assertEquals("Public", rolePermissions.get(0).get("name"));
         Assert.assertEquals("[GameModel:Edit:gm1, GameModel:View:gm1]", rolePermissions.get(0).get("permissions").toString());
-        
+
         userFacade.deleteRolePermissionsByIdAndInstance(roleP.getId(), "gm1");
     }
 
@@ -112,11 +106,11 @@ public class UserFacadeTest {
         // Add permissions
         userFacade.addRolePermission(roleP.getId(), "GameModel:Edit:gm1");
         userFacade.addRolePermission(roleP.getId(), "GameModel:View:gm1");
-        
+
         userFacade.deleteRolePermission(roleP.getId(), "GameModel:View:gm1");
         List<Map> rolePermissions = userFacade.findPermissionByInstance("gm1");
         Assert.assertEquals("[GameModel:Edit:gm1]", rolePermissions.get(0).get("permissions").toString());
-        
+
         userFacade.deleteRolePermission(roleP.getId(), "GameModel:Edit:gm1");
         rolePermissions = userFacade.findPermissionByInstance("gm1");
         Assert.assertEquals("[]", rolePermissions.toString());
@@ -147,13 +141,13 @@ public class UserFacadeTest {
         userFacade.addRolePermission(roleR.getId(), "Game:Edit:g20");
         userFacade.addRolePermission(roleR.getId(), "Game:View:g20");
         userFacade.addRolePermission(roleR.getId(), "Game:Token:g20");
-        
+
         userFacade.addRolePermission(roleP.getId(), "Game:Edit:g20");
         userFacade.addRolePermission(roleP.getId(), "Game:View:g20");
         userFacade.addRolePermission(roleP.getId(), "Game:Token:g20");
-        
+
         userFacade.deleteRolePermissionsByInstance("g20");
-        
+
         List<Map> rolePermission = userFacade.findPermissionByInstance("g20");
         Assert.assertEquals("[]", rolePermission.toString());
     }
@@ -191,7 +185,7 @@ public class UserFacadeTest {
     @Test(expected = WegasException.class)
     public void testCreateSameUser() throws Exception {
         u.addAccount(abstractAccount);
-        userFacade.create(u);        
+        userFacade.create(u);
     }
 
     /**
@@ -199,7 +193,7 @@ public class UserFacadeTest {
      */
     @Test
     public void testRegisteredGames() throws Exception {
-        Game g = new Game();
+        final Game g = new Game();
         g.setName("game");
         gameFacade.create(g);
         Team t = new Team();
@@ -211,10 +205,10 @@ public class UserFacadeTest {
         p.setUser(u);
         p.setTeam(t);
         playerFacade.create(p);
-        
-        List<Game> registeredGames = userFacade.registeredGames(u.getId());
+
+        List<Game> registeredGames = gameFacade.findRegisteredGames(u.getId());
         Assert.assertEquals("game", registeredGames.get(0).getName());
-        
+
         gameFacade.remove(g.getId());
     }
 }

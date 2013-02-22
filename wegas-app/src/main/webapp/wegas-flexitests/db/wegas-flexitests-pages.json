@@ -1,16 +1,169 @@
 {
     "1": {
-        "type": "AbsoluteLayout",
+        "type": "PageLoader",
+        "pageLoaderId": "mainarea",
+        "cssClass": "flexitests",
+        "variable": {
+            "name": "currentPage"
+        }
+    },
+    "2": {
+        "type": "List",
         "children": [{
                 "type": "Text",
-                "content": "Test text",
+                "content": "FlexiTests",
+                "cssClass": "flexitests-title"
+            }, {
+                "type": "Text",
+                "content": "_INSTRUCTIONS_"
+            }, {
+                "type": "Text",
+                "content": "_FORMULAIRE_"
+            }, {
+                "type": "Button",
+                "label": "Submit",
+                "plugins": [{
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "currentPage.value = 3;"
+                            }
+                        }
+                    }]
+            }]
+    },
+    "3": {
+        "type": "AbsoluteLayout",
+        "cssClass": "test-page",
+        "children": [{
+                "type": "ChoiceList",
+                "id": "leftElement",
+                "children": [
+                    {
+                        "type": "SimpleElement",
+                        "content": "Male",
+                        "response": "male"
+                    }
+                ],
                 "plugins": [{
                         "fn": "Position",
                         "cfg": {
-                            "x": "50",
-                            "y": "50"
+                            "left": "50",
+                            "top": "50"
+                        }
+                    },
+                    {
+                        "fn": "HideAfter",
+                        "cfg": {
+                            "time": "0,1000"
+                        }
+                    },
+                    {
+                        "fn": "ShowAfter",
+                        "cfg": {
+                            "time": "500"
                         }
                     }]
+            }, {
+                "type": "ChoiceList",
+                "id": "rightElement",
+                "plugins": [
+                    {
+                        "fn": "Position",
+                        "cfg": {
+                            "right": "50",
+                            "top": "50"
+                        }
+                    },
+                    {
+                        "fn": "HideAfter",
+                        "cfg": {
+                            "time": "0,1500"
+                        }
+                    },
+                    {
+                        "fn": "ShowAfter",
+                        "cfg": {
+                            "time": "1000"
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "SimpleElement",
+                        "content": "Female",
+                        "response": "female"
+                    }
+                ]
+            }, {
+                "type": "ChoiceList",
+                "id": "centerElement",
+                "plugins": [
+                    {
+                        "fn": "Position",
+                        "cfg": {
+                            "left": "300",
+                            "right": "300",
+                            "top": "300"
+                        }
+                    },
+                    {
+                        "fn": "HideAfter",
+                        "cfg": {
+                            "time": "0"
+                        }
+                    },
+                    {
+                        "fn": "ShowAfter",
+                        "cfg": {
+                            "time": "1500"
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "SimpleElement",
+                        "contentType": "img",
+                        "content": "/hectorPerplexe.png",
+                        "response": "male"
+                    },
+                    {
+                        "type": "SimpleElement",
+                        "contentType": "img",
+                        "content": "/jessicaPerplexe.png",
+                        "response": "female"
+                    }, {
+                        "type": "SimpleElement",
+                        "contentType": "img",
+                        "content": "/lucienPortrait.png",
+                        "response": "male"
+                    }, {
+                        "type": "SimpleElement",
+                        "contentType": "img",
+                        "content": "/danielaConfiant.png",
+                        "response": "female"
+                    }, {
+                        "type": "SimpleElement",
+                        "contentType": "img",
+                        "content": "/fernandPensif.png",
+                        "response": "male"
+                    }
+                ]
+            },
+            {
+                "type": "FlexitestsController",
+                "plugins": [
+                    {
+                        "fn": "Position",
+                        "cfg": {
+                            "right": "300",
+                            "left": "300",
+                            "bottom": "10"
+                        }
+                    }
+                ]
             }]
     },
     "1000": {

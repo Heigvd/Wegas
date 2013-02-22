@@ -100,17 +100,9 @@
             "cssClass": "editor-tab",
             "children": [{
                 "type": "Tab",
-                "label": "Your games",
+                "label": "Game models",
                 "children": [{
-                    "type": "LobbyTreeView",
-                    "dataSource": "RegisteredGames",
-                    "emptyMessage": "You are not registered in any game."
-                }]
-            }, {
-                "type": "Tab",
-                "label": "Your game models",
-                "children": [{
-                    "type": "EditorTreeView",
+                    "type": "GameModelTreeView",
                     "dataSource": "GameModel",
                     "plugins": [{
                         "fn": "WidgetToolbar",
@@ -134,19 +126,39 @@
             "cssClass": "editor-tab",
             "children": [{
                 "type": "Tab",
-                "label": "Join a game",
+                "id": "joinedGamesTab",
+                "label": "Joined games",
                 "children": [{
-                    "type": "JoinGameWidget"
+                    "type": "LobbyTreeView",
+                    "dataSource": "RegisteredGames",
+                    "emptyMessage": "You are not registered in any game.",
+                    "plugins": [{
+                        "fn": "WidgetToolbar",
+                        "cfg": {
+                            "children": [{
+                                "type": "Button",
+                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Join game",
+                                "plugins": [{
+                                    "fn": "OpenTabAction",
+                                    "cfg": {
+                                        "tabSelector": "#rightTabView",
+                                        "wchildren": [{
+                                            "type": "JoinGameWidget"
+                                        }]
+                                    }
+                                }]
+                            }]
+                        }
+                    }]
                 }]
             }, {
                 "id": "gamesTreeViewTab",
                 "type": "Tab",
-                "label": "Games",
-                "visible": false,
+                "label": "Created games",
                 "children": [{
-                    "type": "EditorTreeView",
+                    "type": "GameTreeView",
                     "dataSource": "Game",
-                    "emptyMessage": "Click in the left column to select a game.",
+                    "emptyMessage": "You have not created any game yet",
                     "plugins": [{
                         "fn": "WidgetToolbar",
                         "cfg": {
@@ -154,8 +166,7 @@
                                 "type": "NewEntityButton",
                                 "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
                                 "targetClass": "Game",
-                                "dataSource": "Game",
-                                "disabled": true
+                                "dataSource": "Game"
                             }]
                         }
                     }]
