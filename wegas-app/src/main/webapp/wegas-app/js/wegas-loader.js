@@ -516,6 +516,12 @@ YUI().use(function(Y) {
                     path: 'wegas-book/js/wegas-book-dice-min.js',
                     ws_provides: "Dice"
                 },
+                /**monopoly**/
+                'wegas-monopoly': {
+                    path: 'wegas-monopoly/js/wegas-monopoly-pion-min.js',
+                    requires: ['wegas-monopoly-pion', 'wegas-book-dice', 'wegas-button'],
+                    ws_provides: "Pion"
+                },
                 /**CEP**/
                 'wegas-cep': {
                     path: 'wegas-cep/js/wegas-cep-folder-min.js',
