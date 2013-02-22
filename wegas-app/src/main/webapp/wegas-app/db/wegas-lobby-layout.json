@@ -129,7 +129,7 @@
                 "id": "joinedGamesTab",
                 "label": "Joined games",
                 "children": [{
-                    "type": "LobbyTreeView",
+                    "type": "JoinedGameTreeView",
                     "dataSource": "RegisteredGames",
                     "emptyMessage": "You are not registered in any game.",
                     "plugins": [{
@@ -156,7 +156,7 @@
                 "type": "Tab",
                 "label": "Created games",
                 "children": [{
-                    "type": "GameTreeView",
+                    "type": "CreatedGameTreeView",
                     "dataSource": "Game",
                     "emptyMessage": "You have not created any game yet",
                     "plugins": [{
