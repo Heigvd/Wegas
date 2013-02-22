@@ -11,10 +11,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -47,6 +44,11 @@ public class GameModel extends NamedEntity {
     //@XmlID
     //@Pattern(regexp = "^\\w+$")
     private String name;
+    /**
+     *
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creationTime = new Date();
     /**
      *
      */

@@ -13,6 +13,8 @@ import com.wegas.core.persistence.variable.scope.TeamScope;
 import javax.naming.NamingException;
 import junit.framework.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,12 +22,12 @@ import org.junit.Test;
  */
 public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
-    // *** Constants *** //
-    final static private String VARIABLENAME = "test-variable";
-    final static private String VARIABLENAME2 = "test-variable2";
+    private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacadeTest.class);
 
     @Test
     public void testNumberDescriptor() throws NamingException {
+        final String VARIABLENAME = "test-variable";
+        final String VARIABLENAME2 = "test-variable2";
         final double VAL1 = 0;
         final double VAL2 = 1;
         final double VAL3 = 2;
@@ -63,6 +65,8 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testStringDescriptor() throws NamingException {
+        final String VARIABLENAME = "test-variable";
+        final String VARIABLENAME2 = "test-variable2";
         final String VALUE1 = "test-value";
         final String VALUE2 = "test-value2";
         final String VALUE3 = "test-value3";
@@ -101,6 +105,8 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     @Test
     public void testBooleanDescriptor() throws NamingException {
 
+        final String VARIABLENAME = "test-variable";
+        final String VARIABLENAME2 = "test-variable2";
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
@@ -133,8 +139,8 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
     public <T extends VariableDescriptor> T testVariableDescriptor(T descriptor1, T descriptor2)
             throws NamingException {
+        final String VARIABLENAME2 = "test-variable2";
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
         // Create the descriptor
         logger.info("" + descriptor1 + "*" + descriptor2);
