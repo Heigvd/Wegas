@@ -10,6 +10,12 @@
 }
 .wegas-pageeditor-designmode .wegas-choicelist{
     padding: 3px;
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.wegas-pageeditor-designmode .wegas-choicelist-hidden{
+    visibility: visible;
 }
 .wegas-choicelist-hidden{
     visibility: hidden;
