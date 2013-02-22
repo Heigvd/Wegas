@@ -36,10 +36,11 @@ public class UserFacadeTest {
     private static User u;
     private static Role roleP;
     private static Role roleR;
+    private static EJBContainer container;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        EJBContainer container = TestHelper.getEJBContainer();
+        container = TestHelper.getEJBContainer();
         userFacade = Helper.lookupBy(container.getContext(), UserFacade.class);
         roleFacade = Helper.lookupBy(container.getContext(), RoleFacade.class);
         accountFacade = Helper.lookupBy(container.getContext(), AccountFacade.class);
@@ -64,6 +65,7 @@ public class UserFacadeTest {
         userFacade.remove(u.getId());
         roleFacade.remove(roleP.getId());
         roleFacade.remove(roleR.getId());
+        container.close();
     }
 
     /**
