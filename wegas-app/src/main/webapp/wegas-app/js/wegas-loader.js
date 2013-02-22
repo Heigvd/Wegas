@@ -30,14 +30,17 @@ YUI().use(function(Y) {
                 'wegas-app': {
                     path: 'wegas-app/js/wegas-app-min.js',
                     requires: [
-                        'wegas-entity', 'wegas-datasourcerest', 'wegas-scripteval',
-                        'wegas-pageloader', 'wegas-button'
-                                // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
+                        'wegas-helper', 'wegas-entity', 'wegas-datasourcerest',
+                        'wegas-scripteval', 'wegas-pageloader', 'wegas-button'
+                        // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                     ]
                 },
                 'wegas-appcss': {
                     path: 'wegas-app/css/wegas-app.css',
                     type: 'css'
+                },
+                'wegas-helper': {
+                    path: 'wegas-app/js/util/wegas-helper-min.js'
                 },
                 'wegas-editable': {
                     path: 'wegas-app/js/util/wegas-editable-min.js',
