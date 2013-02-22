@@ -66,11 +66,19 @@ YUI.add('wegas-helper', function(Y) {
          * @function
          * @static
          * @argument {Number} timestamp
-         * @argument {String} fmt the format to apply, ex. '%d.%M.%Y at %H:%m:%s'
+         * @argument {String} fmt the format to apply, ex. '%d.%M.%Y at %H:%i:%s' <br />
+         * d	Day of the month, 2 digits with leading zeros <br />
+         * m	Numeric representation of a month, with leading zeros <br />
+         * M	A short textual representation of a month, three letters <br />
+         * Y	A full numeric representation of a year, 4 digits <br />
+         * H	24-hour format of an hour with leading zeros <br />
+         * i	Minutes with leading zeros <br />
+         * s	Seconds, with leading zeros <br />
          * @returns {String} formated date
          */
         formatDate: function(timestamp, fmt) {
-            var date = new Date(timestamp);
+            var date = new Date(timestamp),
+            months = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
             function pad(value) {
                 return (value.toString().length < 2) ? '0' + value : value;
@@ -80,12 +88,14 @@ YUI.add('wegas-helper', function(Y) {
                     case 'Y':
                         return date.getFullYear();
                     case 'M':
+                        return months[date.getMonth()];
+                    case 'm':
                         return pad(date.getMonth() + 1);
                     case 'd':
                         return pad(date.getDate());
                     case 'H':
                         return pad(date.getHours());
-                    case 'm':
+                    case 'i':
                         return pad(date.getMinutes());
                     case 's':
                         return pad(date.getSeconds());
@@ -106,7 +116,6 @@ YUI.add('wegas-helper', function(Y) {
         smartDate: function (timestamp) {
             var date = new Date(timestamp),
             now = new Date(),
-            diff = new Date(now.getTime() - timestamp),
             diffN = now.getTime() - timestamp,
             oneMinute = 60 * 1000,
             oneHour = 60 * oneMinute,
@@ -118,21 +127,21 @@ YUI.add('wegas-helper', function(Y) {
                 return "undefined";
             }
 
-            if (diffN <  oneMinute) {
-                return diff.getUTCSeconds() + " seconds ago";
-            } else if (diffN <  oneHour) {
-                return diff.getUTCMinutes() + " minutes ago";
-            } else if (diffN <  oneDay
-                && now.getUTCDay() === date.getUTCDay()) {                                       // Today
-                //return diff.getUTCHours() + " hours ago";
-                return Helper.formatDate(timestamp, "%H:%m");
-//            } else {if (diffN <  30 * 24 * 60 * 60 * 1000) {                     // last month
-//                return diff.getUTCDay() + " days ago";
-//            } else if (diffN <  oneMonth) {
-//                return Math.round(diff / oneMonth) + " month ago";
-            } else {
-                return Helper.formatDate(timestamp, "%H:%m");
-                return Math.round(diff / oneYear) + " years ago";
+            if (diffN <  oneMinute) {                                           // last minute
+                return diffN / oneSecond + " seconds ago";
+
+            } else if (diffN <  oneHour) {                                      // last hour
+                return  Math.round(diffN / oneMinute) + " minutes ago";
+
+            } else if (diffN < oneDay
+                && now.getDay() === date.getDay()) {                            // Today
+                return Helper.formatDate(timestamp, "%H:%i");
+
+            } else if (date.getYear() === now.getYear()) {                      // This year
+                return Helper.formatDate(timestamp, "%d %M");
+
+            }else {
+                return Helper.formatDate(timestamp, "%d %M %Y");
             }
 
         }

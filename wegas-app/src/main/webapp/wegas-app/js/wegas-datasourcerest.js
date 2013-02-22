@@ -255,6 +255,8 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 cache[i].destroy();
             }
             cache.length = 0;
+
+            this.get("host").fire("update");
         },
 
         /**
