@@ -343,6 +343,11 @@ YUI().use(function(Y) {
                     requires: ['inputex-list', 'inputex-field', "inputex-checkbox", "wegas-inputex-roleselect"],
                     ws_provides: 'RolePermissionList'
                 },
+                'wegas-inputex-gamemodelselect': {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-gamemodelselect-min.js',
+                    requires: ['inputex-select'],
+                    ix_provides: 'gamemodelselect'
+                },
                 'wegas-inputex-roleselect': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-roleselect-min.js',
                     requires: ['inputex-select'],
@@ -427,7 +432,7 @@ YUI().use(function(Y) {
                 'wegas-editor-treeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-treeview-min.js',
                     requires: ['wegas-widget', "treeview", "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
-                    ws_provides: ['EditorTreeView', "LobbyTreeView"]
+                    ws_provides: ['EditorTreeView', "JoinedGameTreeView"]
                 },
                 'wegas-editor-treeviewcss': {
                     path: 'wegas-editor/css/wegas-editor-treeview.css',

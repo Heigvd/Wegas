@@ -109,6 +109,19 @@ public class GameController {
     }
 
     /**
+     * Same as above, but take the parent game model id from a path param
+     *
+     * @param gameModelId
+     * @param entity
+     * @return
+     */
+    @POST
+    @Path("{gmId : [1-9][0-9]*}")
+    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) {
+        return this.create(gameModelId, entity);
+    }
+
+    /**
      *
      * @param entityId
      * @param entity
