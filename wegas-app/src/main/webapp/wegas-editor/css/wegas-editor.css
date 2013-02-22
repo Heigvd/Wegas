@@ -435,3 +435,6 @@ body {
     background-image: url(../../wegas-app/images/loading-small.gif);
     background-repeat: no-repeat;
 }
+.wegas-pageeditor-designmode .timed-hidden-node{
+    visibility: visible;
+}
