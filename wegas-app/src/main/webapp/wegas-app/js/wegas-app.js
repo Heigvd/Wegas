@@ -160,7 +160,7 @@ YUI.add('wegas-app', function(Y) {
          * @description initPage methods
          */
         initPage: function() {
-            Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + App.genId(), {
+            Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + Y.Wegas.Helper.genId(), {
                 context: this,
                 on: {
                     success: function(id, o) {
