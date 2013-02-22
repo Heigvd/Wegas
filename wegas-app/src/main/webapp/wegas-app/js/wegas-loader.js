@@ -614,7 +614,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-flexitests-controller': {
                     path: "wegas-flexitests/js/wegas-flexitests-controller-min.js",
-                    requires: ["wegas-widget"],
+                    requires: ["wegas-absolutelayout"],
                     ws_provides: "FlexitestsController"
                 }
             }
