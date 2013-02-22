@@ -1,0 +1,32 @@
+{
+    "1": {
+        "id": 1,
+        "label": "Main layout",
+        "type": "List",
+        "cssClass": "layout wegas-monopoly",
+        "children": [
+        {
+            "label": "game",
+            "type": "List",
+            "cssClass": "header",
+            "direction": "horizontal",
+            "children": [
+            {
+                "type": "Button",
+                "label": "Restart",
+                "cssClass": "wegas-monopoly-restart"
+            },{
+                "type": "Pion",
+                "label": "Roll",
+                "cssClass": "wegas-monopoly-roll"
+            }, {
+                "type": "VariableDisplay",
+                "label": "Money",
+                "view": "text",
+                "variable": {
+                    "name": "money"
+                }
+            }]
+        }]
+    }
+}
