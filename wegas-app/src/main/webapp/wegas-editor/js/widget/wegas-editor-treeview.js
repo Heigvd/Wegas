@@ -562,16 +562,16 @@ YUI.add('wegas-editor-treeview', function (Y) {
          */
         bindUI: function () {
             this.treeView.on("*:click", function (e) {
-                var data = e.node.get("data"),
+                var entity = e.node.get("data.entity"),
                 sourceUri = "rest/GameModel//Game",                             // If click on "All game models" node
                 registeredGamesUri = "rest/RegisteredGames/" + Wegas.app.get("currentUser.id");
 
-                if (data) {                                                     // If click on a particular game model
-                    sourceUri = "rest/GameModel/" + data.entity.get(ID) + "/Game";
-                    registeredGamesUri += "/" + data.entity.get(ID);
+                if (entity) {                                                   // If click on a particular game model
+                    sourceUri = "rest/GameModel/" + entity.get(ID) + "/Game";
+                    registeredGamesUri += "/" + entity.get(ID);
 
                 }
-                GameModelTreeView.currentGameModel = data.entity;
+                GameModelTreeView.currentGameModel = entity;
 
                 //var entity = this.get("entity"),
                 //tabCfg = {
