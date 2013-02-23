@@ -106,7 +106,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     public void create(User user) {
         try {
             accountFacade.findByEmail(user.getMainAccount().getEmail());
-            throw new WegasException("This email is already associated with an?existing account.");
+            throw new WegasException("This email is already associated with an existing account.");
         } catch (PersistenceException e) {
             // GOTCHA
         }
