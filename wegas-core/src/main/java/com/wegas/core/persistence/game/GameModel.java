@@ -87,6 +87,11 @@ public class GameModel extends NamedEntity {
     //@Column(columnDefinition = "BLOB NOT NULL")
     private Map<String, String> scriptLibrary = new HashMap<>();
     /**
+     *
+     */
+    @ElementCollection(fetch = FetchType.LAZY)
+    private Map<String, String> properties = new HashMap<>();
+    /**
      * @fixme temporary solutions to store pages
      */
     private String cssUri;
@@ -320,5 +325,37 @@ public class GameModel extends NamedEntity {
      */
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
+    }
+
+    /**
+     * @return the properties
+     */
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public String getProperty(String key) {
+        return this.properties.get(key);
+    }
+
+    /**
+     *
+     * @param key
+     * @param value
+     */
+    public void setProperty(String key, String value) {
+        this.properties.put(key, value);
     }
 }

@@ -152,6 +152,11 @@ YUI.add('wegas-entity', function(Y) {
             name: {
                 type: STRING
             },
+            properties: {
+                _inputex: {
+                    _type: "object"
+                }
+            },
             games: {
                 type: ARRAY,
                 value: [],

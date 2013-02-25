@@ -18,7 +18,8 @@ YUI.add('wegas-widgettoolbar', function (Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var  WidgetToolbar = function () {
+    var  BOUNDINGBOX = "boundingBox", HOST ="host",
+    WidgetToolbar = function () {
         WidgetToolbar.superclass.constructor.apply(this, arguments);
     };
 
@@ -53,9 +54,9 @@ YUI.add('wegas-widgettoolbar', function (Y) {
          * @private
          */
         render: function () {
-            var i, host = this.get("host"),
+            var i, host = this.get(HOST),
             children = this.get("children");
-            host.get('boundingBox').addClass("wegas-hastoolbar")
+            host.get(BOUNDINGBOX).addClass("wegas-hastoolbar")
             .append('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
             host.get('contentBox').addClass("wegas-toolbar-sibling");
 
@@ -77,10 +78,10 @@ YUI.add('wegas-widgettoolbar', function (Y) {
                 widget = Y.Wegas.Widget.create(widget);
             }
             widget.render(this.get("header"));
-            widget.addTarget(this.get("host"));
+            widget.addTarget(this.get(HOST));
             return widget;
         },
-        
+
         /**
          * Returns a toolbar widget based on its index
          * @function
@@ -115,14 +116,14 @@ YUI.add('wegas-widgettoolbar', function (Y) {
                 lazyAdd: false,
                 value: false,
                 getter : function () {
-                    return this.get("host").get('boundingBox').one(".wegas-toolbar-header");
+                    return this.get(HOST).get(BOUNDINGBOX).one(".wegas-toolbar-header");
                 }
             },
             panel: {
                 lazyAdd: false,
                 value: false,
                 getter : function () {
-                    return this.get("host").get('boundingBox').one(".wegas-toolbar-panel");
+                    return this.get(HOST).get(BOUNDINGBOX).one(".wegas-toolbar-panel");
                 }
             }
         }
