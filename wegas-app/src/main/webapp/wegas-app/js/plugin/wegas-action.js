@@ -10,8 +10,9 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-action', function(Y) {
+    "use strict";
 
-    var Plugin = Y.Plugin, Wegas = Y.Wegas, HOST = "host";
+    var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas");
 
     "use strict";
 
@@ -21,7 +22,7 @@ YUI.add('wegas-action', function(Y) {
      *  @extends Y.Plugin
      *  @constructor
      */
-    function Plugin() {}
+    function WPlugin() {}
     Y.mix(Plugin.prototype, {});
     Y.mix(Plugin, {
         ATTRS: {
@@ -36,7 +37,7 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").Plugin = Plugin;
+    Wegas.Plugin = WPlugin;
 
     /**
      *  @name Y.Plugin.Action
@@ -73,7 +74,7 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-    Y.namespace("Plugin").Action = Action;
+    Plugin.Action = Action;
 
     /**
      *  @class
@@ -109,7 +110,7 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-    Y.namespace("Plugin").OpenUrlAction = OpenUrlAction;
+    Plugin.OpenUrlAction = OpenUrlAction;
 
 
     /**
@@ -159,7 +160,7 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-    Y.namespace("Plugin").OpenPageAction = OpenPageAction;
+    Plugin.OpenPageAction = OpenPageAction;
 
     /**
      *  @class
@@ -211,7 +212,7 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-    Y.namespace("Plugin").ExecuteScriptAction = ExecuteScriptAction;
+    Plugin.ExecuteScriptAction = ExecuteScriptAction;
 
     /**
      *  @class Show a message when the host widget is rendered, useful for welcome
@@ -240,6 +241,6 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-    Y.namespace("Plugin").PopupPlg = PopupPlg;
+    Plugin.PopupPlg = PopupPlg;
 
 });
