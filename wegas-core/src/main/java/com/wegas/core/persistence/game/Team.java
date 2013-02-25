@@ -67,7 +67,7 @@ public class Team extends AbstractEntity {
      *
      */
     @Column(name = "parentgame_id", nullable = false, insertable = false, updatable = false)
-    private int gameId;
+    private Long gameId;
 
     /**
      *
@@ -184,7 +184,7 @@ public class Team extends AbstractEntity {
     /**
      * @return the gameId
      */
-    public int getGameId() {
+    public Long getGameId() {
         return gameId;
     }
 

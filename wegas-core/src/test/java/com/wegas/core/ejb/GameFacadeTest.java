@@ -7,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.sun.accessibility.internal.resources.accessibility;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -17,7 +16,6 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.List;
 import javax.naming.NamingException;
-import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;

@@ -19,7 +19,8 @@ YUI.add('wegas-cssloader', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var CSSLoader = Y.Base.create("wegas-cssloader", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    var Wegas = Y.Wegas,
+    CSSLoader = Y.Base.create("wegas-cssloader", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.CSSLoader */
 
         /**
@@ -27,22 +28,22 @@ YUI.add('wegas-cssloader', function(Y) {
          * @private
          */
         initializer: function() {
-            var i, css = Y.Wegas.app.get('cssStylesheets'),
-                cfg = {
-                    context: this,
-                    on : {
-                        success : function (tId, e) {
-                            CSSLoader.customCSSText = e.responseText;
-                            CSSLoader.customCSSStyleSheet = new Y.StyleSheet(e.responseText);
-                        },
-                        failure : function (id, o) {
-                            Y.error("initCSS(): Page CSS loading async call failed!", new Error("Loading failed"), "Y.Wegas.App");
-                        }
+            var i, css = Wegas.app.get('cssStylesheets'),
+            cfg = {
+                context: this,
+                on : {
+                    success : function (tId, e) {
+                        CSSLoader.customCSSText = e.responseText;
+                        CSSLoader.customCSSStyleSheet = new Y.StyleSheet(e.responseText);
+                    },
+                    failure : function (id, o) {
+                        Y.error("initCSS(): Page CSS loading async call failed!", new Error("Loading failed"), "Y.Wegas.App");
                     }
-                };
+                }
+            };
 
             for (i = 0; i < css.length; i += 1) {
-                Y.io(Y.Wegas.app.get('base') + css[i] + '?id=' + Y.Wegas.Helper.genId(), cfg);  // Load the page css
+                Y.io(Wegas.app.get('base') + css[i] + '?id=' + Wegas.Helper.genId(), cfg);  // Load the page css
             }
         }
     }, {
