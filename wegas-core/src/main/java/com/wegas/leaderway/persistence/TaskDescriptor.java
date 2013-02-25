@@ -52,7 +52,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
-    private Map<String, WRequirement> requierements = new HashMap<>();
+    private Map<String, WRequirement> requirements = new HashMap<>();
     /**
      *
      * @param a
@@ -65,7 +65,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         this.setIndex(other.getIndex());
         this.predecessors.addAll(other.getPredecessors());
         this.properties.putAll(other.getProperties());
-        this.requierements.putAll(other.getRequierements());
+        this.requirements.putAll(other.getRequirements());
     }
 
     /**
@@ -125,17 +125,17 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
     
     /**
-     * @return the requierements
+     * @return the requirements
      */
-    public Map<String, WRequirement> getRequierements() {
-        return this.requierements;
+    public Map<String, WRequirement> getRequirements() {
+        return this.requirements;
     }
     
     /**
      * @param requierement the requierement to set
      */
-    public void setRequierements(Map<String, WRequirement> requierements) {
-        this.requierements = requierements;
+    public void setRequirements(Map<String, WRequirement> requirements) {
+        this.requirements = requirements;
     }
     
     /**
@@ -143,8 +143,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @param key
      * @return WRequirement
      */
-    public WRequirement getRequierement(String key) {
-        return this.requierements.get(key);
+    public WRequirement getRequirement(String key) {
+        return this.requirements.get(key);
     }
 
     /**
@@ -152,8 +152,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @param key
      * @param WRequirement
      */
-    public void setRequierement(String key, WRequirement val) {
-        this.requierements.put(key, val);
+    public void setRequirement(String key, WRequirement val) {
+        this.requirements.put(key, val);
     }
 
     /**

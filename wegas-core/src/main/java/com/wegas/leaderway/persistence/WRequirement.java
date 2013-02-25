@@ -63,14 +63,14 @@ public class WRequirement implements Serializable  {
     /**
      * @return the needs
      */
-    public Map getNeeds() {
+    public Map<Integer, Integer> getNeeds() {
         return needs;
     }
 
     /**
      * @param needs the needs to set
      */
-    public void setNeeds(Map needs) {
+    public void setNeeds(Map<Integer, Integer> needs) {
         this.needs = needs;
     }
     

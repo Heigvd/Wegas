@@ -309,7 +309,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 //
 //
 //        //test
-//        assertEquals(((TaskDescriptor) vdf.find(task.getId())).getRequierements().get("engineer").getId(),
+//        assertEquals(((TaskDescriptor) vdf.find(task.getId())).getRequirements().get("engineer").getId(),
 //                ((ResourceInstance) vif.find(res.getId(), player)).getActivities().get(0).getWrequirement().getId());
 //
 //        // Clean
