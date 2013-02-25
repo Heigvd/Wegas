@@ -11,7 +11,9 @@ import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -54,16 +56,36 @@ public class Game extends NamedEntity {
     /**
      *
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime = new Date();
+    /**
+     *
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedTime = new Date();
+    /**
+     *
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User createdBy;
+    /**
+     *
+     */
     @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("game-team")
     private List<Team> teams = new ArrayList<>();
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "gamemodelid")
     // @JsonBackReference
     private GameModel gameModel;
+    /**
+     *
+     */
+    @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
+    private Long gameModelId;
 
     /**
      *
@@ -104,6 +126,7 @@ public class Game extends NamedEntity {
             t.addPlayer(new Player("Test player"));
             this.addTeam(t);
         }
+        this.setUpdatedTime(new Date());
     }
 
     @Override
@@ -216,5 +239,61 @@ public class Game extends NamedEntity {
      */
     public void setToken(String token) {
         this.token = token;
+    }
+
+    /**
+     * @return the createdTime
+     */
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    /**
+     * @param createdTime the createdTime to set
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    /**
+     * @return the updatedTime
+     */
+    public Date getUpdatedTime() {
+        return updatedTime;
+    }
+
+    /**
+     * @param updatedTime the updatedTime to set
+     */
+    public void setUpdatedTime(Date updatedTime) {
+        this.updatedTime = updatedTime;
+    }
+
+    /**
+     * @return the creator
+     */
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    /**
+     * @param creator the creator to set
+     */
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    /**
+     * @return the gameModelId
+     */
+    public Long getGameModelId() {
+        return gameModelId;
+    }
+
+    /**
+     * @param gameModelId the gameModelId to set
+     */
+    public void setGameModelId(Long gameModelId) {
+        this.gameModelId = gameModelId;
     }
 }

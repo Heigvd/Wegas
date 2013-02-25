@@ -18,6 +18,7 @@ import com.wegas.core.exception.WegasException;
 import com.wegas.mcq.persistence.*;
 import java.util.HashMap;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
+@LocalBean
 public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescriptor> {
 
     static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);

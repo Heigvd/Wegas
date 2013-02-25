@@ -153,46 +153,6 @@ body {
     height: auto;
 }
 
-/* Editor treeview styles */
-.wegas-editor-treeview .yui3-treenode-content-header,
-.wegas-editor-treeview .yui3-treeleaf-content-header {
-    cursor:pointer;
-}
-.wegas-editor-treeview .wegas-treeview-editmenubutton {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 2px -334px no-repeat;
-    margin: 2px 5px;
-    display: inline-block;
-}
-
-/* Editor treeview icons */
-.wegas-icon-game,
-.wegas-icon-gamemodel,
-.wegas-icon-team,
-.wegas-icon-player,
-.wegas-icon-variabledescriptor {
-    margin: -4px 0 -6px;
-    height: 24px;
-}
-.yui3-skin-sam .wegas-icon-gamemodel {
-    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -514px no-repeat;
-}
-.yui3-skin-sam .wegas-icon-game {
-    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -550px no-repeat;
-
-}
-.yui3-skin-sam .wegas-icon-team {
-    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -621px no-repeat;
-}
-.yui3-skin-sam .wegas-icon-player {
-    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -590px no-repeat;
-}
-.wegas-icon-variabledescriptor {
-    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -974px no-repeat;
-}
-
 /* Panel Widget Styles */
 .yui3-panel-hidden {
     display: none;                                                              /* added to the defaulty yui3 visibility: hidden */
@@ -256,8 +216,9 @@ body {
     position: relative;
     min-width: 20px;
     min-height: 20px;
-    margin: 2px !important;
+    margin: 1px !important;
     -webkit-transition: margin 2s;
+    cursor:pointer;
 }
 .wegas-pageeditor-designmode .wegas-list,
 .wegas-pageeditor-designmode .wegas-pageloader{
@@ -397,4 +358,7 @@ body {
 .loading-icon{
     background-image: url(../../wegas-app/images/loading-small.gif);
     background-repeat: no-repeat;
+}
+.wegas-pageeditor-designmode .timed-hidden-node{
+    visibility: visible;
 }

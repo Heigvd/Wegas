@@ -49,7 +49,7 @@ YUI.add('wegas-proggame-level', function (Y) {
         renderUI: function () {
             var cb = this.get( CONTENTBOX );
 
-            cb.one( ".ai" ).append( Y.Wegas.App.nl2br(this.get( "ai" )) );
+            cb.one( ".ai" ).append( Y.Wegas.Helper.nl2br(this.get( "ai" )) );
             cb.one( ".topcenter h1" ).setHTML(this.get( "label" ));
 
             cb.one(".api").append(this.get("api")+"*");
@@ -226,7 +226,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                     p = Y.Node.create( '<div class="missile"></div>' ),     // Create a missile
                     source = cb.one( "." + object.id ),                     // Retrieve the source node (the object which fired)
                     to = source.getXY();
-                    
+
                     switch ( object.direction ) {
                         case 1:
                             to[1] -= GRIDSIZE * 3;

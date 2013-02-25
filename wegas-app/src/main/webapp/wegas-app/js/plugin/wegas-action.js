@@ -10,6 +10,9 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-action', function(Y) {
+
+    var Plugin = Y.Plugin, Wegas = Y.Wegas, HOST = "host";
+
     "use strict";
 
     /**
@@ -43,7 +46,7 @@ YUI.add('wegas-action', function(Y) {
      *  @class
      *  @constructor
      */
-    var Action = Y.Base.create("wegas-actionplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    var Action = Y.Base.create("wegas-actionplugin", Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Action */
 
         /**
@@ -85,7 +88,7 @@ YUI.add('wegas-action', function(Y) {
     Y.extend(OpenUrlAction, Action, {
 
         execute: function() {
-            var targetUrl = Y.Wegas.app.get("base") + this.get("url");
+            var targetUrl = Wegas.app.get("base") + this.get("url");
 
             if (this.get("target") === "blank") {
                 window.open(targetUrl);
@@ -124,17 +127,17 @@ YUI.add('wegas-action', function(Y) {
         initializer: function() {
             OpenPageAction.superclass.initializer.apply(this, arguments);
             this.afterHostEvent("render", function() {
-                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                var targetPageLoader = Wegas.PageLoader.find(this.get('targetPageLoaderId'));
                 if (targetPageLoader.get("pageId") === this.get("subpageId")) {
-                    this.get("host").set("selected", 1);
+                    this.get(HOST).set("selected", 1);
                 }
             }, this);
         },
 
         execute: function() {
-            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+            var targetPageLoader = Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             targetPageLoader.set("pageId", this.get("subpageId"));
-            this.get("host").set("selected", 1);
+            this.get(HOST).set("selected", 1);
         }
     }, {
         NS: "OpenPageAction",
@@ -170,14 +173,14 @@ YUI.add('wegas-action', function(Y) {
     Y.extend(ExecuteScriptAction, Action, {
 
         execute: function() {
-            var host = this.get("host"), overlayGuest, guest = host.get("root");
+            var host = this.get(HOST), overlayGuest, guest = host.get("root");
             if (guest.showOverlay && guest.hideOverlay) {
                 overlayGuest = guest;
                 overlayGuest.showOverlay();
             }
 
-            Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+            Wegas.VariableDescriptorFacade.rest.sendRequest({
+                request: "/Script/Run/Player/" + Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify(this.get("onClick"))
@@ -220,11 +223,11 @@ YUI.add('wegas-action', function(Y) {
     var PopupPlg = function() {
         PopupPlg.superclass.constructor.apply(this, arguments);
     };
-    Y.extend(PopupPlg, Y.Plugin.Base, {
+    Y.extend(PopupPlg, Plugin.Base, {
 
         initializer: function() {
             this.afterHostEvent("render", function() {
-                this.get("host").showMessage("info", this.get("content"));
+                this.get(HOST).showMessage("info", this.get("content"));
             });
         }
     }, {

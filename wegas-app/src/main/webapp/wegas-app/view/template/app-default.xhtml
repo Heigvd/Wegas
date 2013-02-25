@@ -98,7 +98,8 @@
                     //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
                     //YUI_config.loadOptional = true;
 
-                    var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
+                    var base = "#{request.requestURL
+                            .substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
                     comboBase = base + '/rest/combo?';
                     function setupLocalPath (groupName) {
                         YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path

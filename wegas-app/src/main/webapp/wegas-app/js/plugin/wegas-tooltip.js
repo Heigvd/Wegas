@@ -12,7 +12,7 @@
 YUI.add('wegas-tooltip', function (Y) {
     "use strict";
 
-    var TooltipPlg, Tooltip, Lang = Y.Lang,
+    var Wegas = Y.Wegas, TooltipPlg, Tooltip, Lang = Y.Lang,
     Node = Y.Node,
     OX = -10000,
     OY = -10000;
@@ -25,7 +25,7 @@ YUI.add('wegas-tooltip', function (Y) {
      *  @augments Y.Wegas.Editable
      *  @constructor
      */
-    TooltipPlg = Y.Base.create("wegas-tooltipplugin", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    TooltipPlg = Y.Base.create("wegas-tooltipplugin", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Tooltip# */
 
         /**

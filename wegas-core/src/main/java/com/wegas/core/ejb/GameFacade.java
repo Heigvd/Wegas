@@ -8,15 +8,15 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.exception.WegasException;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Game_;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.GuestAccount;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -70,6 +70,53 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     /**
+     *
+     * @param gameModelId
+     * @param game
+     */
+    public void create(final Long gameModelId, final Game game) {
+
+        if (this.findByToken(game.getToken()) != null
+                || teamFacade.findByToken(game.getToken()) != null) {
+            throw new WegasException("This token is already in use.");
+        }
+
+        final User currentUser = userFacade.getCurrentUser();
+
+        if (!(currentUser.getMainAccount() instanceof GuestAccount)) {       // @hack @fixme, guest are not stored in the db so link wont work
+            game.setCreatedBy(currentUser);
+        }
+
+        GameModel gameModel = gameModelEntityFacade.find(gameModelId);
+        gameModel.addGame(game);
+
+        currentUser.getMainAccount().addPermission("Game:Edit:g" + game.getId());
+        currentUser.getMainAccount().addPermission("Game:View:g" + game.getId());
+
+        super.create(game);
+    }
+
+    @Override
+    public Game update(final Long entityId, final Game entity) {
+        if ((this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)
+                || teamFacade.findByToken(entity.getToken()) != null) {
+            throw new WegasException("This token is already in use.");
+        }
+        return super.update(entityId, entity);
+    }
+
+    @Override
+    public void remove(final Game entity) {
+        for (Team t : entity.getTeams()) {
+            teamFacade.remove(t);
+        }
+        super.remove(entity);
+
+        userFacade.deleteAccountPermissionByInstance("g" + entity.getId());
+        userFacade.deleteRolePermissionsByInstance("g" + entity.getId());
+    }
+
+    /**
      * Search for a game with token
      *
      * @param token
@@ -88,52 +135,58 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
     }
 
-    /**
-     *
-     * @param gameModelId
-     * @param game
-     */
-    public void create(Long gameModelId, Game game) {
-        if (this.findByToken(game.getToken()) != null
-                || teamFacade.findByToken(game.getToken()) != null) {
-            throw new WegasException("This token is already in use.");
-        }
-        GameModel gameModel = gameModelEntityFacade.find(gameModelId);
-        gameModel.addGame(game);
-
-        userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + game.getId());
-        userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + game.getId());
-
-        super.create(game);
-    }
-
-    @Override
-    public Game update(final Long entityId, Game entity) {
-        if ((this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)
-                || teamFacade.findByToken(entity.getToken()) != null) {
-            throw new WegasException("This token is already in use.");
-        }
-        return super.update(entityId, entity);
-    }
-
-    @Override
-    public void remove(Game entity) {
-        for (Team t : entity.getTeams()) {
-            teamFacade.remove(t);
-        }
-        super.remove(entity);
-
-        userFacade.deleteAccountPermissionByInstance("g" + entity.getId());
-        userFacade.deleteRolePermissionsByInstance("g" + entity.getId());
+    public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
+        final Query getByGameId =
+                em.createQuery("SELECT game FROM Game game WHERE game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC");
+        getByGameId.setParameter("gameModelId", gameModelId);
+        //getByGameId.setParameter("orderBy", orderBy);
+        return getByGameId.getResultList();
     }
 
     /**
      *
      * @return
      */
-    @Override
-    public EntityManager getEntityManager() {
-        return em;
+    public List<Game> findAll(final String orderBy) {
+        final Query getByGameId = em.createQuery("SELECT game FROM Game game ORDER BY game.createdTime DESC");
+        //getByGameId.setParameter("orderBy", orderBy);
+        return getByGameId.getResultList();
+    }
+
+    public List<Game> findRegisteredGames(final Long userId) {
+        final Query getByGameId =
+                em.createQuery("SELECT game, p FROM Game game "
+                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
+                + "WHERE t.gameId = game.id AND p.teamId = t.id "
+                + "AND p.user.id = :userId "
+                + "ORDER BY p.joinTime DESC");
+        getByGameId.setParameter("userId", userId);
+
+        return this.findRegisterdGames(getByGameId);
+    }
+
+    public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
+        final Query getByGameId =
+                em.createQuery("SELECT game, p FROM Game game "
+                + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
+                + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
+                + "ORDER BY p.joinTime DESC");
+        getByGameId.setParameter("userId", userId);
+        getByGameId.setParameter("gameModelId", gameModelId);
+
+        return this.findRegisterdGames(getByGameId);
+    }
+
+    private List<Game> findRegisterdGames(final Query q) {
+        final List<Game> games = new ArrayList<>();
+        for (Object ret : q.getResultList()) {                                  // @hack Replace created time by player joined time
+            final Object[] r = (Object[]) ret;
+            final Game game = (Game) r[0];
+            this.em.detach(game);
+            game.setCreatedTime(((Player) r[1]).getJoinTime());
+            games.add(game);
+        }
+        return games;
     }
 
     /**
@@ -142,11 +195,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param userId
      * @return Collection<Game>
      */
-    public Collection<Game> getPublicGames(final Long userId) {
+    public Collection<Game> findPublicGames(final Long userId) {
         final String PREFIX = "Game:View:g";
         final Role pRolle = roleFacade.findByName("Public");
-        final Collection<Game> registerdGame = userFacade.registeredGames(userId);
-        Collection<Game> games = new ArrayList<>();
+        final Collection<Game> registerdGame = this.findRegisteredGames(userId);
+        final Collection<Game> games = new ArrayList<>();
 
         for (String permission : pRolle.getPermissions()) {
             if (permission.startsWith(PREFIX)) {
@@ -159,5 +212,14 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             }
         }
         return games;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public EntityManager getEntityManager() {
+        return em;
     }
 }

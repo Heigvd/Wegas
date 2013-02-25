@@ -69,7 +69,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                 value: "//Put your code here..."
             });
 
-            cb.one(".ai").append(Y.Wegas.App.nl2br(this.findObject("Enemy").ai || "<center><i>empty</i></center>"));
+            cb.one(".ai").append(Y.Wegas.Helper.nl2br(this.findObject("Enemy").ai || "<center><i>empty</i></center>"));
             cb.one(".topcenter h1").setHTML(this.get("label"));
             cb.one(".arguments").setHTML(this.get("arguments").join(", "));
 

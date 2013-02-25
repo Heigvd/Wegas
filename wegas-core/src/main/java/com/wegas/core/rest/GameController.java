@@ -8,7 +8,6 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
@@ -18,9 +17,9 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -32,16 +31,11 @@ import org.apache.shiro.subject.Subject;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : [1-9][0-9]*}/Game/")
+@Path("GameModel/{gameModelId : ([1-9][0-9]*)?}/Game/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GameController {
 
-    /**
-     *
-     */
-    @EJB
-    private GameModelFacade gameModelEntityFacade;
     /**
      *
      */
@@ -83,16 +77,20 @@ public class GameController {
      * @return
      */
     @GET
-    public Collection<Game> index(@PathParam("gameModelId") Long gameModelId) {
-        Collection<Game> games = new ArrayList<>();
-        Subject s = SecurityUtils.getSubject();
+    public Collection<Game> index(@PathParam("gameModelId") String gameModelId) {
+        final Collection<Game> retGames = new ArrayList<>();
+        final Subject s = SecurityUtils.getSubject();
+        final Collection<Game> games = (!gameModelId.isEmpty())
+                ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
+                : gameFacade.findAll("createdTime ASC");
 
-        for (Game g : gameModelEntityFacade.find(gameModelId).getGames()) {
+        for (Iterator<Game> it = games.iterator(); it.hasNext();) {
+            Game g = it.next();
             if (s.isPermitted("Game:Edit:g" + g.getId())) {
-                games.add(g);
+                retGames.add(g);
             }
         }
-        return games;
+        return retGames;
     }
 
     /**
@@ -108,6 +106,19 @@ public class GameController {
 
         this.gameFacade.create(gameModelId, entity);
         return entity;
+    }
+
+    /**
+     * Same as above, but take the parent game model id from a path param
+     *
+     * @param gameModelId
+     * @param entity
+     * @return
+     */
+    @POST
+    @Path("{gmId : [1-9][0-9]*}")
+    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) {
+        return this.create(gameModelId, entity);
     }
 
     /**

@@ -42,10 +42,14 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
-    @EJB
-    private RequestFacade requestFacade;
+    /**
+     *
+     */
     @EJB
     private UserFacade userFacade;
+    /**
+     *
+     */
     @Inject
     private Event<ResetEvent> resetEvent;
 

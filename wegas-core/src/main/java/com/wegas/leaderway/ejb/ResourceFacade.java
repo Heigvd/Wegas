@@ -7,23 +7,16 @@
  */
 package com.wegas.leaderway.ejb;
 
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.leaderway.persistence.Activity;
 import com.wegas.leaderway.persistence.Assignment;
-import com.wegas.leaderway.persistence.ResourceDescriptor;
 import com.wegas.leaderway.persistence.ResourceInstance;
-import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.leaderway.persistence.TaskInstance;
-import com.wegas.leaderway.persistence.WRequirement;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,7 +26,6 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class ResourceFacade {
 
-    static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
     /**
      *
      */
@@ -45,11 +37,6 @@ public class ResourceFacade {
      */
     public ResourceFacade() {
     }
-    /**
-     *
-     */
-    @EJB
-    private VariableDescriptorFacade variableDescriptorFacade;
     /**
      *
      */
