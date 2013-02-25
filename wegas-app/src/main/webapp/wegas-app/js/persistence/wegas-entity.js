@@ -17,11 +17,11 @@ YUI.add('wegas-entity', function(Y) {
     BUTTON = "Button", VALUE = "value", TEXT = "text",
     IDATTRDEF = {
         type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
+        optional: true,                                                         // The id is optional for entites that have not been persisted
         _inputex: {
             _type: HIDDEN
         }
-    }, Wegas = Y.Wegas, Editable = Wegas.Editable, Entity;
+    }, Wegas = Y.namespace("Wegas"), Entity;
 
     /**
      * @class Entity is used to represent db objects
@@ -30,7 +30,7 @@ YUI.add('wegas-entity', function(Y) {
      * @augments Y.Wegas.Editable
      * @constructor
      */
-    Entity = Y.Base.create("Entity", Y.Base, [Editable], {}, {
+    Entity = Y.Base.create("Entity", Y.Base, [Wegas.Editable], {}, {
 
         _buildCfg: {
             //statics: ["EDITMENU"],
@@ -39,7 +39,7 @@ YUI.add('wegas-entity', function(Y) {
         //Entity.ENTITIES_HASH[Receiver.name] = true;
         //var c = Supplier.constructor;
         //while (!Receiver.EDITMENU && c) {
-        //    if (c.EDITMENU) {                                                  // Add to attributes
+        //    if (c.EDITMENU) {                                                 // Add to attributes
         //        Receiver.EDITMENU = c.EDITMENU
         //    }
         //    c = c.superclass ? c.superclass.constructor : null;
@@ -125,8 +125,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * ServerResponse mapper
      */
-    Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] =
-    Y.Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
+    Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Y.Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
         ATTRS: {
             entities: {
                 value: []
@@ -390,18 +389,7 @@ YUI.add('wegas-entity', function(Y) {
             plugins: [{
                 fn: "OpenGameAction"
             }]
-        },
-        //{            // We allow the player to open its pages with the widget
-        //    type: BUTTON,
-        //    label: "Open",
-        //    plugins: [{
-        //        fn: "OpenGameAction",
-        //        cfg: {
-        //            editorUrl: "wegas-app/view/play.html?"
-        //        }
-        //    }]
-        //},
-        {
+        }, {
             type: BUTTON,
             label: "Add player",
             cssClass: "editor-addPlayer-button",
@@ -415,6 +403,17 @@ YUI.add('wegas-entity', function(Y) {
             type: "DeleteEntityButton",
             cssClass: "editor-deleteTeam-button"
         }]
+
+        //{ // We allow the player to open its pages with the widget
+        //    type: BUTTON,
+        //    label: "Open",
+        //    plugins: [{
+        //        fn: "OpenGameAction",
+        //        cfg: {
+        //            editorUrl: "wegas-app/view/play.html?"
+        //        }
+        //    }]
+        //},
     });
 
     /**

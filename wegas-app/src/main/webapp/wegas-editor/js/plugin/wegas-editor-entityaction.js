@@ -12,7 +12,7 @@
 YUI.add('wegas-editor-entityaction', function (Y) {
     "use strict";
     var ENTITY = "entity", LABEL = "label",
-    Plugin = Y.Plugin, Action = Y.Plugin.Action, Wegas = Wegas, Lang = Y.Lang,
+    Plugin = Y.Plugin, Action = Y.Plugin.Action, Wegas = Y.Wegas, Lang = Y.Lang,
     EntityAction;
 
     /**
