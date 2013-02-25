@@ -9,10 +9,14 @@ package com.wegas.leaderway.ejb;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.leaderway.persistence.Activity;
 import com.wegas.leaderway.persistence.Assignment;
+import com.wegas.leaderway.persistence.ResourceDescriptor;
 import com.wegas.leaderway.persistence.ResourceInstance;
+import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.leaderway.persistence.TaskInstance;
+import com.wegas.leaderway.persistence.WRequirement;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -31,7 +35,7 @@ public class ResourceFacade {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
     /**
-     * 
+     *
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
@@ -93,13 +97,23 @@ public class ResourceFacade {
     }
 
     /**
-     * 
+     *
      * @param assignementId
-     * @param index 
+     * @param index
      */
     public void moveAssignment(final Long assignementId, final int index) {
         final Assignment assignement = this.em.find(Assignment.class, assignementId);
         assignement.getResourceInstance().getAssignments().remove(assignement);
         assignement.getResourceInstance().getAssignments().add(index, assignement);
     }
+//
+//    public void test(WRequirement requirement, Long taskId, Long resId, Player player) {
+//        TaskDescriptor td = this.em.find(TaskDescriptor.class, taskId);
+//        ResourceDescriptor rd = this.em.find(ResourceDescriptor.class, resId);
+//        td.setRequierement("engineer", requirement);
+//
+//        //assigne activity between resource to task and assigne Activity between requirement and resource
+//        Activity activity = this.assignActivity(rd.getInstance(player).getId(), td.getInstance(player).getId());
+//        activity.setWrequirement(requirement);
+//    }
 }

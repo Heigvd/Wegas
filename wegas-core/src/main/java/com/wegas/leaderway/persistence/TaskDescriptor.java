@@ -13,9 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -42,13 +45,13 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
-    @ElementCollection
-    @ManyToMany(cascade = {})
+    @ManyToMany
     private List<TaskDescriptor> predecessors = new ArrayList<>();
     /**
      *
      */
-    @ElementCollection
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @JoinColumn(referencedColumnName = "variabledescriptor_id")
     private Map<String, WRequirement> requierements = new HashMap<>();
     /**
      *
@@ -62,7 +65,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         this.setIndex(other.getIndex());
         this.predecessors.addAll(other.getPredecessors());
         this.properties.putAll(other.getProperties());
-        this.requierements.clear();
         this.requierements.putAll(other.getRequierements());
     }
 
@@ -128,12 +130,21 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     public Map<String, WRequirement> getRequierements() {
         return this.requierements;
     }
-
+    
     /**
      * @param requierement the requierement to set
      */
-    public void setSkillsets(Map<String, WRequirement> requierement) {
-        this.requierements = requierement;
+    public void setRequierements(Map<String, WRequirement> requierements) {
+        this.requierements = requierements;
+    }
+    
+    /**
+     * 
+     * @param key
+     * @return WRequirement
+     */
+    public WRequirement getRequierement(String key) {
+        return this.requierements.get(key);
     }
 
     /**
@@ -143,15 +154,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void setRequierement(String key, WRequirement val) {
         this.requierements.put(key, val);
-    }
-
-    /**
-     *
-     * @param key
-     * @return
-     */
-    public WRequirement getRequierements(String key) {
-        return this.requierements.get(key);
     }
 
     /**
