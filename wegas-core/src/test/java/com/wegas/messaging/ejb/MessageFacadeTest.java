@@ -1,33 +1,21 @@
 package com.wegas.messaging.ejb;
 
-import com.wegas.messaging.persistence.Message;
 import com.wegas.core.ejb.AbstractEJBTest;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
+import com.wegas.messaging.persistence.Message;
 import java.util.ArrayList;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
 /**
  *
  * @author Benjamin
  */
 public class MessageFacadeTest extends AbstractEJBTest {
-
-    public MessageFacadeTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
 
     /**
      * Test of listener method, of class MessageFacade.
@@ -53,7 +41,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         me.setMessage(msg);
         me.setPlayer(player);
         mf.listener(me);
-        
+
 
         //get inbox
         VariableDescriptor vd = vdf.findByName(player.getGameModel(), "inbox");

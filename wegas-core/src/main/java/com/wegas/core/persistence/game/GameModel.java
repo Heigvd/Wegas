@@ -11,10 +11,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -50,6 +47,11 @@ public class GameModel extends NamedEntity {
     /**
      *
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime = new Date();
+    /**
+     *
+     */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     @XmlTransient
     private List<VariableDescriptor> variableDescriptors;
@@ -74,7 +76,7 @@ public class GameModel extends NamedEntity {
     /**
      * Holds all the scripts contained in current game model.
      *
-     * @FIXME the @Lob annotation has no effect on ElementCollection and
+     * @FIXME the @Lob annotation has no effect on ElementCollection with
      * Postgresql
      *
      */
@@ -84,6 +86,11 @@ public class GameModel extends NamedEntity {
     //@Lob
     //@Column(columnDefinition = "BLOB NOT NULL")
     private Map<String, String> scriptLibrary = new HashMap<>();
+    /**
+     *
+     */
+    @ElementCollection(fetch = FetchType.LAZY)
+    private Map<String, String> properties = new HashMap<>();
     /**
      * @fixme temporary solutions to store pages
      */
@@ -304,5 +311,51 @@ public class GameModel extends NamedEntity {
             players.addAll(g.getPlayers());
         }
         return players;
+    }
+
+    /**
+     * @return the createdTime
+     */
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    /**
+     * @param createdTime the createdTime to set
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    /**
+     * @return the properties
+     */
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public String getProperty(String key) {
+        return this.properties.get(key);
+    }
+
+    /**
+     *
+     * @param key
+     * @param value
+     */
+    public void setProperty(String key, String value) {
+        this.properties.put(key, value);
     }
 }

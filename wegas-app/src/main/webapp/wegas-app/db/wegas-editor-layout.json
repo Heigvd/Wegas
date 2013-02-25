@@ -247,6 +247,8 @@
                         "MCQDescriptor": true
                     },
                     "plugins": [{
+                          "fn": "EditorTVNodeLoader"
+                    }, {
                         "fn": "WidgetToolbar",
                         "cfg": {
                             "children": [{

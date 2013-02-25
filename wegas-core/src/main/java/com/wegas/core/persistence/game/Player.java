@@ -9,6 +9,7 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.persistence.User;
+import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -41,10 +42,14 @@ public class Player extends AbstractEntity {
      */
     private String name;
     /**
+     *
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date joinTime = new Date();
+    /**
      * The game model this belongs to
      */
-    @ManyToOne
-    @NotNull
+    @ManyToOne(optional=false)
     @JsonBackReference(value = "player-team")
     @JoinColumn(name = "parentteam_id")
     //@XmlInverseReference(mappedBy = "players")
@@ -53,7 +58,7 @@ public class Player extends AbstractEntity {
      *
      */
     @Column(name = "parentteam_id", nullable = false, insertable = false, updatable = false)
-    private int teamId;
+    private Long teamId;
 
     /**
      *
@@ -132,7 +137,7 @@ public class Player extends AbstractEntity {
     /**
      * @return the teamId
      */
-    public int getTeamId() {
+    public Long getTeamId() {
         return teamId;
     }
 
@@ -189,5 +194,19 @@ public class Player extends AbstractEntity {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the joinTime
+     */
+    public Date getJoinTime() {
+        return joinTime;
+    }
+
+    /**
+     * @param joinTime the joinTime to set
+     */
+    public void setJoinTime(Date joinTime) {
+        this.joinTime = joinTime;
     }
 }

@@ -101,25 +101,12 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
-    /**
-     *
-     * @param userId
-     * @return
-     */
-    public List<Game> registeredGames(Long userId) {
-        User user = this.find(userId);
-        List<Game> ret = new ArrayList<>();
-        for (Player p : user.getPlayers()) {
-            ret.add(p.getGame());
-        }
-        return ret;
-    }
 
     @Override
     public void create(User user) {
         try {
             accountFacade.findByEmail(user.getMainAccount().getEmail());
-            throw new WegasException("This email is already associated with an?existing account.");
+            throw new WegasException("This email is already associated with an existing account.");
         } catch (PersistenceException e) {
             // GOTCHA
         }
