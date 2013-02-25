@@ -2,20 +2,34 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
  * @author Benjamin
  */
 @Entity
-public class WRequirement extends VariableInstance {
+@XmlRootElement
+@XmlType(name = "")                                                             // This forces to use Class's short name as type
+//@XmlAccessorType(XmlAccessType.FIELD)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+public class WRequirement implements Serializable  {
 
     private static final long serialVersionUID = 1L;
+    @Id
+    @Column(name="wrequirement_id")
+    @GeneratedValue
+    private Long id;
     /**
      *
      */
@@ -28,12 +42,6 @@ public class WRequirement extends VariableInstance {
     @ElementCollection
     private Map<Integer, Integer> needs = new HashMap<>();
 
-    @Override
-    public void merge(AbstractEntity a) {
-        WRequirement other = (WRequirement) a;
-        this.setLimit(other.getLimit());
-        this.setNeeds(other.getNeeds());
-    }
     
     public WRequirement () {
     }
@@ -78,5 +86,19 @@ public class WRequirement extends VariableInstance {
      */
     public void setNeed(Integer key, Integer value) {
         this.needs.put(key, value);
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 }

@@ -37,7 +37,7 @@ public class Activity extends AbstractAssignement {
     /**
      *
      */
-    @OneToOne(optional = true)
+    @OneToOne(optional = true, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "wrequirement_id", nullable = true)
     @XmlTransient
     private WRequirement wrequirement;
