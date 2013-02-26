@@ -133,8 +133,8 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
     }
     var i, j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),
             budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
-            clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskSkillKey, wish, hate,
-            taskSkillValue, listTaskSkill = taskInstance.getSkillset(), taskDuration = taskInstance.getDescriptor().defaultInstance.getDuration(), workerInstance,
+            clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskRequirementKey, wish, hate,
+            taskRequirementValue, listTaskRequirement = taskDescriptor.getRequirements(), taskDuration = taskInstance.getDescriptor().defaultInstance.getDuration(), workerInstance,
             workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,
             sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber, existingSkills = new Array(),
             punderationMoral = 0.1,
@@ -153,24 +153,24 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
         workerInstance = workersDescriptor[i].getInstance(self);
         moral = parseInt(workerInstance.getMoral());
         confidence = parseInt(workerInstance.getConfidence());
-        learningCoefficient = parseInt(workerInstance.getProperty('learningCoefficient'));
+        learningCoefficient = parseInt(workersDescriptor[i].getProperty('learningCoefficient'));
         totalExperience = 0;
-        from.push(workerInstance.getProperty('surname'));//for e-mail
-        for (j = 0; j < listTaskSkill.size(); j++) {
-            taskSkillKey = listTaskSkill.keySet().toArray()[j];
-            taskSkillValue = parseInt(listTaskSkill.get(taskSkillKey));
-            workerSkillsetValue = parseInt(workerInstance.getSkillset().get(taskSkillKey));
+        from.push(workersDescriptor[i].getProperty('surname'));//for e-mail
+        for (j = 0; j < listTaskRequirement.size(); j++) {
+            taskRequirementKey = listTaskRequirement.keySet().toArray()[j];
+            taskRequirementValue = parseInt(listTaskRequirement.get(taskRequirementKey).getNeeds().keySet().toArray()[0]); //@fixme take the first value only !
+            workerSkillsetValue = parseInt(workerInstance.getSkillset().get(taskRequirementKey));
             //calculate experience général (totalExperienceGained) part 1/2
-            if (workerSkillsetValue < taskSkillValue) {
-                totalExperience += (taskSkillValue - workerSkillsetValue) * taskDuration / workersDescriptor.length;
+            if (workerSkillsetValue < taskRequirementValue) {
+                totalExperience += (taskRequirementValue - workerSkillsetValue) * taskDuration / workersDescriptor.length;
             }
             //calculate experience in current skill
-            if (workerSkillsetValue < taskSkillValue) {
+            if (workerSkillsetValue < taskRequirementValue) {
                 skillExperience = Math.ceil((1 - workerSkillsetValue / 100) * 10 * learningCoefficient * taskDuration / workersDescriptor.length);
-                workerInstance.setSkillset(taskSkillKey, parseInt(workerInstance.getSkillset(taskSkillKey)) + skillExperience);
+                workerInstance.setSkillset(taskRequirementKey, parseInt(workerInstance.getSkillset(taskRequirementKey)) + skillExperience);
             }
             //calculate work Quality part 1/4
-            workPartSkillsQuality.push((workerSkillsetValue - taskSkillValue + 100) / 2);
+            workPartSkillsQuality.push((workerSkillsetValue - taskRequirementValue + 100) / 2);
         }
         //calculate experience général (totalExperienceGained) part 2/2
         workerInstance.setProperty('totalExperienceGained', parseInt(workerInstance.getProperty('totalExperienceGained')) + totalExperience);
@@ -180,18 +180,18 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
         }
         averageWorkPartSkills = (sumWorkPartSkills / workPartSkillsQuality.length) * punderationSkillsets + moral * punderationMoral + confidence * punderationConfidence;
         // check wish and hate
-        for (j = 0; j < listTaskSkill.size(); j++) {
-            taskSkillKey = listTaskSkill.keySet().toArray()[j];
-            taskSkillValue = parseInt(listTaskSkill.get(taskSkillKey));
-            workerSkillsetValue = parseInt(workerInstance.getSkillset().get(taskSkillKey));
+        for (j = 0; j < listTaskRequirement.size(); j++) {
+            taskRequirementKey = listTaskRequirement.keySet().toArray()[j];
+            taskRequirementValue = parseInt(listTaskRequirement.get(taskRequirementKey).getNeeds().keySet().toArray()[0]);
+            workerSkillsetValue = parseInt(workerInstance.getSkillset().get(taskRequirementKey));
             //calculate work Quality part 3/4
-            if (taskSkillKey == workerInstance.getProperty('wish')) {
+            if (taskRequirementKey == workerInstance.getProperty('wish')) {
                 randomNumber = Math.floor(Math.random() * 6) + 5;
                 averageWorkPartSkills += randomNumber;
                 if (averageWorkPartSkills > 100)
                     averageWorkPartSkills = 100;
             }
-            if (taskSkillKey == workerInstance.getProperty('hate')) {
+            if (taskRequirementKey == workerInstance.getProperty('hate')) {
                 randomNumber = Math.floor(Math.random() * 6) + 5;
                 averageWorkPartSkills -= randomNumber;
                 if (averageWorkPartSkills < 0)
@@ -200,7 +200,7 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
             //check wish
             randomNumber = Math.random();
             wish = workerInstance.getProperty('wish');
-            if ((averageWorkPartSkills <= 50 || randomNumber < 0.33) && taskSkillKey == wish) {
+            if ((averageWorkPartSkills <= 50 || randomNumber < 0.33) && taskRequirementKey == wish) {
                 wish = '';
             }
             while (!wish) {
@@ -214,7 +214,7 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
             //check hate
             randomNumber = Math.random();
             hate = workerInstance.getProperty('hate');
-            if ((averageWorkPartSkills > 50 && randomNumber < 0.33) && taskSkillKey == hate) {
+            if ((averageWorkPartSkills > 50 && randomNumber < 0.33) && taskRequirementKey == hate) {
                 hate = '';
             }
             while (!hate) {
@@ -239,7 +239,7 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
             workerInstance.setConfidence(workerInstance.getConfidence() + 10);
         }
         //check 'workWithLeader'
-        if (taskInstance.getProperty('workWithLeader') == 'true') {
+        if (taskDescriptor.getProperty('workWithLeader') == 'true') {
             workerInstance.setProperty('numberOfWorkWithLeader', parseInt(workerInstance.getProperty('numberOfWorkWithLeader')) + 1);
         }
     }
@@ -254,9 +254,9 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
     if (clientsSatisfaction.getValue() < 0)
         clientsSatisfaction.getValue(0);
     //calculate remuneration
-    remuneration = parseInt(taskInstance.getProperty('salary'));
-    if (workQuality >= parseInt(taskInstance.getProperty('workQualityMinForBonus'))) {
-        remuneration += parseInt(taskInstance.getProperty('bonus'));
+    remuneration = parseInt(taskDescriptor.getProperty('salary'));
+    if (workQuality >= parseInt(taskDescriptor.getProperty('workQualityMinForBonus'))) {
+        remuneration += parseInt(taskDescriptor.getProperty('bonus'));
     }
     budgetInstance.setValue(budgetInstance.getValue() + remuneration);
     //e-mail
@@ -281,14 +281,14 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
             break;
     }
     content.push('<br />');
-    if (parseInt(taskInstance.getProperty('workQualityMinForBonus')) > 0 && workQuality >= parseInt(taskInstance.getProperty('workQualityMinForBonus') && parseInt(taskInstance.getProperty('bonus')) > 0)) {
+    if (parseInt(taskDescriptor.getProperty('workQualityMinForBonus')) > 0 && workQuality >= parseInt(taskDescriptor.getProperty('workQualityMinForBonus') && parseInt(taskDescriptor.getProperty('bonus')) > 0)) {
         content.push('Il nous remercier par un bonus de ');
-        content.push(taskInstance.getProperty('bonus'));
+        content.push(taskDescriptor.getProperty('bonus'));
         content.push('.-');
     }
     content.push('<br /> Bonne journée. <br />');
     content.push(from.join(', '));
-    this.sendMessage('Fin de mandat', content.join(''), workersDescriptor[0].getInstance(self).getProperty('surname'));
+    this.sendMessage('Fin de mandat', content.join(''), workersDescriptor[0].getProperty('surname'));
     //desactivate Task
     taskInstance.setActive(false);
 }
@@ -344,13 +344,14 @@ function checkAbsencesEnd () {
  * Activate and deactivate tasks according with its variables and if a resource work on.
  */
 function checkTasksState () {
-    var i, j, k, gm = self.getGameModel(), listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskInstance,
+    var i, j, k, gm = self.getGameModel(), listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance,
             newWeek = VariableDescriptorFacade.findByName(gm, 'week').getInstance(self), inProgress = false,
             listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance, assignment,
             newclientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self);
     for (i = 0; i < listTasks.items.size(); i++) {
         inProgress = false;
-        taskInstance = listTasks.items.get(i).getInstance(self);
+        taskDescriptor = listTasks.items.get(i);
+        taskInstance = taskDescriptor.getInstance(self);
         for (j = 0; j < listResources.items.size(); j++) {
             resourceInstance = listResources.items.get(j).getInstance(self);
             if (resourceInstance.getActive() == true) {
@@ -363,10 +364,10 @@ function checkTasksState () {
             }
         }
         if (inProgress ||
-                (newWeek.getValue() >= taskInstance.getProperty('appearAtWeek') &&
-                        newWeek.getValue() < taskInstance.getProperty('disappearAtWeek') &&
-                        newclientsSatisfaction.getValue() >= taskInstance.getProperty('clientSatisfactionMinToAppear') &&
-                        newclientsSatisfaction.getValue() <= taskInstance.getProperty('clientSatisfactionMaxToAppear') &&
+                (newWeek.getValue() >= taskDescriptor.getProperty('appearAtWeek') &&
+                        newWeek.getValue() < taskDescriptor.getProperty('disappearAtWeek') &&
+                        newclientsSatisfaction.getValue() >= taskDescriptor.getProperty('clientSatisfactionMinToAppear') &&
+                        newclientsSatisfaction.getValue() <= taskDescriptor.getProperty('clientSatisfactionMaxToAppear') &&
                         taskInstance.getDuration() > 0
                         )
                 ) {
@@ -386,12 +387,13 @@ function payResources () {
             listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
             budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),
             budgetInstance = budgetDescriptor.getInstance(self),
-            resourceInstance,
+            resourceDescriptor, resourceInstance,
             sumSalary = 0;
     for (i = 0; i < listResources.items.size(); i++) {
-        resourceInstance = listResources.items.get(i).getInstance(self);
+        resourceDescriptor = listResources.items.get(i);
+        resourceInstance = resourceDescriptor.getInstance(self);
         if (resourceInstance.getActive() == true) {
-            sumSalary += parseInt(resourceInstance.getProperty('salary'));
+            sumSalary += parseInt(resourceDescriptor.getProperty('salary'));
         }
     }
     budgetInstance.setValue(budgetInstance.getValue() - sumSalary);
@@ -466,23 +468,23 @@ function checkMoral () {
             switch (true) {
                 case moral < 10 :
                     if (randomNumber < 0.33) {
-                        this.sendMessage('Changement de départeemnt', 'Bonjour,<br /> Je vous informe que ma lettre de démission est sur votre bureau. Le travail me plaisait mais vos méthodes ne me conviennent pas du tout et je préfère changer de team avant que la situation ne dégénère.<br /> Avec mes sincères salutations.<br />' + resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
+                        this.sendMessage('Changement de département', 'Bonjour,<br /> Je vous informe que ma lettre de démission est sur votre bureau. Le travail me plaisait mais vos méthodes ne me conviennent pas du tout et je préfère changer de team avant que la situation ne dégénère.<br /> Avec mes sincères salutations.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
                         resourceInstance.setActive(false);
                     }
                     else {
-                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />' + resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
+                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
                         sickenResource(resourceDescriptor, 2);
                     }
                     break;
                 case moral < 20 :
                     if (randomNumber < 0.66) {
-                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />' + resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
+                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
                         sickenResource(resourceDescriptor, 2);
                     }
                     break;
                 case moral < 30 :
                     if (randomNumber < 0.33) {
-                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien très bien, je crois que je tombe malade. Je préfère rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />' + resourceInstance.getProperty('surname'), resourceInstance.getProperty('surname'));
+                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien très bien, je crois que je tombe malade. Je préfère rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
                         sickenResource(resourceDescriptor, 1);
                     }
                     break;
