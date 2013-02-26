@@ -6,6 +6,7 @@
     "childVariableDescriptors": [{
             "@class": "NumberDescriptor",
             "name": "budget",
+            "label": "budget",
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "value": 75000
@@ -16,6 +17,7 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "actions",
+            "label": "actions",
             "minValue": 0,
             "maxValue": 8,
             "defaultInstance": {
@@ -28,6 +30,7 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "week",
+            "label": "week",
             "minValue": 0,
             "maxValue": 5,
             "defaultInstance": {
@@ -40,6 +43,7 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "teamMotivation",
+            "label": "teamMotivation",
             "minValue": 0,
             "maxValue": 100,
             "defaultInstance": {
@@ -52,6 +56,7 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "clientsSatisfaction",
+            "label": "clientsSatisfaction",
             "minValue": 0,
             "maxValue": 100,
             "defaultInstance": {
@@ -64,6 +69,7 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "score",
+            "label": "score",
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "value": 0
@@ -74,6 +80,7 @@
         }, {
             "@class": "InboxDescriptor",
             "name": "inbox",
+            "label": "inbox",
             "defaultInstance": {
                 "@class": "InboxInstance"
             },
@@ -83,6 +90,7 @@
         }, {
             "@class": "TriggerDescriptor",
             "name": "introduction",
+            "label": "introduction",
             "defaultInstance": {
                 "@class": "TriggerInstance",
                 "currentStateId": 1
@@ -126,6 +134,7 @@
         }, {
             "@class": "TriggerDescriptor",
             "name": "limiteValues",
+            "label": "limiteValues",
             "defaultInstance": {
                 "@class": "TriggerInstance",
                 "currentStateId": 1
@@ -169,19 +178,24 @@
         }, {
             "@class": "ListDescriptor",
             "name": "resources",
+            "label": "resources",
             "items": [{
                     "@class": "ResourceDescriptor",
                     "name": "Salmero",
+                    "label": "Salmero",
                     "description": "Fernand est franc et n'hésitera pas à vous dire ce qui ne lui convient pas. Engagé pour ses talents de négociateur, il a de l'intérêt pour le web. Expérimenté par une vie de travail, il semble réticent à l'apprentissage de nouvelles méthodes.",
+                    "properties": {
+                        "surname": "Fernand",
+                        "male": true,
+                        "learningCoefficient": 0.7,
+                        "salary": 4000
+                    },
                     "defaultInstance": {
                         "@class": "ResourceInstance",
                         "moral": 80,
                         "confidence": 76,
                         "properties": {
                             "picture": "/fernandPortrait.png",
-                            "surname": "Fernand",
-                            "male": true,
-                            "salary": 4000,
                             "leadershipLevel": 2,
                             "lastWorkQuality": 70,
                             "wish": "Langages Web",
@@ -189,9 +203,7 @@
                             "frankness": 90,
                             "numberOfWorkWithLeader": 0,
                             "totalExperienceGained": 120,
-                            "learningCoefficient": 0.7,
                             "dialogue": "dialogueFernand",
-                            "hiddenVariables": "",
                             "hiddenSkillsets": "Modélisation des traitements;Développement logiciel",
                             "wishIsKnow": false,
                             "hateIsKnow": false,
@@ -199,7 +211,7 @@
                             "isConsidered": false,
                             "bonusInducement": 0
                         },
-                        "skillset": {
+                        "skillsets": {
                             "Design graphique": 35,
                             "Développement de base de données": 14,
                             "Développement logiciel": 0,
@@ -214,16 +226,20 @@
                 }, {
                     "@class": "ResourceDescriptor",
                     "name": "Brossard",
+                    "label": "Brossard",
                     "description": "Employé de longue date, elle s'est fait un nom grâce à ses talents de graphiste. Son expérience l'a rend compétentes dans la plupart des tâches et lui permet d'apprend vite. Elle n'hésitera que rarement à vous prévenir si quelque chose la dérange.",
+                    "properties": {
+                        "surname": "Daniela",
+                        "male": false,
+                        "learningCoefficient": 1.2,
+                        "salary": 3800
+                    },
                     "defaultInstance": {
                         "@class": "ResourceInstance",
                         "moral": 45,
                         "confidence": 30,
                         "properties": {
                             "picture": "/danielaPortrait.png",
-                            "surname": "Daniela",
-                            "male": false,
-                            "salary": 3800,
                             "leadershipLevel": 1,
                             "lastWorkQuality": 48,
                             "wish": "Modélisation des traitements",
@@ -231,9 +247,7 @@
                             "frankness": 65,
                             "numberOfWorkWithLeader": 0,
                             "totalExperienceGained": 0,
-                            "learningCoefficient": 1.2,
                             "dialogue": "dialogueDaniela",
-                            "hiddenVariables": "",
                             "hiddenSkillsets": "Négociation;Modélisation des traitements",
                             "wishIsKnow": false,
                             "hateIsKnow": false,
@@ -241,7 +255,7 @@
                             "isConsidered": false,
                             "bonusInducement": 0
                         },
-                        "skillset": {
+                        "skillsets": {
                             "Design graphique": 73,
                             "Développement de base de données": 23,
                             "Développement logiciel": 0,
@@ -256,16 +270,20 @@
                 }, {
                     "@class": "ResourceDescriptor",
                     "name": "Vogt",
+                    "label": "Vogt",
                     "description": "Jessica a fini sa formation récemment et connait bien les dernières bonnes pratiques concernant les langages Web. Elle a quelque peu de la peine à prendre le point de vue des clients, ce qui la rend peu douée en design par exemple.",
+                    "properties": {
+                        "surname": "Jessica",
+                        "male": false,
+                        "learningCoefficient": 1,
+                        "salary": 3300
+                    },
                     "defaultInstance": {
                         "@class": "ResourceInstance",
                         "moral": 50,
                         "confidence": 34,
                         "properties": {
                             "picture": "/jessicaPortrait.png",
-                            "surname": "Jessica",
-                            "male": false,
-                            "salary": 3300,
                             "leadershipLevel": 1,
                             "lastWorkQuality": 52,
                             "wish": "Design graphique",
@@ -273,9 +291,7 @@
                             "frankness": 50,
                             "numberOfWorkWithLeader": 0,
                             "totalExperienceGained": 0,
-                            "learningCoefficient": 1,
                             "dialogue": "dialogueJessica",
-                            "hiddenVariables": "",
                             "hiddenSkillsets": "Négociation;Design graphique",
                             "wishIsKnow": false,
                             "hateIsKnow": false,
@@ -283,7 +299,7 @@
                             "isConsidered": false,
                             "bonusInducement": 0
                         },
-                        "skillset": {
+                        "skillsets": {
                             "Design graphique": 12,
                             "Développement de base de données": 49,
                             "Développement logiciel": 24,
@@ -298,16 +314,20 @@
                 }, {
                     "@class": "ResourceDescriptor",
                     "name": "Auguste",
+                    "label": "Auguste",
                     "description": "Hector est un développeur logiciel plutôt compétent, alliant connaissances théoriques fraîches et expérience pratique. Parfois un peu brusque, il vous expliquera assez vite son opinion sur les choses qui le dérangent.",
+                    "properties": {
+                        "surname": "Hector",
+                        "male": true,
+                        "learningCoefficient": 1.2,
+                        "salary": 3400
+                    },
                     "defaultInstance": {
                         "@class": "ResourceInstance",
                         "moral": 85,
                         "confidence": 37,
                         "properties": {
                             "picture": "/hectorPortrait.png",
-                            "surname": "Hector",
-                            "male": true,
-                            "salary": 3400,
                             "leadershipLevel": 1,
                             "lastWorkQuality": 89,
                             "wish": "Modélisation des traitements",
@@ -315,9 +335,7 @@
                             "frankness": 85,
                             "numberOfWorkWithLeader": 0,
                             "totalExperienceGained": 0,
-                            "learningCoefficient": 1.2,
                             "dialogue": "dialogueHector",
-                            "hiddenVariables": "",
                             "hiddenSkillsets": "Langages Web;Négociation",
                             "wishIsKnow": false,
                             "hateIsKnow": false,
@@ -325,7 +343,7 @@
                             "isConsidered": false,
                             "bonusInducement": 0
                         },
-                        "skillset": {
+                        "skillsets": {
                             "Design graphique": 5,
                             "Développement de base de données": 34,
                             "Développement logiciel": 64,
@@ -340,16 +358,20 @@
                 }, {
                     "@class": "ResourceDescriptor",
                     "name": "Torr",
+                    "label": "Torr",
                     "description": "Lucien est le cadet de l'équipe. Il a consacrés toutes ses études aux bases de données. Assez mystérieux, il ne donne que rarement son avis sur les décisions prises le concernant directement.",
+                    "properties": {
+                        "surname": "Lucien",
+                        "male": true,
+                        "learningCoefficient": 1,
+                        "salary": 3500
+                    },
                     "defaultInstance": {
                         "@class": "ResourceInstance",
                         "moral": 50,
                         "confidence": 9,
                         "properties": {
                             "picture": "/lucienPortrait.png",
-                            "surname": "Lucien",
-                            "male": true,
-                            "salary": 3500,
                             "leadershipLevel": 1,
                             "lastWorkQuality": 66,
                             "wish": "Développement de base de données",
@@ -357,9 +379,7 @@
                             "frankness": 10,
                             "numberOfWorkWithLeader": 0,
                             "totalExperienceGained": 0,
-                            "learningCoefficient": 1,
                             "dialogue": "dialogueLucien",
-                            "hiddenVariables": "",
                             "hiddenSkillsets": "Développement logiciel;Design graphique;Langages Web",
                             "wishIsKnow": false,
                             "hateIsKnow": false,
@@ -368,7 +388,7 @@
                             "bonusInducement": 0
 
                         },
-                        "skillset": {
+                        "skillsets": {
                             "Design graphique": 12,
                             "Développement de base de données": 72,
                             "Développement logiciel": 25,
@@ -391,26 +411,27 @@
         }, {
             "@class": "ListDescriptor",
             "name": "tasks",
+            "label": "tasks",
             "items": [{
                     "@class": "TaskDescriptor",
                     "name": "Création de maquettes pour un logiciel de cuisine.",
-                    "description": "",
-                    "defaultInstance": {
-                        "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 3500,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 1,
-                            "disappearAtWeek": 2,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Design graphique": 50
+                    "label": "Création de maquettes pour un logiciel de cuisine.",
+                    "properties": {
+                        "salary": 3500,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 1,
+                        "disappearAtWeek": 2,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Design graphique": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "50": "1"
+                            }
                         }
                     },
                     "scope": {
@@ -419,24 +440,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Design graphique d'une page web pour un privé.",
-                    "description": "",
+                    "label": "Design graphique d'une page web pour un privé.",
+                    "properties": {
+                        "salary": 3300,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 1,
+                        "disappearAtWeek": 2,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Design graphique": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "23": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 3300,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 1,
-                            "disappearAtWeek": 2,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Design graphique": 23
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -444,24 +469,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Modification d'une base de donnée multimédia.",
-                    "description": "",
+                    "label": "Modification d'une base de donnée multimédia.",
+                    "properties": {
+                        "salary": 3700,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 1,
+                        "disappearAtWeek": 3,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Développement de base de données": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "43": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 3700,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 1,
-                            "disappearAtWeek": 3,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Développement de base de données": 43
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -469,24 +498,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Modifications d'un logiciel de comptabilité.",
-                    "description": "",
+                    "label": "Modifications d'un logiciel de comptabilité.",
+                    "properties": {
+                        "salary": 8100,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 1,
+                        "disappearAtWeek": 3,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Développement logiciel": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "39": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 8100,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 1,
-                            "disappearAtWeek": 3,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Développement logiciel": 39
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -494,25 +527,34 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Analyse des besoins d'un nouveau CMS.",
-                    "description": "",
+                    "label": "Analyse des besoins d'un nouveau CMS.",
+                    "properties": {
+                        "salary": 8700,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 1,
+                        "disappearAtWeek": 3,
+                        "workWithLeader": true
+                    },
+                    "requirements": {
+                        "Négociation": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "60": "1"
+                            }
+                        },
+                        "Développement logiciel": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "25": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 8700,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 1,
-                            "disappearAtWeek": 3,
-                            "workWithLeader": true
-                        },
-                        "skillset": {
-                            "Négociation": 60,
-                            "Développement logiciel": 25
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -520,25 +562,34 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Création d'un site web  pour les clients d'une assurance.",
-                    "description": "",
+                    "label": "Création d'un site web  pour les clients d'une assurance.",
+                    "properties": {
+                        "salary": 1300,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 1,
+                        "disappearAtWeek": 4,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Langages Web": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "54": "1"
+                            }
+                        },
+                        "Modélisation des traitements": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "45": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 3,
-                        "properties": {
-                            "salary": 1300,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 1,
-                            "disappearAtWeek": 4,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Langages Web": 54,
-                            "Modélisation des traitements": 45
-                        }
+                        "duration": 3
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -546,24 +597,29 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Modélisation d'un système de payement online.",
-                    "description": "",
+                    "label": "Modélisation d'un système de payement online.",
+                    "properties": {
+                        "salary": 3800,
+                        "bonus": 300,
+                        "workQualityMinForBonus": 61,
+                        "comment": "Bonus de 300 si le travail est bon.",
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 1,
+                        "disappearAtWeek": 4,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Modélisation des traitements": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "67": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 3800,
-                            "bonus": 300,
-                            "workQualityMinForBonus": 61,
-                            "comment": "Bonus de 300 si le travail est de bon.",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 1,
-                            "disappearAtWeek": 4,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Modélisation des traitements": 67
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -571,24 +627,29 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Création d'une base de données pour un privé.",
-                    "description": "",
+                    "label": "Création d'une base de données pour un privé.",
+                    "properties": {
+                        "salary": 7200,
+                        "bonus": 600,
+                        "workQualityMinForBonus": 42,
+                        "comment": "Bonus de 600 si le travail est bon.",
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 2,
+                        "disappearAtWeek": 3,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Développement de base de données": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "43": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 7200,
-                            "bonus": 600,
-                            "workQualityMinForBonus": 42,
-                            "comment": "Bonus de 600 si le travail est de bon.",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 2,
-                            "disappearAtWeek": 3,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Développement de base de données": 43
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -596,24 +657,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Modélisation des traitements d'un logiciel.",
-                    "description": "",
+                    "label": "Modélisation des traitements d'un logiciel.",
+                    "properties": {
+                        "salary": 12000,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 2,
+                        "disappearAtWeek": 3,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Modélisation des traitements": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "72": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 3,
-                        "properties": {
-                            "salary": 12000,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 2,
-                            "disappearAtWeek": 3,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Modélisation des traitements": 72
-                        }
+                        "duration": 3
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -621,24 +686,30 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Analyse des besoins pour un privé.",
+                    "label": "Analyse des besoins pour un privé.",
                     "description": "",
+                    "properties": {
+                        "salary": 6400,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "comment": "",
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 30,
+                        "appearAtWeek": 2,
+                        "disappearAtWeek": 4,
+                        "workWithLeader": true
+                    },
+                    "requirements": {
+                        "Négociation": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "65": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 6400,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 30,
-                            "appearAtWeek": 2,
-                            "disappearAtWeek": 4,
-                            "workWithLeader": true
-                        },
-                        "skillset": {
-                            "Négociation ": 65
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -646,24 +717,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Analyse des besoins pour un privé.",
-                    "description": "",
+                    "label": "Analyse des besoins pour un privé.",
+                    "properties": {
+                        "salary": 7400,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 30,
+                        "clientSatisfactionMaxToAppear": 60,
+                        "appearAtWeek": 2,
+                        "disappearAtWeek": 4,
+                        "workWithLeader": true
+                    },
+                    "requirements": {
+                        "Négociation": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "65": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 7400,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 30,
-                            "clientSatisfactionMaxToAppear": 60,
-                            "appearAtWeek": 2,
-                            "disappearAtWeek": 4,
-                            "workWithLeader": true
-                        },
-                        "skillset": {
-                            "Négociation ": 65
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -671,24 +746,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Analyse des besoins pour un privé.",
-                    "description": "",
+                    "label": "Analyse des besoins pour un privé.",
+                    "properties": {
+                        "salary": 8400,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 60,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 2,
+                        "disappearAtWeek": 4,
+                        "workWithLeader": true
+                    },
+                    "requirements": {
+                        "Négociation": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "65": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 8400,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 60,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 2,
-                            "disappearAtWeek": 4,
-                            "workWithLeader": true
-                        },
-                        "skillset": {
-                            "Négociation ": 65
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -696,27 +775,41 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Création d'un d'une démo de logiciel de comptabilité.",
-                    "description": "",
+                    "label": "Création d'un d'une démo de logiciel de comptabilité.",
+                    "properties": {
+                        "salary": 13900,
+                        "bonus": 600,
+                        "workQualityMinForBonus": 60,
+                        "comment": "Bonus de 600 si la tâche est bien réalisée.",
+                        "clientSatisfactionMinToAppear": 45,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 2,
+                        "disappearAtWeek": 5,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Modélisation des traitements": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "67": "1"
+                            }
+                        },
+                        "Négociation": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "20": "1"
+                            }
+                        },
+                        "Développement logiciel": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "60": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 3,
-                        "properties": {
-                            "salary": 13900,
-                            "bonus": 600,
-                            "workQualityMinForBonus": 60,
-                            "comment": "Bonus de 600 si la tâche est bien réalisée.",
-                            "clientSatisfactionMinToAppear": 45,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 2,
-                            "disappearAtWeek": 5,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Modélisation des traitements": 67,
-                            "Négociation": 20,
-                            "Développement logiciel": 60
-
-                        }
+                        "duration": 3
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -724,25 +817,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Maquette pour un logiciel domotique.",
-                    "description": "",
+                    "label": "Maquette pour un logiciel domotique.",
+                    "properties": {
+                        "salary": 3800,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 2,
+                        "disappearAtWeek": 5,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Design graphique": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "40": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 3800,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 2,
-                            "disappearAtWeek": 5,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Design graphique": 40
-
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -750,25 +846,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Migration d'une base de données PostgrSQL.",
-                    "description": "",
+                    "label": "Migration d'une base de données PostgrSQL.",
+                    "properties": {
+                        "salary": 7900,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 4,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Développement de base de données": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "60": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 7900,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 4,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Développement de base de données": 60
-
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -776,25 +875,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Création d'une page web pour un privé.",
-                    "description": "",
+                    "label": "Création d'une page web pour un privé.",
+                    "properties": {
+                        "salary": 3600,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 5,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Langages Web": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "57": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 3600,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 5,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Langages Web": 57
-
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -802,25 +904,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Création d'un nouveau logo pour l'entreprise.",
-                    "description": "",
+                    "label": "Création d'un nouveau logo pour l'entreprise.",
+                    "properties": {
+                        "salary": 3800,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 5,
+                        "workWithLeader": true
+                    },
+                    "requirements": {
+                        "Design graphique": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "82": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 3800,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 5,
-                            "workWithLeader": true
-                        },
-                        "skillset": {
-                            "Design graphique ": 82
-
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -828,25 +933,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Création d'une base de données pour un logiciel de domotique.",
-                    "description": "",
+                    "label": "Création d'une base de données pour un logiciel de domotique.",
+                    "properties": {
+                        "salary": 4100,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 5,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Développement de base de données": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "75": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 4100,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 5,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Développement de base de données": 75
-
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -854,25 +962,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Maquette pour un site web de paris sportif.",
-                    "description": "",
+                    "label": "Maquette pour un site web de paris sportif.",
+                    "properties": {
+                        "salary": 8000,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 40,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 5,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Design graphique": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "65": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 8000,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 40,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 5,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Design graphique": 65
-
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -880,25 +991,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Maquette pour un site web de paris sportif.",
-                    "description": "",
+                    "label": "Maquette pour un site web de paris sportif.",
+                    "properties": {
+                        "salary": 9000,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 40,
+                        "clientSatisfactionMaxToAppear": 70,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 5,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Design graphique": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "75": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 9000,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 40,
-                            "clientSatisfactionMaxToAppear": 70,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 5,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Design graphique": 75
-
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -906,25 +1020,30 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Maquette pour un site web de paris sportif.",
+                    "label": "Maquette pour un site web de paris sportif.",
                     "description": "",
+                    "properties": {
+                        "salary": 10000,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "comment": "",
+                        "clientSatisfactionMinToAppear": 70,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 5,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Design graphique": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "85": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 10000,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 70,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 5,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Design graphique": 85
-
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -932,25 +1051,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Résolution de problème sur le logiciel d'un ancien mandat.",
-                    "description": "",
+                    "label": "Résolution de problème sur le logiciel d'un ancien mandat.",
+                    "properties": {
+                        "salary": 7800,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 6,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Développement logiciel": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "54": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 7800,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 6,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Développement logiciel": 54
-
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -958,25 +1080,35 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Modification de la base de données d'une banque.",
-                    "description": "",
+                    "label": "Modification de la base de données d'une banque.",
+                    "properties": {
+                        "salary": 15000,
+                        "bonus": 700,
+                        "workQualityMinForBonus": 55,
+                        "comment": "Bonus de 700 si correctement réalisé.",
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 6,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Modélisation de base de données": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "94": "1"
+                            }
+                        },
+                        "Modélisation des traitements": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "60": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 3,
-                        "properties": {
-                            "salary": 15000,
-                            "bonus": 700,
-                            "workQualityMinForBonus": 55,
-                            "comment": "Bonus de 700 si correctement réalisé.",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 6,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Modélisation de base de données": 94,
-                            "Modélisation des traitements": 60
-                        }
+                        "duration": 3
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -984,24 +1116,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Modélisation des traitements d'un logiciel de logistique de la Poste.",
-                    "description": "",
+                    "label": "Modélisation des traitements d'un logiciel de logistique de la Poste.",
+                    "properties": {
+                        "salary": 16500,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 60,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 3,
+                        "disappearAtWeek": 6,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Modélisation des traitements": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "62": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 4,
-                        "properties": {
-                            "salary": 16500,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 60,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 3,
-                            "disappearAtWeek": 6,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Modélisation des traitements": 62
-                        }
+                        "duration": 4
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1009,24 +1145,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Modélisation d'une base de données.",
-                    "description": "",
+                    "label": "Modélisation d'une base de données.",
+                    "properties": {
+                        "salary": 3600,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 4,
+                        "disappearAtWeek": 5,
+                        "workWithLeader": true
+                    },
+                    "requirements": {
+                        "Modélisation de base de données": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "56": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 3600,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 4,
-                            "disappearAtWeek": 5,
-                            "workWithLeader": true
-                        },
-                        "skillset": {
-                            "Modélisation de base de données": 56
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1034,23 +1174,23 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Développement de la partie HTML/CSS d'un site internet.",
-                    "description": "",
-                    "defaultInstance": {
-                        "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 4000,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 4,
-                            "disappearAtWeek": 6,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Langages Web": 54
+                    "label": "Développement de la partie HTML/CSS d'un site internet.",
+                    "properties": {
+                        "salary": 4000,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 4,
+                        "disappearAtWeek": 6,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Langages Web": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "54": "1"
+                            }
                         }
                     },
                     "scope": {
@@ -1059,25 +1199,34 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Rédaction d'un cahier des charges pour un site d'artiste.",
-                    "description": "",
+                    "label": "Rédaction d'un cahier des charges pour un site d'artiste.",
+                    "properties": {
+                        "salary": 8400,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 4,
+                        "disappearAtWeek": 6,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Négociation": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "40": "1"
+                            }
+                        },
+                        "Langages Web": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "30": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2,
-                        "properties": {
-                            "salary": 8400,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 4,
-                            "disappearAtWeek": 6,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Négociation": 40,
-                            "Langages Web": 30
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1085,24 +1234,35 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Demande d'un prêt pour la rénovation des bureaux.",
-                    "description": "",
+                    "label": "Demande d'un prêt pour la rénovation des bureaux.",
+                    "properties": {
+                        "salary": 6000,
+                        "bonus": 1000,
+                        "workQualityMinForBonus": 66,
+                        "comment": "Bonus de 1000 si bien réalisé.",
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 5,
+                        "disappearAtWeek": 6,
+                        "workWithLeader": true
+                    },
+                    "requirements": {
+                        "Négociation": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "40": "1"
+                            }
+                        },
+                        "Langages Web": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "30": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 6000,
-                            "bonus": 1000,
-                            "workQualityMinForBonus": 66,
-                            "comment": "Bonus de 1000 si bien réalisé.",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 5,
-                            "disappearAtWeek": 6,
-                            "workWithLeader": true
-                        },
-                        "skillset": {
-                            "Négociation": 85
-                        }
+                        "duration": 2
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1110,24 +1270,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Modifications d'un logiciel de recette cuisine.",
-                    "description": "",
+                    "label": "Modifications d'un logiciel de recette cuisine.",
+                    "properties": {
+                        "salary": 4000,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 5,
+                        "disappearAtWeek": 6,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Développement logiciel": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "60": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 4000,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 5,
-                            "disappearAtWeek": 6,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Développement logiciel": 40
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1135,24 +1299,28 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Résolution de problème d'un logiciel de comptabilité.",
-                    "description": "",
+                    "label": "Résolution de problème d'un logiciel de comptabilité.",
+                    "properties": {
+                        "salary": 6000,
+                        "bonus": 0,
+                        "workQualityMinForBonus": 0,
+                        "clientSatisfactionMinToAppear": 0,
+                        "clientSatisfactionMaxToAppear": 100,
+                        "appearAtWeek": 5,
+                        "disappearAtWeek": 6,
+                        "workWithLeader": false
+                    },
+                    "requirements": {
+                        "Développement logiciel": {
+                            "@class": "WRequirement",
+                            "needs": {
+                                "80": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1,
-                        "properties": {
-                            "salary": 6000,
-                            "bonus": 0,
-                            "workQualityMinForBonus": 0,
-                            "comment": "",
-                            "clientSatisfactionMinToAppear": 0,
-                            "clientSatisfactionMaxToAppear": 100,
-                            "appearAtWeek": 5,
-                            "disappearAtWeek": 6,
-                            "workWithLeader": false
-                        },
-                        "skillset": {
-                            "Développement logiciel": 80
-                        }
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1168,9 +1336,11 @@
         }, {
             "@class": "ListDescriptor",
             "name": "absences",
+            "label": "absences",
             "items": [{
                     "@class": "TaskDescriptor",
                     "name": "sickness",
+                    "label": "sickness",
                     "description": "",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1182,6 +1352,7 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "sickness2",
+                    "label": "sickness2",
                     "description": "",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1201,6 +1372,7 @@
         }, {
             "@class": "DialogueDescriptor",
             "name": "dialogueFernand",
+            "label": "dialogueFernand",
             "defaultInstance": {
                 "@class": "FSMInstance",
                 "currentStateId": 1
@@ -2021,6 +2193,7 @@
         }, {
             "@class": "DialogueDescriptor",
             "name": "dialogueDaniela",
+            "label": "dialogueDaniela",
             "defaultInstance": {
                 "@class": "FSMInstance",
                 "currentStateId": 1
@@ -2841,6 +3014,7 @@
         }, {
             "@class": "DialogueDescriptor",
             "name": "dialogueJessica",
+            "label": "dialogueJessica",
             "defaultInstance": {
                 "@class": "FSMInstance",
                 "currentStateId": 1
@@ -4481,6 +4655,7 @@
         }, {
             "@class": "DialogueDescriptor",
             "name": "dialogueLucien",
+            "label": "dialogueLucien",
             "defaultInstance": {
                 "@class": "FSMInstance",
                 "currentStateId": 1
