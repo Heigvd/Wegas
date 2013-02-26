@@ -23,8 +23,8 @@ YUI.add('wegas-action', function(Y) {
      *  @constructor
      */
     function WPlugin() {}
-    Y.mix(Plugin.prototype, {});
-    Y.mix(Plugin, {
+    Y.mix(WPlugin.prototype, {});
+    Y.mix(WPlugin, {
         ATTRS: {
             host: {
                 "transient": true
