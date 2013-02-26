@@ -88,29 +88,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         },
         buildSubTree: function(node, widget) {
             var treeNode, button = new Y.Node.create("<span class=\"wegas-treeview-editmenubutton\"></span>");
-
-            if (widget instanceof Y.Wegas.List) {
-                treeNode = new Y.TreeNode({
-                    label: "List",
-                    data: {
-                        widget: widget
-                    }
-                });
-
-                widget.each(function(item, index) {
-                    this.buildSubTree(treeNode, item);
-                }, this);
-//                for (var i in widget["children"]) {
-//                    this.buildSubTree(treeNode, widget["children"][i]);
-//                }
-            } else {
-                treeNode = new Y.TreeLeaf({
-                    label: "Widget: " + widget.constructor.NAME,
-                    data: {
-                        widget: widget
-                    }
-                });
-            }
             button.plug(Y.Plugin.WidgetMenu, {
                 children: [{
                         type: "Button",
@@ -146,9 +123,32 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     }],
                 event: "click"
             });
+            if (widget.each && !(widget instanceof Y.Wegas.PageLoader)) {
+                treeNode = new Y.TreeNode({
+                    label: "List",
+                    rightWidget: button,
+                    data: {
+                        widget: widget
+                    }
+                });
+
+                widget.each(function(item, index) {
+                    this.buildSubTree(treeNode, item);
+                }, this);
+//                for (var i in widget["children"]) {
+//                    this.buildSubTree(treeNode, widget["children"][i]);
+//                }
+            } else {
+                treeNode = new Y.TreeLeaf({
+                    label: "Widget: " + widget.constructor.NAME,
+                    rightWidget: button,
+                    data: {
+                        widget: widget
+                    }
+                });
+            }
+
             node.add(treeNode);
-            treeNode.set("rightWidget", button);
-            
         },
         buildIndex: function(index) {
             var i, page = this.get("pageLoader").get("pageId"),

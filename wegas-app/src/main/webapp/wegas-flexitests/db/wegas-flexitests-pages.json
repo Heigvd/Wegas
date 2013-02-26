@@ -43,8 +43,7 @@
                 "children": [
                     {
                         "type": "SimpleElement",
-                        "content": "Male",
-                        "response": "male"
+                        "content": "Male"
                     }
                 ],
                 "plugins": [{
@@ -93,8 +92,7 @@
                 "children": [
                     {
                         "type": "SimpleElement",
-                        "content": "Female",
-                        "response": "female"
+                        "content": "Female"
                     }
                 ]
             }, {
@@ -149,6 +147,24 @@
                         "contentType": "img",
                         "content": "/fernandPensif.png",
                         "response": "male"
+                    }
+                ]
+            },
+            {
+                "type": "FlexitestsMCQ",
+                "id": "flexi-mcq",
+                "responseType": "selector",
+                "variable": {
+                    "name": "test1"
+                },
+                "plugins": [
+                    {
+                        "fn": "Position",
+                        "cfg": {
+                            "bottom": "30",
+                            "left": "200",
+                            "right": "200"
+                        }
                     }
                 ]
             }]
