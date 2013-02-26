@@ -434,6 +434,10 @@
                             }
                         }
                     },
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "duration": 1
+                    },
                     "scope": {
                         "@class": "TeamScope"
                     }
@@ -1192,6 +1196,10 @@
                                 "54": "1"
                             }
                         }
+                    },
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "duration": 1
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -3835,6 +3843,7 @@
         }, {
             "@class": "DialogueDescriptor",
             "name": "dialogueHector",
+            "label": "dialogueHector",
             "defaultInstance": {
                 "@class": "FSMInstance",
                 "currentStateId": 1
@@ -5476,6 +5485,7 @@
         }, {
             "@class": "DialogueDescriptor",
             "name": "dialogueFinal",
+            "label": "dialogueFinal",
             "defaultInstance": {
                 "@class": "FSMInstance",
                 "currentStateId": 0

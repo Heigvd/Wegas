@@ -153,7 +153,7 @@ YUI.add('wegas-leaderway-entities', function (Y) {
                             }
                         }
                     },
-                    skillset: {
+                    skillsets: {
                         _inputex: {
                             label: "Default skills",
                             _type: HASHLIST,
@@ -376,8 +376,8 @@ YUI.add('wegas-leaderway-entities', function (Y) {
                     }
                 }
             },
-            skillset: {
-                name: "skillset",
+            skillsets: {
+                name: "skillsets",
                 _inputex: {
                     label: "Skills",
                     _type: HASHLIST,
@@ -457,11 +457,59 @@ YUI.add('wegas-leaderway-entities', function (Y) {
             },
             description: {
                 type: STRING,
-                format: HTML
+                format: HTML,
+                optional: true
             },
             index: {
                 type: NUMBER,
-                format: HTML
+                format: HTML,
+                optional: true
+            },
+            predecessors: {
+                _inputex: {
+                    label: "Predecessors",
+                    _type: HIDDEN
+                }
+            },
+            requirements: {
+                _inputex: {
+                    label: "requirements",
+                    _type: HASHLIST,
+                    elementType: {
+                        type: COMBINE,
+                        fields: [{
+                                name: NAME,
+                                typeInvite: NAME
+                            }, {
+                                "@class": {
+                                    value: "WRequirement"
+                                },
+                                limite: {
+                                    type: NUMBER,
+                                    format: HTML,
+                                    optional: true
+                                },
+                                needs: {
+                                    _inputex: {
+                                        label: "needs",
+                                        _type: HASHLIST,
+                                        elementType: {
+                                            type: COMBINE,
+                                            fields: [{
+                                                    name: NAME,
+                                                    typeInvite: NAME
+                                                }, {
+                                                    name: NAME,
+                                                    typeInvite: NAME
+                                                }]
+                                        }
+                                    }
+                                }
+                            }]
+
+                    }
+
+                }
             },
             properties: {
                 _inputex: {
@@ -503,12 +551,43 @@ YUI.add('wegas-leaderway-entities', function (Y) {
                     label: "Properties",
                     _type: OBJECT
                 }
+            }
+        }
+    });
+
+    /**
+     * Requirements mapper
+     */
+    Y.Wegas.persistence.WRequirement = Y.Base.create("WRequirement", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "WRequirement"
             },
-            skillset: {
+            limit: {
+                type: NUMBER
+            },
+            needs: {
                 _inputex: {
-                    label: "Skillset",
+                    label: "Needs",
                     _type: OBJECT
                 }
+            }
+        }
+    });
+
+    /**
+     * Activity mapper
+     */
+    Y.Wegas.persistence.Activity = Y.Base.create("WRequirement", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "Activity"
+            },
+            startTime: {
+                type: NUMBER
+            },
+            duration: {
+                type: NUMBER
             }
         }
     });
