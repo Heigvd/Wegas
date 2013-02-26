@@ -1,10 +1,121 @@
 {
-    "@class":"GameModel",
-    "name":"FlexiTests",
-    "childVariableDescriptors":[],
+    "@class": "GameModel",
+    "name": "FlexiTests",
+    "childVariableDescriptors": [{
+            "@class": "NumberDescriptor",
+            "name": "currentPage",
+            "editorLabel": "Page",
+            "label": "Page",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2.0
+            },
+            "scope": {
+                "@class": "PlayerScope"
+            },
+            "tags": [
+            ],
+            "minValue": 2,
+            "maxValue": null
+        },
+        {
+            "@class": "QuestionDescriptor",
+            "name": "test1",
+            "editorLabel": "Test1",
+            "label": "Test1",
+            "defaultInstance": {
+                "@class": "QuestionInstance",
+                "replies": [
+                ],
+                "active": true,
+                "unread": true
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "tags": [
+            ],
+            "items": [
+                {
+                    "@class": "SingleResultChoiceDescriptor",
+                    "name": "male",
+                    "editorLabel": "Homme",
+                    "label": "male",
+                    "defaultInstance": {
+                        "@class": "ChoiceInstance",
+                        "active": true,
+                        "unread": true
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    },
+                    "tags": [
+                    ],
+                    "results": [
+                        {
+                            "@class": "Result",
+                            "name": "",
+                            "answer": "",
+                            "files": [
+                            ],
+                            "impact": {
+                                "@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            }
+                        }
+                    ],
+                    "description": "<p>C'est un homme</p>",
+                    "impact": null,
+                    "duration": 1,
+                    "cost": 0
+                },
+                {
+                    "@class": "SingleResultChoiceDescriptor",
+                    "name": "female",
+                    "editorLabel": "Femme",
+                    "label": "female",
+                    "defaultInstance": {
+                        "@class": "ChoiceInstance",
+                        "active": true,
+                        "unread": true
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    },
+                    "tags": [
+                    ],
+                    "results": [
+                        {
+                            "@class": "Result",
+                            "name": "",
+                            "answer": "",
+                            "files": [
+                            ],
+                            "impact": {
+                                "@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            }
+                        }
+                    ],
+                    "description": "<p>C'est une femme</p>",
+                    "impact": null,
+                    "duration": 1,
+                    "cost": 0
+                }
+            ],
+            "description": "",
+            "allowMultipleReplies": true,
+            "pictures": [
+            ]
+        }
+    ],
     "scriptLibrary": {
         "default": ""
     },
-    "cssUri":"wegas-flexitests/css/wegas-flexitests.css",
-    "widgetsUri":"wegas-flexitests/db/wegas-flexitests-pages.json#"
+    "properties": {
+    },
+    "cssUri": "wegas-flexitests/css/wegas-flexitests.css",
+    "widgetsUri": "wegas-flexitests/db/wegas-flexitests-pages.json#"
 }
