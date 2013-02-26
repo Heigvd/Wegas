@@ -217,7 +217,8 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 if (td.get('requirements')[i].getAttrs && td.get('requirements')[i].getAttrs().needs) {
                     req = td.get('requirements')[i].getAttrs();
                     for (j in req.needs) {
-                        temp.push(req.needs[j] + "x " + i + " - " + j);
+                        //temp.push(req.needs[j] + "x " + i + " - " + j);
+                        temp.push(i + " - " + j);
                     }
 
                 }
@@ -249,7 +250,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
             //get new task descriptor
             for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
-                if (listTasksDescriptor.get('items')[i].get('id') === taskDescriptorId) {
+                if (listTasksDescriptor.get('items')[i].get('id') == taskDescriptorId) {
                     this.selectedTaskDescriptor = listTasksDescriptor.get('items')[i];
                     break;
                 }

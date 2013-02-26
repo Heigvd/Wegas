@@ -143,8 +143,8 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
             punderationQualityWeight = 0.5;
 
     //get existing skills
-    for (i = 0; i < workersDescriptor[0].getInstance(self).getSkillset().size(); i++) {
-        existingSkills.push(workersDescriptor[0].getInstance(self).getSkillset().keySet().toArray()[i]);
+    for (i = 0; i < workersDescriptor[0].getInstance(self).getSkillsets().size(); i++) {
+        existingSkills.push(workersDescriptor[0].getInstance(self).getSkillsets().keySet().toArray()[i]);
     }
 
     for (i = 0; i < workersDescriptor.length; i++) {
@@ -159,7 +159,7 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
         for (j = 0; j < listTaskRequirement.size(); j++) {
             taskRequirementKey = listTaskRequirement.keySet().toArray()[j];
             taskRequirementValue = parseInt(listTaskRequirement.get(taskRequirementKey).getNeeds().keySet().toArray()[0]); //@fixme take the first value only !
-            workerSkillsetValue = parseInt(workerInstance.getSkillset().get(taskRequirementKey));
+            workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));
             //calculate experience général (totalExperienceGained) part 1/2
             if (workerSkillsetValue < taskRequirementValue) {
                 totalExperience += (taskRequirementValue - workerSkillsetValue) * taskDuration / workersDescriptor.length;
@@ -183,7 +183,7 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
         for (j = 0; j < listTaskRequirement.size(); j++) {
             taskRequirementKey = listTaskRequirement.keySet().toArray()[j];
             taskRequirementValue = parseInt(listTaskRequirement.get(taskRequirementKey).getNeeds().keySet().toArray()[0]);
-            workerSkillsetValue = parseInt(workerInstance.getSkillset().get(taskRequirementKey));
+            workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));
             //calculate work Quality part 3/4
             if (taskRequirementKey == workerInstance.getProperty('wish')) {
                 randomNumber = Math.floor(Math.random() * 6) + 5;
@@ -333,7 +333,7 @@ function checkAbsencesEnd () {
             resourceInstance.getAssignments().remove(assignmentToRemove[j]);
         }
         for (j = 0; j < assignmentToAdd.length; j++) {
-            resourceInstance.assign(0, assignmentToAdd[j].getInstance(self));
+            resourceInstance.assign(assignmentToAdd[j].getInstance(self));
         }
         this.calculateTeamMotivation();
     }
@@ -607,7 +607,7 @@ function sickenResource (resourceDescriptor, duration) {
         }
     }
     if (resInstance) {
-        resInstance.assign(0, taskDescriptor.getInstance(self));
+        resInstance.assign(taskDescriptor.getInstance(self));
     }
     else {
         println('unknow id of resourceDescriptor in function sickenResource');
@@ -649,7 +649,7 @@ function assignTask (resourceDescriptorId, taskDescriptorId) {
         return;
     }
     // assign task to resource
-    resInstance.assign(0, taskDescriptor.getInstance(self));
+    resInstance.assign(taskDescriptor.getInstance(self));
 }
 
 /**
@@ -782,7 +782,7 @@ function limitValues () {
         if (value < 0)
             valueInst.setProperty('lastWorkQuality', 0);
         //skillset
-        skillsets = valueInst.getSkillset();
+        skillsets = valueInst.getSkillsets();
         for (j = 0; j < skillsets.size(); j++) {
             skillKey = skillsets.keySet().toArray()[j];
             skillValue = parseInt(skillsets.get(skillKey));
