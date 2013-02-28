@@ -125,14 +125,14 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             });
             if (widget.each && !(widget instanceof Y.Wegas.PageLoader)) {
                 treeNode = new Y.TreeNode({
-                    label: "List",
+                    label: "Container: " + widget.getName(),
                     rightWidget: button,
                     data: {
                         widget: widget
                     }
                 });
 
-                widget.each(function(item, index) {
+                widget.each(function(item) {
                     this.buildSubTree(treeNode, item);
                 }, this);
 //                for (var i in widget["children"]) {
@@ -140,7 +140,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 //                }
             } else {
                 treeNode = new Y.TreeLeaf({
-                    label: "Widget: " + widget.constructor.NAME,
+                    label: "Widget: " + widget.getName(),
                     rightWidget: button,
                     data: {
                         widget: widget

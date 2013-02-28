@@ -134,7 +134,7 @@ YUI.add('wegas-pageloader', function(Y) {
             var same = false;
             this.get("boundingBox").ancestors("." + this.getClassName(), false).some(function(node) {
                 var widget = Y.Widget.getByNode(node);
-                if (pageId === widget.get('pageId' || pageId === widget.get('variable.evaluated'))) {
+                if (pageId === widget.get('pageId') || pageId === widget.get('variable.evaluated')) {
                     same = true;
                     Y.log("Pageloader [" + this.get("pageLoaderId") + "] tries to load page (" + pageId + ") already loaded by one of its ancestor.", 'warn', 'Y.Wegas.PageLoader');
                     return true;
