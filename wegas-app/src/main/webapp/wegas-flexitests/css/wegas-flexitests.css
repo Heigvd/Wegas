@@ -60,5 +60,5 @@ body > .wegas-pageloader, html{
 }
 .wegas-flexitests-mcqdisplay-feedback{
     position: relative;
-    z-index: 30;
+    z-index: 20;
 }

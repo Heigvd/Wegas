@@ -153,7 +153,7 @@
             {
                 "type": "FlexitestsMCQ",
                 "id": "flexi-mcq",
-                "responseType": "selector",
+                "responseType": "link",
                 "variable": {
                     "name": "test1"
                 },
