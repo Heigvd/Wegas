@@ -11,6 +11,7 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-controller", function(Y) {
+    "use strict";
     Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [], {
         /**
          * Lifecycle method
@@ -106,14 +107,18 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             Y.later(this.get("fixPoint"), this, this.createLoadingEvent);
         },
         createLoadingEvent: function() {
-            this.centerElement.getActiveElement().onceAfter("loaded", function(e) {
+            this.centerElement.getActiveElement().onceAfter("render", function(e) {
                 this.set("currentLoading.center", false);
             }, this);
-            this.leftElement.getActiveElement().onceAfter("loaded", function(e) {
+            this.leftElement.getActiveElement().onceAfter("render", function(e) {
+
                 this.set("currentLoading.left", false);
+
             }, this);
-            this.rightElement.getActiveElement().onceAfter("loaded", function(e) {
+            this.rightElement.getActiveElement().onceAfter("render", function(e) {
+
                 this.set("currentLoading.right", false);
+
             }, this);
         },
         generateNextId: function() {

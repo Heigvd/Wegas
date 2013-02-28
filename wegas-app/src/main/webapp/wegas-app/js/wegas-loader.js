@@ -32,7 +32,7 @@ YUI().use(function(Y) {
                     requires: [
                         'wegas-helper', 'wegas-entity', 'wegas-datasourcerest',
                         'wegas-scripteval', 'wegas-pageloader', 'wegas-button'
-                        // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
+                                // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                     ]
                 },
                 'wegas-appcss': {
@@ -125,6 +125,10 @@ YUI().use(function(Y) {
                 'wegas-text': {
                     path: 'wegas-app/js/widget/wegas-text-min.js',
                     ws_provides: "Text"
+                },
+                'wegas-image': {
+                    path: 'wegas-app/js/widget/wegas-image-min.js',
+                    ws_provides: "Image"
                 },
                 'wegas-tabview': {
                     path: 'wegas-app/js/widget/wegas-tabview-min.js',
@@ -619,17 +623,12 @@ YUI().use(function(Y) {
                 /**
                  * Flexitests
                  */
-                'wegas-flexitests-simpleelement': {
-                    path: "wegas-flexitests/js/wegas-flexitests-simpleelement-min.js",
-                    requires: ["wegas-widget"],
-                    ws_provides: "SimpleElement"
-                },
                 'wegas-flexitests-controller': {
                     path: "wegas-flexitests/js/wegas-flexitests-controller-min.js",
                     requires: ["wegas-absolutelayout"],
                     ws_provides: "FlexitestsController"
                 },
-                'wegas-flexitests-mcqdisplay':{
+                'wegas-flexitests-mcqdisplay': {
                     path: "wegas-flexitests/js/wegas-flexitests-mcqdisplay-min.js",
                     requires: ["wegas-widget"],
                     ws_provides: "FlexitestsMCQ"

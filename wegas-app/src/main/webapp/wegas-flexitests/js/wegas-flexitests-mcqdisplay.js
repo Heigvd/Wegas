@@ -11,6 +11,7 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
+    "use strict";
     var INITIALVALUE = "flexi_initial_value";
 
     Y.namespace('Wegas').FlexitestsMCQ = Y.Base.create("wegas-flexitests-mcqdisplay", Y.Widget,

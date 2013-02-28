@@ -37,12 +37,13 @@
     "3": {
         "type": "FlexitestsController",
         "cssClass": "test-page",
+        "fixPoint": "1000",
         "children": [{
                 "type": "ChoiceList",
                 "id": "leftElement",
                 "children": [
                     {
-                        "type": "SimpleElement",
+                        "type": "Text",
                         "content": "Male"
                     }
                 ],
@@ -91,7 +92,7 @@
                 ],
                 "children": [
                     {
-                        "type": "SimpleElement",
+                        "type": "Text",
                         "content": "Female"
                     }
                 ]
@@ -122,30 +123,25 @@
                 ],
                 "children": [
                     {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/hectorPerplexe.png",
+                        "type": "Image",
+                        "url": "/hectorPerplexe.png",
                         "response": "male"
                     },
                     {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/jessicaPerplexe.png",
+                        "type": "Image",
+                        "url": "/jessicaPerplexe.png",
                         "response": "female"
                     }, {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/lucienPortrait.png",
+                        "type": "Image",
+                        "url": "/lucienPortrait.png",
                         "response": "male"
                     }, {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/danielaConfiant.png",
+                        "type": "Image",
+                        "url": "/danielaConfiant.png",
                         "response": "female"
                     }, {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/fernandPensif.png",
+                        "type": "Image",
+                        "url": "/fernandPensif.png",
                         "response": "male"
                     }
                 ]
