@@ -360,3 +360,10 @@ body {
 .wegas-pageeditor-designmode .timed-hidden-node{
     visibility: visible;
 }
+
+.experimental::after{
+    color:rgb(168, 168, 168);
+    font-style: italic;
+    font-size: 6pt;
+    content:" Development"
+}

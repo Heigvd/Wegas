@@ -42,7 +42,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             if (host.toolbar) {
                 el = host.toolbar.get('header');
                 this.designButton = new Y.ToggleButton({
-                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Edit page",
+                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span><span class='experimental'>Edit page</span>",
                     on: {
                         click: Y.bind(function(e) {
                             this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
