@@ -125,24 +125,54 @@
                     {
                         "type": "Image",
                         "url": "/hectorPerplexe.png",
-                        "response": "male"
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "male"
+                                }
+                            }
+                        ]
                     },
                     {
                         "type": "Image",
                         "url": "/jessicaPerplexe.png",
-                        "response": "female"
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "female"
+                                }
+                            }
+                        ]
                     }, {
                         "type": "Image",
                         "url": "/lucienPortrait.png",
-                        "response": "male"
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "male"
+                                }
+                            }
+                        ]
                     }, {
                         "type": "Image",
                         "url": "/danielaConfiant.png",
-                        "response": "female"
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "female"
+                                }
+                            }
+                        ]
                     }, {
                         "type": "Image",
                         "url": "/fernandPensif.png",
-                        "response": "male"
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "male"
+                                }
+                            }
+                        ]
                     }
                 ]
             },

@@ -12,6 +12,7 @@
  */
 YUI.add("wegas-flexitests-controller", function(Y) {
     "use strict";
+
     Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [], {
         /**
          * Lifecycle method
@@ -83,9 +84,10 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.next();
         },
         responseGiven: function(response) {
-            var responseTime = Y.Lang.now() - this.startTime;
+            var responseTime = Y.Lang.now() - this.startTime, reponseElement;
             this.ongoing = false;
-            if (this.centerElement.getActiveElement().get("response") === response) {
+            if ((reponseElement = this.centerElement.getActiveElement().flexiresponse) instanceof Y.Plugin.FlexiResponse &&
+                    reponseElement.get("value") === response) {
                 this.mcq.success(responseTime);
             } else {
                 this.mcq.error(responseTime);
@@ -182,6 +184,19 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             random: {
                 value: true,
                 type: "boolean"
+            }
+        }
+    });
+
+    Y.Plugin.FlexiResponse = Y.Base.create("wegas-flexi-response", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    }, {
+        NS: "flexiresponse",
+        NAME: "flexiresponse",
+        EDITORNAME: "Flexitest Response",
+        ATTRS: {
+            "value": {
+                value: "",
+                type: "string"
             }
         }
     });
