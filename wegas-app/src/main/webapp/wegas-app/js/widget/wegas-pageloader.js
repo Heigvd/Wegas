@@ -145,7 +145,7 @@ YUI.add('wegas-pageloader', function(Y) {
 
     }, {
         /** @lends Y.Wegas.PageLoader */
-
+        EDITORNAME: "Pageloader",
         /**
          * @field
          * @static
