@@ -12,6 +12,7 @@
  */
 YUI.add("wegas-image", function(Y) {
     "use strict";
+    
     var CONTENTBOX = "contentBox", WImage;
     /**
      * @name Y.Wegas.WWImage
@@ -88,6 +89,9 @@ YUI.add("wegas-image", function(Y) {
                             this.constructor.FILEENTRY + val : //Wegas Filesystem
                             val);
                     return val;
+                },
+                _inputex: {
+                    _type: "wegasurl"
                 }
             },
             complete: {
@@ -99,5 +103,6 @@ YUI.add("wegas-image", function(Y) {
             }
         }
     });
+    
     Y.namespace("Wegas").Image = WImage;
 });
