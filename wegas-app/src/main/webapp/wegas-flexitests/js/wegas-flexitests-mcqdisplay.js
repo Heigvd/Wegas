@@ -135,7 +135,7 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
             }
         }
     }, {
-        EDITORNAME: "MCQ Display",
+        EDITORNAME: "Flexitests MCQ Display",
         ATTRS: {
             feedback: {
                 value: 1000,

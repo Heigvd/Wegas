@@ -36,7 +36,7 @@ YUI.add("wegas-text", function (Y) {
 
     }, {
         /** @lends Y.Wegas.Text */
-
+        EDITORNAME: "Text",
         /**
          * @field
          * @static
