@@ -15,14 +15,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
 
     var inputEx = Y.inputEx, VariableDescriptorSelect, VariableDescriptorMethod,
     VariableDescriptorSetter, VariableDescriptorGetter, VariableDescriptorCondition,
-    EntityArrayFieldSelect,
-    escapeJSString = function (str) {
-        return str.replace(/"/g, '\\"').replace(/(\r\n|\n\r|\r|\n)/g, "\\n");
-        //return Y.Wegas.App.nl2br(str.replace(/"/g, '\\"'), "\\n");
-    },
-    unesacapeJSString = function (str) {
-        return str.replace(/\\"/g, '"');
-    };
+    EntityArrayFieldSelect;
 
     /**
      * @name Y.inputEx.Wegas.VariableDescriptorSelect
@@ -308,11 +301,11 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
                 if (this.currentMethod.arguments[i].scriptType === "string") {
                     if (Y.Lang.isArray(args[i])) {
                         for (j = 0; j < args[i].length; j++) {
-                            args[i][j] = escapeJSString(args[i][j]);
+                            args[i][j] = Y.Wegas.Helper.escapeJSString(args[i][j]);
                         }
                         args[i] = Y.JSON.stringify(args[i]);
                     } else {
-                        args[i] = '"' + escapeJSString(args[i]) + '"';
+                        args[i] = '"' + Y.Wegas.Helper.escapeJSString(args[i]) + '"';
                     }
                 }
             }

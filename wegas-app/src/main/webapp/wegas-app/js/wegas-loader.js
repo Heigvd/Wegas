@@ -30,14 +30,17 @@ YUI().use(function(Y) {
                 'wegas-app': {
                     path: 'wegas-app/js/wegas-app-min.js',
                     requires: [
-                        'wegas-entity', 'wegas-datasourcerest', 'wegas-scripteval',
-                        'wegas-pageloader', 'wegas-button'
-                                // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
+                        'wegas-helper', 'wegas-entity', 'wegas-datasourcerest',
+                        'wegas-scripteval', 'wegas-pageloader', 'wegas-button'
+                        // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                     ]
                 },
                 'wegas-appcss': {
                     path: 'wegas-app/css/wegas-app.css',
                     type: 'css'
+                },
+                'wegas-helper': {
+                    path: 'wegas-app/js/util/wegas-helper-min.js'
                 },
                 'wegas-editable': {
                     path: 'wegas-app/js/util/wegas-editable-min.js',
@@ -340,6 +343,11 @@ YUI().use(function(Y) {
                     requires: ['inputex-list', 'inputex-field', "inputex-checkbox", "wegas-inputex-roleselect"],
                     ws_provides: 'RolePermissionList'
                 },
+                'wegas-inputex-gamemodelselect': {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-gamemodelselect-min.js',
+                    requires: ['inputex-select'],
+                    ix_provides: 'gamemodelselect'
+                },
                 'wegas-inputex-roleselect': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-roleselect-min.js',
                     requires: ['inputex-select'],
@@ -423,8 +431,12 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-treeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-treeview-min.js',
-                    requires: ['wegas-widget', "treeview", "wegas-widgetmenu"],
-                    ws_provides: ['EditorTreeView', "LobbyTreeView"]
+                    requires: ['wegas-widget', "treeview", "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
+                    ws_provides: ['EditorTreeView', "JoinedGameTreeView"]
+                },
+                'wegas-editor-treeviewcss': {
+                    path: 'wegas-editor/css/wegas-editor-treeview.css',
+                    type: "css"
                 },
                 'wegas-datatable': {
                     path: 'wegas-editor/js/widget/wegas-datatable-min.js',
@@ -620,7 +632,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-flexitests-controller': {
                     path: "wegas-flexitests/js/wegas-flexitests-controller-min.js",
-                    requires: ["wegas-widget"],
+                    requires: ["wegas-absolutelayout"],
                     ws_provides: "FlexitestsController"
                 }
             }

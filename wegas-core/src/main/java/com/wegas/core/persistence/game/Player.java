@@ -49,8 +49,7 @@ public class Player extends AbstractEntity {
     /**
      * The game model this belongs to
      */
-    @ManyToOne
-    @NotNull
+    @ManyToOne(optional=false)
     @JsonBackReference(value = "player-team")
     @JoinColumn(name = "parentteam_id")
     //@XmlInverseReference(mappedBy = "players")
@@ -59,7 +58,7 @@ public class Player extends AbstractEntity {
      *
      */
     @Column(name = "parentteam_id", nullable = false, insertable = false, updatable = false)
-    private int teamId;
+    private Long teamId;
 
     /**
      *
@@ -138,7 +137,7 @@ public class Player extends AbstractEntity {
     /**
      * @return the teamId
      */
-    public int getTeamId() {
+    public Long getTeamId() {
         return teamId;
     }
 
