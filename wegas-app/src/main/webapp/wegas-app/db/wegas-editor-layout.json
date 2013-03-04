@@ -149,6 +149,7 @@
                     }, {
                         "type": "OpenTabButton",
                         "label": "Pages",
+                        "cssClass":"experimental",
                         "tabSelector": "#leftTabView",
                         "wchildren": [{
                             "type": "PageTreeview",

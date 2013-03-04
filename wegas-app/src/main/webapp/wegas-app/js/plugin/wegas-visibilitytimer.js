@@ -11,6 +11,8 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-visibilitytimer", function(Y) {
+    "use strict";
+    
     var HIDDENNODECSSCLASS = "timed-hidden-node",
             visibilityPlugin;
     visibilityPlugin = function() {

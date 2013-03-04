@@ -11,32 +11,43 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-controller", function(Y) {
+    "use strict";
+
     Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [], {
+        /**
+         * Lifecycle method
+         * @function
+         * @private
+         * @returns {undefined}
+         */
         initializer: function() {
             this.leftElement = null;
             this.rightElement = null;
             this.centerElement = null;
+            this.mcq = null;
             this.maxSize = 0;
-            this.awaitedKeypress = this.get("keyPress");
             this.ongoing = false;
             this.currentQuestionId = -1;
             this.questionToDo = [];
             this.startTime = null;
             this.events = [];
+            this.eventuallyLoad = null;
         },
-        renderUI: function() {
-            this.get("contentBox").append("<div class='feedback'></div>");
-            this.get("contentBox").append("<div class='input'></div>");
-        },
+        /**
+         * Lifecycle method
+         * @function
+         * @private
+         * @returns {undefined}
+         */
         bindUI: function() {
             this.set("tabIndex", -1);
-            this.events.push(this.get("boundingBox").after("keypress", function(e) {
-                if (this.awaitedKeypress && this.ongoing) {
-                    this.keyPressed(String.fromCharCode(e.keyCode));
-                }
-            }, this));
             this.after("*:currentLoadingChange", function(e) {
                 var noready = false;
+                try {
+                    this.eventuallyLoad.cancel();
+                } catch (e) {
+                }
+               // this.eventuallyLoad = Y.later(10000, this, this.set, "currentLoading", {"dummy": true});
                 for (var i in e.newVal) {
                     noready = (noready || e.newVal[i]);
                     if (noready) {
@@ -44,14 +55,27 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     }
                 }
                 if (!noready) {
+                  //  this.eventuallyLoad.cancel();
                     this.startStimuli();
                 }
             });
+            this.on("*:clientResponse", function(e) {
+                if (this.ongoing) {
+                    this.responseGiven(e.value);
+                }
+            });
         },
+        /**
+         * Lifecycle method
+         * @function
+         * @private
+         * @returns {undefined}
+         */
         syncUI: function() {
             this.leftElement = this.getChildById("leftElement");
             this.rightElement = this.getChildById("rightElement");
             this.centerElement = this.getChildById("centerElement");
+            this.mcq = this.getChildById("flexi-mcq");
             this.maxSize = Math.max(this.leftElement.size(), this.rightElement.size(), this.centerElement.size());
             for (var i = 0; i < this.maxSize; i += 1) {
                 this.questionToDo[i] = i;
@@ -59,29 +83,14 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.mask();
             this.next();
         },
-        keyPressed: function(key) {
-            var awaited;
-            this.awaitedKeypress = false;
-            switch (key) {
-                case "f":
-                    awaited = this.leftElement.getActiveElement().get("response");
-                    break;
-                case "j":
-                    awaited = this.rightElement.getActiveElement().get("response");
-                    break;
-                default:
-                    this.awaitedKeypress = true;
-                    return;
-            }
-
-            this.responseGiven(awaited);
-        },
         responseGiven: function(response) {
-            var responseTime = Y.Lang.now() - this.startTime;
-            if (this.centerElement.getActiveElement().get("response") === response) {
-                this.success(responseTime + " ms");
+            var responseTime = Y.Lang.now() - this.startTime, reponseElement;
+            this.ongoing = false;
+            if ((reponseElement = this.centerElement.getActiveElement().flexiresponse) instanceof Y.Plugin.FlexiResponse &&
+                    reponseElement.get("value") === response) {
+                this.mcq.success(responseTime);
             } else {
-                this.error(responseTime + " ms");
+                this.mcq.error(responseTime);
             }
             if (this.questionToDo.length === 0) {
                 this.mask();
@@ -100,14 +109,18 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             Y.later(this.get("fixPoint"), this, this.createLoadingEvent);
         },
         createLoadingEvent: function() {
-            this.centerElement.getActiveElement().onceAfter("loaded", function(e) {
+            this.centerElement.getActiveElement().onceAfter("render", function(e) {
                 this.set("currentLoading.center", false);
             }, this);
-            this.leftElement.getActiveElement().onceAfter("loaded", function(e) {
+            this.leftElement.getActiveElement().onceAfter("render", function(e) {
+
                 this.set("currentLoading.left", false);
+
             }, this);
-            this.rightElement.getActiveElement().onceAfter("loaded", function(e) {
+            this.rightElement.getActiveElement().onceAfter("render", function(e) {
+
                 this.set("currentLoading.right", false);
+
             }, this);
         },
         generateNextId: function() {
@@ -116,7 +129,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     this.questionToDo.shift();
         },
         startStimuli: function() {
-            this.awaitedKeypress = this.get("keyPress");
             this.get("boundingBox").focus();
             this.restartTimer(this.leftElement);
             this.restartTimer(this.rightElement);
@@ -125,7 +137,9 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.ongoing = true;
         },
         restartTimer: function(widget) {
-            widget.fire("visibility-timer:restart");
+            if (widget) {
+                widget.fire("visibility-timer:restart");
+            }
         },
         mask: function() {
             this.showOverlay();
@@ -133,16 +147,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         unmask: function() {
             this.hideOverlay();
             this.startTime = Y.Lang.now();
-        },
-        success: function(message) {
-            if (this.get("feedback")) {
-                this.showMessage("success", message || "", 500);
-            }
-        },
-        error: function(message) {
-            if (this.get("feedback")) {
-                this.showMessage("error", message || "", 500);
-            }
         },
         getChildById: function(id) {
             var returnItem = null;
@@ -154,6 +158,12 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             });
             return returnItem;
         },
+        /**
+         * Lifecycle method
+         * @function
+         * @private
+         * @returns {undefined}
+         */
         destructor: function() {
             var i;
             for (i = 0; i < this.events.length; i += 1) {
@@ -161,21 +171,11 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             }
         }
     }, {
+        EDITORNAME: "Flexitests Controller",
         ATTRS: {
-            keyPress: {
-                value: true,
-                type: "boolean",
-                _inputex: {
-                    label: "Keys 'f' and 'j'"
-                }
-            },
             currentLoading: {
                 value: {},
                 "transient": true
-            },
-            feedback: {
-                value: true,
-                type: "boolean"
             },
             fixPoint: {
                 value: 2000,
@@ -184,6 +184,19 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             random: {
                 value: true,
                 type: "boolean"
+            }
+        }
+    });
+
+    Y.Plugin.FlexiResponse = Y.Base.create("wegas-flexi-response", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    }, {
+        NS: "flexiresponse",
+        NAME: "flexiresponse",
+        EDITORNAME: "Flexitest Response",
+        ATTRS: {
+            "value": {
+                value: "",
+                type: "string"
             }
         }
     });
