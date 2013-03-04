@@ -31,7 +31,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.questionToDo = [];
             this.startTime = null;
             this.events = [];
-            this.eventuallyLoad = null;
         },
         /**
          * Lifecycle method
@@ -43,11 +42,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.set("tabIndex", -1);
             this.after("*:currentLoadingChange", function(e) {
                 var noready = false;
-                try {
-                    this.eventuallyLoad.cancel();
-                } catch (e) {
-                }
-               // this.eventuallyLoad = Y.later(10000, this, this.set, "currentLoading", {"dummy": true});
                 for (var i in e.newVal) {
                     noready = (noready || e.newVal[i]);
                     if (noready) {
@@ -55,7 +49,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     }
                 }
                 if (!noready) {
-                  //  this.eventuallyLoad.cancel();
                     this.startStimuli();
                 }
             });
@@ -113,14 +106,10 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 this.set("currentLoading.center", false);
             }, this);
             this.leftElement.getActiveElement().onceAfter("render", function(e) {
-
                 this.set("currentLoading.left", false);
-
             }, this);
             this.rightElement.getActiveElement().onceAfter("render", function(e) {
-
                 this.set("currentLoading.right", false);
-
             }, this);
         },
         generateNextId: function() {

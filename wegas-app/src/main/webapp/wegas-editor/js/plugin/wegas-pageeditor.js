@@ -68,7 +68,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.jsonView.hide();
                 processSource = function() {
                     if (this.sourceButton.get("pressed")) {
-                        this.jsonView.setValue(JSON.stringify(host.get("widget").toObject("@pageId"), null, "\t"));
+                        this.jsonView.setValue(Y.JSON.stringify(host.get("widget").toObject("@pageId"), null, "\t"));
                         this.get("host").get("contentBox").hide();
                         this.jsonView.show();
                         this.jsonView.editor.resize();
@@ -116,56 +116,18 @@ YUI.add('wegas-pageeditor', function(Y) {
             });
 
             this.highlightOverlay.plug(Y.Plugin.WidgetMenu, {
-                children: [{
-                        type: "Button",
-                        label: "Edit",
-                        on: {
-                            click: Y.bind(function() {                             // Display the edit form
-                                Y.Plugin.EditEntityAction.showEditForm(this.targetWidget, Y.bind(function(targetWidget, val, e, f) {
-                                    Y.Plugin.EditEntityAction.hideEditFormOverlay();
-                                    targetWidget.setAttrs(val);
-                                    targetWidget.syncUI();
-                                    Y.Wegas.PageFacade.rest.patch(targetWidget.get("root").toObject());
-                                }, this, this.targetWidget));
-                            }, this)
-                        }
-                    }, {
-                        type: "Button",
-                        label: "Delete",
-                        on: {
-                            click: Y.bind(function() {
-                                var root = this.targetWidget.get("root");
-                                if (root !== this.targetWidget) {
-                                    this.targetWidget.destroy();
-                                } else if (this.targetWidget.item(0)) {
-                                    this.targetWidget.removeAll();
-                                }
-                                Y.Wegas.PageFacade.rest.patch(root.toObject());
-                            }, this)
-                        }
-                    }],
                 event: "click"
                         /*selector: ".wegas-icon"*/
             });
-
-            this.highlightOverlay.menu.on("menuOpen", function() {
-                this.targetWidget = this.overlayWidget;
-            }, this);
         },
         bind: function() {
             var cb = this.get('host').get(CONTENTBOX);
 
-            //            this.handlers.push(cb.delegate("mouseup", function(e) {
-            //            }, '.wegas-widget', this));
-
-            this.handlers.push(cb.delegate("click", function(e) {
-                e.halt(true);
+            this.highlightOverlay.menu.on("menuOpen", function(e) {
+                this.highlightOverlay.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                 this.targetWidget = this.overlayWidget;
-                this.highlightOverlay.menu.show();
-                this.highlightOverlay.menu.menu.set("xy", [e.clientX, e.clientY]);
-                this.showOverlay(this.overlayWidget);
-                return false;
-            }, '.wegas-widget', this));
+                this.genMenu(this.targetWidget);
+            }, this);
 
             this.handlers.push(cb.delegate("mousemove", function(e) {
                 var widget;
@@ -177,21 +139,49 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.showOverlay(widget);
                 }
             }, '.wegas-widget', this));
+
             this.handlers.push(cb.delegate("mouseleave", function(e) {
                 e.halt();
                 this.hideOverlay();
             }, '.wegas-widget', this));
-
-            /*this.handlers.push(cb.delegate("mouseleave", function(e) {
-             //console.log("out", e.currentTarget.get('id'));
-             this.hideOverlay();
-             e.halt();
-             
-             var parentWidget = Y.Widget.getByNode(e.currentTarget.get('parentNode'));
-             if (parentWidget && parentWidget.get('root') !== parentWidget) {
-             this.showOverlay(parentWidget);
-             }
-             }, '.yui3-widget', this));*/
+        },
+        genMenu: function(widget) {
+            var menuCfg = widget.getMenuCfg({
+                entity: widget 
+            });
+//            [{
+//                    type: "Button",
+//                    label: "Edit",
+//                    on: {
+//                        click: Y.bind(function() {                             // Display the edit form
+//                            Y.Plugin.EditEntityAction.showEditForm(this.targetWidget, Y.bind(function(targetWidget, val, e, f) {
+//                                Y.Plugin.EditEntityAction.hideEditFormOverlay();
+//                                targetWidget.setAttrs(val);
+//                                targetWidget.syncUI();
+//                                Y.Wegas.PageFacade.rest.patch(targetWidget.get("root").toObject());
+//                            }, this, this.targetWidget));
+//                        }, this)
+//                    }
+//                }, {
+//                    type: "Button",
+//                    label: "Delete",
+//                    on: {
+//                        click: Y.bind(function() {
+//                            var root = this.targetWidget.get("root");
+//                            if (root !== this.targetWidget) {
+//                                this.targetWidget.destroy();
+//                            } else if (this.targetWidget.item(0)) {
+//                                this.targetWidget.removeAll();
+//                            }
+//                            Y.Wegas.PageFacade.rest.patch(root.toObject());
+//                        }, this)
+//                    }
+//                }];
+//            if (widget.isAugmentedBy(Y.WidgetParent)) {
+//                menuCfg.splice(1, 0, {type: "Button", label: "I may have children!"});
+//            }
+            this.highlightOverlay.menu.menu.removeAll();
+            this.highlightOverlay.menu.menu.add(menuCfg);
         },
         detach: function() {
             var i;
