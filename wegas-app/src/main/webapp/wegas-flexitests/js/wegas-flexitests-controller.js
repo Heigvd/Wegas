@@ -47,7 +47,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     this.eventuallyLoad.cancel();
                 } catch (e) {
                 }
-                this.eventuallyLoad = Y.later(10000, this, this.set, "currentLoading", {"dummy": true});
+               // this.eventuallyLoad = Y.later(10000, this, this.set, "currentLoading", {"dummy": true});
                 for (var i in e.newVal) {
                     noready = (noready || e.newVal[i]);
                     if (noready) {
@@ -55,7 +55,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     }
                 }
                 if (!noready) {
-                    this.eventuallyLoad.cancel();
+                  //  this.eventuallyLoad.cancel();
                     this.startStimuli();
                 }
             });
