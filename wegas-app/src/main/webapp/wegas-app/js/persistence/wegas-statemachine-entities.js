@@ -1,5 +1,9 @@
 YUI.add("wegas-statemachine-entities", function (Y) {
 
+
+    var STRING = "string", HIDDEN = "hidden", SELF = "self", BOOLEAN = "boolean",
+    NUMBER = "number", BUTTON = "Button", SCRIPT = "script", TEXT = "text",
+    STATES = "states";
     /*******************************/
     /******** STATEMACHINE *********/
     /*******************************/
@@ -14,13 +18,13 @@ YUI.add("wegas-statemachine-entities", function (Y) {
             },
             currentStateId: {
                 value: 1,
-                type: "number",
+                type: NUMBER,
                 _inputex: {
                     label: "Current state id"
                 }
             },
             enabled: {
-                type: 'boolean',
+                type: BOOLEAN,
                 value: true,
                 _inputex: {
                     label: 'Enabled'
@@ -34,7 +38,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                     label: "Transition History"
                 //                    ,
                 //                    elementType:{
-                //                        type:"number",
+                //                        type:NUMBER,
                 //                        readonly:true
                 //                    }
                 }
@@ -52,12 +56,12 @@ YUI.add("wegas-statemachine-entities", function (Y) {
          * @return {Transition|null} the transition if it exists
          */
         getTransitionById: function (id) {
-            var i, t, states = this.get("states"),
+            var i, t, states = this.get(STATES),
             trs;
             for (i in states) {
                 trs = states[i].get("transitions");
                 for (t in trs) {
-                    if (+trs[t].get("id") === +id) {
+                    if (+trs[t].get(ID) === +id) {
                         return trs[t];
                     }
                 }
@@ -85,7 +89,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
         },
         // *** Private methods *** //
         getCurrentState: function () {
-            return this.get("states")[this.getInstance().get("currentStateId")];
+            return this.get(STATES)[this.getInstance().get("currentStateId")];
         },
         getInitialStateId: function () {
             return this.get("defaultInstance").get("currentStateId");
@@ -94,7 +98,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
             this.get("defaultInstance").set("currentStateId", initialStateId);
         },
         getState: function (identifier) {
-            return this.get("states")[identifier];
+            return this.get(STATES)[identifier];
         }
     }, {
         ATTRS: {
@@ -110,21 +114,21 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 },
                 properties: {
                     '@class': {
-                        type: "string",
+                        type: STRING,
                         _inputex: {
-                            _type: 'hidden',
+                            _type: HIDDEN,
                             value: 'FSMInstance'
                         }
                     },
                     id: {
-                        type: "number",
+                        type: NUMBER,
                         optional: true, // The id is optional for entites that have not been persisted
                         _inputex: {
-                            _type: "hidden"
+                            _type: HIDDEN
                         }
                     },
                     currentStateId: {
-                        type: "number",
+                        type: NUMBER,
                         optional: true,
                         _inputex: {
                             label: 'Initial state id',
@@ -132,7 +136,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                         }
                     },
                     enabled: {
-                        type: 'boolean',
+                        type: BOOLEAN,
                         _inputex: {
                             label: 'Enabled'
                         }
@@ -143,7 +147,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 value: {},
                 writeOnce: "initOnly",
                 _inputex: {
-                    _type: "hidden"
+                    _type: HIDDEN
                 }/*,
                  _inputex: {
                  _type:'hashlist',
@@ -153,7 +157,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                  fields: [{
                  name: '@class',
                  value:'DialogueState',
-                 type: 'hidden'
+                 type: HIDDEN
                  },{
                  name: 'id',
                  type: 'string',
@@ -173,11 +177,11 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                  fields: [{
                  name: '@class',
                  value:'Script',
-                 type: 'hidden'
+                 type: HIDDEN
                  }, {
                  name: 'language',
                  value:'JavaScript',
-                 type: 'hidden'
+                 type: HIDDEN
                  }, {
                  name: 'content',
                  'type': 'text',
@@ -193,21 +197,21 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                  fields: [{
                  name: '@class',
                  value:'DialogueTransition',
-                 type: 'hidden'
+                 type: HIDDEN
                  }, {
                  name: 'triggerCondition',
                  type:'group',
                  fields: [{
                  name: '@class',
                  value:'Script',
-                 type: 'hidden'
+                 type: HIDDEN
                  }, {
                  name: 'language',
                  value:'JavaScript',
-                 type: 'hidden'
+                 type: HIDDEN
                  }, {
                  name: 'content',
-                 'type': 'hidden',
+                 'type': HIDDEN,
                  label:'Condition',
                  rows: 3
                  }]
@@ -223,11 +227,11 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                  fields: [{
                  name: '@class',
                  value:'Script',
-                 type: 'hidden'
+                 type: HIDDEN
                  }, {
                  name: 'language',
                  value:'JavaScript',
-                 type: 'hidden'
+                 type: HIDDEN
                  }, {
                  name: 'content',
                  'type': 'text',
@@ -247,7 +251,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 fn: "EditFSMAction"
             }]
         }, {
-            type: "Button",
+            type: BUTTON,
             label: "Duplicate",
             plugins: [{
                 fn: "DuplicateEntityAction"
@@ -258,23 +262,23 @@ YUI.add("wegas-statemachine-entities", function (Y) {
         METHODS: {
             enable: {
                 arguments: [{
-                    type: "hidden",
-                    value: "self"
+                    type: HIDDEN,
+                    value: SELF
                 }]
             },
             disable: {
                 arguments: [{
-                    type: "hidden",
-                    value: "self"
+                    type: HIDDEN,
+                    value: SELF
                 }]
             },
             isEnabled: {
                 label: "is enabled",
                 arguments: [{
-                    type: "hidden",
-                    value: "self"
+                    type: HIDDEN,
+                    value: SELF
                 }],
-                returns: "boolean"
+                returns: BOOLEAN
             }
         }
     });
@@ -348,22 +352,22 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 },
                 properties: {
                     '@class': {
-                        type: "string",
+                        type: STRING,
                         _inputex: {
-                            _type: 'hidden',
+                            _type: HIDDEN,
                             value: 'TriggerInstance'
                         }
                     },
                     currentStateId: {
-                        type: "number",
+                        type: NUMBER,
                         optional: true,
                         _inputex: {
                             label: 'Initial state id',
-                            _type: 'hidden'
+                            _type: HIDDEN
                         }
                     },
                     enabled: {
-                        type: 'boolean',
+                        type: BOOLEAN,
                         _inputex: {
                             label: 'Enabled'
                         }
@@ -372,19 +376,19 @@ YUI.add("wegas-statemachine-entities", function (Y) {
             },
             triggerEvent: {
                 _inputex: {
-                    _type: 'script',
+                    _type: SCRIPT,
                     label: 'Condition',
                     expects: "condition"
                 }
             },
             postTriggerEvent: {
                 _inputex: {
-                    _type: 'script',
+                    _type: SCRIPT,
                     label: 'Impact'
                 }
             },
             oneShot: {
-                type: 'boolean',
+                type: BOOLEAN,
                 value: true,
                 _inputex: {
                     label: 'Only once'
@@ -398,7 +402,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
             type: "EditEntityButton"
 
         }, {
-            type: "Button",
+            type: BUTTON,
             label: "Duplicate",
             plugins: [{
                 fn: "DuplicateEntityAction"
@@ -416,7 +420,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 value: "TriggerInstance"
             },
             currentStateId: {
-                type: "string",
+                type: STRING,
                 optional: true,
                 _inputex: {
                     label: "Trigger state",
@@ -442,23 +446,16 @@ YUI.add("wegas-statemachine-entities", function (Y) {
         doTransition: function (transition, callbacks) {
             var request;
             if (transition instanceof Y.Wegas.persistence.DialogueTransition) {
-                if (!this.get("id") || !transition.get("id")) {
+                if (!this.get(ID) || !transition.get(ID)) {
                     Y.error("Trying to call an unpersisted transition", new Error("Calling a detached entity"), "Y.Wegas.persistence.DialogueDescriptor");
                     return false;
                 }
-                request = "/StateMachine/" + this.get("id")
+                request = "/StateMachine/" + this.get(ID)
                 + "/Player/" + Y.Wegas.app.get("currentPlayer")
-                + "/Do/" + transition.get("id");
+                + "/Do/" + transition.get(ID);
                 try {
                     Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
                         request: request,
-                        cfg: {
-                            method: "GET",
-                            headers: {
-                                'Content-Type': 'application/json; charset=iso-8859-1',
-                                'Managed-Mode': 'true'
-                            }
-                        },
                         on: callbacks
                     });
                 } catch (e) {
@@ -491,7 +488,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
         //    Y.Wegas.app.get("currentGame")
         //    + "/VariableDescriptor/StateMachine/" + id
         //    + "/Player/" + Y.Wegas.app.get("currentPlayer")
-        //    + "/Do/" + this.get("id");
+        //    + "/Do/" + this.get(ID);
         //}
         }, {
             ATTRS: {
@@ -551,7 +548,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
          * @param {String} token The token to split by
          */
         getTexts: function (token) {
-            return this.get("text").split(token);
+            return this.get(TEXT).split(token);
         },
 
         /**
@@ -561,7 +558,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
          * @param {String} token Token to join the array
          */
         setText: function (a, token) {
-            this.set("text", a.join(token));
+            this.set(TEXT, a.join(token));
         }
     }, {
         ATTRS: {

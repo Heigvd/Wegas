@@ -190,27 +190,4 @@ public class UserFacadeTest {
         userFacade.create(u);
     }
 
-    /**
-     * Test registeredGames
-     */
-    @Test
-    public void testRegisteredGames() throws Exception {
-        final Game g = new Game();
-        g.setName("game");
-        gameFacade.create(g);
-        Team t = new Team();
-        t.setGame(g);
-        t.setName("team");
-        teamFacade.create(t);
-        Player p = new Player();
-        p.setName("player");
-        p.setUser(u);
-        p.setTeam(t);
-        playerFacade.create(p);
-
-        List<Game> registeredGames = gameFacade.findRegisteredGames(u.getId());
-        Assert.assertEquals("game", registeredGames.get(0).getName());
-
-        gameFacade.remove(g.getId());
-    }
 }

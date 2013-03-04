@@ -11,7 +11,9 @@ import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.GuestAccount;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -72,22 +74,30 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param gameModelId
      * @param game
      */
-    public void create(Long gameModelId, Game game) {
+    public void create(final Long gameModelId, final Game game) {
+
         if (this.findByToken(game.getToken()) != null
                 || teamFacade.findByToken(game.getToken()) != null) {
             throw new WegasException("This token is already in use.");
         }
+
+        final User currentUser = userFacade.getCurrentUser();
+
+        if (!(currentUser.getMainAccount() instanceof GuestAccount)) {       // @hack @fixme, guest are not stored in the db so link wont work
+            game.setCreatedBy(currentUser);
+        }
+
         GameModel gameModel = gameModelEntityFacade.find(gameModelId);
         gameModel.addGame(game);
 
-        userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + game.getId());
-        userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + game.getId());
+        currentUser.getMainAccount().addPermission("Game:Edit:g" + game.getId());
+        currentUser.getMainAccount().addPermission("Game:View:g" + game.getId());
 
         super.create(game);
     }
 
     @Override
-    public Game update(final Long entityId, Game entity) {
+    public Game update(final Long entityId, final Game entity) {
         if ((this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)
                 || teamFacade.findByToken(entity.getToken()) != null) {
             throw new WegasException("This token is already in use.");
@@ -96,7 +106,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     @Override
-    public void remove(Game entity) {
+    public void remove(final Game entity) {
         for (Team t : entity.getTeams()) {
             teamFacade.remove(t);
         }
@@ -137,7 +147,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      *
      * @return
      */
-    public List<Game> findAll(String orderBy) {
+    public List<Game> findAll(final String orderBy) {
         final Query getByGameId = em.createQuery("SELECT game FROM Game game ORDER BY game.createdTime DESC");
         //getByGameId.setParameter("orderBy", orderBy);
         return getByGameId.getResultList();
@@ -167,7 +177,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return this.findRegisterdGames(getByGameId);
     }
 
-    private List<Game> findRegisterdGames(Query q) {
+    private List<Game> findRegisterdGames(final Query q) {
         final List<Game> games = new ArrayList<>();
         for (Object ret : q.getResultList()) {                                  // @hack Replace created time by player joined time
             final Object[] r = (Object[]) ret;
@@ -189,7 +199,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         final String PREFIX = "Game:View:g";
         final Role pRolle = roleFacade.findByName("Public");
         final Collection<Game> registerdGame = this.findRegisteredGames(userId);
-        Collection<Game> games = new ArrayList<>();
+        final Collection<Game> games = new ArrayList<>();
 
         for (String permission : pRolle.getPermissions()) {
             if (permission.startsWith(PREFIX)) {
