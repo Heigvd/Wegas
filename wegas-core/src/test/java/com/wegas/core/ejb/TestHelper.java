@@ -17,18 +17,18 @@ import org.apache.shiro.config.IniSecurityManagerFactory;
 
 /**
  *
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class TestHelper {
 
     public static EJBContainer getEJBContainer() throws NamingException {
-        // Init Ejb container
-        Map<String, Object> properties = new HashMap<>();
+
+        Map<String, Object> properties = new HashMap<>();                       // Init Ejb container
         properties.put(EJBContainer.MODULES, new File[]{new File("target/embed-classes")});
         properties.put("org.glassfish.ejb.embedded.glassfish.installation.root", "./src/test/glassfish");
         //properties.put(EJBContainer.APP_NAME,"class");
         //ejbContainer.getContext().rebind("inject", this);
-        
+
         // Init shiro
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
 

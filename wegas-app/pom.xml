@@ -14,10 +14,6 @@
     <packaging>war</packaging>
     <name>wegas-app</name>
 
-    <properties>
-        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
-    </properties>
-
     <profiles>
         <profile>
             <id>light-profile</id>
@@ -26,7 +22,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
-                        <version>${war.plugin.version}</version>
                         <configuration>
                             <warName>Wegas</warName>
                             <failOnMissingWebXml>false</failOnMissingWebXml>
@@ -44,6 +39,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>release-profile</id>
             <build>
@@ -51,7 +47,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
-                        <version>${war.plugin.version}</version>
                         <configuration>
                         <!--remove not min js-->
                             <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
@@ -95,87 +90,52 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>wegas-core</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
 
-        <!--<dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wegas-mcq</artifactId>
-            <version>1.0</version>
-            <type>war</type>
-        </dependency>-->
+
 
         <!-- Jersey -->
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
-            <version>${jersey.version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jersey-core</artifactId>
-                    <groupId>com.sun.jersey</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jaxb-impl</artifactId>
-                    <groupId>com.sun.xml.bind</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jettison</artifactId>
-                    <groupId>org.codehaus.jettison</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-mapper-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-jaxrs</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-core-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-xc</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <artifactId>jersey-multipart</artifactId>
             <groupId>com.sun.jersey.contribs</groupId>
-            <version>${jersey.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Apache Shiro Dependencies -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
-            <version>${shiro.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-web</artifactId>
-            <version>${shiro.version}</version>
         </dependency>
 
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>${cdi.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jwebunit</groupId>
+            <artifactId>jwebunit-htmlunit-plugin</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -183,99 +143,21 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>2.0.5</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
-            <version>3.1.2</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Jsf -->
-        <!-- For Java EE Application Server -->
-        <!--<dependency>
-            <groupId>javax.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
-        </dependency>-->
-        <!-- For Servlet Container like Tomcat -->
-	<!--<dependency>
-	  <groupId>com.sun.faces</groupId>
-	  <artifactId>jsf-api</artifactId>
-	  <version>2.1.0-b03</version>
-	</dependency>
-	<dependency>
-	  <groupId>com.sun.faces</groupId>
-	  <artifactId>jsf-impl</artifactId>
-	  <version>2.1.0-b03</version>
-	</dependency>-->
+        <!-- Postgresql Driver -->
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-        <!-- Facebook api -->
-        <!--<dependency>
-            <groupId>com.google.code.facebookapi</groupId>
-            <artifactId>facebook-java-api</artifactId>
-            <version>2.0.5</version>
-        </dependency>-->
-
-        <!-- Atmosphere Dependencies -->
-        <!--<dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-runtime</artifactId>
-            <version>${atmosphere.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-annotations</artifactId>
-            <version>${atmosphere.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-jquery</artifactId>
-            <version>${atmosphere.version}</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>org.atmosphere</groupId>
-            <artifactId>atmosphere-jersey</artifactId>
-            <version>${atmosphere.version}</version>
-        </dependency>-->
-        <!-- Jave web container api -->
-        <!-- Alway after embeded-glassfish -->
-        <!--<dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>6.0</version>
-            <scope>provided</scope>
-        </dependency>-->
-
-
-        <!-- Java Content Repository -->
-        <!--<dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
-            <version>2.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-core</artifactId>
-            <version>2.4.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-jca</artifactId>
-            <version>2.4.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.madgag</groupId>
-            <artifactId>util-diff</artifactId>
-            <version>1.33</version>
-        </dependency>-->
     </dependencies>
 
     <build>
@@ -392,19 +274,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12.2</version>
-                <configuration>
-                    <!-- There is an issue with cobertura and jdk7,
-                    that forces us to run  in compatiblity mode.-->
-                    <argLine>-XX:-UseSplitVerifier</argLine>
-                </configuration>
             </plugin>
 
               <!-- YUI JS Compression Plugin -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
-                <version>1.3.0</version>
                 <executions>
                     <execution>
                         <goals>

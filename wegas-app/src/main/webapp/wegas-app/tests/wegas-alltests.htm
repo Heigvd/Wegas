@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <title>Wegas Test Suite</title>
+
+        <!--<style type="text/css">
+
+        </style>-->
+    </head>
+    <body class="yui3-skin-sam">
+
+        <script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+
+        <script type="text/javascript" src="../js/wegas-loader.js"></script>
+
+        <script type="text/javascript" src="./plugin/wegas-widgettoolbar-test.js"></script>
+
+        <script type="text/javascript">
+            //YUI_config.filter = "raw";
+            YUI_config.groups.wegas.base = "../../";
+            YUI_config.groups.wegas.filter = "raw";
+            YUI_config.groups.libraries.base = "../../lib/";                 // Set up libraries path
+
+            YUI({
+                //coverage: ['widgetmenu']
+            }).use('test-console', 'wegas-widgettoolbar-test', function (Y) {
+                new Y.Test.Console({
+                    style: 'block'
+                }).render();
+
+                Y.Test.Runner.setName('Wegas');
+                Y.Test.Runner.run();
+            });
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,57 @@
+/*
+ * Wegas
+ * http://www.albasim.ch/wegas/
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+package com.wegas.app;
+
+import java.io.File;
+import java.io.IOException;
+import static net.sourceforge.jwebunit.junit.JWebUnit.*;
+import org.glassfish.embeddable.*;
+import org.glassfish.embeddable.archive.ScatteredArchive;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+/**
+ *
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
+public class JavaScriptTest {
+
+    private static GlassFish glassfish;
+    private static String appName;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+
+        ClassLoader loader = Test.class.getClassLoader();
+
+        GlassFishProperties glassfishProperties = new GlassFishProperties();
+        glassfishProperties.setPort("https-listener", 8181);
+        glassfishProperties.setPort("http-listener", 8080);
+
+        glassfish = GlassFishRuntime.bootstrap().newGlassFish(glassfishProperties);
+        glassfish.start();
+
+        ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR, new File("./src/main/webapp/wegas-app/"));
+        appName = glassfish.getDeployer().deploy(archive.toURI(), "--contextroot=wegas-app");
+
+        setBaseUrl("http://localhost:8080/wegas-app/");
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        glassfish.getDeployer().undeploy(appName);
+        glassfish.dispose();
+    }
+
+    @Test
+    public void testJs() throws GlassFishException, IOException {
+        beginAt("tests/wegas-alltests.htm");
+        assertTitleEquals("Wegas Test Suite");
+    }
+}
