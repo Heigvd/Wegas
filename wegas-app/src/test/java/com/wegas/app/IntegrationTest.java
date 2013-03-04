@@ -45,19 +45,16 @@ public class IntegrationTest {
 //        appName = glassfish.getDeployer().deploy(war, "--name=Wegas", "--contextroot=Wegas", "--force=true");
         // deployer.deploy(war);
 
-
-
         ClassLoader loader = Test.class.getClassLoader();
         System.out.println("oooooooooooo: "+loader.getResource("org/slf4j/spi/LocationAwareLogger.class"));
         System.out.println("oooooooooooo: "+loader.getResource("org/apache/commons/logging/Log.class"));
 
         ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR, new File("./src/main/webapp/"));
-//        archive.addClassPath(new File("./target", "classes"));                // target/classes directory contains complied servlets
+        archive.addClassPath(new File("./target/classes/"));                    // target/classes directory contains complied servlets
         //archive.addClassPath(new File("./src/main/webapp/"));                 // target/classes directory contains complied servlets
         //archive.addMetadata(new File("resources", "sun-web.xml"));            // resources/sun-web.xml is the WEB-INF/sun-web.xml
         //archive.addMetadata(new File("./src/main/webapp/test", "web.xml"));   // resources/web.xml is the WEB-INF/web.xml
         appName = glassfish.getDeployer().deploy(archive.toURI(), "--contextroot=Wegas");    // Deploy the scattered web archive.
-
 
         setBaseUrl("http://localhost:8080/Wegas/");
     }
@@ -71,6 +68,7 @@ public class IntegrationTest {
 //    @Test
     public void hello() throws GlassFishException, IOException {
         beginAt("index.html");
+
 //        //tester.beginAt("test-app/tests/wegas-alltests.htm");                                         //Open the browser on http://localhost:8080/Wegas/index.html
 //        tester.beginAt("index.jsp");                   //Open the browser on http://localhost:8080/Wegas/index.html
 //

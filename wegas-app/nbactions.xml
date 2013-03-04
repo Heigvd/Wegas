@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
 
-<!--    <action>
+    <action>
         <actionName>run</actionName>
-        <preAction>build-with-dependencies</preAction>
+        <goals>
+            <goal>install</goal>
+        </goals>
+<!--        <preAction>build-with-dependencies</preAction>
         <goals>
             <goal>package</goal>
             <goal>prepare-package</goal>
             <goal>war:exploded</goal>
-        </goals>
+        </goals>-->
         <properties>
             <netbeans.deploy>true</netbeans.deploy>
             <skipTests>true</skipTests>
         </properties>
-    </action>-->
+    </action>
     <!--<action>
         <actionName>debug</actionName>
         <goals>

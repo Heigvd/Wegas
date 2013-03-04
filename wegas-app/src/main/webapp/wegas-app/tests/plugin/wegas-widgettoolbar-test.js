@@ -14,7 +14,7 @@ YUI.add('wegas-widgettoolbar-test', function(Y) {
     Y.Test.Runner.add(new Y.Test.Case({
         name: 'Y.Wegas.WidgetToolbar',
 
-        'should plug a WidgetMenu': function() {
+        'should plug a WidgetToolbar': function() {
 
             this.widget = new Y.Wegas.Text({
                 render: true,
@@ -28,7 +28,6 @@ YUI.add('wegas-widgettoolbar-test', function(Y) {
             });
 
             Y.Assert.isTrue(this.widget.get("boundingBox").hasClass('wegas-hastoolbar'));
-
         },
 
         "should add a button": function () {

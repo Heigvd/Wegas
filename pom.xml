@@ -12,8 +12,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>wegas-core</module>
-<!--        <module>wegas-app</module>-->
-<!--        <module>wegas-resources</module>-->
+        <module>wegas-app</module>
+        <module>wegas-resources</module>
         <!--<module>wegas-mcq</module>-->
     </modules>
 
@@ -189,6 +189,18 @@
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-core</artifactId>
                 <version>1.2.0</version>
+                <exclusions>
+                    <exclusion>
+                    <!-- Excluded since it is older than glassfish version-->
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <!-- Excluded since it is older than glassfish version-->
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.shiro</groupId>
@@ -250,16 +262,6 @@
                 <artifactId>jackrabbit-core</artifactId>
                 <version>2.4.3</version>
                 <scope>compile</scope>
-                <exclusions>
-                    <exclusion>                                    <!-- Excluded since it is older than glassfish version-->
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>jcl-over-slf4j</artifactId>
-                    </exclusion>
-                    <exclusion>                                    <!-- Excluded since it is older than glassfish version-->
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
@@ -267,13 +269,10 @@
                 <version>2.4.3</version>
                 <scope>compile</scope>
                 <exclusions>
-                    <exclusion>                                    <!-- Excluded since it is older than glassfish version-->
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>jcl-over-slf4j</artifactId>
-                    </exclusion>
-                    <exclusion>                                    <!-- Excluded since it is older than glassfish version-->
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
+                    <!-- logback (slf4j implementation) -->
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -296,6 +295,8 @@
                 <version>1.9.0</version>
                 <scope>test</scope>
             </dependency>
+
+            <!-- jWebUnit -->
             <dependency>
                 <groupId>net.sourceforge.jwebunit</groupId>
                 <artifactId>jwebunit-htmlunit-plugin</artifactId>
@@ -306,14 +307,15 @@
                         <groupId>javax.servlet</groupId>
                         <artifactId>servlet-api</artifactId>
                     </exclusion>
-<!--                    <exclusion>                                     Excluded since it is older than glassfish version
+                    <exclusion>
+                        <!-- Excluded since it is older than glassfish version-->
                         <groupId>org.slf4j</groupId>
                         <artifactId>jcl-over-slf4j</artifactId>
-                    </exclusion>
-                    <exclusion>                                     Excluded since it is older than glassfish version
+                    </exclusion> <exclusion>
+                        <!-- Excluded since it is older than glassfish version-->
                         <groupId>org.slf4j</groupId>
                         <artifactId>slf4j-api</artifactId>
-                    </exclusion>-->
+                    </exclusion>
                 </exclusions>
             </dependency>
 
@@ -426,6 +428,26 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+
+        <!-- slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+
+        <!-- logback (slf4j implementation) -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
 
     <build>
 
