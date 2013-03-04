@@ -25,7 +25,7 @@ YUI.add('wegas-pageloader', function(Y) {
      * @description Load pages and request widget to render.
      */
     PageLoader = Y.Base.create("wegas-pageloader", Y.Widget,
-            [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable], {
+            [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.PageLoader# */
 
         // *** Private fields *** //
