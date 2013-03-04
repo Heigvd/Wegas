@@ -67,11 +67,13 @@ YUI.add('wegas-choicelist', function(Y) {
                 value: 0,
                 "transient": true,
                 setter: function(val) {
-                    val = val % this.size();
-                    this.each(function(item) {
-                        item.get("boundingBox").addClass("hiddenChild");
-                    });
-                    this.item(val).get("boundingBox").removeClass("hiddenChild");
+                    if (this.size() > 0) {
+                        val = val % this.size();
+                        this.each(function(item) {
+                            item.get("boundingBox").addClass("hiddenChild");
+                        });
+                        this.item(val).get("boundingBox").removeClass("hiddenChild");
+                    }
                     return val;
                 }
             }
