@@ -206,34 +206,53 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
             return occupationObject;
         },
+            
+        /**
+         * @param TaskDescriptor td, the task to get Requirements
+         * @return String, a texte including all the Requirements
+         *  of the given task (example : 1x engineer - 48).
+         */
+        getRequirements: function (td) {
+            var i, j, temp = [], req;
+            for (i in td.get('requirements')) {
+                if (td.get('requirements')[i].getAttrs && td.get('requirements')[i].getAttrs().needs) {
+                    req = td.get('requirements')[i].getAttrs();
+                    for (j in req.needs) {
+                        //temp.push(req.needs[j] + "x " + i + " - " + j);
+                        temp.push(i + " - " + j);
+                    }
+
+                }
+            }
+            return temp.join(", ");
+        },
+            
         /**
          * Get a descripton of the occupation of the given resource. this resource can be vacant, sick or on work.
          * @param ResourceInstance resourceInstance, the resource to get the occupation text.
          * @return String decription of the occupation of the given resource
          */
         getTextOccupation: function (resourceInstance) {
-            var occupationObject, occupation = [], taskInstance, taskSkills = [], key;
+            var occupationObject, occupation = [], taskDescriptor, taskInstance, taskSkills = [], key;
             occupationObject = this.getOccupationObject(resourceInstance);
             if (occupationObject.taskDescriptor !== null) {
-                taskInstance = occupationObject.taskDescriptor.getInstance();
+                taskDescriptor = occupationObject.taskDescriptor;
+                taskInstance = taskDescriptor.getInstance();
             }
             switch (occupationObject.code) {
                 case 0 :
                     occupation.push('Libre pour un mandat, travail habituel.');
                     break;
                 case 1 :
-                    for (key in taskInstance.get('skillset')) {
-                        taskSkills.push('<li class="task-skill-value">' + key + ' (' + taskInstance.get('skillset')[key] + ')</li>');
-                    }
                     occupation.push('<div class="task">');
                     occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">');
                     occupation.push(occupationObject.taskDescriptor.get('name'));
                     occupation.push('</span></div>');
                     occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>');
-                    occupation.push(taskSkills.join(""));
+                    occupation.push(this.getRequirements(taskDescriptor));
                     occupation.push('</ul></div>');
                     occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">');
-                    occupation.push(taskInstance.get('properties').salary);
+                    occupation.push(taskDescriptor.get('properties').salary);
                     occupation.push('</span></div>');
                     occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">');
                     occupation.push(taskInstance.get('duration'));

@@ -17,7 +17,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  *
  */
 @Entity
-public class Assignment extends AbstractAssignement {
+public class Activity extends AbstractAssignement {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -26,7 +26,29 @@ public class Assignment extends AbstractAssignement {
     @Id
     @GeneratedValue
     private Long id;
-  
+    /**
+     *
+     */
+    private Double startTime;
+    /**
+     *
+     */
+    private Double duration;
+    /**
+     *
+     */
+    @OneToOne(optional = true, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "wrequirement_id", nullable = true)
+    @XmlTransient
+    private WRequirement wrequirement;
+    /**
+     *
+     */
+    @Column(name = "wcompletion")
+    private Integer completion;
+    /**
+     *
+     */
     @ManyToOne(optional = false)
     @JoinColumn(name = "taskinstance_id", nullable = false)
     @XmlTransient
@@ -43,15 +65,18 @@ public class Assignment extends AbstractAssignement {
     /**
      *
      */
-    public Assignment() {
+    public Activity() {
     }
 
     /**
      *
      * @param taskInstance
      */
-    public Assignment(TaskInstance taskInstance) {
+    public Activity(TaskInstance taskInstance) {
         this.taskInstance = taskInstance;
+        this.startTime = 0D;
+        this.duration = 0D;
+        this.completion = 0;
     }
 
     /**
@@ -60,9 +85,12 @@ public class Assignment extends AbstractAssignement {
      */
     @Override
     public void merge(AbstractEntity a) {
-        Assignment other = (Assignment) a;
+        Activity other = (Activity) a;
         this.setResourceInstance(other.getResourceInstance());
-        this.setTaskInstance(other.getTaskInstance());
+        this.setStartTime(other.getStartTime());
+        this.setDuration(other.getDuration());
+        this.setCompletion(other.getCompletion());
+        //this.setTaskInstance(other.getTaskInstance());
     }
 
     @PostPersist
@@ -95,6 +123,20 @@ public class Assignment extends AbstractAssignement {
     }
 
     /**
+     * @return the startTime
+     */
+    public Double getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * @param startTime the startTime to set
+     */
+    public void setStartTime(double startTime) {
+        this.startTime = startTime;
+    }
+
+    /**
      *
      * @return
      */
@@ -115,5 +157,47 @@ public class Assignment extends AbstractAssignement {
      */
     public void setTaskInstance(TaskInstance taskInstance) {
         this.taskInstance = taskInstance;
+    }
+
+    /**
+     * @return the duration
+     */
+    public Double getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(Double duration) {
+        this.duration = duration;
+    }
+
+    /**
+     * @return the completion
+     */
+    public Integer getCompletion() {
+        return completion;
+    }
+
+    /**
+     * @param completion the completion to set
+     */
+    public void setCompletion(Integer completion) {
+        this.completion = completion;
+    }
+
+    /**
+     * @return the wrequirement
+     */
+    public WRequirement getWrequirement() {
+        return wrequirement;
+    }
+
+    /**
+     * @param wrequirement the wrequirement to set
+     */
+    public void setWrequirement(WRequirement wrequirement) {
+        this.wrequirement = wrequirement;
     }
 }
