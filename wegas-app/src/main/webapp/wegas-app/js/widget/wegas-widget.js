@@ -234,6 +234,7 @@ YUI.add("wegas-widget", function(Y) {
          *    <li>boundingBox: Bounding box of the widget. Transient</li>
          *    <li>contentBox: Content box of the widget. Transient</li>
          *    <li>selection: Widget selection. Transient</li>
+         *    <li>activeDescendant: Currently focused child</li>
          *    <li>tabIndex: Index in tab. Transient</li>
          *    <li>focused: Informe if widget is focused. Transient</li>
          *    <li>disabled: Informe if widget is disable. Transient</li>
@@ -342,6 +343,12 @@ YUI.add("wegas-widget", function(Y) {
              * Widget selection. Transient
              */
             selection: {
+                "transient": true
+            },
+            /**
+             * currently focused child
+             */
+            activeDescendant: {
                 "transient": true
             },
             /**
@@ -566,7 +573,7 @@ YUI.add("wegas-widget", function(Y) {
      * @hack Override so plugin host accepts string definition of classes and
      * look it up in the Y.Wegas.* package.
      */
-    Y.DataSource.IO.prototype.plug = function(Plugin, config) {
+    Y.Widget.prototype.plug = function(Plugin, config) {
         var i, ln, ns;
 
         if (Lang.isArray(Plugin)) {
@@ -601,5 +608,4 @@ YUI.add("wegas-widget", function(Y) {
         }
         return this;
     };
-    Y.Widget.prototype.plug = Y.DataSource.IO.prototype.plug;
 });

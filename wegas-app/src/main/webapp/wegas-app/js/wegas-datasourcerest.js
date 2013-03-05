@@ -1163,4 +1163,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
         }
         return data_out;
     };
+
+    /** @Hack, use method defined in wegas-widget.js */
+    Y.DataSource.IO.prototype.plug = Y.Widget.prototype.plug;
 });

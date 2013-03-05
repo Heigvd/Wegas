@@ -7,7 +7,6 @@
  */
 package com.wegas.core;
 
-import com.wegas.core.Helper;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
@@ -18,25 +17,6 @@ import org.junit.*;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public class HelperTest {
-
-    public HelperTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of buildUniqueName method, of class Helper.
@@ -67,6 +47,7 @@ public class HelperTest {
         assertEquals("test(1String32)", Helper.stripLabelSuffix("test(1String32)"));
         assertEquals("test1String(3s2)", Helper.stripLabelSuffix("test1String(3s2)"));
     }
+
     @Test
     public void testGetLabelSuffix() {
         System.out.println("getLabelSuffix");
