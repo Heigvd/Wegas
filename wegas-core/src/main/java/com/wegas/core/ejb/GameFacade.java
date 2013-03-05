@@ -98,7 +98,8 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     @Override
     public Game update(final Long entityId, final Game entity) {
-        if ((this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)
+        if ((this.findByToken(entity.getToken()) != null
+                && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)
                 || teamFacade.findByToken(entity.getToken()) != null) {
             throw new WegasException("This token is already in use.");
         }
@@ -137,7 +138,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         final Query getByGameId =
-                em.createQuery("SELECT game FROM Game game WHERE game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC");
+                em.createQuery("SELECT game FROM Game game "
+                + "WHERE game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC");
+
+        GameModel gm = new GameModel();
+        gm.getGames();
         getByGameId.setParameter("gameModelId", gameModelId);
         //getByGameId.setParameter("orderBy", orderBy);
         return getByGameId.getResultList();
@@ -179,7 +184,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     private List<Game> findRegisterdGames(final Query q) {
         final List<Game> games = new ArrayList<>();
-        for (Object ret : q.getResultList()) {                                  // @hack Replace created time by player joined time
+        for (Object ret : q.getResultList()) {                                // @hack Replace created time by player joined time
             final Object[] r = (Object[]) ret;
             final Game game = (Game) r[0];
             this.em.detach(game);
