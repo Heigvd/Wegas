@@ -9,18 +9,20 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import javax.persistence.Column;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 /**
  *
- *
- * @todo add predecessors
- * @todo add requirements list<name, Object<grade, qty>
- *  { "webdesigner": { limit: 100, levels: [{lvl: "junior", qty: 2}] }
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- *
  *
  */
 @Entity
@@ -35,7 +37,22 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      */
     private Integer index;
-
+    /**
+     *
+     */
+    @ElementCollection
+    private Map<String, String> properties = new HashMap<>();
+    /**
+     *
+     */
+    @ManyToMany
+    private List<TaskDescriptor> predecessors = new ArrayList<>();
+    /**
+     *
+     */
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @JoinColumn(referencedColumnName = "variabledescriptor_id")
+    private Map<String, WRequirement> requirements = new HashMap<>();
     /**
      *
      * @param a
@@ -46,6 +63,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
         this.setIndex(other.getIndex());
+        this.predecessors.addAll(other.getPredecessors());
+        this.properties.putAll(other.getProperties());
+        this.requirements.putAll(other.getRequirements());
     }
 
     /**
@@ -65,14 +85,106 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      * @return the index
      */
-    public int getIndex() {
+    public Integer getIndex() {
         return index;
     }
 
     /**
-     * @param description the index to set
+     * @param index the index to set
      */
-    public void setIndex(int no) {
-        this.index = no;
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    /**
+     * @return the predecessors
+     */
+    public List<TaskDescriptor> getPredecessors() {
+        return predecessors;
+    }
+
+    /**
+     * @param predecessors the predecessors to set
+     */
+    public void setPredecessors(List<TaskDescriptor> predecessors) {
+        this.predecessors = predecessors;
+    }
+
+    /**
+     * @return the predecessors
+     */
+    public TaskDescriptor getPredecessor(Integer index) {
+        return predecessors.get(index);
+    }
+
+    /**
+     * @param predecessors the predecessors to set
+     */
+    public void setPredecessor(Integer index, TaskDescriptor taskDescriptor) {
+        this.predecessors.set(index, taskDescriptor);
+    }
+    
+    /**
+     * @return the requirements
+     */
+    public Map<String, WRequirement> getRequirements() {
+        return this.requirements;
+    }
+    
+    /**
+     * @param requierement the requierement to set
+     */
+    public void setRequirements(Map<String, WRequirement> requirements) {
+        this.requirements = requirements;
+    }
+    
+    /**
+     * 
+     * @param key
+     * @return WRequirement
+     */
+    public WRequirement getRequirement(String key) {
+        return this.requirements.get(key);
+    }
+
+    /**
+     *
+     * @param key
+     * @param WRequirement
+     */
+    public void setRequirement(String key, WRequirement val) {
+        this.requirements.put(key, val);
+    }
+
+    /**
+     * @return the properties
+     */
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    /**
+     *
+     * @param key
+     * @param val
+     */
+    public void setProperty(String key, String val) {
+        this.properties.put(key, val);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public String getProperty(String key) {
+        return this.properties.get(key);
     }
 }
