@@ -94,18 +94,18 @@
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
-            <scope>compile</scope>
+<!--            <scope>compile</scope>-->
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-core</artifactId>
-            <scope>compile</scope>
+<!--            <scope>compile</scope>-->
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jca</artifactId>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.madgag</groupId>
             <artifactId>util-diff</artifactId>

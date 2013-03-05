@@ -7,6 +7,7 @@
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.core.Helper;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
@@ -38,6 +39,11 @@ public class RequestController implements Serializable {
      */
     @ManagedProperty("#{param.lang}")
     private String lang = "en";
+    /**
+     *
+     */
+    @ManagedProperty("#{param.debug}")
+    private Boolean debug;
 
     /**
      *
@@ -93,11 +99,28 @@ public class RequestController implements Serializable {
         return userFacade.getCurrentUser();
     }
 
-    public String getCurrentRoles(){
+    public String getCurrentRoles() {
         String cssClass = "";
-        for (Role r : userFacade.getCurrentUser().getMainAccount().getRoles()){
-            cssClass += " wegas-group-" +r.getName();
+        for (Role r : userFacade.getCurrentUser().getMainAccount().getRoles()) {
+            cssClass += " wegas-group-" + r.getName();
         }
         return cssClass.toLowerCase();
+    }
+
+    /**
+     * @return the debug
+     */
+    public Boolean getDebug() {
+        if (debug == null) {
+            return Boolean.valueOf(Helper.getWegasProperty("debug", "false"));
+        }
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(Boolean debug) {
+        this.debug = debug;
     }
 }
