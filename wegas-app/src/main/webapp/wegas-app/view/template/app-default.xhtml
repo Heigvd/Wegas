@@ -83,8 +83,8 @@
                     YUI_config.insertBefore = 'customstyles';
                     YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
                     YUI_config.charset = "#{wegasConfig.encoding}";
-                    YUI_config.debug = #{wegasConfig.debug};
-                    YUI_config.throwFail = true;                                // If throwFail is set, Y.error will generate or re-throw
+                    YUI_config.debug = #{requestController.debug};
+                    YUI_config.throwFail = true;                        // If throwFail is set, Y.error will generate or re-throw
                     // a JS Error. Otherwise the failure is logged.
                     YUI_config.errorFn = function (msg, e, src) {
                         // console.log("ERRORFN", msg, e, src);
@@ -92,7 +92,7 @@
                         // jslogger.log({error: {msg: msg, e: e, src: src}});    // Js logger msg
                         // _gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
                         // throw msg;
-                        return false;                           // Returning true from this function will stop the Error from being thrown.
+                        return false;                      // Returning true from this function will stop the Error from being thrown.
                     };
                     //YUI_config.gallery = 'gallery-2011.02.18-23-10';
                     //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
@@ -106,9 +106,9 @@
                         YUI_config.groups[groupName].comboBase = comboBase;
                     }
                     YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
-                    YUI_config.groups.inputex.combine = #{!wegasConfig.debug};
-                    YUI_config.groups.wegas.combine = #{!wegasConfig.debug};
-                    YUI_config.groups.wegas.filter = (#{wegasConfig.debug}) ? "raw" : "min";// Select raw files
+                    YUI_config.groups.inputex.combine = #{!requestController.debug};
+                    YUI_config.groups.wegas.combine = #{!requestController.debug};
+                    YUI_config.groups.wegas.filter = (#{requestController.debug}) ? "raw" : "min";// Select raw files
                     setupLocalPath("wegas");
                     setupLocalPath("inputex");
                     setupLocalPath("ace");                                      // Set up ace path
@@ -131,7 +131,7 @@
                         YUI().use('wegas-app', function (Y) {
                             var app = new Y.Wegas.App({
                                 layoutSrc: 'wegas-app/db/wegas-app-layout.json',
-                                debug: true,
+                                debug: #{requestController.debug},
                                 currentGameModel: #{gameController.currentGameModel.id},
                                 currentGame: #{gameController.currentGame.id},
                                 currentTeam: #{gameController.currentPlayer.team.id},
@@ -201,23 +201,10 @@
                                                 }
                                             }]
                                     }
-                                },
-                                /**
-                                 * This field is used to override Entities edition menus.
-                                 * Use the target class name as the key.
-                                 */
-                                editorMenus: {},
-                                /**
-                                 * This field is used to override Entities edition forms.
-                                 * Use the target class name as the key.
-                                 */
-                                editorForms: {}
+                                }
                             });
 
                             app.render();                                       // launch app
-                            Y.once('domready', function () {});                 // When dom is ready,
-
-
                         });
                     </script>
                 </ui:insert>

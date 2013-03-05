@@ -60,6 +60,7 @@ public class Helper {
     public static <T> T lookupBy(Context context, Class<T> type) throws NamingException {
         return lookupBy(context, type, type);
     }
+
     /**
      *
      * @param <T>
@@ -212,6 +213,15 @@ public class Helper {
             return ResourceBundle.getBundle("wegas-override").getString(propertyName);
         } catch (MissingResourceException ex) {
             return ResourceBundle.getBundle("wegas").getString(propertyName);
+        }
+    }
+
+    public static String getWegasProperty(String propertyName, String defaultValue) {
+        String ret = getWegasProperty(propertyName);
+        if (ret == null) {
+            return defaultValue;
+        } else {
+            return ret;
         }
     }
 }
