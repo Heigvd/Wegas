@@ -101,6 +101,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-chat': {
                     path: 'wegas-app/js/widget/wegas-chat-min.js',
+                    requires: ['inputex-field', 'inputex-textarea', 'button'],
                     ws_provides: 'Chat'
                 },
                 'wegas-langselector': {
@@ -542,10 +543,15 @@ YUI().use(function(Y) {
                     ws_provides: "Dice"
                 },
                 /**monopoly**/
-                'wegas-monopoly': {
-                    path: 'wegas-monopoly/js/wegas-monopoly-pion-min.js',
-                    requires: ['wegas-monopoly-pion', 'wegas-book-dice', 'wegas-button'],
-                    ws_provides: "Pion"
+                'wegas-monopoly-controller': {
+                    path: 'wegas-monopoly/js/wegas-monopoly-controller-min.js',
+                    requires: ['wegas-monopoly-controller', 'wegas-book-dice', 'wegas-button'],
+                    ws_provides: "MonopolyController"
+                },
+                'wegas-monopoly-display': {
+                    path: 'wegas-monopoly/js/wegas-monopoly-display-min.js',
+                    requires: ['wegas-monopoly-display'],
+                    ws_provides: "Monopolydisplay"
                 },
                 /**CEP**/
                 'wegas-cep': {

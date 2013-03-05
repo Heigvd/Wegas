@@ -31,12 +31,20 @@
 .wegas-book-dice .result-value-6{
     background-image:url(../../wegas-book/images/de6.png);
 }
-
+/*
 .wegas-monopoly .wegas-list-vertical .header {
     background-image:url(../../wegas-monopoly/images/plateau.jpg);
     background-repeat: no-repeat;
     background-position: 150px 20px;
     
+}*/
+
+.wegas-monopoly-display{
+    background-image:url(../../wegas-monopoly/images/plateau.jpg);
+    background-repeat: no-repeat;
+    background-position: 150px 0px;
+    height: 730px;
+    width: 800px;
 }
 
 .wegas-monopoly {
@@ -60,61 +68,80 @@
 }
 
 .box1 {
-    margin-top: -55px;
+    margin-top: 525px;
     margin-left: 680px;
 }
 
 .box2 {
-    margin-top: -55px;
+    margin-top: 525px;
     margin-left: 616px;
 }
 
 .box3 {
-    margin-top: -55px;
+    margin-top: 525px;
     margin-left: 570px;
 }
 
 .box4 {
-    margin-top: -55px;
+    margin-top: 525px;
     margin-left: 524px;
 }
 
 .box5 {
-    margin-top: -55px;
+    margin-top: 525px;
     margin-left: 478px;
 }
 
 .box6 {
-    margin-top: -55px;
+    margin-top: 525px;
     margin-left: 435px;
 }
 
 .box7 {
-    margin-top: -55px;
+    margin-top: 525px;
     margin-left: 389px;
 }
 
 .box8 {
-    margin-top: -55px;
-    margin-left: 389px;
-}
-
-.box9 {
-    margin-top: -55px;
+    margin-top: 525px;
     margin-left: 343px;
 }
 
-.box10 {
-    margin-top: -55px;
+.box9 {
+    margin-top: 525px;
     margin-left: 299px;
 }
 
-.box11 {
-    margin-top: -55px;
+.box10 {
+    margin-top: 525px;
     margin-left: 253px;
 }
 
-.box12 {
-    margin-top: -55px;
+.box11 {
+    margin-top: 525px;
     margin-left: 190px;
+}
+
+.box12 {
+    margin-top: 470px;
+    margin-left: 190px;
+}
+
+.wegas-chat {
+    width: 225px;
+}
+
+.conversation .inputEx-fieldWrapper {
+    float: left;
+    margin-top: 5px;
+}
+
+.wegas-chat-send {
+    margin-left: 8px;
+}
+
+.wegas-chat-msgs {
+    display: block;
+    height: 60px;
+    overflow-y: scroll;
 }
