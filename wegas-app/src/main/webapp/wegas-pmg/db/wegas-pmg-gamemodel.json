@@ -142,7 +142,8 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase1",
-                    "editorLabel": "period phase 1",
+                    "editorLabel": "periodPhase1",
+                    "label": "periodPhase1",
                     "minValue": 1,
                     "maxValue": 1,
                     "defaultInstance": {
@@ -155,7 +156,8 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase2",
-                    "editorLabel": "period phase 2",
+                    "editorLabel": "periodPhase2",
+                    "label": "periodPhase2",
                     "minValue": 1,
                     "maxValue": 1,
                     "defaultInstance": {
@@ -168,7 +170,8 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase3",
-                    "editorLabel": "period phase 3",
+                    "editorLabel": "periodPhase3",
+                    "label": "periodPhase3",
                     "minValue": 1,
                     "maxValue": 10,
                     "defaultInstance": {
@@ -181,7 +184,8 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase1_4",
-                    "editorLabel": "period phase 4",
+                    "editorLabel": "periodPhase1_4",
+                    "label": "periodPhase1_4",
                     "minValue": 1,
                     "maxValue": 1,
                     "defaultInstance": {
@@ -196,7 +200,7 @@
         }, {
             "@class": "ListDescriptor",
             "name": "employees",
-            "editorLabel": "Employees",
+            "editorLabel": "employees",
             "label": "employees",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -208,8 +212,8 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "businessSpecialist",
-                    "editorLabel": "Business specialist",
-                    "label": "",
+                    "editorLabel": "businessSpecialist",
+                    "label": "businessSpecialist",
                     "defaultInstance": {
                         "@class": "ListInstance"
                     },
@@ -219,21 +223,29 @@
                     "items": [
                         {
                             "@class": "ResourceDescriptor",
-                            "name": "marcel",
+                            "name": "Marcel",
                             "editorLabel": "Marcel",
                             "label": "Marcel",
                             "description": "Description de Marcel",
+                            "properties": {
+                                "activityRate": 100,
+                                "disengagementCost": 0,
+                                "coef_activityRate": 1,
+                                "coef_moral": 1,
+                                "engagementCost": 0,
+                                "engagementDelay": 0,
+                                "maxBilledUnworkedHours": 0,
+                                "planningAvailability": true
+                            },
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
-                                "moral": 0,
-                                "confidence": 0,
+                                "moral": 8,
                                 "properties": {
-                                    "grade": "senior",
-                                    "motivation": "9",
-                                    "ratio": "80",
-                                    "wage": "7800"
+                                    "ratio": 80,
+                                    "wage": 7800
                                 },
-                                "skillset": {
+                                "skillsets": {
+                                    "Business specialist": 9
                                 }
                             },
                             "scope": {
@@ -241,21 +253,30 @@
                             }
                         }, {
                             "@class": "ResourceDescriptor",
-                            "name": "beatrice",
-                            "editorLabel": "Béatrice",
-                            "label": "Béatrice",
+                            "name": "Beatrice",
+                            "editorLabel": "Beatrice",
+                            "label": "Beatrice",
                             "description": "Description de Béatrice",
+                            "properties": {
+                                "activityRate": 80,
+                                "disengagementCost": 0,
+                                "coef_activityRate": 1,
+                                "coef_moral": 1,
+                                "engagementCost": 0,
+                                "engagementDelay": 0,
+                                "maxBilledUnworkedHours": 0,
+                                "planningAvailability": true
+                            },
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
-                                "moral": 0,
+                                "moral": 9,
                                 "confidence": 0,
                                 "properties": {
-                                    "grade": "junior",
-                                    "motivation": "10",
-                                    "ratio": "100",
-                                    "wage": "5600"
+                                    "ratio": 80,
+                                    "wage": 5400
                                 },
-                                "skillset": {
+                                "skillsets": {
+                                    "Business specialist": 5
                                 }
                             },
                             "scope": {
@@ -266,8 +287,8 @@
                 }, {
                     "@class": "ListDescriptor",
                     "name": "webDesigner",
-                    "editorLabel": "Web designer",
-                    "label": "",
+                    "editorLabel": "webDesigner",
+                    "label": "webDesigner",
                     "defaultInstance": {
                         "@class": "ListInstance"
                     },
@@ -277,21 +298,30 @@
                     "items": [
                         {
                             "@class": "ResourceDescriptor",
-                            "name": "claude",
+                            "name": "Claude",
                             "editorLabel": "Claude",
                             "label": "Claude",
                             "description": "Description de Claude",
+                            "properties": {
+                                "activityRate": 100,
+                                "disengagementCost": 0,
+                                "coef_activityRate": 1,
+                                "coef_moral": 1,
+                                "engagementCost": 0,
+                                "engagementDelay": 0,
+                                "maxBilledUnworkedHours": 0,
+                                "planningAvailability": true
+                            },
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
-                                "moral": 0,
+                                "moral": 8,
                                 "confidence": 0,
                                 "properties": {
-                                    "grade": "expert",
-                                    "motivation": "10",
-                                    "ratio": "80",
-                                    "wage": "10000"
+                                    "ratio": 80,
+                                    "wage": 4200
                                 },
-                                "skillset": {
+                                "skillsets": {
+                                    "Web designer": 2
                                 }
                             },
                             "scope": {
@@ -299,21 +329,30 @@
                             }
                         }, {
                             "@class": "ResourceDescriptor",
-                            "name": "michael",
+                            "name": "Michael",
                             "editorLabel": "Michael",
                             "label": "Michael",
                             "description": "Description de Michael",
+                            "properties": {
+                                "activityRate": 100,
+                                "disengagementCost": 0,
+                                "coef_activityRate": 1,
+                                "coef_moral": 1,
+                                "engagementCost": 0,
+                                "engagementDelay": 0,
+                                "maxBilledUnworkedHours": 0,
+                                "planningAvailability": true
+                            },
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
-                                "moral": 0,
+                                "moral": 6,
                                 "confidence": 0,
                                 "properties": {
-                                    "grade": "junior",
-                                    "motivation": "6",
-                                    "ratio": "100",
-                                    "wage": "4500"
+                                    "ratio": 80,
+                                    "wage": 6000
                                 },
-                                "skillset": {
+                                "skillsets": {
+                                    "Web designer": 5
                                 }
                             },
                             "scope": {
@@ -321,21 +360,30 @@
                             }
                         }, {
                             "@class": "ResourceDescriptor",
-                            "name": "lucie",
+                            "name": "Lucie",
                             "editorLabel": "Lucie",
                             "label": "Lucie",
                             "description": "Description de Lucie",
+                            "properties": {
+                                "activityRate": 100,
+                                "disengagementCost": 0,
+                                "coef_activityRate": 1,
+                                "coef_moral": 1,
+                                "engagementCost": 0,
+                                "engagementDelay": 0,
+                                "maxBilledUnworkedHours": 0,
+                                "planningAvailability": true
+                            },
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
-                                "moral": 0,
+                                "moral": 7,
                                 "confidence": 0,
                                 "properties": {
-                                    "grade": "senior",
-                                    "motivation": "9",
-                                    "ratio": "100",
-                                    "wage": "5300"
+                                    "ratio": 80,
+                                    "wage": 5800
                                 },
-                                "skillset": {
+                                "skillsets": {
+                                    "Web designer": 7
                                 }
                             },
                             "scope": {
@@ -349,87 +397,148 @@
             "@class": "ListDescriptor",
             "name": "tasks",
             "editorLabel": "tasks",
-            "label": "",
+            "label": "tasks",
             "defaultInstance": {
                 "@class": "ListInstance"
             },
             "scope": {
                 "@class": "TeamScope"
             },
-            "tags": [
-            ],
-            "items": [
-                {
+            "items": [{
                     "@class": "TaskDescriptor",
-                    "name": "test",
-                    "editorLabel": "Test",
-                    "label": "Test",
+                    "name": "User-Interface Modeling",
+                    "editorLabel": "User-Interface Modeling",
+                    "label": "User-Interface Modeling",
+                    "index": 1,
+                    "description": "description tâche 1",
+                    "properties": {
+                        "bonusRatio": 0,
+                        "competenceRatioInf": 0,
+                        "competenceRatioSup": 0,
+                        "coordinationRatioInf": 0,
+                        "coordinationRatioSup": 0,
+                        "progressionOfNeeds": 0,
+                        "takeInHandDuration": 0,
+                        "randomDurationInf": 17,
+                        "randomDurationSup": 26
+                    },
+                    "requirements": {
+                        "Web designer": {
+                            "@class": "WRequirement",
+                            "limit": 100,
+                            "needs": {
+                                "4": "1",
+                                "7": "1"
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
                         "active": true,
                         "duration": 2,
                         "properties": {
-                            "realized": "100",
-                            "no": "3"
-                        },
-                        "skillset": {
+                            "fixedCosts": 1200,
+                            "predecessorsDependances": 1000
                         }
                     },
                     "scope": {
                         "@class": "TeamScope"
-                    },
-                    "tags": [
-                    ],
-                    "description": "Ceci est un test"
+                    }
                 }, {
                     "@class": "TaskDescriptor",
-                    "name": "task2",
-                    "editorLabel": "Task 2",
-                    "label": "Task 2",
+                    "name": "Requirements Analysis",
+                    "editorLabel": "Requirements Analysis",
+                    "label": "Requirements Analysis",
+                    "index": 2,
+                    "description": "description tâche 2",
+                    "properties": {
+                        "fixedCosts": 700,
+                        "predecessorsDependances": 1000
+                    },
+                    "requirements": {
+                        "Fitter": {
+                            "@class": "WRequirement",
+                            "limit": 100,
+                            "needs": {
+                                "8": 1
+                            }
+                        },
+                        "Business Specialist": {
+                            "@class": "WRequirement",
+                            "limit": 100,
+                            "needs": {
+                                "4": 2,
+                                "8": 1
+                            }
+                        }
+                    },
                     "defaultInstance": {
                         "@class": "TaskInstance",
                         "active": true,
-                        "duration": 4,
+                        "duration": 1,
                         "properties": {
-                            "realized": "60",
-                            "no": "5"
-                        },
-                        "skillset": {
+                            "bonusRatio": 0,
+                            "competenceRatioInf": 0,
+                            "competenceRatioSup": 0,
+                            "coordinationRatioInf": 0,
+                            "coordinationRatioSup": 0,
+                            "progressionOfNeeds": 0,
+                            "takeInHandDuration": 0,
+                            "randomDurationInf": 15,
+                            "randomDurationSup": 24
                         }
                     },
                     "scope": {
                         "@class": "TeamScope"
-                    },
-                    "tags": [
-                    ],
-                    "description": "Ceci est un deuxième test"
-                }, {
+                    }
+                }
+            ]
+        }, {
+            "@class": "ListDescriptor",
+            "name": "dontErase",
+            "editorLabel": "dontErase",
+            "label": "dontErase",
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "items": [{
                     "@class": "TaskDescriptor",
-                    "name": "task3",
-                    "editorLabel": "task 3",
-                    "label": "",
+                    "name": "defaultTask",
+                    "editorLabel": "defaultTask",
+                    "label": "defaultTask",
+                    "index": "0",
+                    "description": "Assign this task as sickness, holidays, etc.",
                     "defaultInstance": {
                         "@class": "TaskInstance",
                         "active": true,
-                        "duration": 5,
-                        "properties": {
-                            "realized": "0",
-                            "no": "4"
-                        },
-                        "skillset": {
-                        }
+                        "duration": 0
                     },
                     "scope": {
                         "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "ResourceDescriptor",
+                    "name": "defaultResource",
+                    "editorLabel": "defaultResource",
+                    "label": "defaultResource",
+                    "description": "Used to make task-Gantt in planification",
+                    "defaultInstance": {
+                        "@class": "ResourceInstance",
+                        "active": true
                     },
-                    "tags": [
-                    ],
-                    "description": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et nesciunt."
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
                 }
             ]
         }, {
             "@class": "ListDescriptor",
             "name": "questions",
+            "editorLabel": "questions",
+            "label": "questions",
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "value": 0.0
@@ -441,6 +550,8 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "Questions phase 1",
+                    "editorLabel": "Questions phase 1",
+                    "label": "Questions phase 1",
                     "defaultInstance": {
                         "@class": "NumberInstance"
                     },
@@ -451,6 +562,8 @@
                         {
                             "@class": "QuestionDescriptor",
                             "name": "Comment faire cela?",
+                            "editorLabel": "Comment faire cela?",
+                            "label": "Comment faire cela?",
                             "defaultInstance": {
                                 "@class": "QuestionInstance"
                             },
@@ -461,6 +574,8 @@
                                 {
                                     "@class": "ChoiceDescriptor",
                                     "name": "a) Reponse 1",
+                                    "editorLabel": "a) Reponse 1",
+                                    "label": "a) Reponse 1",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"
                                     },
@@ -481,6 +596,8 @@
                 }, {
                     "@class": "ListDescriptor",
                     "name": "Questions phase 2",
+                    "editorLabel": "Questions phase 2",
+                    "label": "Questions phase 2",
                     "defaultInstance": {
                         "@class": "NumberInstance"
                     },
@@ -491,6 +608,8 @@
                         {
                             "@class": "QuestionDescriptor",
                             "name": "Sample question phase 2?",
+                            "editorLabel": "Sample question phase 2?",
+                            "label": "Sample question phase 2?",
                             "defaultInstance": {
                                 "@class": "QuestionInstance"
                             },
@@ -501,6 +620,8 @@
                                 {
                                     "@class": "ChoiceDescriptor",
                                     "name": "a) Reponse 1",
+                                    "editorLabel": "a) Reponse 1",
+                                    "label": "a) Reponse 1",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"
                                     },
@@ -523,6 +644,8 @@
         }, {
             "@class": "ListDescriptor",
             "name": "actions",
+            "editorLabel": "actions",
+            "label": "actions",
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "value": 0.0
@@ -534,6 +657,8 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "Actions phase 1",
+                    "editorLabel": "Actions phase 1",
+                    "label": "Actions phase 1",
                     "defaultInstance": {
                         "@class": "NumberInstance"
                     },
@@ -544,6 +669,8 @@
                         {
                             "@class": "QuestionDescriptor",
                             "name": "Effectuer action 1 phase 1",
+                            "editorLabel": "Effectuer action 1 phase 1",
+                            "label": "Effectuer action 1 phase 1",
                             "allowMultipleReplies": true,
                             "defaultInstance": {
                                 "@class": "QuestionInstance"
@@ -555,6 +682,8 @@
                                 {
                                     "@class": "ChoiceDescriptor",
                                     "name": "reponse 1)",
+                                    "editorLabel": "reponse 1)",
+                                    "label": "reponse 1)",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"
                                     },
@@ -580,6 +709,8 @@
                 }, {
                     "@class": "ListDescriptor",
                     "name": "Actions phase 2",
+                    "editorLabel": "Actions phase 2",
+                    "label": "Actions phase 2",
                     "defaultInstance": {
                         "@class": "NumberInstance"
                     },
@@ -590,6 +721,8 @@
                         {
                             "@class": "QuestionDescriptor",
                             "name": "Effectuer action 1 phase 2",
+                            "editorLabel": "Effectuer action 1 phase 2",
+                            "label": "Effectuer action 1 phase 2",
                             "allowMultipleReplies": true,
                             "defaultInstance": {
                                 "@class": "QuestionInstance"
@@ -601,6 +734,8 @@
                                 {
                                     "@class": "ChoiceDescriptor",
                                     "name": "reponse 1)",
+                                    "editorLabel": "reponse 1)",
+                                    "label": "reponse 1)",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"
                                     },

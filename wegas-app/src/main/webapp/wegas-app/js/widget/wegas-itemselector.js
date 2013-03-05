@@ -34,17 +34,14 @@ YUI.add('wegas-itemselector', function (Y) {
          * Reference to each used functions
          */
         handlers: null,
-
         /**
          * The selected variable descriptor
          */
         currentItem: null,
-
         /**
          * The reference to the ScrollView widget
          */
         scrollView: null,
-
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -54,7 +51,6 @@ YUI.add('wegas-itemselector', function (Y) {
         initializer: function () {
             this.handlers = {};
         },
-
         /**
          * @function
          * @private
@@ -89,7 +85,6 @@ YUI.add('wegas-itemselector', function (Y) {
                 }
             });
         },
-
         /**
          * @function
          * @private
@@ -123,7 +118,6 @@ YUI.add('wegas-itemselector', function (Y) {
             }, '.selector', this);
 
         },
-
         /**
          * @function
          * @private
@@ -139,7 +133,6 @@ YUI.add('wegas-itemselector', function (Y) {
             this.createSelector(cb, variables.get('items'));
             this.createInformations(cb);
         },
-
         /**
          * @function
          * @private
@@ -174,7 +167,6 @@ YUI.add('wegas-itemselector', function (Y) {
             }
             this.scrollView.render();
         },
-
         /**
          * @function
          * @private
@@ -187,7 +179,6 @@ YUI.add('wegas-itemselector', function (Y) {
             node.empty();
             this.createDOMProperties(node, this.currentItem, this.get('informations'));
         },
-
         /**
          * @function
          * @private
@@ -238,7 +229,6 @@ YUI.add('wegas-itemselector', function (Y) {
                 }
             }
         },
-
         /**
          * @function
          * @private
@@ -258,7 +248,11 @@ YUI.add('wegas-itemselector', function (Y) {
                 value = variable.getInstance().get(varName);
             } else {
                 for (i = 0; i < prop.length; i++) {
-                    if (variable.getInstance().get(prop[i]) != null && variable.getInstance().get(prop[i])[varName] != null) {
+                    if (variable.get(prop[i]) != null && variable.get(prop[i])[varName] != null) {
+                        value = variable.get(prop[i])[varName];
+                        break;
+                    }
+                    else if (variable.getInstance().get(prop[i]) != null && variable.getInstance().get(prop[i])[varName] != null) {
                         value = variable.getInstance().get(prop[i])[varName];
                         break;
                     }

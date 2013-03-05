@@ -1,476 +1,511 @@
 {
-    "@class":"GameModel",
-    "name":"CEP Game",
+    "@class": "GameModel",
+    "name": "CEP Game",
     "scriptLibrary": {
         "default": "/*\r\n * Wegas\r\n * http://www.albasim.com/wegas/\r\n *\r\n * School of Business and Engineering Vaud, http://www.heig-vd.ch/\r\n * Media Engineering :: Information Technology Managment :: Comem\r\n *\r\n * Copyright (C) 2012\r\n */\r\n/**\r\n * @author Francois-Xavier Aeberhard <fx@red-agent.com>\r\n */\r\nimportPackage(javax.naming);\r\n\r\nfunction lookupBean (name) {\r\n    var ctx = new InitialContext();\r\n    return ctx.lookup(\"java:module/\" + name);\r\n}\r\n\r\nfunction passPeriod () {\r\n    var currentTime = phases.descriptor.items.get(phases.value),\r\n            currentTimeInstance = currentTime.getInstance(self);\r\n    currentTimeInstance.value += 1;\r\n    if (currentTimeInstance.value > currentTime.maxValue) {\r\n        phases.value += 1;\r\n    }\r\n    humanResources.value = 15;\r\n}\r\n\r\nfunction checkMoral () {\r\n    this.setTeamMotivation();\r\n    this.changePicture();\r\n}\r\n\r\nfunction setTeamMotivation () {\r\n    var i, gm = self.getGameModel(),\r\n            listEmployees = VariableDescriptorFacade.findByName(gm, 'employees'),\r\n            employeeInstance,\r\n            teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation'),\r\n            morals = [],\r\n            mSum = 0,\r\n            mAverage,\r\n            mGap = [],\r\n            SumOfSquareOfMGap = 0,\r\n            standardDeviation,\r\n            newTeamMotivation;\r\n    if (!listEmployees || !teamMotivation) {\r\n        return;\r\n    }\r\n\r\n    // calcul arithmetic average of morals (on actives employees only)\r\n    for (i = 0; i < listEmployees.items.size(); i++) {\r\n        employeeInstance = listEmployees.items.get(i).getInstance(self);\r\n        if (employeeInstance.getActive() == true) {\r\n            morals.push(parseInt(employeeInstance.getMoral()));\r\n            mSum += parseInt(employeeInstance.getMoral());\r\n        }\r\n    }\r\n    mAverage = mSum / morals.length;\r\n\r\n    //For each moral calcul gap between moral and average (= moral - average);\r\n    //take the sum of each square of gaps (= Sum(n_gaps * n_gaps)). \r\n    for (i = 0; i < morals.length; i++) {\r\n        mGap.push(morals[i] - mAverage);\r\n        SumOfSquareOfMGap += Math.pow(mGap[i], 2);\r\n    }\r\n\r\n    // calcul the standard deviation\r\n    standardDeviation = Math.sqrt(SumOfSquareOfMGap / morals.length);\r\n\r\n    //calcul the new Team Motivation\r\n    newTeamMotivation = (mAverage + (mAverage - standardDeviation)) / 2;\r\n    if (newTeamMotivation < 0) { //in extrems cases\r\n        newTeamMotivation = 0;\r\n    }\r\n\r\n    //set teamMotivation\r\n    teamMotivation.getInstance(self).setValue(Math.round(newTeamMotivation));\r\n}\r\n\r\n/**\r\n * Set picture depending of resource's current moral.\r\n */\r\nfunction changePicture () {\r\n    var i, j, valueInst, valueDescr, gm = self.getGameModel(), oldImg, newImg, moral,\r\n            listEmployees = VariableDescriptorFacade.findByName(gm, 'employees'),\r\n            imgSuffixe = ['Triste', 'Neutre', 'Joie'];\r\n    if (!listEmployees) {\r\n        return;\r\n    }\r\n    for (i = 0; i < listEmployees.items.size(); i++) {\r\n        valueDescr = listEmployees.items.get(i);\r\n        valueInst = valueDescr.getInstance(self);\r\n        moral = parseInt(valueInst.getMoral());\r\n        oldImg = valueInst.getProperty('picture')||'';\r\n        newImg = null;\r\n        switch (true) {\r\n            case moral < 40 :\r\n                for (j = 0; j < imgSuffixe.length; j++) {\r\n                    if (oldImg.indexOf(imgSuffixe[j]) > -1) {\r\n                        newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[0]);\r\n                        break\r\n                    }\r\n                }\r\n                break;\r\n            case moral < 75 :\r\n                for (j = 0; j < imgSuffixe.length; j++) {\r\n                    if (oldImg.indexOf(imgSuffixe[j]) > -1) {\r\n                        newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[1]);\r\n                        break\r\n                    }\r\n                }\r\n                break;\r\n            default :\r\n                for (j = 0; j < imgSuffixe.length; j++) {\r\n                    if (oldImg.indexOf(imgSuffixe[j]) > -1) {\r\n                        newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[2]);\r\n                        break\r\n                    }\r\n                }\r\n                break;\r\n        }\r\n        if (newImg) {\r\n            valueInst.setProperty('picture', newImg);\r\n        }\r\n    }\r\n}"
-        },
+    },
     "cssUri": "wegas-cep/css/wegas-cep.css",
     "widgetsUri": "wegas-cep/db/wegas-cep-pages.json#",
     "childVariableDescriptors": [{
-        "@class":"ListDescriptor",
-        "name":"phases",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":0
-        },
-        "scope":{
-            "@class":"TeamScope"
-        },
-        "items":[{
-            "@class":"NumberDescriptor",
-            "name":"organisationalmap-1",
-            "label": "Élaborer la carte personnelle spontanée de l'organisation",
-            "defaultInstance":{
-                "@class":"NumberInstance",
-                "value":1
+            "@class": "ListDescriptor",
+            "name": "phases",
+            "label": "phases",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
             },
-            "scope":{
-                "@class":"TeamScope"
+            "scope": {
+                "@class": "TeamScope"
             },
-            "minValue":1,
-            "maxValue":5
-        }, {
-            "@class":"NumberDescriptor",
-            "name":"organisationalmap-2",
-            "label": "Elaborer la carte factuelle de l'organisation",
-            "defaultInstance":{
-                "@class":"NumberInstance",
-                "value":1
-            },
-            "scope":{
-                "@class":"TeamScope"
-            },
-            "minValue":1,
-            "maxValue":3
-        }, {
-            "@class":"NumberDescriptor",
-            "name":"organisationalmap-3",
-            "label": "Elaborer la carte systématique de l'organisation",
-            "defaultInstance":{
-                "@class":"NumberInstance",
-                "value":1
-            },
-            "scope":{
-                "@class":"TeamScope"
-            },
-            "minValue":1,
-            "maxValue":4
-        }]
-    }, {
-        "@class":"NumberDescriptor",
-        "name":"cost",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":0.0
-        },
-        "scope":{
-            "@class":"TeamScope"
-        },
-        "minValue":null,
-        "maxValue":null
-    },{
-        "@class":"NumberDescriptor",
-        "name":"humanResources",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":15.0
-        },
-        "scope":{
-            "@class":"TeamScope"
-        },
-        "tags":[],
-        "minValue":1,
-        "maxValue":15
-    },{
-        "@class":"NumberDescriptor",
-        "name":"period",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":1.0
-        },
-        "scope":{
-            "@class":"TeamScope"
-        },
-        "tags":[],
-        "minValue":1,
-        "maxValue":10
-    },{
-        "@class":"NumberDescriptor",
-        "label": "Motivation d'équipe",
-        "name":"teamMotivation",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":0
-        },
-        "scope":{
-            "@class":"TeamScope"
-        },
-        "tags":[],
-        "minValue":0,
-        "maxValue":100
-    },{
-        "@class":"NumberDescriptor",
-        "label": "Direction",
-        "name":"managementApproval",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":1.0
-        },
-        "scope":{
-            "@class":"TeamScope"
-        },
-        "tags":[],
-        "minValue":1,
-        "maxValue":10
-    },{
-        "@class":"NumberDescriptor",
-        "label": "Utilisateurs",
-        "name":"customerApproval",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":1.0
-        },
-        "scope":{
-            "@class":"TeamScope"
-        },
-        "tags":[],
-        "minValue":1,
-        "maxValue":10
-    },{
-        "@class":"InboxDescriptor",
-        "name":"inbox",
-        "defaultInstance":{
-            "@class":"InboxInstance",
-            "messages":[]
-        },
-        "scope":{
-            "@class":"TeamScope"
-        }
-    }, {
-        "@class":"ListDescriptor",
-        "name":"questions",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":0.0
-        },
-        "scope":{
-            "@class":"GameModelScope"
-        },
-        "items":[{
-            "@class":"ListDescriptor",
-            "name":"Questions phase 1",
-            "defaultInstance":{
-                "@class":"NumberInstance"
-            },
-            "scope":{
-                "@class":"GameModelScope"
-            },
-            "items":[{
-                "@class":"QuestionDescriptor",
-                "name":"Comment faire cela?",
-                "defaultInstance":{
-                    "@class":"QuestionInstance"
-                },
-                "scope":{
-                    "@class":"TeamScope"
-                },
-                "items":[{
-                    "@class":"ChoiceDescriptor",
-                    "name":"a) Reponse 1",
-                    "defaultInstance":{
-                        "@class":"ChoiceInstance"
+            "items": [{
+                    "@class": "NumberDescriptor",
+                    "name": "organisationalmap-1",
+                    "label": "Élaborer la carte personnelle spontanée de l'organisation",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 1
                     },
-                    "scope":{
-                        "@class":"TeamScope"
+                    "scope": {
+                        "@class": "TeamScope"
                     },
-                    "results": [{
-                        "@class": "Result",
-                        "name": "Normal",
-                        "answer": "Faux c'est pas lui."
-                    }]
+                    "minValue": 1,
+                    "maxValue": 5
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "organisationalmap-2",
+                    "label": "Elaborer la carte factuelle de l'organisation",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 1
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    },
+                    "minValue": 1,
+                    "maxValue": 3
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "organisationalmap-3",
+                    "label": "Elaborer la carte systématique de l'organisation",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 1
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    },
+                    "minValue": 1,
+                    "maxValue": 4
                 }]
-            }]
         }, {
-            "@class":"ListDescriptor",
-            "name":"Questions phase 2",
-            "defaultInstance":{
-                "@class":"NumberInstance"
+            "@class": "NumberDescriptor",
+            "name": "cost",
+            "label": "cost",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0.0
             },
-            "scope":{
-                "@class":"GameModelScope"
+            "scope": {
+                "@class": "TeamScope"
             },
-            "items":[{
-                "@class":"QuestionDescriptor",
-                "name":"Sample question phase 2?",
-                "defaultInstance":{
-                    "@class":"QuestionInstance"
-                },
-                "scope":{
-                    "@class":"TeamScope"
-                },
-                "items":[{
-                    "@class":"ChoiceDescriptor",
-                    "name":"a) Reponse 1",
-                    "defaultInstance":{
-                        "@class":"ChoiceInstance"
-                    },
-                    "scope":{
-                        "@class":"TeamScope"
-                    },
-                    "results": [{
-                        "@class": "Result",
-                        "name": "Normal",
-                        "answer": "Faux c'est pas lui."
-                    }]
-                }]
-            }]
-        }]
-    }, {
-        "@class":"ListDescriptor",
-        "name":"actions",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":0.0
-        },
-        "scope":{
-            "@class":"GameModelScope"
-        },
-        "items":[{
-            "@class":"ListDescriptor",
-            "name":"Actions phase 1",
-            "defaultInstance":{
-                "@class":"NumberInstance"
-            },
-            "scope":{
-                "@class":"GameModelScope"
-            },
-            "items":[{
-                "@class":"QuestionDescriptor",
-                "name":"Effectuer action 1 phase 1",
-                "allowMultipleReplies": true,
-                "defaultInstance":{
-                    "@class":"QuestionInstance"
-                },
-                "scope":{
-                    "@class":"TeamScope"
-                },
-                "items":[{
-                    "@class":"ChoiceDescriptor",
-                    "name":"reponse 1)",
-                    "defaultInstance":{
-                        "@class":"ChoiceInstance"
-                    },
-                    "scope":{
-                        "@class":"TeamScope"
-                    },
-                    "results": [{
-                        "@class": "Result",
-                        "name": "Normal",
-                        "answer": "Tout c'est bien passé.",
-                        "impact":{
-                            "@class":"Script",
-                            "language":"JavaScript",
-                            "content":"humanResources.value -= 1;"
-                        }
-                    }]
-                }]
-            }]
+            "minValue": null,
+            "maxValue": null
         }, {
-            "@class":"ListDescriptor",
-            "name":"Actions phase 2",
-            "defaultInstance":{
-                "@class":"NumberInstance"
+            "@class": "NumberDescriptor",
+            "name": "humanResources",
+            "label": "humanResources",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 15.0
             },
-            "scope":{
-                "@class":"GameModelScope"
+            "scope": {
+                "@class": "TeamScope"
             },
-            "items":[{
-                "@class":"QuestionDescriptor",
-                "name":"Effectuer action 1 phase 2",
-                "allowMultipleReplies": true,
-                "defaultInstance":{
-                    "@class":"QuestionInstance"
-                },
-                "scope":{
-                    "@class":"TeamScope"
-                },
-                "items":[{
-                    "@class":"ChoiceDescriptor",
-                    "name":"reponse 1)",
-                    "defaultInstance":{
-                        "@class":"ChoiceInstance"
-                    },
-                    "scope":{
-                        "@class":"TeamScope"
-                    },
-                    "results": [{
-                        "@class": "Result",
-                        "name": "Normal",
-                        "answer": "Tout c'est bien passé.",
-                        "impact":{
-                            "@class":"Script",
-                            "language":"JavaScript",
-                            "content":"humanResources.value -= 1;"
-                        }
-                    }]
-                }]
-            }]
-        }]
-    },{
-        "@class": "ListDescriptor",
-        "name": "employees",
-        "items":[{
-            "@class": "ResourceDescriptor",
-            "name": "Fernand",
-            "description":"Description de Fernand.",
-            "defaultInstance":{
-                "@class":"ResourceInstance",
-                "moral":72,
-                "confidence":0,
-                "properties":{
-                    "picture":"/fernandNeutre.png",
-                    "male": true,
-                    "salary":4000,
-                    "leadershipLevel":2,
-                    "experience":75
-                },
-                "skillset":{}
+            "tags": [],
+            "minValue": 1,
+            "maxValue": 15
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "period",
+            "label": "Période",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 1.0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "tags": [],
+            "minValue": 1,
+            "maxValue": 10
+        }, {
+            "@class": "NumberDescriptor",
+            "label": "Motivation d'équipe",
+            "name": "teamMotivation",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "tags": [],
+            "minValue": 0,
+            "maxValue": 100
+        }, {
+            "@class": "NumberDescriptor",
+            "label": "Direction",
+            "name": "managementApproval",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 1.0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "tags": [],
+            "minValue": 1,
+            "maxValue": 10
+        }, {
+            "@class": "NumberDescriptor",
+            "label": "Utilisateurs",
+            "name": "customerApproval",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 1.0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "tags": [],
+            "minValue": 1,
+            "maxValue": 10
+        }, {
+            "@class": "InboxDescriptor",
+            "name": "inbox",
+            "label": "inbox",
+            "defaultInstance": {
+                "@class": "InboxInstance",
+                "messages": []
             },
             "scope": {
                 "@class": "TeamScope"
             }
-        },{
-            "@class": "ResourceDescriptor",
-            "name": "Daniela",
-            "description":"Description de Daniela.",
-            "defaultInstance":{
-                "@class":"ResourceInstance",
-                "moral":45,
-                "confidence":0,
-                "properties":{
-                    "picture":"/danielaNeutre.png",
-                    "male":false,
-                    "salary":3800,
-                    "leadershipLevel":0,
-                    "experience":49
-                },
-                "skillset":{}
+        }, {
+            "@class": "ListDescriptor",
+            "name": "questions",
+            "label": "questions",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0.0
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },{
-            "@class": "ResourceDescriptor",
-            "name": "Jessica",
-            "description":"Description de Jessica.",
-            "defaultInstance":{
-                "@class":"ResourceInstance",
-                "moral":92,
-                "confidence":0,
-                "properties":{
-                    "picture":"/jessicaNeutre.png",
-                    "male":false,
-                    "salary":3300,
-                    "leadershipLevel":0,
-                    "experience":35
-                },
-                "skillset":{}
+                "@class": "GameModelScope"
+            },
+            "items": [{
+                    "@class": "ListDescriptor",
+                    "name": "Questions phase 1",
+                    "label": "Questions phase 1",
+                    "defaultInstance": {
+                        "@class": "NumberInstance"
+                    },
+                    "scope": {
+                        "@class": "GameModelScope"
+                    },
+                    "items": [{
+                            "@class": "QuestionDescriptor",
+                            "name": "Comment faire cela?",
+                            "label": "Comment faire cela?",
+                            "defaultInstance": {
+                                "@class": "QuestionInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope"
+                            },
+                            "items": [{
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "a) Reponse 1",
+                                    "label": "a) Reponse 1",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance"
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope"
+                                    },
+                                    "results": [{
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "Faux c'est pas lui."
+                                        }]
+                                }]
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "Questions phase 2",
+                    "label": "Questions phase 2",
+                    "defaultInstance": {
+                        "@class": "NumberInstance"
+                    },
+                    "scope": {
+                        "@class": "GameModelScope"
+                    },
+                    "items": [{
+                            "@class": "QuestionDescriptor",
+                            "name": "Sample question phase 2?",
+                            "label": "Sample question phase 2?",
+                            "defaultInstance": {
+                                "@class": "QuestionInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope"
+                            },
+                            "items": [{
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "a) Reponse 1",
+                                    "label": "a) Reponse 1",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance"
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope"
+                                    },
+                                    "results": [{
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "Faux c'est pas lui."
+                                        }]
+                                }]
+                        }]
+                }]
+        }, {
+            "@class": "ListDescriptor",
+            "name": "actions",
+            "label": "actions",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0.0
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },{
-            "@class": "ResourceDescriptor",
-            "name": "Hector",
-            "description":"Description d'Auguste",
-            "defaultInstance":{
-                "@class":"ResourceInstance",
-                "moral":95,
-                "confidence":0,
-                "properties":{
-                    "picture":"/hectorNeutre.png",
-                    "male":true,
-                    "salary":3400,
-                    "leadershipLevel":1,
-                    "experience":87
-                },
-                "skillset":{}
+                "@class": "GameModelScope"
             },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        },{
-            "@class": "ResourceDescriptor",
-            "name": "Lucien",
-            "description":"Description de Lucien.",
-            "defaultInstance":{
-                "@class":"ResourceInstance",
-                "moral":78,
-                "confidence":0,
-                "properties":{
-                    "picture":"/lucienNeutre.png",
-                    "male":true,
-                    "salary":3500,
-                    "leadershipLevel":0,
-                    "experience":59
+            "items": [{
+                    "@class": "ListDescriptor",
+                    "name": "Actions phase 1",
+                    "label": "Actions phase 1",
+                    "defaultInstance": {
+                        "@class": "NumberInstance"
+                    },
+                    "scope": {
+                        "@class": "GameModelScope"
+                    },
+                    "items": [{
+                            "@class": "QuestionDescriptor",
+                            "name": "Effectuer action 1 phase 1",
+                            "label": "Effectuer action 1 phase 1",
+                            "allowMultipleReplies": true,
+                            "defaultInstance": {
+                                "@class": "QuestionInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope"
+                            },
+                            "items": [{
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "reponse 1)",
+                                    "label": "reponse 1)",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance"
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope"
+                                    },
+                                    "results": [{
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "Tout c'est bien passé.",
+                                            "impact": {
+                                                "@class": "Script",
+                                                "language": "JavaScript",
+                                                "content": "humanResources.value -= 1;"
+                                            }
+                                        }]
+                                }]
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "Actions phase 2",
+                    "label": "Actions phase 2",
+                    "defaultInstance": {
+                        "@class": "NumberInstance"
+                    },
+                    "scope": {
+                        "@class": "GameModelScope"
+                    },
+                    "items": [{
+                            "@class": "QuestionDescriptor",
+                            "name": "Effectuer action 1 phase 2",
+                            "label": "Effectuer action 1 phase 2",
+                            "allowMultipleReplies": true,
+                            "defaultInstance": {
+                                "@class": "QuestionInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope"
+                            },
+                            "items": [{
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "reponse 1)",
+                                    "label": "reponse 1)",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance"
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope"
+                                    },
+                                    "results": [{
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "Tout c'est bien passé.",
+                                            "impact": {
+                                                "@class": "Script",
+                                                "language": "JavaScript",
+                                                "content": "humanResources.value -= 1;"
+                                            }
+                                        }]
+                                }]
+                        }]
+                }]
+        }, {
+            "@class": "ListDescriptor",
+            "name": "employees",
+            "label": "employees",
+            "items": [{
+                    "@class": "ResourceDescriptor",
+                    "name": "Fernand",
+                    "label": "Fernand",
+                    "description": "Description de Fernand.",
+                    "properties": {
+                        "male": true
+                    },
+                    "defaultInstance": {
+                        "@class": "ResourceInstance",
+                        "moral": 72,
+                        "confidence": 0,
+                        "properties": {
+                            "picture": "/fernandNeutre.png",
+                            "salary": 4000,
+                            "leadershipLevel": 2,
+                            "experience": 75
+                        },
+                        "skillsets": {}
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "ResourceDescriptor",
+                    "name": "Daniela",
+                    "label": "Daniela",
+                    "description": "Description de Daniela.",
+                    "properties": {
+                        "male": false
+                    },
+                    "defaultInstance": {
+                        "@class": "ResourceInstance",
+                        "moral": 45,
+                        "confidence": 0,
+                        "properties": {
+                            "picture": "/danielaNeutre.png",
+                            "salary": 3800,
+                            "leadershipLevel": 0,
+                            "experience": 49
+                        },
+                        "skillsets": {}
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "ResourceDescriptor",
+                    "name": "Jessica",
+                    "label": "Jessica",
+                    "description": "Description de Jessica.",
+                    "properties": {
+                        "male": false
+                    },
+                    "defaultInstance": {
+                        "@class": "ResourceInstance",
+                        "moral": 92,
+                        "confidence": 0,
+                        "properties": {
+                            "picture": "/jessicaNeutre.png",
+                            "salary": 3300,
+                            "leadershipLevel": 0,
+                            "experience": 35
+                        },
+                        "skillsets": {}
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "ResourceDescriptor",
+                    "name": "Hector",
+                    "label": "Hector",
+                    "description": "Description d'Auguste",
+                    "properties": {
+                        "male": true
+                    },
+                    "defaultInstance": {
+                        "@class": "ResourceInstance",
+                        "moral": 95,
+                        "confidence": 0,
+                        "properties": {
+                            "picture": "/hectorNeutre.png",
+                            "salary": 3400,
+                            "leadershipLevel": 1,
+                            "experience": 87
+                        },
+                        "skillsets": {}
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "ResourceDescriptor",
+                    "name": "Lucien",
+                    "label": "Lucien",
+                    "description": "Description de Lucien.",
+                    "properties": {
+                        "male": true
+                    },
+                    "defaultInstance": {
+                        "@class": "ResourceInstance",
+                        "moral": 78,
+                        "confidence": 0,
+                        "properties": {
+                            "picture": "/lucienNeutre.png",
+                            "salary": 3500,
+                            "leadershipLevel": 0,
+                            "experience": 59
 
-                },
-                "skillset":{}
+                        },
+                        "skillsets": {}
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }],
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "GameModelScope"
+            }
+        }, {
+            "@class": "TriggerDescriptor",
+            "name": "triggerMoral",
+            "label": "Check moral",
+            "defaultInstance": {
+                "@class": "TriggerInstance",
+                "currentStateId": 1
             },
             "scope": {
                 "@class": "TeamScope"
-            }
-        }],
-        "defaultInstance":{
-            "@class": "NumberInstance",
-            "value": 0
-        },
-        "scope": {
-            "@class": "GameModelScope"
-        }
-    },{
-        "@class" : "TriggerDescriptor",
-        "name" : "triggerMoral",
-        "label": "Check moral",
-        "defaultInstance" : {
-            "@class" : "TriggerInstance",
-            "currentStateId" : 1
-        },
-        "scope" : {
-            "@class" : "TeamScope"
-        },
-        "states" : {
-            "1" : {
-                "@class" : "State",
-                "transitions" : [ {
-                    "@class" : "Transition",
-                    "triggerCondition" : {
-                        "@class" : "Script",
-                        "content" : "1==1",
-                        "language" : "JavaScript"
-                    },
-                    "nextStateId" : 2
-                }]
             },
-            "2" : {
-                "@class" : "State",
-                "onEnterEvent" : {
-                    "@class" : "Script",
-                    "content" : "checkMoral();",
-                    "language" : "JavaScript"
+            "states": {
+                "1": {
+                    "@class": "State",
+                    "transitions": [{
+                            "@class": "Transition",
+                            "triggerCondition": {
+                                "@class": "Script",
+                                "content": "1==1",
+                                "language": "JavaScript"
+                            },
+                            "nextStateId": 2
+                        }]
+                },
+                "2": {
+                    "@class": "State",
+                    "onEnterEvent": {
+                        "@class": "Script",
+                        "content": "checkMoral();",
+                        "language": "JavaScript"
+                    }
                 }
+            },
+            "oneShot": false,
+            "triggerEvent": {
+                "@class": "Script",
+                "content": "1==1",
+                "language": "JavaScript"
+            },
+            "postTriggerEvent": {
+                "@class": "Script",
+                "content": "checkMoral();",
+                "language": "JavaScript"
             }
-        },
-        "oneShot" : false,
-        "triggerEvent" : {
-            "@class" : "Script",
-            "content" : "1==1",
-            "language" : "JavaScript"
-        },
-        "postTriggerEvent" : {
-            "@class" : "Script",
-            "content" : "checkMoral();",
-            "language" : "JavaScript"
-        }
-    }]
+        }]
 }

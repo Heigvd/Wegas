@@ -36,6 +36,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     {
                         key: "skill",
                         label: "Compétence",
+                        allowHTML: true,
                         sortable: true
                     },
                     {
@@ -66,7 +67,6 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 ]
             });
         },
-
         /**
          * Render the widget.
          * Hide node corresponding used only with the "picking mode" of this widget
@@ -80,7 +80,6 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             cb.one('.footer').hide();
             cb.one('.footer .buttonOK').hide();
         },
-
         /**
          * Bind some function at nodes of this widget
          */
@@ -110,7 +109,6 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }, '.buttonCancel', this);
 
         },
-
         /**
          * Synchronise the content of this widget.
          */
@@ -129,7 +127,6 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
             this.goToFinalPage();// ! hack function
         },
-
         /*
          * Destroy all child widget and all function
          */
@@ -163,7 +160,6 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 cb.one('.footer').show();
             }
         },
-
         /**
          * Add rows to the datatable. Get informations on the valide tasks
          * @param ListDescriptor listTasksDescriptor, A list of all tasks.
@@ -187,11 +183,11 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     }
                 }
                 if (taskInstance.get('active')) {
-                    termData = (workers.length <= 0) ? (taskInstance.get('properties').disappearAtWeek - currentWeekInstance.get('value')) : "-";
+                    termData = (workers.length <= 0) ? (taskDescriptor.get('properties').disappearAtWeek - currentWeekInstance.get('value')) : "-";
                     comment = new Array();
-                    if (taskInstance.get('properties').comment)
-                        comment.push(taskInstance.get('properties').comment);
-                    if (taskInstance.get('properties').workWithLeader == 'true')
+                    if (taskDescriptor.get('properties').comment)
+                        comment.push(taskDescriptor.get('properties').comment);
+                    if (taskDescriptor.get('properties').workWithLeader == 'true')
                         comment.push("S'effectue en coopération avec le leader.");
                     if (comment.length <= 0)
                         comment.push("-");
@@ -200,36 +196,41 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                     this.data.push({
                         id: taskDescriptor.get('id'),
                         task: taskDescriptor.get('name'),
-                        skill: this.getSkillsets(taskInstance),
+                        skill: this.getRequirements(taskDescriptor),
                         duration: taskInstance.get('duration'),
                         term: termData,
-                        salary: taskInstance.get('properties').salary,
+                        salary: taskDescriptor.get('properties').salary,
                         comment: comment.join(" "),
                         worker: workers.join(",")
                     });
                 }
             }
         },
-
         /**
-         * @param TaskInstance taskInstance, the task to get skillsets
-         * @return String, a texte including all the skillset of the given task.
+         * @param TaskDescriptor td, the task to get Requirements
+         * @return String, a texte including all the Requirements
+         *  of the given task (example : 1x engineer - 48).
          */
-        getSkillsets: function (taskInstance) {
-            var key, temp = [];
-            for (key in taskInstance.get('skillset')) {
-                temp.push(key, ' (', taskInstance.get('skillset')[key], ')\n');
-            }
-            return temp.join("");
-        },
+        getRequirements: function (td) {
+            var i, j, temp = [], req;
+            for (i in td.get('requirements')) {
+                if (td.get('requirements')[i].getAttrs && td.get('requirements')[i].getAttrs().needs) {
+                    req = td.get('requirements')[i].getAttrs();
+                    for (j in req.needs) {
+                        //temp.push(req.needs[j] + "x " + i + " - " + j);
+                        temp.push(i + " - " + j);
+                    }
 
+                }
+            }
+            return temp.join("<br />");
+        },
         /**
          * @return the current selected task.
          */
         getSelectedTaskDescriptor: function () {
             return this.selectedTaskDescriptor;
         },
-
         /**
          * This function must be called by a click event.
          * set the current selected task
@@ -249,7 +250,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
             //get new task descriptor
             for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
-                if (listTasksDescriptor.get('items')[i].get('id') === taskDescriptorId) {
+                if (listTasksDescriptor.get('items')[i].get('id') == taskDescriptorId) {
                     this.selectedTaskDescriptor = listTasksDescriptor.get('items')[i];
                     break;
                 }
@@ -259,7 +260,6 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 cb.one('.footer .buttonOK').show();
             }
         },
-
         /**
          * Assign the given task to the given ressource.
          * @param ResourceDescriptor resourceDescriptor, the resource to assign a task.
@@ -289,7 +289,6 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
             }
             this.syncUI();
         },
-
         /**
          * Display a feedback on the operation "add task to a resource"
          * This feedback will disappear after 5 seconde.

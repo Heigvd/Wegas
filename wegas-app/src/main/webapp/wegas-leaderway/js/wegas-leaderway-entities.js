@@ -9,61 +9,61 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-leaderway-entities', function(Y) {
+YUI.add('wegas-leaderway-entities', function (Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
-    SELF = "self", BOOLEAN = "boolean", NUMBER = "number", SELECT = "select",
-    OBJECT = "object", HTML = "html", VALUE = "value", HASHLIST = "hashlist",
-    COMBINE = "combine",
-    IDATTRDEF = {
+            SELF = "self", BOOLEAN = "boolean", NUMBER = "number", SELECT = "select",
+            OBJECT = "object", HTML = "html", VALUE = "value", HASHLIST = "hashlist",
+            COMBINE = "combine",
+            IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
         _inputex: {
             _type: HIDDEN
         }
     }, SKILLSDEF = {
-        type: COMBINE,
-        required: true,
-        fields: [{
-            type: SELECT,
+    type: COMBINE,
+            required: true,
+            fields: [{
+    type: SELECT,
             name: NAME,
             choices: [{
-                value: 'softwareEngineer',
-                label: "Software engineering"
-            }, {
-                value: 'webDesgign',
-                label: "Web design"
-            }, {
-                value: 'negotiation',
-                label: "Negotiation"
-            }, {
-                value: 'dbEngineer',
-                label: "Database engineer"
-            }, {
-                value: 'processModeling',
-                label: "Process modeling"
-            },{
-                value: 'graphicDesign',
-                label: "Graphic design"
-            }]
-        }, {
-            type: SELECT,
+    value: 'softwareEngineer',
+            label: "Software engineering"
+    }, {
+    value: 'webDesgign',
+            label: "Web design"
+    }, {
+    value: 'negotiation',
+            label: "Negotiation"
+    }, {
+    value: 'dbEngineer',
+            label: "Database engineer"
+    }, {
+    value: 'processModeling',
+            label: "Process modeling"
+    }, {
+    value: 'graphicDesign',
+            label: "Graphic design"
+    }]
+    }, {
+    type: SELECT,
             name: VALUE,
             choices: [{
-                value: 0,
-                label: "Junior"
-            }, {
-                value: 20,
-                label: "Intermediate"
-            }, {
-                value: 20,
-                label: "Senior"
-            }, {
-                value: 99,
-                label: "Expert"
-            }]
-        }]
+    value: 0,
+            label: "Junior"
+    }, {
+    value: 20,
+            label: "Intermediate"
+    }, {
+    value: 20,
+            label: "Senior"
+    }, {
+    value: 99,
+            label: "Expert"
+    }]
+    }]
     };
 
     /**
@@ -78,6 +78,23 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 type: STRING,
                 format: HTML,
                 optional: true
+            },
+            properties: {
+                _inputex: {
+                    label: "Properties",
+                    _type: HASHLIST,
+                    elementType: {
+                        type: COMBINE,
+                        required: true,
+                        fields: [{
+                                name: NAME,
+                                typeInvite: NAME
+                            }, {
+                                name: VALUE,
+                                typeInvite: VALUE
+                            }]
+                    }
+                }
             },
             defaultInstance: {
                 properties: {
@@ -127,20 +144,30 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                                 type: COMBINE,
                                 required: true,
                                 fields: [{
-                                    name: NAME,
-                                    typeInvite: NAME
-                                }, {
-                                    name: VALUE,
-                                    typeInvite: VALUE
-                                }]
+                                        name: NAME,
+                                        typeInvite: NAME
+                                    }, {
+                                        name: VALUE,
+                                        typeInvite: VALUE
+                                    }]
                             }
                         }
                     },
-                    skillset: {
+                    skillsets: {
                         _inputex: {
                             label: "Default skills",
                             _type: HASHLIST,
-                            elementType: SKILLSDEF
+                            elementType: {
+                                type: COMBINE,
+                                required: true,
+                                fields: [{
+                                        name: NAME,
+                                        typeInvite: NAME
+                                    }, {
+                                        name: VALUE,
+                                        typeInvite: VALUE
+                                    }]
+                            }
                         }
                     }
                 }
@@ -151,164 +178,164 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 label: "Get confidence",
                 returns: NUMBER,
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             },
             addAtConfidence: {
                 label: "Add at confidence",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             setConfidence: {
                 label: "Set confidence",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             getMoral: {
                 label: "Get moral",
                 returns: NUMBER,
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             },
             addAtMoral: {
                 label: "Add at moral",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             setMoral: {
                 label: "Set moral",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             //methods below are temporary ; only for CEP-Game
             getSalary: {
                 label: "Get salary",
                 returns: NUMBER,
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             },
             addAtSalary: {
                 label: "Add at salary",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             setSalary: {
                 label: "Set salary",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             getExperience: {
                 label: "Get experience",
                 returns: NUMBER,
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             },
             addAtExperience: {
                 label: "Add at experience",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             setExperience: {
                 label: "Set experience",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             getLeadershipLevel: {
                 label: "Get leadership level",
                 returns: NUMBER,
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             },
             addAtLeadershipLevel: {
                 label: "Add at leadership level",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             setLeadershipLevel: {
                 label: "Set leadership level",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    value: 1
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
             },
             getActive: {
                 label: "Is active",
                 returns: BOOLEAN,
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             },
             activate: {
                 label: "Activate",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             },
             desactivate: {
                 label: "Desactivate",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             }
         }
     });
@@ -340,21 +367,31 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         type: COMBINE,
                         required: true,
                         fields: [{
-                            name: NAME,
-                            typeInvite: NAME
-                        }, {
-                            name: VALUE,
-                            typeInvite: VALUE
-                        }]
+                                name: NAME,
+                                typeInvite: NAME
+                            }, {
+                                name: VALUE,
+                                typeInvite: VALUE
+                            }]
                     }
                 }
             },
-            skillset: {
-                name: "skillset",
+            skillsets: {
+                name: "skillsets",
                 _inputex: {
                     label: "Skills",
                     _type: HASHLIST,
-                    elementType: SKILLSDEF
+                    elementType: {
+                        type: COMBINE,
+                        required: true,
+                        fields: [{
+                                name: NAME,
+                                typeInvite: NAME
+                            }, {
+                                name: VALUE,
+                                typeInvite: VALUE
+                            }]
+                    }
                 }
             },
             assignments: {
@@ -399,7 +436,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         type: NUMBER
                     },
                     properties: {
-                        optional: false,
                         _inputex: {
                             label: "Default properties",
                             _type: HASHLIST,
@@ -408,26 +444,90 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                             elementType: {
                                 type: COMBINE,
                                 fields: [{
-                                    name: NAME,
-                                    typeInvite: NAME
-                                }, {
-                                    name: VALUE,
-                                    typeInvite: VALUE
-                                }]
+                                        name: NAME,
+                                        typeInvite: NAME
+                                    }, {
+                                        name: VALUE,
+                                        typeInvite: VALUE
+                                    }]
                             }
-                        }
-                    },
-                    skillset: {
-                        _inputex: {
-                            label: "Default skillset",
-                            _type: OBJECT
                         }
                     }
                 }
             },
             description: {
                 type: STRING,
-                format: HTML
+                format: HTML,
+                optional: true
+            },
+            index: {
+                type: NUMBER,
+                format: HTML,
+                optional: true
+            },
+            predecessors: {
+                _inputex: {
+                    label: "Predecessors",
+                    _type: HIDDEN
+                }
+            },
+            requirements: {
+                _inputex: {
+                    label: "requirements",
+                    _type: HASHLIST,
+                    elementType: {
+                        type: COMBINE,
+                        fields: [{
+                                name: NAME,
+                                typeInvite: NAME
+                            }, {
+                                "@class": {
+                                    value: "WRequirement"
+                                },
+                                limite: {
+                                    type: NUMBER,
+                                    format: HTML,
+                                    optional: true
+                                },
+                                needs: {
+                                    _inputex: {
+                                        label: "needs",
+                                        _type: HASHLIST,
+                                        elementType: {
+                                            type: COMBINE,
+                                            fields: [{
+                                                    name: NAME,
+                                                    typeInvite: NAME
+                                                }, {
+                                                    name: NAME,
+                                                    typeInvite: NAME
+                                                }]
+                                        }
+                                    }
+                                }
+                            }]
+
+                    }
+
+                }
+            },
+            properties: {
+                _inputex: {
+                    label: "Properties",
+                    _type: HASHLIST,
+                    keyField: NAME,
+                    valueField: VALUE,
+                    elementType: {
+                        type: COMBINE,
+                        fields: [{
+                                name: NAME,
+                                typeInvite: NAME
+                            }, {
+                                name: VALUE,
+                                typeInvite: VALUE
+                            }]
+                    }
+                }
             }
         }
     });
@@ -451,12 +551,43 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                     label: "Properties",
                     _type: OBJECT
                 }
+            }
+        }
+    });
+
+    /**
+     * Requirements mapper
+     */
+    Y.Wegas.persistence.WRequirement = Y.Base.create("WRequirement", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "WRequirement"
             },
-            skillset: {
+            limit: {
+                type: NUMBER
+            },
+            needs: {
                 _inputex: {
-                    label: "Skillset",
+                    label: "Needs",
                     _type: OBJECT
                 }
+            }
+        }
+    });
+
+    /**
+     * Activity mapper
+     */
+    Y.Wegas.persistence.Activity = Y.Base.create("WRequirement", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "Activity"
+            },
+            startTime: {
+                type: NUMBER
+            },
+            duration: {
+                type: NUMBER
             }
         }
     });
