@@ -121,38 +121,22 @@
             <scope>provided</scope>
         </dependency>
 
-
         <!-- Liquibase -->
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
 
-
-
-        <!-- slf4j -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- logback (slf4j implementation) -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
         <dependency>
             <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- jcl over slf4j bridge -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
 
         <!-- Postgresql Driver -->
@@ -306,6 +290,52 @@
                         <goals>
                             <goal>compress</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+             <!-- Copy classes to test classes directory, for ejbcontainer to use -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-webapp-to-embedded</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/embed-war</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <resources>
+                                <resource>
+                                    <directory>target/Wegas_1.0-SNAPSHOT</directory>
+                                    <includes>
+                                        <include>**/*.js</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <!-- <directory>src/test/resources</directory>-->
+                                    <directory>src/main/webapp</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-wegas-resources-to-embedded</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/embed-war</outputDirectory>
+                            <overwrite>false</overwrite>
+                            <resources>
+                                <resource>
+                                    <!-- <directory>src/test/resources</directory>-->
+                                    <directory>../wegas-resources/target/Wegas-resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
