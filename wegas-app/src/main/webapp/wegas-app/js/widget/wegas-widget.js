@@ -573,7 +573,7 @@ YUI.add("wegas-widget", function(Y) {
      * @hack Override so plugin host accepts string definition of classes and
      * look it up in the Y.Wegas.* package.
      */
-    Y.DataSource.IO.prototype.plug = function(Plugin, config) {
+    Y.Widget.prototype.plug = function(Plugin, config) {
         var i, ln, ns;
 
         if (Lang.isArray(Plugin)) {
@@ -608,5 +608,4 @@ YUI.add("wegas-widget", function(Y) {
         }
         return this;
     };
-    Y.Widget.prototype.plug = Y.DataSource.IO.prototype.plug;
 });

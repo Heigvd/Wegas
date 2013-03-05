@@ -73,6 +73,7 @@ public class Game extends NamedEntity {
      */
     @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("game-team")
+    @OrderBy("name")
     private List<Team> teams = new ArrayList<>();
     /**
      *
