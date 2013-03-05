@@ -52,7 +52,7 @@ public class JackrabbitConnector {
         //this.runGC();
     }
 
-    @Schedule(minute = "0", hour = "3")
+//    @Schedule(minute = "0", hour = "3")
     private void runGC() {
         try {
             logger.info("Running Jackrabbit GarbageCollector");
