@@ -43,7 +43,7 @@ public class RequestController implements Serializable {
      *
      */
     @ManagedProperty("#{param.debug}")
-    private Boolean debug;
+    private String debug;
 
     /**
      *
@@ -110,9 +110,9 @@ public class RequestController implements Serializable {
     /**
      * @return the debug
      */
-    public Boolean getDebug() {
+    public String getDebug() {
         if (debug == null) {
-            return Boolean.valueOf(Helper.getWegasProperty("debug", "false"));
+            return Helper.getWegasProperty("debug", "false");
         }
         return debug;
     }
@@ -120,7 +120,7 @@ public class RequestController implements Serializable {
     /**
      * @param debug the debug to set
      */
-    public void setDebug(Boolean debug) {
+    public void setDebug(String debug) {
         this.debug = debug;
     }
 }
