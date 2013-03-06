@@ -786,7 +786,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 if (domTarget.hasClass("wegas-treeview-editmenubutton")) {          // If user clicked on the edit button
                     this.menu.attachTo(domTarget);                                  // Display the edit button next to it
                 } else {                                                            // Otherwise the user clicked on the node
-                    this.menu.item(0).fire("click");                    // Excute the actions associated to the first item of the menu
+                    this.menu.item(0).fire("click");             // Excute the actions associated to the first item of the menu
                 }
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");

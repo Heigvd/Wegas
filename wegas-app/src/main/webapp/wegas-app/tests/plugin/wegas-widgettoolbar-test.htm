@@ -3,8 +3,17 @@
 <html>
     <head>
         <title>Y.Wegas.WidgetMenu Test Suite</title>
+
+        <style type="text/css">
+            .yui3-console {
+                position: absolute;
+                right: 0;
+                top: 0;
+                height: 98% !important;
+            }
+        </style>
     </head>
-    
+
     <body class="yui3-skin-sam">
 
         <script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
@@ -19,9 +28,12 @@
             YUI_config.groups.libraries.base = "../../../lib/";                 // Set up libraries path
 
             YUI({
+                useBrowserConsole: true,
                 coverage: ['widgettoolbar']
             }).use('test-console', 'wegas-widgettoolbar-test', function (Y) {
-                new Y.Test.Console().render();
+                new Y.Test.Console({
+                    useBrowserConsole: true
+                }).render();
 
                 Y.Test.Runner.setName('WidgetToolbar');
                 Y.Test.Runner.run();
