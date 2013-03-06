@@ -98,13 +98,19 @@
         <param-name>liquibase.datasource</param-name>
         <param-value>jdbc/wegas_dev</param-value>
     </context-param>
-    <!-- Liquibase sevlet listener to check database on start up and apply new changes if needed -->
+    <!--Liquibase sevlet listener to check database on start up and apply new changes if needed-->
     <listener>
         <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
 
+    <!--File Mime Types-->
+    <mime-mapping>
+        <extension>json</extension>
+        <mime-type>application/json;charset=ISO-8859-1</mime-type>
+    </mime-mapping>
+
     <!-- Facebook Servlet -->
-    <servlet>
+    <!--<servlet>
         <servlet-name>Facebook Servlet</servlet-name>
         <servlet-class>com.wegas.core.security.facebook.FacebookLoginServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -112,13 +118,7 @@
     <servlet-mapping>
         <servlet-name>Facebook Servlet</servlet-name>
         <url-pattern>/FacebookServlet</url-pattern>
-    </servlet-mapping>
-
-    <!--File Mime Types-->
-    <mime-mapping>
-        <extension>json</extension>
-        <mime-type>application/json;charset=ISO-8859-1</mime-type>
-    </mime-mapping>
+    </servlet-mapping>-->
 
     <!-- Atmosphere Servlet -->
     <!-- <servlet>
