@@ -533,25 +533,8 @@ YUI.add('wegas-editor-treeview', function (Y) {
     Y.namespace('Wegas').EditorTreeView = EditorTreeView;
 
     /**
-     * Not yet in usese
-     */
-    var SortableTreeview = Y.Base.create("wegas-sortabletreeview", Y.Plugin.Base, [], {
-        initializer: function () {
-            this.afterHostEvent(RENDER, function () {
-                //this.sortable = new Y.Sortable({
-                //    container: this.get("contentBox"),
-                //    nodes: 'li',
-                //    opacity: '.2'
-                //});
-                });
-        }
-    }, {
-        NS: "treeviewmenu",
-        NAME: "treeviewmenu"
-    });
-    Y.namespace("Plugin").SortableTreeview = SortableTreeview;
-
-    /**
+     *
+     *  A treeview used in lobby left tab.
      *
      */
     var GameModelTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
@@ -561,6 +544,8 @@ YUI.add('wegas-editor-treeview', function (Y) {
          * @private
          */
         bindUI: function () {
+            GameModelTreeView.superclass.bindUI.apply(this);
+
             this.treeView.on("*:click", function (e) {
                 var entity = e.node.get("data.entity"),
                 sourceUri = "rest/GameModel//Game",                             // If click on "All game models" node
@@ -813,5 +798,24 @@ YUI.add('wegas-editor-treeview', function (Y) {
         NS: "EditorTVMenu",
         NAME: "EditorTVAdminMenu"
     });
+
+    /**
+     * Not yet in usese
+     */
+    var SortableTreeview = Y.Base.create("wegas-sortabletreeview", Y.Plugin.Base, [], {
+        initializer: function () {
+            this.afterHostEvent(RENDER, function () {
+                //this.sortable = new Y.Sortable({
+                //    container: this.get("contentBox"),
+                //    nodes: 'li',
+                //    opacity: '.2'
+                //});
+                });
+        }
+    }, {
+        NS: "treeviewmenu",
+        NAME: "treeviewmenu"
+    });
+    Y.namespace("Plugin").SortableTreeview = SortableTreeview;
 
 });

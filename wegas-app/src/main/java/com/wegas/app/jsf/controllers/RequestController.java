@@ -111,9 +111,6 @@ public class RequestController implements Serializable {
      * @return the debug
      */
     public String getDebug() {
-        if (debug == null) {
-            return Helper.getWegasProperty("debug", "false");
-        }
         return debug;
     }
 
@@ -122,5 +119,12 @@ public class RequestController implements Serializable {
      */
     public void setDebug(String debug) {
         this.debug = debug;
+    }
+
+    public Boolean debugMode() {
+        if (debug == null) {
+            return Boolean.valueOf(Helper.getWegasProperty("debug", "false"));
+        }
+        return Boolean.valueOf(this.getDebug());
     }
 }
