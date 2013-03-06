@@ -110,7 +110,7 @@ YUI.add("wegas-button", function (Y) {
                             data: "Tooltip"
                         }, {
                             type: "Button",
-                            label: "Impact",
+                            label: "On click",
                             data: "ExecuteScriptAction"
                         }, {
                             type: "Button",

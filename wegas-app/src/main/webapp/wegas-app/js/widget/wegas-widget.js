@@ -471,7 +471,7 @@ YUI.add("wegas-widget", function(Y) {
                         data: "Tooltip"
                     }, {
                         type: "Button",
-                        label: "Impact",
+                        label: "On click",
                         data: "ExecuteScriptAction"
                     }, {
                         type: "Button",
