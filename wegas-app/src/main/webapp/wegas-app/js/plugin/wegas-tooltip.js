@@ -57,7 +57,7 @@ YUI.add('wegas-tooltip', function (Y) {
                 type: "string",
                 format: "html",
                 _inputex: {
-                    label: "Tooltip content"
+                    label: "Tooltip"
                 }
             }
         }

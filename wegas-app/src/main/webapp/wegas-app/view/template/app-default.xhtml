@@ -12,7 +12,7 @@
         <ui:define name="page">
             <h:body class="yui3-skin-sam yui-skin-sam wegas-loading-overlay #{requestController.currentRoles}">
 
-                <ui:fragment rendered="#{!wegasConfig.debug}">
+                <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
 
                     <!-- Muscula error tracking -->
                     <script type='text/javascript'>
@@ -56,11 +56,11 @@
                 </ui:fragment>
 
                 <!-- YUI Base -->
-                <ui:fragment rendered="#{!wegasConfig.assets_local}">
+                <ui:fragment rendered="#{wegasConfig.useYUICDN}">
                     <!-- CDN -->
                     <script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
                 </ui:fragment>
-                <ui:fragment rendered="#{wegasConfig.assets_local}">
+                <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
                     <!-- Self hosted -->
                     <script type="text/javascript" src="#{request.contextPath}/lib/yui3/build/yui/yui-min.js"></script>
                 </ui:fragment>
@@ -69,10 +69,10 @@
                 <script src="#{request.contextPath}/lib/inputex/src/loader-min.js"  type='text/javascript'></script>
 
                 <!-- Wegas Loader -->
-                <ui:fragment rendered="#{wegasConfig.debug}">
+                <ui:fragment rendered="#{requestController.debugMode()}">
                     <script type="text/javascript" src="#{request.contextPath}/wegas-app/js/wegas-loader.js"></script>
                 </ui:fragment>
-                <ui:fragment rendered="#{!wegasConfig.debug}">
+                <ui:fragment rendered="#{!requestController.debugMode()}">
                     <script type="text/javascript" src="#{request.contextPath}/wegas-app/js/wegas-loader-min.js"></script>
                 </ui:fragment>
 
@@ -83,7 +83,7 @@
                     YUI_config.insertBefore = 'customstyles';
                     YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
                     YUI_config.charset = "#{wegasConfig.encoding}";
-                    YUI_config.debug = #{requestController.debug};
+                    YUI_config.debug = #{requestController.debugMode()};
                     YUI_config.throwFail = true;                        // If throwFail is set, Y.error will generate or re-throw
                     // a JS Error. Otherwise the failure is logged.
                     YUI_config.errorFn = function (msg, e, src) {
@@ -106,9 +106,9 @@
                         YUI_config.groups[groupName].comboBase = comboBase;
                     }
                     YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
-                    YUI_config.groups.inputex.combine = #{!requestController.debug};
-                    YUI_config.groups.wegas.combine = #{!requestController.debug};
-                    YUI_config.groups.wegas.filter = (#{requestController.debug}) ? "raw" : "min";// Select raw files
+                    YUI_config.groups.inputex.combine = #{!requestController.debugMode()};
+                    YUI_config.groups.wegas.combine = #{!requestController.debugMode()};
+                    YUI_config.groups.wegas.filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
                     setupLocalPath("wegas");
                     setupLocalPath("inputex");
                     setupLocalPath("ace");                                      // Set up ace path
@@ -116,7 +116,7 @@
                     setupLocalPath("libraries");                                // Set up libraries path
                 </script>
 
-                <ui:fragment rendered="#{wegasConfig.assets_local}">
+                <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
                     <!-- local assets -->
                     <script>
                         YUI_config.comboBase = comboBase;                       // Force use of self hosted yui3
@@ -131,7 +131,7 @@
                         YUI().use('wegas-app', function (Y) {
                             var app = new Y.Wegas.App({
                                 layoutSrc: 'wegas-app/db/wegas-app-layout.json',
-                                debug: #{requestController.debug},
+                                debug: #{requestController.debugMode()},
                                 currentGameModel: #{gameController.currentGameModel.id},
                                 currentGame: #{gameController.currentGame.id},
                                 currentTeam: #{gameController.currentPlayer.team.id},

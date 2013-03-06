@@ -13,11 +13,7 @@
     <artifactId>wegas-resources</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
-
-    <properties>
-        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
-    </properties>
-
+    
     <dependencies>
         <!-- YUI -->
         <!--<dependency>

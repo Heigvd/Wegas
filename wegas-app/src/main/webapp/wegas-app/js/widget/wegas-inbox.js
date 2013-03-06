@@ -201,7 +201,7 @@ YUI.add('wegas-inbox', function (Y) {
                     on: {
                         success: Y.bind(function (e) {
                             if (e.response.entity.get("attachements") && e.response.entity.get("attachements").length > 0) {
-                                for (i = 0; i < e.response.entity.get("attachements").length; i++) {
+                                for (i = 0; i < e.response.entity.get("attachements").length; i += 1) {
                                     attachement = e.response.entity.get("attachements")[i];
                                     attachements.push("<a href='" + attachement + "' data-file='" + attachement + "'>" + attachement + "</a>");
                                 }

@@ -207,7 +207,8 @@ YUI.add('wegas-action', function(Y) {
         ATTRS: {
             onClick: {
                 _inputex: {
-                    _type: "script"
+                    _type: "script",
+                    label: "On click"
                 }
             }
         }

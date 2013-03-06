@@ -92,6 +92,12 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- log4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+
         <!-- Jersey -->
         <dependency>
             <groupId>com.sun.jersey</groupId>
