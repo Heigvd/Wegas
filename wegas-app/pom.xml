@@ -91,7 +91,26 @@
             <artifactId>wegas-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <!-- logging redirect -->
+<!--        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+        </dependency>-->
+        <!--slf4j implementation-->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        
         <!-- Jersey -->
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -133,11 +152,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- jcl over slf4j bridge -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
 
         <!-- Postgresql Driver -->
         <dependency>
