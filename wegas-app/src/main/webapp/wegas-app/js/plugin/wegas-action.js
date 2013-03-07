@@ -181,7 +181,7 @@ YUI.add('wegas-action', function(Y) {
             }
 
             Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/Script/Run/Player/" + Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify(this.get("onClick"))

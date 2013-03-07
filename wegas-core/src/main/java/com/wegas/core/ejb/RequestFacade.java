@@ -10,7 +10,6 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.PlayerAction;
-import com.wegas.core.event.ResetEvent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.List;
@@ -61,8 +60,6 @@ public class RequestFacade {
      */
     @Inject
     private Event<PlayerAction> playerActionEvent;
-    @Inject
-    private Event<ResetEvent> resetEvent;
 
     /**
      * @return the variableInstanceManager

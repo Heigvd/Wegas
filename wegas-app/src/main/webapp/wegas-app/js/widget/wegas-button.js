@@ -95,7 +95,7 @@ YUI.add("wegas-button", function (Y) {
             },
             disabled: {
                 "transient": false,
-                "type": "boolean"
+                type: "boolean"
             },
             cssClass: {
                 value: null
