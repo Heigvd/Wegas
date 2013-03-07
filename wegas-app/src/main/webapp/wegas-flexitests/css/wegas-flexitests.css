@@ -19,8 +19,6 @@ body > .wegas-pageloader, html{
     margin:auto;
 }
 .wegas-flexitests-controller-content{
-    width: 100%;
-    height: 100%;
     text-align: center;
 }
 .wegas-flexitests-controller-content span{
@@ -48,10 +46,6 @@ body > .wegas-pageloader, html{
 }
 .test-page{
     font-size: 14pt;
-}
-.wegas-flexitests-controller-content{
-    width: 100%;
-    height: 200px;
 }
 .wegas-flexitests-controller-content > .feedback{
     width: 50px;
