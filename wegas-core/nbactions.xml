@@ -7,9 +7,10 @@
         </goals>
         <properties>
             <netbeans.deploy>true</netbeans.deploy>
-            <skipTests>true</skipTests>            
+            <skipTests>true</skipTests>
         </properties>
     </action>
+
     <action>
         <actionName>build</actionName>
         <goals>
@@ -19,6 +20,7 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
+    
     <action>
         <actionName>debug</actionName>
         <goals>

@@ -57,7 +57,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             response.setEntity(serverResponse);
 
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
-                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getRequestManager().getUpdatedInstances()));
+                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getUpdatedInstances()));
             }
             if (!rmf.getRequestManager().getExceptions().isEmpty()) {
                 serverResponse.getEvents().add(new ExceptionEvent(rmf.getRequestManager().getExceptions()));

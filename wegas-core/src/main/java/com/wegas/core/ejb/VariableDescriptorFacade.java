@@ -69,6 +69,11 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
     public void create(final GameModel parentGameModel, final VariableDescriptor variableDescriptor) {
         final List<String> usedNames = this.getUsedNames(parentGameModel.getId());
 
+        if (variableDescriptor.getLabel() == null) {
+            variableDescriptor.setLabel((variableDescriptor.getName() == null)
+                    ? "unnamed" : variableDescriptor.getName());
+        }
+
         //Fill name with label if it is empty
         if (variableDescriptor.getName() == null || variableDescriptor.getName().isEmpty()) {
             variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getLabel(), usedNames));

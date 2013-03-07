@@ -36,33 +36,45 @@ YUI.add('wegas-widgetmenu', function(Y) {
             var host = this.get(HOST);
 
             if (host instanceof Y.Node) {
-                this.createMenuEvent(host);
+                this.bind(host);
             } else if (host instanceof Y.Widget) {
                 this.afterHostEvent("render", function() {
-                    this.createMenuEvent(this.get(HOST).get(BOUNDINGBOX));
+                    this.bind(this.get(HOST).get(BOUNDINGBOX));
                 });
             }
 
+            this.after("childrenChange", function () {                          // On children attribute update
+                if (this.menu) {
+                    this.menu.removeAll();
+                    this.menu.add(this.get("children"));            // update menu items
+                }
+            });
+
         },
-        createMenuEvent: function(node) {
-            //var bb = this.get(HOST).get(BOUNDINGBOX);
 
-            node.delegate(this.get("event"), function(e) {
+        bind: function(node) {
+            node.delegate(this.get("event"), function(e) {                      // Target event listener
                 var menu = this.getMenu();                                      // Get a menu instance
-
                 menu.attachTo(e.target);                                        // Attach it to the target node
                 e.halt(true);                                                   // Prevent event from bubbling
                 this.fire("menuOpen", {domEvent: e});                                          // Notify the parent the menu has been opened
             }, this.get("selector"), this);
 
-
-            //bb.append('<span class="wegas-widgetmenu-submenuindicator"></span>');      // Add submenu indicator
-            node.addClass("wegas-widgetmenu-hassubmenu");
-            //bb.all(this.get("selector")).addClass("wegas-widgetmenu-hassubmenu");
+            node.addClass("wegas-widgetmenu-hassubmenu");                       // Add submenu indicator
             if (this.get("menuCfg.points") && this.get("menuCfg.points")[0].indexOf("b") < 0) {
                 node.addClass("wegas-widgetmenu-hassubmenuright");
             }
         },
+
+        add: function (widget) {
+            this.get("children").push(widget);
+            this.set("children", this.get("children"));
+        },
+
+        size: function () {
+            return this.get("children").length;
+        },
+
         /**
          * @function
          * @private

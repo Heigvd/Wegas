@@ -11,11 +11,11 @@
  */
 YUI.add( "wegas-book-fight", function ( Y ) {
     "use strict";
-    
+
     var CONTENTBOX = "contentBox", Fight;
-    
+
     Fight = Y.Base.create( "wegas-book-fight", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable ], {
-        
+
         handlers: new Array(),
         dice:null,
         opponentStamina:0,
@@ -23,7 +23,7 @@ YUI.add( "wegas-book-fight", function ( Y ) {
         success:null,
         failure:null,
         alternative:null,
-        
+
         doFight: function(e){
             var combatSkill = Y.Wegas.VariableDescriptorFacade.rest.find("name", "combatSkill"),
             stamina = Y.Wegas.VariableDescriptorFacade.rest.find("name", "stamina").getInstance().get("value"),
@@ -60,7 +60,7 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             this.opponentStamina -= damageGiven;
             stamina -= damageTaken;
             if(this.opponentStamina<=0){
-                this.opponentStamina = 0; 
+                this.opponentStamina = 0;
                 this.doBattleResult(true);
             } else if(stamina<=0){
                 stamina=0;
@@ -71,11 +71,11 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             this.setStamina(stamina);
             this.syncUI();
         },
-        
+
         setStamina:function(stamina){
             if(typeof stamina !== "number") return;
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 headers:{
                     'Content-Type': 'application/json; charset=ISO-8859-1',
                     'Managed-Mode':'true'
@@ -90,7 +90,7 @@ YUI.add( "wegas-book-fight", function ( Y ) {
                 }
             });
         },
-        
+
         doBattleResult: function(success){
             var cb = this.get(CONTENTBOX);
             if(success){
@@ -99,12 +99,12 @@ YUI.add( "wegas-book-fight", function ( Y ) {
                 if(this.failure)this.failure.render(cb.one(".result"));
             }
         },
-        
+
         displayOpponentState: function(cb){
             cb.one(".opponent .stamina .value").setHTML(this.opponentStamina);
             cb.one(".opponent .combatSkill .value").setHTML(this.opponentCombatSkill);
         },
-        
+
         initializer: function(){
             this.dice = new Y.Wegas.Dice({
                 label:"Combattre",
@@ -134,7 +134,7 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             this.opponentStamina = this.get("stamina");
             this.opponentCombatSkill = this.get("combatSkill");
         },
-        
+
         renderUI: function(){
             var cb = this.get(CONTENTBOX), opponement;
             opponement = Y.Node.create("<div class='opponent'></div>");
@@ -151,19 +151,19 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             this.dice.render(cb.one(".dice"));
             if(this.alternative)this.alternative.render(cb.one(".alternative"));
         },
-        
+
         bindUI: function(){
             this.dice.after("diceRolling",function(){
                 this.dice.rollButton.disable();
             }, this);
             this.dice.after("diceRolled", this.doFight, this);
         },
-        
+
         syncUI: function(){
             var cb = this.get(CONTENTBOX);
             this.displayOpponentState(cb);
         },
-        
+
         destructor: function(){
             var i;
             for (i=0; i<this.handlers.length;i++) {
@@ -173,8 +173,8 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             if(this.success)this.success.destroy();
             if(this.failure)this.failure.destroy();
             if(this.alternative)this.alternative.destroy();
-        }  
-    
+        }
+
     }, {
         ATTRS : {
             name:{
@@ -208,6 +208,6 @@ YUI.add( "wegas-book-fight", function ( Y ) {
             }
         }
     });
-    
+
     Y.namespace( "Wegas" ).Fight = Fight;
 });
