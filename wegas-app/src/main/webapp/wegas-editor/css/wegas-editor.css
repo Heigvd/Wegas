@@ -364,6 +364,6 @@ body {
 .experimental::after{
     color:rgb(168, 168, 168);
     font-style: italic;
-    font-size: 6pt;
-    content:" Development"
+    font-size: 7pt;
+    content:" Experimental"
 }
