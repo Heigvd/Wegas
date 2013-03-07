@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * This servlet allows to retrieve several resources in a single request. Used
  * to combine .js and .css files.
  *
- * Resulting files should be cached. For example check
+ * @todo Resulting files should be cached. For example check
  * https://github.com/smaring/javascript-combo-service/blob/master/src/main/java/org/maring/util/js/JavascriptComboService.java
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -77,13 +77,11 @@ public class ComboController {
         //EntityTag etag = new EntityTag();
         //Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(updateTimestamp, etag);
 
-
         return Response.ok(this.getCombinedFile(files, mediaType)).
                 type(mediaType).
                 cacheControl(cc).
-                //expires()
+                //expires().
                 build();
-
     }
 
     private String getCombinedFile(Set<String> fileList, String mediaType) throws IOException {
@@ -93,15 +91,16 @@ public class ComboController {
                 InputStream fis = (InputStream) servletContext.getResourceAsStream(fileName);
                 String content = IOUtils.toString(fis, Helper.getWegasProperty("encoding"));
                 //String content = new Scanner(fis, Helper.getWegasProperty("encoding"))
-                //.useDelimiter("\\A").next();   // Use a fake delimiter to read all lines at once
-                if (mediaType.equals(MediaTypeCss)) {                             // @hack for css files, we correct the path
-                    String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
-                    content = content.replaceAll("url\\(([^:\\)]+\\))",
-                            "url(" + servletContext.getContextPath()
-                            + dir + "$1");                  //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
-                }
+                //.useDelimiter("\\A").next();          // Use a fake delimiter to read all lines at once
 
+                if (mediaType.equals(MediaTypeCss)) {                           // @hack for css files, we correct the path
+                    String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
+                    content = content.replaceAll("url\\(\"?([^:\\)\"]+)\"?\\)",
+                            "url(" + servletContext.getContextPath()
+                            + dir + "$1)");              //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
+                }
                 acc.append(content);
+
             } catch (NullPointerException e) {
                 logger.error("Resource not found : {}", fileName);
             }

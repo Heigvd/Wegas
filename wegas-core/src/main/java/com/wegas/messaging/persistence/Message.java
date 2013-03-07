@@ -43,7 +43,6 @@ public class Message extends NamedEntity {
      *
      */
     @JsonView(Views.Export.class)
-    //@Column(length = 4096)
     @Lob
     private String body;
     /**
@@ -75,10 +74,9 @@ public class Message extends NamedEntity {
     /**
      *
      */
-    @JsonBackReference("inbox-message")
     @ManyToOne(optional = false)
-    @JoinColumn(name = "variableinstance_id", nullable = false)
-    private InboxInstance inboxInstanceEntity;
+    @JsonBackReference("inbox-message")
+    private InboxInstance inboxInstance;
 
     /**
      *
@@ -135,15 +133,19 @@ public class Message extends NamedEntity {
     @PostUpdate
     @PostRemove
     public void onUpdate() {
-        this.getInboxInstanceEntity().onInstanceUpdate();
+        this.getInboxInstance().onInstanceUpdate();
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof Message) {
             Message vd = (Message) o;
-            // @fixme is null variable returning false the right thing ?
-            return vd.getId() == null || this.getId() == null || this.getId().equals(vd.getId());
+
+            if (vd.getId() == null || this.getId() == null) {
+                return false;
+            } else {
+                return this.getId().equals(vd.getId());
+            }
         } else {
             return false;
         }
@@ -210,22 +212,22 @@ public class Message extends NamedEntity {
      * @return the MCQDescriptor
      */
     @XmlTransient
-    public InboxInstance getInboxInstanceEntity() {
-        return inboxInstanceEntity;
+    public InboxInstance getInboxInstance() {
+        return inboxInstance;
     }
 
     /**
      * @param mailboxInstanceEntity
      */
-    public void setInboxInstanceEntity(InboxInstance mailboxInstanceEntity) {
-        this.inboxInstanceEntity = mailboxInstanceEntity;
+    public void setInboxInstance(InboxInstance inboxInstance) {
+        this.inboxInstance = inboxInstance;
     }
 
     /**
      * @return the startTime
      */
     public Date getTime() {
-        return (Date)sentTime.clone();
+        return (Date) sentTime.clone();
     }
 
     /**

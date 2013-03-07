@@ -72,11 +72,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     resourceDescriptor: this.currentItem
                 });
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({// decrease number of actions by 1
-                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
-                    headers: {
-                        'Content-Type': 'application/json; charset=ISO-8859-1',
-                        'Managed-Mode': 'true'
-                    },
+                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                     cfg: {
                         method: "POST",
                         data: Y.JSON.stringify({
@@ -206,7 +202,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
             return occupationObject;
         },
-            
+
         /**
          * @param TaskDescriptor td, the task to get Requirements
          * @return String, a texte including all the Requirements
@@ -226,7 +222,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             }
             return temp.join(", ");
         },
-            
+
         /**
          * Get a descripton of the occupation of the given resource. this resource can be vacant, sick or on work.
          * @param ResourceInstance resourceInstance, the resource to get the occupation text.
@@ -293,11 +289,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if (!this.currentResourceDescriptor)
                 return;
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
-                headers: {
-                    'Content-Type': 'application/json; charset=ISO-8859-1',
-                    'Managed-Mode': 'true'
-                },
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({

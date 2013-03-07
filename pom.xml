@@ -71,9 +71,11 @@
         <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <resources.local>true</resources.local>
-        <wegas.debug>true</wegas.debug>
         <build.optimize>false</build.optimize>
+
+        <wegas.debug>true</wegas.debug>
+        <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
+        <wegas.useYUICDN>false</wegas.useYUICDN>
 
         <shiro.version>1.2.0</shiro.version>
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
@@ -100,8 +102,9 @@
             <id>release-profile</id>
             <properties>
                 <build.optimize>true</build.optimize>
-                <resources.local>false</resources.local>
                 <wegas.debug>false</wegas.debug>
+                <wegas.clientErrorLogging>true</wegas.clientErrorLogging>
+                <wegas.useYUICDN>true</wegas.useYUICDN>
             </properties>
         </profile>
     </profiles>
@@ -120,6 +123,7 @@
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
@@ -281,7 +285,7 @@
                 </exclusions>
                 <scope>compile</scope>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.madgag</groupId>
                 <artifactId>util-diff</artifactId>
@@ -410,26 +414,6 @@
 
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-
-        <!-- slf4j -->
-<!--        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-
-         logback (slf4j implementation)
--->        
-<!--        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>-->
-    </dependencies>
 
     <build>
 

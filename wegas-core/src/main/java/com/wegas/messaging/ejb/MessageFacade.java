@@ -8,6 +8,7 @@
 package com.wegas.messaging.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -77,12 +78,13 @@ public class MessageFacade extends AbstractFacadeImpl<Message> {
      * @param body
      * @param from
      */
-    public void send(Player p, String subject, String body, String from) {
+    public Message send(Player p, String subject, String body, String from) {
         Message msg = new Message();
         msg.setSubject(subject);
         msg.setBody(body);
         msg.setFrom(from);
         this.send(p, msg);
+        return msg;
     }
 
     /**
@@ -93,13 +95,14 @@ public class MessageFacade extends AbstractFacadeImpl<Message> {
      * @param from
      * @param attachements
      */
-    public void send(Player p, String subject, String body, String from, List<String> attachements) {
+    public Message send(Player p, String subject, String body, String from, List<String> attachements) {
         Message msg = new Message();
         msg.setSubject(subject);
         msg.setBody(body);
         msg.setFrom(from);
         msg.setAttachements(attachements);
         this.send(p, msg);
+        return msg;
     }
 
     @Override

@@ -268,7 +268,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         assignTask: function (resourceDescriptor, taskDescriptor) {
             if (taskDescriptor && resourceDescriptor) {
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                     headers: {
                         'Content-Type': 'application/json; charset=ISO-8859-1',
                         'Managed-Mode': 'true'

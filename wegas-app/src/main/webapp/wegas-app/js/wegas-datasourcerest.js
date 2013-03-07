@@ -656,6 +656,7 @@ YUI.add('wegas-datasourcerest', function (Y) {
             }
             return false;
         },
+
         addToCache: function (entity) {
             if (entity instanceof Wegas.persistence.Team) {
                 var game = this.findById(entity.get("gameId"));
@@ -669,6 +670,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 this.getCache().push(entity);
             }
         },
+        /**
+         * @deprecated
+         */
         generateRequest: function (data) {
             if (data['@class'] === 'Team') {
                 return '/' + data.gameId + '/Team/' + data.id;
@@ -679,8 +683,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
                 return "/" + data.id;
             }
         },
+
         post: function (entity, parentData, callback) {
-            if (entity instanceof Wegas.persistence.Player) {
+            if (entity["@class"] === "Player") {
                 this.sendRequest({
                     request: "/" + this.getGameByTeamId(parentData.id).get(ID)
                     + "/Team/" + parentData.id + "/Player",
@@ -690,9 +695,9 @@ YUI.add('wegas-datasourcerest', function (Y) {
                     },
                     on: callback
                 });
-            } else if (entity instanceof Wegas.persistence.Player) {
+            } else if (entity["@class"] === "Game") {
                 this.sendRequest({
-                    request: "/" + entity.get(ID) + "/" + entity.get("gameModelId"),
+                    request: "/" + entity.gameModelId,
                     cfg: {
                         method: POST,
                         data: Y.JSON.stringify(entity)

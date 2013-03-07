@@ -6,7 +6,7 @@
         <goals>
             <goal>install</goal>
         </goals>
-<!--        <preAction>build-with-dependencies</preAction>
+        <!--<preAction>build-with-dependencies</preAction>
         <goals>
             <goal>package</goal>
             <goal>prepare-package</goal>
@@ -17,17 +17,19 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
-    <!--<action>
+
+    <action>
         <actionName>debug</actionName>
         <goals>
-            <goal>package</goal>
+            <goal>install</goal>
+            <!--<goal>package</goal>-->
         </goals>
         <properties>
             <netbeans.deploy>true</netbeans.deploy>
             <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
             <skipTests>true</skipTests>
         </properties>
-    </action>-->
+    </action>
 
     <action>
         <actionName>CUSTOM-Build -skip-test</actionName>

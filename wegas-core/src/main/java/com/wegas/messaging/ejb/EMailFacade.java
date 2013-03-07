@@ -83,7 +83,7 @@ public class EMailFacade {
             msg.setText(body);
             msg.setSentDate(new Date());
             Transport.send(msg);                                                // Send the message
-            System.out.println("Message sent OK.");
+            logger.info("Email sent");
         } catch (MessagingException ex) {
             logger.error("Error sending mail", ex);
         }

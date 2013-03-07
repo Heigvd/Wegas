@@ -44,7 +44,7 @@ YUI.add('wegas-scripteval', function(Y) {
                 }
                 return result;
             } catch (error) {
-                url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer');
+                url = Y.Wegas.VariableDescriptorFacade.get("source") + "/Script/Run/" + Y.Wegas.app.get('currentPlayer');
                 return Y.io(url, {
                     headers: {
                         'Content-Type': 'application/json; charset=iso-8859-1',
