@@ -13,7 +13,10 @@
     <name>wegas-core</name>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
         <!-- Jersey -->
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -104,7 +107,7 @@
             <groupId>com.madgag</groupId>
             <artifactId>util-diff</artifactId>
         </dependency>
-
+        
 
     </dependencies>
 

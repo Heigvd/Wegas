@@ -159,7 +159,7 @@
                 <thread-pool name="thread-pool-1" max-thread-pool-size="200"/>
             </thread-pools>
             <!--disable liquibase-->
-            <system-property name="liquibase.should.run" value="false"/> 
+            <system-property name="liquibase.should.run" value="true"/> 
         </config>
     </configs>
     <property name="administrative.domain.name" value="domain1"/>
