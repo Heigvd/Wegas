@@ -48,6 +48,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
         choice.setDefaultInstance(new ChoiceInstance());
         choice.setScope(new TeamScope());
+        choice.setName("testChoice");
         Result r = new Result("1st result");
         r.setImpact(new Script("mynumber.value = 10"));
         choice.addResult(r);

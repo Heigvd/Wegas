@@ -91,9 +91,11 @@ public class Helper {
      * @return a String wich will be undestandable by JavaScript as a var
      */
     public static String encodeVariableName(String name) {
-
+        if(name.isEmpty()){
+            throw new NullPointerException("Name is empty");
+        }
         StringBuilder sb = new StringBuilder();
-        StringTokenizer st = new StringTokenizer(name);
+        StringTokenizer st = new StringTokenizer(name);       
         String tmp;
         Boolean first = true;
         while (st.hasMoreTokens()) {                                            //CamelCase the name except first word (instance like)
