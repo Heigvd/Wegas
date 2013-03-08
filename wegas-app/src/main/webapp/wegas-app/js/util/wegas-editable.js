@@ -131,7 +131,7 @@ YUI.add('wegas-editable', function(Y) {
             if (menus) {
                 menu = menus[this.get('@class')] || menus[this.get("type")];    // Select first server defined forms, based on the @class or the type attribute
             }
-            menu = menu || this.getStatic("EDITMENU")[0] || [];                // And if no form is defined we return the default one defined in the entity
+            menu = menu || this.getStatic("EDITMENU", true)[0] || [];                // And if no form is defined we return the default one defined in the entity
 
             function mixMenuCfg(elts, data) {
                 var i, j;
@@ -178,12 +178,19 @@ YUI.add('wegas-editable', function(Y) {
          *  @function
          *  @private
          */
-        getStatic: function(key) {
-            var c = this.constructor, ret = [];
+        getStatic: function(key, withExtensions) {
+            var c = this.constructor, ret = [], i;
 
             while (c) {
                 if (c[key]) {                                                  // Add to attributes
                     ret[ret.length] = c[key];
+                }
+                if (withExtensions && c._yuibuild && c._yuibuild.exts) {
+                    for (i = 0; i < c._yuibuild.exts.length; i += 1) {
+                        if (c._yuibuild.exts[i][key]) {
+                            ret.push(c._yuibuild.exts[i][key]);
+                        }
+                    }
                 }
                 c = c.superclass ? c.superclass.constructor : null;
             }
@@ -200,14 +207,14 @@ YUI.add('wegas-editable', function(Y) {
         },
         /**
          * Check if this widget is augmented (extended) by a specifique Widget
-         * @param {type} constructor to check for
+         * @param {Class} extension to check for
          * @returns {Boolean}
          */
-        isAugmentedBy: function(constructor) {
+        isAugmentedBy: function(extension) {
             var self = this.constructor, i;
             while (self._yuibuild) {
                 for (i = 0; i < self._yuibuild.exts.length; i += 1) {
-                    if (self._yuibuild.exts[i] === constructor) {
+                    if (self._yuibuild.exts[i] === extension) {
                         return true;
                     }
                 }
