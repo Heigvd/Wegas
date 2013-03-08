@@ -12,18 +12,16 @@ YUI.add('wegas-websocketlistener', function(Y) {
 
 
         initializer: function() {
-            return;
+//            return;
             Pusher.log = Y.log;    // Enable pusher logging - don't include this in production
 
             document.WEB_SOCKET_DEBUG = true;// Flash fallback logging - don't include this in production
 
             this.pusher = new Pusher('732a1df75d93d028e4f9');
-            this.gameChannel = pusher.subscribe('test_channel');
-            this.teamChannel = pusher.subscribe('test_channel');
-            this.playerChannel = pusher.subscribe('test_channel');
-            channel.bind('my_event', function(data) {
-                
-                alert(data);
+            this.gameChannel = this.pusher.subscribe('Game-' + Y.Wegas.app.get("currentGame"));
+            //this.teamChannel = this.pusher.subscribe('Team-' + Y.Wegas.app.get("currentTeam"));
+            //this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.app.get("currentPlayer"));
+            this.gameChannel.bind('wegas-event', Y.bind(function(data) {
                 
                 switch (data["@class"]) {
                     case "VariableInstanceUpdate":
@@ -34,7 +32,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                         this.fire(data.event.type, data.event);
                         break;
                 }
-            });
+            }, this));
         },
         
         /**
@@ -45,11 +43,17 @@ YUI.add('wegas-websocketlistener', function(Y) {
          * @arg channel player/team/game/gamemodel
          */
         triggerCustomEvent: function (channel, event) {
-            
-            Y.Wegas.app.get("currentGame")
-            
-            this.get("host").rest.sendRest({
-                request: "WebSocketController/Game/12/",
+            var id;
+            if (channel == "Game"){
+                id = Y.Wegas.app.get("currentGame");
+            } else if (channel == "Team"){
+                id = Y.Wegas.app.get("currentTeam");
+            } else {
+                id = Y.Wegas.app.get("currentPlayer");
+            }
+
+            this.get("host").rest.sendRequest({
+                request: "../../../../Pusher/Send/" + channel + "/" + id,
                 cfg: {
                     method: "POST",
                     data: {

@@ -34,15 +34,22 @@ YUI.add('wegas-chat', function (Y) {
             this.send.render(this.conversation);
             this.sendEvent();
             
+            this.channel = this.get("channel");
+            this.response();
+            
             cb.append(this.conversation);
         },
         
         sendEvent: function(){
+            var sender = Y.Wegas.GameFacade.rest.getCurrentPlayer().get("name");
             this.send.on("click", function(){
-                // now juste add message
-                Y.one('.wegas-chat-msgs').append('<p>' + this.field.getValue() + '</p>');
-                this.field.setValue("");
-                // TODO send to value to pusher
+                Y.Wegas.VariableDescriptorFacade.ws.triggerCustomEvent(this.channel, { type: "chatEvent", sender: sender, value: "Hello"});
+            }, this);
+        },
+        
+        response: function(){
+            Y.Wegas.VariableDescriptorFacade.ws.on("chatEvent", function (e) {
+                Y.one('.wegas-chat-msgs').append('<p>' + e.sender + ': ' + e.value + '</p>');
             }, this);
         }
 
@@ -50,6 +57,9 @@ YUI.add('wegas-chat', function (Y) {
         ATTRS : {
             size: {
                 value: 23
+            },
+            channel: {
+                value: "Game"
             }
         }
     });
