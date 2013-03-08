@@ -41,6 +41,9 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                 this.restart = this.get("host").item(3);
                 this.checkRestart();
                 this.clickRestart();
+                
+                this.next = this.get("host").item(2);
+                this.clickNext();
             });
         },
         
@@ -54,6 +57,35 @@ YUI.add('wegas-monopoly-controller', function(Y) {
         setPion : function(e){
             this.display.setPion(e.target.result);
             this.display.setState("afterRoll");
+        },
+        
+        clickNext: function(){
+            var turn = Y.Wegas.VariableDescriptorFacade.rest.find("name", "turnOf"),
+                id, player;
+            this.next.on("click", function(){
+                if (turn.get("scope") instanceof Y.Wegas.persistence.GameModelScope){ //@fixme when gameScope works
+                    player = Y.Wegas.GameFacade.rest.getCurrentGame().get("teams");
+                    this.nextPlayer("teams", turn, player);
+                } else if (turn.get("scope") instanceof Y.Wegas.persistence.TeamScope) {
+                    this.nextPlayer("players", turn, player);
+                    player = Y.Wegas.GameFacade.rest.getCurrentTeam().get("players");
+                }
+            }, this);
+        },
+        
+        nextPlayer: function (scope, turn, player){
+            var i;
+            for (i = 0; i < player.length; i++){
+                if (turn.get("scope").getInstance().get("value") == Y.Wegas.GameFacade.rest.getCurrentGame().get(scope)[i].get("id")){
+                    i++
+                    if (i == player.length){
+                        this.display.setCurrentPlayer(Y.Wegas.GameFacade.rest.getCurrentGame().get(scope)[0].get("id"));
+                    } else {
+                        this.display.setCurrentPlayer(Y.Wegas.GameFacade.rest.getCurrentGame().get(scope)[i].get("id"));
+                    }
+                }
+            }
+            this.display.setState("wait"); 
         },
         
         checkRestart : function(){
