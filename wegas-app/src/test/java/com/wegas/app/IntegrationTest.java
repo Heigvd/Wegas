@@ -64,7 +64,7 @@ public class IntegrationTest {
         glassfish.dispose();
     }
 
-//    @Test(expected = ScriptException.class)
+    @Test(expected = ScriptException.class)
     public void hello() throws GlassFishException, IOException {
         //java.lang.System.setProperty("org.apache.commons.logging.simplelog.defaultlog", "debug");
         //beginAt("test.htm");
