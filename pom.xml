@@ -83,6 +83,7 @@
         <jdk.version>1.7</jdk.version>
         <glassfish.version>3.1.2</glassfish.version>
         <cdi.version>1.0</cdi.version>
+        <slf4j.version>1.6.1</slf4j.version>
         <weld.version>1.1.0.Final</weld.version>
         <junit.version>4.8.2</junit.version>
         <exec.plugin.version>1.2</exec.plugin.version>
@@ -115,32 +116,32 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.5.10</version>
+                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
-                <version>1.5.10</version>
+                <version>${slf4j.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>1.5.10</version>
-                <!--<exclusions>
-                    <exclusion>
-                        <groupId>org.slf4</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>-->
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
 
             <!-- logback (slf4j implementation) -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.0.2</version>
-                <scope>runtime</scope>
+                <version>1.0.9</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.0.9</version>
+                <scope>compile</scope>
             </dependency>
 
             <!-- Jersey -->
@@ -241,7 +242,7 @@
             <dependency>
                 <groupId>org.glassfish.main.extras</groupId>
                 <artifactId>glassfish-embedded-all</artifactId>
-                <version>3.1.2</version>
+                <version>3.1.2.2</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -523,7 +524,7 @@
                     <configuration>
                     <!-- There is an issue with cobertura and jdk7,
                     that forces us to run  in compatiblity mode.-->
-                        <argLine>-XX:-UseSplitVerifier</argLine>
+                        <argLine>-XX:-UseSplitVerifier -Xms800m -Xmx800m -XX:MaxPermSize=500m</argLine>
                         <forkMode>always</forkMode>
                         <classpathDependencyExcludes>
                             <classpathDependencyExcludes>
@@ -531,6 +532,12 @@
                             </classpathDependencyExcludes>
                             <classpathDependencyExclude>
                                 org.apache.felix:javax.servlet
+                            </classpathDependencyExclude>
+                            <classpathDependencyExclude>
+                                ch.qos.logback:logback-classic
+                            </classpathDependencyExclude>
+                            <classpathDependencyExclude>
+                                org.slf4j:slf4j-api
                             </classpathDependencyExclude>
                         </classpathDependencyExcludes>
                     </configuration>
