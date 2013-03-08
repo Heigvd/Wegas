@@ -10,6 +10,7 @@ package com.wegas.core;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.*;
 
 /**
@@ -54,5 +55,23 @@ public class HelperTest {
         assertEquals(32, Helper.getLabelSuffix("test1String(32)"));
         assertEquals(32, Helper.getLabelSuffix("test(1String)(32)"));
         assertEquals(0, Helper.getLabelSuffix("test(1String32)"));
+    }
+
+    @Test
+    public void testEncodeVariableName() {
+        System.out.println("encodeVariableName");
+        assertEquals("testEncode", Helper.encodeVariableName("test encode"));
+        assertEquals("a4", Helper.encodeVariableName("a 4"));
+        assertEquals("_5Test1", Helper.encodeVariableName("5 test 1"));
+        try {
+            Helper.encodeVariableName(null);
+        } catch (Throwable t) {
+            assertEquals(NullPointerException.class, t.getClass());
+        }
+        try {
+            Helper.encodeVariableName("");
+        } catch (Throwable t) {
+            assertEquals(NullPointerException.class, t.getClass());
+        }
     }
 }
