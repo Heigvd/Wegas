@@ -37,14 +37,14 @@
     "3": {
         "type": "FlexitestsController",
         "cssClass": "test-page",
+        "fixPoint": "1000",
         "children": [{
                 "type": "ChoiceList",
                 "id": "leftElement",
                 "children": [
                     {
-                        "type": "SimpleElement",
-                        "content": "Male",
-                        "response": "male"
+                        "type": "Text",
+                        "content": "Male"
                     }
                 ],
                 "plugins": [{
@@ -92,9 +92,8 @@
                 ],
                 "children": [
                     {
-                        "type": "SimpleElement",
-                        "content": "Female",
-                        "response": "female"
+                        "type": "Text",
+                        "content": "Female"
                     }
                 ]
             }, {
@@ -124,31 +123,74 @@
                 ],
                 "children": [
                     {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/hectorPerplexe.png",
-                        "response": "male"
+                        "type": "Image",
+                        "url": "/hectorPerplexe.png",
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "male"
+                                }
+                            }
+                        ]
                     },
                     {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/jessicaPerplexe.png",
-                        "response": "female"
+                        "type": "Image",
+                        "url": "/jessicaPerplexe.png",
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "female"
+                                }
+                            }
+                        ]
                     }, {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/lucienPortrait.png",
-                        "response": "male"
+                        "type": "Image",
+                        "url": "/lucienPortrait.png",
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "male"
+                                }
+                            }
+                        ]
                     }, {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/danielaConfiant.png",
-                        "response": "female"
+                        "type": "Image",
+                        "url": "/danielaConfiant.png",
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "female"
+                                }
+                            }
+                        ]
                     }, {
-                        "type": "SimpleElement",
-                        "contentType": "img",
-                        "content": "/fernandPensif.png",
-                        "response": "male"
+                        "type": "Image",
+                        "url": "/fernandPensif.png",
+                        "plugins": [{
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "male"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "FlexitestsMCQ",
+                "id": "flexi-mcq",
+                "responseType": "link",
+                "variable": {
+                    "name": "test1"
+                },
+                "plugins": [
+                    {
+                        "fn": "Position",
+                        "cfg": {
+                            "bottom": "30",
+                            "left": "200",
+                            "right": "200"
+                        }
                     }
                 ]
             }]

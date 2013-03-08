@@ -14,7 +14,8 @@
 
 YUI.add('wegas-editor-buttons', function (Y) {
     "use strict";
-
+    
+    var SelectGameButton, SelectPlayerButton;
     /**
      * A button that display all current game's player and that sets the
      * Y.Wegas.app.set("currentPlayer") on click.
@@ -24,7 +25,7 @@ YUI.add('wegas-editor-buttons', function (Y) {
      * @extends Y.Wegas.Button
      * @param {Object} cfg The button config object
      */
-    var SelectPlayerButton = Y.Base.create("button", Y.Wegas.Button, [], {
+    SelectPlayerButton = Y.Base.create("button", Y.Wegas.Button, [], {
         /** @lends Y.Wegas.SelectPlayerButton# */
 
         /**
@@ -96,7 +97,7 @@ YUI.add('wegas-editor-buttons', function (Y) {
      * @extends Y.Wegas.Button
      * @param {Object} cfg The button config object
      */
-    var SelectGameButton= Y.Base.create("button", Y.Wegas.Button, [], {
+    SelectGameButton= Y.Base.create("button", Y.Wegas.Button, [], {
 
         /** @lends Y.Wegas.SelectGameButton# */
         bindUI: function () {

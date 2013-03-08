@@ -95,7 +95,7 @@ YUI.add("wegas-button", function (Y) {
             },
             disabled: {
                 "transient": false,
-                "type": "boolean"
+                type: "boolean"
             },
             cssClass: {
                 value: null
@@ -110,7 +110,7 @@ YUI.add("wegas-button", function (Y) {
                             data: "Tooltip"
                         }, {
                             type: "Button",
-                            label: "Impact",
+                            label: "On click",
                             data: "ExecuteScriptAction"
                         }, {
                             type: "Button",

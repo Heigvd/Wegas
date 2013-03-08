@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class AbstractEJBTest {
 

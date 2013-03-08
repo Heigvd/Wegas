@@ -9,12 +9,17 @@ package com.wegas.messaging.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,15 +29,15 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @XmlType(name = "InboxInstance")
 public class InboxInstance extends VariableInstance {
 
+    protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(InboxInstance.class);
     private static final long serialVersionUID = 1L;
     /**
      *
      */
-    @OneToMany(mappedBy = "inboxInstanceEntity", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(name = "variableinstance_id")
+    @OneToMany(mappedBy = "inboxInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @OrderBy("sentTime")
     @JsonManagedReference("inbox-message")
-    private List<Message> messages = new ArrayList<Message>();
+    private List<Message> messages = new ArrayList<>();
 
     /**
      * @return the replies
@@ -48,7 +53,29 @@ public class InboxInstance extends VariableInstance {
         this.messages = messages;
         for (Iterator<Message> it = this.messages.iterator(); it.hasNext();) {
             Message r = it.next();
-            r.setInboxInstanceEntity(this);
+            r.setInboxInstance(this);
+        }
+    }
+
+    /**
+     *
+     * @param message
+     */
+    public void addMessage(Message message) {
+        this.messages.add(message);
+        message.setInboxInstance(this);
+    }
+
+    @Override
+    public void merge(AbstractEntity a) {
+        InboxInstance other = (InboxInstance) a;
+        this.messages.clear();
+        for (Message m : other.getMessages()) {
+            try {
+                this.addMessage((Message) m.duplicate());
+            } catch (IOException ex) {
+                logger.error("Exception duplicating {}", m);
+            }
         }
     }
 
@@ -57,8 +84,7 @@ public class InboxInstance extends VariableInstance {
      * @param message
      */
     public void sendMessage(Message message) {
-        this.messages.add(message);
-        message.setInboxInstanceEntity(this);
+        this.addMessage(message);
     }
 
     /**
@@ -70,6 +96,7 @@ public class InboxInstance extends VariableInstance {
     public void sendMessage(String from, String subject, String body) {
         this.sendMessage(new Message(from, subject, body));
     }
+
     /**
      *
      * @param from
@@ -82,8 +109,7 @@ public class InboxInstance extends VariableInstance {
     }
 
     @Override
-    public void merge(AbstractEntity a) {
-        InboxInstance other = (InboxInstance) a;
-        this.setMessages(other.getMessages());
+    public String toString() {
+        return this.getClass().getSimpleName() + "( " + getId() + ", msgs: " + this.getMessages().size() + " )";
     }
 }

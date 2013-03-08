@@ -159,6 +159,10 @@ img.inputEx-ListField-delButton {
     top: 0;
     z-index: 10; /* to allow click events */
 }
+
+.yui3-skin-sam .inputEx-ListField .wegas-addbutton:after {
+    content: none;  /** remove submenu indicator for this button */
+}
 .inputEx-ListField .wegas-addbutton {
     left: -3px;
 }

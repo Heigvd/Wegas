@@ -35,8 +35,8 @@ YUI.add("wegas-text", function (Y) {
         }
 
     }, {
-        /** @lends Y.Wegas.Text# */
-
+        /** @lends Y.Wegas.Text */
+        EDITORNAME: "Text",
         /**
          * @field
          * @static
@@ -60,7 +60,19 @@ YUI.add("wegas-text", function (Y) {
                     return val;
                 }
             }
-        }
+        },
+                
+        EDITMENU: [{
+            type: "Button",
+            label: "Properties",
+            cssClass: "editor-exploreGameModel-button",
+            plugins: [{
+                fn: "EditEntityAction",
+                cfg: {
+                    dataSource: "Page"
+                }
+            }]
+        }]
     });
     Y.namespace("Wegas").Text = Text;
 

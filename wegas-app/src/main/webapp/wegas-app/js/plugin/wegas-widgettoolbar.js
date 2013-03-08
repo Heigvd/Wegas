@@ -57,11 +57,11 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             var i, host = this.get(HOST),
             children = this.get("children");
             host.get(BOUNDINGBOX).addClass("wegas-hastoolbar")
-            .append('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
+            .prepend('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
             host.get('contentBox').addClass("wegas-toolbar-sibling");
 
             for (i = 0; i < children.length; i = i + 1) {
-                this.children.push(this.add(children[i]));
+                this.add(children[i]);
             }
         },
 
@@ -79,6 +79,7 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             }
             widget.render(this.get("header"));
             widget.addTarget(this.get(HOST));
+            this.children.push(widget);
             return widget;
         },
 
@@ -90,6 +91,10 @@ YUI.add('wegas-widgettoolbar', function (Y) {
          */
         item: function (index) {
             return this.children[index];
+        },
+
+        size: function () {
+            return this.children.length;
         }
 
     }, {

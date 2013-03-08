@@ -188,6 +188,33 @@ YUI.add('wegas-editable', function(Y) {
                 c = c.superclass ? c.superclass.constructor : null;
             }
             return ret;
+        },
+        /**
+         * Retrives editable's editorname or name
+         * @function
+         * @public
+         * @returns {String} static EDITORNAME or NAME
+         */
+        getName: function() {
+            return this.constructor.EDITORNAME || this.constructor.NAME;
+        },
+        /**
+         * Check if this widget is augmented (extended) by a specifique Widget
+         * @param {type} constructor to check for
+         * @returns {Boolean}
+         */
+        isAugmentedBy: function(constructor) {
+            var self = this.constructor, i;
+            while (self._yuibuild) {
+                for (i = 0; i < self._yuibuild.exts.length; i += 1) {
+                    if (self._yuibuild.exts[i] === constructor) {
+                        return true;
+                    }
+                }
+                self = self.superclass.constructor;
+            }
+            return false;
+
         }
     });
     Y.mix(Editable, {

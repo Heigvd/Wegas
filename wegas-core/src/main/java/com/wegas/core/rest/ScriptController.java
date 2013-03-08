@@ -9,9 +9,9 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.exception.WegasException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.script.ScriptException;
@@ -25,7 +25,7 @@ import org.apache.shiro.authz.UnauthorizedException;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Script/")
+@Path("GameModel/{gameModelId : [1-9][0-9]*}/{opt: (VariableDescriptor/)?}Script/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ScriptController {
@@ -50,7 +50,7 @@ public class ScriptController {
      * @throws WegasException
      */
     @POST
-    @Path("/Run/Player/{playerId : [1-9][0-9]*}")
+    @Path("/Run/{playerId : [1-9][0-9]*}")
     public Object run(@PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId, Script script)
             throws ScriptException, WegasException {
