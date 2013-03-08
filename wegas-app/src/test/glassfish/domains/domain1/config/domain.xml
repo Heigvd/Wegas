@@ -16,10 +16,10 @@
             <property name="connectionAttributes" value=";create=true" />
         </jdbc-connection-pool>
         <jdbc-connection-pool driver-classname="org.postgresql.Driver" name="PostgreSQLPool" res-type="javax.sql.DataSource" datasource-classname="org.postgresql.ds.PGSimpleDataSource" allow-non-component-callers="true" non-transactional-connections="false" transaction-isolation-level="read-committed" is-isolation-level-guaranteed="true" ping="true">
-            <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_test"/>
+            <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_it"/>
             <property name="User" value="postgres"/>
             <property name="Password" value=""/>
-            <property name="databaseName" value="wegas_test" />
+            <property name="databaseName" value="wegas_it" />
             <property name="PortNumber" value="5432" />
             <property name="ServerName" value="localhost" />
             <!--<property name="connectionAttributes" value=";create=true"/>-->
