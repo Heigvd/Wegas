@@ -30,3 +30,5 @@
 *.jar binary
 *.psd binary
 *.swf binary
+*.eap binary
+
