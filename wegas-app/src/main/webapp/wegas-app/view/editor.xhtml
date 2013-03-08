@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:composition template="template/app-default.xhtml">
 
@@ -24,9 +25,10 @@
                 }
             </style>
         </ui:define>
-
         <ui:define name="body">
-            <script type="text/javascript">
+            
+            <script type="text/javascript"> 
+      
               YUI().use("wegas-app",  'wegas-rightscss', /*'wegas-editorcss',*/ function (Y) {
                     var app = new Y.Wegas.App({
                         layoutSrc: 'wegas-app/db/wegas-editor-layout.json',
@@ -89,12 +91,20 @@
                                     }]
                             },
                             "VariableDescriptor": {
-                                source: "rest/PrivateEditor/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                    source: "rest/PrivateEditor/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                </ui:fragment>
+                                <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                    source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                </ui:fragment>
+                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorDataSourceREST"
-                                    },{
+                                    }, {
                                         fn: "ScriptEval"
+                                    }, {
+                                        fn: "WebSocketListener"
                                     }]
                             },
                             "File": {

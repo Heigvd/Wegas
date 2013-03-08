@@ -63,68 +63,101 @@
 .pion1 {
     background-image:url(../../wegas-monopoly/images/pion1.png);
     background-size: 30px 22px;
+    float: left;
+    width: 30px;
+    height: 22px;
+}
+
+.pion2 {
+    background-image:url(../../wegas-monopoly/images/pion2.png);
+    background-size: 30px 22px;
+    float: left;
     width: 30px;
     height: 22px;
 }
 
 .box1 {
-    margin-top: 525px;
-    margin-left: 680px;
+    position: absolute;
+    top: 550px;
+    left: 680px;
+    width: 35px;
 }
 
 .box2 {
-    margin-top: 525px;
-    margin-left: 616px;
+    position: absolute;
+    top: 550px;
+    left: 616px;
+    width: 35px;
 }
 
 .box3 {
-    margin-top: 525px;
-    margin-left: 570px;
+    position: absolute;
+    top: 550px;
+    left: 570px;
+    width: 35px;
 }
 
 .box4 {
-    margin-top: 525px;
-    margin-left: 524px;
+    position: absolute;
+    top: 550px;
+    left: 524px;
+    width: 35px;
 }
 
 .box5 {
-    margin-top: 525px;
-    margin-left: 478px;
+    position: absolute;
+    top: 550px;
+    left: 478px;
+    width: 35px;
 }
 
 .box6 {
-    margin-top: 525px;
-    margin-left: 435px;
+    position: absolute;
+    top: 550px;
+    left: 435px;
+    width: 35px;
 }
 
 .box7 {
-    margin-top: 525px;
-    margin-left: 389px;
+    position: absolute;
+    top: 550px;
+    left: 389px;
+    width: 35px;
 }
 
 .box8 {
-    margin-top: 525px;
-    margin-left: 343px;
+    position: absolute;
+    top: 550px;
+    left: 343px;
+    width: 35px;
 }
 
 .box9 {
-    margin-top: 525px;
-    margin-left: 299px;
+    position: absolute;
+    top: 550px;
+    left: 299px;
+    width: 35px;
 }
 
 .box10 {
-    margin-top: 525px;
-    margin-left: 253px;
+    position: absolute;
+    top: 550px;
+    left: 253px;
+    width: 35px;
 }
 
 .box11 {
-    margin-top: 525px;
-    margin-left: 190px;
+    position: absolute;
+    top: 550px;
+    left: 176px;
+    width: 70px;
 }
 
 .box12 {
-    margin-top: 470px;
-    margin-left: 190px;
+    position: absolute;
+    top: 496px;
+    left: 176px;
+    width: 70px;
 }
 
 .wegas-chat {

@@ -141,9 +141,12 @@ public class GameModel extends NamedEntity {
     @Override
     public void merge(AbstractEntity n) {
         super.merge(n);
-        this.setParentGameModel(((GameModel) n).getParentGameModel());
-        this.setWidgetsUri(((GameModel) n).getWidgetsUri());
-        this.setCssUri(((GameModel) n).getCssUri());
+       GameModel other = (GameModel) n;
+        this.setParentGameModel(other.getParentGameModel());
+        this.setWidgetsUri(other.getWidgetsUri());
+        this.setCssUri(other.getCssUri());
+        this.properties.clear();
+        this.properties.putAll(other.getProperties());
     }
 
     /**

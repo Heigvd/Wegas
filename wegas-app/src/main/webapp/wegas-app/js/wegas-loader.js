@@ -31,7 +31,8 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/wegas-app-min.js',
                     requires: [
                         'wegas-helper', 'wegas-entity', 'wegas-datasourcerest',
-                        'wegas-scripteval', 'wegas-pageloader', 'wegas-button'
+                        'wegas-scripteval', 'wegas-websocketlistener', 
+                        'wegas-pageloader', 'wegas-button'
                         // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                     ]
                 },
@@ -52,9 +53,14 @@ YUI().use(function(Y) {
                         "datasource-io", "datasource-jsonschema", "datasource-cache"]
                 },
                 'wegas-scripteval': {
-                    path: 'wegas-app/js/util/wegas-scripteval-min.js',
+                    path: 'wegas-app/js/plugin/wegas-scripteval-min.js',
                     requires: ['plugin']
                 },
+                'wegas-websocketlistener': {
+                    path: 'wegas-app/js/plugin/wegas-websocketlistener-min.js',
+                    requires: ['plugin', 'pusher']
+                },
+                
                 /** Persistence **/
                 'wegas-entity': {
                     path: 'wegas-app/js/persistence/wegas-entity-min.js',
@@ -553,6 +559,11 @@ YUI().use(function(Y) {
                     requires: ['wegas-monopoly-display'],
                     ws_provides: "Monopolydisplay"
                 },
+                'wegas-monopoly-entities': {
+                    path: 'wegas-monopoly/js/wegas-monopoly-entities.js',
+                    requires: ['wegas-entity'],
+                    ws_provides: ['ResourceDescriptor', 'ObjectDescriptor']
+                },
                 /**CEP**/
                 'wegas-cep': {
                     path: 'wegas-cep/js/wegas-cep-folder-min.js',
@@ -720,6 +731,9 @@ YUI().use(function(Y) {
                 },
                 'gauge': {
                     path: "gauge-min.js"
+                },
+                'pusher': {
+                    fullpath: "http://js.pusher.com/1.12/pusher.min.js"
                 },
                 'tinymce': {
                     path: "tiny_mce/tiny_mce.js"
