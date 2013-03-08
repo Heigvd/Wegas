@@ -112,7 +112,7 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.runButton.set("label", "STOP");
 
             Y.Wegas.app.VariableDescriptorFacade.rest.sendRequest({
-                request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
                     data: "JSON.stringify(run("
@@ -222,7 +222,7 @@ YUI.add('wegas-proggame-level', function (Y) {
 
         doNextLevel: function () {
             Y.Wegas.app.VariableDescriptorFacade.rest.sendRequest({
-                request: "/ProgGame/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
                     data: this.get("onWin")

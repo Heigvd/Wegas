@@ -22,16 +22,23 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @Access(AccessType.FIELD)
-public class ResourceInstance extends VariableInstance  {
+public class ResourceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     public static final int HISTORYSIZE = 20;
     /**
      *
      */
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Assignment.class)
+    @JsonManagedReference
+    @OrderColumn
+    private List<Assignment> assignments;
+    /**
+     *
+     */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
-    private List<Assignment> assignments;
+    private List<Activity> activities;
     /**
      *
      */
@@ -40,20 +47,12 @@ public class ResourceInstance extends VariableInstance  {
      *
      */
     @ElementCollection
-    private Map<String, Long> skillset = new HashMap<>();
+    private Map<String, Long> skillsets = new HashMap<>();
     /**
      *
      */
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
-    /**
-     *
-     */
-    private String desiredSkill;
-    /**
-     *
-     */
-    private String undesiredSkillset;
     /**
      *
      */
@@ -73,6 +72,11 @@ public class ResourceInstance extends VariableInstance  {
     @ElementCollection
     private List<Integer> confidenceHistory = new ArrayList<>();
 
+    public ResourceInstance (){
+        this.assignments = new ArrayList<>();
+        this.activities = new ArrayList<>();
+    }
+    
     /**
      *
      * @param a
@@ -84,12 +88,13 @@ public class ResourceInstance extends VariableInstance  {
         if (other.getAssignments() != null) {
             this.setAssignments(other.getAssignments());
         }
-        this.skillset.clear();
-        this.skillset.putAll(other.getSkillset());
+        if (other.getActivities() != null) {
+            this.setActivities(other.getActivities());
+        }
+        this.skillsets.clear();
+        this.skillsets.putAll(other.getSkillsets());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
-        this.setDesiredSkill(other.getDesiredSkill());
-        this.setUndesiredSkillset(other.getUndesiredSkillset());
         this.setMoral(other.getMoral());
         this.setConfidence(other.getConfidence());
     }
@@ -112,7 +117,7 @@ public class ResourceInstance extends VariableInstance  {
     }
 
     /**
-     * @return the replies
+     * @return the assignements
      */
     public List<Assignment> getAssignments() {
         return assignments;
@@ -142,13 +147,35 @@ public class ResourceInstance extends VariableInstance  {
 
     /**
      *
-     * @param task
-     * @param startTime
+     * @param activities
      */
-    public Assignment assign(Long startTime, TaskInstance task) {
-        final Assignment assignment = this.assign(task);
-        assignment.setStartTime(startTime);
-        return assignment;
+    public void addActivity(Activity activity) {
+        activities.add(activity);
+        activity.setResourceInstance(this);
+    }
+    /**
+     * 
+     * @param task
+     * @return the activity
+     */
+    public Activity assignActivity(TaskInstance task) {
+        final Activity activity = new Activity(task);
+        this.addActivity(activity);
+        return activity;
+    }
+
+    /**
+     * @return the activities
+     */
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    /**
+     * @param activities
+     */
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 
     /**
@@ -168,15 +195,15 @@ public class ResourceInstance extends VariableInstance  {
     /**
      * @return the skillset
      */
-    public Map<String, Long> getSkillset() {
-        return this.skillset;
+    public Map<String, Long> getSkillsets() {
+        return this.skillsets;
     }
 
     /**
      * @param skillset the skillset to set
      */
-    public void setSkillset(Map<String, Long> skillset) {
-        this.skillset = skillset;
+    public void setSkillsets(Map<String, Long> skillsets) {
+        this.skillsets = skillsets;
     }
 
     /**
@@ -185,7 +212,7 @@ public class ResourceInstance extends VariableInstance  {
      * @param val
      */
     public void setSkillset(String key, Long val) {
-        this.skillset.put(key, val);
+        this.skillsets.put(key, val);
     }
 
     /**
@@ -194,7 +221,7 @@ public class ResourceInstance extends VariableInstance  {
      * @return
      */
     public Long getSkillset(String key) {
-        return this.skillset.get(key);
+        return this.skillsets.get(key);
     }
 
     /**
@@ -227,34 +254,6 @@ public class ResourceInstance extends VariableInstance  {
      */
     public String getProperty(String key) {
         return this.properties.get(key);
-    }
-
-    /**
-     * @return the desiredSkill
-     */
-    public String getDesiredSkill() {
-        return desiredSkill;
-    }
-
-    /**
-     * @param desiredSkill the desiredSkill to set
-     */
-    public void setDesiredSkill(String desiredSkill) {
-        this.desiredSkill = desiredSkill;
-    }
-
-    /**
-     * @return the undesiredSkillset
-     */
-    public String getUndesiredSkillset() {
-        return undesiredSkillset;
-    }
-
-    /**
-     * @param undesiredSkillset the undesiredSkillset to set
-     */
-    public void setUndesiredSkillset(String undesiredSkillset) {
-        this.undesiredSkillset = undesiredSkillset;
     }
 
     /**
@@ -351,5 +350,11 @@ public class ResourceInstance extends VariableInstance  {
      */
     public void setConfidenceHistory(Integer ref, Integer value) {
         this.confidenceHistory.set(ref, value);
+    }
+
+    public List<Assignment> moveAssignemnt(Integer currentPosition, Integer nextPosition) {
+        Assignment assignment = this.assignments.remove(currentPosition.intValue());
+        this.assignments.add(nextPosition.intValue(), assignment);
+        return this.assignments;
     }
 }

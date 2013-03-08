@@ -108,10 +108,10 @@ YUI.add('wegas-inbox', function (Y) {
          */
         syncUI: function () {
             var i, msg, tab, from, indexCounter = 0,
-                    inboxVariable = this.get('variable.evaluated').getInstance(),
-                    messages = inboxVariable.get("messages"),
-                    selectedIndex = 0,
-                    tabs = [];
+            inboxVariable = this.get('variable.evaluated').getInstance(),
+            messages = inboxVariable.get("messages"),
+            selectedIndex = 0,
+            tabs = [];
 
             this.isSyncing = true;
             this.tabView.removeAll();
@@ -120,12 +120,12 @@ YUI.add('wegas-inbox', function (Y) {
                 from = msg.get("from") || "<i>No sender</i>";
                 tab = new Y.Tab({
                     label: '<div class="' + (msg.get("unread") ? "unread" : "read") + '"><div class="left">' + from + '</div>'
-                            + '<div class="right">' + msg.get("subject") + '</div></div>',
+                    + '<div class="right">' + msg.get("subject") + '</div></div>',
                     content: '<div class="msg-header">'
-                            + '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
-                            + '<div class="msg-from">From: ' + from + '</div>'
-                            + '</div>'
-                            + '<div class="msg-body"><center><em><i>Loading</i></center></div>'
+                    + '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
+                    + '<div class="msg-from">From: ' + from + '</div>'
+                    + '</div>'
+                    + '<div class="msg-body"><center><em><i>Loading</i></center></div>'
                 });
                 tab.msg = msg;
                 tabs.push(tab);
@@ -195,22 +195,24 @@ YUI.add('wegas-inbox', function (Y) {
             }
 
             if (e.newVal && e.newVal.msg) {
-
-                this.dataSource.rest.sendRequest({// Retrieve the message body from the server
+                this.dataSource.rest.sendRequest({                              // Retrieve the message body from the server
                     request: "/Inbox/Message/" + e.newVal.msg.get("id") + "?view=Export",
                     on: {
                         success: Y.bind(function (e) {
                             if (e.response.entity.get("attachements") && e.response.entity.get("attachements").length > 0) {
-                                for (i = 0; i < e.response.entity.get("attachements").length; i++) {
+                                for (i = 0; i < e.response.entity.get("attachements").length; i += 1) {
                                     attachement = e.response.entity.get("attachements")[i];
-                                    attachements.push("<a href='" + attachement + "' data-file='" + attachement + "'>" + attachement + "</a>");
+                                    attachements.push("<a href='" + attachement + "' data-file='" + attachement + "'>"
+                                        + attachement + "</a>");
                                 }
                                 if (!this.get("panelNode").one(".msg-header .msg-attachement")) {
                                     this.get("panelNode").one(".msg-header").append("<div class='msg-attachement'></div>");
                                 }
-                                this.get("panelNode").one(".msg-header .msg-attachement").setHTML("Attachements: " + attachements.join("; "));
+                                this.get("panelNode").one(".msg-header .msg-attachement")
+                                .setHTML("Attachements: " + attachements.join("; "));
                             }
-                            this.get("panelNode").one(".msg-body").setHTML(e.response.entity.get("body") || "<center><em><i>Empty</i></center>");
+                            this.get("panelNode").one(".msg-body")
+                            .setHTML(e.response.entity.get("body") || "<center><em><i>Empty</i></center>");
                         }, e.newVal)
                     }
                 });
@@ -259,6 +261,6 @@ YUI.add('wegas-inbox', function (Y) {
             }
         }
     });
-
     Y.namespace('Wegas').InboxDisplay = InboxDisplay;
+
 });

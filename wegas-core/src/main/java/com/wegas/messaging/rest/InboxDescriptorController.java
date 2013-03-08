@@ -7,9 +7,8 @@
  */
 package com.wegas.messaging.rest;
 
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
@@ -33,11 +32,6 @@ public class InboxDescriptorController {
      */
     @EJB
     private MessageFacade messageFacade;
-    /**
-     *
-     */
-    @EJB
-    private UserFacade userFacade;
     /**
      *
      */
@@ -80,7 +74,7 @@ public class InboxDescriptorController {
 
         checkPermissions(update);
 
-        return update.getInboxInstanceEntity();
+        return update.getInboxInstance();
     }
 
     /**
@@ -97,7 +91,7 @@ public class InboxDescriptorController {
         checkPermissions(update);
 
         update.setUnread(false);
-        return update.getInboxInstanceEntity();
+        return update.getInboxInstance();
     }
 
     /**
@@ -114,15 +108,16 @@ public class InboxDescriptorController {
         checkPermissions(m);
 
         messageFacade.remove(m);
-        return m.getInboxInstanceEntity();
+        return m.getInboxInstance();
     }
 
-    private void checkPermissions(Message m){
-        if (!SecurityUtils.getSubject().isPermitted("Game:Edit:g" + variableInstanceFacade.findGame(m.getInboxInstanceEntity()).getId())) {
-             try{
-                Long playerId = playerFacade.findCurrentPlayer(variableInstanceFacade.findGame(m.getInboxInstanceEntity())).getId();
-                System.out.println(playerId + " playerid readMessage");
-            } catch(Exception e){
+    private void checkPermissions(Message m) {
+        if (!SecurityUtils.getSubject().isPermitted("Game:Edit:g" + variableInstanceFacade.findGame(m.getInboxInstance()).getId())) {
+            try {
+                Long playerId = playerFacade.findCurrentPlayer(variableInstanceFacade.findGame(m.getInboxInstance())).getId();
+                //System.out.println(playerId + " playerid readMessage");
+
+            } catch (Exception e) {
                 throw new UnauthorizedException();
             }
         }

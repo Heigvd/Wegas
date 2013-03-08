@@ -42,17 +42,19 @@ public class TaskInstance extends VariableInstance {
     @JsonManagedReference
     @XmlTransient
     private List<Assignment> assignments;
+    
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @XmlTransient
+    private List<Activity> activities;
     /**
      *
      */
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
-    /**
-     *
-     */
-    @ElementCollection
-    private Map<String, WRequirement> skillset = new HashMap<>();
-
     /**
      *
      * @param a
@@ -64,8 +66,6 @@ public class TaskInstance extends VariableInstance {
         this.setDuration(other.getDuration());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
-        this.skillset.clear();
-        this.skillset.putAll(other.getSkillset());
     }
 
     /**
@@ -129,39 +129,6 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * @return the skillset
-     */
-    public Map<String, WRequirement> getSkillset() {
-        return this.skillset;
-    }
-
-    /**
-     * @param skillset the skillset to set
-     */
-    public void setSkillset(Map<String, WRequirement> skillset) {
-        this.skillset = skillset;
-    }
-
-    /**
-     *
-     * @param key
-     * @param WRequirement
-     */
-    public void setSkillset(String key, WRequirement val) {
-        this.skillset.put(key, val);
-    }
-
-    /**
-     *
-     * @param key
-     * @return
-     */
-    public WRequirement getSkillset(String key) {
-        return this.skillset.get(key);
-        //return this.getDescriptor().getSk
-    }
-
-    /**
      * @return the assignments
      */
     public List<Assignment> getAssignments() {
@@ -173,5 +140,19 @@ public class TaskInstance extends VariableInstance {
      */
     public void setAssignments(List<Assignment> assignments) {
         this.assignments = assignments;
+    }
+
+    /**
+     * @return the activity
+     */
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    /**
+     * @param activity the activity to set
+     */
+    public void setActivity(List<Activity> activities) {
+        this.activities = activities;
     }
 }

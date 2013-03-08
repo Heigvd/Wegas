@@ -13,8 +13,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             DEFAULTHEADERS = {
         'Content-Type': 'application/json; charset=ISO-8859-1'
     },
-    MAX_FILE_SIZE = 20000000,
-            BOUNDING_BOX = "boundingBox";
+    MAX_FILE_SIZE = 20000000, BOUNDING_BOX = "boundingBox";
 
     FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
         // ** Private fields ** //
@@ -61,8 +60,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 this.treeView = new Y.TreeView({
                     visibleRightWidget: false,
                     plugins: [{
-                            "fn": Y.Plugin.TreeViewFilter,
-                            "cfg": {
+                            fn: Y.Plugin.TreeViewFilter,
+                            cfg: {
                                 searchAttrs: ["label", "data.mimeType"],
                                 regExp: false
                             }
@@ -183,7 +182,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 var node = Y.Widget.getByNode(e.currentTarget);
                 e.halt(true);
                 e.currentTarget.addClass("fileexplorer-drag-over");
-                node.expandTimeout = node.expandTimeout ? node.expandTimeout : Y.later(300, node, node.expand);
+                node.expandTimeout = node.expandTimeout || Y.later(300, node, node.expand);
 
             }, '.yui3-treenode'));
             this.events.push(this.treeView.get(CONTENTBOX).delegate("dragleave", function(e) {
@@ -555,11 +554,11 @@ YUI.add('wegas-fileexplorer', function(Y) {
             return node.get("loading") || (node instanceof Y.TreeNode ? node._items.some(this.isProcessing, this) : false);
         },
         pathToNode: function(node, path) {
-            var n = null;
+            var i, n = null;
             if (node.path === path) {
                 return node;
             } else {
-                for (var i in node._items) {
+                for (i in node._items) {
                     n = this.pathToNode(node._items[i], path);
                     if (n instanceof Y.TreeNode || n instanceof Y.TreeLeaf) {
                         return n;
@@ -617,8 +616,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
             },
             bindUI: function() {
                 this.events.totalProgress = this.uploader.on("totaluploadprogress", function(e) {
-                    var uploaded = 0, total = 0;
-                    for (var f in this.fileList) {
+                    var f, uploaded = 0, total = 0;
+                    for (f in this.fileList) {
                         uploaded += this.fileList[f].get("bytesUploaded");
                         total += this.fileList[f].get("size");
                     }

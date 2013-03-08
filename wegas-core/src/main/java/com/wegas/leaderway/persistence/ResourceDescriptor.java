@@ -10,6 +10,9 @@ package com.wegas.leaderway.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import java.util.HashMap;
+import java.util.Map;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
@@ -26,7 +29,11 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     @Lob
     private String description;
-
+    /**
+     *
+     */
+    @ElementCollection
+    private Map<String, String> properties = new HashMap<>();
     /**
      *
      * @param a
@@ -34,9 +41,10 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
-
         ResourceDescriptor other = (ResourceDescriptor) a;
         this.setDescription(other.getDescription());
+        this.properties.clear();
+        this.properties.putAll(other.getProperties());
     }
 
     /**
@@ -51,6 +59,38 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    /**
+     * @return the properties
+     */
+    public Map<String, String> getProperties() {
+        return this.properties;
+    }
+
+    /**
+     * @param properties the properties to set
+     */
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    /**
+     *
+     * @param key
+     * @param val
+     */
+    public void setProperty(String key, String val) {
+        this.properties.put(key, val);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public String getProperty(String key) {
+        return this.properties.get(key);
     }
 
     // **** Sugar for editor *** //
@@ -67,7 +107,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void setConfidence(Player p, int value) {
+    public void setConfidence(Player p, Integer value) {
         this.getInstance(p).setConfidence(value);
     }
 
@@ -76,7 +116,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void addAtConfidence(Player p, int value) {
+    public void addAtConfidence(Player p, Integer value) {
         ResourceInstance instance = this.getInstance(p);
         instance.setConfidence(instance.getConfidence() + value);
     }
@@ -94,7 +134,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void setMoral(Player p, int value) {
+    public void setMoral(Player p, Integer value) {
         this.getInstance(p).setMoral(value);
     }
 
@@ -103,7 +143,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void addAtMoral(Player p, int value) {
+    public void addAtMoral(Player p, Integer value) {
         ResourceInstance instance = this.getInstance(p);
         instance.setMoral(instance.getMoral() + value);
     }
@@ -122,7 +162,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void setSalary(Player p, int value) {
+    public void setSalary(Player p, Integer value) {
         this.getInstance(p).setProperty("salary", "" + value);
     }
 
@@ -131,7 +171,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void addAtSalary(Player p, int value) {
+    public void addAtSalary(Player p, Integer value) {
         ResourceInstance instance = this.getInstance(p);
         int newVal = Integer.parseInt(instance.getProperty("salary")) + value;
         instance.setProperty("salary", "" + newVal);
@@ -150,7 +190,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void setExperience(Player p, int value) {
+    public void setExperience(Player p, Integer value) {
         this.getInstance(p).setProperty("experience", "" + value);
     }
 
@@ -159,7 +199,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void addAtExperience(Player p, int value) {
+    public void addAtExperience(Player p, Integer value) {
         ResourceInstance instance = this.getInstance(p);
         int newVal = Integer.parseInt(instance.getProperty("experience")) + value;
         instance.setProperty("experience", "" + newVal);
@@ -178,7 +218,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void setLeadershipLevel(Player p, int value) {
+    public void setLeadershipLevel(Player p, Integer value) {
         this.getInstance(p).setProperty("leadershipLevel", "" + value);
     }
 
@@ -187,7 +227,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void addAtLeadershipLevel(Player p, int value) {
+    public void addAtLeadershipLevel(Player p, Integer value) {
         ResourceInstance instance = this.getInstance(p);
         int newVal = Integer.parseInt(instance.getProperty("leadershipLevel")) + value;
         instance.setProperty("leadershipLevel", "" + newVal);
@@ -207,7 +247,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param value
      */
-    public void setActive(Player p, boolean value) {
+    public void setActive(Player p, Boolean value) {
         ResourceInstance instance = this.getInstance(p);
         instance.setActive(value);
     }

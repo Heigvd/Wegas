@@ -25,7 +25,7 @@ YUI.add('wegas-pageloader', function(Y) {
      * @description Load pages and request widget to render.
      */
     PageLoader = Y.Base.create("wegas-pageloader", Y.Widget,
-            [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable], {
+            [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.PageLoader# */
 
         // *** Private fields *** //
@@ -134,7 +134,7 @@ YUI.add('wegas-pageloader', function(Y) {
             var same = false;
             this.get("boundingBox").ancestors("." + this.getClassName(), false).some(function(node) {
                 var widget = Y.Widget.getByNode(node);
-                if (pageId === widget.get('pageId' || pageId === widget.get('variable.evaluated'))) {
+                if (pageId === widget.get('pageId') || pageId === widget.get('variable.evaluated')) {
                     same = true;
                     Y.log("Pageloader [" + this.get("pageLoaderId") + "] tries to load page (" + pageId + ") already loaded by one of its ancestor.", 'warn', 'Y.Wegas.PageLoader');
                     return true;
@@ -145,7 +145,7 @@ YUI.add('wegas-pageloader', function(Y) {
 
     }, {
         /** @lends Y.Wegas.PageLoader */
-
+        EDITORNAME: "Pageloader",
         /**
          * @field
          * @static
