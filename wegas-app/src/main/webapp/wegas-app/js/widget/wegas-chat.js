@@ -43,7 +43,8 @@ YUI.add('wegas-chat', function (Y) {
         sendEvent: function(){
             var sender = Y.Wegas.GameFacade.rest.getCurrentPlayer().get("name");
             this.send.on("click", function(){
-                Y.Wegas.VariableDescriptorFacade.ws.triggerCustomEvent(this.channel, { type: "chatEvent", sender: sender, value: "Hello"});
+                Y.Wegas.VariableDescriptorFacade.ws.triggerCustomEvent(this.channel, { type: "chatEvent", sender: sender, value: this.field.getValue()});
+                this.field.setValue("")
             }, this);
         },
         

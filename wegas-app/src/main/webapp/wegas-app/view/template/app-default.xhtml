@@ -186,7 +186,13 @@
                                                 fn: "VariableDescriptorDataSourceREST"
                                             }, {
                                                 fn: "ScriptEval"
-                                            }]
+                                            }
+                                            <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('websocket')}">
+                                                ,{
+                                                fn: "WebSocketListener"
+                                                }
+                                            </ui:fragment>
+                                        ]
                                     },
                                     "User": {
                                         source: "rest/User",

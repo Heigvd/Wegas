@@ -103,9 +103,13 @@
                                         fn: "VariableDescriptorDataSourceREST"
                                     }, {
                                         fn: "ScriptEval"
-                                    }, {
+                                    }
+                                    <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('websocket')}">
+                                        ,{
                                         fn: "WebSocketListener"
-                                    }]
+                                        }
+                                    </ui:fragment>
+                                ]
                             },
                             "File": {
                                 source: "rest/File/GameModelId/#{editorGameController.currentGameModel.id}/" ,

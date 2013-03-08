@@ -19,8 +19,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
 
             this.pusher = new Pusher('732a1df75d93d028e4f9');
             this.gameChannel = this.pusher.subscribe('Game-' + Y.Wegas.app.get("currentGame"));
-            //this.teamChannel = this.pusher.subscribe('Team-' + Y.Wegas.app.get("currentTeam"));
-            //this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.app.get("currentPlayer"));
+            this.teamChannel = this.pusher.subscribe('Team-' + Y.Wegas.app.get("currentTeam"));
+            this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.app.get("currentPlayer"));
             this.gameChannel.bind('wegas-event', Y.bind(function(data) {
                 
                 switch (data["@class"]) {
@@ -36,11 +36,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
         },
         
         /**
-         * Y.Wegas.VariableDescriptorFacade.ws.triggerCustomEvent("game", { type: "chatEvent", sender: "fx", value: "Hello"});
          *
-         * Y.Wegas.VariableDescriptorFacade.ws.on("chatEvent", function (e) {});
-         *
-         * @arg channel player/team/game/gamemodel
          */
         triggerCustomEvent: function (channel, event) {
             var id;
