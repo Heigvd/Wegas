@@ -408,6 +408,11 @@ YUI().use(function(Y) {
                     requires: ['wegas-action', 'inputex-jsonschema', 'wegas-form'],
                     ws_provides: ['NewEntityAction', 'EditEntityAction', "NewEntityButton"]
                 },
+                'wegas-editor-widgetaction': {
+                    path: 'wegas-editor/js/plugin/wegas-editor-widgetaction-min.js',
+                    requires: ['wegas-editor-entityaction'],
+                    ws_provides: ['EditWidgetAction', '"DeleteWidgetAction']
+                },
                 'wegas-logger': {
                     path: 'wegas-editor/js/widget/wegas-logger-min.js',
                     requires: ['console', 'console-filters'],
@@ -421,7 +426,8 @@ YUI().use(function(Y) {
                 'wegas-pageeditor': {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
                     ws_provides: 'PageEditor',
-                    requires: ['diff_match_patch', "wegas-inputex-ace", "ace-json"]
+                    requires: ['diff_match_patch', "wegas-inputex-ace", "ace-json",
+                    "wegas-editor-widgetaction"]
                 },
                 'wegas-csseditor': {
                     path: 'wegas-editor/js/widget/wegas-csseditor-min.js',
