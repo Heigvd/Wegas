@@ -174,9 +174,9 @@
                                         ]
                                     },
                                     "VariableDescriptor": {
-                                        //source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                        //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                         <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
-                                            source: "rest/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                            source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                         </ui:fragment>
                                         <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
                                             source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",

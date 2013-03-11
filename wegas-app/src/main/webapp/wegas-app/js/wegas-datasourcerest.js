@@ -1073,13 +1073,14 @@ YUI.add('wegas-datasourcerest', function(Y) {
         });
 
         // Support for POST transactions
-        if (Lang.isString(request)) {
+        if (Lang.isString(cfg.fullUri)) {
+            uri = cfg.fullUri;
+        }else if (Lang.isString(request)) {
             //if(cfg.method && (cfg.method.toUpperCase() === POST)) {
             //    cfg.data = cfg.data ? cfg.data+request : request;
             //}
             //else {
             uri += request;
-            //}
         }
         Y.DataSource.Local.transactions[e.tId] = io(uri, cfg);
         return e.tId;

@@ -5,6 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+/**
+ * @author Yannick Lagger <lagger.yannick@gmail.com>
+ */
 YUI.add('wegas-websocketlistener', function(Y) {
     "use strict";
 
@@ -12,7 +15,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
 
 
         initializer: function() {
-//            return;
+            return;
             Pusher.log = Y.log;    // Enable pusher logging - don't include this in production
 
             document.WEB_SOCKET_DEBUG = true;// Flash fallback logging - don't include this in production
@@ -21,17 +24,16 @@ YUI.add('wegas-websocketlistener', function(Y) {
             this.gameChannel = this.pusher.subscribe('Game-' + Y.Wegas.app.get("currentGame"));
             this.teamChannel = this.pusher.subscribe('Team-' + Y.Wegas.app.get("currentTeam"));
             this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.app.get("currentPlayer"));
+            
+            // event response
             this.gameChannel.bind('wegas-event', Y.bind(function(data) {
-                
-                switch (data["@class"]) {
-                    case "VariableInstanceUpdate":
-                        this.get("host").rest.updateCache(data);
-                        break;
-                            
-                    case "CustomEvent":
-                        this.fire(data.event.type, data.event);
-                        break;
-                }
+                this.eventCase(data);
+            }, this));
+            this.teamChannel.bind('wegas-event', Y.bind(function(data) {
+                this.eventCase(data);
+            }, this));
+            this.playerChannel.bind('wegas-event', Y.bind(function(data) {
+                this.eventCase(data);
             }, this));
         },
         
@@ -49,8 +51,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
             }
 
             this.get("host").rest.sendRequest({
-                request: "../../../../Pusher/Send/" + channel + "/" + id,
-                cfg: {
+                cfg: { 
+                    fullUri: Y.Wegas.app.get("base") + "rest/Pusher/Send/" + channel + "/" + id,
                     method: "POST",
                     data: {
                         "@class": "CustomEvent",
@@ -58,6 +60,22 @@ YUI.add('wegas-websocketlistener', function(Y) {
                     }
                 }
             });
+        },
+        
+        triggerEvent: function(){
+            
+        },
+        
+        eventCase: function(data){
+            switch (data["@class"]) {
+                case "VariableInstanceUpdate":
+                    this.get("host").rest.updateCache(data);
+                    break;
+
+                case "CustomEvent":
+                    this.fire(data.event.type, data.event);
+                    break;
+            }
         }
          
     }, {
