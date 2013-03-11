@@ -39,12 +39,27 @@
     
 }*/
 
-.wegas-monopoly-display{
+.wegas-monopoly-buy {
+    float: left
+}
+
+.yui3-togglebutton {
+    float: left
+}
+
+.wegas-monopoly-Next {
+    float: left
+}
+
+.wegas-monopoly-display-content{
     background-image:url(../../wegas-monopoly/images/plateau.jpg);
     background-repeat: no-repeat;
-    background-position: 150px 0px;
-    height: 730px;
+    /*background-position: 150px 0px;*/
+    height: 600px;
     width: 800px;
+    position: absolute;
+    top: 30px;
+    left: 120px;
 }
 
 .wegas-monopoly {
@@ -79,89 +94,94 @@
 .box1 {
     position: absolute;
     top: 550px;
-    left: 680px;
+    left: 645px;
     width: 35px;
 }
 
 .box2 {
     position: absolute;
     top: 550px;
-    left: 616px;
+    left: 586px;
     width: 35px;
 }
 
 .box3 {
     position: absolute;
     top: 550px;
-    left: 570px;
+    left: 540px;
     width: 35px;
 }
 
 .box4 {
     position: absolute;
     top: 550px;
-    left: 524px;
+    left: 495px;
     width: 35px;
 }
 
 .box5 {
     position: absolute;
     top: 550px;
-    left: 478px;
+    left: 450px;
     width: 35px;
 }
 
 .box6 {
     position: absolute;
     top: 550px;
-    left: 435px;
+    left: 406px;
     width: 35px;
 }
 
 .box7 {
     position: absolute;
     top: 550px;
-    left: 389px;
+    left: 360px;
     width: 35px;
 }
 
 .box8 {
     position: absolute;
     top: 550px;
-    left: 343px;
+    left: 316px;
     width: 35px;
 }
 
 .box9 {
     position: absolute;
     top: 550px;
-    left: 299px;
+    left: 270px;
     width: 35px;
 }
 
 .box10 {
     position: absolute;
     top: 550px;
-    left: 253px;
+    left: 225px;
     width: 35px;
 }
 
 .box11 {
     position: absolute;
     top: 550px;
-    left: 176px;
+    left: 148px;
     width: 70px;
 }
 
 .box12 {
     position: absolute;
     top: 496px;
-    left: 176px;
+    left: 148px;
     width: 70px;
 }
 
 .wegas-chat {
     width: 225px;
+    position: absolute;
+    height: 100%;
+    right: 0;
+    margin-right: 9px;    
+    top: 40px;
 }
 
 .conversation .inputEx-fieldWrapper {
@@ -177,4 +197,7 @@
     display: block;
     height: 60px;
     overflow-y: scroll;
+    border-top: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
 }
