@@ -19,7 +19,7 @@ import javax.persistence.Lob;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-//@Entity
+@Entity
 public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
 
     private static final long serialVersionUID = 1L;
