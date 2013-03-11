@@ -145,43 +145,14 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.hideOverlay();
             }, '.wegas-widget', this));
         },
+        
         genMenu: function(widget) {
-            var menuCfg = widget.getMenuCfg({
-                entity: widget 
-            });
-//            [{
-//                    type: "Button",
-//                    label: "Edit",
-//                    on: {
-//                        click: Y.bind(function() {                             // Display the edit form
-//                            Y.Plugin.EditEntityAction.showEditForm(this.targetWidget, Y.bind(function(targetWidget, val, e, f) {
-//                                Y.Plugin.EditEntityAction.hideEditFormOverlay();
-//                                targetWidget.setAttrs(val);
-//                                targetWidget.syncUI();
-//                                Y.Wegas.PageFacade.rest.patch(targetWidget.get("root").toObject());
-//                            }, this, this.targetWidget));
-//                        }, this)
-//                    }
-//                }, {
-//                    type: "Button",
-//                    label: "Delete",
-//                    on: {
-//                        click: Y.bind(function() {
-//                            var root = this.targetWidget.get("root");
-//                            if (root !== this.targetWidget) {
-//                                this.targetWidget.destroy();
-//                            } else if (this.targetWidget.item(0)) {
-//                                this.targetWidget.removeAll();
-//                            }
-//                            Y.Wegas.PageFacade.rest.patch(root.toObject());
-//                        }, this)
-//                    }
-//                }];
+            this.highlightOverlay.menu.set("children", widget.getMenuCfg({
+                widget: widget
+            }));
 //            if (widget.isAugmentedBy(Y.WidgetParent)) {
 //                menuCfg.splice(1, 0, {type: "Button", label: "I may have children!"});
 //            }
-            this.highlightOverlay.menu.menu.removeAll();
-            this.highlightOverlay.menu.menu.add(menuCfg);
         },
         detach: function() {
             var i;
