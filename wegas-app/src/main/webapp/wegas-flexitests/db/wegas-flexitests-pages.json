@@ -1,4 +1,10 @@
 {
+    "1000": {
+        "type": "Form",
+        "plugins": [{
+                "fn": "UserPreferences"
+            }]
+    },
     "1": {
         "type": "PageLoader",
         "pageLoaderId": "mainarea",
@@ -9,20 +15,25 @@
     },
     "2": {
         "type": "List",
-        "children": [{
+        "children": [
+            {
                 "type": "Text",
                 "content": "FlexiTests",
                 "cssClass": "flexitests-title"
-            }, {
+            }, 
+            {
                 "type": "Text",
                 "content": "_INSTRUCTIONS_"
-            }, {
+            }, 
+            {
                 "type": "Text",
                 "content": "_FORMULAIRE_"
-            }, {
+            }, 
+            {
                 "type": "Button",
                 "label": "Submit",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "onClick": {
@@ -31,62 +42,73 @@
                                 "content": "currentPage.value = 3;"
                             }
                         }
-                    }]
-            }]
+                    }
+                ]
+            }
+        ]
     },
     "3": {
         "type": "FlexitestsController",
         "cssClass": "test-page",
         "fixPoint": "1000",
-        "children": [{
-                "type": "ChoiceList",
+        "random": true,
+        "children": [
+            {
                 "id": "leftElement",
-                "children": [
+                "type": "ChoiceList",
+                "plugins": [
                     {
-                        "type": "Text",
-                        "content": "Male"
-                    }
-                ],
-                "plugins": [{
                         "fn": "Position",
                         "cfg": {
                             "left": "50",
                             "top": "50"
                         }
-                    },
+                    }, 
                     {
                         "fn": "HideAfter",
                         "cfg": {
-                            "time": "0,1000"
+                            "time": "0,1000",
+                            "autoStart": true
                         }
-                    },
+                    }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
-                            "time": "500"
+                            "time": "500",
+                            "autoStart": true
                         }
-                    }]
-            }, {
-                "type": "ChoiceList",
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "Male"
+                    }
+                ]
+            }, 
+            {
                 "id": "rightElement",
+                "type": "ChoiceList",
                 "plugins": [
                     {
                         "fn": "Position",
                         "cfg": {
-                            "right": "50",
-                            "top": "50"
+                            "top": "50",
+                            "right": "50"
                         }
-                    },
+                    }, 
                     {
                         "fn": "HideAfter",
                         "cfg": {
-                            "time": "0,1500"
+                            "time": "0,1500",
+                            "autoStart": true
                         }
-                    },
+                    }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
-                            "time": "1000"
+                            "time": "1000",
+                            "autoStart": true
                         }
                     }
                 ],
@@ -96,109 +118,121 @@
                         "content": "Female"
                     }
                 ]
-            }, {
-                "type": "ChoiceList",
+            }, 
+            {
                 "id": "centerElement",
+                "type": "ChoiceList",
                 "plugins": [
                     {
                         "fn": "Position",
                         "cfg": {
                             "left": "300",
-                            "right": "300",
-                            "top": "300"
+                            "top": "300",
+                            "right": "300"
                         }
-                    },
+                    }, 
                     {
                         "fn": "HideAfter",
                         "cfg": {
-                            "time": "0"
+                            "time": "0",
+                            "autoStart": true
                         }
-                    },
+                    }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
-                            "time": "1500"
+                            "time": "1500",
+                            "autoStart": true
                         }
                     }
                 ],
                 "children": [
                     {
                         "type": "Image",
-                        "url": "/hectorPerplexe.png",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "FlexiResponse",
                                 "cfg": {
                                     "value": "male"
                                 }
                             }
-                        ]
-                    },
+                        ],
+                        "url": "/hectorPerplexe.png"
+                    }, 
                     {
                         "type": "Image",
-                        "url": "/jessicaPerplexe.png",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "FlexiResponse",
                                 "cfg": {
                                     "value": "female"
                                 }
                             }
-                        ]
-                    }, {
+                        ],
+                        "url": "/jessicaPerplexe.png"
+                    }, 
+                    {
                         "type": "Image",
-                        "url": "/lucienPortrait.png",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "FlexiResponse",
                                 "cfg": {
                                     "value": "male"
                                 }
                             }
-                        ]
-                    }, {
+                        ],
+                        "url": "/lucienPortrait.png"
+                    }, 
+                    {
                         "type": "Image",
-                        "url": "/danielaConfiant.png",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "FlexiResponse",
                                 "cfg": {
                                     "value": "female"
                                 }
                             }
-                        ]
-                    }, {
+                        ],
+                        "url": "/danielaConfiant.png"
+                    }, 
+                    {
                         "type": "Image",
-                        "url": "/fernandPensif.png",
-                        "plugins": [{
+                        "plugins": [
+                            {
                                 "fn": "FlexiResponse",
                                 "cfg": {
                                     "value": "male"
                                 }
                             }
-                        ]
+                        ],
+                        "url": "/fernandPensif.png"
                     }
                 ]
-            },
+            }, 
             {
-                "type": "FlexitestsMCQ",
                 "id": "flexi-mcq",
-                "responseType": "link",
-                "variable": {
-                    "name": "test1"
-                },
+                "type": "FlexitestsMCQ",
                 "plugins": [
                     {
                         "fn": "Position",
                         "cfg": {
-                            "bottom": "30",
                             "left": "200",
-                            "right": "200"
+                            "right": "200",
+                            "bottom": "30"
                         }
                     }
-                ]
-            }]
-    },
-    "1000": {
-        "type": "Form",
-        "plugins": [{
-                "fn": "UserPreferences"
-            }]
+                ],
+                "feedback": 1000,
+                "responseType": "link",
+                "variable": {
+                    "name": "test1"
+                }
+            }
+        ],
+        "plugins": [
+            {
+                "fn": "SwapZone"
+            }
+        ]
     }
 }

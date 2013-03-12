@@ -82,9 +82,9 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
     };
     Y.extend(AddChildWidgetAction, WidgetAction, {
         execute: function () {
-            var newWidget = {
+            var newWidget = new Y.Wegas.Widget.create({
                 "type": this.get("childType")
-            };
+            });
 
             Wegas.Editable.use(newWidget, Y.bind(function () {                  // Load target widget dependencies
 
@@ -119,11 +119,11 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
         execute: function() {
             if (confirm("Are your sure your want to delete this widget ?")) {
                 var targetWidget = this.get("widget"),
-                root = this.get("widget");
+                root = targetWidget.get("root");
 
                 if (root !== targetWidget) {
                     targetWidget.destroy();
-                } else if (targetWidget.item(0)) {
+                } else if (targetWidget.item(0)) { // @TODO: Panic mode, to change
                     targetWidget.removeAll();
                 }
 

@@ -82,6 +82,7 @@ YUI.add("wegas-image", function(Y) {
         FILEENTRY: Y.Wegas.FileFacade.get("source") + "read",
         ATTRS: {
             url: {
+                value: "",
                 type: "string",
                 setter: function(val) {
                     this.getEvent("load").fired = false;
@@ -100,7 +101,7 @@ YUI.add("wegas-image", function(Y) {
                 readOnly: true,
                 "transient": true,
                 getter: function() {
-                    return this.image.complete;
+                    return this.image ? this.image.complete : true;
                 }
             }
         }
