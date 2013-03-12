@@ -189,5 +189,37 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             }
         }
     });
+    Y.Plugin.SwapZone = Y.Base.create("wegas-flexi-swapzone", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+        initializer: function() {
+            if (!(this.get("host") instanceof Y.Wegas.FlexitestsController)) {
+                return;
+            }
+            this.afterHostMethod("next", function() {
+                var current = this.get("host").maxSize - this.get("host").questionToDo.length;
+                if (current === 1 && Math.random() > 0.5) {
+                    this.swap();
+                }
+                if (current % this.get("after") === 0) {
+                    this.swap();
+                }
+            });
+        },
+        swap: function() {
+            this.get("host").leftElement.get("contentBox").swap(this.get("host").rightElement.get("contentBox"));
+        }
+    }, {
+        NS: "swapzone",
+        NAME: "swapzone",
+        EDITORNAME: "Flexitest swap zone",
+        ATTRS: {
+            "after": {
+                value: 1,
+                type: "number",
+                setter: function(v) {
+                    return +v > 0 ? +v : 1;
+                }
+            }
+        }
+    });
 });
 
