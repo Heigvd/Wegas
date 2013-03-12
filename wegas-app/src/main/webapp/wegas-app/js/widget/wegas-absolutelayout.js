@@ -82,24 +82,32 @@ YUI.add('wegas-absolutelayout', function(Y) {
         NS: "position",
         ATTRS: {
             left: {
+                type: "number",
+                optional: true,
                 setter: function(value) {
                     this.get("host").get("boundingBox").setStyle("left", +value + "px");
                     return value;
                 }
             },
             top: {
+                type: "number",
+                optional: true,
                 setter: function(value) {
                     this.get("host").get("boundingBox").setStyle("top", +value + "px");
                     return value;
                 }
             },
             right: {
+                type: "number",
+                optional: true,
                 setter: function(value) {
                     this.get("host").get("boundingBox").setStyle("right", +value + "px");
                     return value;
                 }
             },
             bottom: {
+                type: "number",
+                optional: true,
                 setter: function(value) {
                     this.get("host").get("boundingBox").setStyle("bottom", +value + "px");
                     return value;
