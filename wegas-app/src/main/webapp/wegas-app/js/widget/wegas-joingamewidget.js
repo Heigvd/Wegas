@@ -128,7 +128,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
             }, this);
             this.createButton.on("click", function(e) {                      // Create a new team
                 if (this.createTeamField.validate()) {
-                    Y.Wegas.GameFacade.rest.sendRequest({
+                    Y.Wegas.GameFacade.sendRequest({
                         request: "/" + this.currentGame.get("id") + "/CreateTeam/" + this.createTeamField.getValue(),
                         cfg: {
                             method: "POST"
@@ -153,7 +153,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
          * Call rest request for join the game : rest/GameModel/1/Game/{gameModelID}/JoinGame/{token}
          */
         sendJoinGame: function() {
-            Y.Wegas.GameFacade.rest.sendRequest({
+            Y.Wegas.GameFacade.sendRequest({
                 request: "/JoinGame/" + this.tokenField.getValue(),
                 on: {
                     success: Y.bind(function(e) {
@@ -218,7 +218,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
                 value: ""
             });
 
-            Y.Wegas.PublicGamesFacade.rest.sendRequest({
+            Y.Wegas.PublicGamesFacade.sendRequest({
                 request: "/" + Y.Wegas.app.get('currentUser').id,
                 on: {
                     success: Y.bind(function(e) {
@@ -243,7 +243,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
          * @description User rest request: rest/GameModel/1/Game/{gameModelID}/JoinTeam/{teamID}
          */
         sendJoinTeamRequest: function(teamId) {
-            Y.Wegas.GameFacade.rest.sendRequest({
+            Y.Wegas.GameFacade.sendRequest({
                 request: "/JoinTeam/" + teamId,
                 on: {
                     success: Y.bind(function(e) {
@@ -264,7 +264,7 @@ YUI.add('wegas-joingamewidget', function(Y) {
         joinTeamSuccess: function() {
             this.showMessage("success", "Game joined, it has been added to your games", 10000);
 
-            Y.Wegas.RegisteredGamesFacade.rest.clearCache();
+            Y.Wegas.RegisteredGamesFacade.cache.clear();
             Y.Wegas.RegisteredGamesFacade.sendInitialRequest();
 
             this.joinGameButton.show();

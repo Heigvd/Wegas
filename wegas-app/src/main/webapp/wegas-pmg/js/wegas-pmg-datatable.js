@@ -79,7 +79,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
                     ct = this.get("columnTitles"), cv = this.get("columnValues");
             if (cv == null)
                 return;
-            variables = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
+            variables = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variables"));
             for (i = 0; i < variables.get('items').length; i++) {
                 variableDesc = variables.get('items')[i];
                 variableInst = variableDesc.getInstance();

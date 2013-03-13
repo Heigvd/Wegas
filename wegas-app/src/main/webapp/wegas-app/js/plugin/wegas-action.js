@@ -180,7 +180,7 @@ YUI.add('wegas-action', function(Y) {
                 overlayGuest.showOverlay();
             }
 
-            Wegas.VariableDescriptorFacade.rest.sendRequest({
+            Wegas.VariableDescriptorFacade.sendRequest({
                 request: "/Script/Run/" + Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",

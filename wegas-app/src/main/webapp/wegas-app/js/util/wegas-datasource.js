@@ -9,13 +9,13 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-datasourcerest', function(Y) {
+YUI.add('wegas-datasource', function(Y) {
     "use strict";
 
     var HOST = "host", ID = "id", POST = "POST",
-            Lang = Y.Lang, Wegas = Y.Wegas, DataSourceREST, VariableDescriptorDataSourceREST,
-            GameModelDataSourceREST, GameDataSourceREST, PageDataSourceREST,
-            DEFAULTHEADERS = {
+    Lang = Y.Lang, Wegas = Y.Wegas, WegasCache, VariableDescriptorCache,
+    GameModelCache, GameCache, PageCache,
+    DEFAULTHEADERS = {
         'Content-Type': 'application/json;charset=ISO-8859-1',
         'Managed-Mode': 'true'
     };
@@ -35,21 +35,49 @@ YUI.add('wegas-datasourcerest', function(Y) {
          */
         initializer: function() {
             this.after("sourceChange", this.sendInitialRequest);
+
+//            this.on("error",function(e) {
+//                //console.log("WegasCache._failureHandler", e);
+//                Y.log("Exception while sending request \"" + (e.request || "") + "\": "
+//                    + (e.response.results.message || e.response.results.exception || e), "error", 'Y.Wegas.WegasCache');
+//            });
+//            this.on("response", function(e) {
+//                Y.log("Datasource response:" + e.response, 'log', 'Y.Wegas.WegasCache');
+//            });
+//            this.on("data", function(e) {
+//                Y.log("Datasource data:" + e.response, 'log', 'Y.Wegas.WegasCache');
+//            });
         },
+
         /**
          * @function
          * @private
          */
         sendInitialRequest: function() {
-            if (this.get("initialRequest") !== undefined) {                // Use this condition so we allow empty strin e.g. ""
-                var sender = this.rest || this;
-                return sender.sendRequest({
+            if (this.get("initialRequest") !== undefined) {                     // Use this condition to allow empty strings (e.g. ")
+                return this.sendRequest({
                     request: this.get("initialRequest")
                 });
             } else {
                 return null;
             }
+        },
+
+        /**
+         * Server requests methods
+         *
+         * @function
+         */
+        sendRequest: function(request) {
+            request.cfg = request.cfg || {};
+            request.cfg.headers = request.cfg.headers || {};
+            Y.mix(request.cfg.headers, DEFAULTHEADERS);
+            if (Lang.isObject(request.cfg.data)) {                              // Stringify data if required
+                request.cfg.data = Y.JSON.stringify(request.cfg.data);
+            }
+            return Y.Wegas.DataSource.superclass.sendRequest.call(this, request);
         }
+
     }, {
         /** @lends Y.Wegas.DataSource */
 
@@ -63,22 +91,22 @@ YUI.add('wegas-datasourcerest', function(Y) {
     });
 
     /**
-     *  @name Y.Plugin.DataSourceREST
+     *  @name Y.Plugin.WegasCache
      *  @class Plugin that add cache management for entites from wegas server.
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    DataSourceREST = function() {
-        DataSourceREST.superclass.constructor.apply(this, arguments);
+    WegasCache = function() {
+        WegasCache.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(DataSourceREST, {
-        NS: "rest",
-        NAME: "DataSourceREST"
+    Y.mix(WegasCache, {
+        NS: "cache",
+        NAME: "WegasCache"
     });
 
-    Y.extend(DataSourceREST, Y.Plugin.Base, {
-        /** @lends Y.Plugin.DataSourceREST# */
+    Y.extend(WegasCache, Y.Plugin.Base, {
+        /** @lends Y.Plugin.WegasCache# */
         /**
          * @function
          * @private
@@ -93,7 +121,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             });
 
             this.doBefore("_defDataFn", this.onData, this);                     // When the host receives some data, we parse the result
-            this.afterHostEvent("sourceChange", this.clearCache, this);         // When the source changes, clear the cache
+            this.afterHostEvent("sourceChange", this.clear, this);         // When the source changes, clear the cache
         },
         /**
          * Server requests methods
@@ -101,17 +129,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
          * @function
          */
         sendRequest: function(request) {
-            request.on = request.on || {
-                success: this._successHandler,
-                failure: this._failureHandler
-            };
-            if (request.cfg && Lang.isObject(request.cfg.data)) {
-                request.cfg.data = Y.JSON.stringify(request.cfg.data);
-            }
-            request.cfg = request.cfg || {};
-            request.cfg.headers = request.cfg.headers || {};
-            Y.mix(request.cfg.headers, DEFAULTHEADERS);
-
+            //Y.log("sendRequest is depreacted, use host.sendrequest instead", "warn");
             return this.get(HOST).sendRequest(request);
         },
         /**
@@ -120,8 +138,8 @@ YUI.add('wegas-datasourcerest', function(Y) {
          */
         onData: function(e) {
             var data = e.data && (e.data.responseText || e.data),
-                    schema = this.get('schema'),
-                    payload = e.details[0];
+            schema = this.get('schema'),
+            payload = e.details[0];
 
             payload.response = Y.DataSchema.JSON.apply.call(this, schema, data) || {
                 meta: {},
@@ -129,14 +147,14 @@ YUI.add('wegas-datasourcerest', function(Y) {
             };
             payload.response.data = this.getCache();                            // Provides with a pointer to the datasource current content
 
-            Y.log("Response received from " + this.get(HOST).get('source')/* + e.cfg.request*/, "log", "Wegas.RestDataSource");
+            Y.log("Response received from " + this.get(HOST).get('source')/* + e.cfg.request*/, "log", "Wegas.WegasCache");
 
             Wegas.Editable.use(payload.response.results, // Lookup dependencies
-                    Y.bind(function(payload) {
-                payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                this.onResponseRevived(payload);
-                this.get(HOST).fire("response", payload);
-            }, this, payload));
+                Y.bind(function(payload) {
+                    payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
+                    this.onResponseRevived(payload);
+                    this.get(HOST).fire("response", payload);
+                }, this, payload));
 
             return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         },
@@ -169,7 +187,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                         serverEvent: response.get("events")[i]
                     };
                     this.fire(evtPayload.serverEvent.get("@class"), evtPayload);
-                    //this.fire("serverEvent", evtPayload);
+                //this.fire("serverEvent", evtPayload);
                 }
             }
             if (this.updated) {
@@ -184,7 +202,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
          *  @return {Boolean} `true` if object could be located and method applied
          */
         updateCache: function(method, entity) {
-            //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.DataSourceRest");
+            //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.WegasCache");
             switch (method) {
                 case "DELETE":
                     if (this.find(ID, entity, function(entity, needle, index, stack) {
@@ -213,22 +231,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         addToCache: function(entity) {
             this.getCache().push(entity);
         },
-        /**
-         * @function
-         * @private
-         */
-        _successHandler: function(e) {
-            Y.log("Datasource reply:" + e.response, 'log', 'Y.Wegas.DataSourceRest');
-        },
-        /**
-         * @function
-         * @private
-         */
-        _failureHandler: function(e) {
-            //console.log("DataSourceRest._failureHandler", e);
-            Y.log("Exception while sending request \"" + (e.request || "") + "\": "
-                    + (e.response.results.message || e.response.results.exception || e), "error", 'Y.Wegas.DataSourceRest');
-        },
+
         /// *** Cache methods *** //
         /**
          * Retrieves all entities stored in the cache.
@@ -238,11 +241,12 @@ YUI.add('wegas-datasourcerest', function(Y) {
         getCache: function() {
             return this.get(HOST).data;
         },
+
         /**
          * @function
          * @private
          */
-        clearCache: function() {
+        clear: function() {
             var i, cache = this.getCache();
             for (i = 0; i < cache.length; i = i + 1) {
                 cache[i].destroy();
@@ -251,6 +255,14 @@ YUI.add('wegas-datasourcerest', function(Y) {
 
             this.get(HOST).fire("update");
         },
+
+        /**
+         *
+         */
+        findAll: function () {
+            return this.getCache();
+        },
+
         /**
          * Retrieves an entity from the cache
          *
@@ -260,6 +272,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         find: function(key, val, onFindFn) {
             return this.doFind(key, val, onFindFn, this.getCache());
         },
+
         /**
          * Retrieves an entity from the cache
          * @function
@@ -268,6 +281,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         findById: function(id) {
             return this.find(ID, id * 1);                                    // Cast to number
         },
+
         /**
          * Retrieves a list of entities from the cache
          * @function
@@ -282,6 +296,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }
             return ret;
         },
+
         /**
          *
          *  Recuresivly walk the provided stack, looking for an object with an
@@ -294,7 +309,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
          *  @return {Boolean} `true` if object could be located and method applied
          */
         doFind: function(key, needle, onFindFn, stack) {
-            //Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.DataSourceRest');
+            //Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.WegasCache');
             var onWalkFn = Y.bind(this.doFind, this, key, needle, onFindFn);
 
             this.ret = null;
@@ -311,17 +326,19 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }, this);
             return this.ret;
         },
+
         /**
          * This method is used to walke down an entity hierarchy, can be overriden
-         * by childrn to extend look capacities. Used in Y.Wegas.GameModelDataSourceRest
-         * and Y.Wegas.VariableDescriptorDataSourceRest
+         * by childrn to extend look capacities. Used in Y.Wegas.GameModelCache
+         * and Y.Wegas.VariableDescriptorCache
          * @function
          * @private
          */
         walkEntity: function(entity, callback) {
-            //Y.log("walkEntity(" + entity + ")", 'log', 'Y.Wegas.DataSourceRest');
+            //Y.log("walkEntity(" + entity + ")", 'log', 'Y.Wegas.WegasCache');
             return false;
         },
+
         /**
          * @function
          * @private
@@ -329,6 +346,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         testEntity: function(entity, key, needle) {
             return this.get("testFn")(entity, key, needle);
         },
+
         /**
          * @function
          * @private
@@ -336,6 +354,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         generateRequest: function(data) {
             return "/" + data.id;
         },
+
         /**
          * @function
          * @private
@@ -352,6 +371,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 on: callback
             });
         },
+
         /**
          * @function
          * @private
@@ -359,6 +379,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
         getObject: function(data) {
             this.sendRequest(this.generateRequest(data));
         },
+
         /**
          * @function
          * @private
@@ -373,6 +394,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 on: callback
             });
         },
+
         /**
          * @function
          * @private
@@ -385,6 +407,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -397,6 +420,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 }
             });
         },
+
         /**
          * @function
          * @private
@@ -407,45 +431,45 @@ YUI.add('wegas-datasourcerest', function(Y) {
         }
 
     }, {
-        /** @lends Y.Plugin.DataSourceREST */
+        /** @lends Y.Plugin.WegasCache */
         ATTRS: {
             schema: {
                 value: {
                     resultListLocator: "."
-                            //resultFields: ["name", ID, "@class"]
+                //resultFields: ["name", ID, "@class"]
                 }
             },
             testFn: {
                 value: function(entity, key, needle) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
-                            needleValue = (needle.get) ? needle.get(key) : (typeof needle === 'object') ? needle[key] : needle;
+                    needleValue = (needle.get) ? needle.get(key) : (typeof needle === 'object') ? needle[key] : needle;
 
                     return value === needleValue;
                 }
             }
         }
     });
-    Y.namespace('Plugin').DataSourceREST = DataSourceREST;
+    Y.namespace('Plugin').WegasCache = WegasCache;
 
     /**
      *  @name Y.Plugin.CRDataSource
      *  @class Content repository dataSource REST plugin.
-     *  @extends Y.Plugin.DataSourceREST
+     *  @extends Y.Plugin.WegasCache
      *  @constructor
      */
     var CRDataSource = function() {
         CRDataSource.superclass.constructor.apply(this, arguments);
     };
 
-    Y.extend(CRDataSource, DataSourceREST, {}, {
+    Y.extend(CRDataSource, WegasCache, {}, {
         /** @lends Y.Plugin.CRDataSource */
-        NS: "rest",
+        NS: "cache",
         NAME: "CRDataSource",
         ATTRS: {
         },
         getFullpath: function(relativePath) {
             return Wegas.app.get("base") + "rest/File/GameModelId/" + Wegas.app.get("currentGameModel") +
-                    "/read" + relativePath;
+            "/read" + relativePath;
         },
         getFilename: function(path) {
             return path.replace(/^.*[\\\/]/, '');
@@ -454,22 +478,22 @@ YUI.add('wegas-datasourcerest', function(Y) {
     Y.namespace('Plugin').CRDataSource = CRDataSource;
 
     /**
-     *  @name Y.Plugin.VariableDescriptorDataSourceREST
+     *  @name Y.Plugin.VariableDescriptorWegasCache
      *  @class adds management of entities of type Y.Wegas.persistence.VariableDescriptor
-     *  @extends Y.Plugin.DataSourceREST
+     *  @extends Y.Plugin.WegasCache
      *  @constructor
      */
-    VariableDescriptorDataSourceREST = function() {
-        VariableDescriptorDataSourceREST.superclass.constructor.apply(this, arguments);
+    VariableDescriptorCache = function() {
+        VariableDescriptorCache.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(VariableDescriptorDataSourceREST, {
-        NS: "rest",
-        NAME: "VariableDescriptorDataSourceREST"
+    Y.mix(VariableDescriptorCache, {
+        NS: "cache",
+        NAME: "VariableDescriptorCache"
     });
 
-    Y.extend(VariableDescriptorDataSourceREST, DataSourceREST, {
-        /** @lends Y.Plugin.VariableDescriptorDataSourceREST# */
+    Y.extend(VariableDescriptorCache, WegasCache, {
+        /** @lends Y.Plugin.VariableDescriptorCache# */
 
         /**
          * @function
@@ -483,6 +507,11 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 var i, entities = e.serverEvent.get("updatedEntities");
                 for (i = 0; i < entities.length; i += 1) {  // Update the cache with the entites contained in the reply
                     this.updated = this.updateCache(POST, entities[i]) || this.updated;
+                }
+
+                if (this.updated) {
+                    this.get(HOST).fire("update", e);
+                    this.updated = false;
                 }
             }, this);
         },
@@ -519,7 +548,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     return true;
                 });
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
-                return VariableDescriptorDataSourceREST.superclass.updateCache.apply(this, arguments);
+                return VariableDescriptorCache.superclass.updateCache.apply(this, arguments);
             }
             return false;
         },
@@ -538,7 +567,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 });
                 return;
             } else {
-                VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
+                VariableDescriptorCache.superclass.put.call(this, data, callback);
             }
         },
         post: function(data, parentData, callback) {
@@ -565,24 +594,24 @@ YUI.add('wegas-datasourcerest', function(Y) {
         }
     });
 
-    Y.namespace('Plugin').VariableDescriptorDataSourceREST = VariableDescriptorDataSourceREST;
+    Y.namespace('Plugin').VariableDescriptorCache = VariableDescriptorCache;
 
     /**
-     *  @name Y.Plugin.GameModelDataSourceREST
+     *  @name Y.Plugin.GameModelCache
      *  @class adds management of entities of type Y.Wegas.persistence.GameModel
-     *  @extends Y.Plugin.DataSourceREST
+     *  @extends Y.Plugin.WegasCache
      *  @constructor
      */
-    GameModelDataSourceREST = function() {
-        GameModelDataSourceREST.superclass.constructor.apply(this, arguments);
+    GameModelCache = function() {
+        GameModelCache.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(GameModelDataSourceREST, {
-        NS: "rest",
-        NAME: "GameModelDataSourceREST"
+    Y.mix(GameModelCache, {
+        NS: "cache",
+        NAME: "GameModelCache"
     });
 
-    Y.extend(GameModelDataSourceREST, DataSourceREST, {
+    Y.extend(GameModelCache, WegasCache, {
         /*
          *  @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
          */
@@ -590,30 +619,30 @@ YUI.add('wegas-datasourcerest', function(Y) {
             if (e.request.indexOf("ScriptLibrary") !== -1) {
                 e.cfg.method = POST;
             }
-            GameModelDataSourceREST.superclass.beforeResponse.call(this, e);
+            GameModelCache.superclass.beforeResponse.call(this, e);
         },
         getCurrentGameModel: function() {
             return this.findById(Wegas.app.get('currentGameModel'));
         }
     });
-    Y.namespace('Plugin').GameModelDataSourceREST = GameModelDataSourceREST;
+    Y.namespace('Plugin').GameModelCache = GameModelCache;
 
     /**
-     *  @name Y.Plugin.GameDataSourceREST
+     *  @name Y.Plugin.GameCache
      *  @class adds management of entities of type Y.Wegas.persistence.Game
-     *  @extends Y.Plugin.DataSourceREST
+     *  @extends Y.Plugin.WegasCache
      *  @constructor
      */
-    GameDataSourceREST = function() {
-        GameDataSourceREST.superclass.constructor.apply(this, arguments);
+    GameCache = function() {
+        GameCache.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(GameDataSourceREST, {
-        NS: "rest",
-        NAME: "GameDataSourceREST"
+    Y.mix(GameCache, {
+        NS: "cache",
+        NAME: "GameCache"
     });
 
-    Y.extend(GameDataSourceREST, DataSourceREST, {
+    Y.extend(GameCache, WegasCache, {
         walkEntity: function(entity, callback) {
             if (entity instanceof Wegas.persistence.Game) {
                 if (callback(entity.get("teams"))) {
@@ -653,7 +682,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 return '/' + data.gameId + '/Team/' + data.id;
             } else if (data['@class'] === 'Player') {
                 return "/" + this.getGameByTeamId(data.teamId).get(ID)
-                        + '/Team/' + data.teamId + '/Player/' + data.id;
+                + '/Team/' + data.teamId + '/Player/' + data.id;
             } else {
                 return "/" + data.id;
             }
@@ -662,7 +691,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             if (entity["@class"] === "Player") {
                 this.sendRequest({
                     request: "/" + this.getGameByTeamId(parentData.id).get(ID)
-                            + "/Team/" + parentData.id + "/Player",
+                    + "/Team/" + parentData.id + "/Player",
                     cfg: {
                         method: POST,
                         data: Y.JSON.stringify(entity)
@@ -679,7 +708,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     on: callback
                 });
             } else {
-                GameDataSourceREST.superclass.post.call(this, entity, parentData, callback);
+                GameCache.superclass.post.call(this, entity, parentData, callback);
             }
         },
         /* Util methods */
@@ -733,19 +762,19 @@ YUI.add('wegas-datasourcerest', function(Y) {
             return null;
         }
     });
-    Y.namespace('Plugin').GameDataSourceREST = GameDataSourceREST;
+    Y.namespace('Plugin').GameCache = GameCache;
 
     /**
-     *  @name Y.Plugin.UserDataSourceREST
+     *  @name Y.Plugin.UserCache
      *  @class adds management of entities of type Y.Wegas.persistence.User
-     *  @extends Y.Plugin.DataSourceREST
+     *  @extends Y.Plugin.WegasCache
      *  @constructor
      */
-    var UserDataSourceREST = function() {
-        UserDataSourceREST.superclass.constructor.apply(this, arguments);
+    var UserCache = function() {
+        UserCache.superclass.constructor.apply(this, arguments);
     };
 
-    Y.extend(UserDataSourceREST, DataSourceREST, {
+    Y.extend(UserCache, WegasCache, {
         walkEntity: function(entity, callback) {
             if (entity.get("accounts")) {
                 if (callback(entity.get("accounts"))) {
@@ -768,7 +797,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                 });
                 return;
             } else {
-                VariableDescriptorDataSourceREST.superclass.put.call(this, data, callback);
+                VariableDescriptorCache.superclass.put.call(this, data, callback);
             }
         },
         post: function(data, parentData, callback) {
@@ -791,15 +820,15 @@ YUI.add('wegas-datasourcerest', function(Y) {
         deleteAllRolePermissions: function(roleId, entityId) {
             this.sendRequest({
                 request: "/DeleteAllRolePermissions/" + roleId
-                        + "/" + entityId,
+                + "/" + entityId,
                 cfg: {
                     method: POST
                 }
             });
         }
     }, {
-        NS: "rest",
-        NAME: "UserDataSourceREST",
+        NS: "cache",
+        NAME: "UserCache",
         ATTRS: {
             currentUser: {
                 getter: function() {
@@ -808,25 +837,25 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }
         }
     });
-    Y.namespace('Plugin').UserDataSourceREST = UserDataSourceREST;
+    Y.namespace('Plugin').UserCache = UserCache;
 
     /**
-     * @name Y.Plugin.PageDataSourceREST
+     * @name Y.Plugin.PageCache
      * @extends Y.Plugin.Base
      * @class
      * @constructor
      */
-    PageDataSourceREST = function() {
-        PageDataSourceREST.superclass.constructor.apply(this, arguments);
+    PageCache = function() {
+        PageCache.superclass.constructor.apply(this, arguments);
     };
 
-    Y.mix(PageDataSourceREST, {
-        NS: "rest",
-        NAME: "PageDataSourceREST"
+    Y.mix(PageCache, {
+        NS: "cache",
+        NAME: "PageCache"
     });
 
-    Y.extend(PageDataSourceREST, Y.Plugin.Base, {
-        /** @lends Y.Plugin.PageDataSourceREST# */
+    Y.extend(PageCache, Y.Plugin.Base, {
+        /** @lends Y.Plugin.PageCache# */
 
         /**
          * @function
@@ -842,6 +871,9 @@ YUI.add('wegas-datasourcerest', function(Y) {
         /**
          * Server requests methods
          *
+         * @fixme Il y a peut-être un problème du au remove de cette fonction dans la class parent.
+         * @deprecated
+         *
          * @function
          */
         sendRequest: function(requestCfg) {
@@ -853,10 +885,10 @@ YUI.add('wegas-datasourcerest', function(Y) {
             requestCfg.cfg.Page = requestCfg.cfg.Page || '';
             requestCfg.cfg.headers = requestCfg.cfg.headers || {};
             Y.mix(requestCfg.cfg.headers, {
-                'Content-Type': 'application/json;charset=ISO-8859-1'
+                'Content-Type': 'application/json;charset=ISO-8859-1',
+                "Managed-Mode": "false"
             });
-
-            return this.get(HOST).sendRequest(requestCfg);
+            this.get(HOST).sendRequest(requestCfg);
         },
         /**
          * @function
@@ -864,8 +896,8 @@ YUI.add('wegas-datasourcerest', function(Y) {
          */
         beforeResponse: function(e) {
             var result = e.response.results,
-                    page = e.data ? (e.data.getResponseHeader("Page") || '') : null,
-                    i;
+            page = e.data ? (e.data.getResponseHeader("Page") || '') : null,
+            i;
 
             result = (e.error) ? null : result;                                 //No Content found
             if (page === "*" || page === '') {
@@ -939,10 +971,10 @@ YUI.add('wegas-datasourcerest', function(Y) {
          */
         patch: function(o, callback) {
             var dmp = new diff_match_patch(),
-                    oldPage = this.getCache(o["@pageId"]),
-                    newPage = Y.clone(o),
-                    pageId = o["@pageId"],
-                    patch;
+            oldPage = this.getCache(o["@pageId"]),
+            newPage = Y.clone(o),
+            pageId = o["@pageId"],
+            patch;
             delete newPage["@pageId"];
             patch = dmp.patch_toText(dmp.patch_make(Y.JSON.stringify(oldPage), Y.JSON.stringify(newPage)));
             this.sendRequest({
@@ -985,7 +1017,6 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     sync: true
                 });
             }
-
             return page;
         },
         getIndex: function(callback) {
@@ -1011,15 +1042,15 @@ YUI.add('wegas-datasourcerest', function(Y) {
             }
         }
     });
-    Y.namespace('Plugin').PageDataSourceREST = PageDataSourceREST;
+    Y.namespace('Plugin').PageCache = PageCache;
 
     /**
      * @FIXME We redefine this so we can use a "." selector and a "@..." field name
      */
     Y.DataSchema.JSON.getPath = function(locator) {
         var path = null,
-                keys = [],
-                i = 0;
+        keys = [],
+        i = 0;
 
         if (locator) {
             if (locator === '.') {
@@ -1028,17 +1059,17 @@ YUI.add('wegas-datasourcerest', function(Y) {
 
             // Strip the ["string keys"] and [1] array indexes
             locator = locator.
-                    replace(/\[(['"])(.*?)\1\]/g,
-                    function(x, $1, $2) {
-                        keys[i] = $2;
-                        return '.@' + (i++);
-                    }).
-                    replace(/\[(\d+)\]/g,
-                    function(x, $1) {
-                        keys[i] = parseInt($1, 10) | 0;
-                        return '.@' + (i++);
-                    }).
-                    replace(/^\./, ''); // remove leading dot
+            replace(/\[(['"])(.*?)\1\]/g,
+                function(x, $1, $2) {
+                    keys[i] = $2;
+                    return '.@' + (i++);
+                }).
+            replace(/\[(\d+)\]/g,
+                function(x, $1) {
+                    keys[i] = parseInt($1, 10) | 0;
+                    return '.@' + (i++);
+                }).
+            replace(/^\./, ''); // remove leading dot
 
             // Validate against problematic characters.
             if (!/[^\w\.\$@]/.test(locator)) {
@@ -1047,7 +1078,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
                     /*if (path[i].charAt(0) === '@') {				// MODIFIED !!
                      path[i] = keys[parseInt(path[i].substr(1),10)];
                      }*/
-                }
+                    }
             }
             else {
             }
@@ -1060,10 +1091,10 @@ YUI.add('wegas-datasourcerest', function(Y) {
      */
     Y.DataSource.IO.prototype._defRequestFn = function(e) {
         var uri = this.get("source"),
-                io = this.get("io"),
-                defIOConfig = this.get("ioConfig"),
-                request = e.request,
-                cfg = Y.merge(defIOConfig, e.cfg, {
+        io = this.get("io"),
+        defIOConfig = this.get("ioConfig"),
+        request = e.request,
+        cfg = Y.merge(defIOConfig, e.cfg, {
             on: Y.merge(defIOConfig, {
                 success: this.successHandler,
                 failure: this.failureHandler
@@ -1079,7 +1110,7 @@ YUI.add('wegas-datasourcerest', function(Y) {
             //}
             //else {
             uri += request;
-            //}
+        //}
         }
         Y.DataSource.Local.transactions[e.tId] = io(uri, cfg);
         return e.tId;
@@ -1090,8 +1121,8 @@ YUI.add('wegas-datasourcerest', function(Y) {
      */
     Y.DataSchema.JSON._parseResults = function(schema, json_in, data_out) {
         var results = [],
-                path,
-                error;
+        path,
+        error;
 
         if (schema.resultListLocator) {
             path = Y.DataSchema.JSON.getPath(schema.resultListLocator);

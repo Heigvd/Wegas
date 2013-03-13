@@ -69,7 +69,7 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
          */
         render: function () {
             RoleSelect.superclass.render.apply(this, arguments);
-            Y.Wegas.RoleFacade.rest.sendRequest({
+            Y.Wegas.RoleFacade.sendRequest({
                 request: "/",
                 on: {
                     success: Y.bind(function () {

@@ -54,7 +54,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                 this.targetEntityId = "g" + gmId;
             }
 
-            Y.Wegas.UserFacade.rest.sendRequest({
+            Y.Wegas.UserFacade.sendRequest({
                 request: "/GameModelPermissions/" + this.targetEntityId,
                 on: {
                     success: Y.bind(function (e) {
@@ -161,7 +161,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             this.roleSelect.on("updated", function (val) {
 
                 if (this.value.id !== val.id) {
-                    Y.Wegas.UserFacade.rest.deleteAllRolePermissions(this.value.id, this.options.targetEntityId);
+                    Y.Wegas.UserFacade.cache.deleteAllRolePermissions(this.value.id, this.options.targetEntityId);
                 }
 
                 this.value.id = val.id;
@@ -185,7 +185,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
 
                 box.on("updated", function (e, field) {
                     if (field.getValue()) {
-                        Y.Wegas.UserFacade.rest.sendRequest({
+                        Y.Wegas.UserFacade.sendRequest({
                             request: "/AddPermission/" + this.roleSelect.getValue().id
                             + "/" + field.options.name +":" + this.options.targetEntityId,
                             cfg: {
@@ -193,7 +193,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                             }
                         });
                     } else {
-                        Y.Wegas.UserFacade.rest.sendRequest({
+                        Y.Wegas.UserFacade.sendRequest({
                             request: "/DeletePermission/" + this.roleSelect.getValue().id
                             + "/" + field.options.name +":" + this.options.targetEntityId,
                             cfg: {
@@ -293,7 +293,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             i, subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
             for (i = 0; i < this.subFields.length; i++) {
                 if (this.subFields[i].getEl() == subFieldEl) {
-                    Y.Wegas.UserFacade.rest.deleteAllRolePermissions(this.subFields[i].roleSelect.getValue().id, this.subFields[i].options.targetEntityId);
+                    Y.Wegas.UserFacade.cache.deleteAllRolePermissions(this.subFields[i].roleSelect.getValue().id, this.subFields[i].options.targetEntityId);
                     break;
                 }
             }

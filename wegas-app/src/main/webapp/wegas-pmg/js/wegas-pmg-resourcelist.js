@@ -134,7 +134,7 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
         createMenu: function (e, add) {
             var i, tasks, resources, resourceDesc, resourceId;
             resourceId = e.target.ancestor().ancestor().ancestor().one('*').getContent();
-            resources = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get('variables'));
+            resources = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get('variables'));
             for (i = 0; i < resources.get('items').length; i++) {
                 if (resources.get('items')[i].get('id') == resourceId) {
                     resourceDesc = resources.get('items')[i];
@@ -169,15 +169,16 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
             }
             return 0;
         },
+        
         getTasks: function (resourceDesc) {
             //add is a boolean to determine if target is remove or add a task
-            //you can only add a task which isn't already added. 
-            //you can only remove a task which is added. 
+            //you can only add a task which isn't already added.
+            //you can only remove a task which is added.
             var i, tasks, items, taskDesc, description, label, array = new Array(), no;
             if (!this.get("taskList")) {
                 return;
             }
-            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("taskList"));
+            tasks = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("taskList"));
             items = tasks.get('items');
             items.sort(Y.bind(this.compareTask, this));
             for (i = 0; i < items.length; i++) {

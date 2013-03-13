@@ -76,7 +76,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
         bindUI: function () {
             this.get(CONTENTBOX).delegate("click", function (e) {
                 this.showOverlay();
-                this.dataSource.rest.sendRequest({
+                this.dataSource.sendRequest({
                     request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
                             + "/Player/" + Y.Wegas.app.get('currentPlayer'),
                     on: {
