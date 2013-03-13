@@ -53,11 +53,11 @@ YUI.add('wegas-datatable', function(Y) {
                 //col = columnSet._conf.data.value.definitions[cellIndex],
                 //name= recordSet.get(target.ancestor('tr').get('id')).getValue('name');
 
-                this._dataSource.rest.getById(record.get('id'));
+                this._dataSource.cache.getById(record.get('id'));
 
                 this._dataSource.once('response', function(e) {
                     Y.Wegas.editor.edit(e.response.results[0], function(cfg) {
-                        that._dataSource.rest.put(cfg);
+                        that._dataSource.cache.put(cfg);
                     });
                 });
 

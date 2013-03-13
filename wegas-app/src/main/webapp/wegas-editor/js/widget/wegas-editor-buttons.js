@@ -14,7 +14,7 @@
 
 YUI.add('wegas-editor-buttons', function (Y) {
     "use strict";
-    
+
     var SelectGameButton, SelectPlayerButton;
     /**
      * A button that display all current game's player and that sets the
@@ -51,8 +51,8 @@ YUI.add('wegas-editor-buttons', function (Y) {
         syncUI: function () {
             SelectPlayerButton.superclass.bindUI.apply(this, arguments);
             var j, k, cTeam, menuItems = [],
-            cGame = Y.Wegas.GameFacade.rest.getCurrentGame(),
-            cPlayer = Y.Wegas.GameFacade.rest.getCurrentPlayer();
+            cGame = Y.Wegas.GameFacade.cache.getCurrentGame(),
+            cPlayer = Y.Wegas.GameFacade.cache.getCurrentPlayer();
 
             this.set("label", "Current player: " + cPlayer.get("name"));      // Update the label
 
@@ -111,8 +111,8 @@ YUI.add('wegas-editor-buttons', function (Y) {
             SelectGameButton.superclass.syncUI.apply(this, arguments);
 
             var j, menuItems = [],
-            cGame = Y.Wegas.GameFacade.rest.getCurrentGame(),
-            games = Y.Wegas.GameIndexFacade.rest.getCache();
+            cGame = Y.Wegas.GameFacade.cache.getCurrentGame(),
+            games = Y.Wegas.GameIndexFacade.cache.findAll();
 
             this.set("label", "Current game: " + cGame.get("name"));      // Update the label
 

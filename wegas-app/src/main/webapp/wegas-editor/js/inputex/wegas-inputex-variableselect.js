@@ -40,13 +40,13 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
             var findVal;
             inputEx.Wegas.Variableselect.superclass.setValue.call(this, val, fireUpdatedEvent);
             if (val.name) {
-                findVal = Y.Wegas.VariableDescriptorFacade.rest.find('name', val.name);
+                findVal = Y.Wegas.VariableDescriptorFacade.cache.find('name', val.name);
             } else if (val.expr) {
                 this.setMode("text");
                 this.inputs[1].el.value =  val.expr;
                 return;
             } else if (val.id) {
-                findVal = Y.Wegas.VariableDescriptorFacade.rest.findById(val.id);
+                findVal = Y.Wegas.VariableDescriptorFacade.cache.findById(val.id);
             }
             this.inputs[0].setValue(findVal.get("id"));                         // @fixme
         },
@@ -70,7 +70,7 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
                 }
             }, this);
             this.viewSrc.render(this.fieldset);
-            
+
             var container = new Y.Node(this.fieldset);                    // Render a div where the wysiwyg list will be rendered
             container.prepend(divLabel.getDOMNode());
             container.prepend(this.viewSrc.get("boundingBox"));
@@ -106,7 +106,7 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
                     if (tree.body[0].expression.callee.object.name === "VariableDescriptorFacade"  &&
                         tree.body[0].expression.callee.property.name === "find" &&
                         tree.body[0].expression.arguments[0].value !== null) {
-                        newVal = Y.Wegas.VariableDescriptorFacade.rest.find('id', tree.body[0].expression.arguments[0].value);
+                        newVal = Y.Wegas.VariableDescriptorFacade.cache.find('id', tree.body[0].expression.arguments[0].value);
                     }
                 }
                 if (newVal !== null) {

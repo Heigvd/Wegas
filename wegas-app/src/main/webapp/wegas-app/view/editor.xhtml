@@ -43,21 +43,21 @@
                                 source: "rest/Editor/GameModel",
                                 initialRequest: "/#{editorGameController.currentGameModel.id}",
                                 plugins: [{
-                                        fn: "GameModelDataSourceREST"
+                                        fn: "GameModelCache"
                                     }]
                             },
                             "GameIndex": {
                                 source: "rest/Index/GameModel/#{editorGameController.currentGameModel.id}/Game",
                                 initialRequest: "/",
                                 plugins: [{
-                                        fn: "GameDataSourceREST"
+                                        fn: "GameCache"
                                     }]
                             },
                             "Game": {
                                 source: "rest/Public/GameModel/#{editorGameController.currentGameModel.id}/Game",
                                 initialRequest: "/#{editorGameController.currentGame.id}",
                                 plugins: [{
-                                        fn: "GameDataSourceREST"
+                                        fn: "GameCache"
                                     }]
                             },
                             "Page": {
@@ -71,28 +71,28 @@
                                             }
                                         }
                                     }, {
-                                        fn: "PageDataSourceREST"
+                                        fn: "PageCache"
                                     }]
                             },
                             "User": {
                                 source: "rest/User",
                                 initialRequest: "/#{requestController.getCurrentUser().id}",
                                 plugins: [{
-                                        fn: "UserDataSourceREST"
+                                        fn: "UserCache"
                                     }]
                             },
                             "Role": {
                                 source: "rest/Role",
                                 //initialRequest: "",
                                 plugins: [{
-                                        fn: "DataSourceREST"
+                                        fn: "WegasCache"
                                     }]
                             },
                             "VariableDescriptor": {
                                 source: "rest/PrivateEditor/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
-                                        fn: "VariableDescriptorDataSourceREST"
+                                        fn: "VariableDescriptorCache"
                                     },{
                                         fn: "ScriptEval"
                                     }]
@@ -126,14 +126,14 @@
                     });
 
                     app.after("render", function () {
-                        var gm = Y.Wegas.GameModelFacade.rest.getCurrentGameModel();
+                        var gm = Y.Wegas.GameModelFacade.cache.getCurrentGameModel();
                         Y.one(".wegas-title").setContent(gm.get("name"));
                     });
 
-                    app.after('currentPlayerChange', function (e) {                // Whenever the current player changes
+                    app.after('currentPlayerChange', function (e) {             // Whenever the current player changes
                         //"rest/Private/xx/GameModel/xx/VariableDescriptor",
                         this.set('currentTeam',
-                            this.dataSources.Game.rest.getPlayerById(e.newVal).get("teamId"));// Update current team
+                            this.dataSources.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
 
                         Y.Wegas.VariableDescriptorFacade.set("source",
                         this.get("base") + "rest/PrivateEditor/" + e.newVal + "/GameModel/"

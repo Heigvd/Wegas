@@ -30,18 +30,18 @@ YUI.add("wegas-inputex-pageselect", function (Y) {
     };
 
     Y.extend(inputEx.Wegas.PageSelect, inputEx.SelectField, {
-        
+
         setOptions: function (options) {
             inputEx.Wegas.PageSelect.superclass.setOptions.call(this, options);
-            Y.Wegas.PageFacade.rest.getIndex(Y.bind(this.buildList, this));
-            
+            Y.Wegas.PageFacade.cache.getIndex(Y.bind(this.buildList, this));
+
         },
-        
+
         setValue: function (val) {
             inputEx.Wegas.PageSelect.superclass.setValue.apply(this, arguments);
             this.options.value = val;
         },
-        
+
         buildList: function(value){
             var i;
             for(i in value){
@@ -51,7 +51,7 @@ YUI.add("wegas-inputex-pageselect", function (Y) {
                 });
                 if (i == this.options.value){
                     this.choicesList[i-1].node.selected = "selected"
-                }     
+                }
             }
         }
     });

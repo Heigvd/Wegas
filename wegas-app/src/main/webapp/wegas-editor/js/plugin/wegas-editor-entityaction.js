@@ -32,7 +32,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
             entity: {
                 getter: function (val) {
                     if (val === "currentGameModel") {
-                        return Wegas.GameModelFacade.rest.getCurrentGameModel();
+                        return Wegas.GameModelFacade.cache.getCurrentGameModel();
                     }
                     return val;
                 }
@@ -146,7 +146,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
         showUpdateForm: function (entity, dataSource) {
             EditEntityAction.showEditForm(entity, function (cfg) {           // Display the edit form
                 // entity.setAttrs(cfg);
-                dataSource.rest.put(cfg, {
+                dataSource.cache.put(cfg, {
                     success: function () {
                         EditEntityAction.showFormMessage("success", "Item has been updated");
                         EditEntityAction.hideEditFormOverlay();
@@ -161,7 +161,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
 
         showAddForm: function (entity, parentData, dataSource) {
             EditEntityAction.showEditForm(entity, function (newVal) {
-                dataSource.rest.post(newVal, (parentData) ? parentData.toObject() : parentData, {
+                dataSource.cache.post(newVal, (parentData) ? parentData.toObject() : parentData, {
                     success: function (e) {
                         EditEntityAction.hideEditFormOverlay();
                         EditEntityAction.showUpdateForm(e.response.entity, dataSource);
@@ -237,7 +237,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
 
                         entity.setAttrs(newVal);
 
-                        dataSource.rest.put(parentEntity.toObject(), {
+                        dataSource.cache.put(parentEntity.toObject(), {
                             success: function () {
                                 EditEntityAction.hideEditFormOverlay();
                                 EditEntityAction.showFormMessage("success", "Item has been updated");
@@ -258,7 +258,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
                         newEntity.setAttrs(newVal);
                         entity.get(this.get("attributeKey")).push(newEntity);
 
-                        dataSource.rest.put(entity.toObject(), {
+                        dataSource.cache.put(entity.toObject(), {
                             success: function () {
                                 EditEntityAction.hideEditFormOverlay();
                                 EditEntityAction.showFormMessage("success", "Item has been added");
@@ -282,7 +282,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
                             }
                             return false;
                         });
-                        dataSource.rest.put(parentEntity.toObject());
+                        dataSource.cache.put(parentEntity.toObject());
                     } else {
                         return;
                     }
@@ -343,7 +343,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
     };
     Y.extend(DuplicateEntityAction, EntityAction, {
         execute: function () {
-            this.get("dataSource").rest.duplicateObject(this.get(ENTITY));
+            this.get("dataSource").cache.duplicateObject(this.get(ENTITY));
         }
     }, {
         NS: "DuplicateEntityAction",
@@ -364,7 +364,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
     Y.extend(DeleteEntityAction, EntityAction, {
         execute: function() {
             if (confirm("Are your sure your want to delete this item ?")) {
-                this.get("dataSource").rest.deleteObject(this.get(ENTITY));
+                this.get("dataSource").cache.deleteObject(this.get(ENTITY));
             }
         }
     }, {

@@ -32,41 +32,41 @@
                                 source: "rest/Public/GameModel",
                                 initialRequest: "",
                                 plugins: [{
-                                        fn: "GameModelDataSourceREST"
+                                        fn: "GameModelCache"
                                     }]
                             },
                             "Game": {
                                 source: "rest/GameModel//Game",
                                 initialRequest: "",
                                 plugins: [{
-                                        fn: "GameDataSourceREST"
+                                        fn: "GameCache"
                                     }]
                             },
                             "RegisteredGames": {
                                 source: "rest/RegisteredGames/#{requestController.currentUser.id}",
                                 initialRequest: "",
                                 plugins: [{
-                                        fn: "GameDataSourceREST"
+                                        fn: "GameCache"
                                     }]
                             },
                             "PublicGames": {
                                 source: "rest/PublicGames",
                                 plugins: [{
-                                        fn: "GameDataSourceREST"
+                                        fn: "GameCache"
                                     }]
                             },
                             "Role": {
                                 source: "rest/Role",
                                 //initialRequest: "",
                                 plugins: [{
-                                        fn: "DataSourceREST"
+                                        fn: "WegasCache"
                                     }]
                             },
                             "User": {
                                 source: "rest/User",
                                 initialRequest: "/#{requestController.getCurrentUser().id}",
                                 plugins: [{
-                                        fn: "UserDataSourceREST"
+                                        fn: "UserCache"
                                     }]
                             }
                         }
