@@ -13,7 +13,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-            MCQTabView;
+    MCQTabView;
 
     /**
      * @name Y.Wegas.MCQTabView
@@ -78,7 +78,7 @@ YUI.add('wegas-mcqtabview', function (Y) {
                 this.showOverlay();
                 this.dataSource.sendRequest({
                     request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
-                            + "/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    + "/Player/" + Y.Wegas.app.get('currentPlayer'),
                     on: {
                         failure: Y.bind(this.defaultExceptionHandler, this)
                     }
@@ -97,77 +97,79 @@ YUI.add('wegas-mcqtabview', function (Y) {
          */
         syncUI: function () {
             var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance, cQuestionLabel, tab, cChoices, choiceDescriptor, reply,
-                    questions = this.get("variable.evaluated"),
-                    selectedTab = this.tabView.get('selection'),
-                    lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
-
-            if (!questions) {
-                return;
-            }
-            questions = questions.get("items");
+            questions = this.get("variable.evaluated"),
+            selectedTab = this.tabView.get('selection'),
+            lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
             this.tabView.removeAll();                                           // Empty the tabview
 
-            for (i = 0; i < questions.length; i += 1) {
-                cQuestion = questions[i];
-                cQuestionLabel = cQuestion.getPublicLabel() || "undefined";
-                ret = [//'<div class="title">Details</div>',
+            if (questions) {
+
+                questions = questions.get("items");
+
+                for (i = 0; i < questions.length; i += 1) {
+                    cQuestion = questions[i];
+                    cQuestionLabel = cQuestion.getPublicLabel() || "undefined";
+                    ret = [//'<div class="title">Details</div>',
                     '<div class="content">',
                     '<div class="title">', cQuestionLabel, '</div>',
                     '<div class="description">',
                     (cQuestion.get("description") || "<em>No description</em>"), '</div>'];
-                cQuestionInstance = cQuestion.getInstance();
-                firstChild = "first-child";
-                cReplyLabel = null;
-                cChoices = cQuestion.get("items");
+                    cQuestionInstance = cQuestion.getInstance();
+                    firstChild = "first-child";
+                    cReplyLabel = null;
+                    cChoices = cQuestion.get("items");
 
-                if (cQuestionInstance.get("active")) {
-                    if (cQuestionInstance.get("replies").length === 0        // If the question is not replied, we display its reply set
+                    if (cQuestionInstance.get("active")) {
+                        if (cQuestionInstance.get("replies").length === 0        // If the question is not replied, we display its reply set
                             || cQuestion.get("allowMultipleReplies")) {
 
-                        ret.push('<div class="subtitle">Possible replies</div><div class="replies">');
+                            ret.push('<div class="subtitle">Possible replies</div><div class="replies">');
 
-                        for (j = 0; j < cChoices.length; j += 1) {
-                            if (cChoices[j].getInstance().get("active")) {
-                                ret.push('<div class="reply ', firstChild, '">',
+                            for (j = 0; j < cChoices.length; j += 1) {
+                                if (cChoices[j].getInstance().get("active")) {
+                                    ret.push('<div class="reply ', firstChild, '">',
                                         '<div class="name">', cChoices[j].get("label"), '</div>',
                                         '<div class="content">', cChoices[j].get("description"), '</div>',
                                         '<input type="submit" id="', cChoices[j].get("id"), '" value="Submit"></input>',
                                         '<div style="clear:both"></div>',
                                         '</div>');
-                                firstChild = "";
+                                    firstChild = "";
+                                }
                             }
+                            ret.push('</div>');
                         }
-                        ret.push('</div>');
-                    }
 
-                    if (cQuestionInstance.get("replies").length > 0) {       // Display the selected replies
-                        ret.push('<div class="subtitle">Selected replies</div><div class="replies">');
-                        for (j = 0; j < cQuestionInstance.get("replies").length; j += 1) {
-                            reply = cQuestionInstance.get("replies")[j];
-                            choiceDescriptor = reply.getChoiceDescriptor();
-                            ret.push('<div class="reply"><div class="name">', choiceDescriptor.get("label"), '</div>',
+                        if (cQuestionInstance.get("replies").length > 0) {       // Display the selected replies
+                            ret.push('<div class="subtitle">Selected replies</div><div class="replies">');
+                            for (j = 0; j < cQuestionInstance.get("replies").length; j += 1) {
+                                reply = cQuestionInstance.get("replies")[j];
+                                choiceDescriptor = reply.getChoiceDescriptor();
+                                ret.push('<div class="reply"><div class="name">', choiceDescriptor.get("label"), '</div>',
                                     '<div>', choiceDescriptor.get("description"), '</div>',
                                     '<div style="clear:both"></div></div>');
 
-                            ret.push('<div class="subtitle">Result</div>',
+                                ret.push('<div class="subtitle">Result</div>',
                                     '<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div>');
 
-                            if (!cReplyLabel) {
-                                cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15) + "...";
+                                if (!cReplyLabel) {
+                                    cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15) + "...";
+                                }
                             }
+                            ret.push("</div>");
                         }
-                        ret.push("</div>");
-                    }
 
-                    ret.push("</div>");
-                    tab = new Y.Tab({
-                        label: '<div class="' + (cQuestionInstance.get("replies").length === 0 ? "unread" : "") + '"><div class="label">' + cQuestionLabel + '</div>'
-                                + '<div class="status">' + (cReplyLabel || "unanswered") + '</div></div>',
-                        content: ret.join('')
-                    });
-                    tab.questionInstance = cQuestionInstance;
-                    this.tabView.add(tab);
+                        ret.push("</div>");
+                        tab = new Y.Tab({
+                            label: '<div class="'
+                            + (cQuestionInstance.get("replies").length === 0 ? "unread" : "")
+                            + '"><div class="label">' + cQuestionLabel + '</div>'
+                            + '<div class="status">' + (cReplyLabel || "unanswered") + '</div></div>',
+                            content: ret.join('')
+                        });
+                        tab.questionInstance = cQuestionInstance;
+                        this.tabView.add(tab);
+                    }
                 }
             }
 
@@ -176,10 +178,11 @@ YUI.add('wegas-mcqtabview', function (Y) {
                     label: "",
                     content: "<center><i><br /><br /><br />No questions available yet.</i></center>"
                 }));
+//                this.tabView.selectChild(0);
             }
-
-            this.tabView.selectChild(lastSelection);
+                this.tabView.selectChild(lastSelection);
             this.hideOverlay();
+
         },
 
         /**
