@@ -3,7 +3,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
 
     var STRING = "string", HIDDEN = "hidden", SELF = "self", BOOLEAN = "boolean",
     NUMBER = "number", BUTTON = "Button", SCRIPT = "script", TEXT = "text",
-    STATES = "states";
+    STATES = "states", ID = "id";
     /*******************************/
     /******** STATEMACHINE *********/
     /*******************************/
