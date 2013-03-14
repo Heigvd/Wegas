@@ -64,7 +64,7 @@ YUI.add('wegas-itemselector', function (Y) {
             if (!this.get('listVariables')) {
                 return;
             }
-            variables = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get('listVariables'));
+            variables = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get('listVariables'));
             if (!variables || !variables.get('items')) {
                 return;
             }
@@ -105,7 +105,7 @@ YUI.add('wegas-itemselector', function (Y) {
                 } else {
                     name = e.target.getAttribute("data-name");
                 }
-                variables = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get('listVariables'));
+                variables = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get('listVariables'));
                 if (!variables || !variables.get('items'))
                     return;
                 for (i = 0; i < variables.get('items').length; i++) {
@@ -127,7 +127,7 @@ YUI.add('wegas-itemselector', function (Y) {
             var cb = this.get(CONTENTBOX), variables;
             if (!this.get('listVariables'))
                 return;
-            variables = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get('listVariables'));
+            variables = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get('listVariables'));
             if (!variables || !variables.get('items') || variables.get('items').length <= 0)
                 return;
             this.createSelector(cb, variables.get('items'));

@@ -34,7 +34,7 @@ YUI.add("wegas-pmg-breadcrumb", function (Y) {
         },
         syncUI: function () {
             var i, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,
-                    varDesc = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variable"));
+                    varDesc = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variable"));
             if (locations.length == 0 || varDesc == null)
                 return;
             for (i = 0; i < locations.length; i++) {

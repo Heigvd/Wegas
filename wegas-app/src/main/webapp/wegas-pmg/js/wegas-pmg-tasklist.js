@@ -55,7 +55,7 @@ YUI.add("wegas-pmg-tasklist", function (Y) {
                     || this.get("columnValues").indexOf('realized') <= -1) {
                 return;
             }
-            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
+            tasks = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variables"));
             allRow = cb.all(".yui3-datatable-data tr");
             allRow.removeClass("notstarted").removeClass("started").removeClass("completed");
             allRow.each(function (node) {
@@ -87,7 +87,7 @@ YUI.add("wegas-pmg-tasklist", function (Y) {
                 return;
             }
             id = node.ancestor().one("*").getContent();
-            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
+            tasks = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variables"));
             if (!id || !tasks) {
                 return;
             }

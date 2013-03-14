@@ -28,7 +28,7 @@ YUI.add("wegas-inputex-gamemodelselect", function (Y) {
     Y.extend(GameModelSelect, Y.inputEx.SelectField, {
 
         setOptions: function (options) {
-            var i, gameModels = Y.Wegas.GameModelFacade.rest.getCache();
+            var i, gameModels = Y.Wegas.GameModelFacade.cache.findAll();
 
             options.choices = [];
 

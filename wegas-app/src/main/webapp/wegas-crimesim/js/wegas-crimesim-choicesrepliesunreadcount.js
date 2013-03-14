@@ -27,7 +27,7 @@ YUI.add('wegas-crimesim-choicesrepliesunreadcount', function (Y) {
         },
         getUnreadCount: function () {
             var i, j, count = 0, questionInstance, reply,
-                    questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items");
+                    questions = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences").get("items");
             for (i = 0; i < questions.length; i = i + 1) {
                 questionInstance = questions[i].getInstance();
                 for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
@@ -44,5 +44,5 @@ YUI.add('wegas-crimesim-choicesrepliesunreadcount', function (Y) {
         NAME: "ChoicesRepliesUnreadCount"
     });
     Y.namespace('Plugin').ChoicesRepliesUnreadCount = ChoicesRepliesUnreadCount;
-    
+
 });

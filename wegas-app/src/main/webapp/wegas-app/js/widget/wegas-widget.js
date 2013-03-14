@@ -543,13 +543,13 @@ YUI.add("wegas-widget", function(Y) {
             if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
 
                 if (val.name) {                                                 // Eval based on the name field
-                    val.evaluated = ds.rest.find('name', val.name);
+                    val.evaluated = ds.cache.find('name', val.name);
 
                 } else if (val.expr) {                                          // if absent evaluate the expr field
-                    val.evaluated = ds.rest.findById(Y.Wegas.VariableDescriptorFacade.script.scopedEval(val.expr));
+                    val.evaluated = ds.cache.findById(Y.Wegas.VariableDescriptorFacade.script.scopedEval(val.expr));
 
                 } else if (val.id) {
-                    val.evaluated = ds.rest.findById(val.id);
+                    val.evaluated = ds.cache.findById(val.id);
                 }
             }
 

@@ -167,7 +167,7 @@ YUI.add('wegas-inbox', function (Y) {
             if (!this.msg) {
                 return;
             }
-            this.dataSource.rest.sendRequest({
+            this.dataSource.sendRequest({
                 request: "/Inbox/Message/" + this.msg.get("id"),
                 cfg: {
                     method: "DELETE"
@@ -195,7 +195,7 @@ YUI.add('wegas-inbox', function (Y) {
             }
 
             if (e.newVal && e.newVal.msg) {
-                this.dataSource.rest.sendRequest({                              // Retrieve the message body from the server
+                this.dataSource.sendRequest({                              // Retrieve the message body from the server
                     request: "/Inbox/Message/" + e.newVal.msg.get("id") + "?view=Export",
                     on: {
                         success: Y.bind(function (e) {
@@ -222,7 +222,7 @@ YUI.add('wegas-inbox', function (Y) {
                     this.timer = Y.later(2000, this, function () {              // Send a request to mark it as read
                         Y.log("Sending message read update", "info", "InboxDisplay");
                         this.msg.set("unread", false);
-                        this.dataSource.rest.sendRequest({
+                        this.dataSource.sendRequest({
                             request: "/Inbox/Message/Read/" + this.msg.get("id"),
                             cfg: {
                                 method: "PUT"
