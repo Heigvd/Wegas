@@ -288,7 +288,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             if (content.questionImages) {
                 this.renderImages(cb.one('.pictures .questionLayer'), content.questionImages);
-                this.renderImages(cb.one('.pictures .answerLayer'), (content.answerImages) ? content.answerImages : content.questiocnImages);
+                this.renderImages(cb.one('.pictures .answerLayer'), (content.answerImages) ? content.answerImages : content.questionImages);
             }
             cb.one('.pictures .backgroundLayer').show();
             cb.one('.pictures .questionLayer').show();
