@@ -76,7 +76,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
          * @private
          */
         syncUI: function () {
-            var i, cGameModel = Y.Wegas.GameModelFacade.rest.getCurrentGameModel(),
+            var i, cGameModel = Y.Wegas.GameModelFacade.cache.getCurrentGameModel(),
             isEmpty = true;
 
             if (!cGameModel) {
@@ -131,7 +131,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
 
                         this.showOverlay();
 
-                        Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
+                        Y.Wegas.app.dataSources.GameModel.sendRequest({
                             request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.currentScript,
                             cfg: {
                                 method: "POST",
@@ -164,7 +164,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                     click: Y.bind(function () {
                         this.showOverlay();
 
-                        Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
+                        Y.Wegas.app.dataSources.GameModel.sendRequest({
                             request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.selectField.getValue(),
                             cfg: {
                                 method: "POST",
@@ -189,7 +189,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                     click: Y.bind(function () {
                         this.showOverlay();
 
-                        Y.Wegas.app.dataSources.GameModel.rest.sendRequest({
+                        Y.Wegas.app.dataSources.GameModel.sendRequest({
                             request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.currentScript,
                             cfg: {
                                 method: "DELETE"
@@ -214,7 +214,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
          * @private
          */
         syncEditor: function () {
-            var cGameModel = Y.Wegas.GameModelFacade.rest.getCurrentGameModel(),
+            var cGameModel = Y.Wegas.GameModelFacade.cache.getCurrentGameModel(),
             val = cGameModel.get("scriptLibrary")[this.selectField.getValue()] || "";
 
             this.aceField.setValue(val, false);

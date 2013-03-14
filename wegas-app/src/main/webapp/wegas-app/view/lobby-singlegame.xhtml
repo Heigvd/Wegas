@@ -34,19 +34,19 @@
                             "User": {
                                 source: "rest/User",
                                 plugins: [{
-                                        fn: "DataSourceREST"
+                                        fn: "WegasCache"
                                     }]
                             },
                             "PublicGames": {
                                 source: "rest/PublicGames",
                                 plugins: [{
-                                        fn: "GameDataSourceREST"
+                                        fn: "GameCache"
                                     }]
                             },
                             "Game": {
                                 source: "rest/GameModel/1/Game",
                                 plugins: [{
-                                        fn: "GameDataSourceREST"
+                                        fn: "GameCache"
                                     }]
                             }
                         }
