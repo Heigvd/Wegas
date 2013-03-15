@@ -108,7 +108,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                     this.restartValue = "true";
                 } 
                 Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                    request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
                         'Content-Type': 'application/json; charset=ISO-8859-1',
                         'Managed-Mode':'true'
@@ -128,17 +128,36 @@ YUI.add('wegas-monopoly-controller', function(Y) {
         buyProperty: function(){
             this.buy.on("click", function(){
                 var position, money;
-                // check if property is free TODO
-                
-                // check if have enough money
                 position = Y.Wegas.VariableDescriptorFacade.rest.find("name", "position").getInstance().get("value");
-                money = Y.Wegas.VariableDescriptorFacade.rest.find("name", "money").getInstance().get("value");
                 position--;
-                if (this.boxValue[position].getInstance().get("value") <= money){
-                    this.setMoney(money - this.boxValue[position].getInstance().get("value"));
-                // add property to the list TODO
-                    position++;
-                    this.addProperty(position);
+                // check if property is free
+                if (this.boxValue[position].getInstance().get("properties").playerId != "" ||
+                this.boxValue[position].getInstance().get("properties").playerId == "notBuyable"){
+                    alert("this property is not buyable");
+                    return;
+                }
+                // check if have enough money               
+                money = Y.Wegas.VariableDescriptorFacade.rest.find("name", "money").getInstance().get("value");
+                if (this.boxValue[position].getInstance().get("properties").value <= money){
+                    this.setMoney(money - this.boxValue[position].getInstance().get("properties").value);
+                // add property
+                    this.boxValue[position].getInstance().get("properties").playerId = Y.Wegas.app.get('currentPlayer');
+                    Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                        request: "/" + this.boxValue[position].getInstance().get("descriptorId") +"/VariableInstance/" + this.boxValue[position].getInstance().get("id"),
+                        headers:{
+                            'Content-Type': 'application/json; charset=ISO-8859-1',
+                            'Managed-Mode':'true'
+                        },
+                        cfg: {
+                            method: "PUT",
+                            data: this.boxValue[position].getInstance().toJSON()
+                        },
+                        on: {
+                            success: Y.bind(function (e) {
+                                this.display.checkPropertyBuyable();
+                            }, this)
+                        }
+                    });
                 } else {
                     alert("You have not enought money");
                 }
@@ -148,7 +167,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
         
         setMoney: function(value){
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 headers:{
                     'Content-Type': 'application/json; charset=ISO-8859-1',
                     'Managed-Mode':'true'
@@ -159,34 +178,6 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                         "@class": "Script",
                         "language": "JavaScript",
                         "content": "importPackage(com.wegas.core.script);\nmoney.value ="+ value +";"
-                    })
-                }
-            });
-        },
-        
-        addProperty: function (position){
-            var listId;
-            listId = Y.Wegas.VariableDescriptorFacade.rest.find("name", "patrimony").getAttrs().id
-            Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/" + listId,
-                headers:{
-                    'Content-Type': 'application/json; charset=ISO-8859-1',
-                    'Managed-Mode':'true'
-                },
-                cfg: {
-                    method: "POST",
-                    data: Y.JSON.stringify({
-                        "id":"",
-                        "@class":"NumberDescriptor",
-                        "label":"box"+position,
-                        "scope":{
-                            "@class":"TeamScope"
-                        },
-                        "defaultInstance":{
-                            "@class":"NumberInstance",
-                            "id":"",
-                            "value":position
-                        }
                     })
                 }
             });

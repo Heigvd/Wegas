@@ -577,7 +577,7 @@ YUI().use(function(Y) {
                 'wegas-monopoly-entities': {
                     path: 'wegas-monopoly/js/wegas-monopoly-entities.js',
                     requires: ['wegas-entity'],
-                    ws_provides: ['ResourceDescriptor', 'ObjectDescriptor']
+                    ws_provides: ['ObjectDescriptor']
                 },
                 /**CEP**/
                 'wegas-cep': {

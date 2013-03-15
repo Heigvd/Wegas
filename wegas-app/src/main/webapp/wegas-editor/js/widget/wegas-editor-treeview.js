@@ -112,6 +112,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                         case 'InboxDescriptor':
                         case 'TriggerDescriptor':
                         case 'TaskDescriptor':
+                        case 'ObjectDescriptor':
                         case 'ResourceDescriptor':
                         case 'DialogueDescriptor':
                             text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getPrivateLabel();

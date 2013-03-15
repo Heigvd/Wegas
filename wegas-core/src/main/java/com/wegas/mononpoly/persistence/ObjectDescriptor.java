@@ -45,6 +45,8 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
 
         ObjectDescriptor other = (ObjectDescriptor) a;
         this.setDescription(other.getDescription());
+        this.properties.clear();
+        this.properties.putAll(other.getProperties());
     }
 
     /**

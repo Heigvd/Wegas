@@ -413,16 +413,16 @@ YUI.add('wegas-entity', function(Y) {
             cssClass: "editor-deleteTeam-button"
         }]
 
-        //{ // We allow the player to open its pages with the widget
-        //    type: BUTTON,
-        //    label: "Open",
-        //    plugins: [{
-        //        fn: "OpenGameAction",
-        //        cfg: {
-        //            editorUrl: "wegas-app/view/play.html?"
-        //        }
-        //    }]
-        //},
+    //{ // We allow the player to open its pages with the widget
+    //    type: BUTTON,
+    //    label: "Open",
+    //    plugins: [{
+    //        fn: "OpenGameAction",
+    //        cfg: {
+    //            editorUrl: "wegas-app/view/play.html?"
+    //        }
+    //    }]
+    //},
     });
 
     /**
@@ -1050,6 +1050,10 @@ YUI.add('wegas-entity', function(Y) {
                         "type": "AddEntityChildButton",
                         "label": "Task (Leaderway)",
                         "targetClass": "TaskDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Object",
+                        "targetClass": "ObjectDescriptor"
                     }]
                 }
             }]

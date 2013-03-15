@@ -25,6 +25,25 @@ YUI.add('wegas-monopoly-entities', function(Y) {
             "@class": {
                 value: "ObjectDescriptor"
             },
+            properties: {
+                optional: false,
+                _inputex: {
+                    label: "Descriptor properties",
+                    _type: HASHLIST,
+                    keyField: NAME,
+                    valueField: VALUE,
+                    elementType: {
+                        type: COMBINE,
+                        fields: [{
+                            name: NAME,
+                            typeInvite: NAME
+                        }, {
+                            name: VALUE,
+                            typeInvite: VALUE
+                        }]
+                    }
+                }
+            },
             defaultInstance: {
                 type: "object",
                 properties: {
@@ -38,7 +57,7 @@ YUI.add('wegas-monopoly-entities', function(Y) {
                     properties: {
                         optional: false,
                         _inputex: {
-                            label: "Default properties",
+                            label: "Instance properties",
                             _type: HASHLIST,
                             keyField: NAME,
                             valueField: VALUE,
@@ -55,6 +74,11 @@ YUI.add('wegas-monopoly-entities', function(Y) {
                         }
                     }
                 }
+            },
+            description: {
+                type: STRING,
+                format: HTML,
+                optional: true
             }
         }
     });
@@ -70,7 +94,7 @@ YUI.add('wegas-monopoly-entities', function(Y) {
             properties: {
                 optional: false,
                 _inputex: {
-                    label: "Default properties",
+                    label: "Instance properties",
                     _type: HASHLIST,
                     keyField: NAME,
                     valueField: VALUE,

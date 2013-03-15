@@ -93,7 +93,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                 this.position -=40;
             }
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({
@@ -124,7 +124,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
         
         setCurrentPlayer: function(id){
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({
@@ -150,8 +150,8 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                     break;
                 case "afterRoll" :
                     this.dice.rollButton.disable();
-                    this.buy.enable();
                     this.next.enable();
+                    this.checkPropertyBuyable();
                     break;
                 case "wait" :
                     this.dice.rollButton.disable();
@@ -160,10 +160,22 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
             }
         },
         
+        checkPropertyBuyable : function(){
+            var position = Y.Wegas.VariableDescriptorFacade.rest.find("name", "position").getInstance().get("value"),
+            boxValue = Y.Wegas.VariableDescriptorFacade.rest.find("name", "boxValue").getAttrs().items;
+            position--;
+            if (boxValue[position].getInstance().get("properties").playerId != "" ||
+            boxValue[position].getInstance().get("properties").playerId == "notBuyable"){
+                this.buy.disable();
+            } else {
+                this.buy.enable();
+            }
+        },
+        
         setState: function (newState){
             this.state = newState;
             Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
-                request: "/Script/Run/Player/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({
@@ -171,9 +183,13 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                         "language": "JavaScript",
                         "content": "importPackage(com.wegas.core.script);\nstate.value ='"+ this.state +"';"
                     })
+                },
+                on: {
+                    success: Y.bind(function (e) {
+                        this.checkState();
+                    }, this)
                 }
-            });          
-            this.checkState();
+            }, this);
         }            
     });
     

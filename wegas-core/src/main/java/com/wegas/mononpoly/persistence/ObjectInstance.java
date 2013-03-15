@@ -38,7 +38,8 @@ public class ObjectInstance extends VariableInstance  {
     @Override
     public void merge(AbstractEntity a) {
         ObjectInstance other = (ObjectInstance) a;
-        this.setProperties(other.getProperties());
+        this.properties.clear();
+        this.properties.putAll(other.getProperties());
 //        this.setActive(other.getActive());
 //        if (other.getAssignments() != null) {
 //            this.setAssignments(other.getAssignments());
