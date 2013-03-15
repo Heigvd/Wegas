@@ -126,6 +126,21 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
             throw new UnsupportedOperationException();
         }
     }
+       public Team findTeam(VariableInstance instance) {
+        if (instance.getScope() instanceof PlayerScope) {
+            return playerFacade.find(instance.getPlayerScopeKey()).getTeam();
+        } else if (instance.getScope() instanceof TeamScope) {
+            return teamFacade.find(instance.getTeamScopeKey());
+        } else if (instance.getScope() instanceof GameScope) {
+            throw new UnsupportedOperationException();
+            //throw new UnsupportedOperationException();                      // @fixme
+        } else if (instance.getScope() instanceof GameModelScope) {
+            throw new UnsupportedOperationException();
+            //return instance.getDescriptor().getGameModel().getGames().get(0);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 
     /**
      *

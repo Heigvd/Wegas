@@ -7,8 +7,10 @@
  */
 package com.wegas.core.websocket.rest;
 
+import com.wegas.core.websocket.ejb.WebsocketFacade;
 import com.wegas.core.websocket.pusher.Pusher;
 import java.io.IOException;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,7 +29,11 @@ import org.slf4j.LoggerFactory;
 public class WebsocketController {
     
     private static final Logger logger = LoggerFactory.getLogger(WebsocketController.class);
-    
+    /**
+     *
+     */
+    @EJB
+    private WebsocketFacade websocketFacade;
     /**
      * Retrieve
      *
@@ -36,9 +42,7 @@ public class WebsocketController {
     @POST
     @Path("Send/{entityType : .*}/{entityId : .*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object index(@PathParam("entityType") String entityType, @PathParam("entityId") String entityId, String data) throws IOException {
-        Pusher p = new Pusher();
-        Pusher.triggerPush(entityType+"-" + entityId, "wegas-event", data);
-        return null;
+    public Object send(@PathParam("entityType") String entityType, @PathParam("entityId") String entityId, String data) throws IOException {
+        return websocketFacade.send("CustomEvent", entityType, entityId, data);
     }
 }
