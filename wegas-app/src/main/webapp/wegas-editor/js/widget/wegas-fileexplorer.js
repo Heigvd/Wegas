@@ -11,7 +11,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
     var FileExplorer,
             CONTENTBOX = 'contentBox',
             DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=ISO-8859-1'
+        'Content-Type': 'application/json; charset=ISO-8859-1',
+        'Managed-Mode': false
     },
     MAX_FILE_SIZE = 20000000, BOUNDING_BOX = "boundingBox";
 
