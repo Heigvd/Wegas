@@ -67,15 +67,13 @@
                     {
                         "fn": "HideAfter",
                         "cfg": {
-                            "time": "0,1000",
-                            "autoStart": true
+                            "time": "0,1000"
                         }
                     }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
-                            "time": "500",
-                            "autoStart": true
+                            "time": "500"
                         }
                     }
                 ],
@@ -100,15 +98,13 @@
                     {
                         "fn": "HideAfter",
                         "cfg": {
-                            "time": "0,1500",
-                            "autoStart": true
+                            "time": "0,1500"
                         }
                     }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
-                            "time": "1000",
-                            "autoStart": true
+                            "time": "1000"
                         }
                     }
                 ],
@@ -134,15 +130,13 @@
                     {
                         "fn": "HideAfter",
                         "cfg": {
-                            "time": "0",
-                            "autoStart": true
+                            "time": "0"
                         }
                     }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
-                            "time": "1500",
-                            "autoStart": true
+                            "time": "1500"
                         }
                     }
                 ],

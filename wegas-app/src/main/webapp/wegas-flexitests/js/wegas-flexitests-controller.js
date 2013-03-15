@@ -31,6 +31,9 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.questionToDo = [];
             this.startTime = null;
             this.events = [];
+            this.publish("visibility-timer:restart", {
+                broadcast: 1
+            });
         },
         /**
          * Lifecycle method
@@ -120,16 +123,9 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         },
         startStimuli: function() {
             this.get("boundingBox").focus();
-            this.restartTimer(this.leftElement);
-            this.restartTimer(this.rightElement);
-            this.restartTimer(this.centerElement);
-            Y.later(3, this, this.unmask);
+            this.fire("visibility-timer:restart");
+            Y.later(1, this, this.unmask);
             this.ongoing = true;
-        },
-        restartTimer: function(widget) {
-            if (widget) {
-                widget.fire("visibility-timer:restart");
-            }
         },
         mask: function() {
             this.showOverlay();
