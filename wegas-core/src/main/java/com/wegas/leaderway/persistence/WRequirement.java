@@ -23,27 +23,33 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @XmlType(name = "")                                                             // This forces to use Class's short name as type
 //@XmlAccessorType(XmlAccessType.FIELD)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class WRequirement implements Serializable  {
+public class WRequirement implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(name="wrequirement_id")
+    @Column(name = "wrequirement_id")
     @GeneratedValue
     private Long id;
     /**
      *
      */
-    @Column(name = "wlimit")
-    private Integer limit;
-
+    private String purview;
     /**
      *
      */
-    @ElementCollection
-    private Map<Integer, Integer> needs = new HashMap<>();
+    @Column(name = "wlimit")
+    private Integer limit;
+    /**
+     *
+     */
+    private Long number;
+    /**
+     *
+     */
+    @Column(name = "wlevel")
+    private Integer level;
 
-    
-    public WRequirement () {
+    public WRequirement() {
     }
 
     /**
@@ -61,34 +67,6 @@ public class WRequirement implements Serializable  {
     }
 
     /**
-     * @return the needs
-     */
-    public Map<Integer, Integer> getNeeds() {
-        return needs;
-    }
-
-    /**
-     * @param needs the needs to set
-     */
-    public void setNeeds(Map<Integer, Integer> needs) {
-        this.needs = needs;
-    }
-    
-    /**
-     * @return the need
-     */
-    public Integer getNeed(Integer key) {
-        return needs.get(key);
-    }
-
-    /**
-     * @param need the need to set
-     */
-    public void setNeed(Integer key, Integer value) {
-        this.needs.put(key, value);
-    }
-
-    /**
      * @return the id
      */
     public Long getId() {
@@ -100,5 +78,47 @@ public class WRequirement implements Serializable  {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the purview
+     */
+    public String getPurview() {
+        return purview;
+    }
+
+    /**
+     * @param purview the purview to set
+     */
+    public void setPurview(String purview) {
+        this.purview = purview;
+    }
+
+    /**
+     * @return the number
+     */
+    public Long getNumber() {
+        return number;
+    }
+
+    /**
+     * @param number the number to set
+     */
+    public void setNumber(Long number) {
+        this.number = number;
+    }
+
+    /**
+     * @return the level
+     */
+    public Integer getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 }

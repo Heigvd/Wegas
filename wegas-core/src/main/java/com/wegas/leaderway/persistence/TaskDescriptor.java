@@ -50,9 +50,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
-    private Map<String, WRequirement> requirements = new HashMap<>();
+    private List<WRequirement> requirements = new ArrayList<>();
+
     /**
      *
      * @param a
@@ -63,9 +64,12 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
         this.setIndex(other.getIndex());
+        this.predecessors.clear();
         this.predecessors.addAll(other.getPredecessors());
+        this.properties.clear();
         this.properties.putAll(other.getProperties());
-        this.requirements.putAll(other.getRequirements());
+        this.requirements.clear();
+        this.requirements.addAll(other.getRequirements());
     }
 
     /**
@@ -123,28 +127,28 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     public void setPredecessor(Integer index, TaskDescriptor taskDescriptor) {
         this.predecessors.set(index, taskDescriptor);
     }
-    
+
     /**
      * @return the requirements
      */
-    public Map<String, WRequirement> getRequirements() {
+    public List<WRequirement> getRequirements() {
         return this.requirements;
     }
-    
+
     /**
      * @param requierement the requierement to set
      */
-    public void setRequirements(Map<String, WRequirement> requirements) {
+    public void setRequirements(List<WRequirement> requirements) {
         this.requirements = requirements;
     }
-    
+
     /**
-     * 
+     *
      * @param key
      * @return WRequirement
      */
-    public WRequirement getRequirement(String key) {
-        return this.requirements.get(key);
+    public WRequirement getRequirement(Integer index) {
+        return this.requirements.get(index);
     }
 
     /**
@@ -152,8 +156,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @param key
      * @param WRequirement
      */
-    public void setRequirement(String key, WRequirement val) {
-        this.requirements.put(key, val);
+    public void setRequirement(Integer index, WRequirement val) {
+        this.requirements.set(index, val);
     }
 
     /**
