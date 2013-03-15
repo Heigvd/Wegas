@@ -31,6 +31,9 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.questionToDo = [];
             this.startTime = null;
             this.events = [];
+            this.publish("visibility-timer:restart", {
+                broadcast: 1
+            });
         },
         /**
          * Lifecycle method
@@ -39,6 +42,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
+            this.constructor.superclass.bindUI.apply(this);
             this.set("tabIndex", -1);
             this.after("*:currentLoadingChange", function(e) {
                 var noready = false;
@@ -119,16 +123,9 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         },
         startStimuli: function() {
             this.get("boundingBox").focus();
-            this.restartTimer(this.leftElement);
-            this.restartTimer(this.rightElement);
-            this.restartTimer(this.centerElement);
-            Y.later(3, this, this.unmask);
+            this.fire("visibility-timer:restart");
+            Y.later(1, this, this.unmask);
             this.ongoing = true;
-        },
-        restartTimer: function(widget) {
-            if (widget) {
-                widget.fire("visibility-timer:restart");
-            }
         },
         mask: function() {
             this.showOverlay();
@@ -155,6 +152,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          */
         destructor: function() {
             var i;
+            this.constructor.superclass.destructor.apply(this);
             for (i = 0; i < this.events.length; i += 1) {
                 this.events[i].detach();
             }
@@ -186,6 +184,38 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             "value": {
                 value: "",
                 type: "string"
+            }
+        }
+    });
+    Y.Plugin.SwapZone = Y.Base.create("wegas-flexi-swapzone", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+        initializer: function() {
+            if (!(this.get("host") instanceof Y.Wegas.FlexitestsController)) {
+                return;
+            }
+            this.afterHostMethod("next", function() {
+                var current = this.get("host").maxSize - this.get("host").questionToDo.length;
+                if (current === 1 && Math.random() > 0.5) {
+                    this.swap();
+                }
+                if (current % this.get("after") === 0) {
+                    this.swap();
+                }
+            });
+        },
+        swap: function() {
+            this.get("host").leftElement.get("contentBox").swap(this.get("host").rightElement.get("contentBox"));
+        }
+    }, {
+        NS: "swapzone",
+        NAME: "swapzone",
+        EDITORNAME: "Flexitest swap zone",
+        ATTRS: {
+            "after": {
+                value: 1,
+                type: "number",
+                setter: function(v) {
+                    return +v > 0 ? +v : 1;
+                }
             }
         }
     });
