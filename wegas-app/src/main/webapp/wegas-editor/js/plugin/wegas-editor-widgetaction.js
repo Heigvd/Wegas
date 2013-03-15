@@ -62,7 +62,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                 var targetWidget = this.get("widget");
                 targetWidget.setAttrs(val);
                 targetWidget.syncUI();
-                this.get("dataSource").rest.patch(targetWidget.get("root").toObject());
+                this.get("dataSource").cache.patch(targetWidget.get("root").toObject());
             }, this));
         }
     }, {
@@ -92,7 +92,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                     Plugin.EditEntityAction.hideEditFormOverlay();
                     var targetWidget = this.get("widget");
                     targetWidget.add(val);
-                    this.get("dataSource").rest.patch(targetWidget.get("root").toObject());
+                    this.get("dataSource").cache.patch(targetWidget.get("root").toObject());
                 }, this));
 
             }, this));
@@ -127,7 +127,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
                     targetWidget.removeAll();
                 }
 
-                this.get("dataSource").rest.patch(root.toObject());
+                this.get("dataSource").cache.patch(root.toObject());
             }
         }
     }, {

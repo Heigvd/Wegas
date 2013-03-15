@@ -3,7 +3,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
 
     var STRING = "string", HIDDEN = "hidden", SELF = "self", BOOLEAN = "boolean",
     NUMBER = "number", BUTTON = "Button", SCRIPT = "script", TEXT = "text",
-    STATES = "states";
+    STATES = "states", ID = "id";
     /*******************************/
     /******** STATEMACHINE *********/
     /*******************************/
@@ -454,7 +454,7 @@ YUI.add("wegas-statemachine-entities", function (Y) {
                 + "/Player/" + Y.Wegas.app.get("currentPlayer")
                 + "/Do/" + transition.get(ID);
                 try {
-                    Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                    Y.Wegas.VariableDescriptorFacade.sendRequest({
                         request: request,
                         on: callbacks
                     });

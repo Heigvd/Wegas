@@ -67,7 +67,7 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            Wegas.VariableDescriptorFacade.rest.sendRequest({
+            Wegas.VariableDescriptorFacade.sendRequest({
                 request: '/Reset/'
             });
         }
