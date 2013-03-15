@@ -57,6 +57,7 @@ YUI.add('wegas-absolutelayout', function(Y) {
         /**
          * @lends Y.Wegas.AbsoluteLayout
          */
+        EDITMENU: Y.Wegas.List.EDITMENU,                                        /* @TODO: Dependency to Wegas.List remove this */
         NAME: "wegas-absolutelayout",
         CSS_PREFIX: "wegas-absolutelayout",
         EDITORNAME: "Absolute Layout",
