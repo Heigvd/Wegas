@@ -10,7 +10,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 
     PageEditor = Y.Base.create("wegas-editor-page", Y.Widget, [Y.WidgetChild], {
         initializer: function() {
-            this.dataSource = Y.Wegas.PageFacade.rest;
+            this.dataSource = Y.Wegas.PageFacade.cache;
             this.plug(Y.Plugin.WidgetToolbar);
         },
         renderUI: function() {
@@ -98,7 +98,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                                     Y.Plugin.EditEntityAction.hideEditFormOverlay();
                                     targetWidget.setAttrs(val);
                                     targetWidget.syncUI();
-                                    Y.Wegas.PageFacade.rest.patch(targetWidget.get("root").toObject());
+                                    Y.Wegas.PageFacade.cache.patch(targetWidget.get("root").toObject());
                                 }, this, widget));
                             }, this)
                         }
@@ -116,7 +116,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                                     widget.removeAll();
                                     this.removeAll();
                                 }
-                                Y.Wegas.PageFacade.rest.patch(root.toObject());
+                                Y.Wegas.PageFacade.cache.patch(root.toObject());
 
                             }, treeNode, widget)
                         }

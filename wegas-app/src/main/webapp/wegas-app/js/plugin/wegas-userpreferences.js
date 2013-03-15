@@ -15,7 +15,7 @@ YUI.add("wegas-userpreferences", function (Y) {
 
         initializer: function () {
             this.afterHostEvent("render", function () {
-                var k, entity = Y.Wegas.UserFacade.rest.get("currentUser").getMainAccount(),
+                var k, entity = Y.Wegas.UserFacade.cache.get("currentUser").getMainAccount(),
                 host = this.get("host"),
                 fieldsToIgnore = [];
 
@@ -38,11 +38,11 @@ YUI.add("wegas-userpreferences", function (Y) {
         },
 
         sendUpdate: function () {
-            var user = Y.Wegas.UserFacade.rest.get("currentUser").getMainAccount().toObject(),
+            var user = Y.Wegas.UserFacade.cache.get("currentUser").getMainAccount().toObject(),
             host = this.get("host"),
             updatedAccount = Y.mix(host.get('form').getValue(), user);//need to send an "JpAccount", thus merge account and updates
 
-            Y.Wegas.UserFacade.rest.sendRequest({
+            Y.Wegas.UserFacade.sendRequest({
                 request: "/Account/" + updatedAccount.id,
                 cfg: {
                     method: "PUT",

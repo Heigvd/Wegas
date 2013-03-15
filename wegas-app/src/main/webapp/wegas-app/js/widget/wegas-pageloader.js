@@ -69,7 +69,7 @@ YUI.add('wegas-pageloader', function(Y) {
                 }
             };
             //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
-            this.handlers.push(Y.Wegas.PageFacade.rest.after("pageUpdated", function(e) {
+            this.handlers.push(Y.Wegas.PageFacade.cache.after("pageUpdated", function(e) {
                 if (e.page && (+e.page["@pageId"] === +this.get("pageId"))) {
                     this.currentPageId = null; // @hack force update
                     this.syncUI();
@@ -194,8 +194,10 @@ YUI.add('wegas-pageloader', function(Y) {
                     if (!val || val === this.currentPageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded, escape
                         return val;
                     }
-                    var widgetCfg = Y.Wegas.PageFacade.rest.getPage(val);
+                    var widgetCfg = Y.Wegas.PageFacade.cache.getPage(val);
 
+                    console.log(widgetCfg);
+                    
                     if (!widgetCfg) {
                         return val;
                     }

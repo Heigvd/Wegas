@@ -79,9 +79,9 @@ YUI.add('wegas-leaderway-score', function (Y) {
          */
         getTeamScore: function (maxRows) {
             var i, j, k, allScore, team = [], score = [], sortedScore = [], sortedTeam = [], exist = false;
-            allScore = Y.Wegas.VariableDescriptorFacade.rest.find("name", "score").get("scope").get("variableInstances");
+            allScore = Y.Wegas.VariableDescriptorFacade.cache.find("name", "score").get("scope").get("variableInstances");
             for (i in allScore) {
-                team.push(Y.Wegas.GameFacade.rest.findById(i).get('name'));
+                team.push(Y.Wegas.GameFacade.cache.findById(i).get('name'));
                 score.push(allScore[i].get('value'));
             }
             if (score.length > 0) {
@@ -121,7 +121,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
          * change the current widget to go on the "dialogue" widget.
          */
         goToFinalPage: function () {
-            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week"),
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.cache.find("name", "week"),
                     targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
                 targetPageLoader.once("widgetChange", function (e) {

@@ -99,7 +99,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.saveButton.hide();
                     //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
                     page["@pageId"] = host.get("widget")["@pageId"];
-                    Y.Wegas.PageFacade.rest.patch(page);
+                    Y.Wegas.PageFacade.cache.patch(page);
                 };
                 this.saveButton = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
@@ -145,7 +145,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.hideOverlay();
             }, '.wegas-widget', this));
         },
-        
+
         genMenu: function(widget) {
             this.highlightOverlay.menu.set("children", widget.getMenuCfg({
                 widget: widget

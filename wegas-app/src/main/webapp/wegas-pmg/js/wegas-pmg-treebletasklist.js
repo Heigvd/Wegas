@@ -50,7 +50,7 @@ YUI.add("wegas-pmg-treebletasklist", function (Y) {
                 resultFields: resultFields
             };
 
-            //Create the schema plugin for the datasource's root 
+            //Create the schema plugin for the datasource's root
             schema_plugin_config = {
                 fn: Y.Plugin.DataSourceArraySchema,
                 cfg: {
@@ -58,7 +58,7 @@ YUI.add("wegas-pmg-treebletasklist", function (Y) {
                 }
             };
 
-            //Create the config object for the datasource's root 
+            //Create the config object for the datasource's root
             treeble_config = {
                 generateRequest: function () {
                 },
@@ -93,13 +93,13 @@ YUI.add("wegas-pmg-treebletasklist", function (Y) {
         bindUI: function () {
             Tasklist.superclass.bindUI.apply(this);
             this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
-            
+
             this.handlers.sort = this.datatable.after('sort', this.syncUI, this);
-            
+
             this.handlers.displayDescription = this.datatable.delegate('click', function (e) {
                 this.displayDescription(e);
             }, '.yui3-datatable-data td', this);
-        
+
             this.handlers.removeDescription = this.datatable.delegate('mouseout', function (e) {
                 this.removeDescription(e);
             }, '.yui3-datatable-data tr', this);
@@ -123,7 +123,7 @@ YUI.add("wegas-pmg-treebletasklist", function (Y) {
                     || this.get("columnValues").indexOf('realized') <= -1) {
                 return;
             }
-            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
+            tasks = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variables"));
             allRow = cb.all(".yui3-datatable-data tr");
             allRow.removeClass("notstarted").removeClass("started").removeClass("completed");
             allRow.each(function (node) {
@@ -155,7 +155,7 @@ YUI.add("wegas-pmg-treebletasklist", function (Y) {
                 return;
             }
             id = node.ancestor().one("*").getContent();
-            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
+            tasks = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variables"));
             if (!id || !tasks) {
                 return;
             }
@@ -195,7 +195,7 @@ YUI.add("wegas-pmg-treebletasklist", function (Y) {
                 return null;
             }
             //get data of the Treeble Datatable and add "kiddies" with description of the task
-            tasks = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get("variables"));
+            tasks = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variables"));
             for (i = 0; i < data.length; i += 1) {
                 description = tasks.get('items')[i].get('description');
                 data[i].kiddies = [{

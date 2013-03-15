@@ -91,10 +91,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
         },
         genData: function () {
             var i, j, k, questionInstance, reply, replyData, status,
-                    questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items"),
+                    questions = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences").get("items"),
                     data = [],
                     responsesByStartTime = {},
-                    period = Y.Wegas.VariableDescriptorFacade.rest.find('name', "period"),
+                    period = Y.Wegas.VariableDescriptorFacade.cache.find('name', "period"),
                     periodInstance = period.getInstance(),
                     currentTime = periodInstance.get("value") - period.get("minValue");
 
@@ -144,14 +144,14 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
         },
         setUnread: function () {
             var i, j, questionInstance, reply,
-                    questions = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items");
+                    questions = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences").get("items");
             for (i = 0; i < questions.length; i = i + 1) {
                 questionInstance = questions[i].getInstance();
                 for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
                     reply = questionInstance.get("replies")[j];
                     if (reply.get("unread")) {
                         reply.set("unread", false);
-                        Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+                        Y.Wegas.VariableDescriptorFacade.sendRequest({
                             request: "/" + reply.getAttrs().id + "/Reply/" + reply.getAttrs().id,
                             headers: {
                                 'Content-Type': 'application/json; charset=ISO-8859-1'

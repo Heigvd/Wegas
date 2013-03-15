@@ -58,7 +58,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 }, this);
 
                 if (request) {
-                    ds.rest.sendRequest(request);
+                    ds.sendRequest(request);
                 }
             }
         },
@@ -75,7 +75,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
             var ds = this.get(DATASOURCE),
             selector = this.get("dataSelector"),
-            entities = (selector) ? ds.rest.find(selector.key, selector.val) : ds.rest.getCache(),
+            entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll(),
             msg = this.get(CONTENTBOX).one(".wegas-smallmessage");
 
             if (msg) {
@@ -213,7 +213,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
                         case 'Game':
                             var createdBy = el.get("createdBy"),
-                            gameModel = Wegas.GameModelFacade.rest.findById(el.get("gameModelId"));
+                            gameModel = Wegas.GameModelFacade.cache.findById(el.get("gameModelId"));
 
                             ret.push({
                                 type: 'TreeNode',
@@ -341,14 +341,14 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     label = '';
                     switch (el.get("scope").get(CLASS)) {
                         case 'PlayerScope':
-                            player = Wegas.GameFacade.rest.getPlayerById(i);
+                            player = Wegas.GameFacade.cache.getPlayerById(i);
 
                             if (!player) continue;
 
                             label = (player) ? player.get(NAME) : "undefined";
                             break;
                         case 'TeamScope':
-                            team = Wegas.GameFacade.rest.getTeamById(i);
+                            team = Wegas.GameFacade.cache.getTeamById(i);
 
                             if (!team) continue;
 
@@ -647,7 +647,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     switch (el.get(CLASS)) {
                         case 'Game':
                             var createdBy = el.get("createdBy"),
-                            gameModel = Wegas.GameModelFacade.rest.findById(el.get("gameModelId"));
+                            gameModel = Wegas.GameModelFacade.cache.findById(el.get("gameModelId"));
 
                             ret.push({
                                 //label: el.get(NAME),
@@ -743,7 +743,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 node.removeAll();
                 node.set("loading", true);
 
-                Wegas.VariableDescriptorFacade.rest.sendRequest({
+                Wegas.VariableDescriptorFacade.sendRequest({
                     request: "/" + id + "?view=Editor"
                 });
             }

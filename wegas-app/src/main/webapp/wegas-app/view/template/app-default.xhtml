@@ -147,14 +147,14 @@
                                         source: "rest/GameModel",
                                         initialRequest: "/#{gameController.currentGameModel.id}",
                                         plugins: [{
-                                                fn: "GameModelDataSourceREST"
+                                                fn: "GameModelCache"
                                             }]
                                     },
                                     "Game": {
                                         source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
                                         initialRequest: "/#{gameController.currentGame.id}",
                                         plugins: [{
-                                                fn: "GameDataSourceREST"
+                                                fn: "GameCache"
                                             }
                                         ]
                                     },
@@ -169,7 +169,7 @@
                                                     }
                                                 }
                                             }, {
-                                                fn: "PageDataSourceREST"
+                                                fn: "PageCache"
                                             }
                                         ]
                                     },
@@ -183,7 +183,7 @@
                                         </ui:fragment>
                                         initialRequest: "",
                                         plugins: [{
-                                                fn: "VariableDescriptorDataSourceREST"
+                                                fn: "VariableDescriptorCache"
                                             }, {
                                                 fn: "ScriptEval"
                                             }
@@ -198,7 +198,7 @@
                                         source: "rest/User",
                                         initialRequest: "/" + #{requestController.currentUser.id},
                                         plugins: [{
-                                                fn: "UserDataSourceREST"
+                                                fn: "UserCache"
                                             }]
                                     },
                                     "File": {

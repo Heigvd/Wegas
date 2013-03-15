@@ -71,7 +71,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                 }, {
                     resourceDescriptor: this.currentItem
                 });
-                Y.Wegas.VariableDescriptorFacade.rest.sendRequest({// decrease number of actions by 1
+                Y.Wegas.VariableDescriptorFacade.sendRequest({// decrease number of actions by 1
                     request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                     cfg: {
                         method: "POST",
@@ -134,7 +134,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
             if (!this.get('listVariables')) {
                 return;
             }
-            resources = Y.Wegas.VariableDescriptorFacade.rest.find("name", this.get('listVariables'));
+            resources = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get('listVariables'));
             if (!resources) {
                 return;
             }
@@ -163,8 +163,8 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          */
         getOccupationObject: function (resourceInstance) {
             var i, j, occupationObject = null, sick = false,
-                    taskListDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "tasks"),
-                    listAbsenceDescriptor = Y.Wegas.VariableDescriptorFacade.rest.find("name", "absences"),
+                    taskListDescriptor = Y.Wegas.VariableDescriptorFacade.cache.find("name", "tasks"),
+                    listAbsenceDescriptor = Y.Wegas.VariableDescriptorFacade.cache.find("name", "absences"),
                     taskDescriptor;
             for (i = 0; i < listAbsenceDescriptor.get('items').length; i++) {
                 taskDescriptor = listAbsenceDescriptor.get('items')[i];
@@ -268,7 +268,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          */
         syncAction: function (e) {
             var resourceInstance, occupation, actions;
-            actions = Y.Wegas.VariableDescriptorFacade.rest.find("name", "actions");
+            actions = Y.Wegas.VariableDescriptorFacade.cache.find("name", "actions");
             this.menuAction.menu.getMenu().toJSON()[0].set('disabled', false)
             this.menuAction.menu.getMenu().toJSON()[1].set('disabled', false)
             if (this.currentItem == null)
@@ -288,7 +288,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         decreaseResourceState: function () {
             if (!this.currentResourceDescriptor)
                 return;
-            Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+            Y.Wegas.VariableDescriptorFacade.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
@@ -333,7 +333,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          * change the current widget to go on the "dialogue" widget.
          */
         goToFinalPage: function () {
-            var currentWeek = Y.Wegas.VariableDescriptorFacade.rest.find("name", "week"),
+            var currentWeek = Y.Wegas.VariableDescriptorFacade.cache.find("name", "week"),
                     targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
                 targetPageLoader.once("widgetChange", function (e) {

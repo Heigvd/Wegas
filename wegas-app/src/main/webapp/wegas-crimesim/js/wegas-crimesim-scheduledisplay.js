@@ -78,7 +78,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             cb.delegate("click", function(e) {                            // Show the available menu options on cell click
                 var questionId = e.target.ancestor("tr").getAttribute("data-questionid"),
                         startTime = +e.target.ancestor("td").getAttribute("data-startTime"),
-                        question = Y.Wegas.VariableDescriptorFacade.rest.findById(questionId);
+                        question = Y.Wegas.VariableDescriptorFacade.cache.findById(questionId);
 
                 this.menu.removeAll();                                          // Populate the menu
                 this.menu.add(this.genMenuItems(question, startTime));
@@ -129,14 +129,14 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 this.handlers[i].detach();
             }
         },
-        
+
         // *** Rendering methods *** //
         syncSchedule: function() {
             var perPeriodLoad = [], cIndex, choiceDescriptor, choiceInstance,
                     questionInstance, reply, i, j, k, question, cols, replies, names,
-                    questionsVarDesc = Y.Wegas.VariableDescriptorFacade.rest.find('name', "evidences").get("items"),
+                    questionsVarDesc = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences").get("items"),
                     questionInstances = [],
-                    period = Y.Wegas.VariableDescriptorFacade.rest.find('name', "period"),
+                    period = Y.Wegas.VariableDescriptorFacade.cache.find('name', "period"),
                     periodInstance = period.getInstance(),
                     maxValue = period.get("maxValue"),
                     totalPeriods = period.get("maxValue") - period.get("minValue"),
@@ -292,7 +292,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         },
         syncDetailsPanel: function() {
             var i, k, reply, status, replyData, cb = this.get(CONTENTBOX),
-                    question = Y.Wegas.VariableDescriptorFacade.rest.findById(this.currentQuestionId),
+                    question = Y.Wegas.VariableDescriptorFacade.cache.findById(this.currentQuestionId),
                     questionInstance = question.getInstance();
 
             this.data.length = 0;
@@ -372,7 +372,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var replyId = e.target.ancestor(".icon").getAttribute("data-replyid");
 
             this.showOverlay();
-            Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+            Y.Wegas.VariableDescriptorFacade.sendRequest({
                 request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.app.get('currentPlayer')
             });
         },
@@ -380,7 +380,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var data = e.target.get("data");
 
             this.showOverlay();
-            Y.Wegas.VariableDescriptorFacade.rest.sendRequest({
+            Y.Wegas.VariableDescriptorFacade.sendRequest({
                 request: "/QuestionDescriptor/SelectChoice/" + data.choice.get("id")
                         + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/"
             });

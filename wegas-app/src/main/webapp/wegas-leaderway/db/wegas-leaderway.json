@@ -1484,7 +1484,7 @@
                 },
                 "6": {
                     "@class": "DialogueState",
-                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0], 7)\"\n}",
+                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[0], 7)\"\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "-",
@@ -1736,7 +1736,7 @@
                 },
                 "19": {
                     "@class": "DialogueState",
-                    "text": "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0])\"\n}",
+                    "text": "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[0])\"\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "-",
@@ -1947,7 +1947,7 @@
                 },
                 "29": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[0].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -1980,7 +1980,7 @@
                 },
                 "32": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[0].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -2013,7 +2013,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[0].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Fernand\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[0].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/fernandConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -2305,7 +2305,7 @@
                 },
                 "6": {
                     "@class": "DialogueState",
-                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1], 7)\"\n}",
+                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[1], 7)\"\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "-",
@@ -2557,7 +2557,7 @@
                 },
                 "19": {
                     "@class": "DialogueState",
-                    "text": "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1])\"\n}",
+                    "text": "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[1])\"\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "-",
@@ -2768,7 +2768,7 @@
                 },
                 "29": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[1].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -2801,7 +2801,7 @@
                 },
                 "32": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[1].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -2834,7 +2834,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[1].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Daniela\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[1].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/danielaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -3126,7 +3126,7 @@
                 },
                 "6": {
                     "@class": "DialogueState",
-                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2], 7)\"\n}",
+                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[2], 7)\"\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "-",
@@ -3378,7 +3378,7 @@
                 },
                 "19": {
                     "@class": "DialogueState",
-                    "text": "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2])\"\n}",
+                    "text": "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[2])\"\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "-",
@@ -3589,7 +3589,7 @@
                 },
                 "29": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[2].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -3622,7 +3622,7 @@
                 },
                 "32": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[2].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -3655,7 +3655,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[2].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Jessica\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[2].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/jessicaConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -3947,7 +3947,7 @@
                 },
                 "6": {
                     "@class": "DialogueState",
-                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3], 7)\"\n}",
+                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[3], 7)\"\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "-",
@@ -4199,7 +4199,7 @@
                 },
                 "19": {
                     "@class": "DialogueState",
-                    "text": "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3])\"\n}",
+                    "text": "{\n\"subPageId\":\"2\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.setResourceDescriptor(Y.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[3])\"\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "-",
@@ -4410,7 +4410,7 @@
                 },
                 "29": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[3].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -4443,7 +4443,7 @@
                 },
                 "32": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[3].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -4476,7 +4476,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[3].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Hector\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[3].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/hectorConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -4768,7 +4768,7 @@
                 },
                 "6": {
                     "@class": "DialogueState",
-                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4], 7)\"\n}",
+                    "text": "{\n\"subPageId\":\"4\",\n\"targetPageLoaderId\":\"maindisplayarea\",\n\"functionAfterTransition\":\"e.newVal.switchToPickingMode(Y.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[4], 7)\"\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "-",
@@ -5231,7 +5231,7 @@
                 },
                 "29": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"En réalité, j'aimerais beaucoup travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[4].getInstance().get('properties').wish&code. Penses-tu pouvoir me donner un travail dans ce domaine ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -5264,7 +5264,7 @@
                 },
                 "32": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Je ne l'ai encore jamais précisé, mais je n'aime vraiment pas travailler sur des mandats du genre &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[4].getInstance().get('properties').hate&code. Est-ce que tu penses pouvoir éviter de me donner des travaux de ce type ?\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",
@@ -5297,7 +5297,7 @@
                 },
                 "35": {
                     "@class": "DialogueState",
-                    "text": "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.rest.find('name', 'resources').get('items')[4].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
+                    "text": "{\n\"speakerName\":\"Lucien\",\n\"texts\":[\n\"Lorsque j'ai été engagé ici, je ne pensais pas avoir la possibilité de travailler dans une diversité de travaux autant grande. Il se trouve que j'ai donné un CV sans les informations qui me semblaient inutiles. Comme je vois qu'il y a des mandats dans le domaine &codeY.Wegas.VariableDescriptorFacade.cache.find('name', 'resources').get('items')[4].getInstance().get('properties').hiddenSkillsets.split(new RegExp('[,;]+', 'g'))[0]&code, j'ai ajouté mon niveau dans votre dossier à ce sujet.\"\n],\n\"backgroundImages\":[{\n\"link\":\"/background.jpg\",\n\"height\":\"315px\",\n\"width\":\"980px\"\n}],\n\"questionImages\":[{\n\"link\":\"/lucienConfiant.png\",\n\"height\":\"250px\",\n\"width\":\"230px\",\n\"css\": {\n\"margin\":\"50px 0 0 375px\"\n}\n}]\n}",
                     "transitions": [{
                             "@class": "DialogueTransition",
                             "actionText": "Suite",

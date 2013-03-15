@@ -33,10 +33,10 @@ YUI().use(function(Y) {
                 'wegas-app': {
                     path: 'wegas-app/js/wegas-app-min.js',
                     requires: [
-                        'wegas-helper', 'wegas-entity', 'wegas-datasourcerest',
-                        'wegas-scripteval', 'wegas-websocketlistener', 
+                        'wegas-helper', 'wegas-entity', 'wegas-datasource',
+                        'wegas-scripteval', 'wegas-websocketlistener',
                         'wegas-pageloader', 'wegas-button'
-                        // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
+                                // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
                     ]
                 },
                 'wegas-appcss': {
@@ -50,8 +50,8 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/util/wegas-editable-min.js',
                     requires: ['base', 'json']
                 },
-                'wegas-datasourcerest': {
-                    path: 'wegas-app/js/wegas-datasourcerest-min.js',
+                'wegas-datasource': {
+                    path: 'wegas-app/js/util/wegas-datasource-min.js',
                     requires: ['plugin', 'json', 'array-extras', 'io-base',
                     "datasource-io", "datasource-jsonschema", "datasource-cache",
                     "wegas-widget"]
@@ -497,7 +497,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-statemachineviewer': {
                     path: 'wegas-editor/js/widget/wegas-statemachineviewer-min.js',
-                    requires: ['dd-constrain', 'wegas-datasourcerest',
+                    requires: ['dd-constrain', 'wegas-datasource',
                     'wegas-statemachineviewercss', 'jsplumb-yui-all', 'button',
                     'wegas-statemachine-entities'],
                     ws_provides: 'StateMachineViewer'
@@ -512,7 +512,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
-                    requires: ['wegas-datasourcerest'],
+                    requires: ['wegas-datasource'],
                     ws_provides: "PageTreeview"
                 },
                 /** Project Management Game **/
