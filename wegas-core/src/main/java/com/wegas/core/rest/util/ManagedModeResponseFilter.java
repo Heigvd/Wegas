@@ -8,12 +8,18 @@
 package com.wegas.core.rest.util;
 
 import com.sun.jersey.spi.container.*;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.event.EntityUpdatedEvent;
+import com.wegas.core.event.ServerEvent;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.exception.ExceptionWrapper;
+import com.wegas.core.websocket.ejb.WebsocketFacade;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import javax.naming.NamingException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -27,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class ManagedModeResponseFilter implements ContainerResponseFilter, ResourceFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
-
+    
     /**
      * This method encapsulates a Jersey response's entities in a ServerResponse
      * and add server side events.
@@ -57,7 +63,17 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             response.setEntity(serverResponse);
 
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
-                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getUpdatedInstances()));
+//                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getUpdatedInstances()));
+                EntityUpdatedEvent e = new EntityUpdatedEvent(rmf.getUpdatedInstances()); 
+                serverResponse.getEvents().add(e);
+                try {
+                    WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
+                    websocketFacade.onRequestCommit(e);
+                } catch (IOException ex) {
+                    java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (NamingException ex) {
+                    java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             if (!rmf.getRequestManager().getExceptions().isEmpty()) {
                 serverResponse.getEvents().add(new ExceptionEvent(rmf.getRequestManager().getExceptions()));
@@ -131,7 +147,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             this.events = events;
         }
     }
-
+/*
     @XmlRootElement
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     abstract private static class ServerEvent {
@@ -139,7 +155,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
         public ServerEvent() {
         }
     }
-
+/*
     @XmlType(name = "EntityUpdatedEvent")
     private static class EntityUpdatedEvent extends ServerEvent {
 
@@ -155,17 +171,17 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
         /**
          * @return the updatedEntities
          */
-        public List<VariableInstance> getUpdatedEntities() {
+       /* public List<VariableInstance> getUpdatedEntities() {
             return updatedEntities;
         }
 
         /**
          * @param updatedEntities the updatedEntities to set
          */
-        public void setUpdatedEntities(List<VariableInstance> updatedEntities) {
+        /*public void setUpdatedEntities(List<VariableInstance> updatedEntities) {
             this.updatedEntities = updatedEntities;
         }
-    }
+    }*/
 
     @XmlType(name = "ExceptionEvent")
     private static class ExceptionEvent extends ServerEvent {

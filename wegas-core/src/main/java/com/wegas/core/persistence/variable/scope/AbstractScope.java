@@ -20,6 +20,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -30,7 +31,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Inheritance(strategy = InheritanceType.JOINED)                                 // JSon Serialisation
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
-    @JsonSubTypes.Type(name = "GameScope", value = GameModelScope.class),
+    @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
     @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
@@ -49,6 +50,9 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     @OneToOne
     //@JsonBackReference
     private VariableDescriptor variableDescriptor;
+    
+    //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+    private String broadcastScope = TeamScope.class.getSimpleName();
 
     /**
      *
@@ -70,7 +74,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      */
     @JsonView(Views.Editor.class)
     abstract public Map<Long, VariableInstance> getVariableInstances();
-
+    
     /**
      *
      * @return The variable instance associated to the current player, which is
@@ -140,4 +144,18 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     public Long getId() {
         return this.id;
     }
+
+    /**
+     * @return the broadcastScope
+     */
+//    public Class getBroadcastScope() {
+//        return broadcastScope;
+//    }
+//
+//    /**
+//     * @param broadcastScope the broadcastScope to set
+//     */
+//    public void setBroadcastScope(Class broadcastScope) {
+//        this.broadcastScope = broadcastScope;
+//    }
 }

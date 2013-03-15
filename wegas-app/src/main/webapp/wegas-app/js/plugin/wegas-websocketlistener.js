@@ -26,16 +26,14 @@ YUI.add('wegas-websocketlistener', function(Y) {
             this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.app.get("currentPlayer"));
             
             // event response
-            this.gameChannel.bind('wegas-event', Y.bind(function(data) {
-                this.eventCase(data);
-            }, this));
-            this.teamChannel.bind('wegas-event', Y.bind(function(data) {
-                this.eventCase(data);
-            }, this));
-            this.playerChannel.bind('wegas-event', Y.bind(function(data) {
-                this.eventCase(data);
-            }, this));
-        },
+            this.gameChannel.bind('EntityUpdatedEvent', Y.bind(this.onVariableInstanceUpdate, this));
+            this.teamChannel.bind('EntityUpdatedEvent', Y.bind(this.onVariableInstanceUpdate, this));
+            this.playerChannel.bind('EntityUpdatedEvent', Y.bind(this.onVariableInstanceUpdate, this));
+          
+            this.gameChannel.bind('CustomEvent', Y.bind(this.onCustomEvent, this));
+            this.teamChannel.bind('CustomEvent', Y.bind(this.onCustomEvent, this));
+            this.playerChannel.bind('CustomEvent', Y.bind(this.onCustomEvent, this)); 
+},
         
         /**
          *
@@ -62,20 +60,13 @@ YUI.add('wegas-websocketlistener', function(Y) {
             });
         },
         
-        triggerEvent: function(){
-            
+        onVariableInstanceUpdate: function(data){
+             // this.get("host").rest.updateCache(data);
+             // @fixme send updated event 
         },
         
-        eventCase: function(data){
-            switch (data["@class"]) {
-                case "VariableInstanceUpdate":
-                    this.get("host").rest.updateCache(data);
-                    break;
-
-                case "CustomEvent":
-                    this.fire(data.event.type, data.event);
-                    break;
-            }
+        onCustomEvent: function(data){
+            this.fire(data.event.type, data.event);                   
         }
          
     }, {
