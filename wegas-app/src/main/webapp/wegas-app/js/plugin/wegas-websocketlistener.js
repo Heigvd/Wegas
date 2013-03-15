@@ -15,7 +15,6 @@ YUI.add('wegas-websocketlistener', function(Y) {
 
 
         initializer: function() {
-            return;
             Pusher.log = Y.log;    // Enable pusher logging - don't include this in production
 
             document.WEB_SOCKET_DEBUG = true;// Flash fallback logging - don't include this in production
@@ -48,7 +47,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 id = Y.Wegas.app.get("currentPlayer");
             }
 
-            this.get("host").rest.sendRequest({
+            this.get("host").sendRequest({
                 cfg: { 
                     fullUri: Y.Wegas.app.get("base") + "rest/Pusher/Send/" + channel + "/" + id,
                     method: "POST",
@@ -61,7 +60,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
         },
         
         onVariableInstanceUpdate: function(data){
-             // this.get("host").rest.updateCache(data);
+             // this.get("host").cache.updateCache(data);
              // @fixme send updated event 
         },
         
