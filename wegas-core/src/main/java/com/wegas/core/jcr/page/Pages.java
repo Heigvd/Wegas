@@ -27,18 +27,18 @@ import org.slf4j.LoggerFactory;
 public class Pages implements Serializable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
-    private String gameModelName;
+    private String gameModelId;
     private Map<Integer, Page> pages;
     @XmlTransient
     private PageConnector connector;
 
     /**
      *
-     * @param gameModelName
+     * @param gameModelId
      * @throws RepositoryException
      */
-    public Pages(String gameModelName) throws RepositoryException {
-        this.gameModelName = gameModelName;
+    public Pages(String gameModelId) throws RepositoryException {
+        this.gameModelId = gameModelId;
         this.connector = new PageConnector();
     }
 
@@ -48,10 +48,10 @@ public class Pages implements Serializable {
      * @throws RepositoryException
      */
     public Map<Integer, String> getIndex() throws RepositoryException {
-        if (!this.connector.exist(this.gameModelName)) {
+        if (!this.connector.exist(this.gameModelId)) {
             return null;
         }
-        NodeIterator it = this.connector.listChildren(this.gameModelName);
+        NodeIterator it = this.connector.listChildren(this.gameModelId);
         Map<Integer, String> ret = new HashMap<>();
         Node n;
         String name;
@@ -72,10 +72,10 @@ public class Pages implements Serializable {
      * @throws RepositoryException
      */
     public Map<Integer, JsonNode> getPages() throws RepositoryException {
-        if (!this.connector.exist(this.gameModelName)) {
+        if (!this.connector.exist(this.gameModelId)) {
             return null;
         }
-        NodeIterator it = this.connector.listChildren(this.gameModelName);
+        NodeIterator it = this.connector.listChildren(this.gameModelId);
         Map<Integer, JsonNode> ret = new HashMap<>();
         while (it.hasNext()) {
             Node n = (Node) it.next();
@@ -101,7 +101,7 @@ public class Pages implements Serializable {
      * @throws RepositoryException
      */
     public Page getPage(Integer id) throws RepositoryException {
-        Node n = this.connector.getChild(gameModelName, id.toString());
+        Node n = this.connector.getChild(gameModelId, id.toString());
         Page ret = null;
         try {
             if (n != null) {
@@ -121,8 +121,8 @@ public class Pages implements Serializable {
      *
      * @return
      */
-    public String getGameModelName() {
-        return gameModelName;
+    public String getGameModelId() {
+        return gameModelId;
     }
 
     /**
@@ -131,7 +131,7 @@ public class Pages implements Serializable {
      * @throws RepositoryException
      */
     public void store(Page page) throws RepositoryException {
-        Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
+        Node n = this.connector.addChild(this.gameModelId, page.getId().toString());
         n.setProperty("content", page.getContent().toString());
         if (page.getName() != null) {
             n.setProperty("pageName", page.getName());
@@ -145,7 +145,7 @@ public class Pages implements Serializable {
      * @throws RepositoryException
      */
     public void setMeta(Page page) throws RepositoryException {
-        Node n = this.connector.addChild(this.gameModelName, page.getId().toString());
+        Node n = this.connector.addChild(this.gameModelId, page.getId().toString());
         if (page.getName() != null) {
             n.setProperty("pageName", page.getName());
         }
@@ -158,7 +158,7 @@ public class Pages implements Serializable {
      * @throws RepositoryException
      */
     public void deletePage(String pageId) throws RepositoryException {
-        this.connector.deleteChild(this.gameModelName, pageId);
+        this.connector.deleteChild(this.gameModelId, pageId);
     }
 
     /**
@@ -166,6 +166,6 @@ public class Pages implements Serializable {
      * @throws RepositoryException
      */
     public void delete() throws RepositoryException {
-        this.connector.deleteRoot(this.gameModelName);
+        this.connector.deleteRoot(this.gameModelId);
     }
 }
