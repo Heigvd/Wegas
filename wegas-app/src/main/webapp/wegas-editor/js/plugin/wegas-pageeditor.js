@@ -49,12 +49,28 @@ YUI.add('wegas-pageeditor', function(Y) {
                                     e.target.get("pressed"));
                             if (e.target.get("pressed")) {
                                 this.bind();
+                                this.layoutbutton.show();
                             } else {
                                 this.detach();
                                 this.highlightOverlay.hide();
+                                if(this.layoutbutton.get("pressed")){
+                                    this.layoutbutton.toggle();
+                                    this.get("host").get(BOUNDINGBOX).removeClass("wegas-pageeditor-layoutmode");
+                                }
+                                this.layoutbutton.hide();
                             }
                         }, this)
                     }
+                }).render(el);
+                this.layoutbutton = new Y.ToggleButton({
+                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Draw layout</span>",
+                    on: {
+                        click: Y.bind(function(e) {
+                            this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-layoutmode",
+                                    e.target.get("pressed"));
+                        }, this)
+                    },
+                    visible: false
                 }).render(el);
                 /** Source view**/
                 this.jsonView = new Y.inputEx.AceField({
@@ -145,7 +161,6 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.hideOverlay();
             }, '.wegas-widget', this));
         },
-        
         genMenu: function(widget) {
             this.highlightOverlay.menu.set("children", widget.getMenuCfg({
                 widget: widget
