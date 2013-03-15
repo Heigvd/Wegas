@@ -157,8 +157,8 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
         totalExperience = 0;
         from.push(workersDescriptor[i].getProperty('surname'));//for e-mail
         for (j = 0; j < listTaskRequirement.size(); j++) {
-            taskRequirementKey = listTaskRequirement.keySet().toArray()[j];
-            taskRequirementValue = parseInt(listTaskRequirement.get(taskRequirementKey).getNeeds().keySet().toArray()[0]); //@fixme take the first value only !
+            taskRequirementKey = listTaskRequirement.get(j).getPurview();
+            taskRequirementValue = parseInt(listTaskRequirement.get(j).getLevel());
             workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));
             //calculate experience général (totalExperienceGained) part 1/2
             if (workerSkillsetValue < taskRequirementValue) {
@@ -181,8 +181,8 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
         averageWorkPartSkills = (sumWorkPartSkills / workPartSkillsQuality.length) * punderationSkillsets + moral * punderationMoral + confidence * punderationConfidence;
         // check wish and hate
         for (j = 0; j < listTaskRequirement.size(); j++) {
-            taskRequirementKey = listTaskRequirement.keySet().toArray()[j];
-            taskRequirementValue = parseInt(listTaskRequirement.get(taskRequirementKey).getNeeds().keySet().toArray()[0]);
+            taskRequirementKey = listTaskRequirement.get(j).getPurview();
+            taskRequirementValue = parseInt(listTaskRequirement.get(j).getLevel());
             workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));
             //calculate work Quality part 3/4
             if (taskRequirementKey == workerInstance.getProperty('wish')) {
@@ -260,9 +260,9 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
     }
     budgetInstance.setValue(budgetInstance.getValue() + remuneration);
     //e-mail
-    content.push('Boujour, <br />Le mandat <<');
+    content.push('Boujour, <br />Le mandat -');
     content.push(taskDescriptor.getName());
-    content.push('>> vient de se terminer. Le client ');
+    content.push('- vient de se terminer. Le client ');
     switch (true) {
         case workQuality < 20 :
             content.push('est totalement instatisfait par notre travail. Aucune chance de décrocher un autre mandate auprès de ce client. ');

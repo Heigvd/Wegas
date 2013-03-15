@@ -303,13 +303,15 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 //        //assign new requirement in task
 //        WRequirement requirement = new WRequirement();
 //        requirement.setLimit(100);
-//        requirement.setNeed(1, 5);
+//        requirement.setLevel(58);
+//        requirement.setNumber(1L);
+//        requirement.setPurview("engineer");
 //
 //        resourceFacade.test(requirement, task.getId(), res.getId(), player);
 //
 //
 //        //test
-//        assertEquals(((TaskDescriptor) vdf.find(task.getId())).getRequirements().get("engineer").getId(),
+//        assertEquals(((TaskDescriptor) vdf.find(task.getId())).getRequirements().get(0).getId(),
 //                ((ResourceInstance) vif.find(res.getId(), player)).getActivities().get(0).getWrequirement().getId());
 //
 //        // Clean
