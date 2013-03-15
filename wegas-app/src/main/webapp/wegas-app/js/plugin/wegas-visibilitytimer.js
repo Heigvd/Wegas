@@ -27,12 +27,8 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 this.initialVisible = this.get("host").hasClass(HIDDENNODECSSCLASS);
             }
             this.set("time", this.get("time"));
-            this.onHostEvent("visibility-timer:restart", function(e) {
-                this.start();
-            });
-            if (this.get("autoStart")) {
-                this.start();
-            }
+            Y.on("visibility-timer:restart", this.start, this);
+            this.start();
         },
         reset: function() {
             var t;
@@ -79,10 +75,6 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 _inputex: {
                     _type: "hidden"
                 }
-            },
-            autoStart: {
-                value: true,
-                type: "boolean"
             }
         }
     });
