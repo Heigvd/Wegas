@@ -291,6 +291,10 @@
                                             "type": "NewEntityButton",
                                             "label": "Task (Leaderway)",
                                             "targetClass": "TaskDescriptor"
+                                        }, {
+                                            "type": "NewEntityButton",
+                                            "label": "Object",
+                                            "targetClass": "ObjectDescriptor"
                                         }]
                                     }
                                 }],
