@@ -1,17 +1,19 @@
 {
     "@class":"GameModel",
     "name":"Monopoly",
+    "createdTime":null,
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
         "name":"money",
-        "editorLabel":"",
+        "editorLabel":"Money",
         "label":"Money",
         "defaultInstance":{
             "@class":"NumberInstance",
             "value":400.0
         },
         "scope":{
-            "@class":"TeamScope"
+            "@class":"TeamScope",
+            "broadcastScope":"GameScope"
         },
         "tags":[],
         "minValue":null,
@@ -26,41 +28,59 @@
             "value":1.0
         },
         "scope":{
-            "@class":"TeamScope"
+            "@class":"TeamScope",
+            "broadcastScope":null
         },
         "tags":[],
         "minValue":1,
         "maxValue":6
     },{
         "@class":"NumberDescriptor",
+        "name":"turnOf",
+        "editorLabel":"TurnOf",
+        "label":"TurnOf",
+        "defaultInstance":{
+            "@class":"NumberInstance",
+            "value":9718.0
+        },
+        "scope":{
+            "@class":"GameModelScope",
+            "broadcastScope":null
+        },
+        "tags":[],
+        "minValue":null,
+        "maxValue":null
+    },{
+        "@class":"NumberDescriptor",
         "name":"position",
-        "editorLabel":"",
+        "editorLabel":"Position",
         "label":"Position",
         "defaultInstance":{
             "@class":"NumberInstance",
             "value":1.0
         },
         "scope":{
-            "@class":"TeamScope"
+            "@class":"TeamScope",
+            "broadcastScope":null
         },
         "tags":[],
         "minValue":1,
-        "maxValue":24
+        "maxValue":40
     },{
-        "@class":"NumberDescriptor",
-        "name":"turnOf",
-        "editorLabel":"",
-        "label":"TurnOf",
+        "@class":"StringDescriptor",
+        "name":"state",
+        "editorLabel":"State",
+        "label":"State",
         "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":1.0
+            "@class":"StringInstance",
+            "value":"wait"
         },
         "scope":{
-            "@class":"GameModelScope"
+            "@class":"TeamScope",
+            "broadcastScope":null
         },
         "tags":[],
-        "minValue":null,
-        "maxValue":null
+        "validationPattern":null
     },{
         "@class":"StringDescriptor",
         "name":"restart",
@@ -71,37 +91,11 @@
             "value":"false"
         },
         "scope":{
-            "@class":"TeamScope"
+            "@class":"TeamScope",
+            "broadcastScope":null
         },
         "tags":[],
         "validationPattern":null
-    },{
-        "@class":"StringDescriptor",
-        "name":"state",
-        "editorLabel":"",
-        "label":"State",
-        "defaultInstance":{
-            "@class":"StringInstance",
-            "value":"wait"
-        },
-        "scope":{
-            "@class":"TeamScope"
-        },
-        "tags":[],
-        "validationPattern":null
-    },{
-        "@class":"ListDescriptor",
-        "name":"patrimony",
-        "editorLabel":"",
-        "label":"Patrimony",
-        "defaultInstance":{
-            "@class":"ListInstance"
-        },
-        "scope":{
-            "@class":"TeamScope"
-        },
-        "tags":[],
-        "items":[]
     },{
         "@class":"ListDescriptor",
         "name":"boxValue",
@@ -111,27 +105,151 @@
             "@class":"ListInstance"
         },
         "scope":{
-            "@class":"GameModelScope"
+            "@class":"GameModelScope",
+            "broadcastScope":null
         },
         "tags":[],
         "items":[{
-            "@class":"NumberDescriptor",
+            "@class":"ObjectDescriptor",
             "name":"box1",
             "editorLabel":"box1",
             "label":"box1",
             "defaultInstance":{
-                "@class":"NumberInstance",
-                "value":50.0
+                "@class":"ObjectInstance",
+                "properties":{
+                    "value":"0",
+                    "playerId":"notBuyable"
+                }
             },
-            "scope":{
-                "@class":"TeamScope"
-            },
-            "tags":[],
-            "minValue":null,
-            "maxValue":null
-        }]
-        }],
-    "scriptLibrary":{},
-    "cssUri":"wegas-monopoly/css/wegas-monopoly.css",
-    "widgetsUri":"wegas-monopoly/db/wegas-monopoly-pages.json#"
+        "scope":{
+            "@class":"GameModelScope",
+            "broadcastScope":null
+        },
+        "tags":[],
+        "description":"",
+        "properties":{}
+},{
+    "@class":"ObjectDescriptor",
+    "name":"box2",
+    "editorLabel":"box2",
+    "label":"box2",
+    "defaultInstance":{
+        "@class":"ObjectInstance",
+        "properties":{
+            "playerId":"",
+            "value":"10"
+        }
+    },
+"scope":{
+    "@class":"GameModelScope",
+    "broadcastScope":null
+},
+"tags":[],
+"description":"",
+"properties":{}
+},{
+    "@class":"ObjectDescriptor",
+    "name":"box3",
+    "editorLabel":"box3",
+    "label":"box3",
+    "defaultInstance":{
+        "@class":"ObjectInstance",
+        "properties":{
+            "value":"20",
+            "playerId":""
+        }
+    },
+"scope":{
+    "@class":"GameModelScope",
+    "broadcastScope":null
+},
+"tags":[],
+"description":"",
+"properties":{}
+},{
+    "@class":"ObjectDescriptor",
+    "name":"box4",
+    "editorLabel":"box4",
+    "label":"box4",
+    "defaultInstance":{
+        "@class":"ObjectInstance",
+        "properties":{
+            "value":"30",
+            "playerId":""
+        }
+    },
+"scope":{
+    "@class":"GameModelScope",
+    "broadcastScope":null
+},
+"tags":[],
+"description":"",
+"properties":{}
+},{
+    "@class":"ObjectDescriptor",
+    "name":"box5",
+    "editorLabel":"box5",
+    "label":"box5",
+    "defaultInstance":{
+        "@class":"ObjectInstance",
+        "properties":{
+            "value":"40",
+            "playerId":""
+        }
+    },
+"scope":{
+    "@class":"GameModelScope",
+    "broadcastScope":null
+},
+"tags":[],
+"description":"",
+"properties":{}
+},{
+    "@class":"ObjectDescriptor",
+    "name":"box6",
+    "editorLabel":"box6",
+    "label":"box6",
+    "defaultInstance":{
+        "@class":"ObjectInstance",
+        "properties":{
+            "value":"50",
+            "playerId":""
+        }
+    },
+"scope":{
+    "@class":"GameModelScope",
+    "broadcastScope":null
+},
+"tags":[],
+"description":"",
+"properties":{}
+},{
+    "@class":"ObjectDescriptor",
+    "name":"box7",
+    "editorLabel":"box7",
+    "label":"box7",
+    "defaultInstance":{
+        "@class":"ObjectInstance",
+        "properties":{
+            "value":"60",
+            "playerId":""
+        }
+    },
+"scope":{
+    "@class":"GameModelScope",
+    "broadcastScope":null
+},
+"tags":[],
+"description":"",
+"properties":{}
+}]
+}],
+"scriptLibrary":{},
+"properties":{
+    "allGameVariables":"true",
+    "websocket":"true"
+},
+"cssUri":"wegas-monopoly/css/wegas-monopoly.css",
+"widgetsUri":"wegas-monopoly/db/wegas-monopoly-pages.json#",
+"parentGameModel":null
 }

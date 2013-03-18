@@ -65,6 +65,8 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
             this.removePions();
             this.doDraw(ret);
             this.checkCurrentPlayer();
+            this.state = Y.Wegas.VariableDescriptorFacade.cache.find("name", "state").getInstance().get("value");
+            this.checkState();
         },
         
         doDraw: function (data) {
@@ -119,6 +121,8 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                 if (this.state == "wait"){
                     this.setState("roll");
                 }
+            } else {
+                this.checkState();
             }
         },
         

@@ -148,14 +148,14 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     /**
      * @return the broadcastScope
      */
-//    public Class getBroadcastScope() {
-//        return broadcastScope;
-//    }
-//
-//    /**
-//     * @param broadcastScope the broadcastScope to set
-//     */
-//    public void setBroadcastScope(Class broadcastScope) {
-//        this.broadcastScope = broadcastScope;
-//    }
+    public String getBroadcastScope() {
+        return broadcastScope;
+    }
+
+    /**
+     * @param broadcastScope the broadcastScope to set
+     */
+    public void setBroadcastScope(String broadcastScope) {
+        this.broadcastScope = broadcastScope;
+    }
 }

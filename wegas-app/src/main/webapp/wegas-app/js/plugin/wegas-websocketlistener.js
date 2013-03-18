@@ -60,8 +60,12 @@ YUI.add('wegas-websocketlistener', function(Y) {
         },
         
         onVariableInstanceUpdate: function(data){
-             // this.get("host").cache.updateCache(data);
-             // @fixme send updated event 
+              this.get("host").cache.onResponseRevived({
+                  serverResponse: Y.Wegas.Editable.revive({
+                      "@class": "ManagedModeResponseFilter$ServerResponse",
+                      events: [data]
+                  })
+              });
         },
         
         onCustomEvent: function(data){

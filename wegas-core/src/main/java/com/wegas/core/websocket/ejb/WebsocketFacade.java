@@ -53,15 +53,19 @@ public class WebsocketFacade {
         
         for (int i=0; i<events.getUpdatedEntities().size(); i++){
             v = events.getUpdatedEntities().get(i);
-            if (v.getScope() instanceof GameModelScope){
+            if (v.getScope() instanceof GameModelScope /*|| 
+                    v.getScope().getBroadcastScope().equals(GameModelScope.class.getSimpleName())*/){
                 //Not supported yet
-            } else if (v.getScope() instanceof GameScope){
+            } else if (v.getScope() instanceof GameScope /*|| 
+                    v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())*/){
                 game.addEntity(v);
                 gameId = variableInstanceFacade.findGame(v).getId();
-            } else if (v.getScope() instanceof TeamScope){
+            } else if (v.getScope() instanceof TeamScope /*|| 
+                    v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())*/){
                 team.addEntity(v);
                 teamId = variableInstanceFacade.findTeam(v).getId();
-            } else if (events.getUpdatedEntities().get(i).getScope() instanceof PlayerScope){
+            } else if (events.getUpdatedEntities().get(i).getScope() instanceof PlayerScope /*|| 
+                    v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())*/){
                 player.addEntity(v);
                 playerId = variableInstanceFacade.findAPlayer(v).getId();
             }

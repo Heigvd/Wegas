@@ -688,8 +688,24 @@ YUI.add('wegas-entity', function(Y) {
                         _inputex: {
                             label: 'Variable is'
                         }
+                    },
+                    broadcastScope: {
+                        type: STRING,
+                        choices: [{
+                            value: "TeamScope",
+                            label: 'team'
+                        }, {
+                            value: "PlayerScope",
+                            label: 'player'
+                        }, {
+                            value: "GameScope",
+                            label: 'game'
+                        }],
+                        _inputex: {
+                            label: 'Broadcast with'
+                        }  
                     }
-                }
+                }                
             },
             defaultInstance: {
                 value: null,
@@ -732,7 +748,9 @@ YUI.add('wegas-entity', function(Y) {
             },
             privateInstances: {
                 "transient": true
-            }
+            },
+            
+            broadcastScope: {}
         }
     });
     /**
