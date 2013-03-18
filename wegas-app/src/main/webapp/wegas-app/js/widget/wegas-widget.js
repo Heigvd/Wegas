@@ -13,8 +13,8 @@ YUI.add("wegas-widget", function(Y) {
     "use strict";
 
     var Lang = Y.Lang,
-    BOUNDING_BOX = "boundingBox",
-    LEVEL = {
+            BOUNDING_BOX = "boundingBox",
+            LEVEL = {
         "warn": "warn",
         "error": "error",
         "info": "info",
@@ -58,7 +58,7 @@ YUI.add("wegas-widget", function(Y) {
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
-        || this.constructor.NAME.toLowerCase();                         // the usual "yui3-" prefix)
+                || this.constructor.NAME.toLowerCase();                         // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
 
         this.publish("exception", {
@@ -84,8 +84,8 @@ YUI.add("wegas-widget", function(Y) {
          */
         showOverlay: function() {
             this.get(BOUNDING_BOX)
-            .addClass("wegas-loading")
-            .prepend("<div class='wegas-loading-overlay'></div>");
+                    .addClass("wegas-loading")
+                    .prepend("<div class='wegas-loading-overlay'></div>");
         },
         /**
          * @function
@@ -94,8 +94,8 @@ YUI.add("wegas-widget", function(Y) {
          */
         hideOverlay: function() {
             this.get(BOUNDING_BOX)
-            .removeClass("wegas-loading")
-            .all("> .wegas-loading-overlay").remove(true);
+                    .removeClass("wegas-loading")
+                    .all("> .wegas-loading-overlay").remove(true);
         },
         /**
          * @function
@@ -123,7 +123,7 @@ YUI.add("wegas-widget", function(Y) {
          */
         showMessage: function(level, txt, timeout) {
             var msgNode = this.getMessageNode(),
-            message = Y.Node.create("<div class='" + (LEVEL[level] || "") + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
+                    message = Y.Node.create("<div class='" + (LEVEL[level] || "") + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
             if (level === "success" && !timeout) {                          // @hack successful messages disapear automatically
                 if (this.toolbar instanceof Y.Plugin.WidgetToolbar) {
                     this.setStatusMessage(txt);
@@ -211,20 +211,20 @@ YUI.add("wegas-widget", function(Y) {
          *  Defines edition menu to be used in editor
          */
         EDITMENU: [{
-            type: "Button",
-            label: "Properties",
-            cssClass: "editor-exploreGameModel-button",
-            plugins: [{
-                fn: "EditWidgetAction"
-            }]
-        }, {
-            type: "Button",
-            label: "Delete",
-            cssClass: "editor-exploreGameModel-button",
-            plugins: [{
-                fn: "DeleteWidgetAction"
-            }]
-        }],
+                type: "Button",
+                label: "Properties",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        fn: "EditWidgetAction"
+                    }]
+            }, {
+                type: "Button",
+                label: "Delete",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        fn: "DeleteWidgetAction"
+                    }]
+            }],
         /**
          * @lends Y.Wegas.Widget
          */
@@ -323,12 +323,18 @@ YUI.add("wegas-widget", function(Y) {
              */
             id: {
                 "transient": false,
+                value: undefined,
+                optional: true,
+                type: "string",
                 getter: function(v) {
-                    if (("" + v).indexOf("yui") === 0) {
+                    if (v === "" || ("" + v).indexOf("yui") === 0) {
                         return undefined;
                     } else {
                         return v;
                     }
+                },
+                _inputex: {
+                    _type: "hidden"
                 }
             },
             /**
@@ -476,18 +482,18 @@ YUI.add("wegas-widget", function(Y) {
                     _type: "editablelist",
                     label: "Plugins",
                     items: [{
-                        type: "Button",
-                        label: "Tooltip",
-                        data: "Tooltip"
-                    }, {
-                        type: "Button",
-                        label: "On click",
-                        data: "ExecuteScriptAction"
-                    }, {
-                        type: "Button",
-                        label: "Open page",
-                        data: "OpenPageAction"
-                    }]
+                            type: "Button",
+                            label: "Tooltip",
+                            data: "Tooltip"
+                        }, {
+                            type: "Button",
+                            label: "On click",
+                            data: "ExecuteScriptAction"
+                        }, {
+                            type: "Button",
+                            label: "Open page",
+                            data: "OpenPageAction"
+                        }]
                 }
             }
         },
@@ -572,10 +578,10 @@ YUI.add("wegas-widget", function(Y) {
      */
     Y.WidgetParent.prototype._createChild = function(config) {
         var defaultType = this.get("defaultChildType"),
-        altType = config.childType || config.type,
-        child,
-        Fn,
-        FnConstructor;
+                altType = config.childType || config.type,
+                child,
+                Fn,
+                FnConstructor;
 
         if (altType) {
             Fn = Lang.isString(altType) ? Y.Wegas[altType] || Y[altType] : altType;           // @hacked

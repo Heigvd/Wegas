@@ -11,7 +11,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-loginwidget', function (Y) {
+YUI.add('wegas-loginwidget', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -35,32 +35,30 @@ YUI.add('wegas-loginwidget', function (Y) {
          * Default link to redirect user
          */
         defaultRedirect: "wegas-app/view/lobby.html",
-
         /**
          * form group to login
          */
         loginForm: null,
-
         /**
          * form group to create account
          */
         createAccountForm: null,
-
         /**
          * form group to send a new password
          */
         sendNewPasswordForm: null,
-
         /**
          * Button to submit form
          */
         submitButton: null,
-
+        /**
+         * Entered email
+         */
+        email: null,
         /**
          * Reference to each used functions
          */
         handlers: null,
-
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -69,7 +67,7 @@ YUI.add('wegas-loginwidget', function (Y) {
          * init the submit button.
          * init all the three forms groups
          */
-        initializer: function () {
+        initializer: function() {
             var cb = this.get(CONTENTBOX);
             this.handlers = {};
             this.submitButton = new Y.Button();
@@ -151,7 +149,6 @@ YUI.add('wegas-loginwidget', function (Y) {
                 parentEl: cb
             });
         },
-
         /**
          * @function
          * @private
@@ -159,7 +156,7 @@ YUI.add('wegas-loginwidget', function (Y) {
          * display link to display other form than default one.
          * Call 'redirect' function if user is alread logged.
          */
-        renderUI: function () {
+        renderUI: function() {
             var cb = this.get(CONTENTBOX),
                     cUser = Y.Wegas.app.get("currentUser");
 
@@ -174,7 +171,6 @@ YUI.add('wegas-loginwidget', function (Y) {
                     + '<p><a class="send-new-password" href="#">Forgot your password?</a></p>'
                     + '</div>');
         },
-
         /**
          * @function
          * @private
@@ -185,7 +181,7 @@ YUI.add('wegas-loginwidget', function (Y) {
          * When return key is pressed, click on submitButton by a fire event.
          * When widget is render, set focus to 'input' node.
          */
-        bindUI: function () {
+        bindUI: function() {
             var cb = this.get(CONTENTBOX),
                     inputNode = cb.one("input");
 
@@ -193,61 +189,56 @@ YUI.add('wegas-loginwidget', function (Y) {
             this.handlers.toggleSendNewPassword = cb.one(".send-new-password").on("click", this.toggleSendNewPassword, this);
 
             this.handlers.onSubmit = this.submitButton.on("click", this.onSubmit, this);
-            this.handlers.keypress = this.on("keypress", function (e) {
+            this.handlers.keypress = this.on("keypress", function(e) {
                 if (e.domEvent.keyCode === 13) {
                     this.submitButton.fire("click");
                 }
             });
             this.handlers.render = this.after("render", inputNode.focus, inputNode);
         },
-
         /**
          * @function
          * @private
          * @description set the displayed form with the current form
          */
-        syncUI: function () {
+        syncUI: function() {
             this.set("mode", this.get("mode"));
         },
-
         /**
          * @function
          * @private
          * @description Detach all functions created by this widget.
          */
-        destructor: function () {
+        destructor: function() {
             for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         },
-
         // *** Private methods *** //
         /**
          * @function
          * @private
          * @description toggle mode to createAccount or login one.
          */
-        toggleCreateAccount: function () {
+        toggleCreateAccount: function() {
             if (this.get("mode") === "login") {
                 this.set("mode", "createaccount");
             } else {
                 this.set("mode", "login");
             }
         },
-
         /**
          * @function
          * @private
          * @description toggle mode to sendNewPassword or login one.
          */
-        toggleSendNewPassword: function () {
+        toggleSendNewPassword: function() {
             if (this.get("mode") === "login") {
                 this.set("mode", "sendNewPassword");
             } else {
                 this.set("mode", "login");
             }
         },
-
         /**
          * @function
          * @private
@@ -257,7 +248,7 @@ YUI.add('wegas-loginwidget', function (Y) {
          * Mode createaccount, call function createaccount.
          * Mode sendNewPassword, call function sendNewPassword.
          */
-        onSubmit: function (e) {
+        onSubmit: function(e) {
             var data;
             switch (this.get("mode")) {
                 case "login":
@@ -282,7 +273,6 @@ YUI.add('wegas-loginwidget', function (Y) {
                     break;
             }
         },
-
         /**
          * @function
          * @private
@@ -292,7 +282,7 @@ YUI.add('wegas-loginwidget', function (Y) {
          * @description Send REST request to login a user with form's values
          *  informations.
          */
-        login: function (email, password, remember) {
+        login: function(email, password, remember) {
             Y.Wegas.UserFacade.sendRequest({
                 request: "/Authenticate/?email=" + email
                         + "&password=" + password
@@ -301,18 +291,17 @@ YUI.add('wegas-loginwidget', function (Y) {
                     method: "POST"
                 },
                 on: {
-                    success: Y.bind(function (e) {
+                    success: Y.bind(function(e) {
                         this.showMessage("success", "Login successful", 4000);
                         this.redirect();
                         return;
                     }, this),
-                    failure: Y.bind(function (e) {
+                    failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Email/password combination not found", 4000);
                     }, this)
                 }
             });
         },
-
         /**
          * @function
          * @private
@@ -320,7 +309,7 @@ YUI.add('wegas-loginwidget', function (Y) {
          * @description Send REST request to create a new account based on the
          *  form's values
          */
-        createAccount: function (data) {
+        createAccount: function(data) {
             Y.Wegas.UserFacade.sendRequest({
                 request: "/Signup/",
                 cfg: {
@@ -328,18 +317,17 @@ YUI.add('wegas-loginwidget', function (Y) {
                     data: data
                 },
                 on: {
-                    success: Y.bind(function (data, e) {
+                    success: Y.bind(function(data, e) {
                         this.showMessage("success", "User created, you can now use it to login", 4000);
                         //this.set("mode", "login");
                         this.login(data.email, data.password, false);
                     }, this, data),
-                    failure: Y.bind(function (e) {
+                    failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Error creating user", 4000);
                     }, this)
                 }
             });
         },
-
         /**
          * @function
          * @private
@@ -347,35 +335,33 @@ YUI.add('wegas-loginwidget', function (Y) {
          * @description Send REST request to set and set a new password for
          *  the user.
          */
-        sendNewPassword: function (email) {
+        sendNewPassword: function(email) {
             Y.Wegas.UserFacade.sendRequest({
                 request: "/SendNewPassword/?email=" + email,
                 cfg: {
                     method: "POST"
                 },
                 on: {
-                    success: Y.bind(function (e) {
+                    success: Y.bind(function(e) {
                         this.hideOverlay();
                         this.showMessage("success", "Your new password had been sent", 4000);
                         this.set("mode", "login");
                     }, this),
-                    failure: Y.bind(function (e) {
+                    failure: Y.bind(function(e) {
                         this.hideOverlay();
                         this.showMessage("error", e.response.results.message || "Error sent new password", 4000);
                     }, this)
                 }
             });
         },
-
         /**
          * @function
          * @private
          * @description redirect the user to a page given by the function 'getRedirect'
          */
-        redirect: function () {
+        redirect: function() {
             window.location = this.getRedirect();
         },
-
         /**
          * @function
          * @private
@@ -383,10 +369,9 @@ YUI.add('wegas-loginwidget', function (Y) {
          * @description return redirection given by the function
          *  'getQueryParameter' or by the default redirection.
          */
-        getRedirect: function () {
+        getRedirect: function() {
             return this.getQueryParameter("redirect") || (Y.Wegas.app.get("base") + this.defaultRedirect);
         },
-
         /**
          * @function
          * @private
@@ -395,7 +380,7 @@ YUI.add('wegas-loginwidget', function (Y) {
          * @description Returns a parameter from the GET parameters (from
          *  url obviously).
          */
-        getQueryParameter: function (name) {
+        getQueryParameter: function(name) {
             var i, pair, query = window.location.search.substring(1),
                     vars = query.split("&");
 
@@ -406,6 +391,22 @@ YUI.add('wegas-loginwidget', function (Y) {
                 }
             }
             return null;
+        },
+        /**
+         * @function
+         * @private
+         * @param form, the setted form.
+         * @description Get current value of email field in current view (if defined), and
+         * put it in email fields of all views.
+         */
+        keepEmail: function(form) {
+            if (!form || !form.getValue() || !form.getValue().email) {
+                return;
+            }
+            this.email = form.getValue().email;
+            this.loginForm.getFieldByName("email").setValue(this.email);
+            this.createAccountForm.getFieldByName("email").setValue(this.email);
+            this.sendNewPasswordForm.getFieldByName("email").setValue(this.email);
         }
 
     }, {
@@ -424,9 +425,15 @@ YUI.add('wegas-loginwidget', function (Y) {
         ATTRS: {
             mode: {
                 value: "login",
-                setter: function (val) {
-                    var cb = this.get(CONTENTBOX);
-
+                setter: function(val) {
+                    var cb = this.get(CONTENTBOX), oldVal = this.get("mode");
+                    if (oldVal === "login") {
+                        this.keepEmail(this.loginForm);
+                    } else if (oldVal === "createaccount") {
+                        this.keepEmail(this.createAccountForm);
+                    } else {
+                        this.keepEmail(this.sendNewPasswordForm);
+                    }
                     if (val === "login") {
                         //this.loginForm.clear();
                         this.loginForm.show();

@@ -19,6 +19,7 @@ import com.wegas.leaderway.persistence.TaskInstance;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.messaging.persistence.InboxInstance;
+import com.wegas.mononpoly.persistence.ObjectInstance;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -43,7 +44,8 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
     @JsonSubTypes.Type(name = "ChoiceInstance", value = ChoiceInstance.class),
     @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
-    @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class)
+    @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
+    @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class)
 })
 @NamedQueries({
     @NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),

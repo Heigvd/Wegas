@@ -125,6 +125,16 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         }
         return newEntity;
     }
+    
+    public GameModel publish(final Long entityId) throws IOException {        
+        
+        final GameModel parentGM = this.find(entityId);
+        
+        GameModel publish = duplicate(entityId);
+        publish.setName(parentGM.getName() + "(publish)");
+        publish.setParentGameModel(parentGM);
+        return publish;
+    }
 
     @Override
     public void remove(final GameModel gameModel) {

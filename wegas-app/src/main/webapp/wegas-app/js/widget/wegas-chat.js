@@ -1,91 +1,66 @@
+/*
+ * Wegas
+ * http://www.albasim.ch/wegas/
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @fileoverview
+ * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 
 YUI.add('wegas-chat', function (Y) {
     var CONTENTBOX = 'contentBox',
     Chat = Y.Base.create("wegas-chat", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        /* destructor: function() {
 
-            //$.atmosphere.unsubscribe();
-        },*/
         renderUI: function () {
-            return;
-
-            var atmospherePath = Y.Wegas.app.get('base')+"atmosphere/pubsub/GeneralChat",
-            connectedEndpoint,
-            cb = this.get(CONTENTBOX),
-            form = new Y.inputEx.Form( {
-                parentEl: cb._node,
-                fields: [{
-                    name: 'text',
-                    type:'text',
-                    rows: 3,
-                    cols: 40,
-                    typeInvite: 'Type here to chat',
-                    value: ''
-                }],
-                buttons: [{
-                    type: 'submit',
-                    value: 'Send'
-                }],
-                onSubmit: function(e) {
-                    connectedEndpoint.push(atmospherePath,
-                        null,
-                        $.atmosphere.request = {
-                            data: 'message='+this.getValue().text
-                        });
-                    this.setValue({
-                        text:''
-                    });
-                    return false;
-                }
+            var cb = this.get(CONTENTBOX);
+            
+            this.conversation = Y.Node.create("<div class='conversation'></div>");
+            
+            this.conversation.append('</div><div class="wegas-chat-msgs">');
+            
+            this.field = new Y.inputEx.StringField({
+                parentEl: this.conversation,
+                typeInvite: "Type here to chat",
+                size: this.get("size")
             });
-
-            $.atmosphere.subscribe(atmospherePath,                                    // Subscribe to websocket events.
-                function(response) {
-                    Y.log("Response(state: "+response.state+", transport: "+response.transport+", status:"+response.status+", body: "+ response.responseBody+")", 'info', 'Wegas.Chat');
-
-                    if (response.transport != 'polling' && response.state == 'messageReceived' && response.status == 200 && response.responseBody.length > 0) {
-                        cb.one('.wegas-chat-msgs').prepend('<div class="wegas-chat-msg">You: '+response.responseBody+'</div>');
-                    }
-                },
-                /* websocket, streaming, long-polling, jsonp */
-                $.atmosphere.request = {
-                    transport: 'long-polling'
-                /*, Uncomments for IE CORS support attachHeadersAsQueryString : true, enableXDR : true */
-                });
-            connectedEndpoint = $.atmosphere.response;
-
-            cb.append('<div style="clear:both"></div><div class="wegas-chat-msgs"></div>');
-
-            /*
-             * Note this is the fasted was to trim in js.
-             * @fixme This function should be moved to some utility class
-             */
-            function trim(str) {
-                return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-            }
-            cb.one('textarea').on('key',  function(event) {
-                connectedEndpoint.push(atmospherePath,
-                    null,
-                    $.atmosphere.request = {
-                        data: 'message='+trim(form.getValue().text)
-                    });
-                form.setValue({
-                    text:''
-                });
-                event.preventDefault();
-            }, 'enter');
+            
+            this.send = new Y.Wegas.Button({
+                label: "send",
+                cssClass: "wegas-chat-send"
+            });
+            this.send.render(this.conversation);
+            this.sendEvent();
+            
+            this.channel = this.get("channel");
+            this.response();
+            
+            cb.append(this.conversation);
+        },
+        
+        sendEvent: function(){
+            var sender = Y.Wegas.GameFacade.cache.getCurrentPlayer().get("name");
+            this.send.on("click", function(){
+                Y.Wegas.VariableDescriptorFacade.ws.triggerCustomEvent(this.channel, { type: "chatEvent", sender: sender, value: this.field.getValue()});
+                this.field.setValue("")
+            }, this);
+        },
+        
+        response: function(){
+            Y.Wegas.VariableDescriptorFacade.ws.on("chatEvent", function (e) {
+                Y.one('.wegas-chat-msgs').append('<p>' + e.sender + ': ' + e.value + '</p>');
+            }, this);
         }
 
     }, {
         ATTRS : {
-            classTxt: {
-                value: 'Chat'
+            size: {
+                value: 23
             },
-            type: {
-                value: "Chat"
+            channel: {
+                value: "Game"
             }
         }
     });

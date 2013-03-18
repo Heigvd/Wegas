@@ -181,13 +181,25 @@
                                         ]
                                     },
                                     "VariableDescriptor": {
-                                        source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                        //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                        <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                            source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                            source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                        </ui:fragment>
                                         initialRequest: "",
                                         plugins: [{
                                                 fn: "VariableDescriptorCache"
                                             }, {
                                                 fn: "ScriptEval"
-                                            }]
+                                            }
+                                            <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('websocket')}">
+                                                ,{
+                                                fn: "WebSocketListener"
+                                                }
+                                            </ui:fragment>
+                                        ]
                                     },
                                     "User": {
                                         source: "rest/User",
