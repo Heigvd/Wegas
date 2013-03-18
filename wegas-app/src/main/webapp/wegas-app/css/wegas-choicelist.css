@@ -5,16 +5,16 @@
 .wegas-choicelist .hiddenChild{
     display: none;
 }
-.wegas-pageeditor-designmode .wegas-choicelist .hiddenChild{
+.wegas-pageeditor-layoutmode .wegas-choicelist .hiddenChild{
     display: inherit;
 }
-.wegas-pageeditor-designmode .wegas-choicelist{
+.wegas-pageeditor-layoutmode .wegas-choicelist{
     padding: 3px;
     max-height: 250px;
     overflow-y: auto;
     overflow-x: hidden;
 }
-.wegas-pageeditor-designmode .wegas-choicelist-hidden{
+.wegas-pageeditor-layoutmode .wegas-choicelist-hidden{
     visibility: visible;
 }
 .wegas-choicelist-hidden{
