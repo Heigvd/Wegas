@@ -15,7 +15,6 @@ import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
-import org.apache.shiro.util.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -103,12 +102,17 @@ public class GameModel extends NamedEntity {
      */
     @ElementCollection(fetch = FetchType.LAZY)
     private Map<String, String> properties = new HashMap<>();
+    /**
+    /**
+     *
+     */
+//    @ManyToOne(optional = true)
+//    private GameModel parentGameModel;
 
     /**
      *
      */
     public GameModel() {
-        org.apache.shiro.util.StringUtils.join(this.getClientScriptLibrary().values().iterator(), "");
     }
 
     /**
@@ -118,6 +122,14 @@ public class GameModel extends NamedEntity {
     public GameModel(String name) {
         this.name = name;
     }
+
+//    public GameModel getParentGameModel() {
+//        return parentGameModel;
+//    }
+//
+//    public void setParentGameModel(GameModel parentGameModel) {
+//        this.parentGameModel = parentGameModel;
+//    }
 
     /**
      *
@@ -132,6 +144,10 @@ public class GameModel extends NamedEntity {
     @Override
     public void merge(AbstractEntity n) {
         super.merge(n);
+       GameModel other = (GameModel) n;
+        //this.setParentGameModel(other.getParentGameModel());
+        this.properties.clear();
+        this.properties.putAll(other.getProperties());
     }
 
     /**

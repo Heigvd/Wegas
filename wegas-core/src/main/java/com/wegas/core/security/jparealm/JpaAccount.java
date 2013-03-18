@@ -48,7 +48,7 @@ public class JpaAccount extends AbstractAccount {
     public void merge(AbstractEntity other) {
         super.merge(other);
         JpaAccount a = (JpaAccount) other;
-        if (a.getPassword() != null) {                                          // Only update the password if it is set
+        if (a.getPassword() != null && !a.getPassword().isEmpty()) {                                          // Only update the password if it is set
             this.setPassword(a.getPassword());
             this.setPasswordHex(null);                                          // Force jpa update
         }
@@ -61,7 +61,7 @@ public class JpaAccount extends AbstractAccount {
     public void prePersist() {
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
         this.setSalt(rng.nextBytes().toHex());
-        if (this.password == null) {
+        if (this.password == null || this.password.isEmpty()) {
             this.password = rng.nextBytes().toString().substring(0, 7);
         }
         this.preUpdate();
@@ -72,7 +72,7 @@ public class JpaAccount extends AbstractAccount {
      */
     @PreUpdate
     public void preUpdate() {
-        if (this.password != null) {
+        if (this.password != null && !this.password.isEmpty()) {
             this.passwordHex = new Sha256Hash(this.password,
                     ( new SimpleByteSource(this.getSalt()) ).getBytes()).toHex();
         }

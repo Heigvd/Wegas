@@ -287,6 +287,10 @@
                                             "type": "NewEntityButton",
                                             "label": "Trigger",
                                             "targetClass": "TriggerDescriptor"
+                                        }, {
+                                            "type": "NewEntityButton",
+                                            "label": "Object",
+                                            "targetClass": "ObjectDescriptor"
                                         }]
                                     }
                                 }],

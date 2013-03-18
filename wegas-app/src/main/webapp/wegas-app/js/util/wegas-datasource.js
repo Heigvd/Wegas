@@ -174,12 +174,14 @@ YUI.add('wegas-datasource', function(Y) {
                     this.updated = this.updateCache(e.cfg.method, response[i]) || this.updated;
                 }
             } else {
-                for (i = 0; i < response.get("entities").length; i += 1) {      // Update the cache with the Entites in the reply body
-                    entity = response.get("entities")[i];
-                    if (Lang.isObject(entity)) {
-                        this.updated = this.updateCache(e.cfg.method, entity) || this.updated;
+                if (response.get("entities")) {
+                    for (i = 0; i < response.get("entities").length; i += 1) {      // Update the cache with the Entites in the reply body
+                        entity = response.get("entities")[i];
+                        if (Lang.isObject(entity)) {
+                            this.updated = this.updateCache(e.cfg.method, entity) || this.updated;
+                        }
+                        e.response.entity = entity;                                 // Shortcut, useful if there is only one instance
                     }
-                    e.response.entity = entity;                                 // Shortcut, useful if there is only one instance
                 }
 
                 for (i = 0; i < response.get("events").length; i += 1) {
@@ -1104,7 +1106,9 @@ YUI.add('wegas-datasource', function(Y) {
         });
 
         // Support for POST transactions
-        if (Lang.isString(request)) {
+        if (Lang.isString(cfg.fullUri)) {
+            uri = cfg.fullUri;
+        }else if (Lang.isString(request)) {
             //if(cfg.method && (cfg.method.toUpperCase() === POST)) {
             //    cfg.data = cfg.data ? cfg.data+request : request;
             //}

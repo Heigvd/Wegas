@@ -17,7 +17,7 @@ YUI.add('wegas-entity', function(Y) {
     BUTTON = "Button", VALUE = "value", TEXT = "text",
     IDATTRDEF = {
         type: STRING,
-        optional: true,                                                         // The id is optional for entites that have not been persisted
+        optional: true,                                                    // The id is optional for entites that have not been persisted
         _inputex: {
             _type: HIDDEN
         }
@@ -233,6 +233,13 @@ YUI.add('wegas-entity', function(Y) {
                 }
             }]
         }, {
+            type: "Button",
+            label: "Publish",
+            cssClass: "editor-publishGameModel-button",
+            plugins: [{
+                fn: "PublishEntityAction"
+            }]
+        }, {
             type: "DeleteEntityButton",
             cssClass: "editor-deleteGameModel-button"
         }]
@@ -396,16 +403,16 @@ YUI.add('wegas-entity', function(Y) {
             cssClass: "editor-deleteTeam-button"
         }]
 
-        //{ // We allow the player to open its pages with the widget
-        //    type: BUTTON,
-        //    label: "Open",
-        //    plugins: [{
-        //        fn: "OpenGameAction",
-        //        cfg: {
-        //            editorUrl: "wegas-app/view/play.html?"
-        //        }
-        //    }]
-        //},
+    //{ // We allow the player to open its pages with the widget
+    //    type: BUTTON,
+    //    label: "Open",
+    //    plugins: [{
+    //        fn: "OpenGameAction",
+    //        cfg: {
+    //            editorUrl: "wegas-app/view/play.html?"
+    //        }
+    //    }]
+    //},
     });
 
     /**
@@ -671,6 +678,22 @@ YUI.add('wegas-entity', function(Y) {
                         _inputex: {
                             label: 'Variable is'
                         }
+                    },
+                    broadcastScope: {
+                        type: STRING,
+                        choices: [{
+                            value: "TeamScope",
+                            label: 'team'
+                        }, {
+                            value: "PlayerScope",
+                            label: 'player'
+                        }, {
+                            value: "GameScope",
+                            label: 'game'
+                        }],
+                        _inputex: {
+                            label: 'Broadcast with'
+                        }
                     }
                 }
             },
@@ -715,7 +738,9 @@ YUI.add('wegas-entity', function(Y) {
             },
             privateInstances: {
                 "transient": true
-            }
+            },
+
+            broadcastScope: {}
         }
     });
     /**
@@ -1021,6 +1046,10 @@ YUI.add('wegas-entity', function(Y) {
                         "type": "AddEntityChildButton",
                         "label": "Trigger",
                         "targetClass": "TriggerDescriptor"
+                    }, {
+                        "type": "AddEntityChildButton",
+                        "label": "Object",
+                        "targetClass": "ObjectDescriptor"
                     }]
                 }
             }]

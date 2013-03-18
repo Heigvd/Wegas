@@ -1,0 +1,49 @@
+{
+    "1": {
+        "id": 1,
+        "label": "Main layout",
+        "type": "List",
+        "cssClass": "layout wegas-monopoly",
+        "children": [
+        {
+            "label": "game",
+            "type": "List",
+            "cssClass": "game",
+            "direction": "horizontal",
+            "plugins": [{
+                    "fn" : "MonopolyController"
+            }],
+            "children": [{
+                "type": "Dice",
+                "label": "Roll",
+                "animated":"true",
+                "cssClass": "wegas-monopoly-roll"
+            },{
+                "type": "Button",
+                "label": "Buy",
+                "cssClass": "wegas-monopoly-buy"
+            },{
+                "type": "Button",
+                "label": "Next",
+                "cssClass": "wegas-monopoly-Next"
+            },{
+                "type": "ToggleButton",
+                "label": "Restart",
+                "cssClass": "wegas-monopoly-restart"
+            },{
+                "type": "VariableDisplay",
+                "label": "Money",
+                "view": "text",
+                "variable": {
+                    "name": "money"
+                }
+            },{
+                "type" : "Monopolydisplay",
+                "cssClass": "wegas-monopoly-display"
+            },{
+                "type" : "Chat",
+                "cssClass": "wegas-chat"
+            }]
+        }]
+    }
+}

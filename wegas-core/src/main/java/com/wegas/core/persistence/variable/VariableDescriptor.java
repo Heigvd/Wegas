@@ -22,6 +22,7 @@ import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.messaging.persistence.InboxDescriptor;
+import com.wegas.mononpoly.persistence.ObjectDescriptor;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -54,7 +55,8 @@ import org.codehaus.jackson.map.annotate.JsonView;
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
     @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
-    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
+    @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
 })
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity {
 
@@ -142,6 +144,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.setLabel(other.getLabel());
         this.setEditorLabel(other.getEditorLabel());
         this.defaultInstance.merge(other.getDefaultInstance());
+        this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
         //this.scope.merge(vd.getScope());
     }
 
