@@ -162,7 +162,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-absolutelayout': {
                     path: 'wegas-app/js/widget/wegas-absolutelayout-min.js',
-                    requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss"],
+                    requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss", "wegas-list"],
                     ws_provides: ['AbsoluteLayout', 'Position']
                 },
                 'wegas-absolutelayoutcss': {

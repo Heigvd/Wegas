@@ -206,18 +206,14 @@ YUI.add('wegas-leaderway-folder', function (Y) {
         /**
          * @param TaskDescriptor td, the task to get Requirements
          * @return String, a texte including all the Requirements
-         *  of the given task (example : 1x engineer - 48).
+         *  of the given task (example : engineer - 48).
          */
-        getRequirements: function (td) {
-            var i, j, temp = [], req;
-            for (i in td.get('requirements')) {
-                if (td.get('requirements')[i].getAttrs && td.get('requirements')[i].getAttrs().needs) {
+        getRequirements: function(td) {
+            var i, j, temp = [], req = [];
+            for (i = 0; i < td.get('requirements').length; i++) {
+                if (td.get('requirements')[i].getAttrs) {
                     req = td.get('requirements')[i].getAttrs();
-                    for (j in req.needs) {
-                        //temp.push(req.needs[j] + "x " + i + " - " + j);
-                        temp.push(i + " - " + j);
-                    }
-
+                    temp.push(req.purview + " - " + req.level);
                 }
             }
             return temp.join(", ");

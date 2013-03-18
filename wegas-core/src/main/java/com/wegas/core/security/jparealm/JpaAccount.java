@@ -61,7 +61,7 @@ public class JpaAccount extends AbstractAccount {
     public void prePersist() {
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
         this.setSalt(rng.nextBytes().toHex());
-        if (this.password == null && !this.password.isEmpty()) {
+        if (this.password == null || this.password.isEmpty()) {
             this.password = rng.nextBytes().toString().substring(0, 7);
         }
         this.preUpdate();

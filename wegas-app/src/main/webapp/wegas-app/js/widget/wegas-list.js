@@ -67,7 +67,7 @@ YUI.add('wegas-list', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.List */
-
+        CSS_PREFIX: "wegas-list",
         /**
          * @field
          * @static
@@ -105,7 +105,54 @@ YUI.add('wegas-list', function(Y) {
             //    value: 2,
             //    readonly: true
             //}
-        }
+        },
+        EDITMENU: [{
+                type: "Button",
+                label: "Properties",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        fn: "EditWidgetAction"
+                    }]
+            }, {
+                type: "Button",
+                label: "Add",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "menuCfg": {
+                                points: ["tl", "tr"]
+                            },
+                            "event": "mouseenter",
+                            "children": [{
+                                    type: "Button",
+                                    label: "Text",
+                                    plugins: [{
+                                            fn: "AddChildWidgetAction",
+                                            cfg: {
+                                                "childType": "Text"
+                                            }
+                                        }]
+                                }, {
+                                    type: "Button",
+                                    label: "Image",
+                                    plugins: [{
+                                            fn: "AddChildWidgetAction",
+                                            cfg: {
+                                                "childType": "Image"
+                                            }
+                                        }]
+                                }]
+                        }
+                    }]
+            }, {
+                type: "Button",
+                label: "Delete",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        fn: "DeleteWidgetAction"
+                    }]
+            }]
     });
     Y.namespace('Wegas').List = List;
 

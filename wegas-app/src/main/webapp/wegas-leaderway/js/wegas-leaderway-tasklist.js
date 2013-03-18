@@ -2,7 +2,7 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 
-YUI.add('wegas-leaderway-tasklist', function (Y) {
+YUI.add('wegas-leaderway-tasklist', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', TaskList;
@@ -17,7 +17,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         handlers: null,
         pickingMode: null,
         // *** Lifecycle Methods *** //
-        initializer: function () {
+        initializer: function() {
             this.data = [];
             this.handlers = {};
             this.pickingMode = false;
@@ -71,7 +71,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * Render the widget.
          * Hide node corresponding used only with the "picking mode" of this widget
          */
-        renderUI: function () {
+        renderUI: function() {
             var cb = this.get(CONTENTBOX);
             cb.insert('<div class="resourceName"><p></p></div>');
             this.table.render(cb);
@@ -83,22 +83,22 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         /**
          * Bind some function at nodes of this widget
          */
-        bindUI: function () {
+        bindUI: function() {
             var cb = this.get(CONTENTBOX);
             this.handlers.update = Y.Wegas.app.dataSources.VariableDescriptor.after("update", this.syncUI, this);
 
-            this.handlers.selectRow = this.table.delegate('click', function (e) {
+            this.handlers.selectRow = this.table.delegate('click', function(e) {
                 this.selectRow(e);
             }, '.yui3-datatable-data tr', this);
 
-            this.handlers.assignTask = cb.one('.buttons').delegate('click', function (e) {
+            this.handlers.assignTask = cb.one('.buttons').delegate('click', function(e) {
                 this.showOverlay();
                 this.assignTask(this.resourceDescriptor, this.selectedTaskDescriptor);
             }, '.buttonOK', this);
 
-            this.handlers.cancelAssign = cb.one('.buttons').delegate('click', function (e) {
+            this.handlers.cancelAssign = cb.one('.buttons').delegate('click', function(e) {
                 var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                targetPageLoader.once("widgetChange", function (e) {
+                targetPageLoader.once("widgetChange", function(e) {
                     if (e.newVal.setResourceDescriptor) {
                         e.newVal.setResourceDescriptor(this.resourceDescriptor);
                     }
@@ -112,7 +112,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         /**
          * Synchronise the content of this widget.
          */
-        syncUI: function () {
+        syncUI: function() {
             var listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.cache.find("name", "tasks");
             if (!listTasksDescriptor) {
                 return;
@@ -130,7 +130,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         /*
          * Destroy all child widget and all function
          */
-        destructor: function () {
+        destructor: function() {
             var k;
             this.table.destroy();
             for (k in this.handlers) {
@@ -148,7 +148,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * @param ResourceDescriptor resourceDescriptor, the new resourceDescriptor
          * @param String nextPageId the identifiant of the nexte page id.
          */
-        switchToPickingMode: function (resourceDescriptor, nextPageId) {
+        switchToPickingMode: function(resourceDescriptor, nextPageId) {
             var cb = this.get(CONTENTBOX);
             this.resourceDescriptor = resourceDescriptor;
             if (this.resourceDescriptor) {
@@ -164,7 +164,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * Add rows to the datatable. Get informations on the valide tasks
          * @param ListDescriptor listTasksDescriptor, A list of all tasks.
          */
-        getTasksData: function (listTasksDescriptor) {
+        getTasksData: function(listTasksDescriptor) {
             var i, j, k, termData, workers = new Array(), taskDescriptor, taskInstance, resourceDescriptor, resourceInstance, comment,
                     listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.cache.find("name", "resources"),
                     currentWeekInstance = Y.Wegas.VariableDescriptorFacade.cache.find("name", "week").getInstance();
@@ -209,18 +209,14 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         /**
          * @param TaskDescriptor td, the task to get Requirements
          * @return String, a texte including all the Requirements
-         *  of the given task (example : 1x engineer - 48).
+         *  of the given task (example : engineer - 48).
          */
-        getRequirements: function (td) {
-            var i, j, temp = [], req;
-            for (i in td.get('requirements')) {
-                if (td.get('requirements')[i].getAttrs && td.get('requirements')[i].getAttrs().needs) {
+        getRequirements: function(td) {
+            var i, j, temp = [], req = [];
+            for (i = 0; i < td.get('requirements').length; i++) {
+                if (td.get('requirements')[i].getAttrs) {
                     req = td.get('requirements')[i].getAttrs();
-                    for (j in req.needs) {
-                        //temp.push(req.needs[j] + "x " + i + " - " + j);
-                        temp.push(i + " - " + j);
-                    }
-
+                    temp.push(req.purview + " - " + req.level);
                 }
             }
             return temp.join("<br />");
@@ -228,7 +224,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         /**
          * @return the current selected task.
          */
-        getSelectedTaskDescriptor: function () {
+        getSelectedTaskDescriptor: function() {
             return this.selectedTaskDescriptor;
         },
         /**
@@ -236,7 +232,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * set the current selected task
          * @param e, a click event on a row from the datatable.
          */
-        selectRow: function (e) {
+        selectRow: function(e) {
             var i, cb = this.get(CONTENTBOX),
                     listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.cache.find("name", "tasks"), taskDescriptorId;
             //deselect old row
@@ -265,7 +261,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * @param ResourceDescriptor resourceDescriptor, the resource to assign a task.
          * @param TaskDescriptor taskDescriptor, the task to assign at a ressource.
          */
-        assignTask: function (resourceDescriptor, taskDescriptor) {
+        assignTask: function(resourceDescriptor, taskDescriptor) {
             if (taskDescriptor && resourceDescriptor) {
                 Y.Wegas.VariableDescriptorFacade.sendRequest({
                     request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
@@ -295,7 +291,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * the feedback message appear in node ".leaderway-feedback"
          * @param Boolean success, true if the opreation was a success, false otherwise.
          */
-        assignTaskResult: function (success) {
+        assignTaskResult: function(success) {
             this.hideOverlay();
             Y.one('.leaderway-feedback').setStyle('display', 'block'); //yes "Y.one" because we want the feed back on each widgets.
             if (success) { // useless, players expect a success
@@ -305,7 +301,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
                 Y.one('.leaderway-feedback').one('p').addClass('red');
                 Y.one('.leaderway-feedback').one('p').insert("Le mandat n'a pas pu être délégué.");
             }
-            setTimeout(function () {
+            setTimeout(function() {
                 Y.one('.leaderway-feedback').setHTML('<p></p>');
                 Y.one('.leaderway-feedback').setStyle('display', 'none');
                 Y.one('.leaderway-feedback').one('p').removeClass('green');
@@ -314,7 +310,7 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
 
             //change the current page
             var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-            targetPageLoader.once("widgetChange", function (e) {
+            targetPageLoader.once("widgetChange", function(e) {
                 if (e.newVal.setResourceDescriptor) {
                     e.newVal.setResourceDescriptor(this.resourceDescriptor);
                 }
@@ -331,11 +327,11 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
          * if current week > max value of week value, then
          * change the current widget to go on the "dialogue" widget.
          */
-        goToFinalPage: function () {
+        goToFinalPage: function() {
             var currentWeek = Y.Wegas.VariableDescriptorFacade.cache.find("name", "week"),
                     targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
-                targetPageLoader.once("widgetChange", function (e) {
+                targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue("dialogueFinal");
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));
@@ -346,13 +342,13 @@ YUI.add('wegas-leaderway-tasklist', function (Y) {
         ATTRS: {
             dialoguePageId: {
                 value: null,
-                validator: function (s) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
             targetPageLoaderId: {
                 value: null,
-                validator: function (s) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             }

@@ -15,7 +15,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
             SELF = "self", BOOLEAN = "boolean", NUMBER = "number", SELECT = "select",
             OBJECT = "object", HTML = "html", VALUE = "value", HASHLIST = "hashlist",
-            COMBINE = "combine",
+            COMBINE = "combine", GROUP = "group", LIST = "list",
             IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
@@ -472,43 +472,36 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 }
             },
             requirements: {
+                type: ARRAY,
                 _inputex: {
                     label: "requirements",
-                    _type: HASHLIST,
+                    _type: LIST,
+                    useButtons: true,
+                    keyField: NAME,
+                    valueField: VALUE,
                     elementType: {
-                        type: COMBINE,
+                        type: GROUP,
                         fields: [{
-                                name: NAME,
+                                name: "@class",
+                                type: HIDDEN
+                            }, {
+                                /*label: "Purview",*/
+                                name: "purview",
                                 typeInvite: NAME
                             }, {
-                                "@class": {
-                                    value: "WRequirement"
-                                },
-                                limite: {
-                                    type: NUMBER,
-                                    format: HTML,
-                                    optional: true
-                                },
-                                needs: {
-                                    _inputex: {
-                                        label: "needs",
-                                        _type: HASHLIST,
-                                        elementType: {
-                                            type: COMBINE,
-                                            fields: [{
-                                                    name: NAME,
-                                                    typeInvite: NAME
-                                                }, {
-                                                    name: NAME,
-                                                    typeInvite: NAME
-                                                }]
-                                        }
-                                    }
-                                }
+                                label: "Limit",
+                                name: "limit",
+                                typeInvite: VALUE
+                            }, {
+                                label: "Level",
+                                name: "level",
+                                typeInvite: VALUE
+                            }, {
+                                label: "Number",
+                                name: "number",
+                                typeInvite: VALUE
                             }]
-
                     }
-
                 }
             },
             properties: {
@@ -563,15 +556,19 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             "@class": {
                 value: "WRequirement"
             },
+            purview: {
+                type: STRING
+            },
             limit: {
                 type: NUMBER
             },
-            needs: {
-                _inputex: {
-                    label: "Needs",
-                    _type: OBJECT
-                }
+            level: {
+                type: NUMBER
+            },
+            number: {
+                type: NUMBER
             }
+
         }
     });
 

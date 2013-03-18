@@ -93,11 +93,11 @@ public class ResourceFacade {
         assignement.getResourceInstance().getAssignments().remove(assignement);
         assignement.getResourceInstance().getAssignments().add(index, assignement);
     }
-//
+
 //    public void test(WRequirement requirement, Long taskId, Long resId, Player player) {
 //        TaskDescriptor td = this.em.find(TaskDescriptor.class, taskId);
 //        ResourceDescriptor rd = this.em.find(ResourceDescriptor.class, resId);
-//        td.setRequierement("engineer", requirement);
+//        td.getRequirements().add(requirement);
 //
 //        //assigne activity between resource to task and assigne Activity between requirement and resource
 //        Activity activity = this.assignActivity(rd.getInstance(player).getId(), td.getInstance(player).getId());
