@@ -248,7 +248,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
-                    description: "Only for crimesim evidences"
+                    _type: HIDDEN
                 }
             },
             cost: {
@@ -256,8 +256,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
                 optional: true,
                 value: 0,
                 _inputex: {
-                    label: "Human resource consumption",
-                    description: "Only for crimesim evidences"
+                    _type: HIDDEN
                 }
             },
             results: {

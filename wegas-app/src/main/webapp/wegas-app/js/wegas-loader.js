@@ -469,7 +469,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-scriptlibrary': {
                     path: 'wegas-editor/js/widget/wegas-scriptlibrary-min.js',
-                    requires: ['ace-javascript', 'button', 'wegas-inputex-ace', 'inputex-select'],
+                    requires: ['ace-javascript', 'ace-css', 'button', 'wegas-inputex-ace', 'inputex-select'],
                     ws_provides: 'ScriptLibrary'
                 },
                 'wegas-fileexplorercss': {

@@ -137,7 +137,7 @@
                                 currentTeam: #{gameController.currentPlayer.team.id},
                                 currentPlayer: #{gameController.currentPlayer.id},
                                 currentUser: #{requestController.getCurrentUser().toJson()},
-                                cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
+
                                 /**
                                  * This field is used to override Entities edition menus.
                                  * Use the target class name as the key.
@@ -159,7 +159,14 @@
                                         ]
                                     },
                                     "Page": {
-                                        source: "#{gameController.currentGameModel.widgetsUri}",
+
+                                        <ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                            source: "rest/Page/#{editorGameController.currentGameModel.id}",
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                            source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
+                                        </ui:fragment>
+
                                         plugins: [{
                                                 fn: "DataSourceJSONSchema",
                                                 cfg: {
@@ -204,7 +211,15 @@
                                 }
                             });
 
-                            app.render();                                       // launch app
+                            app.after("render", function () {
+                                try {
+                                    #{editorGameController.getClientScripts()}  // Add game model specific js footer
+                                } catch (e) {
+                                    Y.log("Error running footer scripts.", "error");
+                                }
+                            });
+
+                            app.render();                                       // Render app
                         });
                     </script>
                 </ui:insert>

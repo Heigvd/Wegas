@@ -89,8 +89,7 @@ YUI.add('wegas-scripteval', function(Y) {
             this.context = {};
 
             function buildItems(entity, acc) {                                  // Recursively build items lists
-                console.log("building", entity, acc, entity instanceof Y.Wegas.persistence.ListDescriptor );
-                if (entity instanceof Y.Wegas.persistence.ListDescriptor) {
+                 if (entity instanceof Y.Wegas.persistence.ListDescriptor) {
                     var items = entity.get("items");
                     acc.items = [];
                     for (j in items) {

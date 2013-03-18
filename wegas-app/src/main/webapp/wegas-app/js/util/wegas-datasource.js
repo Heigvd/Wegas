@@ -169,7 +169,7 @@ YUI.add('wegas-datasource', function(Y) {
             if (e.error) {                                                      // If there was an server error, do not update the cache
                 return;
             }
-            if (Lang.isArray(response)) {                 // Non-managed response: we apply the operation for each object in the returned array
+            if (Lang.isArray(response)) {              // Non-managed response: we apply the operation for each object in the returned array
                 for (i = 0; i < response.length; i += 1) {
                     this.updated = this.updateCache(e.cfg.method, response[i]) || this.updated;
                 }
@@ -615,11 +615,11 @@ YUI.add('wegas-datasource', function(Y) {
         /*
          *  @fixme so we can delect scriptlibrary elemnt and still treat the reply as an gamemodel updated event
          */
-        beforeResponse: function(e) {
-            if (e.request.indexOf("ScriptLibrary") !== -1) {
+        onData: function(e) {
+            if (e.request.indexOf("/Library/") !== -1) {
                 e.cfg.method = POST;
             }
-            GameModelCache.superclass.beforeResponse.call(this, e);
+            GameModelCache.superclass.onData.call(this, e);
         },
         getCurrentGameModel: function() {
             return this.findById(Wegas.app.get('currentGameModel'));

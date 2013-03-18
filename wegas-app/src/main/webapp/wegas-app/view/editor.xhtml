@@ -36,7 +36,6 @@
                         currentTeam: #{editorGameController.currentPlayer.team.id},
                         currentPlayer: #{editorGameController.currentPlayer.id},
                         currentUser: #{requestController.getCurrentUser().toJson()},
-                        cssStylesheets: ["#{editorGameController.currentGameModel.cssUri}"],
 
                         dataSources: {
                             "GameModel": {
@@ -61,7 +60,14 @@
                                     }]
                             },
                             "Page": {
-                                source: "#{editorGameController.currentGameModel.widgetsUri}",
+
+                                <ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                    source: "rest/Page/#{editorGameController.currentGameModel.id}",
+                                </ui:fragment>
+                                <ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                    source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
+                                </ui:fragment>
+
                                 plugins: [{
                                         fn: "DataSourceJSONSchema",
                                         cfg: {
@@ -128,6 +134,13 @@
                     app.after("render", function () {
                         var gm = Y.Wegas.GameModelFacade.cache.getCurrentGameModel();
                         Y.one(".wegas-title").setContent(gm.get("name"));
+
+
+                        try {
+                            #{editorGameController.getClientScripts()}      // Display game model specific js footer
+                        } catch (e) {
+                            Y.log("Error running footer scripts.", "error");
+                        }
                     });
 
                     app.after('currentPlayerChange', function (e) {             // Whenever the current player changes
@@ -140,9 +153,11 @@
                             + this.get("currentGameModel") + "/VariableDescriptor");
 
                         //Y.Wegas.VariableDescriptorFacade.fire("update");      // Fire an update event on the variable datasource
-                        Y.Wegas.UserFacade.fire("update");      // Fire an update event on the variable datasource
+                        Y.Wegas.UserFacade.fire("update");                      // Fire an update event on the variable datasource
                     });
-                    app.render();
+
+                    app.render();                                               // Render app
+
                 });
             </script>
         </ui:define>

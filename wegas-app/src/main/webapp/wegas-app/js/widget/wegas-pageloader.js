@@ -196,8 +196,6 @@ YUI.add('wegas-pageloader', function(Y) {
                     }
                     var widgetCfg = Y.Wegas.PageFacade.cache.getPage(val);
 
-                    console.log(widgetCfg);
-                    
                     if (!widgetCfg) {
                         return val;
                     }

@@ -92,7 +92,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * Here we cannot use type T, otherwise jpa won't handle the db ref
      * correctly
      */
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL},fetch= FetchType.LAZY)
+    @JsonView(Views.EditorI.class)
     @NotNull
     private VariableInstance defaultInstance;
     /*
@@ -112,6 +113,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         @JoinColumn(referencedColumnName = "variabledescriptor_id")},
     inverseJoinColumns = {
         @JoinColumn(referencedColumnName = "tag_id")})
+    @XmlTransient
     private List<Tag> tags;
 
     /**
