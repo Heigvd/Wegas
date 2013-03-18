@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.event.EngineInvocationEvent;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -152,16 +153,18 @@ public class ScriptFacade implements Serializable {
 
         List<String> errorVariable = new ArrayList<>();
 
-        for (Entry<String, String> arg : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
+        for (Entry<String, GameModelContent> arg :
+                evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
             try {
-                evt.getEngine().eval(arg.getValue());
+                evt.getEngine().eval(arg.getValue().getContent());
             } catch (ScriptException ex) {
                 logger.warn("Error injecting script library: {} in\n{}", ex.getMessage(), arg.getValue());
-                throw new ScriptException(ex.getMessage(), arg.getValue(), ex.getLineNumber());
+                throw new ScriptException(ex.getMessage(), arg.getValue().getContent(), ex.getLineNumber());
             }
         }
 
-        for (VariableDescriptor vd : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
+        for (VariableDescriptor vd :
+                evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
             VariableInstance vi = vd.getInstance(evt.getPlayer());
             try {
                 evt.getEngine().put(vd.getName(), vi);

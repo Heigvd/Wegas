@@ -2,10 +2,15 @@
     "@class":"GameModel",
     "name":"Default game model",
     "scriptLibrary": {
-        "default": ""
+        "default": {
+            "@class": "GameContent",
+            "content": ""
+        }
     },
-    "cssUri": "wegas-app/db/wegas-default.css",
-    "widgetsUri": "wegas-app/db/wegas-default-pages.json#",
+    "properties": {
+        "cssUri": "wegas-app/db/wegas-default.css",
+        "pagesUri": "wegas-app/db/wegas-default-pages.json#"
+    },
     "childVariableDescriptors": [{
         "@class":"ListDescriptor",
         "name":"phases",

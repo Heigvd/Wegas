@@ -1,8 +1,10 @@
 {
     "@class": "GameModel",
     "name": "Book",
-    "cssUri":"wegas-book/css/wegas-book.css",
-    "widgetsUri":"wegas-book/db/wegas-book-pages.json#",
+    "properties": {
+        "cssUri":"wegas-book/css/wegas-book.css",
+        "pagesUri":"wegas-book/db/wegas-book-pages.json#"
+    },
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
         "name":"combatSkill",

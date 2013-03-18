@@ -4,6 +4,7 @@
 
 YUI.add('wegas-cep-folder', function (Y) {
     "use strict";
+    
     var CONTENTBOX = 'contentBox', Folder;
     Folder = Y.Base.create("wegas-cep-folder", Y.Wegas.ItemSelector, [Y.Wegas.Widget], {
         handlers: null,
@@ -17,7 +18,7 @@ YUI.add('wegas-cep-folder', function (Y) {
         syncUI: function () {
             var i, cb = this.get(CONTENTBOX), nodeToRemove = [];
             Folder.superclass.syncUI.apply(this);
-            
+
             //remove all "previous" node with "leadershiplevel < 1"
             cb.all('.nodeformatter-position').each(function (node) {
                 node.all('*').each(function (n) {

@@ -35,6 +35,15 @@ YUI.add('wegas-inputex-ace', function (Y) {
             this.options.height = options.height || "150px";
         },
 
+        disable: function () {
+            this.editor.setReadOnly(true);
+        },
+
+        enable: function () {
+
+            this.editor.setReadOnly(false);
+        },
+
         /**
 	 * Render the field using the YUI Editor widget
 	 */

@@ -158,29 +158,19 @@ YUI.add('wegas-entity', function(Y) {
                     _type: HIDDEN
                 }
             },
-            widgetsUri: {
-                type: STRING,
-                /* choices: [{
-                 value: "wegas-leaderway/db/wegas-leaderway-pages.json",
-                 label: "Leaderway"
-                 }, {
-                 value: "wegas-crimesim/db/wegas-crimesim-pages.json",
-                 label: "Crimesim"
-                 }, {
-                 value: "wegas-mmo/db/wegas-leaderway-mmo.json",
-                 label: "Programming Game"
-                 }],*/
-                _inputex: {
-                    label: "Layout"
-                }
-            },
-            cssUri: {
-                type: STRING,
-                _inputex: {
-                    label: "CSS Stylesheet"
-                }
-            },
             scriptLibrary: {
+                value: {},
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
+            clientScriptLibrary: {
+                value: {},
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
+            cssLibrary: {
                 value: {},
                 _inputex: {
                     _type: HIDDEN
@@ -1031,18 +1021,6 @@ YUI.add('wegas-entity', function(Y) {
                         "type": "AddEntityChildButton",
                         "label": "Trigger",
                         "targetClass": "TriggerDescriptor"
-                    }, {
-                        "type": "AddEntityChildButton",
-                        "label": "Resource (Leaderway, CEP Game)",
-                        "targetClass": "ResourceDescriptor"
-                    }, {
-                        "type": "AddEntityChildButton",
-                        "label": "Dialogue (Leaderway)",
-                        "targetClass": "DialogueDescriptor"
-                    }, {
-                        "type": "AddEntityChildButton",
-                        "label": "Task (Leaderway)",
-                        "targetClass": "TaskDescriptor"
                     }]
                 }
             }]

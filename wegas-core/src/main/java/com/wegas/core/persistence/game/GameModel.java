@@ -15,6 +15,7 @@ import java.util.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.shiro.util.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -75,36 +76,39 @@ public class GameModel extends NamedEntity {
     private List<Game> games = new ArrayList<>();
     /**
      * Holds all the scripts contained in current game model.
-     *
-     * @FIXME the @Lob annotation has no effect on ElementCollection with
-     * Postgresql
+     */
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "scriptlibrary_gamemodelid")
+    //@ElementCollection(fetch = FetchType.LAZY)
+    @JsonView({Views.EditorI.class})
+    private Map<String, GameModelContent> scriptLibrary = new HashMap<>();
+    /**
      *
      */
-    @ElementCollection(fetch = FetchType.LAZY)
-    @Column(length = 10485760)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "csslibrary_gamemodelid")
+    //@ElementCollection(fetch = FetchType.LAZY)
     @JsonView({Views.EditorI.class})
-    //@Lob
-    //@Column(columnDefinition = "BLOB NOT NULL")
-    private Map<String, String> scriptLibrary = new HashMap<>();
+    private Map<String, GameModelContent> cssLibrary = new HashMap<>();
+    /**
+     *
+     */
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "clientscriptlibrary_gamemodelid")
+    //@ElementCollection(fetch = FetchType.LAZY)
+    @JsonView({Views.EditorI.class})
+    private Map<String, GameModelContent> clientScriptLibrary = new HashMap<>();
     /**
      *
      */
     @ElementCollection(fetch = FetchType.LAZY)
     private Map<String, String> properties = new HashMap<>();
-    /**
-     * @fixme temporary solutions to store pages
-     */
-    private String cssUri;
-    /**
-     *
-     * @fixme temporary solutions to store widgets
-     */
-    private String widgetsUri;
 
     /**
      *
      */
     public GameModel() {
+        org.apache.shiro.util.StringUtils.join(this.getClientScriptLibrary().values().iterator(), "");
     }
 
     /**
@@ -128,8 +132,6 @@ public class GameModel extends NamedEntity {
     @Override
     public void merge(AbstractEntity n) {
         super.merge(n);
-        this.setWidgetsUri(((GameModel) n).getWidgetsUri());
-        this.setCssUri(((GameModel) n).getCssUri());
     }
 
     /**
@@ -259,44 +261,16 @@ public class GameModel extends NamedEntity {
     }
 
     /**
-     * @return the cssUri
-     */
-    public String getCssUri() {
-        return cssUri;
-    }
-
-    /**
-     * @param cssUri the cssUri to set
-     */
-    public void setCssUri(String cssUri) {
-        this.cssUri = cssUri;
-    }
-
-    /**
-     * @return the widgetsUri
-     */
-    public String getWidgetsUri() {
-        return widgetsUri;
-    }
-
-    /**
-     * @param widgetsUri the widgetsUri to set
-     */
-    public void setWidgetsUri(String widgetsUri) {
-        this.widgetsUri = widgetsUri;
-    }
-
-    /**
      * @return the scriptLibrary
      */
-    public Map<String, String> getScriptLibrary() {
+    public Map<String, GameModelContent> getScriptLibrary() {
         return scriptLibrary;
     }
 
     /**
      * @param scriptLibrary the scriptLibrary to set
      */
-    public void setScriptLibrary(Map<String, String> scriptLibrary) {
+    public void setScriptLibrary(Map<String, GameModelContent> scriptLibrary) {
         this.scriptLibrary = scriptLibrary;
     }
 
@@ -357,5 +331,33 @@ public class GameModel extends NamedEntity {
      */
     public void setProperty(String key, String value) {
         this.properties.put(key, value);
+    }
+
+    /**
+     * @return the cssLibrary
+     */
+    public Map<String, GameModelContent> getCssLibrary() {
+        return cssLibrary;
+    }
+
+    /**
+     * @param cssLibrary the cssLibrary to set
+     */
+    public void setCssLibrary(Map<String, GameModelContent> cssLibrary) {
+        this.cssLibrary = cssLibrary;
+    }
+
+    /**
+     * @return the clientScriptLibrary
+     */
+    public Map<String, GameModelContent> getClientScriptLibrary() {
+        return clientScriptLibrary;
+    }
+
+    /**
+     * @param clientScriptLibrary the clientScriptLibrary to set
+     */
+    public void setClientScriptLibrary(Map<String, GameModelContent> clientScriptLibrary) {
+        this.clientScriptLibrary = clientScriptLibrary;
     }
 }

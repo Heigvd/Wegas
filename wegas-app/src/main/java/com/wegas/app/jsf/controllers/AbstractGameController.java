@@ -10,6 +10,7 @@ package com.wegas.app.jsf.controllers;
 import com.sun.faces.util.Util;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import java.io.Serializable;
 import java.util.Locale;
@@ -66,6 +67,14 @@ public class AbstractGameController implements Serializable {
 //            }
 //        }
 //        return locale;
+    }
+
+    public String getClientScripts() {
+        String ret = "";
+        for (GameModelContent c : this.getCurrentGameModel().getClientScriptLibrary().values()) {
+            ret += c.getContent();
+        }
+        return ret;
     }
 
     /**
