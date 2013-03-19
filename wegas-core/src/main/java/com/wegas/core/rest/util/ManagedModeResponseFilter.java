@@ -14,7 +14,7 @@ import com.wegas.core.event.EntityUpdatedEvent;
 import com.wegas.core.event.ServerEvent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.exception.ExceptionWrapper;
-import com.wegas.core.websocket.ejb.WebsocketFacade;
+import com.wegas.core.ejb.WebsocketFacade;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

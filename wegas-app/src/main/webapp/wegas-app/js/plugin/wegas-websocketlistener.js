@@ -15,63 +15,23 @@ YUI.add('wegas-websocketlistener', function(Y) {
 
 
         initializer: function() {
-            Pusher.log = Y.log;    // Enable pusher logging - don't include this in production
-
-            document.WEB_SOCKET_DEBUG = true;// Flash fallback logging - don't include this in production
-
-            this.pusher = new Pusher('732a1df75d93d028e4f9');
-            this.gameChannel = this.pusher.subscribe('Game-' + Y.Wegas.app.get("currentGame"));
-            this.teamChannel = this.pusher.subscribe('Team-' + Y.Wegas.app.get("currentTeam"));
-            this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.app.get("currentPlayer"));
-            
-            // event response
-            this.gameChannel.bind('EntityUpdatedEvent', Y.bind(this.onVariableInstanceUpdate, this));
-            this.teamChannel.bind('EntityUpdatedEvent', Y.bind(this.onVariableInstanceUpdate, this));
-            this.playerChannel.bind('EntityUpdatedEvent', Y.bind(this.onVariableInstanceUpdate, this));
-          
-            this.gameChannel.bind('CustomEvent', Y.bind(this.onCustomEvent, this));
-            this.teamChannel.bind('CustomEvent', Y.bind(this.onCustomEvent, this));
-            this.playerChannel.bind('CustomEvent', Y.bind(this.onCustomEvent, this)); 
-},
-        
-        /**
-         *
-         */
-        triggerCustomEvent: function (channel, event) {
-            var id;
-            if (channel == "Game"){
-                id = Y.Wegas.app.get("currentGame");
-            } else if (channel == "Team"){
-                id = Y.Wegas.app.get("currentTeam");
-            } else {
-                id = Y.Wegas.app.get("currentPlayer");
-            }
-
-            this.get("host").sendRequest({
-                cfg: { 
-                    fullUri: Y.Wegas.app.get("base") + "rest/Pusher/Send/" + channel + "/" + id,
-                    method: "POST",
-                    data: {
-                        "@class": "CustomEvent",
-                        event: event
-                    }
-                }
-            });
+            new Y.Wegas.PusherConnector();
+            this.pusher = Y.Wegas.PusherConnector.INSTANCE;
+            this.pusher.registerEvent("EntityUpdatedEvent");
+            this.pusher.on("*:EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
         },
         
         onVariableInstanceUpdate: function(data){
-              this.get("host").cache.onResponseRevived({
-                  serverResponse: Y.Wegas.Editable.revive({
-                      "@class": "ManagedModeResponseFilter$ServerResponse",
-                      events: [data]
-                  })
-              });
+            this.get("host").cache.onResponseRevived({
+                serverResponse: Y.Wegas.Editable.revive({
+                    "@class": "ManagedModeResponseFilter$ServerResponse",
+                    events: [data]
+                })
+            });
         },
-        
-        onCustomEvent: function(data){
-            this.fire(data.event.type, data.event);                   
+        destructor: function(){
+            this.pusher.unregisterEvent("EntityUpdatedEvent");
         }
-         
     }, {
         NS: "ws",
         NAME: "WebSocketListener"
