@@ -218,7 +218,7 @@ YUI().use(function(Y) {
                     requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
                     'scrollview-paginator', 'scrollview-scrollbars', 'wegas-gallerycss',
                     'stylesheet', 'event-resize'],
-                    ws_provides: "WegasGallery"
+                    ws_provides: "Gallery"
                 },
                 'wegas-itemselector': {
                     path: 'wegas-app/js/widget/wegas-itemselector-min.js',
@@ -507,7 +507,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-mcqtabview': {
                     path: 'wegas-app/js/widget/wegas-mcqtabview-min.js',
-                    requires: ['tabview', 'wegas-tabviewcss'],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery'],
                     ws_provides: "MCQTabView"
                 },
                 'wegas-editor-pagetreeview': {

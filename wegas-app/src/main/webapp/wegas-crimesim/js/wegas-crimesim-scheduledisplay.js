@@ -64,7 +64,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             this.renderDetailsPanel(this.get(CONTENTBOX).one(".schedule-analysis"));
 
-            this.gallery = new Y.Wegas.FileExplorerGallery({
+            this.gallery = new Y.Wegas.util.FileExplorerGallery({
                 render: this.get(CONTENTBOX).one(".schedule-gallery"),
                 selectedHeight: 150,
                 selectedWidth: 235
