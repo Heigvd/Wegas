@@ -344,8 +344,20 @@
         }]
     }],
     "scriptLibrary": {
-        "default": "importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passWeek() {\n period.value += 1; \nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\n qdf.setCurrentTime(evidences.descriptor, self, period.value); \nhumanResources.value = 15;\n } "
+        "default": {
+            "@class": "GameContent",
+            "content": "importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passWeek() {\n period.value += 1; \nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\n qdf.setCurrentTime(evidences.descriptor, self, period.value); humanResources.value = 15; } "
+        }
     },
-    "cssUri":"wegas-crimesim/css/wegas-crimesim.css",
-    "widgetsUri":"wegas-crimesim/db/wegas-crimesim-pages.json#"
+    "clientScriptLibrary": {
+        "default": {
+            "@class": "GameContent",
+            "content": "Y.Wegas.persistence.ChoiceDescriptor.ATTRS.duration._inputex = {type: \"text\", description: \"Only for analyses\"};Y.Wegas.persistence.ChoiceDescriptor.ATTRS.cost._inputex = {type: \"text\", description: \"Only for analyses\", label: \"Human resource consumption\"};"
+        }
+    },
+
+    "properties": {
+        "cssUri":"wegas-crimesim/css/wegas-crimesim.css",
+        "pagesUri":"wegas-crimesim/db/wegas-crimesim-pages.json#"
+    }
 }

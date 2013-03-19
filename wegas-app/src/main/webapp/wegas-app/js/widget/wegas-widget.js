@@ -552,7 +552,11 @@ YUI.add("wegas-widget", function(Y) {
                     val.evaluated = ds.cache.find('name', val.name);
 
                 } else if (val.expr) {                                          // if absent evaluate the expr field
-                    val.evaluated = ds.cache.findById(Y.Wegas.VariableDescriptorFacade.script.scopedEval(val.expr));
+                    try {
+                        val.evaluated = ds.cache.findById(Y.Wegas.VariableDescriptorFacade.script.localEval(val.expr));
+                    } catch (e) {
+                        val.evaluated = null;
+                    }
 
                 } else if (val.id) {
                     val.evaluated = ds.cache.findById(val.id);

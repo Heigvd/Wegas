@@ -23,7 +23,7 @@ YUI.add('wegas-form', function (Y) {
      */
     var inputEx = Y.inputEx,
     lang = Y.Lang,
-    Form = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    Form = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /**
          * @lends Y.Wegas.Form#
          */
@@ -119,6 +119,7 @@ YUI.add('wegas-form', function (Y) {
              * Values of fields of the form
              */
             values: {
+                "transient": true,
                 value: {
                     setter: function (val) {
                         if (this.get("form")) {
@@ -131,6 +132,7 @@ YUI.add('wegas-form', function (Y) {
              * The form to manage
              */
             form: {
+                "transient": true,
                 setter: function (val) {
                     if (this.get("form")) {                                     // If there is alread a form instantiated, destroy it
                         this.get("form").destroy();
@@ -142,6 +144,7 @@ YUI.add('wegas-form', function (Y) {
              * Configuation of the form
              */
             cfg: {
+                "transient": true,
                 setter: function (val) {
                     val.parentEl = this.get("contentBox");                        // Set up the form parentEl attribute, so it knows where to render
                     val.className = "wegas-form-ix";

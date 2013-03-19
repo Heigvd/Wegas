@@ -5,7 +5,7 @@
 YUI.add('wegas-leaderway-folder', function (Y) {
     "use strict";
     var CONTENTBOX = 'contentBox', Folder;
-    Folder = Y.Base.create("wegas-leaderway-folder", Y.Wegas.ItemSelector, [Y.Wegas.Widget], {
+    Folder = Y.Base.create("wegas-leaderway-folder", Y.Wegas.ItemSelector, [Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
         menuAction: null,
         varToHide: null,

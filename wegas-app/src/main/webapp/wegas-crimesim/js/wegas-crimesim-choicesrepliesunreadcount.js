@@ -22,14 +22,17 @@ YUI.add('wegas-crimesim-choicesrepliesunreadcount', function (Y) {
      * @borrows Y.Wegas.Editable
      */
     var ChoicesRepliesUnreadCount = Y.Base.create("wegas-crimesim-choicesRepliesUnreadCount", Y.Plugin.UnreadCount, [Y.Wegas.Plugin], {
-        syncUI: function () {
-            ChoicesRepliesUnreadCount.superclass.syncUI.apply(this);
-        },
+
         getUnreadCount: function () {
             var i, j, count = 0, questionInstance, reply,
-                    questions = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences").get("items");
-            for (i = 0; i < questions.length; i = i + 1) {
-                questionInstance = questions[i].getInstance();
+                    questions = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences");
+
+            if (!questions) {
+                return 0;
+            }
+
+            for (i = 0; i < questions.get("items").length; i = i + 1) {
+                questionInstance = questions.get("items")[i].getInstance();
                 for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
                     reply = questionInstance.get("replies")[j];
                     if (reply.getAttrs() && reply.getAttrs().unread) {

@@ -17,14 +17,14 @@ function lookupBean (name) {
 
 function passPeriod () {
     var currentTime = phases.descriptor.items.get(phases.value),
-            currentTimeInstance = currentTime.getInstance(self);
-    currentTimeInstance.value += 1;
-    if (currentTimeInstance.value > currentTime.maxValue) {
+    currentTimeInstance = currentTime.getInstance(self);
+    if (currentTimeInstance.value == currentTime.maxValue) {
         phases.value += 1;
+    } else {
+        currentTimeInstance.value += 1;
     }
-    humanResources.value = 15;
+    humanResources.value = humanResources.descriptor.defaultInstance.value;
 }
-
 function checkMoral () {
     this.setTeamMotivation();
     this.changePicture();
@@ -57,7 +57,7 @@ function setTeamMotivation () {
     mAverage = mSum / morals.length;
 
     //For each moral calcul gap between moral and average (= moral - average);
-    //take the sum of each square of gaps (= Sum(n_gaps * n_gaps)). 
+    //take the sum of each square of gaps (= Sum(n_gaps * n_gaps)).
     for (i = 0; i < morals.length; i++) {
         mGap.push(morals[i] - mAverage);
         SumOfSquareOfMGap += Math.pow(mGap[i], 2);

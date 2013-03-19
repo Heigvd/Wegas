@@ -36,6 +36,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
          */
         destructor: function () {
             this.responseHandler.detach();
+            this.aceField.destroy();
         },
 
         /**
@@ -47,7 +48,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                 parentEl: this.get(CONTENTBOX),
                 type: 'ace',
                 height: "100%",
-                language: "javascript",
+                language: (this.get("library") === "CSS") ? "css" : "javascript",
                 value: ""
             });
 
@@ -59,7 +60,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
          * @private
          */
         bindUI: function () {
-            this.responseHandler = Y.Wegas.app.dataSources.GameModel.after("response", this.syncUI, this);
+            this.responseHandler = Y.Wegas.GameModelFacade.after("response", this.syncUI, this);
 
             this.selectField.on("updated", function (val) {
                 this.currentScript = val;
@@ -76,19 +77,15 @@ YUI.add('wegas-scriptlibrary', function (Y) {
          * @private
          */
         syncUI: function () {
-            var i, cGameModel = Y.Wegas.GameModelFacade.cache.getCurrentGameModel(),
-            isEmpty = true;
-
-            if (!cGameModel) {
-                return;
-            }
+            var i, isEmpty = true;
 
             while (this.selectField.choicesList.length > 0) {
                 this.selectField.removeChoice({
                     position: 0
                 });
             }
-            for (i in cGameModel.get("scriptLibrary")) {
+
+            for (i in this.getLibrary()) {
                 if (!this.currentScript) {
                     this.currentScript = i;
                 }
@@ -97,13 +94,18 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                 });
                 isEmpty = false;
             }
+
             if (isEmpty) {
                 this.selectField.addChoice({
                     value: null,
                     label: "No scripts"
                 });
+
+                this.aceField.disable();
             } else {
+                this.aceField.enable();
                 this.selectField.setValue(this.currentScript, false);
+
             }
 
             this.saveButton.set("disabled", isEmpty);
@@ -112,7 +114,32 @@ YUI.add('wegas-scriptlibrary', function (Y) {
             this.hideOverlay();
         },
 
+
         // *** Private Methods *** //
+
+
+        /**
+         * @function
+         * @private
+         */
+        syncEditor: function () {
+            var library = this.getLibrary(),
+            selected = this.selectField.getValue(),
+            val = (library[selected]) ? library[selected].get("val.content") || "" : "";
+
+            this.aceField.setValue(val, false);
+        },
+
+        getLibrary: function () {
+            var cGameModel = Y.Wegas.GameModelFacade.cache.getCurrentGameModel(),
+            mapping = {
+                "Script": "scriptLibrary",
+                "ClientScript": "clientScriptLibrary",
+                "CSS": "cssLibrary"
+            };
+
+            return cGameModel.get(mapping[this.get("library")]);
+        },
 
         /**
          * @function
@@ -131,11 +158,14 @@ YUI.add('wegas-scriptlibrary', function (Y) {
 
                         this.showOverlay();
 
-                        Y.Wegas.app.dataSources.GameModel.sendRequest({
-                            request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.currentScript,
+                        Y.Wegas.GameModelFacade.sendRequest({
+                            request: "/" + Y.Wegas.app.get("currentGameModel")
+                            + "/Library/" + this.get("library") + "/" + this.currentScript,
                             cfg: {
                                 method: "POST",
-                                data: ""
+                                data: {
+                                    "@class": "GameModelContent"
+                                }
                             },
                             on: {
                                 success: Y.bind(function () {
@@ -158,21 +188,41 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                 parentEl: toolbarNode
             });
 
+            if (this.get("library") === "CSS") {
+                this.previewButton = new Y.Button({
+
+                    label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
+                    on: {
+                        click: Y.bind(function () {
+                            this.updateLoadedSheet(this.currentScript, this.aceField.getValue());
+                        }, this)
+                    }
+                });
+            }
+
             this.saveButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
                 on: {
                     click: Y.bind(function () {
                         this.showOverlay();
 
-                        Y.Wegas.app.dataSources.GameModel.sendRequest({
-                            request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.selectField.getValue(),
+                        Y.Wegas.GameModelFacade.sendRequest({
+                            request: "/" + Y.Wegas.app.get("currentGameModel")
+                            + "/Library/" + this.get("library") + "/" + this.selectField.getValue(),
                             cfg: {
                                 method: "POST",
-                                data: this.aceField.getValue()
+                                data: {
+                                    "@class": "GameModelContent",
+                                    content: this.aceField.getValue()
+                                }
                             },
                             on: {
                                 success: Y.bind(function () {
                                     this.showMessage("success", "Script saved");
+
+                                    if (this.get("library") === "CSS") {
+                                        this.updateLoadedSheet(this.currentScript, this.aceField.getValue());
+                                    }
                                 }, this),
                                 failure: Y.bind(function () {
                                     this.showMessage("error", "Error while saving script");
@@ -189,35 +239,44 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                     click: Y.bind(function () {
                         this.showOverlay();
 
-                        Y.Wegas.app.dataSources.GameModel.sendRequest({
-                            request: "/" + Y.Wegas.app.get("currentGameModel") + "/ScriptLibrary/" + this.currentScript,
+                        Y.Wegas.GameModelFacade.sendRequest({
+                            request: "/" + Y.Wegas.app.get("currentGameModel")
+                            + "/Library/" + this.get("library") + "/" + this.currentScript,
                             cfg: {
                                 method: "DELETE"
                             },
                             on: {
                                 success: Y.bind(function () {
                                     this.showMessage("success", "Script deleted");
+
+                                    if (this.get("library") === "CSS") {
+                                        this.updateLoadedSheet(this.currentScript, "");
+                                    }
+
+                                    this.currentScript = null;
                                 }, this),
                                 failure: Y.bind(function () {
                                     this.showMessage("error", "Error while deleting script.");
                                 }, this)
                             }
                         });
-                        this.currentScript = null;
                     }, this)
                 }
             }).render(toolbarNode);
         },
 
-        /**
-         * @function
-         * @private
-         */
-        syncEditor: function () {
-            var cGameModel = Y.Wegas.GameModelFacade.cache.getCurrentGameModel(),
-            val = cGameModel.get("scriptLibrary")[this.selectField.getValue()] || "";
-
-            this.aceField.setValue(val, false);
+        updateLoadedSheet: function (id, content) {
+            if (Y.Plugin.CSSLoader.customCSSStyleSheet[id]) {
+                Y.Plugin.CSSLoader.customCSSStyleSheet[id].disable();
+            }
+            Y.Plugin.CSSLoader.customCSSStyleSheet[id] = new Y.StyleSheet(content);
+        }
+    }, {
+        ATTRS: {
+            library: {
+                type: "string",
+                value: "Script"                                                 // Script, ClientScript or CSS
+            }
         }
     });
     Y.namespace('Wegas').ScriptLibrary = ScriptLibrary;

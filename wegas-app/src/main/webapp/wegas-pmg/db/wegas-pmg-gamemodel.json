@@ -1,8 +1,10 @@
 {
     "@class": "GameModel",
     "name": "Project Management Game",
-    "cssUri": "wegas-pmg/css/wegas-pmg.css",
-    "widgetsUri": "wegas-pmg/db/wegas-pmg-pages.json#",
+    "properties": {
+        "cssUri": "wegas-pmg/css/wegas-pmg.css",
+        "pagesUri": "wegas-pmg/db/wegas-pmg-pages.json#"
+    },
     "childVariableDescriptors": [
         {
             "@class": "InboxDescriptor",

@@ -60,7 +60,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
      * @return the properties
      */

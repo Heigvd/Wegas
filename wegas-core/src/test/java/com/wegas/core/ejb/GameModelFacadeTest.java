@@ -9,10 +9,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.exception.PersistenceException;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.game.*;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -52,15 +49,25 @@ public class GameModelFacadeTest {
     public void createGameModel() throws NamingException {
         logger.info("createGameModel()");
         final String name = "test";
+        final String SCRIPTNAME = "defaultScript";
+        final String SCRIPTCONTENT = "test";
 
         GameModel gameModel = new GameModel();
         gameModel.setName(name);
+        gameModel.getClientScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
+        gameModel.getScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
+        gameModel.getCssLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
+        gameModel.getProperties().put(SCRIPTNAME, SCRIPTCONTENT);
 
         gameModelFacade.create(gameModel);
         Assert.assertEquals(1, gameModelFacade.findAll().size());
 
         gameModel = gameModelFacade.find(gameModel.getId());
         Assert.assertEquals(gameModel.getName(), name);
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScriptLibrary().get(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getProperty(SCRIPTNAME));
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getCssLibrary().get(SCRIPTNAME).getContent());
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getScriptLibrary().get(SCRIPTNAME).getContent());
 
         gameModelFacade.remove(gameModel.getId());
         Assert.assertEquals(0, gameModelFacade.findAll().size());

@@ -5,7 +5,7 @@
 YUI.add('wegas-leaderway-dialogue', function (Y) {
     "use strict";
     var CONTENTBOX = 'contentBox', Dialogue;
-    Dialogue = Y.Base.create("wegas-dialogue", Y.Widget, [Y.Wegas.Widget], {
+    Dialogue = Y.Base.create("wegas-dialogue", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
         chart: null,
         seriesName: null,
         seriesValue: null,

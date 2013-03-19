@@ -56,8 +56,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
     @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
     @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
-    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
-})
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),})
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
@@ -94,7 +93,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * Here we cannot use type T, otherwise jpa won't handle the db ref
      * correctly
      */
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @JsonView(Views.EditorI.class)
     @NotNull
     private VariableInstance defaultInstance;
     /*
@@ -114,6 +114,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         @JoinColumn(referencedColumnName = "variabledescriptor_id")},
     inverseJoinColumns = {
         @JoinColumn(referencedColumnName = "tag_id")})
+    @XmlTransient
     private List<Tag> tags;
 
     /**
@@ -142,7 +143,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.setLabel(other.getLabel());
         this.setEditorLabel(other.getEditorLabel());
         this.defaultInstance.merge(other.getDefaultInstance());
-        this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
+        if (other.getScope() != null) {
+            this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
+        }
         //this.scope.merge(vd.getScope());
     }
 
@@ -153,7 +156,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public void propagateDefaultInstance(boolean force) {
         this.getScope().propagateDefaultInstance(force);
     }
-
 
     /**
      *

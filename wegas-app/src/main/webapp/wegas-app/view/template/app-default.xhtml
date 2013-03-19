@@ -2,8 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:composition template="page-default.xhtml">
 
@@ -23,7 +22,7 @@
                             var m = document.createElement('script');
                             m.type = 'text/javascript';
                             m.async = true;
-                            m.src = (window.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            m.src = (window.location.protocol === 'https:' ? 'https:' : 'http:') +
                                 '//musculahq.appspot.com/Muscula.js';
                             var s = document.getElementsByTagName('script')[0];
                             s.parentNode.insertBefore(m, s);
@@ -36,7 +35,7 @@
                             window.onerror = function () {
                                 window.Muscula.errors.push(arguments);
                                 return window.Muscula.settings.suppressErrors === undefined;
-                            }
+                            };
                         })();
                     </script>
 
@@ -118,7 +117,7 @@
 
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
                     <!-- local assets -->
-                    <script>
+                    <script type="text/javascript">
                         YUI_config.comboBase = comboBase;                       // Force use of self hosted yui3
                         YUI_config.filter = "min";
                         YUI_config.combine = true;
@@ -137,7 +136,7 @@
                                 currentTeam: #{gameController.currentPlayer.team.id},
                                 currentPlayer: #{gameController.currentPlayer.id},
                                 currentUser: #{requestController.getCurrentUser().toJson()},
-                                cssStylesheets: ["#{gameController.currentGameModel.cssUri}"],
+
                                 /**
                                  * This field is used to override Entities edition menus.
                                  * Use the target class name as the key.
@@ -159,7 +158,18 @@
                                         ]
                                     },
                                     "Page": {
-                                        source: "#{gameController.currentGameModel.widgetsUri}",
+
+                                        //THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                            source: "rest/Page/#{editorGameController.currentGameModel.id}/",
+                                        /* THIS IS NOT A COMMENT
+                                        * </ui:fragment>
+                                        */
+                                        //THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                            source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
+                                        /* THIS IS NOT A COMMENT
+                                        * </ui:fragment>
+                                        */
+
                                         plugins: [{
                                                 fn: "DataSourceJSONSchema",
                                                 cfg: {
@@ -175,23 +185,35 @@
                                     },
                                     "VariableDescriptor": {
                                         //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                        <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                        /* THIS IS NOT A COMMENT
+                                         * <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                         */
                                             source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                        /* THIS IS NOT A COMMENT
+                                        * </ui:fragment>
+                                        */
+                                        /* THIS IS NOT A COMMENT
+                                         * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                         */
                                             source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                        </ui:fragment>
+                                        /* THIS IS NOT A COMMENT
+                                        * </ui:fragment>
+                                        */
                                         initialRequest: "",
                                         plugins: [{
                                                 fn: "VariableDescriptorCache"
                                             }, {
                                                 fn: "ScriptEval"
                                             }
-                                            <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('websocket')}">
+                                            /* THIS IS NOT A COMMENT
+                                             * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('websocket')}">
+                                             */
                                                 ,{
                                                 fn: "WebSocketListener"
                                                 }
-                                            </ui:fragment>
+                                            /* THIS IS NOT A COMMENT
+                                            * </ui:fragment>
+                                            */
                                         ]
                                     },
                                     "User": {
@@ -216,7 +238,15 @@
                                 }
                             });
 
-                            app.render();                                       // launch app
+                            app.after("render", function () {
+                                try {
+                                    #{editorGameController.getClientScripts()}  // Add game model specific js footer
+                                } catch (e) {
+                                    Y.log("Error running footer scripts.", "error");
+                                }
+                            });
+
+                            app.render();                                       // Render app
                         });
                     </script>
                 </ui:insert>

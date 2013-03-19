@@ -64,7 +64,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             this.renderDetailsPanel(this.get(CONTENTBOX).one(".schedule-analysis"));
 
-            this.gallery = new Y.Wegas.FileExplorerGallery({
+            this.gallery = new Y.Wegas.util.FileExplorerGallery({
                 render: this.get(CONTENTBOX).one(".schedule-gallery"),
                 selectedHeight: 150,
                 selectedWidth: 235
@@ -102,7 +102,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
 
             this.handlers.response = // If data changes, refresh
-                    Y.Wegas.app.dataSources.VariableDescriptor.after("response", this.syncUI, this);
+                    Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
 
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
@@ -112,6 +112,16 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
          *
          */
         syncUI: function() {
+             var cb = this.get(CONTENTBOX).one(".schedule-questions");
+
+            if (!Y.Wegas.VariableDescriptorFacade.cache.find('name', "period")) {
+                cb.setContent("Unable to find time variable.");
+                return;
+            }
+            if (!Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences")) {
+                cb.setContent("Unable to find evidences variable.");
+                return;
+            }
             this.syncSchedule();
             if (this.currentQuestionId) {
                 this.syncDetailsPanel();

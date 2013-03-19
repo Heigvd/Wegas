@@ -17,7 +17,7 @@ YUI.add('wegas-entity', function(Y) {
     BUTTON = "Button", VALUE = "value", TEXT = "text",
     IDATTRDEF = {
         type: STRING,
-        optional: true,                                                         // The id is optional for entites that have not been persisted
+        optional: true,                                                    // The id is optional for entites that have not been persisted
         _inputex: {
             _type: HIDDEN
         }
@@ -158,29 +158,19 @@ YUI.add('wegas-entity', function(Y) {
                     _type: HIDDEN
                 }
             },
-            widgetsUri: {
-                type: STRING,
-                /* choices: [{
-                 value: "wegas-leaderway/db/wegas-leaderway-pages.json",
-                 label: "Leaderway"
-                 }, {
-                 value: "wegas-crimesim/db/wegas-crimesim-pages.json",
-                 label: "Crimesim"
-                 }, {
-                 value: "wegas-mmo/db/wegas-leaderway-mmo.json",
-                 label: "Programming Game"
-                 }],*/
-                _inputex: {
-                    label: "Layout"
-                }
-            },
-            cssUri: {
-                type: STRING,
-                _inputex: {
-                    label: "CSS Stylesheet"
-                }
-            },
             scriptLibrary: {
+                value: {},
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
+            clientScriptLibrary: {
+                value: {},
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
+            cssLibrary: {
                 value: {},
                 _inputex: {
                     _type: HIDDEN
@@ -242,14 +232,16 @@ YUI.add('wegas-entity', function(Y) {
                     tabSelector: '#rightTabView'
                 }
             }]
-        }, {
-            type: "Button",
-            label: "Publish",
-            cssClass: "editor-publishGameModel-button",
-            plugins: [{
-                fn: "PublishEntityAction"
-            }]
-        }, {
+        },
+        //{
+        //    type: "Button",
+        //    label: "Publish",
+        //    cssClass: "editor-publishGameModel-button",
+        //    plugins: [{
+        //        fn: "PublishGameModelAction"
+        //    }]
+        //}, 
+        {
             type: "DeleteEntityButton",
             cssClass: "editor-deleteGameModel-button"
         }]
@@ -703,9 +695,9 @@ YUI.add('wegas-entity', function(Y) {
                         }],
                         _inputex: {
                             label: 'Broadcast with'
-                        }  
+                        }
                     }
-                }                
+                }
             },
             defaultInstance: {
                 value: null,
@@ -749,7 +741,7 @@ YUI.add('wegas-entity', function(Y) {
             privateInstances: {
                 "transient": true
             },
-            
+
             broadcastScope: {}
         }
     });
@@ -1056,18 +1048,6 @@ YUI.add('wegas-entity', function(Y) {
                         "type": "AddEntityChildButton",
                         "label": "Trigger",
                         "targetClass": "TriggerDescriptor"
-                    }, {
-                        "type": "AddEntityChildButton",
-                        "label": "Resource (Leaderway, CEP Game)",
-                        "targetClass": "ResourceDescriptor"
-                    }, {
-                        "type": "AddEntityChildButton",
-                        "label": "Dialogue (Leaderway)",
-                        "targetClass": "DialogueDescriptor"
-                    }, {
-                        "type": "AddEntityChildButton",
-                        "label": "Task (Leaderway)",
-                        "targetClass": "TaskDescriptor"
                     }, {
                         "type": "AddEntityChildButton",
                         "label": "Object",
