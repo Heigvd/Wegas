@@ -266,7 +266,7 @@ YUI.add("wegas-gallery", function(Y) {
                 e.halt(true);
             });
             this.scrollView.after("scrollEnd", function(e) {
-                this.scrollView.pages.scrollToIndex(+this.scrollView.pages.get("index")); //Constrain               
+                this.scrollView.pages.scrollToIndex(+this.scrollView.pages.get("index")); //Constrain
                 // this.setSelected(this.scrollView.pages.get("index"));
                 Y.later(50, this, function() {                                  // Let some time before loading next one
                     var index = +this.scrollView.pages.get("index");
@@ -546,7 +546,7 @@ YUI.add("wegas-gallery", function(Y) {
              */
             fullScreen: {
                 value: false,
-                transient: "true",
+                "transient": "true",
                 validator: Y.Lang.isBoolean
             },
             /**
