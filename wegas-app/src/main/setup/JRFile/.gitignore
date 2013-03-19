@@ -1,0 +1,4 @@
+repository/*
+workspaces/*
+version/"
+.lock

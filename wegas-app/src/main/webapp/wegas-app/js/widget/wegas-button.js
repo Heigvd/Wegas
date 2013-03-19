@@ -168,7 +168,7 @@ YUI.add("wegas-button", function (Y) {
          * When plugin's host is render, do sync.
          */
         bindUI: function () {
-            this.handlers.update = Y.Wegas.app.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
             this.handlers.render = this.afterHostEvent("render", this.syncUI, this);
         },
 

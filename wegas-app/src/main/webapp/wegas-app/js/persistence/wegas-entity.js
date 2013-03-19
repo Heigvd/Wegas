@@ -232,14 +232,16 @@ YUI.add('wegas-entity', function(Y) {
                     tabSelector: '#rightTabView'
                 }
             }]
-        }, {
-            type: "Button",
-            label: "Publish",
-            cssClass: "editor-publishGameModel-button",
-            plugins: [{
-                fn: "PublishEntityAction"
-            }]
-        }, {
+        },
+        //{
+        //    type: "Button",
+        //    label: "Publish",
+        //    cssClass: "editor-publishGameModel-button",
+        //    plugins: [{
+        //        fn: "PublishGameModelAction"
+        //    }]
+        //}, 
+        {
             type: "DeleteEntityButton",
             cssClass: "editor-deleteGameModel-button"
         }]
