@@ -194,22 +194,20 @@ public class PageController {
      * @throws WegasException
      */
     @POST
-    public Response setPages(@PathParam("gameModelId") String gameModelId, Map<Integer, JsonNode> pageMap)
+    public Response addPages(@PathParam("gameModelId") String gameModelId, Map<Integer, JsonNode> pageMap)
             throws RepositoryException, JSONException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         Pages pages = new Pages(gameModelId);
-        for (Iterator<Entry<Integer, JsonNode>> it = pageMap.entrySet().iterator(); it.hasNext();) {
-            Entry<Integer, JsonNode> p = it.next();
-            Page page = new Page(p.getKey(), p.getValue());
-            pages.store(page);
+        for (Entry<Integer, JsonNode> p: pageMap.entrySet()) {
+            pages.store(new Page(p.getKey(), p.getValue()));
         }
         return getPages(gameModelId);
     }
 
     /**
-     * Delete all gamemodel's pages
+     * Delete all GameModel's pages
      *
      * @param gameModelId The GameModel's ID
      * @return
