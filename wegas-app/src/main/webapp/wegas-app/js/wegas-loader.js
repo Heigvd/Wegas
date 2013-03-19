@@ -506,7 +506,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-mcqtabview': {
                     path: 'wegas-app/js/widget/wegas-mcqtabview-min.js',
-                    requires: ['tabview', 'wegas-tabviewcss'],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery'],
                     ws_provides: "MCQTabView"
                 },
                 'wegas-editor-pagetreeview': {
