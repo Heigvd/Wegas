@@ -160,12 +160,16 @@
                                     },
                                     "Page": {
 
-                                        <ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
-                                            source: "rest/Page/#{editorGameController.currentGameModel.id}",
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                        //THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                            source: "rest/Page/#{editorGameController.currentGameModel.id}/",
+                                        /* THIS IS NOT A COMMENT
+                                        * </ui:fragment>
+                                        */
+                                        //THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
                                             source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
-                                        </ui:fragment>
+                                        /* THIS IS NOT A COMMENT
+                                        * </ui:fragment>
+                                        */
 
                                         plugins: [{
                                                 fn: "DataSourceJSONSchema",
@@ -182,23 +186,35 @@
                                     },
                                     "VariableDescriptor": {
                                         //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                        <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                        /* THIS IS NOT A COMMENT
+                                         * <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                         */
                                             source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                        /* THIS IS NOT A COMMENT
+                                        * </ui:fragment>
+                                        */
+                                        /* THIS IS NOT A COMMENT
+                                         * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                         */
                                             source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                        </ui:fragment>
+                                        /* THIS IS NOT A COMMENT
+                                        * </ui:fragment>
+                                        */
                                         initialRequest: "",
                                         plugins: [{
                                                 fn: "VariableDescriptorCache"
                                             }, {
                                                 fn: "ScriptEval"
                                             }
-                                            <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('websocket')}">
+                                            /* THIS IS NOT A COMMENT
+                                             * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('websocket')}">
+                                             */
                                                 ,{
                                                 fn: "WebSocketListener"
                                                 }
-                                            </ui:fragment>
+                                            /* THIS IS NOT A COMMENT
+                                            * </ui:fragment>
+                                            */
                                         ]
                                     },
                                     "User": {
