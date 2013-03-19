@@ -192,6 +192,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             if (!(this.get("host") instanceof Y.Wegas.FlexitestsController)) {
                 return;
             }
+            this.swaped = false;
             this.afterHostMethod("next", function() {
                 var current = this.get("host").maxSize - this.get("host").questionToDo.length;
                 if (current === 1 && Math.random() > 0.5) {
@@ -204,6 +205,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         },
         swap: function() {
             this.get("host").leftElement.get("contentBox").swap(this.get("host").rightElement.get("contentBox"));
+            this.swaped = !this.swaped;
         }
     }, {
         NS: "swapzone",
