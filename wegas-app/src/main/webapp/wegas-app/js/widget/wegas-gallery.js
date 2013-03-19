@@ -264,7 +264,7 @@ YUI.add("wegas-gallery", function(Y) {
             });
             this.scrollView.after("scrollEnd", function(e) {
                 this.scrollView.pages.scrollToIndex(+this.scrollView.pages.get("index")); //Constrain               
-               // this.setSelected(this.scrollView.pages.get("index"));
+                // this.setSelected(this.scrollView.pages.get("index"));
                 Y.later(600, this, function() {                                  // Let some time before loading next one
                     var index = +this.scrollView.pages.get("index");
                     if (this.images[index + 1] && !this.images[index + 1].loaded) {
@@ -361,6 +361,12 @@ YUI.add("wegas-gallery", function(Y) {
                 this.handlers[i].detach();
             }
         },
+        // *** Private Methods *** //
+        /**Generate index indicator
+         * @private
+         * @function
+         * @returns {undefined}
+         */
         genScrollIndicator: function() {
             var container = this.scrollView.get(BOUNDING_BOX).one(".gallery-scroll-indicator"), i;
             container.empty();
@@ -369,7 +375,6 @@ YUI.add("wegas-gallery", function(Y) {
             }
             this.setSelected(+this.scrollView.pages.get("index"));
         },
-// *** Private Methods *** //
         /**
          * @function
          * @private
