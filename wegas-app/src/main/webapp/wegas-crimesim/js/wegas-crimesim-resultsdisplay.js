@@ -10,7 +10,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
+YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -27,32 +27,35 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
         gallery: null,
         datatable: null,
         // *** Lifecycle Methods *** //
-        initializer: function () {
+        initializer: function() {
             this.handlers = {};
         },
-        renderUI: function () {
+        renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
-            this.setUnread();
         },
-        bindUI: function () {
+        bindUI: function() {
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
 
             this.handlers.response = // If data changes, refresh
-                    Y.Wegas.app.dataSources.VariableDescriptor.after("response",
+                    Y.Wegas.VariableDescriptorFacade.after("response",
                     this.syncUI, this);
         },
-        destructor: function () {
+        destructor: function() {
             this.datatable.destroy();
             for (var i in this.handlers) {
                 this.handlers[i].detach();
             }
         },
-        syncUI: function () {
-            var data = this.genData();
-            this.datatable.syncUI(data);
+        syncUI: function() {
+            if (Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences")) {
+                this.setUnread();
+                this.datatable.syncUI(this.genData());
+            } else {
+                this.datatable.syncUI([]);
+            }
         },
-        renderDetailsPanel: function (node) {
+        renderDetailsPanel: function(node) {
             var columns = [{
                     key: "choiceDescriptorId",
                     className: "hidden"
@@ -89,7 +92,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
             });
             this.datatable.render(this.get(CONTENTBOX));
         },
-        genData: function () {
+        genData: function() {
             var i, j, k, questionInstance, reply, replyData, status,
                     questions = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences").get("items"),
                     data = [],
@@ -142,7 +145,11 @@ YUI.add('wegas-crimesim-resultsdisplay', function (Y) {
             }
             return data;
         },
-        setUnread: function () {
+        /**
+         *
+         * @returns {undefined}
+         */
+        setUnread: function() {
             var i, j, questionInstance, reply,
                     questions = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences").get("items");
             for (i = 0; i < questions.length; i = i + 1) {

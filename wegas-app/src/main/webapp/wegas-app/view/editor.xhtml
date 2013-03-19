@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 
     <ui:composition template="template/app-default.xhtml">
 
@@ -26,9 +25,9 @@
             </style>
         </ui:define>
         <ui:define name="body">
-            
-            <script type="text/javascript"> 
-      
+
+            <script type="text/javascript">
+
               YUI().use("wegas-app",  'wegas-rightscss', /*'wegas-editorcss',*/ function (Y) {
                     var app = new Y.Wegas.App({
                         layoutSrc: 'wegas-app/db/wegas-editor-layout.json',
@@ -64,7 +63,7 @@
                             "Page": {
 
                                 <ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
-                                    source: "rest/Page/#{editorGameController.currentGameModel.id}",
+                                    source: "rest/Page/#{editorGameController.currentGameModel.id}/",
                                 </ui:fragment>
                                 <ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
                                     source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",

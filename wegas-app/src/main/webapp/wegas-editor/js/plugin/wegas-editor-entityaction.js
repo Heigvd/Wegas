@@ -357,20 +357,20 @@ YUI.add('wegas-editor-entityaction', function (Y) {
      * @extends Y.Plugin.EntityAction
      * @constructor
      */
-    var PublishEntityAction = function () {
-        PublishEntityAction.superclass.constructor.apply(this, arguments);
+    var PublishGameModelAction = function () {
+        PublishGameModelAction.superclass.constructor.apply(this, arguments);
     };
-    Y.extend(PublishEntityAction, EntityAction, {
+    Y.extend(PublishGameModelAction, EntityAction, {
         execute: function() {
             if (confirm("Are your sure your want to publish this item ?")) {
-                this.get("dataSource").rest.publishObject(this.get("entity"));
+                //this.get("dataSource").rest.publishObject(this.get("entity"));
             }
         }
     }, {
-        NS: "PublishEntityAction",
-        NAME: "PublishEntityAction"
+        NS: "PublishGameModelAction",
+        NAME: "PublishGameModelAction"
     });
-    Plugin.PublishEntityAction = PublishEntityAction;
+    Plugin.PublishGameModelAction = PublishGameModelAction;
     
     /**
      * @class

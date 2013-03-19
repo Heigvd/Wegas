@@ -11,7 +11,7 @@
 YUI.add('wegas-leaderway-score', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', Score = Y.Base.create("wegas-score", Y.Widget, [Y.Wegas.Widget], {
+    var CONTENTBOX = 'contentBox', Score = Y.Base.create("wegas-score", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
 
         // *** Fields *** /
         table: null,

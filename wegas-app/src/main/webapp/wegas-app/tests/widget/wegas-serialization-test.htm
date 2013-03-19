@@ -2,40 +2,80 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Y.Wegas.WidgetMenu Test Suite</title>
+        <title>Serialization Test Suite</title>
 
         <style type="text/css">
+            body > table {
+            }
+
+            body > div.wegas-widget {
+                display: none;
+            }
+            body > table td {
+                font-size: 11px;
+                font-family: arial;
+                vertical-align: top;
+                padding: 4px;
+                width: 500px;
+                border: 1px solid black;
+            }
+
+            body > table td div {
+                max-height: 40px;
+                overflow: hidden;
+            }
+            body > table tr:hover td div {
+                max-height: initial;
+            }
+
             .yui3-console {
                 position: absolute;
+                display: block;
                 right: 0;
                 top: 0;
                 height: 98% !important;
+                background: white;
             }
         </style>
     </head>
 
     <body class="yui3-skin-sam">
 
+        <!-- table used to dispaly results -->
+        <table>
+            <thead>
+                <tr style="background: black; color: white;">
+                    <td>Original</td><td>Serialized</td>
+                </tr>
+            </thead>
+        </table>
+
         <script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+        <script type="text/javascript" src="http://neyric.github.com/inputex/src/loader.js"></script>
 
         <script type="text/javascript" src="../../js/wegas-loader.js"></script>
 
-        <script type="text/javascript" src="./wegas-widgettoolbar-test.js"></script>
+        <script type="text/javascript" src="./wegas-serialization-test.js"></script>
 
         <script type="text/javascript">
             YUI_config.groups.wegas.base = "../../../";
             YUI_config.groups.wegas.filter = "raw";
+            YUI_config.groups.inputex.base = "http://neyric.github.com/inputex/src/";
+            YUI_config.groups.inputex.filter = "raw";
             YUI_config.groups.libraries.base = "../../../lib/";                 // Set up libraries path
+            YUI_config.groups.libraries.filter = "raw";
+            //YUI_config.groups.libraries.base = "../../../../../../../wegas-resources/src/main/webapp/lib/";                 // Set up libraries path
+
 
             YUI({
-                useBrowserConsole: true,
-                coverage: ['widgettoolbar']
-            }).use('test-console', 'wegas-widgettoolbar-test', function (Y) {
+                useBrowserConsole: true
+            }).use('test-console', 'wegas-serialization-test', function(Y) {
                 new Y.Test.Console({
-                    useBrowserConsole: true
+                    useBrowserConsole: true,
+                    verbose: true
                 }).render();
 
-                Y.Test.Runner.setName('WidgetToolbar');
+                Y.Test.Runner.setName('Serialiation');
                 Y.Test.Runner.run();
             });
 

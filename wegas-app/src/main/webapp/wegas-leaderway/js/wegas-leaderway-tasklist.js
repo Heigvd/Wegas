@@ -7,7 +7,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
 
     var CONTENTBOX = 'contentBox', TaskList;
 
-    TaskList = Y.Base.create("wegas-tasklist", Y.Widget, [Y.Wegas.Widget], {
+    TaskList = Y.Base.create("wegas-tasklist", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
         // *** Fields *** /
         table: null,
         data: null,
@@ -85,7 +85,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         bindUI: function() {
             var cb = this.get(CONTENTBOX);
-            this.handlers.update = Y.Wegas.app.dataSources.VariableDescriptor.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
 
             this.handlers.selectRow = this.table.delegate('click', function(e) {
                 this.selectRow(e);
