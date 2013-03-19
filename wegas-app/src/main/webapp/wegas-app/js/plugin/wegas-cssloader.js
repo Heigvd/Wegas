@@ -28,25 +28,37 @@ YUI.add('wegas-cssloader', function(Y) {
          * @private
          */
         initializer: function() {
-            var i, css = Wegas.app.get('cssStylesheets'),
-            cfg = {
+            Y.Plugin.CSSLoader.customCSSStyleSheet = this.sheets = {};
+
+            var i, cGameModel = Y.Wegas.GameModelFacade.cache.getCurrentGameModel(),
+            customSheets = (cGameModel.get("properties.cssUri")) ? cGameModel.get("properties.cssUri").split(",") : [];
+
+            for (i in cGameModel.get("cssLibrary")) {                           // Load every db stored sheet (game model specific)
+                this.sheets[i] = new Y.StyleSheet(cGameModel.get("cssLibrary")[i].get("val.content"));
+            }
+
+            for (i = 0; i < customSheets.length; i += 1) {                      // Load sheet reference provided through game model properties
+                this.loadSheet("custom" + i, Wegas.app.get('base') + customSheets[i] + '?id=' + Wegas.Helper.genId());
+            }
+        },
+
+        loadSheet: function (id, url) {
+            Y.io(url, {                                                         // Load the page css
                 context: this,
                 on : {
                     success : function (tId, e) {
-                        CSSLoader.customCSSText = e.responseText;
-                        CSSLoader.customCSSStyleSheet = new Y.StyleSheet(e.responseText);
+                        //CSSLoader.customCSSStyleSheet =
+                        new Y.StyleSheet(e.responseText);
                     },
                     failure : function (id, o) {
                         Y.error("initCSS(): Page CSS loading async call failed!", new Error("Loading failed"), "Y.Wegas.App");
                     }
                 }
-            };
-
-            for (i = 0; i < css.length; i += 1) {
-                Y.io(Wegas.app.get('base') + css[i] + '?id=' + Wegas.Helper.genId(), cfg);  // Load the page css
-            }
+            });
         }
+
     }, {
+        customCSSStyleSheet: {},
         NS: "CSSLoader",
         NAME: "CSSLoader"
     });

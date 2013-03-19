@@ -8,7 +8,6 @@
 YUI.add('wegas-scripteval', function(Y) {
     "use strict";
 
-
     var ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
 
         context: null,
@@ -88,14 +87,28 @@ YUI.add('wegas-scripteval', function(Y) {
             var i, j, data = this.get("host").data;
             this.upToDate = true;
             this.context = {};
-            for (i in data) {
-                this.context[data[i].get('name')] = JSON.parse(JSON.stringify(data[i].getInstance()));
-                if (data[i] instanceof Y.Wegas.persistence.ListDescriptor) {
-                    this.context[data[i].get('name')].items = [];
-                    for (j in data[i].get("items")) {
-                        this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance())));
+
+            function buildItems(entity, acc) {                                  // Recursively build items lists
+                 if (entity instanceof Y.Wegas.persistence.ListDescriptor) {
+                    var items = entity.get("items");
+                    acc.items = [];
+                    for (j in items) {
+                        acc.items.push(JSON.parse(JSON.stringify(items[j].getInstance())));
+                        buildItems(items[j], acc.items[acc.items.length - 1]);
                     }
                 }
+            }
+
+            for (i in data) {
+                this.context[data[i].get('name')] = JSON.parse(JSON.stringify(data[i].getInstance()));
+                buildItems(data[i], this.context[data[i].get('name')]);
+
+//                if (data[i] instanceof Y.Wegas.persistence.ListDescriptor) {
+//                    this.context[data[i].get('name')].items = [];
+//                    for (j in data[i].get("items")) {
+//                        this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance())));
+//                    }
+//                }
             }
             /*SANDBOX*/
             Y.mix(this.context, {

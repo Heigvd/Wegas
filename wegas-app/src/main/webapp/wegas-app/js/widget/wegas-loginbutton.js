@@ -76,10 +76,10 @@ YUI.add("wegas-loginbutton", function (Y) {
         syncUI: function () {
             Y.Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
-            var cUser = Y.Wegas.app.get("currentUser"),
+            var cUser = Y.Wegas.UserFacade.cache.get("currentUser"),
             cPlayer = Y.Wegas.GameFacade.cache.getCurrentPlayer(),
             cTeam = Y.Wegas.GameFacade.cache.getCurrentTeam(),
-            name = cUser.name || "undefined";
+            name = cUser.get("name") || "undefined";
             if (!this.get('labelIsUser')) {
                 if (cPlayer) {
                     name = cPlayer.get("name");

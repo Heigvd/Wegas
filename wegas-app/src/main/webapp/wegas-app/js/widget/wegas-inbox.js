@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-inbox', function (Y) {
+YUI.add('wegas-inbox', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', InboxDisplay;
@@ -31,22 +31,18 @@ YUI.add('wegas-inbox', function (Y) {
          * TabView widget used to display message header and body
          */
         tabView: null,
-
         /**
          * Reference to each used functions
          */
         handlers: null,
-
         /**
          * datasource from Y.Wegas.app.VariableDescriptorFacade
          */
         dataSource: null,
-
         /**
          * Button widget used to delete e-mail
          */
         deleteButton: null,
-
         /**
          * Current selected message in tabview;
          */
@@ -58,8 +54,8 @@ YUI.add('wegas-inbox', function (Y) {
          * @description Set variable with initials values.
          * Plug a toolbar widget (and add the delete button at this toolbar).
          */
-        initializer: function () {
-            this.dataSource = Y.Wegas.app.VariableDescriptorFacade;
+        initializer: function() {
+            this.dataSource = Y.Wegas.VariableDescriptorFacade;
             this.handlers = {};
             this.plug(Y.Plugin.WidgetToolbar);
             this.deleteButton = new Y.Wegas.Button({
@@ -68,16 +64,14 @@ YUI.add('wegas-inbox', function (Y) {
             this.toolbar.add(this.deleteButton);
             this.tabView = new Y.TabView();
         },
-
         /**
          * @function
          * @private
          * @description Render the TabView widget in the content box.
          */
-        renderUI: function () {
+        renderUI: function() {
             this.tabView.render(this.get(CONTENTBOX));
         },
-
         /**
          * @function
          * @private
@@ -86,10 +80,10 @@ YUI.add('wegas-inbox', function (Y) {
          * When dataSource is updated, do syncUI
          * When deleteButton is clicked, show an alert which allow to delete selected message
          */
-        bindUI: function () {
+        bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
             this.handlers.dataUpdated = this.dataSource.after("update", this.syncUI, this);
-            this.handlers.deleteEMail = this.deleteButton.on("click", function (e) {
+            this.handlers.deleteEMail = this.deleteButton.on("click", function(e) {
                 if (!this.msg) {
                     return;
                 }
@@ -98,7 +92,6 @@ YUI.add('wegas-inbox', function (Y) {
                 }
             }, this);
         },
-
         /**
          * @function
          * @private
@@ -106,12 +99,21 @@ YUI.add('wegas-inbox', function (Y) {
          * display a message if there is no message.
          * Re-select the current selected msg;
          */
-        syncUI: function () {
+        syncUI: function() {
             var i, msg, tab, from, indexCounter = 0,
-            inboxVariable = this.get('variable.evaluated').getInstance(),
-            messages = inboxVariable.get("messages"),
-            selectedIndex = 0,
-            tabs = [];
+                    inboxDescriptor = this.get('variable.evaluated'),
+                    inboxVariable, messages,
+                    selectedIndex = 0,
+                    tabs = [];
+            if (!inboxDescriptor) {
+                this.tabView.add({
+                    label: '',
+                    content: '<center>Unable to find inbox variable</center>'
+                });
+                return;
+            }
+            inboxVariable = inboxDescriptor.getInstance();
+            messages = inboxVariable.get("messages");
 
             this.isSyncing = true;
             this.tabView.removeAll();
@@ -120,12 +122,12 @@ YUI.add('wegas-inbox', function (Y) {
                 from = msg.get("from") || "<i>No sender</i>";
                 tab = new Y.Tab({
                     label: '<div class="' + (msg.get("unread") ? "unread" : "read") + '"><div class="left">' + from + '</div>'
-                    + '<div class="right">' + msg.get("subject") + '</div></div>',
+                            + '<div class="right">' + msg.get("subject") + '</div></div>',
                     content: '<div class="msg-header">'
-                    + '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
-                    + '<div class="msg-from">From: ' + from + '</div>'
-                    + '</div>'
-                    + '<div class="msg-body"><center><em><i>Loading</i></center></div>'
+                            + '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
+                            + '<div class="msg-from">From: ' + from + '</div>'
+                            + '</div>'
+                            + '<div class="msg-body"><center><em><i>Loading</i></center></div>'
                 });
                 tab.msg = msg;
                 tabs.push(tab);
@@ -147,13 +149,12 @@ YUI.add('wegas-inbox', function (Y) {
             this.isSyncing = false;
             this.tabView.selectChild(selectedIndex);
         },
-
         /**
          * @function
          * @private
          * @description Destroy TabView and all functions created by this widget
          */
-        destructor: function () {
+        destructor: function() {
             this.tabView.destroy();
             this.handlers.dataUpdated.detach();
         },
@@ -163,7 +164,7 @@ YUI.add('wegas-inbox', function (Y) {
          * @private
          * @description Send a REST request to delete selected message
          */
-        deleteEmail: function (e) {
+        deleteEmail: function(e) {
             if (!this.msg) {
                 return;
             }
@@ -177,14 +178,13 @@ YUI.add('wegas-inbox', function (Y) {
                 }
             });
         },
-
         /**
          * @function
          * @private
          * @description retrieve selected message's body and set this as "read" if
          * tab has been selected longer than 2000 miliseconde.
          */
-        onTabSelected: function (e) {
+        onTabSelected: function(e) {
             var i, attachement, attachements = [];
             if (this.isSyncing) {
                 return;
@@ -195,31 +195,31 @@ YUI.add('wegas-inbox', function (Y) {
             }
 
             if (e.newVal && e.newVal.msg) {
-                this.dataSource.sendRequest({                              // Retrieve the message body from the server
+                this.dataSource.sendRequest({// Retrieve the message body from the server
                     request: "/Inbox/Message/" + e.newVal.msg.get("id") + "?view=Export",
                     on: {
-                        success: Y.bind(function (e) {
+                        success: Y.bind(function(e) {
                             if (e.response.entity.get("attachements") && e.response.entity.get("attachements").length > 0) {
                                 for (i = 0; i < e.response.entity.get("attachements").length; i += 1) {
                                     attachement = e.response.entity.get("attachements")[i];
                                     attachements.push("<a href='" + attachement + "' data-file='" + attachement + "'>"
-                                        + attachement + "</a>");
+                                            + attachement + "</a>");
                                 }
                                 if (!this.get("panelNode").one(".msg-header .msg-attachement")) {
                                     this.get("panelNode").one(".msg-header").append("<div class='msg-attachement'></div>");
                                 }
                                 this.get("panelNode").one(".msg-header .msg-attachement")
-                                .setHTML("Attachements: " + attachements.join("; "));
+                                        .setHTML("Attachements: " + attachements.join("; "));
                             }
                             this.get("panelNode").one(".msg-body")
-                            .setHTML(e.response.entity.get("body") || "<center><em><i>Empty</i></center>");
+                                    .setHTML(e.response.entity.get("body") || "<center><em><i>Empty</i></center>");
                         }, e.newVal)
                     }
                 });
                 this.msg = e.newVal.msg;
 
                 if (e.newVal.msg.get("unread")) {                               // If the message is currently unread,
-                    this.timer = Y.later(2000, this, function () {              // Send a request to mark it as read
+                    this.timer = Y.later(2000, this, function() {              // Send a request to mark it as read
                         Y.log("Sending message read update", "info", "InboxDisplay");
                         this.msg.set("unread", false);
                         this.dataSource.sendRequest({

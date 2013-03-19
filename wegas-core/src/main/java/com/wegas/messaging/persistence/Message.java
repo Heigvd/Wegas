@@ -44,6 +44,7 @@ public class Message extends NamedEntity {
      */
     @JsonView(Views.Export.class)
     @Lob
+    @Basic(fetch = FetchType.LAZY)
     private String body;
     /**
      *

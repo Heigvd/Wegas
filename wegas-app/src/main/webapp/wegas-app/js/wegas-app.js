@@ -20,7 +20,6 @@ YUI.add('wegas-app', function(Y) {
      *    <li>base {String} base Url for app</li>
      *    <li>layoutSrc {String} location for the json config of the current page</li>
      *    <li>dataSources {Object[]} the list of datasource to be loaded on startup</li>
-     *    <li>cssStylesheets {String[]} a list of stylesheets to be loaded<i>default: []</i></li>
      *    <li>currentGameModel {Number} current game model id</li>
      *    <li>currentGame {Number} current game  id</li>
      *    <li>currentTeam {Number} current team id</li>
@@ -213,9 +212,6 @@ YUI.add('wegas-app', function(Y) {
             layoutSrc: {},
             dataSources: {
                 value: {}
-            },
-            cssStylesheets: {
-                value: []
             },
             currentGameModel: {},
             currentGame: {},
