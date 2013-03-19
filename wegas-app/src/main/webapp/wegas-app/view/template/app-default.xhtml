@@ -2,8 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:composition template="page-default.xhtml">
 
@@ -161,7 +160,7 @@
                                     "Page": {
 
                                         <ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
-                                            source: "rest/Page/#{editorGameController.currentGameModel.id}",
+                                            source: "rest/Page/#{editorGameController.currentGameModel.id}/",
                                         </ui:fragment>
                                         <ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
                                             source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
