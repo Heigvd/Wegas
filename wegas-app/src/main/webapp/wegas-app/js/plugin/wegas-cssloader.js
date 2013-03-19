@@ -31,7 +31,7 @@ YUI.add('wegas-cssloader', function(Y) {
             Y.Plugin.CSSLoader.customCSSStyleSheet = this.sheets = {};
 
             var i, cGameModel = Y.Wegas.GameModelFacade.cache.getCurrentGameModel(),
-            customSheets = cGameModel.get("properties.cssUri").split(",");
+            customSheets = (cGameModel.get("properties.cssUri")) ? cGameModel.get("properties.cssUri").split(",") : [];
 
             for (i in cGameModel.get("cssLibrary")) {                           // Load every db stored sheet (game model specific)
                 this.sheets[i] = new Y.StyleSheet(cGameModel.get("cssLibrary")[i].get("val.content"));
