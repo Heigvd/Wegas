@@ -23,7 +23,7 @@
                             var m = document.createElement('script');
                             m.type = 'text/javascript';
                             m.async = true;
-                            m.src = (window.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            m.src = (window.location.protocol === 'https:' ? 'https:' : 'http:') +
                                 '//musculahq.appspot.com/Muscula.js';
                             var s = document.getElementsByTagName('script')[0];
                             s.parentNode.insertBefore(m, s);
@@ -36,7 +36,7 @@
                             window.onerror = function () {
                                 window.Muscula.errors.push(arguments);
                                 return window.Muscula.settings.suppressErrors === undefined;
-                            }
+                            };
                         })();
                     </script>
 
@@ -118,7 +118,7 @@
 
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
                     <!-- local assets -->
-                    <script>
+                    <script type="text/javascript">
                         YUI_config.comboBase = comboBase;                       // Force use of self hosted yui3
                         YUI_config.filter = "min";
                         YUI_config.combine = true;
