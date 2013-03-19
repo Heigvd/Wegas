@@ -546,7 +546,7 @@ YUI.add("wegas-gallery", function(Y) {
              */
             fullScreen: {
                 value: false,
-                transient: "true",
+                "transient": "true",
                 validator: Y.Lang.isBoolean
             },
             /**
