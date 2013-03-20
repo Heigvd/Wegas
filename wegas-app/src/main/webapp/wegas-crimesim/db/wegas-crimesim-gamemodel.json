@@ -345,13 +345,13 @@
     }],
     "scriptLibrary": {
         "default": {
-            "@class": "GameContent",
+            "@class": "GameModelContent",
             "content": "importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passWeek() {\n period.value += 1; \nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\n qdf.setCurrentTime(evidences.descriptor, self, period.value); humanResources.value = 15; } "
         }
     },
     "clientScriptLibrary": {
         "default": {
-            "@class": "GameContent",
+            "@class": "GameModelContent",
             "content": "Y.Wegas.persistence.ChoiceDescriptor.ATTRS.duration._inputex = {type: \"text\", description: \"Only for analyses\"};Y.Wegas.persistence.ChoiceDescriptor.ATTRS.cost._inputex = {type: \"text\", description: \"Only for analyses\", label: \"Human resource consumption\"};"
         }
     },
