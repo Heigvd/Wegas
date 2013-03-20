@@ -391,8 +391,8 @@ public class GameModel extends NamedEntity {
      * @return the pages
      */
     public Map<Integer, JsonNode> getPages() throws RepositoryException {
-        final Pages pages = new Pages(this.id.toString());
-        return pages.getPages();
+        final Pages pagesDAO = new Pages(this.id.toString());
+        return pagesDAO.getPages();
     }
 
     /**
@@ -403,11 +403,11 @@ public class GameModel extends NamedEntity {
     public void setPages(Map<Integer, JsonNode> pageMap) throws RepositoryException {
         if (pages != null) {
 
-            Pages pages = new Pages(this.id.toString());
-            //pages.delete();                                                   // Remove existing pages
+            Pages pagesDAO = new Pages(this.id.toString());
+            pagesDAO.delete();                                                  // Remove existing pages
 
             for (Entry<Integer, JsonNode> p : pageMap.entrySet()) {             // Add all pages
-                pages.store(new Page(p.getKey(), p.getValue()));
+                pagesDAO.store(new Page(p.getKey(), p.getValue()));
             }
         }
     }
