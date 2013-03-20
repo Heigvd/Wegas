@@ -166,9 +166,6 @@ YUI.add("wegas-inputex-list", function(Y) {
                 children: this.options.items
             });
 
-//            this.addButton.menu.on("*:click", function(e) {
-//                this.addPluginField(e.target.get("data"));
-//            }, this);
             this.addButton.menu.on("button:click", function(e) {
                 this.addPluginField(e.target.get("data"));
             }, this);
