@@ -76,13 +76,8 @@ YUI.add('wegas-widgetmenu', function(Y) {
          */
         show: function() {
             this.getMenu().attachTo(// Get a menu instance
-                    this.get(HOST).get(BOUNDINGBOX).one(this.get("selector")));     // Attach it to the target node
+                    this.get(HOST).get(BOUNDINGBOX).one(this.get("selector"))); // Attach it to the target node
         },
-        /*on: function () {
-         var menu = this.getMenu();                                             // Get a menu instance
-         menu.on.apply(menu, arguments);
-         },*/
-
         // *** Private methods *** //
         /**
          * @function
@@ -159,7 +154,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
             this.publish("cancelMenuTimer", {
                 bubbles: true
             });
-            this.on("*:click", function() {});                                  // @hack Catch all click events so they will bubble to parent, such as Y.Plugin.WidgetMenu
+            this.on("*:click");                     // @hack Catch all click events so they will bubble to parent, such as Y.Plugin.WidgetMenu
         },
         renderUI: function() {
             var bb = this.get(BOUNDINGBOX);
@@ -169,7 +164,6 @@ YUI.add('wegas-widgetmenu', function(Y) {
             bb.on("mouseenter", this.cancelMenuTimer, this);
             bb.on("mouseleave", this.startMenuHideTimer, this);
         },
-
         // *** Public methods *** //
         /**
          *
@@ -179,7 +173,6 @@ YUI.add('wegas-widgetmenu', function(Y) {
          * @function
          */
         attachTo: function(node) {
-
             //node.on("mouseenter", this.show, this);
             //node.on("mouseleave", this.hide, this);
             this.currentNode = node;

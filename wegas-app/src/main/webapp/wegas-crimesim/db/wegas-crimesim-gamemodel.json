@@ -352,7 +352,7 @@
     "clientScriptLibrary": {
         "default": {
             "@class": "GameModelContent",
-            "content": "Y.Wegas.persistence.ChoiceDescriptor.ATTRS.duration._inputex = {type: \"text\", description: \"Only for analyses\"};Y.Wegas.persistence.ChoiceDescriptor.ATTRS.cost._inputex = {type: \"text\", description: \"Only for analyses\", label: \"Human resource consumption\"};"
+            "content": "Y.Wegas.persistence.Result.ATTRS.files._inputex = Y.Wegas.persistence.SingleResultChoiceDescriptor.ATTRS.results.items.properties.files._inputex = {useButtons: true, description: \"Only for analyses\",};\nY.Wegas.persistence.ChoiceDescriptor.ATTRS.duration._inputex = {type: \"text\", description: \"Only for analyses\"};\nY.Wegas.persistence.ChoiceDescriptor.ATTRS.cost._inputex = {type: \"text\", description: \"Only for analyses\", label: \"Human resource consumption\"};"
         }
     },
 
