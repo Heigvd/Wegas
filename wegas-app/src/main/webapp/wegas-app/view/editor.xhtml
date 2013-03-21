@@ -28,7 +28,7 @@
 
             <script type="text/javascript">
 
-              YUI().use("wegas-app",  'wegas-rightscss', /*'wegas-editorcss',*/ function (Y) {
+                YUI().use("wegas-app",  'wegas-rightscss', /*'wegas-editorcss',*/ function (Y) {
                     var app = new Y.Wegas.App({
                         layoutSrc: 'wegas-app/db/wegas-editor-layout.json',
                         debug: true,
@@ -75,12 +75,12 @@
                                  * </ui:fragment>
                                  */
 
-                                        plugins: [{
+                                plugins: [{
                                         fn: "DataSourceJSONSchema",
                                         cfg: {
                                             schema: {
                                                 resultListLocator: "."
-                                                        //resultFields: ["name", "id", "@class"]
+                                                //resultFields: ["name", "id", "@class"]
                                             }
                                         }
                                     }, {
@@ -100,7 +100,21 @@
                                 plugins: [{
                                         fn: "WegasCache"
                                     }]
-                            },
+                            }
+                            
+                            /* THIS IS NOT A COMMENT
+                             * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
+                             */
+                            ,
+                            "Pusher":{
+                                type: "PusherDataSource",
+                                source: "rest/Pusher/",
+                                applicationKey:"#{editorGameController.currentGameModel.getProperty('websocket')}"  
+                            }
+                            /* THIS IS NOT A COMMENT
+                             * </ui:fragment>
+                             */
+                            ,
                             "VariableDescriptor": {
                                 /* THIS IS NOT A COMMENT
                                  * <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
@@ -116,22 +130,22 @@
                                 /* THIS IS NOT A COMMENT
                                  * </ui:fragment>
                                  */
-                                        //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                        initialRequest: "",
+                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache"
                                     }, {
                                         fn: "ScriptEval"
                                     }
                                     /* THIS IS NOT A COMMENT
-                                     * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('websocket')}">
+                                     * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
                                      */
                                     , {
                                         fn: "WebSocketListener"
                                     }
                                     /* THIS IS NOT A COMMENT
-                                    * </ui:fragment>
-                                    */
+                                     * </ui:fragment>
+                                     */
                                 ]
                             },
                             "File": {
@@ -142,12 +156,13 @@
                                         cfg: {
                                             schema: {
                                                 resultListLocator: "."
-                                                        //resultFields: ["name", "id", "@class"]
+                                                //resultFields: ["name", "id", "@class"]
                                             }
                                         }
                                     }
                                 ]
                             }
+                            
                         },
                         /**
                          * This field is used to override Entities edition menus.
@@ -168,27 +183,27 @@
 
                         try {
                 #{editorGameController.getClientScripts()}      // Display game model specific js footer
-                        } catch (e) {
-                            Y.log("Error running footer scripts.", "error");
-                        }
-                    });
+                            } catch (e) {
+                                Y.log("Error running footer scripts.", "error");
+                            }
+                        });
 
-                    app.after('currentPlayerChange', function(e) {             // Whenever the current player changes
-                        //"rest/Private/xx/GameModel/xx/VariableDescriptor",
-                        this.set('currentTeam',
-                                this.dataSources.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
+                        app.after('currentPlayerChange', function(e) {             // Whenever the current player changes
+                            //"rest/Private/xx/GameModel/xx/VariableDescriptor",
+                            this.set('currentTeam',
+                            this.dataSources.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
 
-                        Y.Wegas.VariableDescriptorFacade.set("source",
-                                this.get("base") + "rest/PrivateEditor/" + e.newVal + "/GameModel/"
+                            Y.Wegas.VariableDescriptorFacade.set("source",
+                            this.get("base") + "rest/PrivateEditor/" + e.newVal + "/GameModel/"
                                 + this.get("currentGameModel") + "/VariableDescriptor");
 
-                        //Y.Wegas.VariableDescriptorFacade.fire("update");      // Fire an update event on the variable datasource
-                        Y.Wegas.UserFacade.fire("update");                      // Fire an update event on the variable datasource
+                            //Y.Wegas.VariableDescriptorFacade.fire("update");      // Fire an update event on the variable datasource
+                            Y.Wegas.UserFacade.fire("update");                      // Fire an update event on the variable datasource
+                        });
+
+                        app.render();                                               // Render app
+
                     });
-
-                    app.render();                                               // Render app
-
-                });
             </script>
         </ui:define>
     </ui:composition>

@@ -27,8 +27,7 @@ YUI.add('wegas-cssstyles', function(Y) {
          * @private
          */
         initializer: function() {
-            this.sheet = Y.Plugin.CSSLoader.customCSSStyleSheet;
-            console.log(this.sheet);
+            this.get("host").get(this.get("targetNode")).setStyles(this.get("styles"));
         }
     }, {
         ATTRS: {

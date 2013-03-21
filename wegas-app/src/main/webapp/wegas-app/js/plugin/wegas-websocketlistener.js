@@ -13,8 +13,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
 
     var WebSocketListener = Y.Base.create("WebSocketListener", Y.Plugin.Base, [], {
         initializer: function() {
-            this.pusher = Y.Wegas.PusherConnectorFactory.getConnector("732a1df75d93d028e4f9");
-            this.pusher.on("*:EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
+            Y.Wegas.PusherFacade.on("*:EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
         },
         onVariableInstanceUpdate: function(data) {
             this.get("host").cache.onResponseRevived({

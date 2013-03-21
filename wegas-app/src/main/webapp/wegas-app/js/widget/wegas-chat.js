@@ -12,11 +12,13 @@
 
 YUI.add('wegas-chat', function(Y) {
     var CONTENTBOX = 'contentBox',
-            Chat = Y.Base.create("wegas-chat", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+            Chat = Y.Base.create("wegas-chat", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: "<div class='conversation'><div class='wegas-chat-msgs'></div></div>",
         initializer: function() {
-            this.push = Y.Wegas.PusherConnectorFactory.getConnector("732a1df75d93d028e4f9");
+            this.field = null;
+            this.send = null;
         },
+        
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
 
@@ -36,11 +38,11 @@ YUI.add('wegas-chat', function(Y) {
         bindUI: function() {
             this.send.on("click", function() {
                 var sender = Y.Wegas.GameFacade.cache.getCurrentPlayer().get("name");
-                Y.Wegas.PusherConnectorFactory.getConnector().triggerCustomEvent(this.get("channel"), {sender: sender, value: this.field.getValue()}, this.get("event"));
+                Y.Wegas.PusherFacade.triggerCustomEvent(this.get("channel"), {sender: sender, value: this.field.getValue()}, this.get("event"));
                 this.field.setValue("");
             }, this);
 
-            this.responseEvent = Y.Wegas.PusherConnectorFactory.getConnector().on(this.get("event"), function(e) {
+            this.responseEvent = Y.Wegas.PusherFacade.on(this.get("event"), function(e) {
                 this.get(CONTENTBOX).one('.wegas-chat-msgs').append('<p>' + e.sender + ': ' + e.value + '</p>');
             }, this);
         },
