@@ -92,7 +92,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
          * When VariableDescriptorFacade is updated, do sync.
          */
         bindUI: function () {
-            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this));
+            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
         },
 
         /**

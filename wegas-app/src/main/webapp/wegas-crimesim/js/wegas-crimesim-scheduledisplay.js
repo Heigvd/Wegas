@@ -78,7 +78,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             cb.delegate("click", function(e) {                            // Show the available menu options on cell click
                 var questionId = e.target.ancestor("tr").getAttribute("data-questionid"),
                         startTime = +e.target.ancestor("td").getAttribute("data-startTime"),
-                        question = Y.Wegas.VariableDescriptorFacade.cache.findById(questionId);
+                        question = Y.Wegas.Facade.VariableDescriptor.cache.findById(questionId);
 
                 this.menu.removeAll();                                          // Populate the menu
                 this.menu.add(this.genMenuItems(question, startTime));
@@ -102,7 +102,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
 
             this.handlers.response = // If data changes, refresh
-                    Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
+                    Y.Wegas.Facade.VariableDescriptor.after("response", this.syncUI, this);
 
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
@@ -114,11 +114,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         syncUI: function() {
              var cb = this.get(CONTENTBOX).one(".schedule-questions");
 
-            if (!Y.Wegas.VariableDescriptorFacade.cache.find('name', "period")) {
+            if (!Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period")) {
                 cb.setContent("Unable to find time variable.");
                 return;
             }
-            if (!Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences")) {
+            if (!Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences")) {
                 cb.setContent("Unable to find evidences variable.");
                 return;
             }
@@ -144,9 +144,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         syncSchedule: function() {
             var perPeriodLoad = [], cIndex, choiceDescriptor, choiceInstance,
                     questionInstance, reply, i, j, k, question, cols, replies, names,
-                    questionsVarDesc = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences").get("items"),
+                    questionsVarDesc = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").get("items"),
                     questionInstances = [],
-                    period = Y.Wegas.VariableDescriptorFacade.cache.find('name', "period"),
+                    period = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period"),
                     periodInstance = period.getInstance(),
                     maxValue = period.get("maxValue"),
                     totalPeriods = period.get("maxValue") - period.get("minValue"),
@@ -302,7 +302,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         },
         syncDetailsPanel: function() {
             var i, k, reply, status, replyData, cb = this.get(CONTENTBOX),
-                    question = Y.Wegas.VariableDescriptorFacade.cache.findById(this.currentQuestionId),
+                    question = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentQuestionId),
                     questionInstance = question.getInstance();
 
             this.data.length = 0;
@@ -382,7 +382,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var replyId = e.target.ancestor(".icon").getAttribute("data-replyid");
 
             this.showOverlay();
-            Y.Wegas.VariableDescriptorFacade.sendRequest({
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.app.get('currentPlayer')
             });
         },
@@ -390,7 +390,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var data = e.target.get("data");
 
             this.showOverlay();
-            Y.Wegas.VariableDescriptorFacade.sendRequest({
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/QuestionDescriptor/SelectChoice/" + data.choice.get("id")
                         + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/"
             });

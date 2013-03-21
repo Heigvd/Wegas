@@ -459,7 +459,7 @@ YUI.add('wegas-mcq-entities', function (Y) {
      */
     Wegas.persistence.Result = Y.Base.create("Result", Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function () {
-            return Wegas.VariableDescriptorFacade.cache.findById(this.get("choiceDescriptorId"));
+            return Wegas.Facade.VariableDescriptor.cache.findById(this.get("choiceDescriptorId"));
         }
     }, {
         ATTRS: {

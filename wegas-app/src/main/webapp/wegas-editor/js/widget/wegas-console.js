@@ -36,7 +36,7 @@ YUI.add('wegas-console', function (Y) {
         },
 
         executeScript: function (scriptEntity) {
-            Y.Wegas.VariableDescriptorFacade.sendRequest({
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",

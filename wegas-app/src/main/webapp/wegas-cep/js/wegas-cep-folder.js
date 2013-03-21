@@ -13,7 +13,7 @@ YUI.add('wegas-cep-folder', function (Y) {
         },
         bindUI: function () {
             Folder.superclass.bindUI.apply(this);
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         syncUI: function () {
             var i, cb = this.get(CONTENTBOX), nodeToRemove = [];

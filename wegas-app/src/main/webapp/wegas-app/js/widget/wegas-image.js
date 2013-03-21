@@ -79,7 +79,7 @@ YUI.add("wegas-image", function(Y) {
     }, {
         /** @lends Y.Wegas.WImage */
         EDITORNAME: "Image",
-        FILEENTRY: Y.Wegas.FileFacade.get("source") + "read",
+        FILEENTRY: Y.Wegas.Facade.File.get("source") + "read",
         ATTRS: {
             url: {
                 value: "",

@@ -213,7 +213,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
                         case 'Game':
                             var createdBy = el.get("createdBy"),
-                            gameModel = Wegas.GameModelFacade.cache.findById(el.get("gameModelId"));
+                            gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
 
                             ret.push({
                                 type: 'TreeNode',
@@ -341,14 +341,14 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     label = '';
                     switch (el.get("scope").get(CLASS)) {
                         case 'PlayerScope':
-                            player = Wegas.GameFacade.cache.getPlayerById(i);
+                            player = Wegas.Facade.Game.cache.getPlayerById(i);
 
                             if (!player) continue;
 
                             label = (player) ? player.get(NAME) : "undefined";
                             break;
                         case 'TeamScope':
-                            team = Wegas.GameFacade.cache.getTeamById(i);
+                            team = Wegas.Facade.Game.cache.getTeamById(i);
 
                             if (!team) continue;
 
@@ -523,7 +523,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
             dataSource: {
                 getter: function (val) {
                     if (Y.Lang.isString(val)) {
-                        return Wegas.app.dataSources[val];
+                        return Wegas.Facade[val];
                     }
                     return val;
                 }
@@ -571,10 +571,10 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 ////tab.witem(0).set("emptyMessage", "This game model has no games.");
                 //tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
 
-                Wegas.GameFacade.set("source",
+                Wegas.Facade.Game.set("source",
                     Wegas.app.get("base") + sourceUri);                       // Change the source attribute on the datasource
 
-                Wegas.RegisteredGamesFacade.set("source",
+                Wegas.Facade.RegisteredGames.set("source",
                     Wegas.app.get("base") + registeredGamesUri);              // Change the source attribute on the datasource
             }, this);
         },
@@ -647,7 +647,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     switch (el.get(CLASS)) {
                         case 'Game':
                             var createdBy = el.get("createdBy"),
-                            gameModel = Wegas.GameModelFacade.cache.findById(el.get("gameModelId"));
+                            gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
 
                             ret.push({
                                 //label: el.get(NAME),
@@ -743,7 +743,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 node.removeAll();
                 node.set("loading", true);
 
-                Wegas.VariableDescriptorFacade.sendRequest({
+                Wegas.Facade.VariableDescriptor.sendRequest({
                     request: "/" + id + "?view=Editor"
                 });
             }

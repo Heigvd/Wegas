@@ -36,7 +36,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
         },
         bindUI: function () {
             Gantt.superclass.bindUI.apply(this);
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
 
             this.handlers.sort = this.datatable.after('sort', this.syncUI, this);
 
@@ -75,7 +75,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
                     || this.get("columnValues").indexOf('realized') <= -1) {
                 return;
             }
-            tasks = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variables"));
+            tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("variables"));
             allRow = cb.all(".yui3-datatable-data tr");
             allRow.removeClass("notstarted").removeClass("started").removeClass("completed");
             allRow.each(function (node) {
@@ -107,7 +107,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
                     || node.get("className").indexOf("cell-gantt") > -1)
                 return;
             id = node.ancestor().one("*").getContent();
-            tasks = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variables"));
+            tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("variables"));
             if (!id || !tasks)
                 return;
             for (i = 0; i < tasks.get('items').length; i++) {
@@ -251,8 +251,8 @@ YUI.add("wegas-pmg-gantt", function (Y) {
             periods: {}, // to change to accept global expresssion or simple variable.
             periodsDesc: {
                 getter: function () {
-                    return Y.Wegas.VariableDescriptorFacade.cache.findById(
-                            Y.Wegas.VariableDescriptorFacade.script.scopedEval(this.get("periods")));
+                    return Y.Wegas.Facade.VariableDescriptor.cache.findById(
+                            Y.Wegas.Facade.VariableDescriptor.script.scopedEval(this.get("periods")));
                 }
             }
         }

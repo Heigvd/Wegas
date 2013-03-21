@@ -43,7 +43,7 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
         },
         bindUI: function () {
             ResourceList.superclass.bindUI.apply(this);
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
 
             this.handlers.createMenu = this.datatable.delegate('click', function (e) {            // fill the "add" menu on click
                 this.createMenu(e, true);
@@ -134,7 +134,7 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
         createMenu: function (e, add) {
             var i, tasks, resources, resourceDesc, resourceId;
             resourceId = e.target.ancestor().ancestor().ancestor().one('*').getContent();
-            resources = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get('variables'));
+            resources = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get('variables'));
             for (i = 0; i < resources.get('items').length; i++) {
                 if (resources.get('items')[i].get('id') == resourceId) {
                     resourceDesc = resources.get('items')[i];
@@ -178,7 +178,7 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
             if (!this.get("taskList")) {
                 return;
             }
-            tasks = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("taskList"));
+            tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("taskList"));
             items = tasks.get('items');
             items.sort(Y.bind(this.compareTask, this));
             for (i = 0; i < items.length; i++) {

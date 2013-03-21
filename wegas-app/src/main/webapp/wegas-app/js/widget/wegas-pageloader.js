@@ -68,15 +68,15 @@ YUI.add('wegas-pageloader', function(Y) {
                     this.syncUI();
                 }
             };
-            //Y.Wegas.app.dataSources.Page.after("response", this.syncUI, this);
-            this.handlers.push(Y.Wegas.PageFacade.cache.after("pageUpdated", function(e) {
+            //Y.Wegas.Facade.Page.after("response", this.syncUI, this);
+            this.handlers.push(Y.Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
                 if (e.page && (+e.page["@pageId"] === +this.get("pageId"))) {
                     this.currentPageId = null; // @hack force update
                     this.syncUI();
                 }
             }, this));
 
-            this.handlers.push(Y.Wegas.VariableDescriptorFacade.after("response", onUpdate, this));
+            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("response", onUpdate, this));
 
             this.handlers.push(Y.Wegas.app.after('currentPlayerChange', onUpdate, this));
 
@@ -194,7 +194,7 @@ YUI.add('wegas-pageloader', function(Y) {
                     if (!val || val === this.currentPageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded, escape
                         return val;
                     }
-                    var widgetCfg = Y.Wegas.PageFacade.cache.getPage(val);
+                    var widgetCfg = Y.Wegas.Facade.Page.cache.getPage(val);
 
                     if (!widgetCfg) {
                         return val;
