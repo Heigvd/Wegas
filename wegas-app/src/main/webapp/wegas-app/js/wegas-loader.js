@@ -290,6 +290,11 @@ YUI().use(function(Y) {
                     requires: ['stylesheet'],
                     ws_provides: 'CSSLoader'
                 },
+                "wegas-cssstyles": {
+                    path: 'wegas-app/js/plugin/wegas-cssstyles-min.js',
+                    requires: ['stylesheet'],
+                    ws_provides: 'CSSStyles'
+                },
                 "wegas-visibilitytimer": {
                     path: 'wegas-app/js/plugin/wegas-visibilitytimer-min.js',
                     requires: ["wegas-editable", "plugin", "wegas-action"],
