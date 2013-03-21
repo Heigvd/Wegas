@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 @Stateless
-@Path("Pusher")
+@Path("Pusher/")
 public class WebsocketController {
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketController.class);
