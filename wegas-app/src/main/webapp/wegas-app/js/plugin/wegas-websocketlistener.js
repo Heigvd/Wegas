@@ -12,16 +12,11 @@ YUI.add('wegas-websocketlistener', function(Y) {
     "use strict";
 
     var WebSocketListener = Y.Base.create("WebSocketListener", Y.Plugin.Base, [], {
-
-
         initializer: function() {
-            new Y.Wegas.PusherConnector();
-            this.pusher = Y.Wegas.PusherConnector.INSTANCE;
-            this.pusher.registerEvent("EntityUpdatedEvent");
+            this.pusher = Y.Wegas.PusherConnectorFactory.getConnector("732a1df75d93d028e4f9");
             this.pusher.on("*:EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
         },
-        
-        onVariableInstanceUpdate: function(data){
+        onVariableInstanceUpdate: function(data) {
             this.get("host").cache.onResponseRevived({
                 serverResponse: Y.Wegas.Editable.revive({
                     "@class": "ManagedModeResponseFilter$ServerResponse",
@@ -29,8 +24,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 })
             });
         },
-        destructor: function(){
-            this.pusher.unregisterEvent("EntityUpdatedEvent");
+        destructor: function() {
         }
     }, {
         NS: "ws",

@@ -11,82 +11,140 @@
  */
 YUI.add('wegas-pusher-connector', function(Y) {
     "use strict";
+    /**
+     * PusherConnector singleton for each applicationKey
+     * @name Y.Wegas.util.PusherConnector
+     * @constructor
+     * @param {Object} config, requires applicationKey
+     * @returns {Instance}
+     */
+    var EVENT_PREFIX = "pusherConnector",
+            PusherConnectorFactory = function(config) {
+        if (config && config.hasOwnProperty("applicationKey")) {
+            if (Y.Lang.isUndefined(this.constructor.INSTANCES[config.applicationKey])) {
+                PusherConnectorFactory.superclass.constructor.apply(this, arguments);
+                this.constructor.INSTANCES[config.applicationKey] = this;
+                this._yuievt.config = {
+                    prefix: EVENT_PREFIX
+                };
+            }
+        } else {
+            Y.log("An applicationKey is required to connect", "error", "Y.Wegas.util.PusherConnector");
+            return;
+        }
+        return this.constructor.INSTANCES[config.applicationKey];
+    };
 
-    var PusherConnector = Y.Base.create("wegas-pusher-connector", Y.Base, [], {
+    Y.extend(PusherConnectorFactory, Y.Base, {
+        /* @lends Y.Wegas.util.PusherConnector# */
+        /*
+         * life cycle method
+         * @private
+         * @function
+         * @param {Object} cfg
+         * @returns {undefined}
+         */
+        initializer: function(cfg) {
 
+            this.pusherInit(cfg);
+            //this.pusher = new Pusher('732a1df75d93d028e4f9');
 
-        initializer: function() {
-            if(this.constructor.INSTANCE){
+        },
+        pusherInit: function(cfg) {
+            if (!Pusher) {
+                Y.later(100, this.pusherInit, this, cfg);
                 return;
             }
-            this.constructor.INSTANCE = this;
             Pusher.log = Y.log;    // Enable pusher logging - don't include this in production
-
             document.WEB_SOCKET_DEBUG = true;// Flash fallback logging - don't include this in production
-
-            this.pusher = new Pusher('732a1df75d93d028e4f9');
-            this.pusher.connection.bind( 'error', function( err ) { 
-                if( err.data.code === 4004 ) {
-                    Y.log("Pusher daily limit", "error", "Y.Plugin.WebSocketListener");
+            this.pusher = new Pusher(cfg["applicationKey"]);
+            this.pusher.connection.bind('error', function(err) {
+                if (err.data.code === 4004) {
+                    Y.log("Pusher daily limit", "error", "Y.Wegas.util.PusherConnector");
                 }
             });
             this.gameChannel = this.pusher.subscribe('Game-' + Y.Wegas.app.get("currentGame"));
             this.teamChannel = this.pusher.subscribe('Team-' + Y.Wegas.app.get("currentTeam"));
             this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.app.get("currentPlayer"));
+            this.pusher.bind_all(Y.bind(this.eventReceived, this));
         },
-        
-        registerEvent:function(eventType){
-            this.publish(eventType);
-            this.gameChannel.bind(eventType, Y.bind(this.fire, this, eventType));
-            this.teamChannel.bind(eventType, Y.bind(this.fire, this, eventType));
-            this.playerChannel.bind(eventType, Y.bind(this.fire, this, eventType)); 
-        },
-        
-        unregisterEvent: function(eventType){
-            this.getEvent(eventType).detach();
-            this.gameChannel.unbind(eventType, Y.bind(this.fire, this, eventType));
-            this.teamChannel.unbind(eventType, Y.bind(this.fire, this, eventType));
-            this.playerChannel.unbind(eventType, Y.bind(this.fire, this, eventType)); 
-        },
-        
         /**
-         *
+         * @function
+         * @private
+         * @param {type} event
+         * @param {type} data
+         * @returns {undefined}
          */
-        triggerCustomEvent: function (channel, data, eventType) {
+        eventReceived: function(event, data) {
+            if (event.indexOf("pusher:") !== 0) {                               //ignore pusher specific event
+                this.publish(event, {
+                    emitFacade: false
+                });
+                this.fire(event, data);
+            }
+        },
+        /**
+         * @function
+         * @public
+         * @param {String} channel (Game | Team | Player)
+         * @param {Object} data to send
+         * @param {String} event to send
+         * @returns {undefined}
+         */
+        triggerCustomEvent: function(channel, data, event) {
             var id;
-            if (channel == "Game"){
+            if (channel === "Game") {
                 id = Y.Wegas.app.get("currentGame");
-            } else if (channel == "Team"){
+            } else if (channel === "Team") {
                 id = Y.Wegas.app.get("currentTeam");
             } else {
                 id = Y.Wegas.app.get("currentPlayer");
             }
-
-            Y.Wegas.VariableDescriptorFacade.sendRequest({
-                
-                cfg: {
-                    fullUri: Y.Wegas.app.get("base") + "rest/Pusher/Send/" + channel + "/" + id + "/" + eventType,
-                    method: "POST",
-                    data: data
+            Y.io(Y.Wegas.app.get("base") + "rest/Pusher/Send/" + channel + "/" + id + "/" + event, {
+                method: 'POST',
+                data: Y.JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             });
         },
-        
-        onVariableInstanceUpdate: function(data){
-            Y.Wegas.VariableDescriptorFacade.cache.onResponseRevived({
-                serverResponse: Y.Wegas.Editable.revive({
-                    "@class": "ManagedModeResponseFilter$ServerResponse",
-                    events: [data]
-                })
-            });
-        },
-        
-        destructor: function(){
+        /*
+         * life cycle method
+         * @private
+         * @function
+         * @returns {undefined}
+         */
+        destructor: function() {
             this.pusher.disconnect();
+            delete this.constructor.INSTANCES[this.get("applicationKey")];
         }
-    }, {
-    });
-    Y.namespace('Wegas').PusherConnector   = PusherConnector;
+    }, {/* @lends Y.Wegas.util.PusherConnector */
+        /**
+         * Store running instances.
+         * @private
+         * @field
+         */
+        INSTANCES: {},
+        ATTRS: {
+            applicationKey: {
+                initOnly: true,
+                validator: Y.Lang.isString
+            }
+        },
+        getConnector: function(applicationKey) {
+            if (Y.Lang.isUndefined(applicationKey)) {
+                for (var i in PusherConnectorFactory.INSTANCES) {
+                    return PusherConnectorFactory.INSTANCES[i];
+                }
+                return null;
+            }
+            return new PusherConnectorFactory({applicationKey: applicationKey});
+        }
 
+
+    });
+
+    Y.namespace('Wegas').PusherConnectorFactory = {getConnector: PusherConnectorFactory.getConnector};
+    //new PusherConnectorFactory({applicationKey: "732a1df75d93d028e4f9"});
 });
 
