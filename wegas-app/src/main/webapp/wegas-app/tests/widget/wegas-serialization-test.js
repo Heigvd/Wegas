@@ -26,8 +26,8 @@ YUI.add('wegas-serialization-test', function(Y) {
             });
 
             // Create UserFacade mock
-            Y.Wegas.UserFacade = Y.Mock();
-            Y.Wegas.UserFacade.cache = {
+            Y.Wegas.Facade.User = Y.Mock();
+            Y.Wegas.Facade.User.cache = {
                 get: function() {
                     return Y.Wegas.Editable.revive({
                         "@class": "User",
@@ -39,14 +39,14 @@ YUI.add('wegas-serialization-test', function(Y) {
                     });
                 }
             };
-            Y.Mock.expect(Y.Wegas.UserFacade, {
+            Y.Mock.expect(Y.Wegas.Facade.User, {
                 method: "after",
                 args: [Y.Mock.Value.String, Y.Mock.Value.Object, Y.Mock.Value.Any]
             });
 
             // Create GameFacade mock
-            Y.Wegas.GameFacade = Y.Mock();
-            Y.Wegas.GameFacade.cache = {
+            Y.Wegas.Facade.Game = Y.Mock();
+            Y.Wegas.Facade.Game.cache = {
                 getCurrentPlayer: function() {
                     return null;
                 },
@@ -56,20 +56,20 @@ YUI.add('wegas-serialization-test', function(Y) {
             };
 
             // Create VariableDescriptorFacade mock
-            Y.Wegas.VariableDescriptorFacade = Y.Mock();
-            Y.Wegas.VariableDescriptorFacade.cache = {
+            Y.Wegas.Facade.VariableDescriptor = Y.Mock();
+            Y.Wegas.Facade.VariableDescriptor.cache = {
                 find: function() {
                     return null;
                 }
             };
-            Y.Mock.expect(Y.Wegas.VariableDescriptorFacade, {
+            Y.Mock.expect(Y.Wegas.Facade.VariableDescriptor, {
                 method: "after",
                 args: [Y.Mock.Value.String, Y.Mock.Value.Object, Y.Mock.Value.Any]
             });
 
             // Create PageFacade mock
-            Y.Wegas.PageFacade = Y.Mock();
-            Y.Wegas.PageFacade.cache = {
+            Y.Wegas.Facade.Page = Y.Mock();
+            Y.Wegas.Facade.Page.cache = {
                 getPage: function() {
                     return null;
                 },
@@ -79,8 +79,8 @@ YUI.add('wegas-serialization-test', function(Y) {
             };
 
             // Create FileFacade mock
-            Y.Wegas.FileFacade = Y.Mock();
-            Y.Mock.expect(Y.Wegas.FileFacade, {
+            Y.Wegas.Facade.File = Y.Mock();
+            Y.Mock.expect(Y.Wegas.Facade.File, {
                 method: "get",
                 args: [Y.Mock.Value.String]
             });

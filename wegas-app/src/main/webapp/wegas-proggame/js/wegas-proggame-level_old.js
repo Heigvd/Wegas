@@ -73,7 +73,7 @@ YUI.add('wegas-proggame-level', function (Y) {
 
         },
         bindUI: function () {
-            Y.Wegas.app.VariableDescriptorFacade.after( "response",             // If data changes, refresh
+            Y.Wegas.Facade.VariableDescriptor.after( "response",             // If data changes, refresh
                 this.syncUI, this);
 
             Y.Wegas.app.after( 'currentPlayerChange', this.syncUI, this);       // If current user changes, refresh (editor only)
@@ -86,7 +86,7 @@ YUI.add('wegas-proggame-level', function (Y) {
                 this.runButton.set( "label", "RUNNING..." );
                 this.runButton.set( "disabled", true );
 
-                Y.Wegas.app.VariableDescriptorFacade.sendRequest({
+                Y.Wegas.Facade.VariableDescriptor.sendRequest({
                     request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
                     cfg: {
                         method: "POST",
@@ -127,7 +127,7 @@ YUI.add('wegas-proggame-level', function (Y) {
         },
 
         doNextLevel: function () {
-            Y.Wegas.app.VariableDescriptorFacade.sendRequest({
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",

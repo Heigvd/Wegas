@@ -36,7 +36,7 @@ YUI.add('wegas-inbox', function(Y) {
          */
         handlers: null,
         /**
-         * datasource from Y.Wegas.app.VariableDescriptorFacade
+         * datasource from Y.Wegas.Facade.VariableDescriptor
          */
         dataSource: null,
         /**
@@ -55,7 +55,7 @@ YUI.add('wegas-inbox', function(Y) {
          * Plug a toolbar widget (and add the delete button at this toolbar).
          */
         initializer: function() {
-            this.dataSource = Y.Wegas.VariableDescriptorFacade;
+            this.dataSource = Y.Wegas.Facade.VariableDescriptor;
             this.handlers = {};
             this.plug(Y.Plugin.WidgetToolbar);
             this.deleteButton = new Y.Wegas.Button({

@@ -36,7 +36,7 @@ YUI.add("wegas-loginbutton", function (Y) {
          */
         bindUI: function () {
             Y.Wegas.LoginButton.superclass.bindUI.apply(this, arguments);
-            Y.Wegas.UserFacade.after("update", this.syncUI, this);
+            Y.Wegas.Facade.User.after("update", this.syncUI, this);
 
             if (this.menu) {                                                    // Don't add the plugin if it already exist.
                 return;
@@ -76,9 +76,9 @@ YUI.add("wegas-loginbutton", function (Y) {
         syncUI: function () {
             Y.Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
-            var cUser = Y.Wegas.UserFacade.cache.get("currentUser"),
-            cPlayer = Y.Wegas.GameFacade.cache.getCurrentPlayer(),
-            cTeam = Y.Wegas.GameFacade.cache.getCurrentTeam(),
+            var cUser = Y.Wegas.Facade.User.cache.get("currentUser"),
+            cPlayer = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
+            cTeam = Y.Wegas.Facade.Game.cache.getCurrentTeam(),
             name = cUser.get("name") || "undefined";
             if (!this.get('labelIsUser')) {
                 if (cPlayer) {

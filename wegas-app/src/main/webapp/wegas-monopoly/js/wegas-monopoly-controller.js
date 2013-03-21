@@ -32,7 +32,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                 this.diceAfter();
                
                 this.buy = this.get("host").item(1);
-                this.boxValue = Y.Wegas.VariableDescriptorFacade.cache.find("name", "boxValue").getAttrs().items;
+                this.boxValue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "boxValue").getAttrs().items;
                 this.buyProperty();
                
                 this.display = this.get("host").item(5);
@@ -60,15 +60,15 @@ YUI.add('wegas-monopoly-controller', function(Y) {
         },
         
         clickNext: function(){
-            var turn = Y.Wegas.VariableDescriptorFacade.cache.find("name", "turnOf"),
+            var turn = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "turnOf"),
                 id, player;
             this.next.on("click", function(){
                 if (turn.get("scope") instanceof Y.Wegas.persistence.GameModelScope){ //@fixme when gameScope works
-                    player = Y.Wegas.GameFacade.cache.getCurrentGame().get("teams");
+                    player = Y.Wegas.Facade.Game.cache.getCurrentGame().get("teams");
                     this.nextPlayer("teams", turn, player);
                 } else if (turn.get("scope") instanceof Y.Wegas.persistence.TeamScope) {
                     this.nextPlayer("players", turn, player);
-                    player = Y.Wegas.GameFacade.cache.getCurrentTeam().get("players");
+                    player = Y.Wegas.Facade.Game.cache.getCurrentTeam().get("players");
                 }
             }, this);
         },
@@ -76,12 +76,12 @@ YUI.add('wegas-monopoly-controller', function(Y) {
         nextPlayer: function (scope, turn, player){
             var i;
             for (i = 0; i < player.length; i++){
-                if (turn.get("scope").getInstance().get("value") == Y.Wegas.GameFacade.cache.getCurrentGame().get(scope)[i].get("id")){
+                if (turn.get("scope").getInstance().get("value") == Y.Wegas.Facade.Game.cache.getCurrentGame().get(scope)[i].get("id")){
                     i++
                     if (i == player.length){
-                        this.display.setCurrentPlayer(Y.Wegas.GameFacade.cache.getCurrentGame().get(scope)[0].get("id"));
+                        this.display.setCurrentPlayer(Y.Wegas.Facade.Game.cache.getCurrentGame().get(scope)[0].get("id"));
                     } else {
-                        this.display.setCurrentPlayer(Y.Wegas.GameFacade.cache.getCurrentGame().get(scope)[i].get("id"));
+                        this.display.setCurrentPlayer(Y.Wegas.Facade.Game.cache.getCurrentGame().get(scope)[i].get("id"));
                     }
                 }
             }
@@ -89,7 +89,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
         },
         
         checkRestart : function(){
-            this.restartValue = Y.Wegas.VariableDescriptorFacade.cache.find("name", "restart").getInstance().get("value");
+            this.restartValue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "restart").getInstance().get("value");
             if (this.restartValue == "true"){
                 Y.one('.game .yui3-togglebutton').addClass('yui3-button-selected');
             } else {
@@ -107,7 +107,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                 } else {
                     this.restartValue = "true";
                 } 
-                Y.Wegas.VariableDescriptorFacade.sendRequest({
+                Y.Wegas.Facade.VariableDescriptor.sendRequest({
                     request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
                         'Content-Type': 'application/json; charset=ISO-8859-1',
@@ -128,7 +128,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
         buyProperty: function(){
             this.buy.on("click", function(){
                 var position, money;
-                position = Y.Wegas.VariableDescriptorFacade.cache.find("name", "position").getInstance().get("value");
+                position = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position").getInstance().get("value");
                 position--;
                 // check if property is free
                 if (this.boxValue[position].getInstance().get("properties").playerId != "" ||
@@ -137,12 +137,12 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                     return;
                 }
                 // check if have enough money               
-                money = Y.Wegas.VariableDescriptorFacade.cache.find("name", "money").getInstance().get("value");
+                money = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "money").getInstance().get("value");
                 if (this.boxValue[position].getInstance().get("properties").value <= money){
                     this.setMoney(money - this.boxValue[position].getInstance().get("properties").value);
                 // add property
                     this.boxValue[position].getInstance().get("properties").playerId = Y.Wegas.app.get('currentPlayer');
-                    Y.Wegas.VariableDescriptorFacade.sendRequest({
+                    Y.Wegas.Facade.VariableDescriptor.sendRequest({
                         request: "/" + this.boxValue[position].getInstance().get("descriptorId") +"/VariableInstance/" + this.boxValue[position].getInstance().get("id"),
                         headers:{
                             'Content-Type': 'application/json; charset=ISO-8859-1',
@@ -166,7 +166,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
         },
         
         setMoney: function(value){
-            Y.Wegas.VariableDescriptorFacade.sendRequest({
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 headers:{
                     'Content-Type': 'application/json; charset=ISO-8859-1',

@@ -32,7 +32,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
             entity: {
                 getter: function (val) {
                     if (val === "currentGameModel") {
-                        return Wegas.GameModelFacade.cache.getCurrentGameModel();
+                        return Wegas.Facade.GameModel.cache.getCurrentGameModel();
                     }
                     return val;
                 }
@@ -40,7 +40,7 @@ YUI.add('wegas-editor-entityaction', function (Y) {
             dataSource: {
                 getter: function (val) {
                     if (Lang.isString(val)) {
-                        return Wegas.app.dataSources[val];
+                        return Wegas.Facade[val];
                     }
                     return val;
                 }
@@ -202,10 +202,10 @@ YUI.add('wegas-editor-entityaction', function (Y) {
             dataSource: {
                 getter: function (val) {
                     if (!val) {
-                        return Wegas.VariableDescriptorFacade;
+                        return Wegas.Facade.VariableDescriptor;
                     }
                     if (Lang.isString(val)) {
-                        return Wegas.app.dataSources[val];
+                        return Wegas.Facade[val];
                     }
                     return val;
                 }

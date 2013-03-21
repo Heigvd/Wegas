@@ -33,7 +33,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
          */
         tabView: null,
         /**
-         * datasource from Y.Wegas.app.VariableDescriptorFacade
+         * datasource from Y.Wegas.Facade.VariableDescriptor
          */
         dataSource: null,
         /**
@@ -47,7 +47,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
          * @description Set variable with initials values.
          */
         initializer: function() {
-            this.dataSource = Y.Wegas.VariableDescriptorFacade;
+            this.dataSource = Y.Wegas.Facade.VariableDescriptor;
             this.tabView = new Y.TabView();
             this.gallery = null;
             this.handlers = {};

@@ -60,7 +60,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
          * @private
          */
         bindUI: function () {
-            this.responseHandler = Y.Wegas.GameModelFacade.after("response", this.syncUI, this);
+            this.responseHandler = Y.Wegas.Facade.GameModel.after("response", this.syncUI, this);
 
             this.selectField.on("updated", function (val) {
                 this.currentScript = val;
@@ -131,7 +131,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
         },
 
         getLibrary: function () {
-            var cGameModel = Y.Wegas.GameModelFacade.cache.getCurrentGameModel(),
+            var cGameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
             mapping = {
                 "Script": "scriptLibrary",
                 "ClientScript": "clientScriptLibrary",
@@ -158,7 +158,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
 
                         this.showOverlay();
 
-                        Y.Wegas.GameModelFacade.sendRequest({
+                        Y.Wegas.Facade.GameModel.sendRequest({
                             request: "/" + Y.Wegas.app.get("currentGameModel")
                             + "/Library/" + this.get("library") + "/" + this.currentScript,
                             cfg: {
@@ -206,7 +206,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                     click: Y.bind(function () {
                         this.showOverlay();
 
-                        Y.Wegas.GameModelFacade.sendRequest({
+                        Y.Wegas.Facade.GameModel.sendRequest({
                             request: "/" + Y.Wegas.app.get("currentGameModel")
                             + "/Library/" + this.get("library") + "/" + this.selectField.getValue(),
                             cfg: {
@@ -239,7 +239,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                     click: Y.bind(function () {
                         this.showOverlay();
 
-                        Y.Wegas.GameModelFacade.sendRequest({
+                        Y.Wegas.Facade.GameModel.sendRequest({
                             request: "/" + Y.Wegas.app.get("currentGameModel")
                             + "/Library/" + this.get("library") + "/" + this.currentScript,
                             cfg: {
