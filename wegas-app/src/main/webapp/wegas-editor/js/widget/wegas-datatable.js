@@ -20,7 +20,7 @@ YUI.add('wegas-datatable', function(Y) {
         _table: null,
 
         initializer: function(cfg) {
-            this._dataSource = Y.Wegas.app.dataSources[this.get('dataSource')];
+            this._dataSource = Y.Wegas.Facade[this.get('dataSource')];
         },
 
         renderUI: function () {

@@ -283,7 +283,7 @@ YUI.add('wegas-loginwidget', function(Y) {
          *  informations.
          */
         login: function(email, password, remember) {
-            Y.Wegas.UserFacade.sendRequest({
+            Y.Wegas.Facade.User.sendRequest({
                 request: "/Authenticate/?email=" + email
                         + "&password=" + password
                         + "&remember=" + remember,
@@ -310,7 +310,7 @@ YUI.add('wegas-loginwidget', function(Y) {
          *  form's values
          */
         createAccount: function(data) {
-            Y.Wegas.UserFacade.sendRequest({
+            Y.Wegas.Facade.User.sendRequest({
                 request: "/Signup/",
                 cfg: {
                     method: "POST",
@@ -336,7 +336,7 @@ YUI.add('wegas-loginwidget', function(Y) {
          *  the user.
          */
         sendNewPassword: function(email) {
-            Y.Wegas.UserFacade.sendRequest({
+            Y.Wegas.Facade.User.sendRequest({
                 request: "/SendNewPassword/?email=" + email,
                 cfg: {
                     method: "POST"

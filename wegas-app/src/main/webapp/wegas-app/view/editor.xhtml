@@ -162,7 +162,7 @@
                     });
 
                     app.after("render", function() {
-                        var gm = Y.Wegas.GameModelFacade.cache.getCurrentGameModel();
+                        var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
                         Y.one(".wegas-title").setContent(gm.get("name"));
 
 
@@ -178,12 +178,12 @@
                         this.set('currentTeam',
                                 this.dataSources.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
 
-                        Y.Wegas.VariableDescriptorFacade.set("source",
+                        Y.Wegas.Facade.VariableDescriptor.set("source",
                                 this.get("base") + "rest/PrivateEditor/" + e.newVal + "/GameModel/"
                                 + this.get("currentGameModel") + "/VariableDescriptor");
 
-                        //Y.Wegas.VariableDescriptorFacade.fire("update");      // Fire an update event on the variable datasource
-                        Y.Wegas.UserFacade.fire("update");                      // Fire an update event on the variable datasource
+                        //Y.Wegas.Facade.VariableDescriptor.fire("update");      // Fire an update event on the variable datasource
+                        Y.Wegas.Facade.User.fire("update");                      // Fire an update event on the variable datasource
                     });
 
                     app.render();                                               // Render app
