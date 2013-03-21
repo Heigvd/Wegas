@@ -358,6 +358,9 @@ public class GameModel extends NamedEntity {
     public void setProperty(String key, String value) {
         this.properties.put(key, value);
     }
+    public Boolean hasProperty (String key){
+        return this.properties.containsKey(key);
+    }
 
     /**
      * @return the cssLibrary
