@@ -4,6 +4,16 @@
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout wegas-monopoly",
+        "plugins": [
+            {
+                "fn": "CSSStyles",
+                "cfg": {
+                    "styles": {
+                       "background-color": "pink" 
+                    }
+                }
+            }
+        ],
         "children": [
         {
             "label": "game",
