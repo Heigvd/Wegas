@@ -116,6 +116,12 @@ YUI.add('wegas-editable', function(Y) {
                     }
                 });
                 form = builder.schemaToInputEx(schemaMap.Entity);
+
+                form.fields.sort(function(a, b) {
+                    var a = a.index || 0;
+                    b = b.index || 0;
+                    return a - b;
+                });
             }
             return form || [];
         },
@@ -162,7 +168,8 @@ YUI.add('wegas-editable', function(Y) {
          * @function
          */
         getMethodCfgs: function(data) {
-            var menu = this.getStatic("METHODS")[0] || {};
+            var menu = this.getStatic("METHODS")[0] || {
+            };
             return menu;
         },
         /**
@@ -267,7 +274,8 @@ YUI.add('wegas-editable', function(Y) {
             }
             if (cfg.plugins) {                                                  // Plugins must be revived in the proper way
                 Y.Array.each(cfg.plugins, function(field) {
-                    field.cfg = field.cfg || {};
+                    field.cfg = field.cfg || {
+                    };
                     field.cfg.type = field.fn;
                     modules = modules.concat(Editable.getModulesFromDefinition(field.cfg));
                 });

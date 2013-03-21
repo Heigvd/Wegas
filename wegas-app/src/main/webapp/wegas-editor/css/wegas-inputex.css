@@ -207,3 +207,30 @@ img.inputEx-ListField-delButton {
     width: 80%;
     margin-left: 115px;
 }
+
+/** Styles for form edition */
+.wegas-form div.inputEx-TypeField-PropertiesPanel {
+    padding-left: 140px;
+}
+
+.wegas-form legend.inputEx-Group-legend {
+    margin-left: -134px;
+    color: #2647a0;
+    width: 130px;
+    white-space: nowrap;
+    padding: 0.2em 0.5em 0 0;
+}
+
+.wegas-form legend.inputEx-Group-legend span {
+    text-align: right;
+    display: block;
+}
+
+.wegas-form  .inputEx-ListField-childContainer > div {
+    position: relative;
+}
+
+.wegas-form .inputEx-ListField-childContainer > div > img.inputEx-ListField-delButton {
+    position: absolute;
+    left: -111px;
+}

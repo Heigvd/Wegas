@@ -13,8 +13,6 @@
 YUI.add('wegas-nodeformatter', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', NodeFormatter;
-
     /**
      * @name Y.Wegas.NodeFormatter
      * @extends Y.Widget
@@ -24,7 +22,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
      * @description returm value in specifique node. Available type:
      * Text node, image node, value box node, and position node.
      */
-    NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
+    var NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
         /** @lends Y.Wegas.NodeFormatter# */
 
         // ** Lifecycle Methods ** //
