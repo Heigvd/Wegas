@@ -345,14 +345,14 @@
     }],
     "scriptLibrary": {
         "default": {
-            "@class": "GameContent",
+            "@class": "GameModelContent",
             "content": "importPackage(javax.naming);\n\nfunction lookupBean(name) {\nvar ctx = new InitialContext();\nreturn ctx.lookup(\"java:module/\" + name);\n } \n\nfunction passWeek() {\n period.value += 1; \nvar qdf = lookupBean(\"QuestionDescriptorFacade\");\n qdf.setCurrentTime(evidences.descriptor, self, period.value); humanResources.value = 15; } "
         }
     },
     "clientScriptLibrary": {
         "default": {
-            "@class": "GameContent",
-            "content": "Y.Wegas.persistence.ChoiceDescriptor.ATTRS.duration._inputex = {type: \"text\", description: \"Only for analyses\"};Y.Wegas.persistence.ChoiceDescriptor.ATTRS.cost._inputex = {type: \"text\", description: \"Only for analyses\", label: \"Human resource consumption\"};"
+            "@class": "GameModelContent",
+            "content": "Y.Wegas.persistence.Result.ATTRS.files._inputex = Y.Wegas.persistence.SingleResultChoiceDescriptor.ATTRS.results.items.properties.files._inputex = {useButtons: true, description: \"Only for analyses\",};\nY.Wegas.persistence.ChoiceDescriptor.ATTRS.duration._inputex = {type: \"text\", description: \"Only for analyses\"};\nY.Wegas.persistence.ChoiceDescriptor.ATTRS.cost._inputex = {type: \"text\", description: \"Only for analyses\", label: \"Human resource consumption\"};"
         }
     },
 

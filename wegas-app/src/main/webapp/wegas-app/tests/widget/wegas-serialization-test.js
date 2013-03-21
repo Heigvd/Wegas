@@ -23,7 +23,7 @@ YUI.add('wegas-serialization-test', function(Y) {
             Y.Mock.expect(Y.Wegas.app, {
                 method: "after",
                 args: [Y.Mock.Value.String, Y.Mock.Value.Function, Y.Mock.Value.Object]
-            })
+            });
 
             // Create UserFacade mock
             Y.Wegas.UserFacade = Y.Mock();
@@ -106,6 +106,10 @@ YUI.add('wegas-serialization-test', function(Y) {
             this.log("CEP pages");
             this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-cep/db/wegas-cep-pages.json")
         },
+        //'should instantiate and serialize flexitests widgets cfg': function() {
+            //this.log("PMG pages");
+            //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json")
+        //},
 //        'should instantiate and serialize flexitests widgets cfg': function() {
 //            this.log("Flexitests pages");
 //            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json")
@@ -154,7 +158,6 @@ YUI.add('wegas-serialization-test', function(Y) {
                     success: function(id, e) {
                         Y.log("Io success", "log", "Y.Wegas.SerializationTest");
                         this.resume(function() {
-
                             this.pagesAcc = Y.Object.values(Y.JSON.parse(e.responseText));
                             this.nextPage();
                         });
@@ -179,15 +182,13 @@ YUI.add('wegas-serialization-test', function(Y) {
          */
         assertUseAndRevive: function(cfg) {
             Y.Wegas.Widget.use(cfg, Y.bind(function(cfg) {                      // Load the subwidget dependencies
-
-                var widget = Y.Wegas.Widget.create(cfg); // Render the subwidget
-
-                var serializedCfg = widget.toObject();                            // Serialize
+                var widget = Y.Wegas.Widget.create(cfg), // Render the subwidget
+                serializedCfg = widget.toObject();                            // Serialize
 
                 this.logResult(Y.JSON.stringify(cfg, null, "\t"), Y.JSON.stringify(serializedCfg, null, "\t"));
 
-                // widget.destroy();                                               // Delete
-                //Y.Assert.isTrue(widget.get("destroyed"));
+//                 widget.destroy();                                            // Delete
+//                Y.Assert.isTrue(widget.get("destroyed"));
 
                 widget.render();
 

@@ -7,14 +7,19 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.jcr.page.Page;
+import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.*;
+import java.util.Map.Entry;
+import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -25,7 +30,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = "name"))
+        @UniqueConstraint(columnNames = "name"))
 public class GameModel extends NamedEntity {
     //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
 
@@ -103,12 +108,18 @@ public class GameModel extends NamedEntity {
     @ElementCollection(fetch = FetchType.LAZY)
     private Map<String, String> properties = new HashMap<>();
     /**
+     * Holds a reference to the pages, used to serialize page and game model at
+     * the same time.
+     */
+    @Transient
+    @JsonView({Views.Export.class})
+    private Map<Integer, JsonNode> pages;
+
     /**
      *
      */
 //    @ManyToOne(optional = true)
 //    private GameModel parentGameModel;
-
     /**
      *
      */
@@ -130,7 +141,6 @@ public class GameModel extends NamedEntity {
 //    public void setParentGameModel(GameModel parentGameModel) {
 //        this.parentGameModel = parentGameModel;
 //    }
-
     /**
      *
      * @param force
@@ -144,7 +154,7 @@ public class GameModel extends NamedEntity {
     @Override
     public void merge(AbstractEntity n) {
         super.merge(n);
-       GameModel other = (GameModel) n;
+        GameModel other = (GameModel) n;
         //this.setParentGameModel(other.getParentGameModel());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
@@ -375,5 +385,30 @@ public class GameModel extends NamedEntity {
      */
     public void setClientScriptLibrary(Map<String, GameModelContent> clientScriptLibrary) {
         this.clientScriptLibrary = clientScriptLibrary;
+    }
+
+    /**
+     * @return the pages
+     */
+    public Map<Integer, JsonNode> getPages() throws RepositoryException {
+        final Pages pagesDAO = new Pages(this.id.toString());
+        return pagesDAO.getPages();
+    }
+
+    /**
+     * @fixme This method only adds pages to target game model, it does not
+     * remove existing ones.
+     * @param pages the pages to set
+     */
+    public void setPages(Map<Integer, JsonNode> pageMap) throws RepositoryException {
+        if (pages != null) {
+
+            Pages pagesDAO = new Pages(this.id.toString());
+            pagesDAO.delete();                                                  // Remove existing pages
+
+            for (Entry<Integer, JsonNode> p : pageMap.entrySet()) {             // Add all pages
+                pagesDAO.store(new Page(p.getKey(), p.getValue()));
+            }
+        }
     }
 }
