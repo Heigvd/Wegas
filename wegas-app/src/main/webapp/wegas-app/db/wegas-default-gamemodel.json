@@ -3,13 +3,13 @@
     "name":"Default game model",
     "scriptLibrary": {
         "default": {
-            "@class": "GameContent",
+            "@class": "GameModelContent",
             "content": ""
         }
     },
     "cssLibrary": {
         "default": {
-            "@class": "GameContent",
+            "@class": "GameModelContent",
             "content": ".layout {    width: 1000px;    margin: 0 auto;    background:ligthgray;}.menu {    background: green;  }"
         }
     },
