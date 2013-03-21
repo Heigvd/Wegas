@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-form', function (Y) {
+YUI.add('wegas-form', function(Y) {
     "use strict";
 
     /**
@@ -22,8 +22,8 @@ YUI.add('wegas-form', function (Y) {
      * @constructor
      */
     var inputEx = Y.inputEx,
-    lang = Y.Lang,
-    Form = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+            lang = Y.Lang,
+            Form = Y.Base.create("wegas-form", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /**
          * @lends Y.Wegas.Form#
          */
@@ -34,22 +34,36 @@ YUI.add('wegas-form', function (Y) {
          * @private
          * @description plug a toolbar and publich "submit" event.
          */
-        initializer: function () {
+        initializer: function() {
             this.plug(Y.Plugin.WidgetToolbar);
             this.publish("submit", {
                 emitFacade: true
             });
         },
-
         /**
          * @function
          * @private
          * @description call function "renderToolbar".
          */
-        renderUI: function () {
+        renderUI: function() {
             this.renderToolbar();
         },
-
+        /**
+         * @function
+         * @private
+         * @description call function "renderToolbar".
+         */
+        syncUI: function() {
+            this.set("cfg", this.get("cfg"));
+        },
+        /**
+         * @function
+         * @private
+         * @returns {undefined}
+         */
+        destructor: function() {
+            this.set("form", null);
+        },
         // ** Private Methods ** //
         /**
          * Add a submit button (with "afterValidation" and
@@ -58,15 +72,15 @@ YUI.add('wegas-form', function (Y) {
          * @function
          * @private
          */
-        renderToolbar: function () {
+        renderToolbar: function() {
             var toolbarNode = this.toolbar.get('header');
 
             this.saveButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
                 on: {
-                    click: Y.bind(function () {
+                    click: Y.bind(function() {
                         var form = this.get("form"),
-                        val = form.getValue();
+                                val = form.getValue();
 
                         if (!form.validate()) {
                             return;
@@ -84,19 +98,18 @@ YUI.add('wegas-form', function (Y) {
             this.cancelButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-cancel\" ></span>Cancel",
                 on: {
-                    click: Y.bind(function () {
+                    click: Y.bind(function() {
                         this.fire("cancel");
                     }, this)
                 }
             }).render(toolbarNode);
         },
-
         /**
          * @function
          * @private
          * @description set the given form to null
          */
-        destroyForm: function () {
+        destroyForm: function() {
             this.set("form", null);
         }
 
@@ -119,12 +132,13 @@ YUI.add('wegas-form', function (Y) {
              * Values of fields of the form
              */
             values: {
-                "transient": true,
+                //"transient": true,
                 value: {
-                    setter: function (val) {
+                    setter: function(val) {
                         if (this.get("form")) {
                             this.form.setValue(val);
                         }
+                        return val;
                     }
                 }
             },
@@ -133,7 +147,7 @@ YUI.add('wegas-form', function (Y) {
              */
             form: {
                 "transient": true,
-                setter: function (val) {
+                setter: function(val) {
                     if (this.get("form")) {                                     // If there is alread a form instantiated, destroy it
                         this.get("form").destroy();
                     }
@@ -144,16 +158,32 @@ YUI.add('wegas-form', function (Y) {
              * Configuation of the form
              */
             cfg: {
-                "transient": true,
-                setter: function (val) {
-                    val.parentEl = this.get("contentBox");                        // Set up the form parentEl attribute, so it knows where to render
-                    val.className = "wegas-form-ix";
-                    Y.inputEx.use(val, Y.bind(function (cfg) {                  // Load form dependencies
-                        var form = Y.inputEx(cfg);                              // Initialize and render form
-                        form.setValue(this.get("values"));                      // Sync form with "values" ATTR
-                        this.set("form", form);
-                    }, this, val));
+                setter: function(val) {
+
+                    if (val) {
+                        var cfg = Y.clone(val);                                 // Duplicate so val will be untouched while serializing
+                        cfg.parentEl = this.get("contentBox");                  // Set up the form parentEl attribute, so it knows where to render
+                        cfg.className = "wegas-form-ix";
+                        cfg.type = cfg.type || "group";
+                        Y.inputEx.use(val, Y.bind(function(cfg) {               // Load form dependencies
+                            var form = Y.inputEx(cfg);                          // Initialize and render form
+                            form.setValue(this.get("values"));                  // Sync form with "values" ATTR
+                            this.set("form", form);
+                        }, this, cfg));
+                    }
+
                     return val;
+                },
+                items: {
+                    test: {
+                        type: "string"
+                    }
+                },
+                _inputex: {
+                    index: 8,
+                    _type: "group",
+                    legend: "Fields",
+                    fields: Y.inputEx.Group.groupOptions
                 }
             }
         }
@@ -164,16 +194,21 @@ YUI.add('wegas-form', function (Y) {
     /**
      *  @hack So we can easily change classs on inputex fields
      */
-    inputEx.Field.prototype.addClassName = function (className) {
+    inputEx.Field.prototype.addClassName = function(className) {
         Y.one(this.divEl).addClass(className);
     };
-    inputEx.Field.prototype.removeClassName = function (className) {
+    inputEx.Field.prototype.removeClassName = function(className) {
         Y.one(this.divEl).removeClass(className);
     };
+
+    Y.inputEx.Group.groupOptions.splice(0, 4);
+    Y.inputEx.Group.groupOptions[0].label = null;
+    Y.inputEx.Group.groupOptions[0].useButtons = true;
+
     /*
      * @hack Automatically add the "optional" message when necessary
      */
-    inputEx.StringField.prototype.setOptions = function (options) {
+    inputEx.StringField.prototype.setOptions = function(options) {
         inputEx.StringField.superclass.setOptions.call(this, options);
 
         this.options.regexp = options.regexp;
@@ -186,29 +221,29 @@ YUI.add('wegas-form', function (Y) {
         }
         this.options.readonly = options.readonly;
         this.options.autocomplete = lang.isUndefined(options.autocomplete) ?
-        inputEx.browserAutocomplete :
-        (options.autocomplete === false || options.autocomplete === "off") ? false : true;
+                inputEx.browserAutocomplete :
+                (options.autocomplete === false || options.autocomplete === "off") ? false : true;
         this.options.trim = (options.trim === true) ? true : false;
     };
     /**
      * @hack Let inputex also get requirement from selectfields, lists
      */
-    inputEx.getRawModulesFromDefinition = function (inputexDef) {
+    inputEx.getRawModulesFromDefinition = function(inputexDef) {
 
         var type = inputexDef.type || 'string',
-        module = YUI_config.groups.inputex.modulesByType[type],
-        modules = [module || type],
-        //set fields if they exist
-        fields = inputexDef.fields
-        //else see if we have elementType for lists - if neither then we end up with null
-        || inputexDef.availableFields || [];
+                module = YUI_config.groups.inputex.modulesByType[type],
+                modules = [module || type],
+                //set fields if they exist
+                fields = inputexDef.fields
+                //else see if we have elementType for lists - if neither then we end up with null
+                || inputexDef.availableFields || [];
 
         if (inputexDef.elementType) {
             fields.push(inputexDef.elementType);
         }
 
         // recursive for group,forms,list,combine, etc...
-        Y.Array.each(fields, function (field) {
+        Y.Array.each(fields, function(field) {
             modules = modules.concat(this.getModulesFromDefinition(field));
         }, this);
 
@@ -216,4 +251,5 @@ YUI.add('wegas-form', function (Y) {
 
         return modules;
     };
+
 });

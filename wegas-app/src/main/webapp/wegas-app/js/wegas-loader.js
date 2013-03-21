@@ -178,7 +178,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-form': {
                     path: 'wegas-app/js/widget/wegas-form-min.js',
-                    requires: ['wegas-widget', 'wegas-inputex', 'inputex-string', 'inputex-jsonschema',
+                    requires: ['wegas-widget', 'wegas-inputex',
+                        'inputex-string', 'inputex-jsonschema', "inputex-group",
                         'wegas-widgettoolbar', "wegas-button"],
                     ws_provides: "Form"
                 },
@@ -332,7 +333,7 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/js/inputex/wegas-inputex-variabledescriptorselect-min.js',
                     requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
                         'inputex-select'],
-                    ix_provides: ["entityarrayfieldselect"]
+                    ix_provides: ["entityarrayfieldselect", "variabledescriptorselect"]
                 },
                 'wegas-inputex-wysiwygscript': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',

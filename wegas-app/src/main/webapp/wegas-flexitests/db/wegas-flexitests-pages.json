@@ -15,21 +15,49 @@
     },
     "2": {
         "type": "List",
-        "children": [
-            {
+        "children": [{
                 "type": "Text",
                 "content": "FlexiTests",
                 "cssClass": "flexitests-title"
-            }, 
-            {
+            }, {
                 "type": "Text",
                 "content": "_INSTRUCTIONS_"
-            }, 
-            {
-                "type": "Text",
-                "content": "_FORMULAIRE_"
-            }, 
-            {
+            }, {
+                "id": 2,
+                "type": "Form",
+                "cfg": {
+                    "type": "group",
+                    "fields": [{
+                            "name": "fullname",
+                            "label": "Name"
+                        }, {
+                            "name": "gender",
+                            "label": "Gender",
+                            "type": "select",
+                            "choices": [{"label": "M", "value": "m"}, {"label": "F", "value": "f"}]
+                        }]
+                },
+                "plugins": [{
+                        "fn": "SaveEntityAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "variable": {
+                                "name": "demographics"
+                            }
+                        }
+                    }, {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "/*currentPage.value = 10;*/"
+                            }
+                        }
+                    }]
+
+            }, {
                 "type": "Button",
                 "label": "Submit",
                 "plugins": [
@@ -63,13 +91,13 @@
                             "left": "50",
                             "top": "50"
                         }
-                    }, 
+                    },
                     {
                         "fn": "HideAfter",
                         "cfg": {
                             "time": "0,1000"
                         }
-                    }, 
+                    },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
@@ -83,7 +111,7 @@
                         "content": "Male"
                     }
                 ]
-            }, 
+            },
             {
                 "id": "rightElement",
                 "type": "ChoiceList",
@@ -94,13 +122,13 @@
                             "top": "50",
                             "right": "50"
                         }
-                    }, 
+                    },
                     {
                         "fn": "HideAfter",
                         "cfg": {
                             "time": "0,1500"
                         }
-                    }, 
+                    },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
@@ -114,7 +142,7 @@
                         "content": "Female"
                     }
                 ]
-            }, 
+            },
             {
                 "id": "centerElement",
                 "type": "ChoiceList",
@@ -126,13 +154,13 @@
                             "top": "300",
                             "right": "300"
                         }
-                    }, 
+                    },
                     {
                         "fn": "HideAfter",
                         "cfg": {
                             "time": "0"
                         }
-                    }, 
+                    },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
@@ -152,7 +180,7 @@
                             }
                         ],
                         "url": "/hectorPerplexe.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -164,7 +192,7 @@
                             }
                         ],
                         "url": "/jessicaPerplexe.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -176,7 +204,7 @@
                             }
                         ],
                         "url": "/lucienPortrait.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -188,7 +216,7 @@
                             }
                         ],
                         "url": "/danielaConfiant.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -202,7 +230,7 @@
                         "url": "/fernandPensif.png"
                     }
                 ]
-            }, 
+            },
             {
                 "id": "flexi-mcq",
                 "type": "FlexitestsMCQ",

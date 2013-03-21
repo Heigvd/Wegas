@@ -133,7 +133,8 @@ YUI.add("wegas-widget", function(Y) {
                 }
             }
             msgNode.append(message);
-            message.closeHandler = message.one(".close").once("click", destroySelf, message);
+            message.closeHandler = message.one(".close").
+                    once("click", destroySelf, message);
 
             if (timeout) {
                 message.timeout = Y.later(timeout, message, destroySelf);
@@ -148,7 +149,8 @@ YUI.add("wegas-widget", function(Y) {
         getMessageNode: function() {
             var msgNode = this.get(BOUNDING_BOX).one(".wegas-systemmessage");
             if (!msgNode) {
-                this.get(BOUNDING_BOX).append("<div class='wegas-systemmessage'></div>");
+                this.get(BOUNDING_BOX).
+                        append("<div class='wegas-systemmessage'></div>");
                 return this.get(BOUNDING_BOX).one(".wegas-systemmessage");
             }
             return msgNode;
@@ -181,7 +183,8 @@ YUI.add("wegas-widget", function(Y) {
             if (!(this.toolbar instanceof Y.Plugin.WidgetToolbar)) {
                 return null;
             }
-            statusNode = this.toolbar.get("header").one(".wegas-status-message");
+            statusNode = this.toolbar.get("header").
+                    one(".wegas-status-message");
             if (!statusNode) {
                 statusNode = new Y.Node.create("<span class='wegas-status-message'></span>");
                 this.toolbar.get("header").append(statusNode);
@@ -296,7 +299,8 @@ YUI.add("wegas-widget", function(Y) {
                 type: "string",
                 optional: true,
                 _inputex: {
-                    label: "CSS class"
+                    label: "CSS class",
+                    index: 4
                 },
                 getter: function(val) {
                     if (val === "") {
@@ -478,9 +482,10 @@ YUI.add("wegas-widget", function(Y) {
                 type: "array",
                 "transient": false,
                 _inputex: {
+                    index: 10,
                     useButtons: true,
                     _type: "editablelist",
-                    label: "Plugins",
+                    legend: "Plugins",
                     items: [{
                             type: "Button",
                             label: "Tooltip",

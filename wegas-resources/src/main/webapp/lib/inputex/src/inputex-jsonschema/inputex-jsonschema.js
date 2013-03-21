@@ -5,7 +5,7 @@ YUI.add("inputex-jsonschema", function(Y){
 
   var lang = Y.Lang,
       inputEx = Y.inputEx;
- 
+
 /**
  * Namespace containing utility functions for conversion between inputEx JSON format and JSON Schema
  *
@@ -28,17 +28,17 @@ YUI.add("inputex-jsonschema", function(Y){
  * @static
  */
 inputEx.JsonSchema = {
-   
+
    /**
     * Convert the inputEx JSON fields to a JSON schema
     * @method inputExToSchema
     * @static
     */
    inputExToSchema: function(inputExJson) {
-      
+
       var t = inputExJson.type || "string",
           ip = inputExJson || {};
-      
+
       if(t == "group") {
          var ret = {
             type:'object',
@@ -46,14 +46,14 @@ inputEx.JsonSchema = {
             properties:{
             }
          };
-         
+
          for(var i = 0 ; i < ip.fields.length ; i++) {
             var field = ip.fields[i];
-            
+
             var fieldName = field.name;
             ret.properties[fieldName] = inputEx.JsonSchema.inputExToSchema(field);
          }
-         
+
          return ret;
       }
       else if(t == "number") {
@@ -89,7 +89,7 @@ inputEx.JsonSchema = {
     			'optional': typeof ip.required == "undefined" ? true : !ip.required,
     			'title': ip.label,
 				'_inputex':{
-					
+
 				}
     		};
       }
@@ -167,7 +167,7 @@ inputEx.JsonSchema = {
 				'_inputex': ip
 			};
       }
-      
+
    }
 
 };
@@ -177,48 +177,48 @@ inputEx.JsonSchema = {
  * @class inputEx.JsonSchema.Builder
  */
 inputEx.JsonSchema.Builder = function(opts) {
-	
+
 	var options = opts || {};
-	this.options  = options; 
-	
+	this.options  = options;
+
 	// specify how other schema properties are mapped to inputParam properties
 	this.schemaToParamMap = options.schemaToParamMap || {
 		'title':'label',
 		'description':'description',
 		'_inputex':null	// null value means copy child key/value pairs into field options directly
 	};
-	
+
 	this.referenceResolver = options.referenceResolver || null;
-	
+
 	// options to be applied unless already specified
-	this.defaultOptions = options.defaultOptions || {};	
-	
+	this.defaultOptions = options.defaultOptions || {};
+
 	// key is reference, value is schema
 	this.schemaIdentifierMap = options.schemaIdentifierMap || {};
 };
 
 inputEx.JsonSchema.Builder.prototype = {
-   
-   /** 
+
+   /**
  	 * return a schema based on the reference value default is to look up in map
  	 * @method defaultReferenceResolver
     */
 	defaultReferenceResolver:function(reference) {
 		return this.schemaIdentifierMap[reference] || null;
 	},
-	
+
 	/**
 	 * Convert a JSON schema to inputEx JSON
 	 * @method schemaToInputEx
 	 * @param {JSONSchema} p
 	 */
 	schemaToInputEx:function(p, propertyName) {
-	
+
 	   var fieldDef = { label: propertyName, name: propertyName };
 	   var schemaMap = this.schemaToParamMap;
     	var referencedSchema = p["$ref"];
 		var key;
-	    
+
 	   if(referencedSchema){
 	    	var new_schema = null;
 	    	if(this.referenceResolver) {
@@ -233,7 +233,7 @@ inputEx.JsonSchema.Builder.prototype = {
 	    	// copy options into new schema, for example we can overide presentation
 	    	// of a defined schema depending on where it is used
 	    	new_schema = Y.mix({},new_schema);	// copy new_schema
-	    	
+
 	    	for(var pk in p) {
 	    		if(p.hasOwnProperty(pk) && lang.isUndefined(new_schema[pk]) && pk != '$ref') {
 	    			new_schema[pk] = p[pk];
@@ -248,7 +248,7 @@ inputEx.JsonSchema.Builder.prototype = {
 
 	    for(key in schemaMap) {
 	        if(schemaMap.hasOwnProperty(key)) {
-	      	  var paramName = schemaMap[key]; 
+	      	  var paramName = schemaMap[key];
 	      	  var v = p[key];
 	      	  if(!lang.isUndefined(v)) {
 	      		  if(paramName === null) {
@@ -269,7 +269,7 @@ inputEx.JsonSchema.Builder.prototype = {
 	    }
 	    if(!p.type) p.type = 'object';
 	    var type = p.type;
-	       
+
 	       // If type is a "Union type definition", we'll use the first type for the field
 	       // "array" <=>  [] <=> ["any"]
 	       if(lang.isArray(type)) {
@@ -284,29 +284,29 @@ inputEx.JsonSchema.Builder.prototype = {
 	          // What do we do ??
 	          //console.log("type is an object !!");
 	       //}
-	       
+
 	       fieldDef.type = type;
-	       
+
 	       // default value
 	       if( !lang.isUndefined(p["default"]) ) {
 	          fieldDef.value = p["default"];
 	       }
-	    
+
 	       if(type == "array" ) {
 	          fieldDef.type = "list";
 	          if(lang.isObject(p.items) && !lang.isArray(p.items)) {
 	        	  // when items is an object, it's a schema that describes each item in the list
 	        	  fieldDef.elementType = this.schemaToInputEx(p.items, propertyName);
 	          }
-	
+
 		       if(p.minItems) { fieldDef.minItems = p.minItems; }
 				 if(p.maxItems) { fieldDef.maxItems = p.maxItems; }
-	
+
 	       }
 	       else if(type == "object" ) {
 	          fieldDef.type = "group";
 	          if(p.title && lang.isUndefined(fieldDef.legend)) {
-	        	  fieldDef.legend = p.title; 
+	        	  fieldDef.legend = p.title;
 	          }
 	          //fieldDef = this.schemaToInputEx(p, propertyName);
 	          //fieldDef = this._parseSchemaProperty(p, propertyName);
@@ -314,19 +314,19 @@ inputEx.JsonSchema.Builder.prototype = {
 	          if(propertyName) {
 	        	  fieldDef.name = propertyName;
 	          }
-	
-	          for(key in p.properties) {
-	             if(p.properties.hasOwnProperty(key)) {
-	                fields.push( this.schemaToInputEx(p.properties[key], key) );
-	             }
-	          }
-	
-	          fieldDef.fields = fields;
-	          
+                    if (!p._inputex || !p._inputex.fields) { // @modified
+                        for(key in p.properties) {
+                           if(p.properties.hasOwnProperty(key)) {
+                              fields.push( this.schemaToInputEx(p.properties[key], key) );
+                           }
+                        }
+
+                        fieldDef.fields = fields;
+                    }
 	       }
 	       else if(type == "string" && (p["enum"] || p["choices"]) ) {
 	          fieldDef.type = "select";
-	          
+
 	          if(p.choices) {
 	             fieldDef.choices = [];
 	             for(var i = 0 ; i < p.choices.length ; i++) {
@@ -345,7 +345,7 @@ inputEx.JsonSchema.Builder.prototype = {
 							fieldDef.choices[i] = { value: o };
 						 }
 	             }
-             }		
+             }
 	       }
 	       else if(type == "string") {
 	    	  if(!lang.isUndefined(p.pattern) && lang.isUndefined(fieldDef.regexp)) {
@@ -356,15 +356,15 @@ inputEx.JsonSchema.Builder.prototype = {
 	    		  }
 	    	  }
 	    	  if(!lang.isUndefined(p.maxLength) && lang.isUndefined(fieldDef.maxLength)) {
-	    		  fieldDef.maxLength = p.maxLength; 
+	    		  fieldDef.maxLength = p.maxLength;
 	    	  }
 
 	    	  if(!lang.isUndefined(p.minLength) && lang.isUndefined(fieldDef.minLength)) {
-	    		  fieldDef.minLength = p.minLength; 
+	    		  fieldDef.minLength = p.minLength;
 	    	  }
 
 	    	  if(!lang.isUndefined(p.readonly) && lang.isUndefined(fieldDef.readonly)) {
-	    		  fieldDef.readonly = p.readonly; 
+	    		  fieldDef.readonly = p.readonly;
 	    	  }
 
            // According to http://groups.google.com/group/json-schema/web/json-schema-possible-formats
@@ -389,17 +389,17 @@ inputEx.JsonSchema.Builder.prototype = {
     	          }
 	          }
 	       }
-	
+
 			 // Override inputEx's type with the "_type" attribute
 			 if( !!p["_inputex"] && !!p["_inputex"]["_type"]) {
 				fieldDef.type = p["_inputex"]["_type"];
 			 }
-	
+
 	    // Add the defaultOptions
 	    for(var kk in this.defaultOptions) {
 	        if(this.defaultOptions.hasOwnProperty(kk) && lang.isUndefined(fieldDef[kk])) {
-	        	fieldDef[kk] = this.defaultOptions[kk]; 
-	        }	    	
+	        	fieldDef[kk] = this.defaultOptions[kk];
+	        }
 	    }
 	    return fieldDef;
 	},
@@ -413,18 +413,18 @@ inputEx.JsonSchema.Builder.prototype = {
       if(!instanceObject || !instanceObject["$schema"]) {
          throw new Error("Invalid json schema instance object. Object must have a '$schema' property.");
       }
-      
+
       var formDef = this.schemaToInputEx(instanceObject["$schema"]);
-      
+
       // Set the default value of each property to the instance value
       for(var i = 0 ; i < formDef.fields.length ; i++) {
          var fieldName = formDef.fields[i].name;
          formDef.fields[i].value = instanceObject[fieldName];
       }
-      
+
       return formDef;
    }
-   
+
 };
 
 }, '3.1.0',{
