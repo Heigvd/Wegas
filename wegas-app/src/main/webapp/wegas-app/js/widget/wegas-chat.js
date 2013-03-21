@@ -10,18 +10,16 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 
-YUI.add('wegas-chat', function (Y) {
+YUI.add('wegas-chat', function(Y) {
     var CONTENTBOX = 'contentBox',
-    Chat = Y.Base.create("wegas-chat", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+            Chat = Y.Base.create("wegas-chat", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         CONTENT_TEMPLATE: "<div class='conversation'><div class='wegas-chat-msgs'></div></div>",
-        initializer: function(){
-            this.pusher = Y.Wegas.PusherConnector.INSTANCE;
-            this.pusher.registerEvent(this.get("event"));
+        initializer: function() {
+            this.push = Y.Wegas.PusherConnectorFactory.getConnector("732a1df75d93d028e4f9");
         },
-        
-        renderUI: function () {
+        renderUI: function() {
             var cb = this.get(CONTENTBOX);
-            
+
             this.field = new Y.inputEx.StringField({
                 parentEl: cb,
                 typeInvite: "Type here to chat",
@@ -31,30 +29,27 @@ YUI.add('wegas-chat', function (Y) {
             this.send = new Y.Wegas.Button({
                 label: "send",
                 cssClass: "wegas-chat-send",
-                render:cb
+                render: cb
             });
             cb.append(this.send);
         },
-        
-        bindUI: function(){
-            this.send.on("click", function(){
+        bindUI: function() {
+            this.send.on("click", function() {
                 var sender = Y.Wegas.GameFacade.cache.getCurrentPlayer().get("name");
-                this.pusher.triggerCustomEvent(this.get("channel"), { sender: sender, value: this.field.getValue()}, this.get("event"));
+                Y.Wegas.PusherConnectorFactory.getConnector().triggerCustomEvent(this.get("channel"), {sender: sender, value: this.field.getValue()}, this.get("event"));
                 this.field.setValue("");
             }, this);
-            
-            this.responseEvent = this.pusher.on("WebSocketListener:" + this.get("event"), function (e) {
-                this.get(CONTENTBOX).one('.wegas-chat-msgs').append('<p>' + e.event.sender + ': ' + e.event.value + '</p>');
+
+            this.responseEvent = Y.Wegas.PusherConnectorFactory.getConnector().on(this.get("event"), function(e) {
+                this.get(CONTENTBOX).one('.wegas-chat-msgs').append('<p>' + e.sender + ': ' + e.value + '</p>');
             }, this);
         },
-        
-        destructor: function(){
-            this.pusher.unregisterEvent(this.get("event"));
+        destructor: function() {
             this.send.destroy();
             this.responseEvent.detach();
         }
     }, {
-        ATTRS : {
+        ATTRS: {
             size: {
                 value: 23
             },
@@ -65,6 +60,8 @@ YUI.add('wegas-chat', function (Y) {
                 value: "chatEvent",
                 type: "string",
                 initOnly: "true"
+            },
+            dataSource: {
             }
         }
     });
