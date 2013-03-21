@@ -25,7 +25,7 @@ YUI.add('wegas-crimesim-choicesrepliesunreadcount', function (Y) {
 
         getUnreadCount: function () {
             var i, j, count = 0, questionInstance, reply,
-                    questions = Y.Wegas.VariableDescriptorFacade.cache.find('name', "evidences");
+                    questions = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences");
 
             if (!questions) {
                 return 0;

@@ -75,8 +75,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
             this.empty();
 
             var i, ret = [],
-            rootEntities = Y.Wegas.VariableDescriptorFacade.cache.findAll(),
-            currentEntity = Y.Wegas.VariableDescriptorFacade.cache.findById(this.options.value) || rootEntities[0];
+            rootEntities = Y.Wegas.Facade.VariableDescriptor.cache.findAll(),
+            currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.options.value) || rootEntities[0];
 
             this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
 
@@ -232,8 +232,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function (Y) {
 
         syncUI: function () {
             var i, args, methods, cMethod,
-            rootEntities = Y.Wegas.VariableDescriptorFacade.cache.findAll(),
-            currentEntity = Y.Wegas.VariableDescriptorFacade.cache.findById(this.options.value) || rootEntities[0];
+            rootEntities = Y.Wegas.Facade.VariableDescriptor.cache.findAll(),
+            currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.options.value) || rootEntities[0];
 
             while (this.getMethods(currentEntity).length === 0                  // If the current entity has no methods,
                 && currentEntity.get("items") && currentEntity.get("items").length > 0) { // but it has a child

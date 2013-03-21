@@ -37,8 +37,8 @@ YUI.add('wegas-chat', function(Y) {
         },
         bindUI: function() {
             this.send.on("click", function() {
-                var sender = Y.Wegas.GameFacade.cache.getCurrentPlayer().get("name");
-                Y.Wegas.PusherFacade.triggerCustomEvent(this.get("channel"), {sender: sender, value: this.field.getValue()}, this.get("event"));
+                var sender = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("name");
+                Y.Wegas.PusherConnectorFactory.getConnector().triggerCustomEvent(this.get("channel"), {sender: sender, value: this.field.getValue()}, this.get("event"));
                 this.field.setValue("");
             }, this);
 

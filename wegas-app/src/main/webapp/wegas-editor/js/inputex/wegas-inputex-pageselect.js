@@ -33,7 +33,7 @@ YUI.add("wegas-inputex-pageselect", function (Y) {
 
         setOptions: function (options) {
             inputEx.Wegas.PageSelect.superclass.setOptions.call(this, options);
-            Y.Wegas.PageFacade.cache.getIndex(Y.bind(this.buildList, this));
+            Y.Wegas.Facade.Page.cache.getIndex(Y.bind(this.buildList, this));
 
         },
 

@@ -45,14 +45,14 @@ YUI.add("wegas-injector", function(Y) {
                 case "IMG":
                     if (!element.hasAttribute("src") || !element.getAttribute("src").match("^(https?://)")) {
                         element.setAttribute("src",
-                                Y.Wegas.FileFacade.get("source") + "read" + element.getAttribute("data-file"));
+                                Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"));
                         element.removeAttribute("data-file");
                     }
                     break;
                 default:
                     if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(https?://)")) {
                         element.setAttribute("href",
-                                Y.Wegas.FileFacade.get("source") + "read" + element.getAttribute("data-file"));
+                                Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"));
                         element.removeAttribute("data-file");
                     }
             }

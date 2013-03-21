@@ -1194,13 +1194,13 @@ YUI.add('wegas-entity', function(Y) {
          * evaluated event contains response. true or false. False if script error.
          */
         localEval: function() {
-            if (Wegas.VariableDescriptorFacade.script.scopedEval) {
+            if (Wegas.Facade.VariableDescriptor.script.scopedEval) {
                 if (this._result) {
                     this.fire("evaluated", this._result);
                     return;
                 }
                 if (!this._eHandler) {
-                    this._eHandler = Wegas.VariableDescriptorFacade.script.on("ScriptEval:evaluated", function(e, o, id) {
+                    this._eHandler = Wegas.Facade.VariableDescriptor.script.on("ScriptEval:evaluated", function(e, o, id) {
 
                         if (this._yuid !== id) {
                             return;
@@ -1216,7 +1216,7 @@ YUI.add('wegas-entity', function(Y) {
                     }, this);
                 }
                 if (!this._fHandler) {
-                    this._fHandler = Wegas.VariableDescriptorFacade.script.on("ScriptEval:failure", function(e, o, id) {
+                    this._fHandler = Wegas.Facade.VariableDescriptor.script.on("ScriptEval:failure", function(e, o, id) {
 
                         if (this._yuid !== id) {
                             return;
@@ -1230,7 +1230,7 @@ YUI.add('wegas-entity', function(Y) {
 
                 if (!this._inProgress) {
                     this._inProgress = true;
-                    Wegas.VariableDescriptorFacade.script.scopedEval(this.get("content"), this._yuid);
+                    Wegas.Facade.VariableDescriptor.script.scopedEval(this.get("content"), this._yuid);
                 } else {
                     Y.log("evaluation in progress");
                 }

@@ -62,7 +62,7 @@ YUI.add("wegas-pmg-slidepanel", function (Y) {
         },
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
             
             this.handlers.anim = cb.one(".slidepanel-title").on('click', function (e) {
                 this.animation.fx.set('reverse', !this.animation.fx.get('reverse')); // toggle reverse 
