@@ -56,7 +56,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
             this.datatable.render(cb);
         },
         bindUI: function () {
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("response", this.syncUI, this);
         },
         syncUI: function () {
             if (this.datatable == null || this.get("variables") == null)
@@ -79,7 +79,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
                     ct = this.get("columnTitles"), cv = this.get("columnValues");
             if (cv == null)
                 return;
-            variables = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variables"));
+            variables = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("variables"));
             for (i = 0; i < variables.get('items').length; i++) {
                 variableDesc = variables.get('items')[i];
                 variableInst = variableDesc.getInstance();

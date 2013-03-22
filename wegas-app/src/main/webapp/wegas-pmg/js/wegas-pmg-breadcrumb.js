@@ -30,11 +30,11 @@ YUI.add("wegas-pmg-breadcrumb", function (Y) {
             cb.append(node);
         },
         bindUI: function () {
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("response", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("response", this.syncUI, this);
         },
         syncUI: function () {
             var i, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,
-                    varDesc = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.get("variable"));
+                    varDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("variable"));
             if (locations.length == 0 || varDesc == null)
                 return;
             for (i = 0; i < locations.length; i++) {

@@ -85,7 +85,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         bindUI: function() {
             var cb = this.get(CONTENTBOX);
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
 
             this.handlers.selectRow = this.table.delegate('click', function(e) {
                 this.selectRow(e);
@@ -113,7 +113,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          * Synchronise the content of this widget.
          */
         syncUI: function() {
-            var listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.cache.find("name", "tasks");
+            var listTasksDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks");
             if (!listTasksDescriptor) {
                 return;
             }
@@ -166,8 +166,8 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         getTasksData: function(listTasksDescriptor) {
             var i, j, k, termData, workers = new Array(), taskDescriptor, taskInstance, resourceDescriptor, resourceInstance, comment,
-                    listResourcesDescriptor = Y.Wegas.VariableDescriptorFacade.cache.find("name", "resources"),
-                    currentWeekInstance = Y.Wegas.VariableDescriptorFacade.cache.find("name", "week").getInstance();
+                    listResourcesDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "resources"),
+                    currentWeekInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week").getInstance();
             for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
                 workers.length = 0;
                 taskDescriptor = listTasksDescriptor.get('items')[i];
@@ -234,7 +234,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         selectRow: function(e) {
             var i, cb = this.get(CONTENTBOX),
-                    listTasksDescriptor = Y.Wegas.VariableDescriptorFacade.cache.find("name", "tasks"), taskDescriptorId;
+                    listTasksDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), taskDescriptorId;
             //deselect old row
             if (this.pickingMode) {
                 cb.all('.yui3-datatable-content .selected').removeClass('selected');
@@ -263,7 +263,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         assignTask: function(resourceDescriptor, taskDescriptor) {
             if (taskDescriptor && resourceDescriptor) {
-                Y.Wegas.VariableDescriptorFacade.sendRequest({
+                Y.Wegas.Facade.VariableDescriptor.sendRequest({
                     request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                     headers: {
                         'Content-Type': 'application/json; charset=ISO-8859-1',
@@ -328,7 +328,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          * change the current widget to go on the "dialogue" widget.
          */
         goToFinalPage: function() {
-            var currentWeek = Y.Wegas.VariableDescriptorFacade.cache.find("name", "week"),
+            var currentWeek = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week"),
                     targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
                 targetPageLoader.once("widgetChange", function(e) {

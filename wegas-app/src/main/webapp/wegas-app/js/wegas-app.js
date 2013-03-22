@@ -140,7 +140,7 @@ YUI.add('wegas-app', function(Y) {
                 if (dataSources.hasOwnProperty(k)) {
                     dataSources[k].source = this.get("base") + dataSources[k].source; // Set up datasource path
                     dataSource = new Y.Wegas.DataSource(dataSources[k]);        // Instantiate the datasource
-                    this.dataSources[k] = Y.Wegas[k + "Facade"] = this[k + "Facade"] = dataSource; // Set up global references
+                    Y.namespace("Wegas.Facade")[k] = dataSource;                 // Set up global references
                     dataSource.once("response", onInitialRequest, this);        // Listen to the datasources initial requests
                     if (Y.Lang.isNumber(dataSource.sendInitialRequest())) {     // Send the initial request
                         this.requestCounter += 1;                               // If the request was sent, update the counter

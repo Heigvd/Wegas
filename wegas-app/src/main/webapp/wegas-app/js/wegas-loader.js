@@ -62,7 +62,11 @@ YUI().use(function(Y) {
                 },
                 'wegas-websocketlistener': {
                     path: 'wegas-app/js/plugin/wegas-websocketlistener-min.js',
-                    requires: ['plugin', 'pusher']
+                    requires: ['plugin', 'wegas-pusher-connector']
+                },
+                "wegas-pusher-connector": {
+                    path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
+                    requires: ['pusher', 'io-base']
                 },
                 /** Persistence **/
                 'wegas-entity': {
