@@ -47,12 +47,12 @@ public class Pages implements Serializable {
      * @return
      * @throws RepositoryException
      */
-    public Map<Integer, String> getIndex() throws RepositoryException {
+    public Map<String, String> getIndex() throws RepositoryException {
         if (!this.connector.exist(this.gameModelId)) {
             return null;
         }
         NodeIterator it = this.connector.listChildren(this.gameModelId);
-        Map<Integer, String> ret = new HashMap<>();
+        Map<String, String> ret = new HashMap<>();
         Node n;
         String name;
         while (it.hasNext()) {
@@ -61,7 +61,7 @@ public class Pages implements Serializable {
             if (n.hasProperty("pageName")) {
                 name = n.getProperty("pageName").getString();
             }
-            ret.put(Integer.valueOf(n.getName()), name);
+            ret.put(n.getName(), name);
         }
         return ret;
     }
@@ -71,16 +71,16 @@ public class Pages implements Serializable {
      * @return
      * @throws RepositoryException
      */
-    public Map<Integer, JsonNode> getPages() throws RepositoryException {
+    public Map<String, JsonNode> getPages() throws RepositoryException {
         if (!this.connector.exist(this.gameModelId)) {
             return null;
         }
         NodeIterator it = this.connector.listChildren(this.gameModelId);
-        Map<Integer, JsonNode> ret = new HashMap<>();
+        Map<String, JsonNode> ret = new HashMap<>();
         while (it.hasNext()) {
             Node n = (Node) it.next();
             try {
-                Page p = new Page(Integer.valueOf(n.getName()), n.getProperty("content").getString());
+                Page p = new Page(n.getName(), n.getProperty("content").getString());
                 //pageMap.put(p.getId().toString(),  p.getContent());
                 ret.put(p.getId(), p.getContent());
             } catch (IOException ex) {
@@ -100,12 +100,12 @@ public class Pages implements Serializable {
      * @return
      * @throws RepositoryException
      */
-    public Page getPage(Integer id) throws RepositoryException {
-        Node n = this.connector.getChild(gameModelId, id.toString());
+    public Page getPage(String id) throws RepositoryException {
+        Node n = this.connector.getChild(gameModelId, id);
         Page ret = null;
         try {
             if (n != null) {
-                ret = new Page(Integer.valueOf(n.getName()), n.getProperty("content").getString());
+                ret = new Page(n.getName(), n.getProperty("content").getString());
             }
         } catch (IOException ex) {
             //Well Stored String is wrong
@@ -133,10 +133,7 @@ public class Pages implements Serializable {
     public void store(Page page) throws RepositoryException {
         Node n = this.connector.addChild(this.gameModelId, page.getId().toString());
         n.setProperty("content", page.getContent().toString());
-        if (page.getName() != null) {
-            n.setProperty("pageName", page.getName());
-        }
-        this.connector.save();
+        this.setMeta(page);
     }
 
     /**
