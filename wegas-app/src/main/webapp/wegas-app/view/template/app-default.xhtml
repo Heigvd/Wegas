@@ -159,12 +159,16 @@
                                     },
                                     "Page": {
 
-                                        //THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                        /*
+                                         *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                         */
                                             source: "rest/Page/#{editorGameController.currentGameModel.id}/",
                                         /* THIS IS NOT A COMMENT
                                         * </ui:fragment>
                                         */
-                                        //THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                        /*
+                                         *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                         */
                                             source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
                                         /* THIS IS NOT A COMMENT
                                         * </ui:fragment>
@@ -182,7 +186,20 @@
                                                 fn: "PageCache"
                                             }
                                         ]
-                                    },
+                                    }
+                                    /* THIS IS NOT A COMMENT
+                                    * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
+                                    */
+                                    ,
+                                    "Pusher":{
+                                        type: "PusherDataSource",
+                                        source: "rest/Pusher/",
+                                        applicationKey:"#{editorGameController.currentGameModel.getProperty('websocket')}"  
+                                    }
+                                    /* THIS IS NOT A COMMENT
+                                    * </ui:fragment>
+                                    */
+                                    ,
                                     "VariableDescriptor": {
                                         //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                         /* THIS IS NOT A COMMENT
@@ -206,11 +223,14 @@
                                                 fn: "ScriptEval"
                                             }
                                             /* THIS IS NOT A COMMENT
-                                             * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
-                                             */
-                                                ,{
-                                                fn: "WebSocketListener"
+                                            * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
+                                            */
+                                            , {
+                                                fn: "WebSocketListener",
+                                                cfg:{
+                                                    dataSource: "Pusher"
                                                 }
+                                            }
                                             /* THIS IS NOT A COMMENT
                                             * </ui:fragment>
                                             */

@@ -141,7 +141,10 @@
                                      * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
                                      */
                                     , {
-                                        fn: "WebSocketListener"
+                                        fn: "WebSocketListener",
+                                        cfg:{
+                                            dataSource: "Pusher"
+                                        }
                                     }
                                     /* THIS IS NOT A COMMENT
                                      * </ui:fragment>
