@@ -459,7 +459,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
      * MCQ Result mapper
      */
     Wegas.persistence.Result = Y.Base.create("Result", Wegas.persistence.Entity, [], {
-        getChoiceDescriptor: function () {
+        getChoiceDescriptor: function() {
             return Wegas.Facade.VariableDescriptor.cache.findById(this.get("choiceDescriptorId"));
         }
     }, {
@@ -499,7 +499,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 _inputex: {
                     _type: HIDDEN,
-                            value: [],
+                    value: [],
                     useButtons: true
                 }
             }
