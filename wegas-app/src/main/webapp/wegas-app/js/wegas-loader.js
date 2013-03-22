@@ -66,7 +66,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-pusher-connector": {
                     path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
-                    requires: ['pusher', 'io-base']
+                    requires: ['pusher', 'wegas-datasource']
                 },
                 /** Persistence **/
                 'wegas-entity': {

@@ -27,7 +27,13 @@ YUI.add('wegas-cssstyles', function(Y) {
          * @private
          */
         initializer: function() {
-            this.get("host").get(this.get("targetNode")).setStyles(this.get("styles"));
+            if (this.get("host") instanceof Y.Widget) {
+                this.get("host").get(this.get("targetNode")).setStyles(this.get("styles"));
+            } else if (this.get("host") instanceof Y.Node){
+                this.get("host").setStyles(this.get("styles"));
+            } else {
+                Y.log("Host's type mistmach", "warn", "Y.Plugin.CSSStyles");
+            }
         }
     }, {
         ATTRS: {
@@ -43,7 +49,6 @@ YUI.add('wegas-cssstyles', function(Y) {
                 "transient": true
             }
         },
-        customCSSStyleSheet: {},
         NS: "CSSStyles",
         NAME: "CSSStyles"
     });

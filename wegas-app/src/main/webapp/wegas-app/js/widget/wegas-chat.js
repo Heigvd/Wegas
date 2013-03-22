@@ -38,11 +38,11 @@ YUI.add('wegas-chat', function(Y) {
         bindUI: function() {
             this.send.on("click", function() {
                 var sender = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("name");
-                Y.Wegas.PusherConnectorFactory.getConnector().triggerCustomEvent(this.get("channel"), {sender: sender, value: this.field.getValue()}, this.get("event"));
+                Y.Wegas.Facade.Pusher.triggerCustomEvent(this.get("channel"), {sender: sender, value: this.field.getValue()}, this.get("event"));
                 this.field.setValue("");
             }, this);
 
-            this.responseEvent = Y.Wegas.PusherFacade.on(this.get("event"), function(e) {
+            this.responseEvent = Y.Wegas.Facade.Pusher.on(this.get("event"), function(e) {
                 this.get(CONTENTBOX).one('.wegas-chat-msgs').append('<p>' + e.sender + ': ' + e.value + '</p>');
             }, this);
         },
