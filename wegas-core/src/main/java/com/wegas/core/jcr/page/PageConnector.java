@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-
 public class PageConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageConnector.class);
@@ -57,11 +56,13 @@ public class PageConnector {
      * @throws RepositoryException
      */
     protected Node getChild(String gameModelName, String path) throws RepositoryException {
+        Node ret;
         try {
-            return this.getRootNode(gameModelName).getNode(path);
+            ret = this.getRootNode(gameModelName).getNode(path);
         } catch (PathNotFoundException ex) {
-            return null;
+            ret = null;
         }
+        return ret;
     }
 
     /**

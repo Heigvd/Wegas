@@ -63,7 +63,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     }
                 }).render(el);
                 this.layoutbutton = new Y.ToggleButton({
-                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Draw layout</span>",
+                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Show regions</span>",
                     on: {
                         click: Y.bind(function(e) {
                             this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-layoutmode",
