@@ -181,6 +181,18 @@ public class PageController {
                 .header("Page", pageId).build();
     }
 
+    @GET
+    @Path("/{pageId : [1-9][0-9]*}/duplicate")
+    public Response duplicate(@PathParam("gameModelId") String gameModelId,
+            @PathParam("pageId") String pageId) throws RepositoryException, IOException {
+        Pages pages = new Pages(gameModelId);
+        Page page = pages.getPage(pageId);
+        if(page == null){
+            throw new WegasException("Attempt to duplicate an inexistant page");
+        }
+        return this.createPage(gameModelId, page.getContent());
+    }
+
     /**
      * Merges existing gameModelId's pages with the provided content, replacing
      * existing pages with those given, storing new pages and keeping previous
@@ -200,7 +212,7 @@ public class PageController {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         Pages pages = new Pages(gameModelId);
-        for (Entry<String, JsonNode> p: pageMap.entrySet()) {
+        for (Entry<String, JsonNode> p : pageMap.entrySet()) {
             pages.store(new Page(p.getKey(), p.getValue()));
         }
         return getPages(gameModelId);
