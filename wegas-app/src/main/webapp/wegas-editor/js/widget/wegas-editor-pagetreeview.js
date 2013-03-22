@@ -153,9 +153,10 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         buildIndex: function(index) {
             var i, page = this.get("pageLoader").get("pageId"),
                     node,
-                    widget = this.get("pageLoader").get("widget");
+                    widget = this.get("pageLoader").get("widget"), button;
             this.tw.removeAll();
             for (i in index) {
+
                 node = new Y.TreeNode({
                     label: "Page: " + (Y.Lang.isString(index[i]) ? index[i] : "") + " (" + i + ")",
                     data: {
@@ -163,6 +164,31 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     }
                 });
                 this.tw.add(node);
+                button = new Y.Node.create("<span class=\"wegas-treeview-editmenubutton\"></span>");
+                button.plug(Y.Plugin.WidgetMenu, {
+                    children: [{
+                            type: "Button",
+                            label: "Duplicate",
+                            on: {
+                                click: Y.bind(function(pageId) {
+                                    Y.Wegas.Facade.Page.cache.duplicate(pageId, {
+                                        success: Y.bind(this.buildIndex, this)
+                                    });
+                                }, this, i)
+                            }
+                        }, {
+                            type: "Button",
+                            label: "Delete",
+                            on: {
+                                click: Y.bind(function(pageId) {
+                                        Y.Wegas.Facade.Page.cache.deletePage(pageId);
+                                        this.destroy();
+                                }, node, i)
+                            }
+                        }],
+                    event: "click"
+                });
+                node.set("rightWidget", button);
                 if (+i === +page) {
                     this.buildSubTree(node, widget);
                     node.expand(false);
