@@ -30,7 +30,7 @@ public class Page implements Serializable {
     @JsonIgnore
     @XmlTransient
     private static ObjectMapper mapper = new ObjectMapper();
-    private Integer id;
+    private String id;
     private JsonNode content;
     private String name;
 
@@ -40,7 +40,7 @@ public class Page implements Serializable {
      * @param content
      * @throws IOException
      */
-    public Page(Integer id, String content) throws IOException {
+    public Page(String id, String content) throws IOException {
         this.id = id;
         this.content = mapper.readTree(content);
     }
@@ -50,7 +50,7 @@ public class Page implements Serializable {
      * @param id
      * @param content
      */
-    public Page(Integer id, JsonNode content) {
+    public Page(String id, JsonNode content) {
         this.id = id;
         this.content = content;
     }
@@ -65,7 +65,7 @@ public class Page implements Serializable {
      *
      * @return
      */
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
@@ -73,7 +73,7 @@ public class Page implements Serializable {
      *
      * @param id
      */
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
