@@ -393,7 +393,7 @@ public class GameModel extends NamedEntity {
     /**
      * @return the pages
      */
-    public Map<Integer, JsonNode> getPages() throws RepositoryException {
+    public Map<String, JsonNode> getPages() throws RepositoryException {
         final Pages pagesDAO = new Pages(this.id.toString());
         return pagesDAO.getPages();
     }
@@ -403,13 +403,13 @@ public class GameModel extends NamedEntity {
      * remove existing ones.
      * @param pages the pages to set
      */
-    public void setPages(Map<Integer, JsonNode> pageMap) throws RepositoryException {
+    public void setPages(Map<String, JsonNode> pageMap) throws RepositoryException {
         if (pages != null) {
 
             Pages pagesDAO = new Pages(this.id.toString());
             pagesDAO.delete();                                                  // Remove existing pages
 
-            for (Entry<Integer, JsonNode> p : pageMap.entrySet()) {             // Add all pages
+            for (Entry<String, JsonNode> p : pageMap.entrySet()) {             // Add all pages
                 pagesDAO.store(new Page(p.getKey(), p.getValue()));
             }
         }
