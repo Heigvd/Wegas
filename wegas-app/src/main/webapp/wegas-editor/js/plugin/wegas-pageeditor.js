@@ -115,7 +115,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.saveButton.hide();
                     //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
                     page["@pageId"] = host.get("widget")["@pageId"];
-                    Y.Wegas.PageFacade.cache.patch(page);
+                    Y.Wegas.Facade.Page.cache.patch(page);
                 };
                 this.saveButton = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",

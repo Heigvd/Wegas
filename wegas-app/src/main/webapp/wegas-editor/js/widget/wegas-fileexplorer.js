@@ -290,7 +290,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
         listNodeData: function(node, callback) {
             if (!this.isProcessing(node)) {
                 node.set("loading", true);
-                Y.Wegas.app.dataSources.File.sendRequest({
+                Y.Wegas.Facade.File.sendRequest({
                     request: "list" + node.path,
                     cfg: {
                         headers: DEFAULTHEADERS,
@@ -359,7 +359,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         path = "delete" + node.path;
                         method = "DELETE";
                         if (confirm("Delete : " + node.path + " ?")) {
-                            Y.Wegas.app.dataSources.File.sendRequest({
+                            Y.Wegas.Facade.File.sendRequest({
                                 request: path,
                                 cfg: {
                                     headers: DEFAULTHEADERS,
@@ -382,7 +382,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
         },
         editContent: function(node, data) {
             var method = "PUT";
-            Y.Wegas.app.dataSources.File.sendRequest({
+            Y.Wegas.Facade.File.sendRequest({
                 request: node.path.substring(1, node.path.length), //remove first "/"
                 cfg: {
                     headers: DEFAULTHEADERS,

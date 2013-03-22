@@ -40,7 +40,7 @@ YUI.add('wegas-editor-buttons', function (Y) {
                 Y.Wegas.app.set('currentPlayer', e.target.get("data").get("id"));
             });
 
-            Y.Wegas.GameFacade.after("response", this.syncUI, this);
+            Y.Wegas.Facade.Game.after("response", this.syncUI, this);
             Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
         },
 
@@ -51,8 +51,8 @@ YUI.add('wegas-editor-buttons', function (Y) {
         syncUI: function () {
             SelectPlayerButton.superclass.bindUI.apply(this, arguments);
             var j, k, cTeam, menuItems = [],
-            cGame = Y.Wegas.GameFacade.cache.getCurrentGame(),
-            cPlayer = Y.Wegas.GameFacade.cache.getCurrentPlayer();
+            cGame = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+            cPlayer = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
 
             this.set("label", "Current player: " + cPlayer.get("name"));      // Update the label
 
@@ -104,15 +104,15 @@ YUI.add('wegas-editor-buttons', function (Y) {
             SelectGameButton.superclass.bindUI.apply(this, arguments);
             this.plug(Y.Plugin.WidgetMenu);
 
-            Y.Wegas.GameIndexFacade.after("response", this.syncUI, this);
+            Y.Wegas.Facade.GameIndex.after("response", this.syncUI, this);
         },
 
         syncUI: function () {
             SelectGameButton.superclass.syncUI.apply(this, arguments);
 
             var j, menuItems = [],
-            cGame = Y.Wegas.GameFacade.cache.getCurrentGame(),
-            games = Y.Wegas.GameIndexFacade.cache.findAll();
+            cGame = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+            games = Y.Wegas.Facade.GameIndex.cache.findAll();
 
             this.set("label", "Current game: " + cGame.get("name"));      // Update the label
 

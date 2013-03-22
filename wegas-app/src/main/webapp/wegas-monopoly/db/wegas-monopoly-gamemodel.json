@@ -1,6 +1,6 @@
 {
     "@class":"GameModel",
-    "name":"Monopoly",
+    "name":"Monopolyasd",
     "createdTime":null,
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
@@ -245,11 +245,12 @@
 }]
 }],
 "scriptLibrary":{},
+"cssLibrary":{},
+"clientScriptLibrary":{},
 "properties":{
+    "cssUri":"wegas-monopoly/css/wegas-monopoly.css",
+    "pagesUri":"wegas-monopoly/db/wegas-monopoly-pages.json#",
     "allGameVariables":"true",
     "websocket":"true"
-},
-"cssUri":"wegas-monopoly/css/wegas-monopoly.css",
-"widgetsUri":"wegas-monopoly/db/wegas-monopoly-pages.json#",
-"parentGameModel":null
+}
 }
