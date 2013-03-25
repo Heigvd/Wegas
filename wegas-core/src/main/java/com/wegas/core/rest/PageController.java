@@ -116,6 +116,7 @@ public class PageController {
      */
     @PUT
     @Path("/{pageId : [1-9][0-9]*}")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response setPage(@PathParam("gameModelId") String gameModelId,
             @PathParam("pageId") String pageId,
             JsonNode content) throws RepositoryException, IOException, WegasException {
