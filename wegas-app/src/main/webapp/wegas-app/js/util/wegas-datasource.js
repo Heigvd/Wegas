@@ -965,6 +965,9 @@ YUI.add('wegas-datasource', function(Y) {
                 request: "" + pageId,
                 cfg: {
                     method: 'PUT',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
                     data: patch
                 },
                 callback: callback
