@@ -139,7 +139,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                 return null;
             }
             for (i = 0; i < data.length; i += 1) {
-                reply = Y.Wegas.VariableDescriptorFacade.cache.findById(data[i].choiceDescriptorId);
+                reply = Y.Wegas.Facade.VariableDescriptor.cache.findById(data[i].choiceDescriptorId);
                 if (reply && reply.get('description')) {
                     description = reply.get('description');
                     kiddies = [{}];

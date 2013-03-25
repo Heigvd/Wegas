@@ -118,7 +118,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 Y.later(30, this, this.rebuild);
             });
 
-            this.events.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.events.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
 
             this.events.toolbarNodeNew = this.on("button:load", function(e) {
                 this.processMenu("load");
@@ -177,7 +177,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         loader: function() {
             var i, tmp;
             if (!this.panel.loader) {
-                this.cacheDialogue = Y.Wegas.VariableDescriptorFacade.cache.filter("@class", "DialogueDescriptor");
+                this.cacheDialogue = Y.Wegas.Facade.VariableDescriptor.cache.filter("@class", "DialogueDescriptor");
                 tmp = "<select><option>Select</option>";
                 for (i in this.cacheDialogue) {
                     tmp += "<option value='" + this.cacheDialogue[i].get("id") + "'>" + this.cacheDialogue[i].get("name") + "</option>";
@@ -187,7 +187,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.panel.append(this.panel.loader);
                 this.panel.loader.on("change", function(e) {
                     if (e.target.getDOMNode().value) {
-                        this.set("entity", Y.Wegas.VariableDescriptorFacade.cache.find("id", parseInt(e.target.getDOMNode().value)));
+                        this.set("entity", Y.Wegas.Facade.VariableDescriptor.cache.find("id", parseInt(e.target.getDOMNode().value)));
                     }
                     this.panel.loader.remove(true);
                     this.panel.loader = null;
@@ -285,9 +285,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                         this.showOverlay();
                         entity = JSON.parse(JSON.stringify(entity));
                         if (entity.id) {
-                            Y.Wegas.VariableDescriptorFacade.cache.put(entity, DEFAULTCB);
+                            Y.Wegas.Facade.VariableDescriptor.cache.put(entity, DEFAULTCB);
                         } else {
-                            Y.Wegas.VariableDescriptorFacade.cache.post(entity, DEFAULTCB);
+                            Y.Wegas.Facade.VariableDescriptor.cache.post(entity, DEFAULTCB);
                         }
                     }
                     break;

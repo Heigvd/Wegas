@@ -48,10 +48,10 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          */
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
             this.handlers.dialogueResponse = cb.one('.dialogue .response').delegate('click', function (e) {
                 var no = parseInt(e.currentTarget._node.attributes[0].nodeValue),
-                        dialogue = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.currentDialogue);
+                        dialogue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.currentDialogue);
                 this.responseIsDisplayed = false;
                 if (this.availableActions[no]) {
                     dialogue.doTransition(this.availableActions[no]);
@@ -215,7 +215,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 this.responseIsDisplayed = false;
                 return;
             }
-            dialogue = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.currentDialogue);
+            dialogue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.currentDialogue);
             if (!dialogue) {
                 cb.one('.dialogue .talk').insert("Aucun dialogue n'est disponible.");
                 this.responseIsDisplayed = false;
@@ -247,7 +247,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * hide the layer "answerImage".
          */
         readStateContent: function (availableActions) {
-            var dialogue = Y.Wegas.VariableDescriptorFacade.cache.find("name", this.currentDialogue),
+            var dialogue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.currentDialogue),
                     content, rawContent, texts, splittedText = [], cb = this.get(CONTENTBOX);
             //get availableActions
             this.availableActions = availableActions;
@@ -402,7 +402,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * @param String newDialogueRef, the new DialogueDescriptor's name
          */
         setCurrentDialogue: function (newDialogueRef) {
-            var i, listResource = Y.Wegas.VariableDescriptorFacade.cache.find("name", 'resources'),
+            var i, listResource = Y.Wegas.Facade.VariableDescriptor.cache.find("name", 'resources'),
                     resourceDescriptor;
             if (typeof newDialogueRef !== "string" || this.currentDialogue === newDialogueRef) {
                 return;
@@ -436,7 +436,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * change the current widget to go on the "dialogue" widget.
          */
         goToFinalPage: function () {
-            var currentWeek = Y.Wegas.VariableDescriptorFacade.cache.find("name", "week"),
+            var currentWeek = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week"),
                     targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
                 targetPageLoader.once("widgetChange", function (e) {

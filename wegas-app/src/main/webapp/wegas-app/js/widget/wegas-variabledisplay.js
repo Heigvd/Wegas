@@ -50,7 +50,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
          */
         bindUI: function () {
             this.handlers.push(
-                Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this));
+                Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
         },
 
         /**

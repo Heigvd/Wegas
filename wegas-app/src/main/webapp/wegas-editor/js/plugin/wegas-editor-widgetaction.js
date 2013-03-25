@@ -33,7 +33,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
             dataSource: {
                 getter: function (val) {
                     if (!val) {
-                        return Wegas.PageFacade;
+                        return Wegas.Facade.Page;
                     }
                     return val;
                 }

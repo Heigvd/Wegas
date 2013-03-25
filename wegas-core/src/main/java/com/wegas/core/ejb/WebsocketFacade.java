@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.websocket.ejb;
+package com.wegas.core.ejb;
 
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.EntityUpdatedEvent;
@@ -36,10 +36,9 @@ public class WebsocketFacade {
      */
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
-    public Object send(String channel, String entityType, String entityId, String data) throws IOException {
+    public String send(String filter, String entityType, String entityId, String data) throws IOException {
         Pusher p = new Pusher();
-        Pusher.triggerPush(entityType+"-" + entityId, channel, data);
-        return null;
+        return Pusher.triggerPush(entityType+"-" + entityId, filter, data);
     }
     
     public void onRequestCommit(@Observes EntityUpdatedEvent events) throws IOException {
