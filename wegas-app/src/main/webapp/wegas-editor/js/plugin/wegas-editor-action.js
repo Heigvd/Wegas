@@ -67,7 +67,7 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            Wegas.VariableDescriptorFacade.sendRequest({
+            Wegas.Facade.VariableDescriptor.sendRequest({
                 request: '/Reset/'
             });
         }
@@ -234,10 +234,10 @@ YUI.add('wegas-editor-action', function(Y) {
             tab.witem(0).set("emptyMessage", "This game model has no games.");
             tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
 
-            Wegas.GameFacade.set("source", // Change the source attribute on the datasource
+            Wegas.Facade.Game.set("source", // Change the source attribute on the datasource
                     Wegas.app.get("base") + "rest/GameModel/" + entity.get("id") + "/Game");
 
-            Wegas.GameFacade.sendRequest({
+            Wegas.Facade.Game.sendRequest({
                 request: "/"
             });
         }

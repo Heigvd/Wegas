@@ -501,6 +501,10 @@ YUI.add("wegas-widget", function(Y) {
                             type: "Button",
                             label: "Open page",
                             data: "OpenPageAction"
+                        }, {
+                            type: "Button",
+                            label: "Styles",
+                            data: "CSSStyles"
                         }]
                 }
             }
@@ -553,7 +557,7 @@ YUI.add("wegas-widget", function(Y) {
          *  or expr parameter.
          */
         VARIABLEDESCRIPTORGETTER: function(val, fullName) {
-            var ds = Y.Wegas.VariableDescriptorFacade;
+            var ds = Y.Wegas.Facade.VariableDescriptor;
             if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
 
                 if (val.name) {                                                 // Eval based on the name field
@@ -561,7 +565,7 @@ YUI.add("wegas-widget", function(Y) {
 
                 } else if (val.expr) {                                          // if absent evaluate the expr field
                     try {
-                        val.evaluated = ds.cache.findById(Y.Wegas.VariableDescriptorFacade.script.localEval(val.expr));
+                        val.evaluated = ds.cache.findById(Y.Wegas.Facade.VariableDescriptor.script.localEval(val.expr));
                     } catch (e) {
                         val.evaluated = null;
                     }

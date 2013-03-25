@@ -116,6 +116,10 @@ YUI.add("wegas-button", function(Y) {
                             type: "Button",
                             label: "Open page",
                             data: "OpenPageAction"
+                        }, {
+                            type: "Button",
+                            label: "Styles",
+                            data: "CSSStyles"
                         }]
                 }
             }
@@ -165,8 +169,8 @@ YUI.add("wegas-button", function(Y) {
          * When VariableDescriptorFacade is updated, do sync.
          * When plugin's host is render, do sync.
          */
-        bindUI: function() {
-            this.handlers.update = Y.Wegas.VariableDescriptorFacade.after("update", this.syncUI, this);
+        bindUI: function () {
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
             this.handlers.render = this.afterHostEvent("render", this.syncUI, this);
         },
         /**

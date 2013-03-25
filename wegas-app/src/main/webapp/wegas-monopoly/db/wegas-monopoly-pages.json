@@ -11,7 +11,7 @@
             "cssClass": "game",
             "direction": "horizontal",
             "plugins": [{
-                    "fn" : "MonopolyController"
+                "fn" : "MonopolyController"
             }],
             "children": [{
                 "type": "Dice",

@@ -62,7 +62,11 @@ YUI().use(function(Y) {
                 },
                 'wegas-websocketlistener': {
                     path: 'wegas-app/js/plugin/wegas-websocketlistener-min.js',
-                    requires: ['plugin', 'pusher']
+                    requires: ['plugin', 'wegas-pusher-connector']
+                },
+                "wegas-pusher-connector": {
+                    path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
+                    requires: ['pusher', 'wegas-datasource']
                 },
                 /** Persistence **/
                 'wegas-entity': {
@@ -286,6 +290,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-cssloader-min.js',
                     requires: ['stylesheet'],
                     ws_provides: 'CSSLoader'
+                },
+                "wegas-cssstyles": {
+                    path: 'wegas-app/js/plugin/wegas-cssstyles-min.js',
+                    requires: ['stylesheet'],
+                    ws_provides: 'CSSStyles'
                 },
                 "wegas-visibilitytimer": {
                     path: 'wegas-app/js/plugin/wegas-visibilitytimer-min.js',

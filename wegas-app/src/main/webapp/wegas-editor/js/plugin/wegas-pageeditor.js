@@ -63,7 +63,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     }
                 }).render(el);
                 this.layoutbutton = new Y.ToggleButton({
-                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Draw layout</span>",
+                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Show regions</span>",
                     on: {
                         click: Y.bind(function(e) {
                             this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-layoutmode",
@@ -115,7 +115,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.saveButton.hide();
                     //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
                     page["@pageId"] = host.get("widget")["@pageId"];
-                    Y.Wegas.PageFacade.cache.patch(page);
+                    Y.Wegas.Facade.Page.cache.patch(page);
                 };
                 this.saveButton = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
