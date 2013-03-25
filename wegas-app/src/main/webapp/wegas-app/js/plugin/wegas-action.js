@@ -24,8 +24,7 @@ YUI.add('wegas-action', function(Y) {
      */
     function WPlugin() {
     }
-    Y.mix(WPlugin.prototype, {
-    });
+    Y.mix(WPlugin.prototype, {});
     Y.mix(WPlugin, {
         ATTRS: {
             host: {
@@ -71,7 +70,11 @@ YUI.add('wegas-action', function(Y) {
         NAME: "Action",
         ATTRS: {
             targetEvent: {
-                value: "click"
+                type: "string",
+                value: "click",
+                _inputex: {
+                    _type: "hidden"
+                }
             }
         }
     });

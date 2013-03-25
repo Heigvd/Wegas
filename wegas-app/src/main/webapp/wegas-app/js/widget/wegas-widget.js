@@ -387,7 +387,10 @@ YUI.add("wegas-widget", function(Y) {
              * Informe if widget is disable. Transient
              */
             disabled: {
-                "transient": true
+                "transient": true,
+                _inputex: {
+                    index: 9
+                }
             },
             /**
              * Informe if widget is visible. Transient
@@ -484,7 +487,7 @@ YUI.add("wegas-widget", function(Y) {
                 _inputex: {
                     index: 10,
                     useButtons: true,
-                    _type: "editablelist",
+                    _type: "pluginlist",
                     legend: "Plugins",
                     items: [{
                             type: "Button",
