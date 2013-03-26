@@ -58,15 +58,16 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
         execute: function() {
             Plugin.EditEntityAction.showEditForm(this.get("widget"), Y.bind(function(val, e, f) {
                 Plugin.EditEntityAction.hideEditFormOverlay();
-                var i, targetWidget = this.get("widget"), plugins = {};
+                var i, targetWidget = this.get("widget"), plugins = {}, plugin;
                 targetWidget.setAttrs(val);
                 for (i = 0; i < val.plugins.length; i += 1) {
-                    if (!Y.Lang.isUndefined(targetWidget._plugins[val.plugins[i].fn])) { //that plugin exists on target
-                        targetWidget[val.plugins[i].fn].setAttrs(val.plugins[i].cfg);
-                        plugins[val.plugins[i].fn] = true;                              //store namespace as treated
+                    plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
+                    if (!Y.Lang.isUndefined(targetWidget._plugins[plugin.NS])) { //that plugin exists on target
+                        targetWidget[plugin.NS].setAttrs(val.plugins[i].cfg);
+                        plugins[plugin.NS] = true;                              //store namespace as treated
                     } else {
-                        targetWidget.plug(Y.Plugin[val.plugins[i].fn], val.plugins[i].cfg);
-                        plugins[Y.Plugin[val.plugins[i].fn].NS] = true;                 //store namespace as treated
+                        targetWidget.plug(plugin, val.plugins[i].cfg);
+                        plugins[plugin.NS] = true;                 //store namespace as treated
                     }
                 }
                 for (i in targetWidget._plugins) {                                 // remove
