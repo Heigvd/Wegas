@@ -278,6 +278,7 @@ YUI.add('wegas-editable', function(Y) {
                     };
                     field.cfg.type = field.fn;
                     modules = modules.concat(Editable.getModulesFromDefinition(field.cfg));
+                    delete field.cfg.type;
                 });
             }
 

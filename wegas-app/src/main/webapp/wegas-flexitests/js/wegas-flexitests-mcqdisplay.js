@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
@@ -44,7 +44,11 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
          * @returns {undefined}
          */
         syncUI: function() {
-            this.generators[this.get("responseType")].apply(this);
+            if (this.get("variable.evaluated")) {
+                this.generators[this.get("responseType")].apply(this);
+            } else {
+                // Display warning
+            }
         },
         /**
          * Lifecycle method

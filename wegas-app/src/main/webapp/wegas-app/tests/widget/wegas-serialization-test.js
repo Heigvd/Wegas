@@ -26,7 +26,7 @@ YUI.add('wegas-serialization-test', function(Y) {
             });
 
             // Create UserFacade mock
-            Y.Wegas.Facade.User = Y.Mock();
+            Y.namespace("Wegas.Facade").User = Y.Mock();
             Y.Wegas.Facade.User.cache = {
                 get: function() {
                     return Y.Wegas.Editable.revive({
@@ -106,14 +106,14 @@ YUI.add('wegas-serialization-test', function(Y) {
             this.log("CEP pages");
             this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-cep/db/wegas-cep-pages.json")
         },
+        'should instantiate and serialize flexitests widgets cfg': function() {
+            this.log("Flexitests pages");
+            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json")
+        },
         //'should instantiate and serialize flexitests widgets cfg': function() {
-            //this.log("PMG pages");
-            //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json")
+        //this.log("PMG pages");
+        //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json")
         //},
-//        'should instantiate and serialize flexitests widgets cfg': function() {
-//            this.log("Flexitests pages");
-//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json")
-//        },
 //        'should instantiate and serialize proggame widgets cfg': function() {
 //            this.log("Proggame pages");
 //            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-proggame/db/wegas-proggame-pages.json")
@@ -122,10 +122,10 @@ YUI.add('wegas-serialization-test', function(Y) {
 //            this.log("Leaderway pages");
 //            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-leaderway/db/wegas-leaderway-pages.json")
 //        },
-        'should instantiate and serialize book widget from an io request': function() {
-            this.log("Book pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-book/db/wegas-book-pages.json")
-        },
+//        'should instantiate and serialize book widget from an io request': function() {
+//            this.log("Book pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-book/db/wegas-book-pages.json")
+//        },
 //        'should instantiate and serialize leaderway widget from an io request': function() {
 //            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-leaderway/db/wegas-lobby-layout.json")
 //        },
@@ -182,13 +182,20 @@ YUI.add('wegas-serialization-test', function(Y) {
          */
         assertUseAndRevive: function(cfg) {
             Y.Wegas.Widget.use(cfg, Y.bind(function(cfg) {                      // Load the subwidget dependencies
-                var widget = Y.Wegas.Widget.create(cfg), // Render the subwidget
-                serializedCfg = widget.toObject();                            // Serialize
+                var widget = Y.Wegas.Widget.create(Y.clone(cfg)),
+                        // Render the subwidget
+                        serializedCfg = widget.toObject(), // Serialize
+                        escape = function(t) {
+                    return Y.JSON.stringify(this.sortObject(t), null, "\t")
+                },
+                        a = escape.call(this, cfg),
+                        b = escape.call(this, serializedCfg);
 
-                this.logResult(Y.JSON.stringify(cfg, null, "\t"), Y.JSON.stringify(serializedCfg, null, "\t"));
+                this.logResult(a, b);
+                Y.Assert.areSame(a, b, "Seralized version does not match original version");
 
-//                 widget.destroy();                                            // Delete
-//                Y.Assert.isTrue(widget.get("destroyed"));
+                //widget.destroy();                                            // Delete
+                //Y.Assert.isTrue(widget.get("destroyed"));
 
                 widget.render();
 
@@ -214,7 +221,6 @@ YUI.add('wegas-serialization-test', function(Y) {
             this.assertUseAndRevive(cPage);
             this.wait();
         },
-
         log: function(a) {
             var targetEl = Y.one("body > table");
             if (targetEl) {
@@ -224,14 +230,40 @@ YUI.add('wegas-serialization-test', function(Y) {
         },
         logResult: function(a, b) {
             function format(t) {
-                return t.replace(/\n/g, "<br />").replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+                return t.replace(/\n/g, "<br />").
+                        replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
             }
             var targetEl = Y.one("body > table");
             if (targetEl) {
-                targetEl.append("<tr " + ((a !== b) ? "style=\"background:pink\"" : "") + ">"
+                targetEl.append("<tr " + ((a !== b) ? "style=\"background:pink\"" : "style=\"background:lightgreen\"") + ">"
                         + "<td><div>" + format(a) + "</div></td>"
                         + "<td><div>" + format(b) + "</div></td></tr>");// Display results
             }
+        },
+        sortObject: function(obj) {
+
+            if (Y.Lang.isArray(obj)) {
+                var sorted_obj = [];
+                Y.Array.each(obj, function(i) {
+                    sorted_obj.push(this.sortObject(i));
+                }, this);
+                return sorted_obj;
+            } else if (Y.Lang.isObject(obj)) {
+
+                var keys = Y.Object.keys(obj),
+                        sorted_obj = {};
+
+                keys.sort();                                                        // sort keys
+
+                Y.Array.each(keys, function(item) {                               // create new array based on Sorted Keys
+                    sorted_obj[item] = this.sortObject(obj[item]);
+                }, this);
+                return sorted_obj;
+            } else {
+                return obj;
+            }
+
+
         }
     }));
 }, '@VERSION@', {

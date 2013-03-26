@@ -15,6 +15,7 @@
     },
     "2": {
         "type": "List",
+        "direction": "vertical",
         "children": [{
                 "type": "Text",
                 "content": "FlexiTests",
@@ -60,10 +61,13 @@
             }, {
                 "type": "Button",
                 "label": "Submit",
+                "cssClass": null,
+                "disabled": false,
                 "plugins": [
                     {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
+                            "targetEvent": "click",
                             "onClick": {
                                 "@class": "Script",
                                 "language": "JavaScript",
@@ -253,7 +257,10 @@
         ],
         "plugins": [
             {
-                "fn": "SwapZone"
+                "fn": "SwapZone",
+                "cfg": {
+                    "after": 1
+                }
             }
         ]
     }

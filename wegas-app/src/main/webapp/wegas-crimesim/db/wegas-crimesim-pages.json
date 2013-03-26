@@ -1,17 +1,14 @@
 {
     "1": {
         "id": 1,
-        "label": "Main layout",
+        "direction": "vertical",
         "type": "List",
         "cssClass": "layout wegas-crimesim",
-        "children": [
-            {
-                "label": "Indicators",
+        "children": [{
                 "type": "List",
                 "cssClass": "header",
                 "direction": "horizontal",
-                "children": [
-                    {
+                "children": [{
                         "type": "Text",
                         "content": "Crimesim",
                         "cssClass": "wegas-crimesim-title"
@@ -23,14 +20,19 @@
                             "name": "period"
                         }
                     }, {
+                        "cssClass": null,
+                        "disabled": false,
                         "type": "Button",
                         "label": "Next period",
-                        "view": "button",
-                        "tooltip": "Advance to next period",
-                        "plugins": [
-                            {
+                        "plugins": [{
+                                "cfg": {
+                                    "content": "Advance to next period"
+                                },
+                                "fn": "Tooltip"
+                            }, {
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
+                                    "targetEvent": "click",
                                     "onClick": {
                                         "@class": "Script",
                                         "language": "JavaScript",
@@ -57,7 +59,6 @@
                 ]
             }, {
                 "id": "menu",
-                "label": "Menu",
                 "type": "List",
                 "cssClass": "menu",
                 "direction": "horizontal",
@@ -65,11 +66,13 @@
                     {
                         "type": "Button",
                         "label": "Accueil",
+                        "disabled": false,
                         "cssClass": "menu-button",
                         "plugins": [
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
+                                    "targetEvent": "click",
                                     "subpageId": 2,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
@@ -77,12 +80,14 @@
                         ]
                     }, {
                         "type": "Button",
+                        "disabled": false,
                         "label": "Questions",
                         "cssClass": "menu-button",
                         "plugins": [
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
+                                    "targetEvent": "click",
                                     "subpageId": 3,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
@@ -97,12 +102,14 @@
                         ]
                     }, {
                         "type": "Button",
+                        "disabled": false,
                         "label": "Pièces",
                         "cssClass": "menu-button",
                         "plugins": [
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
+                                    "targetEvent": "click",
                                     "subpageId": 4,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
@@ -110,6 +117,7 @@
                         ]
                     }, {
                         "type": "Button",
+                        "disabled": false,
                         "label": "Analyses results",
                         "cssClass": "menu-button",
                         "plugins": [
@@ -119,6 +127,7 @@
                             }, {
                                 "fn": "OpenPageAction",
                                 "cfg": {
+                                    "targetEvent": "click",
                                     "subpageId": 6,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
@@ -126,12 +135,14 @@
                         ]
                     }, {
                         "type": "Button",
+                        "disabled": false,
                         "label": "Mails",
                         "cssClass": "menu-button",
                         "plugins": [
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
+                                    "targetEvent": "click",
                                     "subpageId": 5,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
@@ -145,8 +156,13 @@
                             }
                         ]
                     }, {
-                        "type": "LoginButton",
-                        "cssClass": "menu-loginbutton"
+                        "cssClass": "menu-loginbutton",
+                        "disabled": false,
+                        "label": "",
+                        "labelIsUser": false,
+                        "preferencePageId": 1000,
+                        "targetPageLoader": "maindisplayarea",
+                        "type": "LoginButton"
                     }
                 ]
             }, {

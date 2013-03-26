@@ -10,7 +10,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-gaugedisplay', function (Y) {
+YUI.add('wegas-gaugedisplay', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', GaugeDisplay;
@@ -32,17 +32,14 @@ YUI.add('wegas-gaugedisplay', function (Y) {
          * Content box of this widget, static
          */
         CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas height="50px" width="100px"></canvas><center class="label"></center><center class="percent"></center></div>',
-
         /**
          * Maximum value displayed by the gauge, static
          */
         MAXVAL: 200,
-
         /**
          * Reference to each used functions
          */
         handlers: null,
-
         /**
          * reference to the gauge object
          */
@@ -53,21 +50,23 @@ YUI.add('wegas-gaugedisplay', function (Y) {
          * @private
          * @description Set variables with initials values.
          */
-        initializer: function () {
+        initializer: function() {
             this.handlers = [];
         },
-
         /**
          * @function
          * @private
          * @description create  and render a gauge with a defined configuration
          *  or given cfg (in ATTRS)
          */
-        renderUI: function () {
+        renderUI: function() {
             var opts = {
-                lines: this.get('cfg').lines || 12, // The number of lines to draw
-                angle: this.get('cfg').angle || 0.15, // The length of each line
-                lineWidth: this.get('cfg').lineWidth || 0.44, // The line thickness
+                lines: this.get('cfg').lines || 12,
+                // The number of lines to draw
+                angle: this.get('cfg').angle || 0.15,
+                // The length of each line
+                lineWidth: this.get('cfg').lineWidth || 0.44,
+                // The line thickness
                 pointer: this.get('cfg').pointer || {
                     length: 0.5, // The radius of the inner circle
                     strokeWidth: 0.035, // The rotation offset
@@ -79,22 +78,21 @@ YUI.add('wegas-gaugedisplay', function (Y) {
                 strokeColor: this.get('cfg').strokeColor || '#FFFFFF',
                 generateGradient: this.get('cfg').generateGradient || true
             };
-            this.gauge = new Gauge(this.get("contentBox").one("canvas").getDOMNode());// create the  gauge!conso
+            this.gauge = new Gauge(this.get("contentBox").one("canvas").
+                    getDOMNode());// create the  gauge!conso
             this.gauge.setOptions(opts);
             this.gauge.maxValue = this.MAXVAL;                                  // set max gauge value
             this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)
         },
-
         /**
          * @function
          * @private
          * @description bind function to events.
          * When VariableDescriptorFacade is updated, do sync.
          */
-        bindUI: function () {
+        bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
         },
-
         /**
          * @function
          * @private
@@ -102,7 +100,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
          *  value and display the percentage based on these value. This values
          *   are based on the descriptor/instance variable given in ATTRS.
          */
-        syncUI: function () {
+        syncUI: function() {
             var maxVal, minVal, value, label,
                     variableDescriptor = this.get("variable.evaluated");
             if (!variableDescriptor) {
@@ -112,22 +110,23 @@ YUI.add('wegas-gaugedisplay', function (Y) {
             label = this.get("label") || variableDescriptor.getPublicLabel();
             minVal = variableDescriptor.get("minValue");
             maxVal = variableDescriptor.get("maxValue") - minVal;
-            value = (variableDescriptor.getInstance().get("value") - minVal) / maxVal * this.MAXVAL;
+            value = (variableDescriptor.getInstance().
+                    get("value") - minVal) / maxVal * this.MAXVAL;
             if (!value) {
                 value = 0.1;                                                    // @hack @fixme unkown bug, value seams to be treated by gauge as false...
             }
 
             this.gauge.set(value);                                              // set actual value
             this.get(CONTENTBOX).one(".label").setContent(label);
-            this.get(CONTENTBOX).one(".percent").setContent(Math.round(value / this.MAXVAL * 100) + "%");
+            this.get(CONTENTBOX).one(".percent").
+                    setContent(Math.round(value / this.MAXVAL * 100) + "%");
         },
-
         /**
          * @function
          * @private
          * @description Detach all functions created by this widget.
          */
-        destructor: function () {
+        destructor: function() {
             for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
@@ -178,6 +177,7 @@ YUI.add('wegas-gaugedisplay', function (Y) {
              */
             cfg: {
                 value: {},
+                "transient": true,
                 _inputex: {
                     _type: "object"
                 }

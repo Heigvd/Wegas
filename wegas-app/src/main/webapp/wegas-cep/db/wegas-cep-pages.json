@@ -1,12 +1,13 @@
 {
     "1": {
         "id": 1,
-        "label": "Main layout",
+        "direction": "vertical",
         "type": "List",
         "cssClass": "layout wegas-cep",
         "children": [{
                 "type": "List",
                 "cssClass": "header",
+                "direction": "vertical",
                 "children": [{
                         "type": "List",
                         "direction": "horizontal",
@@ -17,6 +18,7 @@
                                 "cssClass": "cep-title"
                             }, {
                                 "type": "List",
+                                "direction": "vertical",
                                 "cssClass": "timeIndicators",
                                 "children": [{
                                         "type": "VariableDisplay",
@@ -35,12 +37,17 @@
                                     }]
                             }, {
                                 "type": "Button",
+                                "disabled": false,
                                 "label": "Next period",
-                                "view": "button",
-                                "tooltip": "Advance to next period",
                                 "plugins": [{
+                                        "cfg": {
+                                            "content": "Advance to next period"
+                                        },
+                                        "fn": "Tooltip"
+                                    }, {
                                         "fn": "ExecuteScriptAction",
                                         "cfg": {
+                                            "targetEvent": "click",
                                             "onClick": {
                                                 "@class": "Script",
                                                 "language": "JavaScript",
@@ -83,6 +90,7 @@
                         "direction": "horizontal",
                         "children": [{
                                 "type": "Button",
+                                "disabled": false,
                                 "label": "<span class=\"wegas-icon cep-icon-home\"></span>Accueil",
                                 "cssClass": "menu-button",
                                 "plugins": [
@@ -90,12 +98,14 @@
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 2,
+                                            "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }
                                 ]
                             }, {
                                 "type": "Button",
+                                "disabled": false,
                                 "label": "<span class=\"wegas-icon cep-icon-questions\"></span>Questions",
                                 "cssClass": "menu-button",
                                 "plugins": [
@@ -103,6 +113,7 @@
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 4,
+                                            "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }, {
@@ -116,6 +127,7 @@
                                 ]
                             }, {
                                 "type": "Button",
+                                "disabled": false,
                                 "label": "<span class=\"wegas-icon cep-icon-actions\"></span>Actions",
                                 "cssClass": "menu-button",
                                 "plugins": [
@@ -123,6 +135,7 @@
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 5,
+                                            "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }, {
@@ -136,6 +149,7 @@
                                 ]
                             }, {
                                 "type": "Button",
+                                "disabled": false,
                                 "label": "<span class=\"wegas-icon cep-icon-employees\"></span>Employees",
                                 "cssClass": "menu-button",
                                 "plugins": [
@@ -143,12 +157,14 @@
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 3,
+                                            "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }
                                 ]
                             }, {
                                 "type": "Button",
+                                "disabled": false,
                                 "label": "<span class=\"wegas-icon cep-icon-mail\"></span>Mails",
                                 "cssClass": "menu-button",
                                 "plugins": [
@@ -156,6 +172,7 @@
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 6,
+                                            "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }, {
@@ -169,12 +186,18 @@
                                 ]
                             }, {
                                 "type": "Button",
+                                "disabled": false,
                                 "label": "<span class=\"wegas-icon cep-icon-history\"></span>Historique",
                                 "cssClass": "menu-button",
                                 "disabled": true
                             }, {
-                                "type": "LoginButton",
-                                "cssClass": "menu-loginbutton"
+                                "cssClass": "menu-loginbutton",
+                                "disabled": false,
+                                "label": "",
+                                "labelIsUser": false,
+                                "preferencePageId": 1000,
+                                "targetPageLoader": "maindisplayarea",
+                                "type": "LoginButton"
                             }
                         ]
                     }
@@ -188,12 +211,10 @@
                 "type": "List",
                 "cssClass": "footer",
                 "direction": "horizontal",
-                "children": [
-                    {
+                "children": [{
                         "type": "Text",
                         "content": "Copyright 2012 Heig-vd.ch"
-                    }
-                ]
+                    }]
             }
         ]
     },
@@ -287,7 +308,7 @@
         "id": 1000,
         "type": "Form",
         "plugins": [{
-            "fn": "UserPreferences"
-        }]
+                "fn": "UserPreferences"
+            }]
     }
 }
