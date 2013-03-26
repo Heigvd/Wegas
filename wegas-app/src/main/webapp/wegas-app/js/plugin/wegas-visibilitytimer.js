@@ -104,6 +104,19 @@ YUI.add("wegas-visibilitytimer", function(Y) {
         NAME: "ShowAfter",
         NS: "showafter",
         ATTRS: {
+            time: {
+                value: "0",
+                type: "string",
+                _inputex: {
+                    label: "Show after (ms)",
+                    description: "Multiple times may be separated by ','",
+                    regexp: /^([0-9]+[,]{0,1})*[^,]$/
+                },
+                setter: function(v) {
+                    this._set("arrayTime", v.split(","));
+                    return v;
+                }
+            }
         }
     });
     Y.Plugin.HideAfter = Y.Base.create("wegas-hideafter", visibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
@@ -131,6 +144,19 @@ YUI.add("wegas-visibilitytimer", function(Y) {
         NAME: "HideAfter",
         NS: "hideafter",
         ATTRS: {
+            time: {
+                value: "0",
+                type: "string",
+                _inputex: {
+                    label: "Hide after (ms)",
+                    description: "Multiple times may be separated by ','",
+                    regexp: /^([0-9]+[,]{0,1})*[^,]$/
+                },
+                setter: function(v) {
+                    this._set("arrayTime", v.split(","));
+                    return v;
+                }
+            }
         }
     });
 });
