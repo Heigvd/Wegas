@@ -132,7 +132,7 @@ YUI.add('wegas-form', function(Y) {
              * Values of fields of the form
              */
             values: {
-                //"transient": true,
+                "transient": true,
                 value: {
                     setter: function(val) {
                         if (this.get("form")) {

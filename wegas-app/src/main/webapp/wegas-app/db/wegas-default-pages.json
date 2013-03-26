@@ -1,68 +1,75 @@
 {
     "1": {
         "id": 1,
-        "label": "Main layout",
         "type": "List",
         "cssClass": "layout",
+        "direction": "vertical",
         "children": [{
                 "type": "List",
                 "cssClass": "header",
+                "direction": "vertical",
                 "children": [{
                         "type": "List",
-                        "direction": "horizontal",
                         "cssClass": "variables",
+                        "direction": "horizontal",
                         "children": [{
                                 "type": "Text",
-                                "content": "",
-                                "cssClass": "title"
+                                "cssClass": "title",
+                                "content": ""
                             }, {
                                 "type": "List",
                                 "cssClass": "timeIndicators",
+                                "direction": "vertical",
                                 "children": [{
                                         "type": "VariableDisplay",
-                                        "label": "Phase",
-                                        "view": "title",
                                         "variable": {
                                             "name": "phases"
-                                        }
+                                        },
+                                        "label": "Phase",
+                                        "view": "title"
                                     }, {
                                         "type": "VariableDisplay",
-                                        "label": "Period",
-                                        "view": "valuebox",
                                         "variable": {
                                             "name": "phases"
-                                        }
+                                        },
+                                        "label": "Period",
+                                        "view": "valuebox"
                                     }]
                             }, {
-                                "type": "Button",
+                                "disabled": false,
                                 "label": "Next period",
-                                "view": "button",
-                                "tooltip": "Advance to next period",
+                                "type": "Button",
+                                "cssClass": "fl",
                                 "plugins": [{
+                                        "fn": "Tooltip",
+                                        "cfg": {
+                                            "content": "Advance to next period"
+                                        }
+                                    }, {
                                         "fn": "ExecuteScriptAction",
                                         "cfg": {
+                                            "targetEvent": "click",
                                             "onClick": {
                                                 "@class": "Script",
                                                 "language": "JavaScript",
                                                 "content": "passPeriod();"
                                             }
                                         }
-                                    }],
-                                "cssClass": "fl"
+                                    }]
                             }, {
                                 "type": "VariableDisplay",
-                                "label": "Time cards",
-                                "view": "box",
+                                "cssClass": "fr timecards",
                                 "variable": {
                                     "name": "humanResources"
                                 },
-                                "cssClass": "fr timecards"
+                                "label": "Time cards",
+                                "view": "box"
                             }, {
                                 "type": "GaugeDisplay",
+                                "cssClass": "fr",
                                 "variable": {
                                     "name": "customerApproval"
-                                },
-                                "cssClass": "fr"
+                                }
                             }
                         ]
                     }, {
@@ -70,6 +77,7 @@
                         "cssClass": "menu",
                         "direction": "horizontal",
                         "children": [{
+                                "disabled": false,
                                 "type": "Button",
                                 "label": "<span class=\"wegas-icon\"></span>Accueil",
                                 "cssClass": "menu-button",
@@ -77,19 +85,22 @@
                                     {
                                         "fn": "OpenPageAction",
                                         "cfg": {
+                                            "targetEvent": "click",
                                             "subpageId": 2,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
                                     }
                                 ]
                             }, {
-                                "type": "Button",
+                                "disabled": false,
                                 "label": "<span class=\"wegas-icon\"></span>Questions",
+                                "type": "Button",
                                 "cssClass": "menu-button",
                                 "plugins": [
                                     {
                                         "fn": "OpenPageAction",
                                         "cfg": {
+                                            "targetEvent": "click",
                                             "subpageId": 4,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
@@ -97,19 +108,21 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "name": "questions2"
+                                                "name": "questions"
                                             }
                                         }
                                     }
                                 ]
                             }, {
-                                "type": "Button",
+                                "disabled": false,
                                 "label": "<span class=\"wegas-icon\"></span>Mails",
+                                "type": "Button",
                                 "cssClass": "menu-button",
                                 "plugins": [
                                     {
                                         "fn": "OpenPageAction",
                                         "cfg": {
+                                            "targetEvent": "click",
                                             "subpageId": 6,
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
@@ -123,8 +136,13 @@
                                     }
                                 ]
                             }, {
-                                "type": "LoginButton",
-                                "cssClass": "menu-loginbutton"
+                                "cssClass": "menu-loginbutton",
+                                "disabled": false,
+                                "label": "",
+                                "labelIsUser": false,
+                                "preferencePageId": 1000,
+                                "targetPageLoader": "maindisplayarea",
+                                "type": "LoginButton"
                             }
                         ]
                     }
@@ -170,7 +188,7 @@
         "id": 1000,
         "type": "Form",
         "plugins": [{
-            "fn": "UserPreferences"
-        }]
+                "fn": "UserPreferences"
+            }]
     }
 }
