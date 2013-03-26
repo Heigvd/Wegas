@@ -71,7 +71,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 }
                 for (i in targetWidget._plugins) {                                 // remove
                     if (Y.Lang.isUndefined(plugins[i])) {                           //An inexistant namespace
-                        targetWidget.unplug(Y.Plugin[targetWidget._getPluginFromName(targetWidget._plugins[i].NAME)]);
+                        targetWidget.unplug(i);
                     }
                 }
                 targetWidget.syncUI();
