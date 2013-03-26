@@ -114,7 +114,7 @@
     "scriptLibrary": {
         "default": {
             "@class": "GameModelContent",
-            "content": ""
+            "content": "Y.use(\"wegas-flexitests-controller\", function(Z){ Y.Wegas.FlexitestsController.EDITMENU= [{type: \"Button\", label: \"Properties\", cssClass: \"editor-exploreGameModel-button\", plugins: [{ fn: \"EditWidgetAction\" }] }, { type: \"Button\", label: \"Add\", cssClass: \"editor-exploreGameModel-button\", plugins: [{ \"fn\": \"WidgetMenu\", \"cfg\": { \"menuCfg\": { points: [\"tl\", \"tr\"] }, \"event\": \"mouseenter\", \"children\": [{ type: \"Button\", label: \"ChoiceList\", plugins: [{ fn: \"AddChildWidgetAction\", cfg: { \"childType\": \"ChoiceList\" } }] }] } }] }]; Y.Wegas.FlexitestsController.ATTRS.plugins= Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins); Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push( { type: \"Button\", label: \"Swap top zones\", data: \"SwapZone\" },{ type: \"Button\", label: \"Expected response\", data: \"FlexiResponse\" }); });"
         }
     },
     "properties": {

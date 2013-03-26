@@ -499,6 +499,21 @@ YUI.add("wegas-widget", function(Y) {
                             type: "Button",
                             label: "Styles",
                             data: "CSSStyles"
+                        },
+                        {
+                            type: "Button",
+                            label: "Show after",
+                            data: "ShowAfter"
+                        },
+                        {
+                            type: "Button",
+                            label: "Hide after",
+                            data: "HideAfter"
+                        },
+                        {
+                            type: "Button",
+                            label: "Position",
+                            data: "Position"
                         }]
                 }
             }

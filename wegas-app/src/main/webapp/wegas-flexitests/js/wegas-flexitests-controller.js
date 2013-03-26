@@ -13,7 +13,7 @@
 YUI.add("wegas-flexitests-controller", function(Y) {
     "use strict";
 
-    Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [], {
+    Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [Y.Wegas.Widget, Y.Wegas.Editable], {
         /**
          * Lifecycle method
          * @function
@@ -144,6 +144,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             });
             return returnItem;
         },
+        toObject: Y.Wegas.AbsoluteLayout.prototype.toObject,
         /**
          * Lifecycle method
          * @function
@@ -183,7 +184,10 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         ATTRS: {
             "value": {
                 value: "",
-                type: "string"
+                type: "string",
+                _inputex: {
+                    label: "Response value"
+                }
             }
         }
     });
@@ -215,6 +219,9 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             "after": {
                 value: 1,
                 type: "number",
+                _inputex: {
+                    label: "Swap after (ms)"
+                },
                 setter: function(v) {
                     return +v > 0 ? +v : 1;
                 }
