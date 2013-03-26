@@ -24,7 +24,7 @@ YUI.add('wegas-choicelist', function(Y) {
      * @description class to serialize widgets
      */
     List = Y.Base.create("wegas-choicelist", Y.Wegas.List, [], {
-        /** @lends Y.Wegas.SoloList# */
+        /** @lends Y.Wegas.ChoiceList# */
         bindUI: function() {
 
         },
@@ -38,6 +38,9 @@ YUI.add('wegas-choicelist', function(Y) {
 
     }, {
         EDITORNAME: "Choice List",
+        /**
+         * @lends Y.Wegas.ChoiceList
+         */
         /**
          * @field
          * @static

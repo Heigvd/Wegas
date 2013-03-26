@@ -27,15 +27,13 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 this.initialVisible = this.get("host").hasClass(HIDDENNODECSSCLASS);
             }
             this.set("time", this.get("time"));
-            Y.on("visibility-timer:restart", this.start, this);
+            this.restartEvent = Y.on("visibility-timer:restart", this.start, this);
             this.start();
         },
         reset: function() {
             var t;
-            if (this.timers.length > 0) {
-                for (t in this.timers) {
-                    this.timers[t].cancel();
-                }
+            for (t in this.timers) {
+                this.timers[t].cancel();
             }
             if (this.initialVisible) {
                 if (this.get("host") instanceof Y.Widget) {
@@ -53,7 +51,12 @@ YUI.add("wegas-visibilitytimer", function(Y) {
         },
         start: function() {
             Y.log("Abstract function, needs to be implemented", "warn");
+        },
+        destructor: function() {
+            this.reset();
+            this.restartEvent.detach();
         }
+
     });
     Y.mix(visibilityPlugin, {
         ATTRS: {
@@ -110,7 +113,7 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 _inputex: {
                     label: "Show after (ms)",
                     description: "Multiple times may be separated by ','",
-                    regexp: /^([0-9]+[,]{0,1})*[^,]$/
+                    regexp: /^([0-9]+(,|, | , | ,)?)*[^, ]$/
                 },
                 setter: function(v) {
                     this._set("arrayTime", v.split(","));
@@ -150,7 +153,7 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 _inputex: {
                     label: "Hide after (ms)",
                     description: "Multiple times may be separated by ','",
-                    regexp: /^([0-9]+[,]{0,1})*[^,]$/
+                    regexp: /^([0-9]+(,|, | , | ,)?)*[^, ]$/
                 },
                 setter: function(v) {
                     this._set("arrayTime", v.split(","));
