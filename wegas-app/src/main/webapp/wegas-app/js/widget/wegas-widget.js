@@ -194,7 +194,7 @@ YUI.add("wegas-widget", function(Y) {
         /**
          * @function
          * @private
-         * @param txt
+         * @param {String} name
          * @return Status node
          * @description Get Class From plugin name. Hopefully a unique name ...
          */
@@ -302,13 +302,7 @@ YUI.add("wegas-widget", function(Y) {
                     label: "CSS class",
                     index: 4
                 },
-                getter: function(val) {
-                    if (val === "") {
-                        return undefined;       // so this attr wont appear in serialization
-                    } else {
-                        return val;
-                    }
-                }
+                getter: Y.Wegas.Editable.removeNullValue
             },
             /**
              * Informe if widget initialized. Transient

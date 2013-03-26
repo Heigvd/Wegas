@@ -366,6 +366,19 @@ YUI.add('wegas-editable', function(Y) {
             Editable.use(cfg, Y.bind(function(cb) {                            // Load target class dependencies
                 cb(Editable.revive(this));
             }, cfg, cb));
+        },
+        /**
+         * Serialization purpose.
+         * Any null or empty String attribute won't serialize.
+         * Use this with getters.
+         * @static
+         * @public
+         * @function
+         * @param {Any} value
+         * @returns {Any|undefined}
+         */
+        removeNullValue: function(value) {
+            return (value === null || value === "") ? undefined : value;
         }
     });
     Y.namespace("Wegas").Editable = Editable;
