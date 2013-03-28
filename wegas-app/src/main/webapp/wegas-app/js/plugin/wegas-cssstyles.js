@@ -19,6 +19,8 @@ YUI.add('wegas-cssstyles', function(Y) {
      *  @constructor
      */
     var Wegas = Y.Wegas,
+        styleList = [],
+        node,
     CSSStyles = Y.Base.create("wegas-cssstyles", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.CSSStyles */
 
@@ -27,13 +29,37 @@ YUI.add('wegas-cssstyles', function(Y) {
          * @private
          */
         initializer: function() {
+            var i;
             if (this.get("host") instanceof Y.Widget) {
-                this.get("host").get(this.get("targetNode")).setStyles(this.get("styles"));
+                node = this.get("host").get(this.get("targetNode"));
             } else if (this.get("host") instanceof Y.Node){
-                this.get("host").setStyles(this.get("styles"));
+                node = this.get("host");
             } else {
                 Y.log("Host's type mistmach", "warn", "Y.Plugin.CSSStyles");
+                return;
             }
+
+            if (this.get("styles")){
+                for (var style in this.get("styles")){
+                    this.addStyle(style);
+                }
+            }
+        },
+        
+        removeStyle: function(style) {
+            var i;
+            for (i=0; i<styleList.length; i++){
+                if (styleList[i] == style){
+                    styleList.splice(i);
+                    // TODO remove css style
+                }
+            }
+            console.log(styleList);
+        },
+        
+        addStyle: function(style) {
+            styleList.push(style);
+            node.setStyle(style, this.get("styles")[style]);         
         }
     }, {
         ATTRS: {
