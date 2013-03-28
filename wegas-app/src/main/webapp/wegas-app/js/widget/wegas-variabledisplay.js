@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-variabledisplay', function (Y) {
+YUI.add('wegas-variabledisplay', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', VariableDisplay;
@@ -25,43 +25,39 @@ YUI.add('wegas-variabledisplay', function (Y) {
      */
     VariableDisplay = Y.Base.create("wegas-variabledisplay", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.VariableDisplay# */
-        
+
         // *** Private fields *** //
         /**
          * Reference to each used functions
          */
         handlers: null,
-
         // ** Lifecycle Methods ** //
         /**
          * @function
          * @private
          * @description Set variable with initials values.
          */
-        initializer: function () {
+        initializer: function() {
             this.handlers = [];
         },
-
         /**
          * @function
          * @private
          * @description bind function to events.
          * When VariableDescriptorFacade is updated, do syncUI
          */
-        bindUI: function () {
+        bindUI: function() {
             this.handlers.push(
-                Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
+                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
         },
-
         /**
          * @function
          * @private
          * @description get given variable descriptor and call
          *  "genMarkup" function with this variable.
          */
-        syncUI: function () {
+        syncUI: function() {
             var variableDescriptor = this.get("variable.evaluated");
-
             if (!variableDescriptor) {
                 return;
             }
@@ -73,18 +69,16 @@ YUI.add('wegas-variabledisplay', function (Y) {
             this.get(CONTENTBOX).setHTML(this.genMarkup(variableDescriptor));   // Display the variable
 
         },
-
         /**
          * @function
          * @private
          * @description Detach all functions created by this widget
          */
-        destructor: function () {
+        destructor: function() {
             for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         },
-
         // *** Private Methods *** //
         /**
          * @function
@@ -101,7 +95,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
          *  value to the max value. On each created div indicate if the div is
          *  under value, on value or over the value.
          */
-        genMarkup: function (variableDescriptor) {
+        genMarkup: function(variableDescriptor) {
             var acc, i, maxVal = variableDescriptor.get("maxValue"),
                     minVal = variableDescriptor.get("minValue"),
                     value = variableDescriptor.getInstance().get("value"),
@@ -166,7 +160,7 @@ YUI.add('wegas-variabledisplay', function (Y) {
          *    <li>variable: The target variable, returned either based on the variableName attribute,
          *    and if absent by evaluating the expr attribute.</li>
          *    <li>label: A label if you want display other label than public label
-             * of the variable descriptor</li>
+         * of the variable descriptor</li>
          *    <li>view: Choose the view to display variable descriptor</li>
          * </ul>
          */

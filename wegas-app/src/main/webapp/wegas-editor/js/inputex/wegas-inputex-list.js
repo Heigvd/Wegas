@@ -20,7 +20,7 @@ YUI.add("wegas-inputex-list", function(Y) {
      *  (unlike Y.inputEx.Group.getValue() that returns an object based on
      *  inputs names):
      */
-    Y.inputEx.Group.prototype.getArray = function() {
+    inputEx.Group.prototype.getArray = function() {
         var i, ret = [];
         for (i = 0; i < this.inputs.length; i = i + 1) {
             ret.push(this.inputs[i].getValue());
@@ -144,17 +144,6 @@ YUI.add("wegas-inputex-list", function(Y) {
                 //this.fireUpdatedEvent();
             }
         },
-        addPluginField: function(fn, value) {
-            var cfg, targetPlg = Y.Plugin[fn],
-                    w = new Y.Wegas.Text();                                     // Use this hack to retrieve a plugin config
-            w.plug(targetPlg);
-            cfg = w[targetPlg.NS].getFormCfg();
-            cfg.value = value;
-            Y.inputEx.use(w[targetPlg.NS].getFormCfg(), Y.bind(function(cfg) {
-                this.addField(cfg);
-                this.fireUpdatedEvt();
-            }, this, cfg, value));
-        },
         /**
          * Handle the click event on the add button
          */
@@ -165,10 +154,6 @@ YUI.add("wegas-inputex-list", function(Y) {
             this.addButton.plug(Y.Plugin.WidgetMenu, {
                 children: this.options.items
             });
-
-            this.addButton.menu.on("button:click", function(e) {
-                this.addPluginField(e.target.get("data"));
-            }, this);
         },
         /**
          * Override to prevent field creation on click
@@ -183,6 +168,78 @@ YUI.add("wegas-inputex-list", function(Y) {
 
     });
 
-    inputEx.registerType("editablelist", EditableList);                               // Register this class as "list" type
-});
+    inputEx.registerType("editablelist", EditableList);                         // Register this class as "list" type
 
+
+    /**
+     * @class PluginList
+     * @constructor
+     * @extends Y.Wegas.EditableList
+     * @param {Object} options InputEx definition object
+     */
+    var PluginList = function(options) {
+        PluginList.superclass.constructor.call(this, options);
+    };
+    Y.extend(PluginList, EditableList, {
+        /**
+         * Handle the click event on the add button
+         */
+        initEvents: function() {
+            PluginList.superclass.initEvents.call(this);
+
+            this.addButton.menu.on("button:click", function(e) {
+                this.addPluginField(e.target.get("data"));
+            }, this);
+        },
+        /**
+         *
+         * @returns {Array}
+         */
+        getValue: function() {
+            var f = [];
+            for (var e = 0; e < this.inputs.length; e += 1) {
+                f.push({
+                    fn: this.inputs[e].options.name,
+                    cfg: this.inputs[e].getValue()
+                });
+            }
+            return f;
+        },
+        /**
+         *
+         * @param {Object} value
+         * @param {boolean} fireUpdatedEvent
+         */
+        setValue: function(value, fireUpdatedEvent) {
+            //EditableList.superclass.setValue.apply(this, arguments);
+            this.clear();
+            var i;
+            for (i = 0; i < value.length; i += 1) {
+                this.addPluginField(value[i].fn, value[i].cfg);
+            }
+
+            if (fireUpdatedEvent) {
+                //this.fireUpdatedEvent();
+            }
+        },
+        /**
+         *
+         * @param {string|function} fn
+         * @param {Object} value
+         */
+        addPluginField: function(fn, value) {
+            var cfg, targetPlg = Y.Plugin[fn],
+                    w = new Y.Wegas.Text();                                     // Use this hack to retrieve a plugin config
+            w.plug(targetPlg);
+            cfg = w[targetPlg.NS].getFormCfg();
+            cfg.name = targetPlg.NAME;
+            cfg.value = value;
+            inputEx.use(w[targetPlg.NS].getFormCfg(), Y.bind(function(cfg) {
+                this.addField(cfg);
+                this.fireUpdatedEvt();
+            }, this, cfg, value));
+        }
+    });
+    inputEx.registerType("pluginlist", PluginList);                             // Register this class as "list" type
+
+});

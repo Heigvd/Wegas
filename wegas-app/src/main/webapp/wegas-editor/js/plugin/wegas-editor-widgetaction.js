@@ -9,11 +9,11 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-editor-widgetaction', function (Y) {
+YUI.add('wegas-editor-widgetaction', function(Y) {
     "use strict";
 
     var Plugin = Y.Plugin, Action = Y.Plugin.Action, Wegas = Y.Wegas,
-    WidgetAction;
+            WidgetAction;
 
     /**
      * @class
@@ -21,7 +21,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
      * @extends Y.Plugin.Action
      * @constructor
      */
-    WidgetAction = function () {
+    WidgetAction = function() {
         WidgetAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(WidgetAction, Action, {}, {
@@ -31,7 +31,7 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
         ATTRS: {
             widget: {},
             dataSource: {
-                getter: function (val) {
+                getter: function(val) {
                     if (!val) {
                         return Wegas.Facade.Page;
                     }
@@ -47,20 +47,34 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
      * @extends Y.Plugin.WidgetAction
      * @constructor
      */
-    var EditWidgetAction = function () {
+    var EditWidgetAction = function() {
         EditWidgetAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(EditWidgetAction, WidgetAction, {
-
         /**
          * @function
          * @private
          */
-        execute: function () {
-            Plugin.EditEntityAction.showEditForm(this.get("widget"), Y.bind(function( val, e, f) {
+        execute: function() {
+            Plugin.EditEntityAction.showEditForm(this.get("widget"), Y.bind(function(val, e, f) {
                 Plugin.EditEntityAction.hideEditFormOverlay();
-                var targetWidget = this.get("widget");
+                var i, targetWidget = this.get("widget"), plugins = {}, plugin;
                 targetWidget.setAttrs(val);
+                for (i = 0; i < val.plugins.length; i += 1) {
+                    plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
+                    if (!Y.Lang.isUndefined(targetWidget._plugins[plugin.NS])) { //that plugin exists on target
+                        targetWidget[plugin.NS].setAttrs(val.plugins[i].cfg);
+                        plugins[plugin.NS] = true;                              //store namespace as treated
+                    } else {
+                        targetWidget.plug(plugin, val.plugins[i].cfg);
+                        plugins[plugin.NS] = true;                 //store namespace as treated
+                    }
+                }
+                for (i in targetWidget._plugins) {                                 // remove
+                    if (Y.Lang.isUndefined(plugins[i])) {                           //An inexistant namespace
+                        targetWidget.unplug(i);
+                    }
+                }
                 targetWidget.syncUI();
                 this.get("dataSource").cache.patch(targetWidget.get("root").toObject());
             }, this));
@@ -77,16 +91,16 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
      * @extends Y.Plugin.WidgetAction
      * @constructor
      */
-    var AddChildWidgetAction = function () {
+    var AddChildWidgetAction = function() {
         AddChildWidgetAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(AddChildWidgetAction, WidgetAction, {
-        execute: function () {
+        execute: function() {
             var newWidget = new Y.Wegas.Widget.create({
                 "type": this.get("childType")
             });
 
-            Wegas.Editable.use(newWidget, Y.bind(function () {                  // Load target widget dependencies
+            Wegas.Editable.use(newWidget, Y.bind(function() {                  // Load target widget dependencies
 
                 Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
                     Plugin.EditEntityAction.hideEditFormOverlay();
@@ -112,14 +126,14 @@ YUI.add('wegas-editor-widgetaction', function (Y) {
      * @extends Y.Plugin.WidgetAction
      * @constructor
      */
-    var DeleteWidgetAction = function () {
+    var DeleteWidgetAction = function() {
         DeleteWidgetAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(DeleteWidgetAction, WidgetAction, {
         execute: function() {
             if (confirm("Are your sure your want to delete this widget ?")) {
                 var targetWidget = this.get("widget"),
-                root = targetWidget.get("root");
+                        root = targetWidget.get("root");
 
                 if (root !== targetWidget) {
                     targetWidget.destroy();

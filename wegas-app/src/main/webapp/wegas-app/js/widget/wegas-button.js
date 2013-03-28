@@ -11,7 +11,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add("wegas-button", function (Y) {
+YUI.add("wegas-button", function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -38,7 +38,7 @@ YUI.add("wegas-button", function (Y) {
          * @description Set variable with initials values.
          * Plug tooltip add given (by ATTRS) css class to contentbox
          */
-        initializer: function () {
+        initializer: function() {
             Button.superclass.initializer.apply(this, arguments);
 
             //this.constructor.CSS_PREFIX = "yui3-button";                      // Revert changes done by Y.Wegas.Widget so styling will work
@@ -54,14 +54,13 @@ YUI.add("wegas-button", function (Y) {
                 });
             }
         },
-
         /**
          * @function
          * @private
          * @description Call widget parent to execute its proper render function.
          * add "wegas-button" class to bounding box.
          */
-        renderUI: function () {
+        renderUI: function() {
             Button.superclass.renderUI.apply(this, arguments);
             this.get(BOUNDINGBOX).addClass("wegas-button");
         }
@@ -103,7 +102,8 @@ YUI.add("wegas-button", function (Y) {
             plugins: {
                 "transient": false,
                 _inputex: {
-                    _type: "editablelist",
+                    _type: "pluginlist",
+                    index: 10,
                     items: [{
                             type: "Button",
                             label: "Tooltip",
@@ -129,7 +129,7 @@ YUI.add("wegas-button", function (Y) {
 
 
     /* @fixme @hack So we can display html tag inside a button */
-    Y.Button.prototype._uiSetLabel = function (value) {
+    Y.Button.prototype._uiSetLabel = function(value) {
         var node = this._host;
         //attr = (node.get('tagName').toLowerCase() === 'input') ? 'value' : 'text';
         // node.set(attr, value);
@@ -152,18 +152,16 @@ YUI.add("wegas-button", function (Y) {
          * Reference to each used functions
          */
         handlers: null,
-
         // *** Lifecycle methods *** //
         /**
          * @function
          * @private
          * @description Set variable with initials values.
          */
-        initializer: function () {
+        initializer: function() {
             this.handlers = {};
             this.bindUI();
         },
-
         /**
          * @function
          * @private
@@ -175,14 +173,13 @@ YUI.add("wegas-button", function (Y) {
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
             this.handlers.render = this.afterHostEvent("render", this.syncUI, this);
         },
-
         /**
          * @function
          * @private
          * @description call function 'getUnreadCount' to set the number of
          * unread on the host.
          */
-        syncUI: function () {
+        syncUI: function() {
             var cb = this.get('host').get(CONTENTBOX),
                     target = cb.one(".unread-count"),
                     unreadCount = this.getUnreadCount();
@@ -198,26 +195,24 @@ YUI.add("wegas-button", function (Y) {
                 target.setContent("");
             }
         },
-
         /**
          * @function
          * @private
          * @description Detach all functions created by this widget
          */
-        destructor: function () {
+        destructor: function() {
             for (var k in this.handlers) {
                 this.handlers[k].detach();
             }
         },
-
         // *** Private methods *** //
-       /**
+        /**
          * @function
          * @private
          * @return Number of unread.
          * @description Count the number of unread reply in given variable.
          */
-        getUnreadCount: function () {
+        getUnreadCount: function() {
             var i, instance, messages, count = 0,
                     descriptor = this.get('variable.evaluated');
 
@@ -235,7 +230,8 @@ YUI.add("wegas-button", function (Y) {
                 }
             }
 
-            messages = descriptor.getInstance().get("messages");                // For InboxVariableDescriptors, we count the replies
+            messages = descriptor.getInstance().
+                    get("messages");                // For InboxVariableDescriptors, we count the replies
             if (messages) {
                 for (i = 0; i < messages.length; i = i + 1) {
                     count += messages[i].get("unread") ? 1 : 0;
@@ -292,7 +288,7 @@ YUI.add("wegas-button", function (Y) {
          * @description plug the plugin "OpenPageAction" with a given
          *  configuration.
          */
-        initializer: function (cfg) {
+        initializer: function(cfg) {
             this.plug(Y.Plugin.OpenPageAction, cfg);
         }
     });

@@ -25,7 +25,7 @@ import org.apache.shiro.SecurityUtils;
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/Library/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class Library {
+public class LibraryController {
 
     /**
      *
