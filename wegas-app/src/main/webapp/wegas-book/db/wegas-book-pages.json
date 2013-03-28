@@ -1,7 +1,7 @@
 {
     "1": {
         "id": 1,
-        "label": "Main layout",
+        "direction": "vertical",
         "type": "List",
         "cssClass": "layout",
         "children": [
@@ -39,7 +39,7 @@
     },
     "2": {
         "id": 2,
-        "label": "Page 1",
+        "direction": "vertical",
         "cssClass": "book-page",
         "type": "List",
         "children": [
@@ -48,6 +48,7 @@
                 "content": "Bienvenue, ceci est la première page de ce tutoriel. La page (élément général existant sur chaque 'interface' du jeu) contient un titre ainsi que la valeure de vigueur (stamina) et de combat (combat skill) de notre héros. Cette page est constituée également d'une sous-page (inteface changeante du jeu) contenant un widget 'list' qui contient un widget 'text' (ce texte) ainsi qu'un widget 'button' (le bouton ci-dessous). Cliquez sur ce dernier pour aller à la sous-page suivante."
             }, {
                 "type": "List",
+                "direction": "vertical",
                 "label": "Choices",
                 "cssClass": "book-choice",
                 "children": [
@@ -81,9 +82,9 @@
     },
     "3": {
         "id": 3,
-        "label": "Page 2",
         "cssClass": "book-page",
         "type": "List",
+        "direction": "vertical",
         "children": [
             {
                 "type": "Text",
@@ -169,10 +170,14 @@
                     }, {
                         "type": "Button",
                         "cssClass": "book-bouton",
-                        "tooltip": "Aller à la page 1",
                         "label": "Fuire !",
-                        "plugins": [
-                            {
+                        "disabled": false,
+                        "plugins": [{
+                                "cfg": {
+                                    "content": "Aller à la page 1"
+                                },
+                                "fn": "Tooltip"
+                            }, {
                                 "fn": "ExecuteScriptAction",
                                 "cfg": {
                                     "onClick": {
@@ -196,8 +201,8 @@
     },
     "4": {
         "id": 4,
-        "label": "Page 3",
         "cssClass": "book-page",
+        "direction": "vertical",
         "type": "List",
         "children": [
             {
@@ -210,7 +215,7 @@
         "id": 1000,
         "type": "Form",
         "plugins": [{
-            "fn": "UserPreferences"
-        }]
+                "fn": "UserPreferences"
+            }]
     }
 }

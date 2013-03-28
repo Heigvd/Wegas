@@ -11,7 +11,7 @@
 YUI.add("wegas-userpreferences", function (Y) {
     "use strict";
 
-    var UserPreferences = Y.Base.create("wegas-userpreferences", Y.Plugin.Base, [Y.Wegas.Plugin], {
+    var UserPreferences = Y.Base.create("wegas-userpreferences", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
 
         initializer: function () {
             this.afterHostEvent("render", function () {

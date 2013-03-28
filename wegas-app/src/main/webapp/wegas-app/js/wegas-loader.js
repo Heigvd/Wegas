@@ -262,6 +262,14 @@ YUI().use(function(Y) {
                         "widget-position", 'widget-position-constrain'],
                     ws_provides: 'Button'
                 },
+                'wegas-templatecss': {
+                    path: "wegas-app/css/wegas-template.css"
+                },
+                'wegas-template': {
+                    path: "wegas-app/js/widget/wegas-template-min.js",
+                    requires: ["template", "wegas-templatecss"],
+                    ws_provides: ["Template"]
+                },
                 'wegas-injector': {
                     path: 'wegas-app/js/plugin/wegas-injector-min.js',
                     ws_provides: "Injector"
@@ -327,7 +335,7 @@ YUI().use(function(Y) {
                 'wegas-inputex-list': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-list-min.js',
                     requires: ['inputex-group', 'wegas-text'],
-                    ix_provides: ['listfield', "editablelist"]
+                    ix_provides: ['listfield', "editablelist", "pluginlist"]
                 },
                 'wegas-inputex-hashlist': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-hashlist-min.js',

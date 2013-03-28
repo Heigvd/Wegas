@@ -190,22 +190,6 @@ YUI.add("wegas-widget", function(Y) {
                 this.toolbar.get("header").append(statusNode);
             }
             return statusNode;
-        },
-        /**
-         * @function
-         * @private
-         * @param txt
-         * @return Status node
-         * @description Get Class From plugin name. Hopefully a unique name ...
-         */
-        _getPluginFromName: function(name) {
-            var i;
-            for (i in Y.Plugin) {
-                if (Y.Plugin[i].NAME === name) {
-                    return "" + i;
-                }
-            }
-            return undefined;
         }
     });
 
@@ -302,13 +286,7 @@ YUI.add("wegas-widget", function(Y) {
                     label: "CSS class",
                     index: 4
                 },
-                getter: function(val) {
-                    if (val === "") {
-                        return undefined;       // so this attr wont appear in serialization
-                    } else {
-                        return val;
-                    }
-                }
+                getter: Y.Wegas.Editable.removeNullValue
             },
             /**
              * Informe if widget initialized. Transient
@@ -387,7 +365,10 @@ YUI.add("wegas-widget", function(Y) {
              * Informe if widget is disable. Transient
              */
             disabled: {
-                "transient": true
+                "transient": true,
+                _inputex: {
+                    index: 9
+                }
             },
             /**
              * Informe if widget is visible. Transient
@@ -466,12 +447,12 @@ YUI.add("wegas-widget", function(Y) {
              */
             plugins: {//For serialization purpose, get plugin configs
                 getter: function() {
-                    var i, p = [], plg;
+                    var i, p = [], plg;  
                     for (i in this._plugins) {
                         plg = this[this._plugins[i].NS];
                         if (plg.toObject) {
                             p.push({
-                                "fn": this._getPluginFromName(this._plugins[i].NAME), //TODO: find an other referencing way
+                                "fn": Y.Wegas.Plugin.getPluginFromName(this._plugins[i].NAME), //TODO: find an other referencing way
                                 "cfg": plg.toObject("type")
                             });
                         }
@@ -484,7 +465,7 @@ YUI.add("wegas-widget", function(Y) {
                 _inputex: {
                     index: 10,
                     useButtons: true,
-                    _type: "editablelist",
+                    _type: "pluginlist",
                     legend: "Plugins",
                     items: [{
                             type: "Button",
@@ -502,6 +483,21 @@ YUI.add("wegas-widget", function(Y) {
                             type: "Button",
                             label: "Styles",
                             data: "CSSStyles"
+                        },
+                        {
+                            type: "Button",
+                            label: "Show after",
+                            data: "ShowAfter"
+                        },
+                        {
+                            type: "Button",
+                            label: "Hide after",
+                            data: "HideAfter"
+                        },
+                        {
+                            type: "Button",
+                            label: "Position",
+                            data: "Position"
                         }]
                 }
             }

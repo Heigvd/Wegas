@@ -24,8 +24,7 @@ YUI.add('wegas-action', function(Y) {
      */
     function WPlugin() {
     }
-    Y.mix(WPlugin.prototype, {
-    });
+    Y.mix(WPlugin.prototype, {});
     Y.mix(WPlugin, {
         ATTRS: {
             host: {
@@ -37,6 +36,23 @@ YUI.add('wegas-action', function(Y) {
             destroyed: {
                 "transient": true
             }
+        },
+        /**
+         * @function
+         * @private
+         * @static
+         * @param {String} name
+         * @return Status node
+         * @description Get Class From plugin name. Hopefully a unique name ...
+         */
+        getPluginFromName: function(name) {
+            var i;
+            for (i in Y.Plugin) {
+                if (Y.Plugin[i].NAME === name) {
+                    return "" + i;
+                }
+            }
+            return undefined;
         }
     });
     Wegas.Plugin = WPlugin;
@@ -71,7 +87,11 @@ YUI.add('wegas-action', function(Y) {
         NAME: "Action",
         ATTRS: {
             targetEvent: {
-                value: "click"
+                type: "string",
+                value: "click",
+                _inputex: {
+                    _type: "hidden"
+                }
             }
         }
     });

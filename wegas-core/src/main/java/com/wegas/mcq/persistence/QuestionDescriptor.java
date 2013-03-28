@@ -10,13 +10,17 @@ package com.wegas.mcq.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Column;
+import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -32,7 +36,9 @@ public class QuestionDescriptor extends ListDescriptor {
     /**
      *
      */
-    @Column(length = 4096)
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    //@JsonView(Views.EditorI.class)
     private String description;
     /**
      *
