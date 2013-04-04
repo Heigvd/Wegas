@@ -20,6 +20,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class class to display Wegas variables instance (or/and descriptor).
      * @constructor
+     * @deprecated replaced by Y.Wegas.Template
      * @description  Display  Wegas variables instance (or/and descriptor) under
      * specifique shape : text, title, box, fraction and valuebox.
      */
