@@ -960,6 +960,10 @@ YUI.add('wegas-datasource', function(Y) {
                     pageId = o["@pageId"],
                     patch;
             delete newPage["@pageId"];
+            if (!pageId) {
+                Y.log("Failed to define page id", "error", "Y.Plugin.PageCache");
+                return;
+            }
             patch = dmp.patch_toText(dmp.patch_make(Y.JSON.stringify(oldPage), Y.JSON.stringify(newPage)));
             this.sendRequest({
                 request: "" + pageId,
