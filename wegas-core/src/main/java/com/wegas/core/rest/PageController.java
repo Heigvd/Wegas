@@ -150,7 +150,8 @@ public class PageController {
         Pages pages = new Pages(gameModelId);
         page.setId(pageId);
         pages.setMeta(page);
-        return this.getPage(gameModelId, pageId);
+        return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
+                .header("Page", "index").build();
     }
 
     /**
@@ -188,7 +189,7 @@ public class PageController {
             @PathParam("pageId") String pageId) throws RepositoryException, IOException {
         Pages pages = new Pages(gameModelId);
         Page page = pages.getPage(pageId);
-        if(page == null){
+        if (page == null) {
             throw new WegasException("Attempt to duplicate an inexistant page");
         }
         return this.createPage(gameModelId, page.getContent());
