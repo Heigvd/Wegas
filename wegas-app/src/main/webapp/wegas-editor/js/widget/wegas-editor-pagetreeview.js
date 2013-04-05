@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 YUI.add('wegas-editor-pagetreeview', function(Y) {
-    var PageEditor, CONTENT_BOX = "contentBox",
+    var PageEditor, PageMeta, CONTENT_BOX = "contentBox",
             BOUNDING_BOX = "boundingBox",
             NEWPAGE = (new Y.Wegas.List({type: "List"})).toObject();
     PageEditor = Y.Base.create("wegas-editor-page", Y.Widget, [Y.WidgetChild], {
@@ -93,7 +93,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             button.once("click", function(e) {
                 var target = Y.Widget.getByNode(e.target);
                 this.plug(Y.Plugin.WidgetMenu, {
-         //           children: target.get("data.widget").getMenuCfg({widget: target.get("data.widget")})
+                    //           children: target.get("data.widget").getMenuCfg({widget: target.get("data.widget")})
                 });
                 this.menu.set("children", target.get("data.widget").getMenuCfg({widget: target.get("data.widget")}));
                 this.menu.show();
@@ -161,9 +161,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                             }
                         }, {
                             type: "Button",
-                            label: "Preferences",
+                            label: "Properties",
                             on: {
-                                click: Y.bind(this.editPage, this, i)
+                                click: Y.bind(this.editPage, this, node.get("data"))
                             }
                         }],
                     event: "click"
@@ -175,8 +175,14 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }
             }
         },
-        editPage: function(pageId) {
-            Y.Plugin.EditEntityAction.showEditForm();
+        editPage: function(meta) {
+            Y.Plugin.EditEntityAction.showEditForm(new PageMeta({id: meta.page, name: meta.name}), Y.bind(function(value, page) {
+                Y.Plugin.EditEntityAction.hideEditFormOverlay();
+                Y.Wegas.Facade.Page.cache.editMeta(page.get("id"), {
+                    name: value.name
+                }, Y.bind(this.buildIndex, this));
+
+            }, this));
         },
         cleanAllChildren: function() {
             for (var i in this.tw._items) {
@@ -199,4 +205,13 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         }
     });
     Y.namespace("Wegas").PageTreeview = PageEditor;
+
+    PageMeta = Y.Base.create("wegas-pagemeta", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            name: {
+                type: "string",
+                optional: true,
+            }
+        }
+    });
 });
