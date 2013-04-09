@@ -38,7 +38,7 @@ public class SessionHolder {
     public static Session getSession(String repository) throws RepositoryException {
         Session session;
         if (!SessionHolder.sessionMap.containsKey(repository) || !SessionHolder.sessionMap.get(repository).isLive()) {
-            Repository repo = (Repository) new JackrabbitConnector().getRepo();
+            final Repository repo = (Repository) new JackrabbitConnector().getRepo();
             sessionMap.remove(repository);
             try {
                 session = repo.login(admin, repository);
@@ -70,9 +70,7 @@ public class SessionHolder {
      * @throws RepositoryException
      */
     protected static void createWorkspace(String repository) throws RepositoryException {
-        Session s;
-
-        s = getSession(null);
+        final Session s = getSession(null);
         s.getWorkspace().createWorkspace(repository);
     }
 
