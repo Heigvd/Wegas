@@ -240,7 +240,7 @@ YUI.add('wegas-entity', function(Y) {
         //    plugins: [{
         //        fn: "PublishGameModelAction"
         //    }]
-        //}, 
+        //},
         {
             type: "DeleteEntityButton",
             cssClass: "editor-deleteGameModel-button"
@@ -1111,7 +1111,7 @@ YUI.add('wegas-entity', function(Y) {
                     label: "title",
                     scriptType: STRING
                 }, {
-                    type: TEXT,
+                    type: "html",
                     label: "Content",
                     scriptType: STRING
                 }, {
