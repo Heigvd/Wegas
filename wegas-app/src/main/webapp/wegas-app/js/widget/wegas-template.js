@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 
@@ -28,12 +28,12 @@ YUI.add("wegas-template", function(Y) {
                 "</span></div>",
         TITLE: "<div class='wegas-title-template'><%= this.label || '{label}'%></div>",
         FRACTION: "<div class='wegas-fraction-template'><%= (this.min_value || '{min_value}') + '/' + (this.value || '{label}') + '/' + (this.max_value || '{max_value}') %></div>"
-    };   
+    };
     /**
      * @name Y.Wegas.Template
      * @extends Y.Widget
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
-     * @class 
+     * @class
      * @constructor
      * @description  Display  Wegas variables instance (or/and descriptor) under
      * specifique templates : text, title, box, fraction and valuebox.
@@ -57,7 +57,7 @@ YUI.add("wegas-template", function(Y) {
         syncUI: function() {
             var template = this.get("custom"), hashCode = "" + Y.Wegas.Helper.hashCode(template),
                     data = this.computeData();
-            if (template === "" && COMPILED[this.get("template")]) {
+            if (template === "" && this.TEMPLATES[this.get("template")]) {
                 this.get("contentBox").setHTML(this.TEMPLATES[this.get("template")](data));
             } else {
                 if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
