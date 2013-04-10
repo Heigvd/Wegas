@@ -1,6 +1,5 @@
 {
     "1": {
-        "id": 1,
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout",
@@ -273,7 +272,6 @@
         ]
     },
     "2": {
-        "id": 2,
         "cssClass": "project-page",
         "type": "List",
         "children": [
@@ -284,7 +282,6 @@
         ]
     },
     "3": {
-        "id": 3,
         "cssClass": "task-page",
         "type": "List",
         "children": [
@@ -309,7 +306,6 @@
         ]
     },
     "4": {
-        "id": 4,
         "cssClass": "gantt-page",
         "type": "List",
         "children": [
@@ -332,7 +328,6 @@
         ]
     },
     "5": {
-        "id": 5,
         "cssClass": "resources-page",
         "type": "List",
         "children": [
@@ -394,7 +389,6 @@
         ]
     },
     "6": {
-        "id": 6,
         "cssClass": "actions-page",
         "type": "List",
         "children": [
@@ -411,7 +405,6 @@
         ]
     },
     "7": {
-        "id": 7,
         "cssClass": "questions-page",
         "type": "List",
         "children": [
@@ -427,7 +420,6 @@
         ]
     },
     "8": {
-        "id": 8,
         "cssClass": "inbox-page",
         "type": "List",
         "children": [
@@ -443,7 +435,6 @@
         ]
     },
     "9": {
-        "id": 9,
         "cssClass": "history-page",
         "type": "List",
         "children": [
@@ -457,11 +448,5 @@
                 }
             }
         ]
-    }, "1000": {
-        "id": 1000,
-        "type": "Form",
-        "plugins": [{
-            "fn": "UserPreferences"
-        }]
     }
 }

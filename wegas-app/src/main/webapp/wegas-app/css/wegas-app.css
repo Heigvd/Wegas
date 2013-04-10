@@ -227,3 +227,7 @@ font{
 .timed-hidden-node{
     visibility: hidden;
 }
+
+.yui3-skin-sam .userPreferences .wegas-toolbar{
+    background: rgba(255, 255, 255, 0.6);
+}
