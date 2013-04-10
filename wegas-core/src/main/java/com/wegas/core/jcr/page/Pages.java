@@ -44,7 +44,7 @@ public class Pages implements Serializable {
 
     /**
      *
-     * @return
+     * @return Map<String,String> Page index
      * @throws RepositoryException
      */
     public Map<String, String> getIndex() throws RepositoryException {
@@ -68,7 +68,7 @@ public class Pages implements Serializable {
 
     /**
      *
-     * @return
+     * @return Map<String,String> complete pages
      * @throws RepositoryException
      */
     public Map<String, JsonNode> getPages() throws RepositoryException {

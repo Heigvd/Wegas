@@ -13,11 +13,13 @@
                         "content": "Crimesim",
                         "cssClass": "wegas-crimesim-title"
                     }, {
-                        "type": "VariableDisplay",
-                        "label": "Period",
-                        "view": "valuebox",
+                        "type": "Template",
+                        "template": "valuebox",
                         "variable": {
                             "name": "period"
+                        },
+                        "data":{
+                            "label":"Period"
                         }
                     }, {
                         "cssClass": null,
@@ -42,19 +44,23 @@
                             }
                         ]
                     }, {
-                        "type": "VariableDisplay",
-                        "label": "Costs",
-                        "view": "text",
+                        "type": "Template",
+                        "template": "text",
+                        "data": {
+                            "label": "Cost"
+                        },
                         "variable": {
                             "name": "cost"
                         }
                     }, {
-                        "type": "VariableDisplay",
-                        "label": "Human resources",
+                        "type": "Template",
+                        "template": "box",
+                        "data": {
+                            "label": "Human resources"
+                        },
                         "variable": {
                             "name": "humanResources"
-                        },
-                        "view": "box"
+                        }
                     }
                 ]
             }, {
@@ -123,7 +129,8 @@
                         "plugins": [
                             {
                                 "fn": "ChoicesRepliesUnreadCount",
-                                "cfg": {}
+                                "cfg": {
+                                }
                             }, {
                                 "fn": "OpenPageAction",
                                 "cfg": {

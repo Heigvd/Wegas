@@ -34,11 +34,10 @@ public class JackrabbitConnector {
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
     final private String DIR = Helper.getWegasProperty("jcr.repository.basedir");
     private static JackrabbitRepository repo;
-    private JackrabbitRepositoryFactory rf;
+    final private JackrabbitRepositoryFactory rf = new RepositoryFactoryImpl();
 
     @PostConstruct
     private void init() {
-        rf = new RepositoryFactoryImpl();
         Properties prop = new Properties();
         prop.setProperty("org.apache.jackrabbit.repository.home", DIR);
         prop.setProperty("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
@@ -56,7 +55,7 @@ public class JackrabbitConnector {
     private void runGC() {
         try {
             logger.info("Running Jackrabbit GarbageCollector");
-            RepositoryManager rm = rf.getRepositoryManager(JackrabbitConnector.repo);
+            final RepositoryManager rm = rf.getRepositoryManager(JackrabbitConnector.repo);
             SessionHolder.getSession(null);
             Integer countDeleted = 0;
             DataStoreGarbageCollector gc = rm.createDataStoreGarbageCollector();

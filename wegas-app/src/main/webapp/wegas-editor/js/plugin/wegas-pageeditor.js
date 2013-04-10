@@ -165,9 +165,6 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.highlightOverlay.menu.set("children", widget.getMenuCfg({
                 widget: widget
             }));
-//            if (widget.isAugmentedBy(Y.WidgetParent)) {
-//                menuCfg.splice(1, 0, {type: "Button", label: "I may have children!"});
-//            }
         },
         detach: function() {
             var i;

@@ -1,5 +1,4 @@
 {
-    "id": 2003,
     "type": "Layout",
     "plugins": [{
         "fn": "Injector"

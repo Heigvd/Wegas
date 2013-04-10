@@ -232,7 +232,7 @@ YUI.add("wegas-inputex-list", function(Y) {
                     w = new Y.Wegas.Text();                                     // Use this hack to retrieve a plugin config
             w.plug(targetPlg);
             cfg = w[targetPlg.NS].getFormCfg();
-            cfg.name = targetPlg.NS;
+            cfg.name = targetPlg.NAME;
             cfg.value = value;
             inputEx.use(w[targetPlg.NS].getFormCfg(), Y.bind(function(cfg) {
                 this.addField(cfg);
