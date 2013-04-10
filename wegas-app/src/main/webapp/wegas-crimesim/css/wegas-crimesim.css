@@ -237,7 +237,15 @@
     width: 141px;
 }
 .schedule-table .schedule-unavailable-3 .icon {
-    width: 201px;
+    width: 222px;
+}
+
+.schedule-table .schedule-unavailable-4 .icon {
+    width: 303px;
+}
+
+.schedule-table .schedule-unavailable-5 .icon {
+    width: 384px;
 }
 /* Schedule cancel icon */
 .schedule-table .schedule-present.schedule-task .icon .close-icon,
