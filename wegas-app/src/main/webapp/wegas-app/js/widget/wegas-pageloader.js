@@ -64,13 +64,13 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         bindUI: function() {
             var onUpdate = function(e) {
-                if (+this.get("variable.evaluated") !== +this.get('pageId')) {
+                if ("" + this.get("variable.evaluated") !== "" + this.get('pageId')) {
                     this.syncUI();
                 }
             };
             //Y.Wegas.Facade.Page.after("response", this.syncUI, this);
             this.handlers.push(Y.Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
-                if (e.page && (+e.page["@pageId"] === +this.get("pageId"))) {
+                if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
                     this.currentPageId = null; // @hack force update
                     this.syncUI();
                 }
