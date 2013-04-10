@@ -109,8 +109,8 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
                     status = reply.getStatus(currentTime);
 
-                    replyData.evidence = questions[i].get("name");
-                    replyData.analyis = reply.getChoiceDescriptor().get("name");
+                    replyData.evidence = questions[i].getPublicLabel();
+                    replyData.analyis = reply.getChoiceDescriptor().getPublicLabel();
 
                     replyData.startTime += 1;
 
