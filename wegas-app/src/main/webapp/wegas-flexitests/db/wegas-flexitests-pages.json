@@ -1,10 +1,4 @@
 {
-    "1000": {
-        "type": "Form",
-        "plugins": [{
-                "fn": "UserPreferences"
-            }]
-    },
     "1": {
         "type": "PageLoader",
         "pageLoaderId": "mainarea",
