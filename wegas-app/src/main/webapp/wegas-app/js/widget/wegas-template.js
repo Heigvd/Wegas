@@ -57,7 +57,7 @@ YUI.add("wegas-template", function(Y) {
         syncUI: function() {
             var template = this.get("custom"), hashCode = "" + Y.Wegas.Helper.hashCode(template),
                     data = this.computeData();
-            if (template === "" && COMPILED[this.get("template")]) {
+            if (template === "" && this.TEMPLATES[this.get("template")]) {
                 this.get("contentBox").setHTML(this.TEMPLATES[this.get("template")](data));
             } else {
                 if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
