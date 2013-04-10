@@ -129,7 +129,7 @@ YUI.add("wegas-button", function(Y) {
 
 
     /* @fixme @hack So we can display html tag inside a button */
-    Y.Button.prototype._uiSetLabel = function(value) {
+    Y.ButtonCore.prototype._uiSetLabel = function(value) {
         var node = this._host;
         //attr = (node.get('tagName').toLowerCase() === 'input') ? 'value' : 'text';
         // node.set(attr, value);
