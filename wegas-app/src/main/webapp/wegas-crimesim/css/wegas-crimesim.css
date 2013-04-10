@@ -343,6 +343,7 @@
     background:lightsteelblue;
     font-weight: bold;
     padding: 2px 5px;
+    border-bottom: 1px solid black;
 }
 .wegas-mcqtabview .subtitle {
     background:lightsteelblue;
