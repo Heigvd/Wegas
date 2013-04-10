@@ -43,7 +43,7 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 }
             } else {
                 if (this.get("host") instanceof Y.Widget) {
-                    this.get("host").get("visible").hide();
+                    this.get("host").hide();
                 } else if (this.get("host") instanceof Y.Node) {
                     this.get("host").addClass(HIDDENNODECSSCLASS);
                 }

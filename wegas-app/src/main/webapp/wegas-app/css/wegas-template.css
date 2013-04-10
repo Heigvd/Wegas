@@ -1,0 +1,21 @@
+/*
+*/
+.wegas-template{
+    padding:5px;
+}
+.wegas-template-box-unit {
+    width:5px;
+    height:10px;
+    background:steelblue;
+    border:1px solid gray;
+    margin-right:2px;
+    float:left;
+}
+.wegas-template-valuebox-unit {
+    background:steelblue;
+    border:1px solid gray;
+    float:left;
+}
+.wegas-template-valuebox-selected {
+    background:white;
+}

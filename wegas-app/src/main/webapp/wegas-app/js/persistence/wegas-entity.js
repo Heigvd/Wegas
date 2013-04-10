@@ -647,7 +647,9 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
-                    label: "Script alias"
+                    label: "Script alias",
+                    regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    description: "Alphanumeric characters,'_','$'. Without a digit as first character. Changing this may break your scripts."
                 },
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);

@@ -190,22 +190,6 @@ YUI.add("wegas-widget", function(Y) {
                 this.toolbar.get("header").append(statusNode);
             }
             return statusNode;
-        },
-        /**
-         * @function
-         * @private
-         * @param {String} name
-         * @return Status node
-         * @description Get Class From plugin name. Hopefully a unique name ...
-         */
-        _getPluginFromName: function(name) {
-            var i;
-            for (i in Y.Plugin) {
-                if (Y.Plugin[i].NAME === name) {
-                    return "" + i;
-                }
-            }
-            return undefined;
         }
     });
 
@@ -280,7 +264,7 @@ YUI.add("wegas-widget", function(Y) {
                     value: undefined
                 },
                 validator: function(s) {
-                    return (s === undefined || (Y.Lang.isString(s) && s.lenght > 0) || Y.Lang.isNumber(s));
+                    return (s === undefined || (Y.Lang.isString(s) && s.length > 0) || Y.Lang.isNumber(s));
                 }
             },
             /**
@@ -463,12 +447,12 @@ YUI.add("wegas-widget", function(Y) {
              */
             plugins: {//For serialization purpose, get plugin configs
                 getter: function() {
-                    var i, p = [], plg;
+                    var i, p = [], plg;  
                     for (i in this._plugins) {
                         plg = this[this._plugins[i].NS];
                         if (plg.toObject) {
                             p.push({
-                                "fn": this._getPluginFromName(this._plugins[i].NAME), //TODO: find an other referencing way
+                                "fn": Y.Wegas.Plugin.getPluginFromName(this._plugins[i].NAME), //TODO: find an other referencing way
                                 "cfg": plg.toObject("type")
                             });
                         }
