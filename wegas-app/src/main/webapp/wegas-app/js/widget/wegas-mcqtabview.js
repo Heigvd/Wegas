@@ -37,6 +37,10 @@ YUI.add('wegas-mcqtabview', function(Y) {
          */
         dataSource: null,
         /**
+         * questions who have already get it description from server
+         */
+        questionsWithDescription: null,
+        /**
          * Reference to each used functions
          */
         handlers: null,
@@ -51,6 +55,8 @@ YUI.add('wegas-mcqtabview', function(Y) {
             this.tabView = new Y.TabView();
             this.gallery = null;
             this.handlers = {};
+            this.questionsWithDescription = [];
+            this.isRemovingTabs = false;
         },
         /**
          * @function
@@ -70,7 +76,8 @@ YUI.add('wegas-mcqtabview', function(Y) {
          * When datasource is updated, do syncUI;
          */
         bindUI: function() {
-            this.get(CONTENTBOX).delegate("click", function(e) {
+            this.handlers.tabSelectedChange = this.tabView.after("selectionChange", this.onTabSelected, this);
+            this.handlers.submit = this.get(CONTENTBOX).delegate("click", function(e) {
                 this.showOverlay();
                 this.dataSource.sendRequest({
                     request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
@@ -91,12 +98,16 @@ YUI.add('wegas-mcqtabview', function(Y) {
          * Display a message if there is no message.
          */
         syncUI: function() {
-            var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance, cQuestionLabel, tab, cChoices, choiceDescriptor, reply,
+            var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance,
+                    cQuestionLabel, tab, cChoices, choiceDescriptor, reply, cQuestionDescription,
                     questions = this.get("variable.evaluated"),
                     selectedTab = this.tabView.get('selection'),
                     lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
+            this.isRemovingTabs = true;
             this.tabView.removeAll();                                           // Empty the tabview
+            this.isRemovingTabs = false;
+            
             if (this.gallery) {
                 this.gallery.destroy();
                 this.gallery = null;
@@ -107,18 +118,25 @@ YUI.add('wegas-mcqtabview', function(Y) {
 
                 for (i = 0; i < questions.length; i += 1) {
                     cQuestion = questions[i];
-                    cQuestionLabel = cQuestion.getPublicLabel() || "undefined";
-                    ret = [//'<div class="title">Details</div>',
-                        '<div class="content">',
-                        '<div class="title">', cQuestionLabel, '</div>',
-                        '<div class="description">',
-                        (cQuestion.get("description") || "<em>No description</em>"), '</div>'];
                     cQuestionInstance = cQuestion.getInstance();
                     firstChild = "first-child";
                     cReplyLabel = null;
                     cChoices = cQuestion.get("items");
+                    cQuestionDescription = "<em><i>Loading</i></em>";
 
                     if (cQuestionInstance.get("active")) {
+
+                        cQuestionLabel = cQuestion.getPublicLabel() || "undefined";
+                        if (cQuestion.get("description") || this.questionsWithDescription.indexOf(cQuestion.get("id")) > -1) {
+                            cQuestionDescription = (cQuestion.get("description") || "</em>No description</em>");
+                        }
+
+                        ret = [
+                            '<div class="content">',
+                            '<div class="title">', cQuestionLabel, '</div>',
+                            '<div class="description">', cQuestionDescription, '</div>'];
+
+
                         if (cQuestionInstance.get("replies").length === 0        // If the question is not replied, we display its reply set
                                 || cQuestion.get("allowMultipleReplies")) {
 
@@ -165,7 +183,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
                                     + '<div class="status">' + (cReplyLabel || "unanswered") + '</div></div>',
                             content: ret.join('')
                         });
-                        tab.questionInstance = cQuestionInstance;
+                        tab.cQuestion = cQuestion;
                         this.tabView.add(tab);
                     }
                     if (cQuestion.get("pictures").length > 0) {
@@ -184,13 +202,29 @@ YUI.add('wegas-mcqtabview', function(Y) {
                     label: "",
                     content: "<center><i><br /><br /><br />No questions available yet.</i></center>"
                 }));
-//                this.tabView.selectChild(0);
+                this.tabView.selectChild(0);
+            } else {
+                this.tabView.selectChild(lastSelection);
             }
-            this.tabView.selectChild(lastSelection);
+
             this.hideOverlay();
             if (this.gallery) {
                 this.gallery.syncUI();
             }
+        },
+        /**
+         * @function
+         * @private
+         * @description retrieve selected question's description on current tab.
+         */
+        onTabSelected: function(e) {
+            if (e.newVal && e.newVal.cQuestion && !this.isRemovingTabs && !e.newVal.cQuestion.get("description") && this.questionsWithDescription.indexOf(e.newVal.cQuestion.get("id")) < 0) {
+                this.questionsWithDescription.push(e.newVal.cQuestion.get("id"));
+                e.newVal.cQuestion.exportDescription({success: function(e) { // Retrieve the question/choice description from the server
+                        console.log(e);
+                    }});
+            }
+            ;
         },
         /**
          * @function
@@ -200,7 +234,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
          */
         destructor: function() {
             var i;
-            if(this.gallery){
+            if (this.gallery) {
                 this.gallery.destroy();
             }
             this.tabView.destroy();

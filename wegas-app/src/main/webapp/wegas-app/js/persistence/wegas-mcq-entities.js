@@ -30,6 +30,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
     Y.namespace("Wegas.persistence").QuestionDescriptor = Y.Base.create("QuestionDescriptor", Wegas.persistence.ListDescriptor, [], {
         getRepliesByStartTime: function(startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
+        },
+        exportDescription: function(callback) {
+            if (this.get('id') > 0) {
+                Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                    request: "/" + this.get('id')  + "?view=Export",
+                    callback:callback
+                }, this);
+            }
         }
     }, {
         ATTRS: {

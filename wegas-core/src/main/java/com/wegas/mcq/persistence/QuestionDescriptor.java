@@ -36,9 +36,9 @@ public class QuestionDescriptor extends ListDescriptor {
     /**
      *
      */
+    @JsonView(Views.EditorI.class)
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    //@JsonView(Views.EditorI.class)
     private String description;
     /**
      *
@@ -70,7 +70,7 @@ public class QuestionDescriptor extends ListDescriptor {
      * @param value
      */
     public void setActive(Player p, boolean value) {
-        ( (QuestionInstance) this.getInstance(p) ).setActive(value);
+        ((QuestionInstance) this.getInstance(p)).setActive(value);
     }
 
     /**
