@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 if (typeof _yuitest_coverage == "undefined"){
     _yuitest_coverage = {};
     _yuitest_coverline = function(src, line){
@@ -32,7 +27,7 @@ _yuitest_coverage["build/yql-nodejs/yql-nodejs.js"] = {
     path: "build/yql-nodejs/yql-nodejs.js",
     code: []
 };
-_yuitest_coverage["build/yql-nodejs/yql-nodejs.js"].code=["YUI.add('yql-nodejs', function (Y, NAME) {","","/**","* NodeJS plugin for YQL to use native request to make requests instead of JSONP.","* Not required by the user, it's conditionally loaded and should \"just work\".","* @module yql","* @submodule yql-nodejs","*/","","var request = require('request');","","//Over writes Y.YQLRequest._send to use request instead of JSONP","Y.YQLRequest.prototype._send = function (url, o) {","    request(url, {","        method: 'GET',","        timeout: o.timeout || (30 * 1000)","    }, function(err, res) {","        if (err) {","            //The signature that YQL requires","            o.on.success({","                error: err","            });","        } else {","            o.on.success(JSON.parse(res.body));","        }","    });","};","","","}, '3.8.0');"];
+_yuitest_coverage["build/yql-nodejs/yql-nodejs.js"].code=["YUI.add('yql-nodejs', function (Y, NAME) {","","/**","* NodeJS plugin for YQL to use native request to make requests instead of JSONP.","* Not required by the user, it's conditionally loaded and should \"just work\".","* @module yql","* @submodule yql-nodejs","*/","","var request = require('request');","","//Over writes Y.YQLRequest._send to use request instead of JSONP","Y.YQLRequest.prototype._send = function (url, o) {","    request(url, {","        method: 'GET',","        timeout: o.timeout || (30 * 1000)","    }, function(err, res) {","        if (err) {","            //The signature that YQL requires","            o.on.success({","                error: err","            });","        } else {","            o.on.success(JSON.parse(res.body));","        }","    });","};","","","}, '3.9.1');"];
 _yuitest_coverage["build/yql-nodejs/yql-nodejs.js"].lines = {"1":0,"10":0,"13":0,"14":0,"18":0,"20":0,"24":0};
 _yuitest_coverage["build/yql-nodejs/yql-nodejs.js"].functions = {"(anonymous 2):17":0,"_send:13":0,"(anonymous 1):1":0};
 _yuitest_coverage["build/yql-nodejs/yql-nodejs.js"].coveredLines = 7;
@@ -76,4 +71,4 @@ o.on.success(JSON.parse(res.body));
 };
 
 
-}, '3.8.0');
+}, '3.9.1');

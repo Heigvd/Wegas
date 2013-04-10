@@ -1,15 +1,9 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('tabview-base', function (Y, NAME) {
 
 var getClassName = Y.ClassNameManager.getClassName,
     TABVIEW = 'tabview',
     TAB = 'tab',
-    CONTENT = 'content',
     PANEL = 'panel',
     SELECTED = 'selected',
     EMPTY_OBJ = {},
@@ -37,7 +31,7 @@ var getClassName = Y.ClassNameManager.getClassName,
         selectedPanel: '> div ' + DOT + _classNames.selectedPanel
     },
 
-    TabviewBase = function(config) {
+    TabviewBase = function() {
         this.init.apply(this, arguments);
     };
 
@@ -147,4 +141,4 @@ Y.mix(TabviewBase.prototype, {
 Y.TabviewBase = TabviewBase;
 
 
-}, '3.8.0', {"requires": ["node-event-delegate", "classnamemanager", "skin-sam-tabview"]});
+}, '3.9.1', {"requires": ["node-event-delegate", "classnamemanager", "skin-sam-tabview"]});

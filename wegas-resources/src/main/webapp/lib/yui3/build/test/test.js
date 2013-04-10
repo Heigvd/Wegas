@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('test', function (Y, NAME) {
 
 
@@ -25,7 +20,7 @@ if (YUI.YUITest) {
 
     //Make this global for back compat
     YUITest = {
-        version: "3.8.0",
+        version: "3.9.1",
         guid: function(pre) {
             return Y.guid(pre);
         }
@@ -1027,7 +1022,7 @@ YUITest.TestFormat = function(){
             
             /**
             * If true, YUITest will not fire an error for tests with no Asserts.
-            * @prop _ignoreEmpty
+            * @property _ignoreEmpty
             * @private
             * @type Boolean
             * @static
@@ -3769,4 +3764,4 @@ if (!YUI.YUITest) {
 } //End if for YUI.YUITest
 
 
-}, '3.8.0', {"requires": ["event-simulate", "event-custom", "json-stringify"]});
+}, '3.9.1', {"requires": ["event-simulate", "event-custom", "json-stringify"]});

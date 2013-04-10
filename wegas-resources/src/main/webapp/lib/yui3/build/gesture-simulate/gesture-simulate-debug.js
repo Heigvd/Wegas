@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('gesture-simulate', function (Y, NAME) {
 
 /**
@@ -85,9 +80,7 @@ var NAME = "gesture-simulate",
     X_AXIS = 'x',
     Y_AXIS = 'y';
 
-/**
- *
- */
+
 function Simulations(node) {
     if(!node) {
         Y.error(NAME+': invalid target node');
@@ -664,7 +657,7 @@ Simulations.prototype = {
             }
         }
 
-        /**
+        /*
          * Check if too slow for a flick.
          * Adjust duration if the calculated velocity is less than 
          * the minimum velcocity to be claimed as a flick.
@@ -981,7 +974,7 @@ Simulations.prototype = {
                 // this will inclide android(Y.UA.android && Y.UA.android < 4.0) 
                 // and desktops among all others. 
 
-                /**
+                /*
                  * Touch APIs are broken in androids older than 4.0. We will use 
                  * simulated touch apis for these versions. 
                  */
@@ -1087,19 +1080,19 @@ Simulations.prototype = {
     }
 };
 
-/**
+/*
  * A gesture simulation class.
  */
 Y.GestureSimulation = Simulations;
 
-/**
+/*
  * Various simulation default behavior properties. If user override 
  * Y.GestureSimulation.defaults, overriden values will be used and this 
  * should be done before the gesture simulation.  
  */
 Y.GestureSimulation.defaults = DEFAULTS;
 
-/**
+/*
  * The high level gesture names that YUI knows how to simulate.
  */
 Y.GestureSimulation.GESTURES = gestureNames;
@@ -1328,4 +1321,4 @@ Y.Event.simulateGesture = function(node, name, options, cb) {
 };
 
 
-}, '3.8.0', {"requires": ["async-queue", "event-simulate", "node-screen"]});
+}, '3.9.1', {"requires": ["async-queue", "event-simulate", "node-screen"]});

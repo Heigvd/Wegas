@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('datatable-message', function (Y, NAME) {
 
 /**
@@ -123,7 +118,7 @@ Y.mix(Message.prototype, {
     @protected
     @since 3.5.0
     **/
-    _afterMessageColumnsChange: function (e) {
+    _afterMessageColumnsChange: function () {
         var contentNode;
 
         if (this._messageNode) {
@@ -146,7 +141,7 @@ Y.mix(Message.prototype, {
     @protected
     @since 3.5.0
     **/
-    _afterMessageDataChange: function (e) {
+    _afterMessageDataChange: function () {
         this._uiSetMessage();
     },
 
@@ -231,14 +226,14 @@ Y.mix(Message.prototype, {
 
     /**
     Add the messaging related strings to the `strings` map.
-    
+
     @method _initMessageStrings
     @protected
     @since 3.5.0
     **/
     _initMessageStrings: function () {
         // Not a valueFn because other class extensions will want to add to it
-        this.set('strings', Y.mix((this.get('strings') || {}), 
+        this.set('strings', Y.mix((this.get('strings') || {}),
             Y.Intl.get('datatable-message')));
     },
 
@@ -293,4 +288,4 @@ if (Y.Lang.isFunction(Y.DataTable)) {
 }
 
 
-}, '3.8.0', {"requires": ["datatable-base"], "lang": ["en"], "skinnable": true});
+}, '3.9.1', {"requires": ["datatable-base"], "lang": ["en", "fr", "es"], "skinnable": true});

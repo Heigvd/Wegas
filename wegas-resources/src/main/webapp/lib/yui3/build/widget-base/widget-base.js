@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('widget-base', function (Y, NAME) {
 
 /**
@@ -554,7 +549,7 @@ Y.extend(Widget, Y.Base, {
               * after rendering is complete.
               * </p>
               *
-              * @event widget:render
+              * @event render
               * @preventable _defRenderFn
               * @param {EventFacade} e The Event Facade
               */
@@ -1264,7 +1259,7 @@ Y.extend(Widget, Y.Base, {
 Y.Widget = Widget;
 
 
-}, '3.8.0', {
+}, '3.9.1', {
     "requires": [
         "attribute",
         "base-base",

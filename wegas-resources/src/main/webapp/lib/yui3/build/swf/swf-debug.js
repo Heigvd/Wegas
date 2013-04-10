@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('swf', function (Y, NAME) {
 
 /**
@@ -38,7 +33,7 @@ YUI.add('swf', function (Y, NAME) {
          * Creates the SWF instance and keeps the configuration data
          *
          * @class SWF
-         * @augments Y.Event.Target
+         * @uses Y.Event.Target
          * @constructor
          * @param {String|HTMLElement} id The id of the element, or the element itself that the SWF will be inserted into.
          *        The width and height of the SWF will be set to the width and height of this container element.
@@ -206,4 +201,4 @@ Y.augment(SWF, Y.EventTarget);
 Y.SWF = SWF;
 
 
-}, '3.8.0', {"requires": ["event-custom", "node", "swfdetect", "escape"]});
+}, '3.9.1', {"requires": ["event-custom", "node", "swfdetect", "escape"]});

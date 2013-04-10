@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('uploader-queue', function (Y, NAME) {
 
 /**
@@ -498,7 +493,7 @@ Y.extend(UploaderQueue, Y.Base, {
         * Maximum number of simultaneous uploads; must be in the
         * range between 1 and 5. The value of `2` is default. It
         * is recommended that this value does not exceed 3.
-        * @property simUploads
+        * @attribute simUploads
         * @type Number
         * @default 2
         */
@@ -517,7 +512,7 @@ Y.extend(UploaderQueue, Y.Base, {
         * should restart immediately on the errored out file and continue as planned), or
         * Y.Uploader.Queue.RESTART_AFTER (the upload of the errored out file should restart
         * after all other files have uploaded)
-        * @property errorAction
+        * @attribute errorAction
         * @type String
         * @default Y.Uploader.Queue.CONTINUE
         */
@@ -535,7 +530,7 @@ Y.extend(UploaderQueue, Y.Base, {
 
         /**
         * The total number of bytes that has been uploaded.
-        * @property bytesUploaded
+        * @attribute bytesUploaded
         * @type Number
         */
         bytesUploaded: {
@@ -545,7 +540,7 @@ Y.extend(UploaderQueue, Y.Base, {
 
         /**
         * The total number of bytes in the queue.
-        * @property bytesTotal
+        * @attribute bytesTotal
         * @type Number
         */
         bytesTotal: {
@@ -558,8 +553,8 @@ Y.extend(UploaderQueue, Y.Base, {
         * before the upload has been started; modifying it after starting
         * the upload has no effect, and `addToQueueTop` or `addToQueueBottom` methods
         * should be used instead.
-        * @property fileList
-        * @type Number
+        * @attribute fileList
+        * @type Array
         */
         fileList: {
             value: [],
@@ -659,4 +654,4 @@ Y.namespace('Uploader');
 Y.Uploader.Queue = UploaderQueue;
 
 
-}, '3.8.0', {"requires": ["base"]});
+}, '3.9.1', {"requires": ["base"]});
