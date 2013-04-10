@@ -93,23 +93,6 @@ body {
     font-size:11px;
 }
 
-/* CSSEditor Styles */
-.wegas-csseditor .inputEx-Field {
-    float:none;
-    height:100%;
-}
-.wegas-csseditor .inputEx-fieldWrapper {
-    height:100%;
-    margin-bottom:0;
-}
-.wegas-csseditor .ace_editor {
-    top:0px;
-    left:0px;
-    right:0px;
-    bottom:0px;
-    height: auto;
-}
-
 /* Chat styles */
 .wegas-chat  div.inputEx-fieldWrapper {
     padding:0;
