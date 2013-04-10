@@ -46,7 +46,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      */
+    @JsonView(Views.EditorI.class)
     @Column(length = 4096)
+    @Basic(fetch = FetchType.LAZY)
     private String description;
     /**
      *

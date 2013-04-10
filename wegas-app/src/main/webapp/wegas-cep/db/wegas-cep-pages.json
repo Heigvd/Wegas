@@ -283,14 +283,14 @@
         "id": 4,
         "type": "MCQTabView",
         "variable": {
-            "expr": "questions.items[phases.value].items[phases.items[phases.value].value - 1].descriptorId"
+            "expr": "questions.items[phases.items[phases.value].value - 1].descriptorId"
         }
     },
     "5": {
         "id": 5,
         "type": "MCQTabView",
         "variable": {
-            "expr": "actions.items[phases.value].items[phases.items[phases.value].value - 1].descriptorId"
+            "expr": "actions.items[phases.items[phases.value].value - 1].descriptorId"
         }
     },
     "6": {
