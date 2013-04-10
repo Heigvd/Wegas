@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('io-form', function (Y, NAME) {
 
 /**
@@ -16,6 +11,30 @@ YUI.add('io-form', function (Y, NAME) {
 
 var eUC = encodeURIComponent;
 
+/**
+ * Method to enumerate through an HTML form's elements collection
+ * and return a string comprised of key-value pairs.
+ *
+ * @method serialize
+ * @static
+ * @param {Node|String} form YUI form node or HTML form id
+ * @param {Object} [options] Configuration options.
+ * @param {Boolean} [options.useDisabled=false] Whether to include disabled fields.
+ * @param {Object|String} [options.extra] Extra values to include. May be a query string or an object with key/value pairs.
+ * @return {String}
+ */
+Y.IO.stringify = function(form, options) {
+    options = options || {};
+
+    var s = Y.IO.prototype._serialize({
+        id: form,
+        useDisabled: options.useDisabled
+    },
+    options.extra && typeof options.extra === 'object' ? Y.QueryString.stringify(options.extra) : options.extra);
+
+    return s;
+};
+
 Y.mix(Y.IO.prototype, {
    /**
     * Method to enumerate through an HTML form's elements collection
@@ -23,9 +42,10 @@ Y.mix(Y.IO.prototype, {
     *
     * @method _serialize
     * @private
-    * @static
-    * @param {Object} c - YUI form node or HTML form id.
-    * @param {String} s - Key-value data defined in the configuration object.
+    * @param {Object} c
+    * @param {String|Element} c.id YUI form node or HTML form id
+    * @param {Boolean} c.useDisabled `true` to include disabled fields
+    * @param {String} s Key-value data defined in the configuration object.
     * @return {String}
     */
     _serialize: function(c, s) {
@@ -35,12 +55,16 @@ Y.mix(Y.IO.prototype, {
             id = (typeof c.id === 'string') ? c.id : c.id.getAttribute('id'),
             e, f, n, v, d, i, il, j, jl, o;
 
-            if (!id) {
-                id = Y.guid('io:');
-                c.id.setAttribute('id', id);
-            }
+        if (!id) {
+            id = Y.guid('io:');
+            c.id.setAttribute('id', id);
+        }
 
-            f = Y.config.doc.getElementById(id);
+        f = Y.config.doc.getElementById(id);
+
+        if (!f || !f.elements) {
+            return s || '';
+        }
 
         // Iterate over the form elements collection to construct the
         // label-value pairs.
@@ -93,10 +117,15 @@ Y.mix(Y.IO.prototype, {
                 }
             }
         }
+
+        if (s) {
+            data[item++] = s;
+        }
+
         Y.log('HTML form serialized. The value is: ' + data.join('&'), 'info', 'io');
-        return s ? data.join('&') + "&" + s : data.join('&');
+        return data.join('&');
     }
 }, true);
 
 
-}, '3.8.0', {"requires": ["io-base", "node-base"]});
+}, '3.9.1', {"requires": ["io-base", "node-base"]});

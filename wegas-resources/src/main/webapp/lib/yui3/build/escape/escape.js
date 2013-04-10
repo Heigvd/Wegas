@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('escape', function (Y, NAME) {
 
 /**
@@ -81,7 +76,7 @@ Escape = {
      *
      * @method _htmlReplacer
      * @param {String} match Matched character (must exist in HTML_CHARS).
-     * @returns {String} HTML entity.
+     * @return {String} HTML entity.
      * @static
      * @protected
      */
@@ -95,4 +90,4 @@ Escape.regexp = Escape.regex;
 Y.Escape = Escape;
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});

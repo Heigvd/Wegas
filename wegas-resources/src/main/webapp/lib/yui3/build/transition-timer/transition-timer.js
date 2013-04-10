@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('transition-timer', function (Y, NAME) {
 
 /**
@@ -88,7 +83,7 @@ Y.mix(Transition.prototype, {
 
                 if (!delay || time >= delay) {
                     setter(anim, name, attribute.from, attribute.to, t - delay, d - delay,
-                        attribute.easing, attribute.unit); 
+                        attribute.easing, attribute.unit);
 
                     if (done) {
                         delete attrs[name];
@@ -197,7 +192,7 @@ Y.mix(Y.Transition, {
     DEFAULT_UNIT: 'px',
 
     /*
-     * Time in milliseconds passed to setInterval for frame processing 
+     * Time in milliseconds passed to setInterval for frame processing
      *
      * @property intervalTime
      * @default 20
@@ -277,7 +272,7 @@ Y.mix(Y.Transition, {
      * @method _runFrame
      * @private
      * @static
-     */    
+     */
     _runFrame: function() {
         var done = true,
             anim;
@@ -330,11 +325,11 @@ Y.mix(Y.Transition, {
     _timer: null,
 
     RE_UNITS: /^(-?\d*\.?\d*){1}(em|ex|px|in|cm|mm|pt|pc|%)*$/
-}, true); 
+}, true);
 
 Transition.behaviors.top = Transition.behaviors.bottom = Transition.behaviors.right = Transition.behaviors.left;
 
 Y.Transition = Transition;
 
 
-}, '3.8.0', {"requires": ["transition"]});
+}, '3.9.1', {"requires": ["transition"]});

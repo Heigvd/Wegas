@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('calendarnavigator', function (Y, NAME) {
 
 /**
@@ -290,6 +285,8 @@ Y.extend(CalendarNavigator, Y.Plugin.Base, {
         this._updateControlState();
 
         host.after("dateChange", this._updateControlState, this);
+        host.after("minimumDateChange", this._updateControlState, this);
+        host.after("maximumDateChange", this._updateControlState, this);
 
         headerCell.prepend(this._controls.prevMonth);
         headerCell.append(this._controls.nextMonth);
@@ -299,4 +296,4 @@ Y.extend(CalendarNavigator, Y.Plugin.Base, {
 Y.namespace("Plugin").CalendarNavigator = CalendarNavigator;
 
 
-}, '3.8.0', {"requires": ["plugin", "classnamemanager", "datatype-date", "node", "substitute"], "skinnable": true});
+}, '3.9.1', {"requires": ["plugin", "classnamemanager", "datatype-date", "node"], "skinnable": true});

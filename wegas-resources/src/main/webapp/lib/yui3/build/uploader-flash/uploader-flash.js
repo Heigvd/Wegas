@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('uploader-flash', function (Y, NAME) {
 
 /**
@@ -292,7 +287,9 @@ Y.UploaderFlash = Y.extend(UploaderFlash, Y.Widget, {
         var boundingBox = this.get("boundingBox"),
             contentBox = this.get('contentBox'),
             selFilesButton = this.get("selectFilesButton"),
-            flashContainer = Y.one("#" + this._swfContainerId),
+            flashContainer = Y.Node.create(substitute(UploaderFlash.FLASH_CONTAINER, {
+                swfContainerId: this._swfContainerId
+            })),
             params = {
                 version: "10.0.45",
                 fixedAttributes: {
@@ -306,9 +303,7 @@ Y.UploaderFlash = Y.extend(UploaderFlash, Y.Widget, {
         boundingBox.setStyle("position", "relative");
         selFilesButton.setStyles({width: "100%", height: "100%"});
         contentBox.append(selFilesButton);
-        contentBox.append(Y.Node.create(substitute(UploaderFlash.FLASH_CONTAINER, {
-            swfContainerId: this._swfContainerId
-        })));
+        contentBox.append(flashContainer);
 
         this._swfReference = new Y.SWF(flashContainer, this.get("swfURL"), params);
     },
@@ -1068,16 +1063,4 @@ Y.UploaderFlash = Y.extend(UploaderFlash, Y.Widget, {
 Y.UploaderFlash.Queue = UploaderQueue;
 
 
-}, '3.8.0', {
-    "requires": [
-        "swf",
-        "widget",
-        "substitute",
-        "base",
-        "cssbutton",
-        "node",
-        "event-custom",
-        "file-flash",
-        "uploader-queue"
-    ]
-});
+}, '3.9.1', {"requires": ["swf", "widget", "base", "cssbutton", "node", "event-custom", "file-flash", "uploader-queue"]});

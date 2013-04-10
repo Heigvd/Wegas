@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('autocomplete-list', function (Y, NAME) {
 
 /**
@@ -155,12 +150,6 @@ List = Y.Base.create('autocompleteList', Y.Widget, [
         if (useShim) {
             boundingBox.plug(Y.Plugin.Shim);
         }
-
-        // Force position: absolute on the boundingBox. This works around a
-        // potential CSS loading race condition in Gecko that can cause the
-        // boundingBox to become relatively positioned, which is all kinds of
-        // no good.
-        boundingBox.setStyle('position', 'absolute');
 
         this._ariaNode    = ariaNode;
         this._boundingBox = boundingBox;
@@ -897,9 +886,10 @@ for API docs.
 Y.AutoComplete = List;
 
 
-}, '3.8.0', {
+}, '3.9.1', {
     "lang": [
-        "en"
+        "en",
+        "es"
     ],
     "requires": [
         "autocomplete-base",

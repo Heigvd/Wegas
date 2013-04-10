@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('datatable-column-widths', function (Y, NAME) {
 
 /**
@@ -199,7 +194,7 @@ Y.mix(ColumnWidths.prototype, {
     @protected
     @since 3.5.0
     **/
-    initializer: function (config) {
+    initializer: function () {
         this.after(['renderView', 'columnsChange'], this._uiSetColumnWidths);
     },
 
@@ -240,10 +235,10 @@ Y.mix(ColumnWidths.prototype, {
             // td.style.width === col.style.width
             if  (width && Y.Features.test('table', 'badColWidth')) {
                 cell = this.getCell([0, colIndex]);
-                
+
                 if (cell) {
                     getCStyle = function (prop) {
-                        return parseInt(cell.getComputedStyle(prop), 10)|0;
+                        return parseInt(cell.getComputedStyle(prop), 10)||0;
                     };
 
                     col.setStyle('width',
@@ -302,4 +297,4 @@ Y.DataTable.ColumnWidths = ColumnWidths;
 Y.Base.mix(Y.DataTable, [ColumnWidths]);
 
 
-}, '3.8.0', {"requires": ["datatable-base"]});
+}, '3.9.1', {"requires": ["datatable-base"]});

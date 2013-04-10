@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 if (typeof _yuitest_coverage == "undefined"){
     _yuitest_coverage = {};
     _yuitest_coverline = function(src, line){
@@ -32,7 +27,7 @@ _yuitest_coverage["build/querystring-stringify-simple/querystring-stringify-simp
     path: "build/querystring-stringify-simple/querystring-stringify-simple.js",
     code: []
 };
-_yuitest_coverage["build/querystring-stringify-simple/querystring-stringify-simple.js"].code=["YUI.add('querystring-stringify-simple', function (Y, NAME) {","","/*global Y */","/**"," * <p>Provides Y.QueryString.stringify method for converting objects to Query Strings."," * This is a subset implementation of the full querystring-stringify.</p>"," * <p>This module provides the bare minimum functionality (encoding a hash of simple values),"," * without the additional support for nested data structures.  Every key-value pair is"," * encoded by encodeURIComponent.</p>"," * <p>This module provides a minimalistic way for io to handle  single-level objects"," * as transaction data.</p>"," *"," * @module querystring"," * @submodule querystring-stringify-simple"," */","","var QueryString = Y.namespace(\"QueryString\"),","    EUC = encodeURIComponent;","","","QueryString.stringify = function (obj, c) {","    var qs = [],","        // Default behavior is false; standard key notation.","        s = c && c.arrayKey ? true : false,","        key, i, l;","","    for (key in obj) {","        if (obj.hasOwnProperty(key)) {","            if (Y.Lang.isArray(obj[key])) {","                for (i = 0, l = obj[key].length; i < l; i++) {","                    qs.push(EUC(s ? key + '[]' : key) + '=' + EUC(obj[key][i]));","                }","            }","            else {","                qs.push(EUC(key) + '=' + EUC(obj[key]));","            }","        }","    }","","    return qs.join('&');","};","","","}, '3.8.0', {\"requires\": [\"yui-base\"]});"];
+_yuitest_coverage["build/querystring-stringify-simple/querystring-stringify-simple.js"].code=["YUI.add('querystring-stringify-simple', function (Y, NAME) {","","/*global Y */","/**"," * <p>Provides Y.QueryString.stringify method for converting objects to Query Strings."," * This is a subset implementation of the full querystring-stringify.</p>"," * <p>This module provides the bare minimum functionality (encoding a hash of simple values),"," * without the additional support for nested data structures.  Every key-value pair is"," * encoded by encodeURIComponent.</p>"," * <p>This module provides a minimalistic way for io to handle  single-level objects"," * as transaction data.</p>"," *"," * @module querystring"," * @submodule querystring-stringify-simple"," */","","var QueryString = Y.namespace(\"QueryString\"),","    EUC = encodeURIComponent;","","","QueryString.stringify = function (obj, c) {","    var qs = [],","        // Default behavior is false; standard key notation.","        s = c && c.arrayKey ? true : false,","        key, i, l;","","    for (key in obj) {","        if (obj.hasOwnProperty(key)) {","            if (Y.Lang.isArray(obj[key])) {","                for (i = 0, l = obj[key].length; i < l; i++) {","                    qs.push(EUC(s ? key + '[]' : key) + '=' + EUC(obj[key][i]));","                }","            }","            else {","                qs.push(EUC(key) + '=' + EUC(obj[key]));","            }","        }","    }","","    return qs.join('&');","};","","","}, '3.9.1', {\"requires\": [\"yui-base\"]});"];
 _yuitest_coverage["build/querystring-stringify-simple/querystring-stringify-simple.js"].lines = {"1":0,"17":0,"21":0,"22":0,"27":0,"28":0,"29":0,"30":0,"31":0,"35":0,"40":0};
 _yuitest_coverage["build/querystring-stringify-simple/querystring-stringify-simple.js"].functions = {"stringify:21":0,"(anonymous 1):1":0};
 _yuitest_coverage["build/querystring-stringify-simple/querystring-stringify-simple.js"].coveredLines = 11;
@@ -93,4 +88,4 @@ return qs.join('&');
 };
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});

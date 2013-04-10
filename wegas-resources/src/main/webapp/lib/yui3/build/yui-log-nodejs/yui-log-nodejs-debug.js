@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('yui-log-nodejs', function (Y, NAME) {
 
 var sys = require(process.binding('natives').util ? 'util' : 'sys'),
@@ -30,13 +25,13 @@ Y.consoleColor = function(str, num) {
 
 
 var logFn = function(str, t, m) {
-    var id = '';
+    var id = '', lvl, mLvl;
     if (this.id) {
         id = '[' + this.id + ']:';
     }
     t = t || 'info';
     m = (m) ? this.consoleColor(' (' +  m.toLowerCase() + '):', 35) : '';
-    
+
     if (str === null) {
         str = 'null';
     }
@@ -54,7 +49,8 @@ var logFn = function(str, t, m) {
         }
     }
 
-    var lvl = '37;40', mLvl = ((str) ? '' : 31);
+    lvl = '37;40';
+    mLvl = ((str) ? '' : 31);
     t = t+''; //Force to a string..
     switch (t.toLowerCase()) {
         case 'error':
@@ -83,4 +79,4 @@ if (!Y.config.logFn) {
 
 
 
-}, '3.8.0');
+}, '3.9.1');

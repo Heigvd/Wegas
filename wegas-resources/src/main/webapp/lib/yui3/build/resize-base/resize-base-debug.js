@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('resize-base', function (Y, NAME) {
 
 /**
@@ -159,7 +154,7 @@ Quick Example:
         handles: 't, tr, r, br, b, bl, l, tl'
     });
 
-Check the list of <a href="Resize.html#configattributes">Configuration Attributes</a> available for
+Check the list of <a href="Resize.html#attrs">Configuration Attributes</a> available for
 Resize.
 
 @class Resize
@@ -1652,4 +1647,4 @@ Y.each(Y.Resize.prototype.ALL_HANDLES, function(handle) {
 });
 
 
-}, '3.8.0', {"requires": ["base", "widget", "event", "oop", "dd-drag", "dd-delegate", "dd-drop"], "skinnable": true});
+}, '3.9.1', {"requires": ["base", "widget", "event", "oop", "dd-drag", "dd-delegate", "dd-drop"], "skinnable": true});

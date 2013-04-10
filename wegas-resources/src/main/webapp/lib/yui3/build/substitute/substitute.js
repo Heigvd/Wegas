@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('substitute', function (Y, NAME) {
 
 /**
@@ -11,6 +6,7 @@ YUI.add('substitute', function (Y, NAME) {
  * If included, the substitute method is added to the YUI instance.
  *
  * @module substitute
+ * @deprecated
  */
 
     var L = Y.Lang, DUMP = 'dump', SPACE = ' ', LBRACE = '{', RBRACE = '}',
@@ -18,37 +14,45 @@ YUI.add('substitute', function (Y, NAME) {
 
     /**
      * The following methods are added to the YUI instance
+     *
+     * <strong>Use `Y.Lang.sub` or `Y.Template` instead.</strong>
      * @class YUI~substitute
+     * @deprecated
      */
 
-    /**
-    Does {placeholder} substitution on a string.  The object passed as the
-    second parameter provides values to replace the {placeholder}s.
-    {placeholder} token names must match property names of the object.  For
-    example
+/**
+<strong>Use `Y.Lang.sub` or `Y.Template` instead.</strong>
 
-    `var greeting = Y.substitute("Hello, {who}!", { who: "World" });`
 
-    {placeholder} tokens that are undefined on the object map will be left in
-    tact (leaving unsightly "{placeholder}"s in the output string).  If your
-    replacement strings *should* include curly braces, use `{LBRACE}` and
-    `{RBRACE}` in your object map string value.
 
-    If a function is passed as a third argument, it will be called for each
-    {placeholder} found.  The {placeholder} name is passed as the first value
-    and the value from the object map is passed as the second.  If the
-    {placeholder} contains a space, the first token will be used to identify
-    the object map property and the remainder will be passed as a third
-    argument to the function.  See below for an example.
-    
-    If the value in the object map for a given {placeholder} is an object and
-    the `dump` module is loaded, the replacement value will be the string
-    result of calling `Y.dump(...)` with the object as input.  Include a
-    numeric second token in the {placeholder} to configure the depth of the call
-    to `Y.dump(...)`, e.g. "{someObject 2}".  See the
-    <a href="../classes/YUI.html#method_dump">`dump`</a> method for details.
+Does `{placeholder}` substitution on a string.  The object passed as the
+second parameter provides values to replace the `{placeholder}`s.
+{placeholder} token names must match property names of the object.  For
+example
+
+`var greeting = Y.substitute("Hello, {who}!", { who: "World" });`
+
+`{placeholder}` tokens that are undefined on the object map will be left in
+tact (leaving unsightly "{placeholder}"s in the output string).  If your
+replacement strings *should* include curly braces, use `{LBRACE}` and
+`{RBRACE}` in your object map string value.
+
+If a function is passed as a third argument, it will be called for each
+{placeholder} found.  The {placeholder} name is passed as the first value
+and the value from the object map is passed as the second.  If the
+{placeholder} contains a space, the first token will be used to identify
+the object map property and the remainder will be passed as a third
+argument to the function.  See below for an example.
+
+If the value in the object map for a given {placeholder} is an object and
+the `dump` module is loaded, the replacement value will be the string
+result of calling `Y.dump(...)` with the object as input.  Include a
+numeric second token in the {placeholder} to configure the depth of the call
+to `Y.dump(...)`, e.g. "{someObject 2}".  See the
+<a href="../classes/YUI.html#method_dump">`dump`</a> method for details.
 
     @method substitute
+    @deprecated
     @param {string} s The string that will be modified.
     @param {object} o An object containing the replacement values.
     @param {function} f An optional function that can be used to
@@ -164,4 +168,4 @@ YUI.add('substitute', function (Y, NAME) {
 
 
 
-}, '3.8.0', {"requires": ["yui-base"], "optional": ["dump"]});
+}, '3.9.1', {"requires": ["yui-base"], "optional": ["dump"]});
