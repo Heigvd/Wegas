@@ -100,7 +100,6 @@ YUI.add("wegas-gallery", function(Y) {
                 srcNode: this.get(BOUNDING_BOX),
                 axis: "x",
                 flick: false,
-                drag: false,
                 bounce: 0
             });
             if (this.get("lightGallery")) {
