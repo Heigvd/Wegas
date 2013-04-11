@@ -5,7 +5,10 @@
         "cssClass": "flexitests",
         "variable": {
             "name": "currentPage"
-        }
+        },
+        "plugins": [{
+            "fn": "PopupPlg"
+        }]        
     },
     "2": {
         "type": "List",

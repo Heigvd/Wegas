@@ -311,9 +311,15 @@ YUI.add('wegas-action', function(Y) {
     };
     Y.extend(PopupPlg, Plugin.Base, {
         initializer: function() {
-            this.afterHostEvent("render", function() {
-                this.get(HOST).showMessage("info", this.get("content"));
-            });
+            if (this.get("content")){
+                this.afterHostEvent("render", function() {
+                    this.get(HOST).showMessage("info", this.get("content"));
+                });
+            }
+            
+            Y.Wegas.Facade.VariableDescriptor.on(this.get("event"), function(e){
+                this.get(HOST).showMessage("info", e.content);
+            }, this);
         }
     }, {
         NS: "PopupPlg",
@@ -322,6 +328,10 @@ YUI.add('wegas-action', function(Y) {
             content: {
                 type: "string",
                 format: "text"
+            },
+            event: {
+                value: "popupEvent",
+                type: "string"
             }
         }
     });

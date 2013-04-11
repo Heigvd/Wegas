@@ -4,6 +4,9 @@
         "direction": "vertical",
         "type": "List",
         "cssClass": "layout wegas-crimesim",
+        "plugins": [{
+            "fn": "PopupPlg"
+        }],
         "children": [{
                 "type": "List",
                 "cssClass": "header",

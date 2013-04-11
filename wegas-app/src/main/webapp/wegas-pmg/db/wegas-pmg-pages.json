@@ -4,6 +4,9 @@
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout",
+        "plugins": [{
+            "fn": "PopupPlg"
+        }],
         "children": [
             {
                 "type": "List",
