@@ -132,4 +132,20 @@ public class Page implements Serializable {
         logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + (String) result[0]);
         this.setContent((String) result[0]);
     }
+
+    //@TODO : tokenizer
+    public String extract(String jsonPath) {
+        JsonNode node = this.content;
+        final String[] xpath = jsonPath.trim().split("\\.|\\[|\\]");
+        for (int i = 0; i < xpath.length; i++) {
+            if (!xpath[i].equals("")) {
+                if (node.isArray() && xpath[i].matches("[0-9]+")) {
+                    node = node.path(new Integer(xpath[i]));
+                } else {
+                    node = node.path(xpath[i]);
+                }
+            }
+        }
+        return node.asText();
+    }
 }
