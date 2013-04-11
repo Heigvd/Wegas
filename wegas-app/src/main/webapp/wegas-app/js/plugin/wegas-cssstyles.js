@@ -28,8 +28,7 @@ YUI.add('wegas-cssstyles', function(Y) {
          * @function
          * @private
          */
-        initializer: function() {
-            var i;
+        initializer: function() {   
             if (this.get("host") instanceof Y.Widget) {
                 node = this.get("host").get(this.get("targetNode"));
             } else if (this.get("host") instanceof Y.Node){
@@ -38,35 +37,80 @@ YUI.add('wegas-cssstyles', function(Y) {
                 Y.log("Host's type mistmach", "warn", "Y.Plugin.CSSStyles");
                 return;
             }
-
-            if (this.get("styles")){
-                for (var style in this.get("styles")){
-                    this.addStyle(style);
-                }
-            }
+            this.set("styles",  this.get("styles"));
         },
         
         removeStyle: function(style) {
             var i;
             for (i=0; i<styleList.length; i++){
-                if (styleList[i] == style){
+                if (styleList[i] === style){
                     styleList.splice(i);
-                    // TODO remove css style
+                    node.setStyle(style, "");
                 }
             }
-            console.log(styleList);
         },
         
-        addStyle: function(style) {
+        addStyle: function(stylesList, style) {
             styleList.push(style);
-            node.setStyle(style, this.get("styles")[style]);         
+            node.setStyle(style, stylesList[style]);
+        },
+        
+        destructor: function(){
+            var i;
+            for (i=0; i<styleList.length; i++){
+                this.removeStyle(styleList[i]);
+            }
+        },
+        
+        setValue: function(styles) {
+            if (styles){
+                for (var style in styles){
+                    var value = styles[style];                 
+                    if (value){
+                        if (style === "font-size" || style === "top" || style === "right" || style === "bottom" || style === "left"){
+                            if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-2) !== "%"){
+                                  styles[style] = value + "pt";
+                            }
+                        }
+                    }
+                    this.removeStyle(style);
+                    this.addStyle(styles, style);
+                }
+            }
         }
     }, {
         ATTRS: {
             styles: {
+                setter: function(value) {
+                    this.setValue(value);
+                    return value;
+                },            
                 value: {},
                 _inputex: {
-                    _type: "object"
+                    _type: "wegasobject",
+                    elementType: {
+                        type:"wegaskeyvalue",
+                        availableFields: [{
+                            name: "background-color",
+                            type: "colorpicker",
+                            palette:3
+                        }, {
+                            name: "color",
+                            type: "colorpicker",
+                            palette:3
+                        }, {
+                            type: "string",
+                            name: "font-size"
+                        }, {
+                            type: "select",
+                            name: "font-style",
+                            choices: ["", "normal", "italic", "oblique", "inherit"]
+                        }, {
+                            type: "select",
+                            name: "text-align",
+                            choices: ["", "left", "right", "center", "justify", "inherit"]
+                        }]
+                    }
                 }
             },
             targetNode: {

@@ -234,3 +234,20 @@ img.inputEx-ListField-delButton {
     position: absolute;
     left: -111px;
 }
+
+div.inputEx-ColorField button {
+    background-image: url(../images/palette.png);
+    
+   /*background-position: 3px 0;*/
+   background-repeat: no-repeat;
+   margin-left: 2px;
+}
+
+div.inputEx-ColorField-button {
+	height: 19px;
+	width: 100px;
+	border: 1px solid #B5B8C8;
+	margin-left: 0px;
+	cursor: pointer;
+	float:left; /* to display color picker icon on the right */
+}
