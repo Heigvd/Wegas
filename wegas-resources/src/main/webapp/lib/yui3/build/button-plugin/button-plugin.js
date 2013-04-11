@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('button-plugin', function (Y, NAME) {
 
 /**
@@ -14,11 +9,13 @@ YUI.add('button-plugin', function (Y, NAME) {
 */
 
 /**
-* @class ButtonPlugin
+* @class Button
 * @param config {Object} Configuration object
+* @extends ButtonCore
 * @constructor
+* @namespace Plugin
 */
-function ButtonPlugin(config) {
+function ButtonPlugin() {
     ButtonPlugin.superclass.constructor.apply(this, arguments);
 }
 
@@ -112,14 +109,14 @@ Y.extend(ButtonPlugin, Y.ButtonCore, {
 * @description A factory that plugs a Y.Node instance with Y.Plugin.Button
 * @param node {Object}
 * @param config {Object}
-* @returns {Object} A plugged Y.Node instance
+* @return {Object} A plugged Y.Node instance
 * @public
 */
 ButtonPlugin.createNode = function(node, config) {
     var template;
 
     if (node && !config) {
-        if (! (node.nodeType || node.getDOMNode || typeof node == 'string')) {
+        if (! (node.nodeType || node.getDOMNode || typeof node === 'string')) {
             config = node;
             node = config.srcNode;
         }
@@ -135,4 +132,4 @@ ButtonPlugin.createNode = function(node, config) {
 Y.namespace('Plugin').Button = ButtonPlugin;
 
 
-}, '3.8.0', {"requires": ["button-core", "cssbutton", "node-pluginhost"]});
+}, '3.9.1', {"requires": ["button-core", "cssbutton", "node-pluginhost"]});

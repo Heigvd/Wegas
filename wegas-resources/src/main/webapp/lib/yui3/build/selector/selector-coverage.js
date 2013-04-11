@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 if (typeof _yuitest_coverage == "undefined"){
     _yuitest_coverage = {};
     _yuitest_coverline = function(src, line){
@@ -32,7 +27,7 @@ _yuitest_coverage["build/selector/selector.js"] = {
     path: "build/selector/selector.js",
     code: []
 };
-_yuitest_coverage["build/selector/selector.js"].code=["YUI.add('selector', function (Y, NAME) {","","","","}, '3.8.0', {\"requires\": [\"selector-native\"]});"];
+_yuitest_coverage["build/selector/selector.js"].code=["YUI.add('selector', function (Y, NAME) {","","","","}, '3.9.1', {\"requires\": [\"selector-native\"]});"];
 _yuitest_coverage["build/selector/selector.js"].lines = {"1":0};
 _yuitest_coverage["build/selector/selector.js"].functions = {};
 _yuitest_coverage["build/selector/selector.js"].coveredLines = 1;
@@ -42,4 +37,4 @@ YUI.add('selector', function (Y, NAME) {
 
 
 
-}, '3.8.0', {"requires": ["selector-native"]});
+}, '3.9.1', {"requires": ["selector-native"]});

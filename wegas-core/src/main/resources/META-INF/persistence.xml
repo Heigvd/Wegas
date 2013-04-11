@@ -6,7 +6,7 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
-            <property name="eclipselink.logging.level" value="FINE"/>
+<!--            <property name="eclipselink.logging.level" value="FINE"/>-->
             <property name="eclipselink.target-database" value="PostgreSQL"/>
       <!--
             <property name="eclipselink.weaving" value="static" />

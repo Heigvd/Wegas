@@ -122,7 +122,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
                         if (cQuestionInstance.get("replies").length === 0        // If the question is not replied, we display its reply set
                                 || cQuestion.get("allowMultipleReplies")) {
 
-                            ret.push('<div class="subtitle">Possible replies</div><div class="replies">');
+                            ret.push('<div class="replies">');
 
                             for (j = 0; j < cChoices.length; j += 1) {
                                 if (cChoices[j].getInstance().get("active")) {
@@ -147,8 +147,9 @@ YUI.add('wegas-mcqtabview', function(Y) {
                                         '<div>', choiceDescriptor.get("description"), '</div>',
                                         '<div style="clear:both"></div></div>');
 
-                                ret.push('<div class="subtitle">Result</div>',
-                                        '<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div>');
+                                if (reply.get("result").get("answer")) {
+                                    ret.push('<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div>');
+                                }
 
                                 if (!cReplyLabel) {
                                     cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15) + "...";

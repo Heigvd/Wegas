@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('template-base', function (Y, NAME) {
 
 /**
@@ -51,11 +46,21 @@ Using with Handlebars:
 @param {Mixed} [engine=Y.Template.Micro] Template engine to use, such as
     `Y.Template.Micro` or `Y.Handlebars`. Defaults to `Y.Template.Micro` if not
     specified.
+@param {Object} [defaults] Default options to use when instance methods are
+    invoked.
 @constructor
 @since 3.8.0
 **/
 
-function Template(engine) {
+function Template(engine, defaults) {
+    /**
+    Default options.
+
+    @property {Object} defaults
+    @since 3.8.1
+    **/
+    this.defaults = defaults;
+
     /**
     Template engine class.
 
@@ -82,6 +87,7 @@ Template.prototype = {
     @since 3.8.0
     **/
     compile: function (text, options) {
+        options = options ? Y.merge(this.defaults, options) : this.defaults;
         return this.engine.compile(text, options);
     },
 
@@ -97,6 +103,7 @@ Template.prototype = {
     @since 3.8.0
     **/
     precompile: function (text, options) {
+        options = options ? Y.merge(this.defaults, options) : this.defaults;
         return this.engine.precompile(text, options);
     },
 
@@ -113,6 +120,8 @@ Template.prototype = {
     @since 3.8.0
     **/
     render: function (text, data, options) {
+        options = options ? Y.merge(this.defaults, options) : this.defaults;
+
         if (this.engine.render) {
             return this.engine.render(text, data, options);
         }
@@ -133,6 +142,8 @@ Template.prototype = {
     @since 3.8.0
     **/
     revive: function (precompiled, options) {
+        options = options ? Y.merge(this.defaults, options) : this.defaults;
+
         return this.engine.revive ? this.engine.revive(precompiled, options) :
                 precompiled;
     }
@@ -145,4 +156,4 @@ Template.prototype = {
 Y.Template = Y.Template ? Y.mix(Template, Y.Template) : Template;
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});

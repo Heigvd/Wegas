@@ -330,12 +330,6 @@ h3 {
 .wegas-mcqtabview .reply {
     margin: 3px 8px 0px;
 }
-.wegas-mcqtabview .replies .subtitle {
-    border-bottom: none;
-    font-weight: normal;
-    font-style: italic;
-    padding: 4px 8px 0px;
-}
 .wegas-mcqtabview .reply .name {
     font-weight: bold;
 }

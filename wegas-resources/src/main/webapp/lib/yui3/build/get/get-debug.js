@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('get', function (Y, NAME) {
 
 /*jslint boss:true, expr:true, laxbreak: true */
@@ -1013,7 +1008,7 @@ Transaction.prototype = {
     _getInsertBefore: function (req) {
         var doc = req.doc,
             el  = req.insertBefore,
-            cache, cachedNode, docStamp;
+            cache, docStamp;
 
         if (el) {
             return typeof el === 'string' ? doc.getElementById(el) : el;
@@ -1143,11 +1138,12 @@ Transaction.prototype = {
 
             if (ua.ie >= 10) {
 
-                // We currently need to introduce a timeout for IE10, since it 
+                // We currently need to introduce a timeout for IE10, since it
                 // calls onerror/onload synchronously for 304s - messing up existing
-                // program flow. 
+                // program flow.
 
                 // Remove this block if the following bug gets fixed by GA
+                /*jshint maxlen: 1500 */
                 // https://connect.microsoft.com/IE/feedback/details/763871/dynamically-loaded-scripts-with-304s-responses-interrupt-the-currently-executing-js-thread-onload
                 node.onerror = function() { setTimeout(onError, 0); };
                 node.onload  = function() { setTimeout(onLoad, 0); };
@@ -1293,4 +1289,4 @@ Transaction.prototype = {
 };
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});

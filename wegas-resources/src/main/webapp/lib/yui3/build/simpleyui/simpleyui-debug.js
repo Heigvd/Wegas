@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 /**
 The YUI module contains the components required for building the YUI seed file.
 This includes the script loading mechanism, a simple queue, and the core
@@ -14,6 +9,7 @@ utilities for the library.
 @submodule yui-base
 **/
 
+/*jshint eqeqeq: false*/
 if (typeof YUI != 'undefined') {
     YUI._YUI = YUI;
 }
@@ -161,7 +157,7 @@ available.
 (function() {
 
     var proto, prop,
-        VERSION = '3.8.0',
+        VERSION = '3.9.1',
         PERIOD = '.',
         BASE = 'http://yui.yahooapis.com/',
         /*
@@ -488,6 +484,8 @@ proto = {
             } else {
                 docEl.insertBefore(YUI.Env.cssStampEl, docEl.firstChild);
             }
+        } else if (doc && doc.getElementById(CSS_STAMP_EL) && !YUI.Env.cssStampEl) {
+            YUI.Env.cssStampEl = doc.getElementById(CSS_STAMP_EL);
         }
 
         Y.config.lang = Y.config.lang || 'en-US';
@@ -509,7 +507,7 @@ proto = {
     @method _setup
     @private
     **/
-    _setup: function(o) {
+    _setup: function() {
         var i, Y = this,
             core = [],
             mods = YUI.Env.mods,
@@ -913,7 +911,6 @@ with any configuration info required for the module.
             callback = args[args.length - 1],
             Y = this,
             i = 0,
-            a = [],
             name,
             Env = Y.Env,
             provisioned = true;
@@ -1005,7 +1002,7 @@ with any configuration info required for the module.
             this._attach(['yui-base']);
         }
 
-        var len, loader, handleBoot, handleRLS,
+        var len, loader, handleBoot,
             Y = this,
             G_ENV = YUI.Env,
             mods = G_ENV.mods,
@@ -1498,6 +1495,30 @@ Y.log('Fetching loader: ' + config.base + config.loaderPath, 'info', 'yui');
     // Support the CommonJS method for exporting our single global
     if (typeof exports == 'object') {
         exports.YUI = YUI;
+        /**
+        * Set a method to be called when `Get.script` is called in Node.js
+        * `Get` will open the file, then pass it's content and it's path
+        * to this method before attaching it. Commonly used for code coverage
+        * instrumentation. <strong>Calling this multiple times will only
+        * attach the last hook method</strong>. This method is only
+        * available in Node.js.
+        * @method setLoadHook
+        * @static
+        * @param {Function} fn The function to set
+        * @param {String} fn.data The content of the file
+        * @param {String} fn.path The file path of the file
+        */
+        YUI.setLoadHook = function(fn) {
+            YUI._getLoadHook = fn;
+        };
+        /**
+        * Load hook for `Y.Get.script` in Node.js, see `YUI.setLoadHook`
+        * @method _getLoadHook
+        * @private
+        * @param {String} data The content of the file
+        * @param {String} path The file path of the file
+        */
+        YUI._getLoadHook = null;
     }
 
 }());
@@ -2014,18 +2035,34 @@ relying on ES5 functionality, even when ES5 functionality is available.
 **/
 
 /**
-Event to wait for before executing the `use()` callback.
+ * Leverage native JSON stringify if the browser has a native
+ * implementation.  In general, this is a good idea.  See the Known Issues
+ * section in the JSON user guide for caveats.  The default value is true
+ * for browsers with native JSON support.
+ *
+ * @property useNativeJSONStringify
+ * @type Boolean
+ * @default true
+ * @since 3.8.0
+ */
 
-The following events are supported:
+ /**
+ * Leverage native JSON parse if the browser has a native implementation.
+ * In general, this is a good idea.  See the Known Issues section in the
+ * JSON user guide for caveats.  The default value is true for browsers with
+ * native JSON support.
+ *
+ * @property useNativeJSONParse
+ * @type Boolean
+ * @default true
+ * @since 3.8.0
+ */
 
-  - available
-  - contentready
-  - domready
-  - load
-
-The event may be specified as a string or as an object hash that provides
-additional event configuration, as illustrated in the example below.
-
+/**
+Delay the `use` callback until a specific event has passed (`load`, `domready`, `contentready` or `available`)
+@property delayUntil
+@type String|Object
+@since 3.6.0
 @example
 
 You can use `load` or `domready` strings by default:
@@ -2423,6 +2460,7 @@ pass `true` as the value of the _force_ parameter.
 function YArray(thing, startIndex, force) {
     var len, result;
 
+    /*jshint expr: true*/
     startIndex || (startIndex = 0);
 
     if (force || YArray.test(thing)) {
@@ -2795,13 +2833,15 @@ string `[object Object]` when used as a cache key.
 @for YUI
 **/
 Y.cached = function (source, cache, refetch) {
+    /*jshint expr: true*/
     cache || (cache = {});
 
     return function (arg) {
         var key = arguments.length > 1 ?
                 Array.prototype.join.call(arguments, CACHED_DELIMITER) :
                 String(arg);
-
+        
+        /*jshint eqeqeq: false*/
         if (!(key in cache) || (refetch && cache[key] == refetch)) {
             cache[key] = source.apply(source, arguments);
         }
@@ -3881,6 +3921,7 @@ Y.UA.compareVersions = function (a, b) {
         aPart = parseInt(aParts[i], 10);
         bPart = parseInt(bParts[i], 10);
 
+        /*jshint expr: true*/
         isNaN(aPart) && (aPart = 0);
         isNaN(bPart) && (bPart = 0);
 
@@ -3902,15 +3943,17 @@ YUI.Env.aliases = {
     "attribute": ["attribute-base","attribute-complex"],
     "attribute-events": ["attribute-observable"],
     "autocomplete": ["autocomplete-base","autocomplete-sources","autocomplete-list","autocomplete-plugin"],
+    "axes": ["axis-numeric","axis-category","axis-time","axis-stacked"],
+    "axes-base": ["axis-numeric-base","axis-category-base","axis-time-base","axis-stacked-base"],
     "base": ["base-base","base-pluginhost","base-build"],
     "cache": ["cache-base","cache-offline","cache-plugin"],
+    "charts": ["charts-base"],
     "collection": ["array-extras","arraylist","arraylist-add","arraylist-filter","array-invoke"],
     "color": ["color-base","color-hsl","color-harmony"],
     "controller": ["router"],
     "dataschema": ["dataschema-base","dataschema-json","dataschema-xml","dataschema-array","dataschema-text"],
     "datasource": ["datasource-local","datasource-io","datasource-get","datasource-function","datasource-cache","datasource-jsonschema","datasource-xmlschema","datasource-arrayschema","datasource-textschema","datasource-polling"],
     "datatable": ["datatable-core","datatable-table","datatable-head","datatable-body","datatable-base","datatable-column-widths","datatable-message","datatable-mutable","datatable-sort","datatable-datasource"],
-    "datatable-deprecated": ["datatable-base-deprecated","datatable-datasource-deprecated","datatable-sort-deprecated","datatable-scroll-deprecated"],
     "datatype": ["datatype-date","datatype-number","datatype-xml"],
     "datatype-date": ["datatype-date-parse","datatype-date-format","datatype-date-math"],
     "datatype-number": ["datatype-number-parse","datatype-number-format"],
@@ -3939,7 +3982,7 @@ YUI.Env.aliases = {
 };
 
 
-}, '3.8.0', {"use": ["get", "features", "intl-base", "yui-log", "yui-later"]});
+}, '3.9.1', {"use": ["get", "features", "intl-base", "yui-log", "yui-later"]});
 YUI.add('get', function (Y, NAME) {
 
 /*jslint boss:true, expr:true, laxbreak: true */
@@ -4949,7 +4992,7 @@ Transaction.prototype = {
     _getInsertBefore: function (req) {
         var doc = req.doc,
             el  = req.insertBefore,
-            cache, cachedNode, docStamp;
+            cache, docStamp;
 
         if (el) {
             return typeof el === 'string' ? doc.getElementById(el) : el;
@@ -5079,11 +5122,12 @@ Transaction.prototype = {
 
             if (ua.ie >= 10) {
 
-                // We currently need to introduce a timeout for IE10, since it 
+                // We currently need to introduce a timeout for IE10, since it
                 // calls onerror/onload synchronously for 304s - messing up existing
-                // program flow. 
+                // program flow.
 
                 // Remove this block if the following bug gets fixed by GA
+                /*jshint maxlen: 1500 */
                 // https://connect.microsoft.com/IE/feedback/details/763871/dynamically-loaded-scripts-with-304s-responses-interrupt-the-currently-executing-js-thread-onload
                 node.onerror = function() { setTimeout(onError, 0); };
                 node.onload  = function() { setTimeout(onLoad, 0); };
@@ -5229,7 +5273,7 @@ Transaction.prototype = {
 };
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('features', function (Y, NAME) {
 
 var feature_tests = {};
@@ -5246,21 +5290,21 @@ Contains the core of YUI's feature test architecture.
 */
 
 Y.mix(Y.namespace('Features'), {
-    
+
     /**
     * Object hash of all registered feature tests
     * @property tests
     * @type Object
     */
     tests: feature_tests,
-    
+
     /**
     * Add a test to the system
-    * 
+    *
     *   ```
     *   Y.Features.add("load", "1", {});
     *   ```
-    * 
+    *
     * @method add
     * @param {String} cat The category, right now only 'load' is supported
     * @param {String} name The number sequence of the test, how it's reported in the URL or config: 1, 2, 3
@@ -5345,7 +5389,8 @@ Y.mix(Y.namespace('Features'), {
 // Y.Features.test("load", "1");
 // caps=1:1;2:0;3:1;
 
-/* This file is auto-generated by src/loader/scripts/meta_join.js */
+/* This file is auto-generated by (yogi loader --yes --mix --start ../) */
+/*jshint maxlen:900, eqeqeq: false */
 var add = Y.Features.add;
 // app-transitions-native
 add('load', '0', {
@@ -5521,14 +5566,64 @@ add('load', '13', {
     "trigger": "io-base",
     "ua": "nodejs"
 });
-// scrollview-base-ie
+// json-parse-shim
 add('load', '14', {
+    "name": "json-parse-shim",
+    "test": function (Y) {
+    var _JSON = Y.config.global.JSON,
+        Native = Object.prototype.toString.call(_JSON) === '[object JSON]' && _JSON,
+        nativeSupport = Y.config.useNativeJSONParse !== false && !!Native;
+
+    function workingNative( k, v ) {
+        return k === "ok" ? true : v;
+    }
+    
+    // Double check basic functionality.  This is mainly to catch early broken
+    // implementations of the JSON API in Firefox 3.1 beta1 and beta2
+    if ( nativeSupport ) {
+        try {
+            nativeSupport = ( Native.parse( '{"ok":false}', workingNative ) ).ok;
+        }
+        catch ( e ) {
+            nativeSupport = false;
+        }
+    }
+
+    return !nativeSupport;
+},
+    "trigger": "json-parse"
+});
+// json-stringify-shim
+add('load', '15', {
+    "name": "json-stringify-shim",
+    "test": function (Y) {
+    var _JSON = Y.config.global.JSON,
+        Native = Object.prototype.toString.call(_JSON) === '[object JSON]' && _JSON,
+        nativeSupport = Y.config.useNativeJSONStringify !== false && !!Native;
+
+    // Double check basic native functionality.  This is primarily to catch broken
+    // early JSON API implementations in Firefox 3.1 beta1 and beta2.
+    if ( nativeSupport ) {
+        try {
+            nativeSupport = ( '0' === Native.stringify(0) );
+        } catch ( e ) {
+            nativeSupport = false;
+        }
+    }
+
+
+    return !nativeSupport;
+},
+    "trigger": "json-stringify"
+});
+// scrollview-base-ie
+add('load', '16', {
     "name": "scrollview-base-ie",
     "trigger": "scrollview-base",
     "ua": "ie"
 });
 // selector-css2
-add('load', '15', {
+add('load', '17', {
     "name": "selector-css2",
     "test": function (Y) {
     var DOCUMENT = Y.config.doc,
@@ -5539,7 +5634,7 @@ add('load', '15', {
     "trigger": "selector"
 });
 // transition-timer
-add('load', '16', {
+add('load', '18', {
     "name": "transition-timer",
     "test": function (Y) {
     var DOCUMENT = Y.config.doc,
@@ -5555,27 +5650,39 @@ add('load', '16', {
     "trigger": "transition"
 });
 // widget-base-ie
-add('load', '17', {
+add('load', '19', {
     "name": "widget-base-ie",
     "trigger": "widget-base",
     "ua": "ie"
 });
+// yql-jsonp
+add('load', '20', {
+    "name": "yql-jsonp",
+    "test": function (Y) {
+    /* Only load the JSONP module when not in nodejs or winjs
+    TODO Make the winjs module a CORS module
+    */
+    return (!Y.UA.nodejs && !Y.UA.winjs);
+},
+    "trigger": "yql",
+    "when": "after"
+});
 // yql-nodejs
-add('load', '18', {
+add('load', '21', {
     "name": "yql-nodejs",
     "trigger": "yql",
     "ua": "nodejs",
     "when": "after"
 });
 // yql-winjs
-add('load', '19', {
+add('load', '22', {
     "name": "yql-winjs",
     "trigger": "yql",
     "ua": "winjs",
     "when": "after"
 });
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('intl-base', function (Y, NAME) {
 
 /**
@@ -5663,12 +5770,13 @@ Y.mix(Y.namespace('Intl'), {
 });
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('yui-log', function (Y, NAME) {
 
 /**
  * Provides console log capability and exposes a custom event for
- * console implementations. This module is a `core` YUI module, <a href="../classes/YUI.html#method_log">it's documentation is located under the YUI class</a>.
+ * console implementations. This module is a `core` YUI module,
+ * <a href="../classes/YUI.html#method_log">it's documentation is located under the YUI class</a>.
  *
  * @module yui
  * @submodule yui-log
@@ -5727,17 +5835,17 @@ INSTANCE.log = function(msg, cat, src, silent) {
                 m = (src) ? src + ': ' + msg : msg;
                 if (Y.Lang.isFunction(c.logFn)) {
                     c.logFn.call(Y, msg, cat, src);
-                } else if (typeof console != UNDEFINED && console.log) {
+                } else if (typeof console !== UNDEFINED && console.log) {
                     f = (cat && console[cat] && (cat in LEVELS)) ? cat : 'log';
                     console[f](m);
-                } else if (typeof opera != UNDEFINED) {
+                } else if (typeof opera !== UNDEFINED) {
                     opera.postError(m);
                 }
             }
 
             if (publisher && !silent) {
 
-                if (publisher == Y && (!publisher.getEvent(LOGEVENT))) {
+                if (publisher === Y && (!publisher.getEvent(LOGEVENT))) {
                     publisher.publish(LOGEVENT, {
                         broadcast: 2
                     });
@@ -5773,11 +5881,12 @@ INSTANCE.message = function() {
 };
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('yui-later', function (Y, NAME) {
 
 /**
- * Provides a setTimeout/setInterval wrapper. This module is a `core` YUI module, <a href="../classes/YUI.html#method_later">it's documentation is located under the YUI class</a>.
+ * Provides a setTimeout/setInterval wrapper. This module is a `core` YUI module,
+ * <a href="../classes/YUI.html#method_later">it's documentation is located under the YUI class</a>.
  *
  * @module yui
  * @submodule yui-later
@@ -5850,8 +5959,8 @@ Y.Lang.later = Y.later;
 
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
-YUI.add('yui', function (Y, NAME) {}, '3.8.0', {"use": ["get", "features", "intl-base", "yui-log", "yui-later"]});
+}, '3.9.1', {"requires": ["yui-base"]});
+YUI.add('yui', function (Y, NAME) {}, '3.9.1', {"use": ["get", "features", "intl-base", "yui-log", "yui-later"]});
 YUI.add('oop', function (Y, NAME) {
 
 /**
@@ -6252,7 +6361,7 @@ Y.rbind = function(f, c) {
 };
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('features', function (Y, NAME) {
 
 var feature_tests = {};
@@ -6269,21 +6378,21 @@ Contains the core of YUI's feature test architecture.
 */
 
 Y.mix(Y.namespace('Features'), {
-    
+
     /**
     * Object hash of all registered feature tests
     * @property tests
     * @type Object
     */
     tests: feature_tests,
-    
+
     /**
     * Add a test to the system
-    * 
+    *
     *   ```
     *   Y.Features.add("load", "1", {});
     *   ```
-    * 
+    *
     * @method add
     * @param {String} cat The category, right now only 'load' is supported
     * @param {String} name The number sequence of the test, how it's reported in the URL or config: 1, 2, 3
@@ -6368,7 +6477,8 @@ Y.mix(Y.namespace('Features'), {
 // Y.Features.test("load", "1");
 // caps=1:1;2:0;3:1;
 
-/* This file is auto-generated by src/loader/scripts/meta_join.js */
+/* This file is auto-generated by (yogi loader --yes --mix --start ../) */
+/*jshint maxlen:900, eqeqeq: false */
 var add = Y.Features.add;
 // app-transitions-native
 add('load', '0', {
@@ -6544,14 +6654,64 @@ add('load', '13', {
     "trigger": "io-base",
     "ua": "nodejs"
 });
-// scrollview-base-ie
+// json-parse-shim
 add('load', '14', {
+    "name": "json-parse-shim",
+    "test": function (Y) {
+    var _JSON = Y.config.global.JSON,
+        Native = Object.prototype.toString.call(_JSON) === '[object JSON]' && _JSON,
+        nativeSupport = Y.config.useNativeJSONParse !== false && !!Native;
+
+    function workingNative( k, v ) {
+        return k === "ok" ? true : v;
+    }
+    
+    // Double check basic functionality.  This is mainly to catch early broken
+    // implementations of the JSON API in Firefox 3.1 beta1 and beta2
+    if ( nativeSupport ) {
+        try {
+            nativeSupport = ( Native.parse( '{"ok":false}', workingNative ) ).ok;
+        }
+        catch ( e ) {
+            nativeSupport = false;
+        }
+    }
+
+    return !nativeSupport;
+},
+    "trigger": "json-parse"
+});
+// json-stringify-shim
+add('load', '15', {
+    "name": "json-stringify-shim",
+    "test": function (Y) {
+    var _JSON = Y.config.global.JSON,
+        Native = Object.prototype.toString.call(_JSON) === '[object JSON]' && _JSON,
+        nativeSupport = Y.config.useNativeJSONStringify !== false && !!Native;
+
+    // Double check basic native functionality.  This is primarily to catch broken
+    // early JSON API implementations in Firefox 3.1 beta1 and beta2.
+    if ( nativeSupport ) {
+        try {
+            nativeSupport = ( '0' === Native.stringify(0) );
+        } catch ( e ) {
+            nativeSupport = false;
+        }
+    }
+
+
+    return !nativeSupport;
+},
+    "trigger": "json-stringify"
+});
+// scrollview-base-ie
+add('load', '16', {
     "name": "scrollview-base-ie",
     "trigger": "scrollview-base",
     "ua": "ie"
 });
 // selector-css2
-add('load', '15', {
+add('load', '17', {
     "name": "selector-css2",
     "test": function (Y) {
     var DOCUMENT = Y.config.doc,
@@ -6562,7 +6722,7 @@ add('load', '15', {
     "trigger": "selector"
 });
 // transition-timer
-add('load', '16', {
+add('load', '18', {
     "name": "transition-timer",
     "test": function (Y) {
     var DOCUMENT = Y.config.doc,
@@ -6578,27 +6738,39 @@ add('load', '16', {
     "trigger": "transition"
 });
 // widget-base-ie
-add('load', '17', {
+add('load', '19', {
     "name": "widget-base-ie",
     "trigger": "widget-base",
     "ua": "ie"
 });
+// yql-jsonp
+add('load', '20', {
+    "name": "yql-jsonp",
+    "test": function (Y) {
+    /* Only load the JSONP module when not in nodejs or winjs
+    TODO Make the winjs module a CORS module
+    */
+    return (!Y.UA.nodejs && !Y.UA.winjs);
+},
+    "trigger": "yql",
+    "when": "after"
+});
 // yql-nodejs
-add('load', '18', {
+add('load', '21', {
     "name": "yql-nodejs",
     "trigger": "yql",
     "ua": "nodejs",
     "when": "after"
 });
 // yql-winjs
-add('load', '19', {
+add('load', '22', {
     "name": "yql-winjs",
     "trigger": "yql",
     "ua": "winjs",
     "when": "after"
 });
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('dom-core', function (Y, NAME) {
 
 var NODE_TYPE = 'nodeType',
@@ -6987,7 +7159,7 @@ Y_DOM = {
 Y.DOM = Y_DOM;
 
 
-}, '3.8.0', {"requires": ["oop", "features"]});
+}, '3.9.1', {"requires": ["oop", "features"]});
 YUI.add('dom-base', function (Y, NAME) {
 
 /**
@@ -7675,7 +7847,7 @@ Y.mix(Y.DOM, {
 });
 
 
-}, '3.8.0', {"requires": ["dom-core"]});
+}, '3.9.1', {"requires": ["dom-core"]});
 YUI.add('dom-style', function (Y, NAME) {
 
 (function(Y) {
@@ -8015,7 +8187,7 @@ Y.Color = {
 
 
 
-}, '3.8.0', {"requires": ["dom-base"]});
+}, '3.9.1', {"requires": ["dom-base"]});
 YUI.add('dom-style-ie', function (Y, NAME) {
 
 (function(Y) {
@@ -8321,7 +8493,7 @@ if (!testFeature('style', 'computedStyle')) {
 })(Y);
 
 
-}, '3.8.0', {"requires": ["dom-style"]});
+}, '3.9.1', {"requires": ["dom-style"]});
 YUI.add('dom-screen', function (Y, NAME) {
 
 (function(Y) {
@@ -8932,7 +9104,7 @@ Y.mix(DOM, {
 })(Y);
 
 
-}, '3.8.0', {"requires": ["dom-base", "dom-style"]});
+}, '3.9.1', {"requires": ["dom-base", "dom-style"]});
 YUI.add('selector-native', function (Y, NAME) {
 
 (function(Y) {
@@ -9307,12 +9479,12 @@ Y.mix(Y.Selector, Selector, true);
 })(Y);
 
 
-}, '3.8.0', {"requires": ["dom-base"]});
+}, '3.9.1', {"requires": ["dom-base"]});
 YUI.add('selector', function (Y, NAME) {
 
 
 
-}, '3.8.0', {"requires": ["selector-native"]});
+}, '3.9.1', {"requires": ["selector-native"]});
 YUI.add('event-custom-base', function (Y, NAME) {
 
 /**
@@ -11625,7 +11797,7 @@ for that signature.
 **/
 
 
-}, '3.8.0', {"requires": ["oop"]});
+}, '3.9.1', {"requires": ["oop"]});
 YUI.add('event-custom-complex', function (Y, NAME) {
 
 
@@ -12131,7 +12303,7 @@ for (key in FACADE) {
     FACADE_KEYS[key] = true;
 }
 
-}, '3.8.0', {"requires": ["event-custom-base"]});
+}, '3.9.1', {"requires": ["event-custom-base"]});
 YUI.add('node-core', function (Y, NAME) {
 
 /**
@@ -13733,7 +13905,7 @@ Y.NodeList.importMethod(Y.Node.prototype, [
 ]);
 
 
-}, '3.8.0', {"requires": ["dom-core", "selector"]});
+}, '3.9.1', {"requires": ["dom-core", "selector"]});
 YUI.add('node-base', function (Y, NAME) {
 
 /**
@@ -14553,10 +14725,10 @@ Y.mix(Y_Node.prototype, {
     /**
      * Displays or hides the node.
      * If the "transition" module is loaded, toggleView optionally
-     * animates the toggling of the node using either the default
-     * transition effect ('fadeIn'), or the given named effect.
+     * animates the toggling of the node using given named effect.
      * @method toggleView
      * @for Node
+     * @param {String} [name] An optional string value to use as transition effect.
      * @param {Boolean} [on] An optional boolean value to force the node to be shown or hidden
      * @param {Function} [callback] An optional function to run after the transition completes.
      * @chainable
@@ -14647,9 +14819,9 @@ Y.NodeList.importMethod(Y.Node.prototype, [
     /**
      * Displays or hides each node.
      * If the "transition" module is loaded, toggleView optionally
-     * animates the toggling of the nodes using either the default
-     * transition effect ('fadeIn'), or the given named effect.
+     * animates the toggling of the nodes using given named effect.
      * @method toggleView
+     * @param {String} [name] An optional string value to use as transition effect.
      * @param {Boolean} [on] An optional boolean value to force the nodes to be shown or hidden
      * @param {Function} [callback] An optional function to run after the transition completes.
      * @chainable
@@ -14794,8 +14966,9 @@ Y.mix(Y.Node.prototype, {
     },
 
     _getDataAttribute: function(name) {
-        var name = this.DATA_PREFIX + name,
-            node = this._node,
+        name = this.DATA_PREFIX + name;
+
+        var node = this._node,
             attrs = node.attributes,
             data = attrs && attrs[name] && attrs[name].value;
 
@@ -14891,7 +15064,7 @@ Y.mix(Y.NodeList.prototype, {
 });
 
 
-}, '3.8.0', {"requires": ["event-base", "node-core", "dom-base"]});
+}, '3.9.1', {"requires": ["event-base", "node-core", "dom-base"]});
 (function () {
 var GLOBAL_ENV = YUI.Env;
 
@@ -16271,7 +16444,310 @@ Y.Env.evt.plugins.contentready = {
 };
 
 
-}, '3.8.0', {"requires": ["event-custom-base"]});
+}, '3.9.1', {"requires": ["event-custom-base"]});
+(function() {
+
+var stateChangeListener,
+    GLOBAL_ENV   = YUI.Env,
+    config       = YUI.config,
+    doc          = config.doc,
+    docElement   = doc && doc.documentElement,
+    EVENT_NAME   = 'onreadystatechange',
+    pollInterval = config.pollInterval || 40;
+
+if (docElement.doScroll && !GLOBAL_ENV._ieready) {
+    GLOBAL_ENV._ieready = function() {
+        GLOBAL_ENV._ready();
+    };
+
+/*! DOMReady: based on work by: Dean Edwards/John Resig/Matthias Miller/Diego Perini */
+// Internet Explorer: use the doScroll() method on the root element.
+// This isolates what appears to be a safe moment to manipulate the
+// DOM prior to when the document's readyState suggests it is safe to do so.
+    if (self !== self.top) {
+        stateChangeListener = function() {
+            if (doc.readyState == 'complete') {
+                GLOBAL_ENV.remove(doc, EVENT_NAME, stateChangeListener);
+                GLOBAL_ENV.ieready();
+            }
+        };
+        GLOBAL_ENV.add(doc, EVENT_NAME, stateChangeListener);
+    } else {
+        GLOBAL_ENV._dri = setInterval(function() {
+            try {
+                docElement.doScroll('left');
+                clearInterval(GLOBAL_ENV._dri);
+                GLOBAL_ENV._dri = null;
+                GLOBAL_ENV._ieready();
+            } catch (domNotReady) { }
+        }, pollInterval);
+    }
+}
+
+})();
+YUI.add('event-base-ie', function (Y, NAME) {
+
+/*
+ * Custom event engine, DOM event listener abstraction layer, synthetic DOM
+ * events.
+ * @module event
+ * @submodule event-base
+ */
+
+function IEEventFacade() {
+    // IEEventFacade.superclass.constructor.apply(this, arguments);
+    Y.DOM2EventFacade.apply(this, arguments);
+}
+
+/*
+ * (intentially left out of API docs)
+ * Alternate Facade implementation that is based on Object.defineProperty, which
+ * is partially supported in IE8.  Properties that involve setup work are
+ * deferred to temporary getters using the static _define method.
+ */
+function IELazyFacade(e) {
+    var proxy = Y.config.doc.createEventObject(e),
+        proto = IELazyFacade.prototype;
+
+    // TODO: necessary?
+    proxy.hasOwnProperty = function () { return true; };
+
+    proxy.init = proto.init;
+    proxy.halt = proto.halt;
+    proxy.preventDefault           = proto.preventDefault;
+    proxy.stopPropagation          = proto.stopPropagation;
+    proxy.stopImmediatePropagation = proto.stopImmediatePropagation;
+
+    Y.DOM2EventFacade.apply(proxy, arguments);
+
+    return proxy;
+}
+
+
+var imp = Y.config.doc && Y.config.doc.implementation,
+    useLazyFacade = Y.config.lazyEventFacade,
+
+    buttonMap = {
+        0: 1, // left click
+        4: 2, // middle click
+        2: 3  // right click
+    },
+    relatedTargetMap = {
+        mouseout: 'toElement',
+        mouseover: 'fromElement'
+    },
+
+    resolve = Y.DOM2EventFacade.resolve,
+
+    proto = {
+        init: function() {
+
+            IEEventFacade.superclass.init.apply(this, arguments);
+
+            var e = this._event,
+                x, y, d, b, de, t;
+
+            this.target = resolve(e.srcElement);
+
+            if (('clientX' in e) && (!x) && (0 !== x)) {
+                x = e.clientX;
+                y = e.clientY;
+
+                d = Y.config.doc;
+                b = d.body;
+                de = d.documentElement;
+
+                x += (de.scrollLeft || (b && b.scrollLeft) || 0);
+                y += (de.scrollTop  || (b && b.scrollTop)  || 0);
+
+                this.pageX = x;
+                this.pageY = y;
+            }
+
+            if (e.type == "mouseout") {
+                t = e.toElement;
+            } else if (e.type == "mouseover") {
+                t = e.fromElement;
+            }
+
+            // fallback to t.relatedTarget to support simulated events.
+            // IE doesn't support setting toElement or fromElement on generic
+            // events, so Y.Event.simulate sets relatedTarget instead.
+            this.relatedTarget = resolve(t || e.relatedTarget);
+
+            // which should contain the unicode key code if this is a key event.
+            // For click events, which is normalized for which mouse button was
+            // clicked.
+            this.which = // chained assignment
+            this.button = e.keyCode || buttonMap[e.button] || e.button;
+        },
+
+        stopPropagation: function() {
+            this._event.cancelBubble = true;
+            this._wrapper.stopped = 1;
+            this.stopped = 1;
+        },
+
+        stopImmediatePropagation: function() {
+            this.stopPropagation();
+            this._wrapper.stopped = 2;
+            this.stopped = 2;
+        },
+
+        preventDefault: function(returnValue) {
+            this._event.returnValue = returnValue || false;
+            this._wrapper.prevented = 1;
+            this.prevented = 1;
+        }
+    };
+
+Y.extend(IEEventFacade, Y.DOM2EventFacade, proto);
+
+Y.extend(IELazyFacade, Y.DOM2EventFacade, proto);
+IELazyFacade.prototype.init = function () {
+    var e         = this._event,
+        overrides = this._wrapper.overrides,
+        define    = IELazyFacade._define,
+        lazyProperties = IELazyFacade._lazyProperties,
+        prop;
+
+    this.altKey   = e.altKey;
+    this.ctrlKey  = e.ctrlKey;
+    this.metaKey  = e.metaKey;
+    this.shiftKey = e.shiftKey;
+    this.type     = (overrides && overrides.type) || e.type;
+    this.clientX  = e.clientX;
+    this.clientY  = e.clientY;
+    this.keyCode  = // chained assignment
+    this.charCode = e.keyCode;
+    this.which    = // chained assignment
+    this.button   = e.keyCode || buttonMap[e.button] || e.button;
+
+    for (prop in lazyProperties) {
+        if (lazyProperties.hasOwnProperty(prop)) {
+            define(this, prop, lazyProperties[prop]);
+        }
+    }
+
+    if (this._touch) {
+        this._touch(e, this._currentTarget, this._wrapper);
+    }
+};
+
+IELazyFacade._lazyProperties = {
+    target: function () {
+        return resolve(this._event.srcElement);
+    },
+    relatedTarget: function () {
+        var e = this._event,
+            targetProp = relatedTargetMap[e.type] || 'relatedTarget';
+
+        // fallback to t.relatedTarget to support simulated events.
+        // IE doesn't support setting toElement or fromElement on generic
+        // events, so Y.Event.simulate sets relatedTarget instead.
+        return resolve(e[targetProp] || e.relatedTarget);
+    },
+    currentTarget: function () {
+        return resolve(this._currentTarget);
+    },
+
+    wheelDelta: function () {
+        var e = this._event;
+
+        if (e.type === "mousewheel" || e.type === "DOMMouseScroll") {
+            return (e.detail) ?
+                (e.detail * -1) :
+                // wheelDelta between -80 and 80 result in -1 or 1
+                Math.round(e.wheelDelta / 80) || ((e.wheelDelta < 0) ? -1 : 1);
+        }
+    },
+
+    pageX: function () {
+        var e = this._event,
+            val = e.pageX,
+            doc, bodyScroll, docScroll;
+                
+        if (val === undefined) {
+            doc = Y.config.doc;
+            bodyScroll = doc.body && doc.body.scrollLeft;
+            docScroll = doc.documentElement.scrollLeft;
+
+            val = e.clientX + (docScroll || bodyScroll || 0);
+        }
+
+        return val;
+    },
+    pageY: function () {
+        var e = this._event,
+            val = e.pageY,
+            doc, bodyScroll, docScroll;
+                
+        if (val === undefined) {
+            doc = Y.config.doc;
+            bodyScroll = doc.body && doc.body.scrollTop;
+            docScroll = doc.documentElement.scrollTop;
+
+            val = e.clientY + (docScroll || bodyScroll || 0);
+        }
+
+        return val;
+    }
+};
+
+
+/**
+ * Wrapper function for Object.defineProperty that creates a property whose
+ * value will be calulated only when asked for.  After calculating the value,
+ * the getter wll be removed, so it will behave as a normal property beyond that
+ * point.  A setter is also assigned so assigning to the property will clear
+ * the getter, so foo.prop = 'a'; foo.prop; won't trigger the getter,
+ * overwriting value 'a'.
+ *
+ * Used only by the DOMEventFacades used by IE8 when the YUI configuration
+ * <code>lazyEventFacade</code> is set to true.
+ *
+ * @method _define
+ * @param o {DOMObject} A DOM object to add the property to
+ * @param prop {String} The name of the new property
+ * @param valueFn {Function} The function that will return the initial, default
+ *                  value for the property.
+ * @static
+ * @private
+ */
+IELazyFacade._define = function (o, prop, valueFn) {
+    function val(v) {
+        var ret = (arguments.length) ? v : valueFn.call(this);
+
+        delete o[prop];
+        Object.defineProperty(o, prop, {
+            value: ret,
+            configurable: true,
+            writable: true
+        });
+        return ret;
+    }
+    Object.defineProperty(o, prop, {
+        get: val,
+        set: val,
+        configurable: true
+    });
+};
+
+if (imp && (!imp.hasFeature('Events', '2.0'))) {
+    if (useLazyFacade) {
+        // Make sure we can use the lazy facade logic
+        try {
+            Object.defineProperty(Y.config.doc.createEventObject(), 'z', {});
+        } catch (e) {
+            useLazyFacade = false;
+        }
+    }
+        
+    Y.DOMEventFacade = (useLazyFacade) ? IELazyFacade : IEEventFacade;
+}
+
+
+}, '3.9.1', {"requires": ["node-base"]});
 YUI.add('pluginhost-base', function (Y, NAME) {
 
     /**
@@ -16454,7 +16930,7 @@ YUI.add('pluginhost-base', function (Y, NAME) {
     Y.namespace("Plugin").Host = PluginHost;
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('pluginhost-config', function (Y, NAME) {
 
     /**
@@ -16584,7 +17060,7 @@ YUI.add('pluginhost-config', function (Y, NAME) {
     };
 
 
-}, '3.8.0', {"requires": ["pluginhost-base"]});
+}, '3.9.1', {"requires": ["pluginhost-base"]});
 YUI.add('event-delegate', function (Y, NAME) {
 
 /**
@@ -16796,6 +17272,23 @@ delegate.compileFilter = Y.cached(function (selector) {
 });
 
 /**
+Regex to test for disabled elements during filtering. This is only relevant to
+IE to normalize behavior with other browsers, which swallow events that occur
+to disabled elements. IE fires the event from the parent element instead of the
+original target, though it does preserve `event.srcElement` as the disabled
+element. IE also supports disabled on `<a>`, but the event still bubbles, so it
+acts more like `e.preventDefault()` plus styling. That issue is not handled here
+because other browsers fire the event on the `<a>`, so delegate is supported in
+both cases.
+
+@property _disabledRE
+@type {RegExp}
+@protected
+@since 3.8.1
+**/
+delegate._disabledRE = /^(?:button|input|select|textarea)$/i;
+
+/**
 Walks up the parent axis of an event's target, and tests each element
 against a supplied filter function.  If any Nodes, including the container,
 satisfy the filter, the delegated callback will be triggered for each.
@@ -16821,6 +17314,14 @@ delegate._applyFilter = function (filter, args, ce) {
     // Resolve text nodes to their containing element
     if (target.nodeType === 3) {
         target = target.parentNode;
+    }
+
+    // For IE. IE propagates events from the parent element of disabled
+    // elements, where other browsers swallow the event entirely. To normalize
+    // this in IE, filtering for matching elements should abort if the target
+    // is a disabled form control.
+    if (target.disabled && delegate._disabledRE.test(target.nodeName)) {
+        return match;
     }
 
     // passing target as the first arg rather than leaving well enough alone
@@ -16907,7 +17408,7 @@ delegate._applyFilter = function (filter, args, ce) {
 Y.delegate = Y.Event.delegate = delegate;
 
 
-}, '3.8.0', {"requires": ["node-base"]});
+}, '3.9.1', {"requires": ["node-base"]});
 YUI.add('node-event-delegate', function (Y, NAME) {
 
 /**
@@ -16961,7 +17462,7 @@ Y.Node.prototype.delegate = function(type) {
 };
 
 
-}, '3.8.0', {"requires": ["node-base", "event-delegate"]});
+}, '3.9.1', {"requires": ["node-base", "event-delegate"]});
 YUI.add('node-pluginhost', function (Y, NAME) {
 
 /**
@@ -17047,7 +17548,7 @@ Y.NodeList.prototype.unplug = function() {
 };
 
 
-}, '3.8.0', {"requires": ["node-base", "pluginhost"]});
+}, '3.9.1', {"requires": ["node-base", "pluginhost"]});
 YUI.add('node-screen', function (Y, NAME) {
 
 /**
@@ -17287,7 +17788,7 @@ Y.Node.prototype.inRegion = function(node2, all, altRegion) {
 };
 
 
-}, '3.8.0', {"requires": ["dom-screen", "node-base"]});
+}, '3.9.1', {"requires": ["dom-screen", "node-base"]});
 YUI.add('node-style', function (Y, NAME) {
 
 (function(Y) {
@@ -17393,7 +17894,7 @@ Y.NodeList.importMethod(Y.Node.prototype, ['getStyle', 'getComputedStyle', 'setS
 })(Y);
 
 
-}, '3.8.0', {"requires": ["dom-style", "node-base"]});
+}, '3.9.1', {"requires": ["dom-style", "node-base"]});
 YUI.add('querystring-stringify-simple', function (Y, NAME) {
 
 /*global Y */
@@ -17437,7 +17938,7 @@ QueryString.stringify = function (obj, c) {
 };
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('io-base', function (Y, NAME) {
 
 /**
@@ -18085,10 +18586,15 @@ IO.prototype = {
         sync = config.sync;
         data = config.data;
 
-        // Serialize an map object into a key-value string using
+        // Serialize a map object into a key-value string using
         // querystring-stringify-simple.
         if ((Y.Lang.isObject(data) && !data.nodeType) && !transaction.upload) {
-            data = Y.QueryString.stringify(data);
+            if (Y.QueryString && Y.QueryString.stringify) {
+                Y.log('Stringifying config.data for request', 'info', 'io');
+                config.data = data = Y.QueryString.stringify(data);
+            } else {
+                Y.log('Failed to stringify config.data object, likely because `querystring-stringify-simple` is missing.', 'warn', 'io');
+            }
         }
 
         if (config.form) {
@@ -18101,6 +18607,10 @@ IO.prototype = {
                 data = io._serialize(config.form, data);
             }
         }
+
+        // Convert falsy values to an empty string. This way IE can't be
+        // rediculous and translate `undefined` to "undefined".
+        data || (data = '');
 
         if (data) {
             switch (method) {
@@ -18440,238 +18950,17 @@ Y.mix(Y.IO.prototype, {
 
 
 
-}, '3.8.0', {"requires": ["event-custom-base", "querystring-stringify-simple"]});
+}, '3.9.1', {"requires": ["event-custom-base", "querystring-stringify-simple"]});
 YUI.add('json-parse', function (Y, NAME) {
 
-/**
- * <p>The JSON module adds support for serializing JavaScript objects into
- * JSON strings and parsing JavaScript objects from strings in JSON format.</p>
- *
- * <p>The JSON namespace is added to your YUI instance including static methods
- * Y.JSON.parse(..) and Y.JSON.stringify(..).</p>
- *
- * <p>The functionality and method signatures follow the ECMAScript 5
- * specification.  In browsers with native JSON support, the native
- * implementation is used.</p>
- *
- * <p>The <code>json</code> module is a rollup of <code>json-parse</code> and
- * <code>json-stringify</code>.</p>
- *
- * <p>As their names suggest, <code>json-parse</code> adds support for parsing
- * JSON data (Y.JSON.parse) and <code>json-stringify</code> for serializing
- * JavaScript data into JSON strings (Y.JSON.stringify).  You may choose to
- * include either of the submodules individually if you don't need the
- * complementary functionality, or include the rollup for both.</p>
- *
- * @module json
- * @main json
- * @class JSON
- * @static
- */
+var _JSON = Y.config.global.JSON;
 
-/**
- * Provides Y.JSON.parse method to accept JSON strings and return native
- * JavaScript objects.
- *
- * @module json
- * @submodule json-parse
- * @for JSON
- * @static
- */
-
-
-// All internals kept private for security reasons
-function fromGlobal(ref) {
-    var g = ((typeof global === 'object') ? global : undefined);
-    return ((Y.UA.nodejs && g) ? g : (Y.config.win || {}))[ref];
-}
-
-
-    /**
-     * Alias to native browser implementation of the JSON object if available.
-     *
-     * @property Native
-     * @type {Object}
-     * @private
-     */
-var _JSON  = fromGlobal('JSON'),
-
-    Native = (Object.prototype.toString.call(_JSON) === '[object JSON]' && _JSON),
-    useNative = !!Native,
-
-    /**
-     * Replace certain Unicode characters that JavaScript may handle incorrectly
-     * during eval--either by deleting them or treating them as line
-     * endings--with escape sequences.
-     * IMPORTANT NOTE: This regex will be used to modify the input if a match is
-     * found.
-     *
-     * @property _UNICODE_EXCEPTIONS
-     * @type {RegExp}
-     * @private
-     */
-    _UNICODE_EXCEPTIONS = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
-
-
-    /**
-     * First step in the safety evaluation.  Regex used to replace all escape
-     * sequences (i.e. "\\", etc) with '@' characters (a non-JSON character).
-     *
-     * @property _ESCAPES
-     * @type {RegExp}
-     * @private
-     */
-    _ESCAPES = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,
-
-    /**
-     * Second step in the safety evaluation.  Regex used to replace all simple
-     * values with ']' characters.
-     *
-     * @property _VALUES
-     * @type {RegExp}
-     * @private
-     */
-    _VALUES  = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
-
-    /**
-     * Third step in the safety evaluation.  Regex used to remove all open
-     * square brackets following a colon, comma, or at the beginning of the
-     * string.
-     *
-     * @property _BRACKETS
-     * @type {RegExp}
-     * @private
-     */
-    _BRACKETS = /(?:^|:|,)(?:\s*\[)+/g,
-
-    /**
-     * Final step in the safety evaluation.  Regex used to test the string left
-     * after all previous replacements for invalid characters.
-     *
-     * @property _UNSAFE
-     * @type {RegExp}
-     * @private
-     */
-    _UNSAFE = /[^\],:{}\s]/,
-
-    /**
-     * Replaces specific unicode characters with their appropriate \unnnn
-     * format. Some browsers ignore certain characters during eval.
-     *
-     * @method escapeException
-     * @param c {String} Unicode character
-     * @return {String} the \unnnn escapement of the character
-     * @private
-     */
-    _escapeException = function (c) {
-        return '\\u'+('0000'+(+(c.charCodeAt(0))).toString(16)).slice(-4);
-    },
-
-    /**
-     * Traverses nested objects, applying a reviver function to each (key,value)
-     * from the scope if the key:value's containing object.  The value returned
-     * from the function will replace the original value in the key:value pair.
-     * If the value returned is undefined, the key will be omitted from the
-     * returned object.
-     *
-     * @method _revive
-     * @param data {MIXED} Any JavaScript data
-     * @param reviver {Function} filter or mutation function
-     * @return {MIXED} The results of the filtered data
-     * @private
-     */
-    _revive = function (data, reviver) {
-        var walk = function (o,key) {
-            var k,v,value = o[key];
-            if (value && typeof value === 'object') {
-                for (k in value) {
-                    if (value.hasOwnProperty(k)) {
-                        v = walk(value, k);
-                        if (v === undefined) {
-                            delete value[k];
-                        } else {
-                            value[k] = v;
-                        }
-                    }
-                }
-            }
-            return reviver.call(o,key,value);
-        };
-
-        return typeof reviver === 'function' ? walk({'':data},'') : data;
-    },
-
-    /**
-     * Parse a JSON string, returning the native JavaScript representation.
-     *
-     * @param s {string} JSON string data
-     * @param reviver {function} (optional) function(k,v) passed each key value
-     *          pair of object literals, allowing pruning or altering values
-     * @return {MIXED} the native JavaScript representation of the JSON string
-     * @throws SyntaxError
-     * @method parse
-     * @static
-     */
-    // JavaScript implementation in lieu of native browser support.  Based on
-    // the json2.js library from http://json.org
-    _parse = function (s,reviver) {
-        // Replace certain Unicode characters that are otherwise handled
-        // incorrectly by some browser implementations.
-        // NOTE: This modifies the input if such characters are found!
-        s = s.replace(_UNICODE_EXCEPTIONS, _escapeException);
-
-        // Test for any remaining invalid characters
-        if (!_UNSAFE.test(s.replace(_ESCAPES,'@').
-                            replace(_VALUES,']').
-                            replace(_BRACKETS,''))) {
-
-            // Eval the text into a JavaScript data structure, apply any
-            // reviver function, and return
-            return _revive( eval('(' + s + ')'), reviver );
-        }
-
-        throw new SyntaxError('JSON.parse');
-    };
-
-Y.namespace('JSON').parse = function (s,reviver) {
-        if (typeof s !== 'string') {
-            s += '';
-        }
-
-        return Native && Y.JSON.useNativeParse ?
-            Native.parse(s,reviver) : _parse(s,reviver);
+Y.namespace('JSON').parse = function (obj, reviver, space) {
+    return _JSON.parse((typeof obj === 'string' ? obj : obj + ''), reviver, space);
 };
 
-function workingNative( k, v ) {
-    return k === "ok" ? true : v;
-}
 
-// Double check basic functionality.  This is mainly to catch early broken
-// implementations of the JSON API in Firefox 3.1 beta1 and beta2
-if ( Native ) {
-    try {
-        useNative = ( Native.parse( '{"ok":false}', workingNative ) ).ok;
-    }
-    catch ( e ) {
-        useNative = false;
-    }
-}
-
-/**
- * Leverage native JSON parse if the browser has a native implementation.
- * In general, this is a good idea.  See the Known Issues section in the
- * JSON user guide for caveats.  The default value is true for browsers with
- * native JSON support.
- *
- * @property useNativeParse
- * @type Boolean
- * @default true
- * @static
- */
-Y.JSON.useNativeParse = useNative;
-
-
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('transition', function (Y, NAME) {
 
 /**
@@ -18686,10 +18975,9 @@ var CAMEL_VENDOR_PREFIX = '',
     VENDOR_PREFIX = '',
     DOCUMENT = Y.config.doc,
     DOCUMENT_ELEMENT = 'documentElement',
-    TRANSITION = 'transition',
+    DOCUMENT_STYLE = DOCUMENT[DOCUMENT_ELEMENT].style,
     TRANSITION_CAMEL = 'transition',
     TRANSITION_PROPERTY_CAMEL = 'transitionProperty',
-    TRANSFORM_CAMEL = 'transform',
     TRANSITION_PROPERTY,
     TRANSITION_DURATION,
     TRANSITION_TIMING_FUNCTION,
@@ -18719,6 +19007,9 @@ Transition = function() {
     this.init.apply(this, arguments);
 };
 
+// One off handling of transform-prefixing.
+Transition._TRANSFORM = 'transform';
+
 Transition._toCamel = function(property) {
     property = property.replace(/-([a-z])/gi, function(m0, m1) {
         return m1.toUpperCase();
@@ -18746,7 +19037,12 @@ Transition.HIDE_TRANSITION = 'fadeOut';
 
 Transition.useNative = false;
 
-if ('transition' in DOCUMENT[DOCUMENT_ELEMENT].style) {
+// Map transition properties to vendor-specific versions.
+if ('transition' in DOCUMENT_STYLE 
+    && 'transitionProperty' in DOCUMENT_STYLE 
+    && 'transitionDuration' in DOCUMENT_STYLE
+    && 'transitionTimingFunction' in DOCUMENT_STYLE
+    && 'transitionDelay' in DOCUMENT_STYLE) {
     Transition.useNative = true;
     Transition.supported = true; // TODO: remove
 } else {
@@ -18763,10 +19059,20 @@ if ('transition' in DOCUMENT[DOCUMENT_ELEMENT].style) {
     });
 }
 
+// Map transform property to vendor-specific versions.
+// One-off required for cssText injection.
+if (typeof DOCUMENT_STYLE.transform === 'undefined') {
+    Y.Array.each(VENDORS, function(val) { // then vendor specific
+        var property = val + 'Transform';
+        if (typeof DOCUMENT_STYLE[property] !== 'undefined') {
+            Transition._TRANSFORM = property;
+        }
+    });
+}
+
 if (CAMEL_VENDOR_PREFIX) {
     TRANSITION_CAMEL          = CAMEL_VENDOR_PREFIX + 'Transition';
     TRANSITION_PROPERTY_CAMEL = CAMEL_VENDOR_PREFIX + 'TransitionProperty';
-    TRANSFORM_CAMEL           = CAMEL_VENDOR_PREFIX + 'Transform';
 }
 
 TRANSITION_PROPERTY        = VENDOR_PREFIX + 'transition-property';
@@ -18859,13 +19165,13 @@ Transition.prototype = {
         anim._count++; // properties per transition
 
         // make 0 async and fire events
-        dur = ((typeof config.duration != 'undefined') ? config.duration :
+        dur = ((typeof config.duration !== 'undefined') ? config.duration :
                     anim._duration) || 0.0001;
 
         attrs[prop] = {
             value: val,
             duration: dur,
-            delay: (typeof config.delay != 'undefined') ? config.delay :
+            delay: (typeof config.delay !== 'undefined') ? config.delay :
                     anim._delay,
 
             easing: config.easing || anim._easing,
@@ -18904,8 +19210,8 @@ Transition.prototype = {
         var attr,
             node = this._node;
 
-        if (config.transform && !config[TRANSFORM_CAMEL]) {
-            config[TRANSFORM_CAMEL] = config.transform;
+        if (config.transform && !config[Transition._TRANSFORM]) {
+            config[Transition._TRANSFORM] = config.transform;
             delete config.transform; // TODO: copy
         }
 
@@ -18966,7 +19272,7 @@ Transition.prototype = {
         return dur + 'ms';
     },
 
-    _runNative: function(time) {
+    _runNative: function() {
         var anim = this,
             node = anim._node,
             uid = Y.stamp(node),
@@ -19209,12 +19515,26 @@ Y.Node.prototype.show = function(name, config, callback) {
     return this;
 };
 
+Y.NodeList.prototype.show = function(name, config, callback) {
+    var nodes = this._nodes,
+        i = 0,
+        node;
+
+    while ((node = nodes[i++])) {
+        Y.one(node).show(name, config, callback);
+    }
+
+    return this;
+};
+
+
+
 var _wrapCallBack = function(anim, fn, callback) {
     return function() {
         if (fn) {
             fn.call(anim);
         }
-        if (callback) {
+        if (callback && typeof callback === 'function') {
             callback.apply(anim._node, arguments);
         }
     };
@@ -19240,6 +19560,18 @@ Y.Node.prototype.hide = function(name, config, callback) {
     } else {
         this._hide();
     }
+    return this;
+};
+
+Y.NodeList.prototype.hide = function(name, config, callback) {
+    var nodes = this._nodes,
+        i = 0,
+        node;
+
+    while ((node = nodes[i++])) {
+        Y.one(node).hide(name, config, callback);
+    }
+
     return this;
 };
 
@@ -19285,14 +19617,17 @@ Y.Node.prototype.toggleView = function(name, on, callback) {
     this._toggles = this._toggles || [];
     callback = arguments[arguments.length - 1];
 
-    if (typeof name == 'boolean') { // no transition, just toggle
+    if (typeof name !== 'string') { // no transition, just toggle
         on = name;
-        name = null;
+        this._toggleView(on, callback); // call original _toggleView in Y.Node
+        return;
     }
 
-    name = name || Y.Transition.DEFAULT_TOGGLE;
+    if (typeof on === 'function') { // Ignore "on" if used for callback argument.
+        on = undefined;
+    }
 
-    if (typeof on == 'undefined' && name in this._toggles) { // reverse current toggle
+    if (typeof on === 'undefined' && name in this._toggles) { // reverse current toggle
         on = ! this._toggles[name];
     }
 
@@ -19315,7 +19650,8 @@ Y.NodeList.prototype.toggleView = function(name, on, callback) {
         node;
 
     while ((node = nodes[i++])) {
-        Y.one(node).toggleView(name, on, callback);
+        node = Y.one(node);
+        node.toggleView.apply(node, arguments);
     }
 
     return this;
@@ -19375,11 +19711,8 @@ Y.mix(Transition.toggles, {
     fade: ['fadeOut', 'fadeIn']
 });
 
-Transition.DEFAULT_TOGGLE = 'fade';
 
-
-
-}, '3.8.0', {"requires": ["node-style"]});
+}, '3.9.1', {"requires": ["node-style"]});
 YUI.add('selector-css2', function (Y, NAME) {
 
 /**
@@ -19824,7 +20157,7 @@ if (Y.Selector.useNative && Y.config.doc.querySelector) {
 
 
 
-}, '3.8.0', {"requires": ["selector-native"]});
+}, '3.9.1', {"requires": ["selector-native"]});
 YUI.add('selector-css3', function (Y, NAME) {
 
 /**
@@ -19976,12 +20309,13 @@ Y.Selector.combinators['~'] = {
 };
 
 
-}, '3.8.0', {"requires": ["selector-native", "selector-css2"]});
+}, '3.9.1', {"requires": ["selector-native", "selector-css2"]});
 YUI.add('yui-log', function (Y, NAME) {
 
 /**
  * Provides console log capability and exposes a custom event for
- * console implementations. This module is a `core` YUI module, <a href="../classes/YUI.html#method_log">it's documentation is located under the YUI class</a>.
+ * console implementations. This module is a `core` YUI module,
+ * <a href="../classes/YUI.html#method_log">it's documentation is located under the YUI class</a>.
  *
  * @module yui
  * @submodule yui-log
@@ -20040,17 +20374,17 @@ INSTANCE.log = function(msg, cat, src, silent) {
                 m = (src) ? src + ': ' + msg : msg;
                 if (Y.Lang.isFunction(c.logFn)) {
                     c.logFn.call(Y, msg, cat, src);
-                } else if (typeof console != UNDEFINED && console.log) {
+                } else if (typeof console !== UNDEFINED && console.log) {
                     f = (cat && console[cat] && (cat in LEVELS)) ? cat : 'log';
                     console[f](m);
-                } else if (typeof opera != UNDEFINED) {
+                } else if (typeof opera !== UNDEFINED) {
                     opera.postError(m);
                 }
             }
 
             if (publisher && !silent) {
 
-                if (publisher == Y && (!publisher.getEvent(LOGEVENT))) {
+                if (publisher === Y && (!publisher.getEvent(LOGEVENT))) {
                     publisher.publish(LOGEVENT, {
                         broadcast: 2
                     });
@@ -20086,7 +20420,7 @@ INSTANCE.message = function() {
 };
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('dump', function (Y, NAME) {
 
 /**
@@ -20191,7 +20525,7 @@ YUI.add('dump', function (Y, NAME) {
 
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});
 YUI.add('transition-timer', function (Y, NAME) {
 
 /**
@@ -20276,7 +20610,7 @@ Y.mix(Transition.prototype, {
 
                 if (!delay || time >= delay) {
                     setter(anim, name, attribute.from, attribute.to, t - delay, d - delay,
-                        attribute.easing, attribute.unit); 
+                        attribute.easing, attribute.unit);
 
                     if (done) {
                         delete attrs[name];
@@ -20385,7 +20719,7 @@ Y.mix(Y.Transition, {
     DEFAULT_UNIT: 'px',
 
     /*
-     * Time in milliseconds passed to setInterval for frame processing 
+     * Time in milliseconds passed to setInterval for frame processing
      *
      * @property intervalTime
      * @default 20
@@ -20465,7 +20799,7 @@ Y.mix(Y.Transition, {
      * @method _runFrame
      * @private
      * @static
-     */    
+     */
     _runFrame: function() {
         var done = true,
             anim;
@@ -20518,21 +20852,21 @@ Y.mix(Y.Transition, {
     _timer: null,
 
     RE_UNITS: /^(-?\d*\.?\d*){1}(em|ex|px|in|cm|mm|pt|pc|%)*$/
-}, true); 
+}, true);
 
 Transition.behaviors.top = Transition.behaviors.bottom = Transition.behaviors.right = Transition.behaviors.left;
 
 Y.Transition = Transition;
 
 
-}, '3.8.0', {"requires": ["transition"]});
+}, '3.9.1', {"requires": ["transition"]});
 YUI.add('yui', function (Y, NAME) {
 
 // empty
 
 
 
-}, '3.8.0', {
+}, '3.9.1', {
     "use": [
         "yui",
         "oop",

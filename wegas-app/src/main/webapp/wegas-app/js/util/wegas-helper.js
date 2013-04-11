@@ -11,7 +11,6 @@
  */
 YUI.add('wegas-helper', function(Y) {
     "use strict";
-
     /**
      * @name Y.Wegas.Helper
      * @class
@@ -19,7 +18,6 @@ YUI.add('wegas-helper', function(Y) {
      */
 
     var Helper = {
-
         /**
          * Generate ID an unique id based on current time.
          * @function
@@ -31,7 +29,6 @@ YUI.add('wegas-helper', function(Y) {
             var now = new Date();
             return now.getHours() + now.getMinutes() + now.getSeconds();
         },
-
         /**
          * Escape a html string by replacing <, > and " by their html entities.
          *
@@ -42,11 +39,10 @@ YUI.add('wegas-helper', function(Y) {
          */
         htmlEntities: function(str) {
             return String(str).replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
         },
-
         /**
          * Replace any text line return
          * @function
@@ -59,16 +55,13 @@ YUI.add('wegas-helper', function(Y) {
             replaceBy = replaceBy || '<br />';
             return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + replaceBy + '$2');
         },
-
-        escapeJSString: function (str) {
+        escapeJSString: function(str) {
             return str.replace(/"/g, '\\"').replace(/(\r\n|\n\r|\r|\n)/g, "\\n");
-        //return Helper.nl2br(str.replace(/"/g, '\\"'), "\\n");
+            //return Helper.nl2br(str.replace(/"/g, '\\"'), "\\n");
         },
-
-        unesacapeJSString: function (str) {
+        unesacapeJSString: function(str) {
             return str.replace(/\\"/g, '"');
         },
-
         /**
          * Format a date, using provided format string.
          *
@@ -87,12 +80,11 @@ YUI.add('wegas-helper', function(Y) {
          */
         formatDate: function(timestamp, fmt) {
             var date = new Date(timestamp),
-            months = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
+                    months = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             function pad(value) {
                 return (value.toString().length < 2) ? '0' + value : value;
             }
-            return fmt.replace(/%([a-zA-Z])/g, function (_, fmtCode) {
+            return fmt.replace(/%([a-zA-Z])/g, function(_, fmtCode) {
                 switch (fmtCode) {
                     case 'Y':
                         return date.getFullYear();
@@ -113,7 +105,6 @@ YUI.add('wegas-helper', function(Y) {
                 }
             });
         },
-
         /**
          * Returns a time lapse between provided timestamp and now, e.g. "a month ago",
          * "2 hours ago", "10 minutes ago"
@@ -122,13 +113,13 @@ YUI.add('wegas-helper', function(Y) {
          * @argument {Number} timestamp
          * @return {String} The formatted time
          */
-        smartDate: function (timestamp) {
+        smartDate: function(timestamp) {
             var date = new Date(timestamp),
-            now = new Date(),
-            diffN = now.getTime() - timestamp,
-            oneMinute = 60 * 1000,
-            oneHour = 60 * oneMinute,
-            oneDay =24 * oneHour;
+                    now = new Date(),
+                    diffN = now.getTime() - timestamp,
+                    oneMinute = 60 * 1000,
+                    oneHour = 60 * oneMinute,
+                    oneDay = 24 * oneHour;
             // oneMonth =  30 * oneDay,
             // oneYear =  365 * oneDay;
 
@@ -136,25 +127,31 @@ YUI.add('wegas-helper', function(Y) {
                 return "undefined";
             }
 
-            if (diffN <  oneMinute) {                                           // last minute
+            if (diffN < oneMinute) {                                           // last minute
                 return Math.round(diffN / 1000) + " seconds ago";
-
-            } else if (diffN <  oneHour) {                                      // last hour
+            } else if (diffN < oneHour) {                                      // last hour
                 return  Math.round(diffN / oneMinute) + " minutes ago";
-
             } else if (diffN < oneDay
-                && now.getDay() === date.getDay()) {                            // Today
+                    && now.getDay() === date.getDay()) {                            // Today
                 return Helper.formatDate(timestamp, "%H:%i");
-
             } else if (date.getYear() === now.getYear()) {                      // This year
                 return Helper.formatDate(timestamp, "%d %M");
-
-            }else {                                                             // Older
+            } else {                                                             // Older
                 return Helper.formatDate(timestamp, "%d %M %Y");
             }
 
+        },
+        /**
+         * Java hashCode implementation
+         * @param {String} value to hash
+         * @returns {Number}
+         */
+        hashCode: function(value) {
+            return Y.Array.reduce(value.split(""), 0, function(prev, curr) {
+                prev = ((prev << 5) - prev) + curr.charCodeAt(0);
+                return prev |= 0;                                               //Force 32 bits
+            });
         }
-    }
+    };
     Y.namespace("Wegas").Helper = Helper;
-
 });

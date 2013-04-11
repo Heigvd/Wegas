@@ -386,8 +386,8 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',
                     requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
                         'wegas-inputex-variabledescriptorselect',
-                        'wegas-button', 'inputex-jsonschema',
-                        'inputex-list', 'wegas-inputex-url', // for mail attachements in script
+                        'wegas-button', 'inputex-jsonschema', 'inputex-list',
+                        'wegas-inputex-url', "wegas-inputex-rte",               // for mail attachements in script
                         'esprima'],
                     ix_provides: ['script']
                 },

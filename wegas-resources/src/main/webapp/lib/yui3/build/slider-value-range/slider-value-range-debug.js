@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('slider-value-range', function (Y, NAME) {
 
 /**
@@ -256,12 +251,11 @@ Y.SliderValueRange = Y.mix( SliderValueRange, {
             var val = e.newVal;
             Y.log("Positioning thumb after set('value',x)","info","slider");
             this._setPosition( val, { source: 'set' } );
-            this.thumb.set('aria-valuenow', val);
-            this.thumb.set('aria-valuetext', val);
         },
 
         /**
-         * Positions the thumb in accordance with the translated value.
+         * Positions the thumb and its ARIA attributes in accordance with the 
+         * translated value.
          *
          * @method _setPosition
          * @param value {Number} Value to translate to a pixel position
@@ -270,6 +264,8 @@ Y.SliderValueRange = Y.mix( SliderValueRange, {
          */
         _setPosition: function ( value, options ) {
             this._uiMoveThumb( this._valueToOffset( value ), options );
+            this.thumb.set('aria-valuenow', value);
+            this.thumb.set('aria-valuetext', value);
         },
 
         /**
@@ -421,4 +417,4 @@ Y.SliderValueRange = Y.mix( SliderValueRange, {
 }, true );
 
 
-}, '3.8.0', {"requires": ["slider-base"]});
+}, '3.9.1', {"requires": ["slider-base"]});

@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('color-harmony', function (Y, NAME) {
 
 /**
@@ -247,23 +242,38 @@ var HSL = 'hsl',
         getSimilar: function(str, offset, count, to) {
             var c = Harmony._start(str),
                 offsets = [],
-                slOffset;
+                slOffset,
+                s = +(c[1]),
+                sMin,
+                sMax,
+                sRand,
+                l = +(c[2]),
+                lMin,
+                lMax,
+                lRand;
 
             to = to || Color.findType(str);
             count = count || DEF_COUNT;
             offset = offset || DEF_OFFSET;
+
             slOffset = (offset > 100) ? 100 : offset;
+            sMin = Math.max(0,   s - slOffset);
+            sMax = Math.min(100, s + slOffset);
+            lMin = Math.max(0,   l - slOffset);
+            lMax = Math.min(100, l + slOffset);
 
             offsets.push({});
             for (i = 0; i < count; i++) {
+                sRand = ( Math.round( (Math.random() * (sMax - sMin)) + sMin ) );
+                lRand = ( Math.round( (Math.random() * (lMax - lMin)) + lMin ) );
+
                 offsets.push({
                     h: ( Math.random() * (offset * 2)) - offset,
                     // because getOffset adjusts from the existing color, we
                     // need to adjust it negatively to get a good number for
-                    // saturation and luminance, otherwise we get a lot of
-                    // white when using large offsets
-                    s: ( Math.random() * slOffset - c[1]),
-                    l: ( Math.random() * slOffset - c[2])
+                    // saturation and luminance, otherwise we get a lot of white
+                    s: -(s - sRand),
+                    l: -(l - lRand)
                 });
             }
 
@@ -557,4 +567,4 @@ var HSL = 'hsl',
 Y.Color = Y.mix(Y.Color, Harmony);
 
 
-}, '3.8.0', {"requires": ["color-hsl"]});
+}, '3.9.1', {"requires": ["color-hsl"]});

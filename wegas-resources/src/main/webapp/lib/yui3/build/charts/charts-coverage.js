@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 if (typeof _yuitest_coverage == "undefined"){
     _yuitest_coverage = {};
     _yuitest_coverline = function(src, line){
@@ -32,7 +27,7 @@ _yuitest_coverage["build/charts/charts.js"] = {
     path: "build/charts/charts.js",
     code: []
 };
-_yuitest_coverage["build/charts/charts.js"].code=["YUI.add('charts', function (Y, NAME) {","","/**"," * The Chart class is the basic application used to create a chart."," *"," * @module charts"," * @class Chart"," * @constructor"," */","function Chart(cfg)","{","    if(cfg.type != \"pie\")","    {","        return new Y.CartesianChart(cfg);","    }","    else","    {","        return new Y.PieChart(cfg);","    }","}","Y.Chart = Chart;","","","}, '3.8.0', {\"requires\": [\"charts-base\"]});"];
+_yuitest_coverage["build/charts/charts.js"].code=["YUI.add('charts', function (Y, NAME) {","","/**"," * The Chart class is the basic application used to create a chart."," *"," * @module charts"," * @class Chart"," * @constructor"," */","function Chart(cfg)","{","    if(cfg.type != \"pie\")","    {","        return new Y.CartesianChart(cfg);","    }","    else","    {","        return new Y.PieChart(cfg);","    }","}","Y.Chart = Chart;","","","}, '3.9.1', {\"requires\": [\"charts-base\"]});"];
 _yuitest_coverage["build/charts/charts.js"].lines = {"1":0,"10":0,"12":0,"14":0,"18":0,"21":0};
 _yuitest_coverage["build/charts/charts.js"].functions = {"Chart:10":0,"(anonymous 1):1":0};
 _yuitest_coverage["build/charts/charts.js"].coveredLines = 6;
@@ -68,4 +63,4 @@ _yuitest_coverline("build/charts/charts.js", 21);
 Y.Chart = Chart;
 
 
-}, '3.8.0', {"requires": ["charts-base"]});
+}, '3.9.1', {"requires": ["charts-base"]});

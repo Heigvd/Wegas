@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('node-menunav', function (Y, NAME) {
 
 /**
@@ -84,7 +79,10 @@ YUI.add('node-menunav', function (Y, NAME) {
 * </code>
 * </p>
 * 
-* @module node-menunav
+DEPRECATED. The MenuNav Node Plugin has been deprecated as of YUI 3.9.0. This module will be removed from the library in a future version. If you require functionality similar to the one provided by this module, consider taking a look at the various modules in the YUI Gallery <http://yuilibrary.com/gallery/>. 
+
+@module node-menunav
+@deprecated 3.9.0
 */
 
 
@@ -171,6 +169,7 @@ var getPreviousSibling = function (node) {
 		oPrevious = oChildren.item(oChildren.size() - 1);
 	}
 	
+	
 	return oPrevious;
 
 };
@@ -203,42 +202,42 @@ var isAnchor = function (node) {
 
 
 var isMenuItem = function (node) {
-
+	
 	return node.hasClass(CSS_MENUITEM);
 
 };
 
 
 var isMenuLabel = function (node) {
-
+	
 	return node.hasClass(CSS_MENU_LABEL);
 
 };
 
 
 var isHorizontalMenu = function (menu) {
-
+	
 	return menu.hasClass(CSS_MENU_HORIZONTAL);
 
 };
 
 
 var hasVisibleSubmenu = function (menuLabel) {
-
+	
 	return menuLabel.hasClass(CSS_MENU_LABEL_MENUVISIBLE);
 
 };
 
 
 var getItemAnchor = function (node) {
-
+	
 	return isAnchor(node) ? node : node.one(LOWERCASE_A);
 
 };
 
 
 var getNodeWithClass = function (node, className, searchAncestors) {
-
+	
 	var oItem;
 	
 	if (node) {
@@ -259,14 +258,14 @@ var getNodeWithClass = function (node, className, searchAncestors) {
 
 
 var getParentMenu = function (node) {
-
+	
 	return node.ancestor(MENU_SELECTOR);
 	
 };
 
 
 var getMenu = function (node, searchAncestors) {
-
+	
 	return getNodeWithClass(node, CSS_MENU, searchAncestors);
 
 };
@@ -328,14 +327,14 @@ var getFirstItem = function (menu) {
 
 
 var getActiveClass = function (node) {
-
+	
 	return isMenuItem(node) ? CSS_MENUITEM_ACTIVE : CSS_MENU_LABEL_ACTIVE;
 
 };
 
 
 var handleMouseOverForNode = function (node, target) {
-
+	
 	return node && !node[HANDLED_MOUSEOVER] && 
 		(node.compareTo(target) || node.contains(target));
 
@@ -343,7 +342,7 @@ var handleMouseOverForNode = function (node, target) {
 
 
 var handleMouseOutForNode = function (node, relatedTarget) {
-
+	
 	return node && !node[HANDLED_MOUSEOUT] && 
 		(!node.compareTo(relatedTarget) && !node.contains(relatedTarget));
 
@@ -701,6 +700,7 @@ Y.extend(NodeMenuNav, Y.Plugin.Base, {
 			aHandlers = [],
 			oDoc;
 
+		Y.log("WARNING: Node-MenuNav is a deprecated module as of YUI 3.9.0. This module will be removed from a later version of the library.", "warn");
 
 		if (oRootMenu) {
 
@@ -2187,4 +2187,4 @@ Y.namespace('Plugin');
 Y.Plugin.NodeMenuNav = NodeMenuNav;
 
 
-}, '3.8.0', {"requires": ["node", "classnamemanager", "plugin", "node-focusmanager"], "skinnable": true});
+}, '3.9.1', {"requires": ["node", "classnamemanager", "plugin", "node-focusmanager"], "skinnable": true});

@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 if (typeof _yuitest_coverage == "undefined"){
     _yuitest_coverage = {};
     _yuitest_coverline = function(src, line){
@@ -32,7 +27,7 @@ _yuitest_coverage["build/datatype-date-parse/datatype-date-parse.js"] = {
     path: "build/datatype-date-parse/datatype-date-parse.js",
     code: []
 };
-_yuitest_coverage["build/datatype-date-parse/datatype-date-parse.js"].code=["YUI.add('datatype-date-parse', function (Y, NAME) {","","/**"," * Parse number submodule."," *"," * @module datatype-date"," * @submodule datatype-date-parse"," * @for Date"," */","Y.mix(Y.namespace(\"Date\"), {","    /**","     * Converts data to type Date.","     *","     * @method parse","     * @param data {Date|Number|String} date object, timestamp (string or number), or string parsable by Date.parse","     * @return {Date} a Date object or null if unable to parse","     */","    parse: function(data) {","        var val = new Date(+data || data);","        if (Y.Lang.isDate(val)) {","            return val;","        } else {","            return null;","        }","    }","});","","// Add Parsers shortcut","Y.namespace(\"Parsers\").date = Y.Date.parse;","","Y.namespace(\"DataType\");","Y.DataType.Date = Y.Date;","","","}, '3.8.0');"];
+_yuitest_coverage["build/datatype-date-parse/datatype-date-parse.js"].code=["YUI.add('datatype-date-parse', function (Y, NAME) {","","/**"," * Parse number submodule."," *"," * @module datatype-date"," * @submodule datatype-date-parse"," * @for Date"," */","Y.mix(Y.namespace(\"Date\"), {","    /**","     * Converts data to type Date.","     *","     * @method parse","     * @param data {Date|Number|String} date object, timestamp (string or number), or string parsable by Date.parse","     * @return {Date} a Date object or null if unable to parse","     */","    parse: function(data) {","        var val = new Date(+data || data);","        if (Y.Lang.isDate(val)) {","            return val;","        } else {","            return null;","        }","    }","});","","// Add Parsers shortcut","Y.namespace(\"Parsers\").date = Y.Date.parse;","","Y.namespace(\"DataType\");","Y.DataType.Date = Y.Date;","","","}, '3.9.1');"];
 _yuitest_coverage["build/datatype-date-parse/datatype-date-parse.js"].lines = {"1":0,"10":0,"19":0,"20":0,"21":0,"23":0,"29":0,"31":0,"32":0};
 _yuitest_coverage["build/datatype-date-parse/datatype-date-parse.js"].functions = {"parse:18":0,"(anonymous 1):1":0};
 _yuitest_coverage["build/datatype-date-parse/datatype-date-parse.js"].coveredLines = 9;
@@ -82,4 +77,4 @@ _yuitest_coverline("build/datatype-date-parse/datatype-date-parse.js", 32);
 Y.DataType.Date = Y.Date;
 
 
-}, '3.8.0');
+}, '3.9.1');

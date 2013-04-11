@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('datatable-scroll', function (Y, NAME) {
 
 /**
@@ -23,7 +18,7 @@ var YLang = Y.Lang,
 
 // Returns the numeric value portion of the computed style, defaulting to 0
 function styleDim(node, style) {
-    return parseInt(node.getComputedStyle(style), 10) | 0;
+    return parseInt(node.getComputedStyle(style), 10) || 0;
 }
 
 /**
@@ -39,7 +34,8 @@ separate tables, the latter of which is wrapped in a vertically scrolling
 container.  In this case, column widths of header cells and data cells are kept
 in sync programmatically.
 
-Since the split table synchronization can be costly at runtime, the split is only done if the data in the table stretches beyond the configured `height` value.
+Since the split table synchronization can be costly at runtime, the split is only
+done if the data in the table stretches beyond the configured `height` value.
 
 To activate or deactivate scrolling, set the `scrollable` attribute to one of
 the following values:
@@ -104,7 +100,7 @@ Y.mix(Scrollable.prototype, {
         if (id && this._tbodyNode && (this._yScrollNode || this._xScrollNode)) {
             if (isArray(id)) {
                 target = this.getCell(id);
-            } else if (isNumber(id)) { 
+            } else if (isNumber(id)) {
                 target = this.getRow(id);
             } else if (isString(id)) {
                 target = this._tbodyNode.one('#' + id);
@@ -114,7 +110,9 @@ Y.mix(Scrollable.prototype, {
                 target = id;
             }
 
-            target && target.scrollIntoView();
+            if(target) {
+                target.scrollIntoView();
+            }
         }
 
         return this;
@@ -229,7 +227,7 @@ Y.mix(Scrollable.prototype, {
     @protected
     @since 3.5.0
     **/
-    _afterScrollableChange: function (e) {
+    _afterScrollableChange: function () {
         var scroller = this._xScrollNode;
 
         if (this._xScroll && scroller) {
@@ -253,7 +251,7 @@ Y.mix(Scrollable.prototype, {
     @protected
     @since 3.5.0
     **/
-    _afterScrollCaptionChange: function (e) {
+    _afterScrollCaptionChange: function () {
         if (this._xScroll || this._yScroll) {
             this._syncScrollUI();
         }
@@ -269,7 +267,7 @@ Y.mix(Scrollable.prototype, {
     @protected
     @since 3.5.0
     **/
-    _afterScrollColumnsChange: function (e) {
+    _afterScrollColumnsChange: function () {
         if (this._xScroll || this._yScroll) {
             if (this._yScroll && this._yScrollHeader) {
                 this._syncScrollHeaders();
@@ -288,7 +286,7 @@ Y.mix(Scrollable.prototype, {
     @protected
     @since 3.5.0
     **/
-    _afterScrollDataChange: function (e) {
+    _afterScrollDataChange: function () {
         if (this._xScroll || this._yScroll) {
             this._syncScrollUI();
         }
@@ -306,7 +304,7 @@ Y.mix(Scrollable.prototype, {
     @protected
     @since 3.5.0
     **/
-    _afterScrollHeightChange: function (e) {
+    _afterScrollHeightChange: function () {
         if (this._yScroll) {
             this._syncScrollUI();
         }
@@ -320,7 +318,7 @@ Y.mix(Scrollable.prototype, {
     If you're reading this and the current version is greater than 3.5.0, I
     should be publicly scolded.
     */
-    _afterScrollSort: function (e) {
+    _afterScrollSort: function () {
         var headers, headerClass;
 
         if (this._yScroll && this._yScrollHeader) {
@@ -344,7 +342,7 @@ Y.mix(Scrollable.prototype, {
     @protected
     @since 3.5.0
     **/
-    _afterScrollWidthChange: function (e) {
+    _afterScrollWidthChange: function () {
         if (this._xScroll || this._yScroll) {
             this._syncScrollUI();
         }
@@ -1199,7 +1197,7 @@ Y.mix(Scrollable.prototype, {
             scrollbar.get('firstChild').setStyle('height',
                 this._tbodyNode.get('scrollHeight') + 'px');
 
-            scrollbar.setStyle('height', 
+            scrollbar.setStyle('height',
                 (parseFloat(scroller.getComputedStyle('height')) -
                  parseFloat(fixedHeader.getComputedStyle('height'))) + 'px');
         }
@@ -1386,4 +1384,4 @@ Y.mix(Scrollable.prototype, {
 Y.Base.mix(Y.DataTable, [Scrollable]);
 
 
-}, '3.8.0', {"requires": ["datatable-base", "datatable-column-widths", "dom-screen"], "skinnable": true});
+}, '3.9.1', {"requires": ["datatable-base", "datatable-column-widths", "dom-screen"], "skinnable": true});
