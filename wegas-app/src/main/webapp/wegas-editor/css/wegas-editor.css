@@ -61,8 +61,14 @@ body {
     border-top: 1px solid lightgray;
 }
 .wegas-console .results .result {
-    padding: 2px 0;
+    padding: 2px 4px;
     font-size: 11px;
+    margin: 2px;
+}
+
+.wegas-console .results .result.error {
+    border: 1px solid red;
+    background: rgb(248, 220, 220);
 }
 
 /* style for Animator -> impact game */

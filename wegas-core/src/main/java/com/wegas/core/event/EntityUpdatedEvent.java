@@ -19,9 +19,8 @@ import org.codehaus.jackson.map.ObjectMapper;
  *
  * @author Yannick Lagger <lagger.yannick at gmail.com>
  */
-
 @XmlType(name = "EntityUpdatedEvent")
-public class EntityUpdatedEvent extends ServerEvent{
+public class EntityUpdatedEvent extends ServerEvent {
 
     private List<VariableInstance> updatedEntities = new ArrayList<>();
 
@@ -33,23 +32,23 @@ public class EntityUpdatedEvent extends ServerEvent{
     }
 
     /**
-        * @return the updatedEntities
-        */
+     * @return the updatedEntities
+     */
     public List<VariableInstance> getUpdatedEntities() {
         return updatedEntities;
     }
 
     /**
-        * @param updatedEntities the updatedEntities to set
-        */
+     * @param updatedEntities the updatedEntities to set
+     */
     public void setUpdatedEntities(List<VariableInstance> updatedEntities) {
         this.updatedEntities = updatedEntities;
     }
-    
-    public void addEntity(VariableInstance vi){
+
+    public void addEntity(VariableInstance vi) {
         this.updatedEntities.add(vi);
     }
-    
+
     /**
      *
      * @return @throws IOException
