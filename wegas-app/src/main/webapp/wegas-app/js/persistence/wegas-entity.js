@@ -895,7 +895,8 @@ YUI.add('wegas-entity', function(Y) {
                         value: SELF
                     }, {
                         type: HTML,
-                        value: ""
+                        value: "",
+                        scriptType: STRING
                     }]
             },
             getValue: {

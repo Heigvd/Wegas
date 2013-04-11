@@ -13,21 +13,20 @@
 
 YUI.add("wegas-template", function(Y) {
     "use strict";
-    var TEMPLATE,
-            engine = new Y.Template(Y.Template.Micro),
-            undefinedToEmpty = function(value) {
-        return Y.Lang.isUndefined(value) ? "" : "" + value;
-    };
-    TEMPLATE = {
+    var TEMPLATE = {
         TEXT: "<div class='wegas-text-template'><span><%= this.label || '{label}' %></span><br/><span><%= this.value || '{value}' %></span></div>",
         BOX: "<div class='wegas-box-template'><%= this.label || '{label}'%><br/><span><% for(var i=0; i < this.value; i+=1){%>" +
                 "<div class='wegas-template-box-unit'></div><% } %></span><br/>" +
-                "<span>(<%= this.value || '{value}' %><% if(this.default_value != ''){ %><%= '/' + (this.default_value || '{default_value}') %><% } %>)</span></div>",
-        VALUEBOX: "<div class='wegas-valuebox-template'><%= this.label || '{label}'%><br/><span><% for(var i=+this.min_value; i < +this.max_value + 1; i+=1){%>" +
+                "<span>(<%= this.value || '{value}' %><% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>)</span></div>",
+        VALUEBOX: "<div class='wegas-valuebox-template'><%= this.label || '{label}'%><br/><span><% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
                 "<div class='wegas-template-valuebox-unit<%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div><% } %></span><br/>" +
                 "</span></div>",
         TITLE: "<div class='wegas-title-template'><%= this.label || '{label}'%></div>",
-        FRACTION: "<div class='wegas-fraction-template'><%= (this.min_value || '{min_value}') + '/' + (this.value || '{label}') + '/' + (this.max_value || '{max_value}') %></div>"
+        FRACTION: "<div class='wegas-fraction-template'><%= (this.minValue || '{minValue}') + '/' + (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>"
+    },
+    engine = new Y.Template(Y.Template.Micro),
+            undefinedToEmpty = function(value) {
+        return Y.Lang.isUndefined(value) ? "" : "" + value;
     };
     /**
      * @name Y.Wegas.Template
@@ -49,8 +48,6 @@ YUI.add("wegas-template", function(Y) {
             title: engine.compile(TEMPLATE.TITLE),
             fraction: engine.compile(TEMPLATE.FRACTION)
         },
-        initializer: function() {
-        },
         renderUI: function() {
             this.set("variable", this.get("variable"));
         },
@@ -58,7 +55,8 @@ YUI.add("wegas-template", function(Y) {
             var template = this.get("custom"), hashCode = "" + Y.Wegas.Helper.hashCode(template),
                     data = this.computeData();
             if (template === "" && this.TEMPLATES[this.get("template")]) {
-                this.get("contentBox").setHTML(this.TEMPLATES[this.get("template")](data));
+                this.get("contentBox").
+                        setHTML(this.TEMPLATES[this.get("template")](data));
             } else {
                 if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
                     this.TEMPLATES[hashCode] = engine.compile(template);
@@ -68,17 +66,21 @@ YUI.add("wegas-template", function(Y) {
 
         },
         bindUI: function() {
-            this.after(["dataChange", "variableChange", "templateChange"], this.syncUI, this);
-            Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.after(["dataChange", "variableChange", "templateChange"], this.syncUI);
+            Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI);
         },
         computeData: function() {
             var data = {}, desc = this.get("variable.evaluated");
-            data.label = undefinedToEmpty(desc.getPublicLabel());
-            data.value = undefinedToEmpty(desc.getInstance().get("value"));
-            data.max_value = undefinedToEmpty(desc.get("maxValue"));
-            data.min_value = undefinedToEmpty(desc.get("minValue"));
-            data.default_value = undefinedToEmpty(desc.get("defaultInstance").get("value"));
-            data.variable = desc;
+
+            if (desc) {
+                data.label = undefinedToEmpty(desc.getPublicLabel());
+                data.value = undefinedToEmpty(desc.getInstance().get("value"));
+                data.maxValue = undefinedToEmpty(desc.get("maxValue"));
+                data.minValue = undefinedToEmpty(desc.get("minValue"));
+                data.defaultValue = undefinedToEmpty(desc.get("defaultInstance").
+                        get("value"));
+                data.variable = desc;
+            }
             return Y.mix(Y.merge(this.get("data")), data, false, null, 0, true);
         },
         destructor: function() {
@@ -100,8 +102,8 @@ YUI.add("wegas-template", function(Y) {
                 }
             },
             template: {
-                value: "TEXT",
                 type: "string",
+                value: "text",
                 choices: [{
                         value: "text"
                     }, {
@@ -124,7 +126,7 @@ YUI.add("wegas-template", function(Y) {
                 _inputex: {
                     label: "Custom template",
                     description: "Takes precedence over predefined templates",
-                    _type: "html"
+                    _type: "text"
                 }
             },
             data: {
