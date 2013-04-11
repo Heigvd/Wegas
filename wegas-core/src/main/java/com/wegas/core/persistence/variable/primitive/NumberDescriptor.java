@@ -87,7 +87,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         this.maxValue = maxValue;
     }
 
-    // **** Sugar for editor *** //
+    // **** Sugar for scripts *** //
     /**
      *
      * @param p

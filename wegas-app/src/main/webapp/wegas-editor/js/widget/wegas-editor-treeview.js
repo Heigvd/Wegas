@@ -108,6 +108,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
                     switch (elClass) {
                         case 'StringDescriptor':
+                        case 'TextDescriptor':
                         case 'NumberDescriptor':
                         case 'InboxDescriptor':
                         case 'TriggerDescriptor':
@@ -375,6 +376,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
             switch (el.get(CLASS)) {
                 case 'StringInstance':
+                case 'TextInstance':
                 case 'NumberInstance':
                 case 'ListInstance':
                     return {

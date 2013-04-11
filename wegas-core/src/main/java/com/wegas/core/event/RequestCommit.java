@@ -16,8 +16,8 @@ import java.io.Serializable;
 public class RequestCommit implements Serializable {
 
     private EntityUpdatedEvent request;
-    
-    public RequestCommit(EntityUpdatedEvent request){
+
+    public RequestCommit(EntityUpdatedEvent request) {
         this.request = request;
     }
 }

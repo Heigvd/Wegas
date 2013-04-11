@@ -268,7 +268,7 @@ YUI().use(function(Y) {
                 'wegas-template': {
                     path: "wegas-app/js/widget/wegas-template-min.js",
                     requires: ["template", "wegas-templatecss"],
-                    ws_provides: ["Template"]
+                    ws_provides: "Template"
                 },
                 'wegas-injector': {
                     path: 'wegas-app/js/plugin/wegas-injector-min.js',
