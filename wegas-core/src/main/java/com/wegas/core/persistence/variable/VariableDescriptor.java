@@ -11,8 +11,10 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.rest.util.Views;
@@ -47,7 +49,9 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptor variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
+    @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
+    @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
     @JsonSubTypes.Type(name = "MCQDescriptor", value = QuestionDescriptor.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
@@ -112,7 +116,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(joinColumns = {
         @JoinColumn(referencedColumnName = "variabledescriptor_id")},
-    inverseJoinColumns = {
+            inverseJoinColumns = {
         @JoinColumn(referencedColumnName = "tag_id")})
     @XmlTransient
     private List<Tag> tags;
@@ -252,8 +256,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @param scope the scope to set @fixme here we cannot use managed
-     * references since this.class is abstract.
+     * @param scope the scope to set
+     * @fixme here we cannot use managed references since this.class is
+     * abstract.
      */
     //@JsonManagedReference
     public void setScope(AbstractScope scope) {
