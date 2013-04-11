@@ -5,8 +5,10 @@
         "type": "List",
         "cssClass": "layout wegas-crimesim",
         "plugins": [{
-            "fn": "PopupPlg"
-        }],
+                "fn": "PopupPlg"
+            }, {
+                "fn": "BlockRightclick"
+            }],
         "children": [{
                 "type": "List",
                 "cssClass": "header",
@@ -21,8 +23,8 @@
                         "variable": {
                             "name": "period"
                         },
-                        "data":{
-                            "label":"Period"
+                        "data": {
+                            "label": "Period"
                         }
                     }, {
                         "disabled": false,
