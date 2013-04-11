@@ -193,18 +193,17 @@ public class StateMachineFacade implements Serializable {
 
                         if (transition.getTriggerCondition().getContent().equals("")) { // if the condition is empty
                             validTransition = true;                             // return true
-                        } else {
+                        } else {                                                // Otherwise evaluate the condition
                             validTransition = (Boolean) scriptManager.eval(transition.getTriggerCondition());
                         }
-
                     } catch (ScriptException ex) {
                         validTransition = false;
                     }
                 }
 
                 if (validTransition == null) {
-                    //throw new WegasException("Please review condition [" + stateMachine.getDescriptor().getName() + "]:\n"
-                    //        + transition.getTriggerCondition().getContent());
+                    throw new WegasException("Please review condition [" + stateMachine.getDescriptor().getName() + "]:\n"
+                            + transition.getTriggerCondition().getContent());
                 } else if (validTransition) {
                     /*
                      * A valid transition has been found
