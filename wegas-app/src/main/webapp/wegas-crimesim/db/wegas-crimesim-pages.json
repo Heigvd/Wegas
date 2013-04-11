@@ -22,7 +22,6 @@
                             "label":"Period"
                         }
                     }, {
-                        "cssClass": null,
                         "disabled": false,
                         "type": "Button",
                         "label": "Next period",

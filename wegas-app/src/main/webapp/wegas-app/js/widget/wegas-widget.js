@@ -447,7 +447,7 @@ YUI.add("wegas-widget", function(Y) {
              */
             plugins: {//For serialization purpose, get plugin configs
                 getter: function() {
-                    var i, p = [], plg;  
+                    var i, p = [], plg;
                     for (i in this._plugins) {
                         plg = this[this._plugins[i].NS];
                         if (plg.toObject) {
@@ -481,20 +481,43 @@ YUI.add("wegas-widget", function(Y) {
                             data: "OpenPageAction"
                         }, {
                             type: "Button",
+                            label: "Background",
+                            data: "CSSBackground"
+                        }, {
+                            type: "Button",
+                            label: "Text",
+                            data: "CSSText"
+                        }, {
+                            type: "Button",
+                            label: "Position",
+                            data: "CSSPosition"
+                        }, {
+                            type: "Button",
                             label: "Styles",
-                            data: "CSSStyles"
-                        },
-                        {
+                            data: "CSSStyles",
+                            plugins: [{
+                                    fn: "WidgetMenu",
+                                    cfg: {
+                                        menuCfg: {
+                                            points: ["tl", "tr"]
+                                        },
+                                        event: "mouseenter",
+                                        children: [{
+                                                type: "Button",
+                                                label: "Styles",
+                                                data: "CSSStyles"
+                                            }]
+                                    }
+                                }]
+                        }, {
                             type: "Button",
                             label: "Show after",
                             data: "ShowAfter"
-                        },
-                        {
+                        }, {
                             type: "Button",
                             label: "Hide after",
                             data: "HideAfter"
-                        },
-                        {
+                        }, {
                             type: "Button",
                             label: "Position",
                             data: "Position"
