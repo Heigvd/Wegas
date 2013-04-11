@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('lazy-model-list', function (Y, NAME) {
 
 /**
@@ -73,6 +68,11 @@ var AttrProto = Y.Attribute.prototype,
     EVT_RESET = 'reset';
 
 Y.LazyModelList = Y.Base.create('lazyModelList', Y.ModelList, [], {
+    // -- Lifecycle ------------------------------------------------------------
+    initializer: function () {
+        this.after('*:change', this._afterModelChange);
+    },
+
     // -- Public Methods -------------------------------------------------------
 
     /**
@@ -430,11 +430,41 @@ Y.LazyModelList = Y.Base.create('lazyModelList', Y.ModelList, [], {
 
         if (!model) {
             model = new this.model(item);
+
+            // The clientId attribute is read-only, but revived models should
+            // have the same clientId as the original object, so we need to set
+            // it manually.
+            model._set('clientId', item.clientId);
+
             this._attachList(model);
             this._models[index] = model;
         }
 
         return model;
+    },
+
+    // -- Event Handlers -------------------------------------------------------
+
+    /**
+    Handles `change` events on revived models and updates the original objects
+    with the changes.
+
+    @method _afterModelChange
+    @param {EventFacade} e
+    @protected
+    **/
+    _afterModelChange: function (e) {
+        var changed = e.changed,
+            item    = this._clientIdMap[e.target.get('clientId')],
+            name;
+
+        if (item) {
+            for (name in changed) {
+                if (changed.hasOwnProperty(name)) {
+                    item[name] = changed[name].newVal;
+                }
+            }
+        }
     },
 
     // -- Default Event Handlers -----------------------------------------------
@@ -486,4 +516,4 @@ Y.LazyModelList = Y.Base.create('lazyModelList', Y.ModelList, [], {
 });
 
 
-}, '3.8.0', {"requires": ["model-list"]});
+}, '3.9.1', {"requires": ["model-list"]});

@@ -960,6 +960,10 @@ YUI.add('wegas-datasource', function(Y) {
                     pageId = o["@pageId"],
                     patch;
             delete newPage["@pageId"];
+            if (!pageId) {
+                Y.log("Failed to define page id", "error", "Y.Plugin.PageCache");
+                return;
+            }
             patch = dmp.patch_toText(dmp.patch_make(Y.JSON.stringify(oldPage), Y.JSON.stringify(newPage)));
             this.sendRequest({
                 request: "" + pageId,
@@ -971,6 +975,22 @@ YUI.add('wegas-datasource', function(Y) {
                     data: patch
                 },
                 callback: callback
+            });
+        },
+        editMeta: function(pageId, meta, callback) {
+            this.sendRequest({
+                request: "" + pageId + "/meta",
+                cfg: {
+                    method: 'PUT',
+                    data: meta
+                },
+                callback: {
+                    success: Y.bind(function(e) {
+                        if (callback instanceof Function) {
+                            callback(e.response.results);
+                        }
+                    }, this)
+                }
             });
         },
         duplicate: function(pageId, callback) {

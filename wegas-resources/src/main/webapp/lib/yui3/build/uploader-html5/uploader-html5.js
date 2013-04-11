@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('uploader-html5', function (Y, NAME) {
 
 /**
@@ -230,7 +225,13 @@ Y.UploaderHTML5 = Y.extend( UploaderHTML5, Y.Widget, {
         * Signals that an object has been dropped over the uploader's associated drag-and-drop area.
         *
         * @event drop
-        * @param event {Event} The event object for the `drop`.
+        * @param event {Event} The event object for the `drop` with the
+        *                      following payload:
+        *  <dl>
+        *      <dt>fileList</dt>
+        *          <dd>An `Array` of files dropped by the user, encapsulated
+        *              in Y.FileHTML5 objects.</dd>
+        *  </dl>
         */
         this.publish("drop");
 
@@ -389,7 +390,7 @@ Y.UploaderHTML5 = Y.extend( UploaderHTML5, Y.Widget, {
                         this.fire("fileselect", {fileList: parsedFiles});
                     }
 
-                    this.fire("drop");
+                    this.fire("drop", {fileList: parsedFiles});
                     break;
             }
         }
@@ -1000,4 +1001,4 @@ Y.UploaderHTML5.Queue = UploaderQueue;
 
 
 
-}, '3.8.0', {"requires": ["widget", "node-event-simulate", "substitute", "file-html5", "uploader-queue"]});
+}, '3.9.1', {"requires": ["widget", "node-event-simulate", "file-html5", "uploader-queue"]});

@@ -1,15 +1,10 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('graphics-canvas', function (Y, NAME) {
 
 var IMPLEMENTATION = "canvas",
     SHAPE = "shape",
 	SPLITPATHPATTERN = /[a-z][^a-z]*/ig,
-    SPLITARGSPATTERN = /[-]?[0-9]*[0-9|\.][0-9]*/g,
+    SPLITARGSPATTERN = /[\-]?[0-9]*[0-9|\.][0-9]*/g,
     DOCUMENT = Y.config.doc,
     Y_LANG = Y.Lang,
     AttributeLite = Y.AttributeLite,
@@ -208,10 +203,12 @@ CanvasDrawing.prototype = {
      * @method lineTo
      * @param {Number} point1 x-coordinate for the end point.
      * @param {Number} point2 y-coordinate for the end point.
+     * @chainable
      */
     lineTo: function()
     {
         this._lineTo.apply(this, [Y.Array(arguments), false]);
+        return this;
     },
 
     /**
@@ -220,10 +217,12 @@ CanvasDrawing.prototype = {
      * @method lineTo
      * @param {Number} point1 x-coordinate for the end point.
      * @param {Number} point2 y-coordinate for the end point.
+     * @chainable
      */
     relativeLineTo: function()
     {
         this._lineTo.apply(this, [Y.Array(arguments), true]);
+        return this;
     },
 
     /**
@@ -284,10 +283,12 @@ CanvasDrawing.prototype = {
      * @method moveTo
      * @param {Number} x x-coordinate for the end point.
      * @param {Number} y y-coordinate for the end point.
+     * @chainable
      */
     moveTo: function()
     {
         this._moveTo.apply(this, [Y.Array(arguments), false]);
+        return this;
     },
 
     /**
@@ -296,10 +297,12 @@ CanvasDrawing.prototype = {
      * @method relativeMoveTo
      * @param {Number} x x-coordinate for the end point.
      * @param {Number} y y-coordinate for the end point.
+     * @chainable
      */
     relativeMoveTo: function()
     {
         this._moveTo.apply(this, [Y.Array(arguments), true]);
+        return this;
     },
 
     /**
@@ -334,9 +337,11 @@ CanvasDrawing.prototype = {
      * @param {Number} cp2y y-coordinate for the second control point.
      * @param {Number} x x-coordinate for the end point.
      * @param {Number} y y-coordinate for the end point.
+     * @chainable
      */
     curveTo: function() {
         this._curveTo.apply(this, [Y.Array(arguments), false]);
+        return this;
     },
 
     /**
@@ -349,9 +354,11 @@ CanvasDrawing.prototype = {
      * @param {Number} cp2y y-coordinate for the second control point.
      * @param {Number} x x-coordinate for the end point.
      * @param {Number} y y-coordinate for the end point.
+     * @chainable
      */
     relativeCurveTo: function() {
         this._curveTo.apply(this, [Y.Array(arguments), true]);
+        return this;
     },
 
     /**
@@ -412,9 +419,11 @@ CanvasDrawing.prototype = {
      * @param {Number} cpy y-coordinate for the control point.
      * @param {Number} x x-coordinate for the end point.
      * @param {Number} y y-coordinate for the end point.
+     * @chainable
      */
     quadraticCurveTo: function() {
         this._quadraticCurveTo.apply(this, [Y.Array(arguments), false]);
+        return this;
     },
 
     /**
@@ -425,9 +434,11 @@ CanvasDrawing.prototype = {
      * @param {Number} cpy y-coordinate for the control point.
      * @param {Number} x x-coordinate for the end point.
      * @param {Number} y y-coordinate for the end point.
+     * @chainable
      */
     relativeQuadraticCurveTo: function() {
         this._quadraticCurveTo.apply(this, [Y.Array(arguments), true]);
+        return this;
     },
 
     /**
@@ -452,7 +463,6 @@ CanvasDrawing.prototype = {
             top,
             i,
             len = args.length - 3,
-            wt = this._stroke && this._strokeWeight ? this._strokeWeight : 0,
             relativeX = relative ? parseFloat(this._currentX) : 0,
             relativeY = relative ? parseFloat(this._currentY) : 0;
         for(i = 0; i < len; i = i + 4)
@@ -483,6 +493,7 @@ CanvasDrawing.prototype = {
      * @param {Number} x y-coordinate
      * @param {Number} y x-coordinate
      * @param {Number} r radius
+     * @chainable
      * @protected
      */
 	drawCircle: function(x, y, radius) {
@@ -507,6 +518,7 @@ CanvasDrawing.prototype = {
      * @param {Number} y x-coordinate
      * @param {Number} width width
      * @param {Number} height height
+     * @chainable
      * @protected
      */
     drawDiamond: function(x, y, width, height)
@@ -529,6 +541,7 @@ CanvasDrawing.prototype = {
      * @param {Number} y y-coordinate
      * @param {Number} w width
      * @param {Number} h height
+     * @chainable
      * @protected
      */
 	drawEllipse: function(x, y, w, h) {
@@ -571,9 +584,9 @@ CanvasDrawing.prototype = {
      * @param {Number} y y-coordinate
      * @param {Number} w width
      * @param {Number} h height
+     * @chainable
      */
     drawRect: function(x, y, w, h) {
-        var wt = this._stroke && this._strokeWeight ? this._strokeWeight : 0;
         this._drawingComplete = false;
         this.moveTo(x, y);
         this.lineTo(x + w, y);
@@ -593,9 +606,9 @@ CanvasDrawing.prototype = {
      * @param {Number} h height
      * @param {Number} ew width of the ellipse used to draw the rounded corners
      * @param {Number} eh height of the ellipse used to draw the rounded corners
+     * @chainable
      */
     drawRoundRect: function(x, y, w, h, ew, eh) {
-        var wt = this._stroke && this._strokeWeight ? this._strokeWeight : 0;
         this._drawingComplete = false;
         this.moveTo( x, y + eh);
         this.lineTo(x, y + h - eh);
@@ -619,6 +632,7 @@ CanvasDrawing.prototype = {
      * @param {Number} arc sweep of the wedge. Negative values draw clockwise.
      * @param {Number} radius radius of wedge. If [optional] yRadius is defined, then radius is the x radius.
      * @param {Number} yRadius [optional] y radius for wedge.
+     * @chainable
      * @private
      */
     drawWedge: function(x, y, startAngle, arc, radius, yRadius)
@@ -694,6 +708,7 @@ CanvasDrawing.prototype = {
      * Completes a drawing operation.
      *
      * @method end
+     * @chainable
      */
     end: function() {
         this._closePath();
@@ -704,18 +719,30 @@ CanvasDrawing.prototype = {
      * Ends a fill and stroke
      *
      * @method closePath
+     * @chainable
      */
     closePath: function()
     {
         this._updateDrawingQueue(["closePath"]);
         this._updateDrawingQueue(["beginPath"]);
+        return this;
     },
 
 	/**
 	 * Clears the graphics object.
 	 *
 	 * @method clear
+     * @chainable
 	 */
+    clear: function() {
+		this._initProps();
+        if(this.node)
+        {
+            this._context.clearRect(0, 0, this.node.width, this.node.height);
+        }
+        return this;
+	},
+
 
     /**
      * Returns a linear gradient fill
@@ -926,7 +953,7 @@ CanvasDrawing.prototype = {
      * @return HTMLCanvasElement
      * @private
      */
-    _createGraphic: function(config) {
+    _createGraphic: function() {
         var graphic = Y.config.doc.createElement('canvas');
         return graphic;
     },
@@ -1035,7 +1062,7 @@ Y.CanvasDrawing = CanvasDrawing;
  * @class CanvasShape
  * @constructor
  */
-CanvasShape = function(cfg)
+CanvasShape = function()
 {
     this._transforms = [];
     this.matrix = new Y.Matrix();
@@ -1299,7 +1326,15 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 		node.setAttribute("id", id);
 		id = "#" + id;
         host.node = node;
-		host.addClass(_getClassName(SHAPE) + " " + _getClassName(concat(IMPLEMENTATION, SHAPE)) + " " + _getClassName(name) + " " + _getClassName(concat(IMPLEMENTATION, name)));
+		host.addClass(
+            _getClassName(SHAPE) +
+            " " +
+            _getClassName(concat(IMPLEMENTATION, SHAPE)) +
+            " " +
+            _getClassName(name) +
+            " " +
+            _getClassName(concat(IMPLEMENTATION, name))
+        );
 	},
 
 	/**
@@ -1363,7 +1398,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
                 this._strokeStyle = color;
             }
             this._linecap = linecap;
-            if(linejoin == "round" || linejoin == "bevel")
+            if(linejoin === "round" || linejoin === "bevel")
             {
                 this._linejoin = linejoin;
             }
@@ -1394,8 +1429,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
      */
 	set: function()
 	{
-		var host = this,
-			val = arguments[0];
+		var host = this;
 		AttributeLite.prototype.set.apply(host, arguments);
 		if(host.initialized)
 		{
@@ -1420,7 +1454,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
         {
             color = fill.color;
             type = fill.type;
-            if(type == "linear" || type == "radial")
+            if(type === "linear" || type === "radial")
             {
                 this._fillType = type;
             }
@@ -1499,7 +1533,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
      * @param {Number} x The value to skew on the x-axis.
      * @param {Number} y The value to skew on the y-axis.
      */
-    skew: function(x, y)
+    skew: function()
     {
         this._addTransform("skew", arguments);
     },
@@ -1510,7 +1544,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @method skewX
 	 * @param {Number} x x-coordinate
 	 */
-    skewX: function(x)
+    skewX: function()
     {
         this._addTransform("skewX", arguments);
     },
@@ -1521,7 +1555,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @method skewY
 	 * @param {Number} y y-coordinate
 	 */
-    skewY: function(y)
+    skewY: function()
     {
         this._addTransform("skewY", arguments);
     },
@@ -1532,9 +1566,8 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @method rotate
 	 * @param {Number} deg The degree of the rotation.
 	 */
-    rotate: function(deg)
+    rotate: function()
     {
-        this._rotation = deg;
         this._addTransform("rotate", arguments);
     },
 
@@ -1544,19 +1577,10 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 	 * @method scale
 	 * @param {Number} val
 	 */
-    scale: function(x, y)
+    scale: function()
     {
         this._addTransform("scale", arguments);
     },
-
-    /**
-     * Storage for `rotation` atribute.
-     *
-     * @property _rotation
-     * @type Number
-	 * @private
-	 */
-	_rotation: 0,
 
     /**
      * Storage for the transform attribute.
@@ -1689,7 +1713,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 			{
 				methods[i] = cachedMethods[i].concat();
 				args = methods[i];
-                argsLen = (args[0] == "quadraticCurveTo" || args[0] == "bezierCurveTo") ? args.length : 3;
+                argsLen = (args[0] === "quadraticCurveTo" || args[0] === "bezierCurveTo") ? args.length : 3;
 				for(j = 1; j < argsLen; ++j)
 				{
 					if(j % 2 === 0)
@@ -1713,12 +1737,12 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 					method = args.shift();
 					if(method)
 					{
-                        if(method == "closePath")
+                        if(method === "closePath")
                         {
                             context.closePath();
                             this._strokeAndFill(context);
                         }
-						else if(method && method == "lineTo" && this._dashstyle)
+						else if(method && method === "lineTo" && this._dashstyle)
 						{
 							args.unshift(this._xcoords[i] - this._left, this._ycoords[i] - this._top);
 							this._drawDashedLine.apply(this, args);
@@ -1750,11 +1774,11 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
     {
         if (this._fillType)
         {
-            if(this._fillType == "linear")
+            if(this._fillType === "linear")
             {
                 context.fillStyle = this._getLinearGradient();
             }
-            else if(this._fillType == "radial")
+            else if(this._fillType === "radial")
             {
                 context.fillStyle = this._getRadialGradient();
             }
@@ -1832,17 +1856,6 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 		context.moveTo(xEnd, yEnd);
 	},
 
-	//This should move to CanvasDrawing class.
-    //Currently docmented in CanvasDrawing class.
-    clear: function() {
-		this._initProps();
-        if(this.node)
-        {
-            this._context.clearRect(0, 0, this.node.width, this.node.height);
-        }
-        return this;
-	},
-
 	/**
 	 * Returns the bounds for a shape.
 	 *
@@ -1859,7 +1872,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
 			h = this.get("height"),
 			x = this.get("x"),
 			y = this.get("y");
-        if(type == "path")
+        if(type === "path")
         {
             x = x + this._left;
             y = y + this._top;
@@ -1891,7 +1904,7 @@ Y.extend(CanvasShape, Y.GraphicBase, Y.mix({
             transform,
             key,
             contentRect;
-        if(this._type == "path")
+        if(this._type === "path")
         {
             transformX = transformX + x;
             transformY = transformY + y;
@@ -2237,7 +2250,7 @@ CanvasShape.ATTRS =  {
 			fill = (val) ? Y.merge(tmpl, val) : null;
 			if(fill && fill.color)
 			{
-				if(fill.color === undefined || fill.color == "none")
+				if(fill.color === undefined || fill.color === "none")
 				{
 					fill.color = null;
 				}
@@ -2358,7 +2371,7 @@ Y.CanvasShape = CanvasShape;
  * @class CanvasPath
  * @extends CanvasShape
  */
-CanvasPath = function(cfg)
+CanvasPath = function()
 {
 	CanvasPath.superclass.constructor.apply(this, arguments);
 };
@@ -2407,7 +2420,15 @@ Y.extend(CanvasPath, Y.CanvasShape, {
 		node.setAttribute("id", id);
 		id = "#" + id;
 		host.node = node;
-		host.addClass(_getClassName(SHAPE) + " " + _getClassName(concat(IMPLEMENTATION, SHAPE)) + " " + _getClassName(name) + " " + _getClassName(concat(IMPLEMENTATION, name)));
+		host.addClass(
+            _getClassName(SHAPE) +
+            " " +
+            _getClassName(concat(IMPLEMENTATION, SHAPE)) +
+            " " +
+            _getClassName(name) +
+            " " +
+            _getClassName(concat(IMPLEMENTATION, name))
+        );
 	},
 
     /**
@@ -2533,7 +2554,7 @@ Y.CanvasRect = CanvasRect;
  * @class CanvasEllipse
  * @constructor
  */
-CanvasEllipse = function(cfg)
+CanvasEllipse = function()
 {
 	CanvasEllipse.superclass.constructor.apply(this, arguments);
 };
@@ -2625,7 +2646,7 @@ Y.CanvasEllipse = CanvasEllipse;
  * @class CanvasCircle
  * @constructor
  */
-CanvasCircle = function(cfg)
+CanvasCircle = function()
 {
 	CanvasCircle.superclass.constructor.apply(this, arguments);
 };
@@ -2738,7 +2759,7 @@ Y.extend(CanvasPieSlice, Y.CanvasShape, {
 	 * @private
 	 * @method _updateHandler
 	 */
-	_draw: function(e)
+	_draw: function()
 	{
         var x = this.get("cx"),
             y = this.get("cy"),
@@ -2804,7 +2825,7 @@ Y.CanvasPieSlice = CanvasPieSlice;
  * @class CanvasGraphic
  * @constructor
  */
-function CanvasGraphic(config) {
+function CanvasGraphic() {
 
     CanvasGraphic.superclass.constructor.apply(this, arguments);
 }
@@ -3072,9 +3093,10 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
      * @param {Any} value The value to set the attribute to. This value is ignored if an object is received as
      * the name param.
      */
-	set: function(attr, value)
+	set: function()
 	{
 		var host = this,
+            attr = arguments[0],
             redrawAttrs = {
                 autoDraw: true,
                 autoSize: true,
@@ -3150,7 +3172,7 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
      * @param {Object} config Optional attributes
      * @private
      */
-    initializer: function(config) {
+    initializer: function() {
         var render = this.get("render"),
             visibility = this.get("visible") ? "visible" : "hidden",
             w = this.get("width") || 0,
@@ -3226,8 +3248,8 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
         {
             cfg.visible = false;
         }
-        var shapeClass = this._getShapeClass(cfg.type),
-            shape = new shapeClass(cfg);
+        var ShapeClass = this._getShapeClass(cfg.type),
+            shape = new ShapeClass(cfg);
         this._appendShape(shape);
         return shape;
     },
@@ -3456,14 +3478,14 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
             node = this.get("node");
         if(autoSize)
         {
-            if(autoSize == "sizeContentToGraphic")
+            if(autoSize === "sizeContentToGraphic")
             {
                 contentWidth = box.right - box.left;
                 contentHeight = box.bottom - box.top;
                 w = parseFloat(Y_DOM.getComputedStyle(node, "width"));
                 h = parseFloat(Y_DOM.getComputedStyle(node, "height"));
                 matrix = new Y.Matrix();
-                if(preserveAspectRatio == "none")
+                if(preserveAspectRatio === "none")
                 {
                     xScale = w/contentWidth;
                     yScale = h/contentHeight;
@@ -3649,4 +3671,4 @@ Y.extend(CanvasGraphic, Y.GraphicBase, {
 Y.CanvasGraphic = CanvasGraphic;
 
 
-}, '3.8.0', {"requires": ["graphics"]});
+}, '3.9.1', {"requires": ["graphics"]});

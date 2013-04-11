@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('editor-base', function (Y, NAME) {
 
 
@@ -797,7 +792,7 @@ YUI.add('editor-base', function (Y, NAME) {
         * @property USE
         * @type Array
         */
-        USE: ['substitute', 'node', 'selector-css3', 'editor-selection', 'stylesheet'],
+        USE: ['node', 'selector-css3', 'editor-selection', 'stylesheet'],
         /**
         * The Class Name: editorBase
         * @static
@@ -918,4 +913,4 @@ YUI.add('editor-base', function (Y, NAME) {
 
 
 
-}, '3.8.0', {"requires": ["base", "frame", "node", "exec-command", "editor-selection"]});
+}, '3.9.1', {"requires": ["base", "frame", "node", "exec-command", "editor-selection"]});

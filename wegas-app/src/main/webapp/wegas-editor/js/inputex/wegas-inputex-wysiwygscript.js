@@ -171,7 +171,7 @@ YUI.add("wegas-inputex-wysiwygscript", function (Y) {
          *
          */
         generateExpression: function (expression) {
-            Y.log("generateExpression(" + expression.type + ")");
+            //Y.log("generateExpression(" + expression.type + ")");
             switch (expression.type) {
 
                 case "Identifier":

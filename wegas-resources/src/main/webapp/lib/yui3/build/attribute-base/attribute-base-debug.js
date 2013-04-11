@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('attribute-base', function (Y, NAME) {
 
     /**
@@ -49,8 +44,10 @@ YUI.add('attribute-base', function (Y, NAME) {
      * of attributes for derived classes, accounting for values passed into the constructor.</p>
      *
      * @class Attribute
-     * @param attrs {Object} The attributes to add during construction (passed through to <a href="#method_addAttrs">addAttrs</a>). These can also be defined on the constructor being augmented with Attribute by defining the ATTRS property on the constructor.
-     * @param values {Object} The initial attribute values to apply (passed through to <a href="#method_addAttrs">addAttrs</a>). These are not merged/cloned. The caller is responsible for isolating user provided values if required.
+     * @param attrs {Object} The attributes to add during construction (passed through to <a href="#method_addAttrs">addAttrs</a>).
+     *        These can also be defined on the constructor being augmented with Attribute by defining the ATTRS property on the constructor.
+     * @param values {Object} The initial attribute values to apply (passed through to <a href="#method_addAttrs">addAttrs</a>).
+     *        These are not merged/cloned. The caller is responsible for isolating user provided values if required.
      * @param lazy {boolean} Whether or not to add attributes lazily (passed through to <a href="#method_addAttrs">addAttrs</a>).
      * @uses AttributeCore
      * @uses AttributeObservable
@@ -66,7 +63,7 @@ YUI.add('attribute-base', function (Y, NAME) {
     Y.mix(Attribute, Y.AttributeCore, false, null, 1);
     Y.mix(Attribute, Y.AttributeExtras, false, null, 1);
 
-    // Needs to be "true", to overwrite methods from AttributeCore
+    // Needs to be `true`, to overwrite methods from AttributeCore
     Y.mix(Attribute, Y.AttributeObservable, true, null, 1);
 
     /**
@@ -111,4 +108,4 @@ YUI.add('attribute-base', function (Y, NAME) {
     Y.Attribute = Attribute;
 
 
-}, '3.8.0', {"requires": ["attribute-core", "attribute-observable", "attribute-extras"]});
+}, '3.9.1', {"requires": ["attribute-core", "attribute-observable", "attribute-extras"]});

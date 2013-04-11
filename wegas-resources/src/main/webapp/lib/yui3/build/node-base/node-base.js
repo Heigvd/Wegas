@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('node-base', function (Y, NAME) {
 
 /**
@@ -823,10 +818,10 @@ Y.mix(Y_Node.prototype, {
     /**
      * Displays or hides the node.
      * If the "transition" module is loaded, toggleView optionally
-     * animates the toggling of the node using either the default
-     * transition effect ('fadeIn'), or the given named effect.
+     * animates the toggling of the node using given named effect.
      * @method toggleView
      * @for Node
+     * @param {String} [name] An optional string value to use as transition effect.
      * @param {Boolean} [on] An optional boolean value to force the node to be shown or hidden
      * @param {Function} [callback] An optional function to run after the transition completes.
      * @chainable
@@ -917,9 +912,9 @@ Y.NodeList.importMethod(Y.Node.prototype, [
     /**
      * Displays or hides each node.
      * If the "transition" module is loaded, toggleView optionally
-     * animates the toggling of the nodes using either the default
-     * transition effect ('fadeIn'), or the given named effect.
+     * animates the toggling of the nodes using given named effect.
      * @method toggleView
+     * @param {String} [name] An optional string value to use as transition effect.
      * @param {Boolean} [on] An optional boolean value to force the nodes to be shown or hidden
      * @param {Function} [callback] An optional function to run after the transition completes.
      * @chainable
@@ -1062,8 +1057,9 @@ Y.mix(Y.Node.prototype, {
     },
 
     _getDataAttribute: function(name) {
-        var name = this.DATA_PREFIX + name,
-            node = this._node,
+        name = this.DATA_PREFIX + name;
+
+        var node = this._node,
             attrs = node.attributes,
             data = attrs && attrs[name] && attrs[name].value;
 
@@ -1159,4 +1155,4 @@ Y.mix(Y.NodeList.prototype, {
 });
 
 
-}, '3.8.0', {"requires": ["event-base", "node-core", "dom-base"]});
+}, '3.9.1', {"requires": ["event-base", "node-core", "dom-base"]});

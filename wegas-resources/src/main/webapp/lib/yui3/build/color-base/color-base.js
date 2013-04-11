@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('color-base', function (Y, NAME) {
 
 /**
@@ -16,8 +11,7 @@ Color provides static methods for color conversion.
 
 @module color
 @submodule color-base
-@class Base
-@namespace Color
+@class Color
 @since 3.8.0
 **/
 
@@ -190,24 +184,30 @@ Y.Color = {
         // parse with regex and return "matches" array
         var type = Y.Color.findType(str).toUpperCase(),
             regex,
-            arr;
+            arr,
+            length,
+            lastItem;
 
         if (type === 'HEX' && str.length < 5) {
             type = 'HEX3';
         }
 
-        if (type[type.length - 1] === 'A') {
+        if (type.charAt(type.length - 1) === 'A') {
             type = type.slice(0, -1);
         }
         regex = Y.Color['REGEX_' + type];
         if (regex) {
             arr = regex.exec(str) || [];
+            length = arr.length;
 
-            if (arr.length) {
+            if (length) {
+
                 arr.shift();
+                length--;
 
-                if (typeof arr[arr.length - 1] === 'undefined') {
-                    arr[arr.length - 1] = 1;
+                lastItem = arr[length - 1];
+                if (!lastItem) {
+                    arr[length - 1] = 1;
                 }
             }
         }
@@ -334,28 +334,30 @@ Y.Color = {
         }
 
         if (from === 'hex' && clr.length < 5) {
-            if (clr[0] === '#') {
+            if (clr.charAt(0) === '#') {
                 clr = clr.substr(1);
             }
 
-            clr = '#' + clr[0] + clr[0] + clr[1] + clr[1] + clr[2] + clr[2];
+            clr = '#' + clr.charAt(0) + clr.charAt(0) +
+                        clr.charAt(1) + clr.charAt(1) +
+                        clr.charAt(2) + clr.charAt(2);
         }
 
         if (from === to) {
             return clr;
         }
 
-        if (from[from.length - 1] === 'a') {
+        if (from.charAt(from.length - 1) === 'a') {
             from = from.slice(0, -1);
         }
 
-        needsAlpha = (to[to.length - 1] === 'a');
+        needsAlpha = (to.charAt(to.length - 1) === 'a');
         if (needsAlpha) {
             to = to.slice(0, -1);
             alpha = Y.Color._getAlpha(clr);
         }
 
-        ucTo = to[0].toUpperCase() + to.substr(1).toLowerCase();
+        ucTo = to.charAt(0).toUpperCase() + to.substr(1).toLowerCase();
         method = Y.Color['_' + from + 'To' + ucTo ];
 
         // check to see if need conversion to rgb first
@@ -444,4 +446,4 @@ Y.Color = {
 
 
 
-}, '3.8.0', {"requires": ["yui-base"]});
+}, '3.9.1', {"requires": ["yui-base"]});

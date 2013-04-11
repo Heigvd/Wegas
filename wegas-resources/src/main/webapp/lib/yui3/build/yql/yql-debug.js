@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('yql', function (Y, NAME) {
 
 /**
@@ -99,7 +94,7 @@ YQLRequest.prototype = {
     send: function () {
         var qs = [], url = ((this._opts && this._opts.proto) ? this._opts.proto : Y.YQLRequest.PROTO), o;
 
-        Y.each(this._params, function (v, k) {
+        Y.Object.each(this._params, function (v, k) {
             qs.push(k + '=' + encodeURIComponent(v));
         });
 
@@ -125,19 +120,8 @@ YQLRequest.prototype = {
     * @param {String} url The URL to request
     * @param {Object} o The config object
     */
-    _send: function(url, o) {
-        if (o.allowCache !== false) {
-            o.allowCache = true;
-        }
-        if (!this._jsonp) {
-            this._jsonp = Y.jsonp(url, o);
-        } else {
-            this._jsonp.url = url;
-            if (o.on && o.on.success) {
-                this._jsonp._config.on.success = o.on.success;
-            }
-            this._jsonp.send();
-        }
+    _send: function() {
+        //Overwritten in plugins
     }
 };
 
@@ -182,4 +166,4 @@ Y.YQL = function (sql, callback, params, opts) {
 };
 
 
-}, '3.8.0', {"requires": ["jsonp", "jsonp-url"]});
+}, '3.9.1', {"requires": ["oop"]});

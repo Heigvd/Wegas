@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 if (typeof _yuitest_coverage == "undefined"){
     _yuitest_coverage = {};
     _yuitest_coverline = function(src, line){
@@ -32,7 +27,7 @@ _yuitest_coverage["build/datatype-xml-format/datatype-xml-format.js"] = {
     path: "build/datatype-xml-format/datatype-xml-format.js",
     code: []
 };
-_yuitest_coverage["build/datatype-xml-format/datatype-xml-format.js"].code=["YUI.add('datatype-xml-format', function (Y, NAME) {","","/**"," * The Number Utility provides type-conversion and string-formatting"," * convenience methods for Numbers."," *"," * @module datatype-xml"," * @submodule datatype-xml-format"," */","","/**"," * XML provides a set of utility functions to operate against XML documents."," *"," * @class XML"," * @static"," */","var LANG = Y.Lang;","","Y.mix(Y.namespace(\"XML\"), {","    /**","     * Converts data to type XMLDocument.","     *","     * @method format","     * @param data {XMLDoc} Data to convert.","     * @return {String} String.","     */","    format: function(data) {","        try {","            if(!LANG.isUndefined(data.getXml)) {","                return data.getXml();","            }","","            if(!LANG.isUndefined(XMLSerializer)) {","                return (new XMLSerializer()).serializeToString(data);","            }","        }","        catch(e) {","            if(data && data.xml) {","                return data.xml;","            }","            else {","                return (LANG.isValue(data) && data.toString) ? data.toString() : \"\";","            }","        }","    }","});","","Y.namespace(\"DataType\");","Y.DataType.XML = Y.XML;","","","}, '3.8.0');"];
+_yuitest_coverage["build/datatype-xml-format/datatype-xml-format.js"].code=["YUI.add('datatype-xml-format', function (Y, NAME) {","","/**"," * The Number Utility provides type-conversion and string-formatting"," * convenience methods for Numbers."," *"," * @module datatype-xml"," * @submodule datatype-xml-format"," */","","/**"," * XML provides a set of utility functions to operate against XML documents."," *"," * @class XML"," * @static"," */","var LANG = Y.Lang;","","Y.mix(Y.namespace(\"XML\"), {","    /**","     * Converts data to type XMLDocument.","     *","     * @method format","     * @param data {XMLDoc} Data to convert.","     * @return {String} String.","     */","    format: function(data) {","        try {","            if(!LANG.isUndefined(data.getXml)) {","                return data.getXml();","            }","","            if(!LANG.isUndefined(XMLSerializer)) {","                return (new XMLSerializer()).serializeToString(data);","            }","        }","        catch(e) {","            if(data && data.xml) {","                return data.xml;","            }","            else {","                return (LANG.isValue(data) && data.toString) ? data.toString() : \"\";","            }","        }","    }","});","","Y.namespace(\"DataType\");","Y.DataType.XML = Y.XML;","","","}, '3.9.1');"];
 _yuitest_coverage["build/datatype-xml-format/datatype-xml-format.js"].lines = {"1":0,"17":0,"19":0,"28":0,"29":0,"30":0,"33":0,"34":0,"38":0,"39":0,"42":0,"48":0,"49":0};
 _yuitest_coverage["build/datatype-xml-format/datatype-xml-format.js"].functions = {"format:27":0,"(anonymous 1):1":0};
 _yuitest_coverage["build/datatype-xml-format/datatype-xml-format.js"].coveredLines = 13;
@@ -103,4 +98,4 @@ _yuitest_coverline("build/datatype-xml-format/datatype-xml-format.js", 49);
 Y.DataType.XML = Y.XML;
 
 
-}, '3.8.0');
+}, '3.9.1');

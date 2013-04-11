@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 YUI.add('datatype-number-parse', function (Y, NAME) {
 
 /**
@@ -26,7 +21,7 @@ Y.mix(Y.namespace("Number"), {
      * @return {Number} A number, or null.
      */
     parse: function(data) {
-        var number = (data === null) ? data : +data;
+        var number = (data === null || data === "") ? data : +data;
         if(LANG.isNumber(number)) {
             return number;
         }
@@ -43,4 +38,4 @@ Y.namespace("DataType");
 Y.DataType.Number = Y.Number;
 
 
-}, '3.8.0');
+}, '3.9.1');

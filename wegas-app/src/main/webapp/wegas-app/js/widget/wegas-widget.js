@@ -264,7 +264,7 @@ YUI.add("wegas-widget", function(Y) {
                     value: undefined
                 },
                 validator: function(s) {
-                    return (s === undefined || (Y.Lang.isString(s) && s.lenght > 0) || Y.Lang.isNumber(s));
+                    return (s === undefined || (Y.Lang.isString(s) && s.length > 0) || Y.Lang.isNumber(s));
                 }
             },
             /**

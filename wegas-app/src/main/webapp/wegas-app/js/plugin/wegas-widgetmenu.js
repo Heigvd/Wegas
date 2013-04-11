@@ -75,8 +75,11 @@ YUI.add('wegas-widgetmenu', function(Y) {
          * @private
          */
         show: function() {
+            var host = this.get(HOST).get(BOUNDINGBOX) ?
+                    this.get(HOST).get(BOUNDINGBOX).one(this.get("selector")) : //Widget
+                    this.get(HOST);                                             //Node
             this.getMenu().attachTo(// Get a menu instance
-                    this.get(HOST).get(BOUNDINGBOX).one(this.get("selector"))); // Attach it to the target node
+                    host); // Attach it to the target node
         },
         // *** Private methods *** //
         /**

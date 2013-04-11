@@ -1,9 +1,4 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 if (typeof _yuitest_coverage == "undefined"){
     _yuitest_coverage = {};
     _yuitest_coverline = function(src, line){
@@ -32,7 +27,7 @@ _yuitest_coverage["build/pjax-plugin/pjax-plugin.js"] = {
     path: "build/pjax-plugin/pjax-plugin.js",
     code: []
 };
-_yuitest_coverage["build/pjax-plugin/pjax-plugin.js"].code=["YUI.add('pjax-plugin', function (Y, NAME) {","","/**","Node plugin that provides seamless, gracefully degrading pjax functionality.","","@module pjax","@submodule pjax-plugin","@since 3.5.0","**/","","/**","Node plugin that provides seamless, gracefully degrading pjax functionality.","","@class Plugin.Pjax","@extends Pjax","@since 3.5.0","**/","","Y.Plugin.Pjax = Y.Base.create('pjaxPlugin', Y.Pjax, [Y.Plugin.Base], {","    // -- Lifecycle Methods ----------------------------------------------------","    initializer: function (config) {","        this.set('container', config.host);","    }","}, {","    NS: 'pjax'","});","","","}, '3.8.0', {\"requires\": [\"node-pluginhost\", \"pjax\", \"plugin\"]});"];
+_yuitest_coverage["build/pjax-plugin/pjax-plugin.js"].code=["YUI.add('pjax-plugin', function (Y, NAME) {","","/**","Node plugin that provides seamless, gracefully degrading pjax functionality.","","@module pjax","@submodule pjax-plugin","@since 3.5.0","**/","","/**","Node plugin that provides seamless, gracefully degrading pjax functionality.","","@class Plugin.Pjax","@extends Pjax","@since 3.5.0","**/","","Y.Plugin.Pjax = Y.Base.create('pjaxPlugin', Y.Pjax, [Y.Plugin.Base], {","    // -- Lifecycle Methods ----------------------------------------------------","    initializer: function (config) {","        this.set('container', config.host);","    }","}, {","    NS: 'pjax'","});","","","}, '3.9.1', {\"requires\": [\"node-pluginhost\", \"pjax\", \"plugin\"]});"];
 _yuitest_coverage["build/pjax-plugin/pjax-plugin.js"].lines = {"1":0,"19":0,"22":0};
 _yuitest_coverage["build/pjax-plugin/pjax-plugin.js"].functions = {"initializer:21":0,"(anonymous 1):1":0};
 _yuitest_coverage["build/pjax-plugin/pjax-plugin.js"].coveredLines = 3;
@@ -70,4 +65,4 @@ this.set('container', config.host);
 });
 
 
-}, '3.8.0', {"requires": ["node-pluginhost", "pjax", "plugin"]});
+}, '3.9.1', {"requires": ["node-pluginhost", "pjax", "plugin"]});

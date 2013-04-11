@@ -1,13 +1,18 @@
-/*
-YUI 3.8.0 (build 5744)
-Copyright 2012 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
+/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
 .yui3-g {
-    letter-spacing: -0.31em; /* webkit: collapse white-space between units */
+    letter-spacing: -0.31em; /* Webkit: collapse white-space between units */
     *letter-spacing: normal; /* reset IE < 8 */
-    word-spacing: -0.43em; /* IE < 8 && gecko: collapse white-space between units */
+    *word-spacing: -0.43em; /* IE < 8: collapse white-space between units */
+    text-rendering: optimizespeed; /* Webkit: fixes text-rendering: optimizeLegibility */
+}
+
+/* Opera as of 12 on Windows needs word-spacing.
+   The ".opera-only" selector is used to prevent actual prefocus styling
+   and is not required in markup.
+*/
+.opera-only :-o-prefocus,
+.yui3-g {
+    word-spacing: -0.43em;
 }
 
 .yui3-u {
@@ -16,6 +21,7 @@ http://yuilibrary.com/license/
     letter-spacing: normal;
     word-spacing: normal;
     vertical-align: top;
+    text-rendering: auto;
 }
 .yui3-u-1,
 .yui3-u-1-2,
@@ -50,6 +56,7 @@ http://yuilibrary.com/license/
     letter-spacing: normal;
     word-spacing: normal;
     vertical-align: top;
+    text-rendering: auto;
 }
 
 .yui3-u-1 {

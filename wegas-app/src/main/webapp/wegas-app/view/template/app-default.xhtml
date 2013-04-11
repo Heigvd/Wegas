@@ -57,7 +57,7 @@
                 <!-- YUI Base -->
                 <ui:fragment rendered="#{wegasConfig.useYUICDN}">
                     <!-- CDN -->
-                    <script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+                    <script type="text/javascript" src="http://yui.yahooapis.com/3.9.1/build/yui/yui-min.js"></script>
                 </ui:fragment>
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
                     <!-- Self hosted -->
@@ -194,7 +194,7 @@
                                     "Pusher":{
                                         type: "PusherDataSource",
                                         source: "rest/Pusher/",
-                                        applicationKey:"#{editorGameController.currentGameModel.getProperty('websocket')}"  
+                                        applicationKey:"#{editorGameController.currentGameModel.getProperty('websocket')}"
                                     }
                                     /* THIS IS NOT A COMMENT
                                     * </ui:fragment>

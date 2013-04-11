@@ -154,7 +154,7 @@ YUI.add('wegas-scriptlibrary', function (Y) {
                 label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                 on: {
                     click: Y.bind(function () {
-                        this.currentScript = prompt("Script name:");
+                        this.currentScript = prompt("Enter a name:");
 
                         this.showOverlay();
 
