@@ -48,7 +48,7 @@ YUI.add('wegas-console', function (Y) {
                             + e.response.results.entities[0] + "</div>");
                     }, this),
                     failure: Y.bind(function(e) {
-                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Error executing script: '
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: '
                             + e.response.results.message + "</div>");
                     }, this)
                 }

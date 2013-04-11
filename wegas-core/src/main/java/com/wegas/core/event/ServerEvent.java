@@ -14,12 +14,8 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  *
  * @author Yannick Lagger <lagger.yannick at gmail.com>
  */
-
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 //@JsonSubTypes()
 abstract public class ServerEvent {
-    
-    public ServerEvent() {
-    }
 }

@@ -14,7 +14,7 @@ YUI.add('wegas-entity', function(Y) {
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
             SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
-            BUTTON = "Button", VALUE = "value", TEXT = "text",
+            BUTTON = "Button", VALUE = "value", TEXT = "text", HTML = "html",
             IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
@@ -38,7 +38,7 @@ YUI.add('wegas-entity', function(Y) {
                 //Entity.ENTITIES_HASH[Receiver.name] = true;
                 //var c = Supplier.constructor;
                 //while (!Receiver.EDITMENU && c) {
-                //    if (c.EDITMENU) {                                                 // Add to attributes
+                //    if (c.EDITMENU) {                                         // Add to attributes
                 //        Receiver.EDITMENU = c.EDITMENU
                 //    }
                 //    c = c.superclass ? c.superclass.constructor : null;
@@ -236,7 +236,7 @@ YUI.add('wegas-entity', function(Y) {
             //    plugins: [{
             //        fn: "PublishGameModelAction"
             //    }]
-            //}, 
+            //},
             {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deleteGameModel-button"
@@ -860,6 +860,69 @@ YUI.add('wegas-entity', function(Y) {
         }
     });
     /**
+     * StringDescriptor mapper
+     */
+    Wegas.persistence.TextDescriptor = Y.Base.create("TextDescriptor", Wegas.persistence.VariableDescriptor, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "TextDescriptor"
+            },
+            defaultInstance: {
+                properties: {
+                    "@class": {
+                        type: STRING,
+                        _inputex: {
+                            value: 'TextInstance',
+                            _type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    value: {
+                        type: HTML,
+                        _inputex: {
+                            label: 'Default value'
+                        }
+                    }
+
+                }
+            }
+        },
+        METHODS: {
+            setValue: {
+                label: "set",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: HTML,
+                        value: "",
+                        scriptType: STRING
+                    }]
+            },
+            getValue: {
+                label: VALUE,
+                returns: STRING,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            }
+        }
+    });
+    /**
+     * TextInstance mapper
+     */
+    Wegas.persistence.TextInstance = Y.Base.create("TextInstance", Wegas.persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "TextInstance"
+            },
+            value: {
+                type: HTML
+            }
+        }
+    });
+    /**
      * NumberDescriptor mapper
      */
     Wegas.persistence.NumberDescriptor = Y.Base.create("NumberDescriptor", Wegas.persistence.VariableDescriptor, [], {}, {
@@ -994,7 +1057,8 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": true,
                 getter: function() {
                     if (this.get("items").length > 0) {
-                        return this.get("items")[this.getInstance().get(VALUE)];
+                        return this.get("items")[this.getInstance().
+                                get(VALUE)];
                     } else {
                         return null;
                     }
@@ -1097,32 +1161,32 @@ YUI.add('wegas-entity', function(Y) {
                 label: "send message",
                 className: "wegas-method-sendmessage",
                 arguments: [{
-                    type: HIDDEN,
-                    value: SELF
-                }, {
-                    type: STRING,
-                    label: "from",
-                    scriptType: STRING
-                }, {
-                    type: STRING,
-                    label: "title",
-                    scriptType: STRING
-                }, {
-                    type: "html",
-                    label: "Content",
-                    scriptType: STRING
-                }, {
-                    type: "list",
-                    label: "Attachements",
-                    scriptType: STRING,
-                    useButtons: true,
-                    /*sortable: true*/
-                    elementType: {
-                        type: "wegasurl",
-                        label: "",
-                        required: true
-                    }
-                }]
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "from",
+                        scriptType: STRING
+                    }, {
+                        type: STRING,
+                        label: "title",
+                        scriptType: STRING
+                    }, {
+                        type: HTML,
+                        label: "Content",
+                        scriptType: STRING
+                    }, {
+                        type: "list",
+                        label: "Attachements",
+                        scriptType: STRING,
+                        useButtons: true,
+                        /*sortable: true*/
+                        elementType: {
+                            type: "wegasurl",
+                            label: "",
+                            required: true
+                        }
+                    }]
             },
             isEmpty: {
                 label: "is empty",

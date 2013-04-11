@@ -7,7 +7,10 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.event.CustomEvent;
+import com.wegas.core.event.ExceptionEvent;
 import com.wegas.core.event.PlayerAction;
+import com.wegas.core.event.ServerEvent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -50,7 +53,7 @@ public class RequestManager implements Serializable {
     /**
      *
      */
-    private List<Exception> exceptions = new ArrayList<>();
+    private List<ServerEvent> events = new ArrayList<>();
     /**
      *
      */
@@ -113,16 +116,26 @@ public class RequestManager implements Serializable {
      *
      * @return
      */
-    public List<Exception> getExceptions() {
-        return exceptions;
+    public List<ServerEvent> getServerEvents() {
+        return events;
     }
 
     /**
      *
      * @param exception
      */
-    public void addException(Exception exception) {
-        this.exceptions.add(exception);
+    public void addEvent(ServerEvent event) {
+        this.events.add(event);
+    }
+
+    public void addException(Exception e) {
+        ArrayList exceptions = new ArrayList();
+        exceptions.add(e);
+        this.addEvent(new ExceptionEvent(exceptions));
+    }
+
+    public void sendCustomEvent(String type, Object payload) {
+        this.addEvent(new CustomEvent(type, payload));
     }
 
     /**
@@ -161,5 +174,4 @@ public class RequestManager implements Serializable {
     public void setLocale(Locale local) {
         this.locale = local;
     }
-
 }

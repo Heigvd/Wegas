@@ -15,6 +15,7 @@ import com.wegas.core.event.ServerEvent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.exception.ExceptionWrapper;
 import com.wegas.core.ejb.WebsocketFacade;
+import com.wegas.core.event.ExceptionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class ManagedModeResponseFilter implements ContainerResponseFilter, ResourceFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
-    
+
     /**
      * This method encapsulates a Jersey response's entities in a ServerResponse
      * and add server side events.
@@ -64,7 +65,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
 
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
 //                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getUpdatedInstances()));
-                EntityUpdatedEvent e = new EntityUpdatedEvent(rmf.getUpdatedInstances()); 
+                EntityUpdatedEvent e = new EntityUpdatedEvent(rmf.getUpdatedInstances());
                 serverResponse.getEvents().add(e);
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
@@ -75,9 +76,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            if (!rmf.getRequestManager().getExceptions().isEmpty()) {
-                serverResponse.getEvents().add(new ExceptionEvent(rmf.getRequestManager().getExceptions()));
-            }
+
+            serverResponse.getEvents().addAll(rmf.getRequestManager().getServerEvents());// Push events stored in RequestManager
         }
 
         return response;
@@ -147,60 +147,39 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             this.events = events;
         }
     }
-/*
-    @XmlRootElement
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    abstract private static class ServerEvent {
+    /*
+     @XmlRootElement
+     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+     abstract private static class ServerEvent {
 
-        public ServerEvent() {
-        }
-    }
-/*
-    @XmlType(name = "EntityUpdatedEvent")
-    private static class EntityUpdatedEvent extends ServerEvent {
+     public ServerEvent() {
+     }
+     }
+     /*
+     @XmlType(name = "EntityUpdatedEvent")
+     private static class EntityUpdatedEvent extends ServerEvent {
 
-        private List<VariableInstance> updatedEntities;
+     private List<VariableInstance> updatedEntities;
 
-        public EntityUpdatedEvent() {
-        }
+     public EntityUpdatedEvent() {
+     }
 
-        public EntityUpdatedEvent(List<VariableInstance> updatedEntities) {
-            this.updatedEntities = updatedEntities;
-        }
+     public EntityUpdatedEvent(List<VariableInstance> updatedEntities) {
+     this.updatedEntities = updatedEntities;
+     }
 
-        /**
-         * @return the updatedEntities
-         */
-       /* public List<VariableInstance> getUpdatedEntities() {
-            return updatedEntities;
-        }
+     /**
+     * @return the updatedEntities
+     */
+    /* public List<VariableInstance> getUpdatedEntities() {
+     return updatedEntities;
+     }
 
-        /**
-         * @param updatedEntities the updatedEntities to set
-         */
-        /*public void setUpdatedEntities(List<VariableInstance> updatedEntities) {
-            this.updatedEntities = updatedEntities;
-        }
-    }*/
-
-    @XmlType(name = "ExceptionEvent")
-    private static class ExceptionEvent extends ServerEvent {
-
-        private List<Exception> exceptions;
-
-        public ExceptionEvent() {
-        }
-
-        public ExceptionEvent(List<Exception> exceptions) {
-            this.exceptions = exceptions;
-        }
-
-        public List<Exception> getExceptions() {
-            return exceptions;
-        }
-
-        public void setExceptions(List<Exception> exceptions) {
-            this.exceptions = exceptions;
-        }
-    }
+     /**
+     * @param updatedEntities the updatedEntities to set
+     */
+    /*public void setUpdatedEntities(List<VariableInstance> updatedEntities) {
+     this.updatedEntities = updatedEntities;
+     }
+     }*/
 }

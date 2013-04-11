@@ -9,8 +9,10 @@ package com.wegas.core.persistence.variable;
 
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
@@ -35,8 +37,15 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({VariableInstancePersistenceListener.class})
+@NamedQueries({
+    @NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
+    @NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid")
+})
+//@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
+    @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class),
+    @JsonSubTypes.Type(name = "BooleanInstance", value = BooleanInstance.class),
     @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
     @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
@@ -47,11 +56,6 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
     @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class)
 })
-@NamedQueries({
-    @NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
-    @NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid")
-})
-//@JsonIgnoreProperties(value={"descriptorId"})
 abstract public class VariableInstance extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
