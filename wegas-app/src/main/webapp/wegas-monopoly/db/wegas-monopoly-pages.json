@@ -4,6 +4,9 @@
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout wegas-monopoly",
+        "plugins": [{
+            "fn": "PopupPlg"
+        }],
         "children": [
         {
             "label": "game",
