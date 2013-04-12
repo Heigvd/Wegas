@@ -21,8 +21,14 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(StringDescriptor.class);
+    /**
+     *
+     */
+    //@NotNull
+    //@Pattern(regexp = "^\\w*$")
+    private String validationPattern;
 
-   /**
+    /**
      *
      */
     public StringDescriptor() {
@@ -35,12 +41,6 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
     public StringDescriptor(String name) {
         this.name = name;
     }
-    /**
-     *
-     */
-    //@NotNull
-    //@Pattern(regexp = "^\\w*$")
-    private String validationPattern;
 
     /**
      * @return the validationPattern
@@ -48,6 +48,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
     public String getValidationPattern() {
         return validationPattern;
     }
+
 
     /**
      * @param validationPattern the validationPattern to set

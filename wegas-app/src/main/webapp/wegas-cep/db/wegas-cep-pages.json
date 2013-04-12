@@ -4,6 +4,9 @@
         "direction": "vertical",
         "type": "List",
         "cssClass": "layout wegas-cep",
+        "plugins": [{
+            "fn": "PopupPlg"
+        }],
         "children": [{
                 "type": "List",
                 "cssClass": "header",
@@ -21,18 +24,22 @@
                                 "direction": "vertical",
                                 "cssClass": "timeIndicators",
                                 "children": [{
-                                        "type": "VariableDisplay",
-                                        "label": "Phase",
-                                        "view": "title",
+                                        "type": "Template",
+                                        "template": "title",
                                         "variable": {
                                             "name": "phases"
+                                        },
+                                        "data": {
+                                            "label": "Phase"
                                         }
                                     }, {
-                                        "type": "VariableDisplay",
-                                        "label": "Period",
-                                        "view": "valuebox",
+                                        "type": "Template",
+                                        "template": "valuebox",
                                         "variable": {
                                             "name": "phases"
+                                        },
+                                        "data": {
+                                            "label": "Period"
                                         }
                                     }]
                             }, {
@@ -57,9 +64,11 @@
                                     }],
                                 "cssClass": "fl"
                             }, {
-                                "type": "VariableDisplay",
-                                "label": "Time cards",
-                                "view": "box",
+                                "type": "Template",
+                                "template": "box",
+                                "data": {
+                                    "label": "Time cards"
+                                },
                                 "variable": {
                                     "name": "humanResources"
                                 },

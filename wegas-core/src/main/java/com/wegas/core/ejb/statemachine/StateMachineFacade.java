@@ -190,7 +190,12 @@ public class StateMachineFacade implements Serializable {
                         && transition.getTriggerCondition() != null) {      //Do not eval Dialogue transition, no condition means invalid transition
                     requestManager.setPlayer(currentPlayer);
                     try {
-                        validTransition = (Boolean) scriptManager.eval(transition.getTriggerCondition());
+
+                        if (transition.getTriggerCondition().getContent().equals("")) { // if the condition is empty
+                            validTransition = true;                             // return true
+                        } else {                                                // Otherwise evaluate the condition
+                            validTransition = (Boolean) scriptManager.eval(transition.getTriggerCondition());
+                        }
                     } catch (ScriptException ex) {
                         validTransition = false;
                     }

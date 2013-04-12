@@ -4,6 +4,11 @@
         "direction": "vertical",
         "type": "List",
         "cssClass": "layout wegas-crimesim",
+        "plugins": [{
+                "fn": "PopupPlg"
+            }, {
+                "fn": "BlockRightclick"
+            }],
         "children": [{
                 "type": "List",
                 "cssClass": "header",
@@ -18,11 +23,10 @@
                         "variable": {
                             "name": "period"
                         },
-                        "data":{
-                            "label":"Period"
+                        "data": {
+                            "label": "Period"
                         }
                     }, {
-                        "cssClass": null,
                         "disabled": false,
                         "type": "Button",
                         "label": "Next period",
@@ -56,7 +60,8 @@
                         "type": "Template",
                         "template": "box",
                         "data": {
-                            "label": "Human resources"
+                            "label": "Human resources",
+                            "maxValue": 15
                         },
                         "variable": {
                             "name": "humanResources"
@@ -181,9 +186,11 @@
         ]
     },
     "2": {
-        "id": 2,
-        "type": "Text",
-        "content": "Welcome to CrimeSim."
+        "type": "Template",
+        "custom": "<%= this.value || 'Unable to find welcome text' %>",
+        "variable": {
+            "name": "welcomeText"
+        }
     },
     "3": {
         "id": 3,

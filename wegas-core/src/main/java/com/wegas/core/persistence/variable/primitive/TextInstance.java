@@ -10,6 +10,7 @@ package com.wegas.core.persistence.variable.primitive;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,34 +19,25 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-public class StringInstance extends VariableInstance {
+public class TextInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(StringInstance.class);
+    private static final Logger logger = LoggerFactory.getLogger(TextInstance.class);
+    @Lob
     private String val;
 
     /**
      *
      */
-    public StringInstance() {
+    public TextInstance() {
     }
 
     /**
      *
      * @param value
      */
-    public StringInstance(String value) {
+    public TextInstance(String value) {
         this.val = value;
-    }
-
-    /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        StringInstance vi = (StringInstance) a;
-        this.setValue(vi.getValue());
     }
 
     /**
@@ -60,5 +52,15 @@ public class StringInstance extends VariableInstance {
      */
     public void setValue(String value) {
         this.val = value;
+    }
+
+    /**
+     *
+     * @param a
+     */
+    @Override
+    public void merge(AbstractEntity a) {
+        TextInstance vi = (TextInstance) a;
+        this.setValue(vi.getValue());
     }
 }

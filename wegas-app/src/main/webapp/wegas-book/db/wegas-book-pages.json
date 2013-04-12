@@ -4,6 +4,9 @@
         "direction": "vertical",
         "type": "List",
         "cssClass": "layout",
+        "plugins": [{
+            "fn": "PopupPlg"
+        }],
         "children": [
             {
                 "type": "List",
