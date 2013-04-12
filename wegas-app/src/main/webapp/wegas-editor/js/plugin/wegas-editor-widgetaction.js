@@ -67,7 +67,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                         plugins[plugin.NS] = true;                              //store namespace as treated
                     } else {
                         targetWidget.plug(plugin, val.plugins[i].cfg);
-                        plugins[plugin.NS] = true;                 //store namespace as treated
+                        plugins[plugin.NS] = true;                              //store namespace as treated
                     }
                 }
                 for (i in targetWidget._plugins) {                                 // remove
@@ -104,9 +104,14 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
 
                 Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
                     Plugin.EditEntityAction.hideEditFormOverlay();
-                    var targetWidget = this.get("widget");
-                    targetWidget.add(val);
-                    this.get("dataSource").cache.patch(targetWidget.get("root").toObject());
+                    var targetWidget = this.get("widget"), widget = new Y.Wegas.Widget.create(val);
+                    targetWidget.add(widget);
+                    this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), {success: Y.bind(function() {
+                            var tw = new Y.Wegas.Text();
+                            tw.plug(Plugin.EditWidgetAction, {"widget": this});
+                            tw.EditWidgetAction.execute();
+                        }, widget)
+                    });
                 }, this));
 
             }, this));
