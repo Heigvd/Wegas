@@ -48,6 +48,10 @@ YUI.add("wegas-template", function(Y) {
             title: engine.compile(TEMPLATE.TITLE),
             fraction: engine.compile(TEMPLATE.FRACTION)
         },
+        initializer: function() {
+            /*Store variable descriptor cache update event reference. Destructor purpose*/
+            this.vdUpdate = null;
+        },
         renderUI: function() {
             this.set("variable", this.get("variable"));
         },
@@ -55,8 +59,7 @@ YUI.add("wegas-template", function(Y) {
             var template = this.get("custom"), hashCode = "" + Y.Wegas.Helper.hashCode(template),
                     data = this.computeData();
             if (template === "" && this.TEMPLATES[this.get("template")]) {
-                this.get("contentBox").
-                        setHTML(this.TEMPLATES[this.get("template")](data));
+                this.get("contentBox").setHTML(this.TEMPLATES[this.get("template")](data));
             } else {
                 if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
                     this.TEMPLATES[hashCode] = engine.compile(template);
@@ -67,7 +70,7 @@ YUI.add("wegas-template", function(Y) {
         },
         bindUI: function() {
             this.after(["dataChange", "variableChange", "templateChange"], this.syncUI);
-            Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI);
+            this.vdUpdate = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI);
         },
         computeData: function() {
             var data = {}, desc = this.get("variable.evaluated");
@@ -84,7 +87,7 @@ YUI.add("wegas-template", function(Y) {
             return Y.mix(Y.merge(this.get("data")), data, false, null, 0, true);
         },
         destructor: function() {
-
+            this.vdUpdate.detach();
         }
     },
     {/*@lends Y.Wegas.Template*/
