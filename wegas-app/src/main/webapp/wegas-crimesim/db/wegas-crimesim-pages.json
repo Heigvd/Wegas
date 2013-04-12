@@ -8,6 +8,13 @@
                 "fn": "PopupPlg"
             }, {
                 "fn": "BlockRightclick"
+            }, {
+                "fn": "CSSStyles",
+                "cfg": {
+                    "styles": {
+                        "min-width": "700px"
+                    }
+                }
             }],
         "children": [{
                 "type": "List",
