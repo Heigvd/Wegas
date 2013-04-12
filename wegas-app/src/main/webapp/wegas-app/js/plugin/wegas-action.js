@@ -306,10 +306,7 @@ YUI.add('wegas-action', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var PopupPlg = function() {
-        PopupPlg.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(PopupPlg, Plugin.Base, {
+    var PopupPlg = Y.Base.create("wegas-popupplugin", Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         initializer: function() {
             if (this.get("content")){
                 this.afterHostEvent("render", function() {
