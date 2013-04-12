@@ -120,6 +120,8 @@ YUI.add('wegas-datasource', function(Y) {
 
             this.doBefore("_defDataFn", this.onData, this);                     // When the host receives some data, we parse the result
             this.afterHostEvent("sourceChange", this.clear, this);         // When the source changes, clear the cache
+
+            this.aft
         },
         /**
          * Server requests methods
@@ -497,7 +499,11 @@ YUI.add('wegas-datasource', function(Y) {
                     this.get(HOST).fire("update", e);
                     this.updated = false;
                 }
-            }, this);
+            });
+
+            this.on("CustomEvent", function (e) {
+                this.get("host").fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
+            });
         },
         /**
          * @function

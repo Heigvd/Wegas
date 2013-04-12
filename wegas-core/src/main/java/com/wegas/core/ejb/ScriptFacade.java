@@ -150,11 +150,12 @@ public class ScriptFacade implements Serializable {
      */
     public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException, WegasException {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
+        evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
 
         List<String> errorVariable = new ArrayList<>();
 
-        for (Entry<String, GameModelContent> arg :
-                evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
+        for (Entry<String, GameModelContent> arg
+                : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
             try {
                 evt.getEngine().eval(arg.getValue().getContent());
             } catch (ScriptException ex) {
@@ -163,8 +164,8 @@ public class ScriptFacade implements Serializable {
             }
         }
 
-        for (VariableDescriptor vd :
-                evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
+        for (VariableDescriptor vd
+                : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
             VariableInstance vi = vd.getInstance(evt.getPlayer());
             try {
                 evt.getEngine().put(vd.getName(), vi);

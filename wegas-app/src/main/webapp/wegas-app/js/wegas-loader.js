@@ -268,7 +268,7 @@ YUI().use(function(Y) {
                 'wegas-template': {
                     path: "wegas-app/js/widget/wegas-template-min.js",
                     requires: ["template", "wegas-templatecss"],
-                    ws_provides: ["Template"]
+                    ws_provides: "Template"
                 },
                 'wegas-injector': {
                     path: 'wegas-app/js/plugin/wegas-injector-min.js',
@@ -303,6 +303,40 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-cssstyles-min.js',
                     requires: ['stylesheet'],
                     ws_provides: 'CSSStyles'
+                },
+                "wegas-cssbackground": {
+                    path: 'wegas-app/js/plugin/wegas-cssbackground-min.js',
+                    requires: ['wegas-cssstyles'],
+                    ws_provides: 'CSSBackground'
+                },
+                "wegas-csstext": {
+                    path: 'wegas-app/js/plugin/wegas-csstext-min.js',
+                    requires: ['wegas-cssstyles'],
+                    ws_provides: 'CSSText'
+                },
+                "wegas-cssposition": {
+                    path: 'wegas-app/js/plugin/wegas-cssposition-min.js',
+                    requires: ['wegas-cssstyles'],
+                    ws_provides: 'CSSPosition'
+                },
+                "wegas-inputex-object": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
+                    requires: ['inputex-object'],
+                    ix_provides: 'wegasobject'
+                },
+                "wegas-inputex-colorpicker": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-colorpicker-min.js',
+                    requires: ['inputex-field', 'overlay'],
+                    ix_provides: 'colorpicker'
+                },
+                "wegas-inputex-keyvalue": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-keyvalue-min.js',
+                    requires: ['inputex-keyvalue'],
+                    ix_provides: 'wegaskeyvalue'
+                },
+                "wegas-blockrightclick": {
+                    path: 'wegas-app/js/plugin/wegas-blockrightclick-min.js',
+                    ws_provides: 'BlockRightclick'
                 },
                 "wegas-visibilitytimer": {
                     path: 'wegas-app/js/plugin/wegas-visibilitytimer-min.js',
@@ -419,6 +453,10 @@ YUI().use(function(Y) {
                 },
                 'wegas-rightscss': {
                     path: 'wegas-editor/css/wegas-rights.css',
+                    type: 'css'
+                },
+                'gallery-colorpickercss': {
+                    path: 'wegas-editor/css/gallery-colorpicker.css',
                     type: 'css'
                 },
                 /** Editor's Widgets **/
