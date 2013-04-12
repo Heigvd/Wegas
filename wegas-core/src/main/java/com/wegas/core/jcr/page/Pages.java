@@ -28,7 +28,6 @@ public class Pages implements Serializable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
     private String gameModelId;
-    private Map<Integer, Page> pages;
     @XmlTransient
     private PageConnector connector;
 

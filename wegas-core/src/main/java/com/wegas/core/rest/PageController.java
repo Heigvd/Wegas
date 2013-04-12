@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
-@Path("Page/{gameModelId : [0-9]*}")
+@Path("Page/{gameModelId : [0-9]+}")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class PageController {
@@ -64,7 +64,7 @@ public class PageController {
      * @throws WegasException
      */
     @GET
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]*}")
+    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     public Response getPage(@PathParam("gameModelId") String gameModelId,
             @PathParam("pageId") String pageId)
             throws RepositoryException, WegasException {
@@ -117,7 +117,7 @@ public class PageController {
      * @throws WegasException
      */
     @PUT
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]*}")
+    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setPage(@PathParam("gameModelId") String gameModelId,
             @PathParam("pageId") String pageId,
@@ -142,7 +142,7 @@ public class PageController {
      * @throws WegasException
      */
     @PUT
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]*}/meta")
+    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/meta")
     public Response setMeta(@PathParam("gameModelId") String gameModelId,
             @PathParam("pageId") String pageId,
             Page page) throws RepositoryException, WegasException {
@@ -167,14 +167,13 @@ public class PageController {
      * @throws IOException
      * @throws WegasException
      */
-    @POST
-    @Path("/new")
+    @PUT
     public Response createPage(@PathParam("gameModelId") String gameModelId, JsonNode content, String name)
             throws RepositoryException, IOException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         Pages pages = new Pages(gameModelId);
-        if (name == null) {
+        if (name == null || name.equals("")) {
 
             Map<String, String> index = pages.getIndex();
             Integer pageId = 1;
@@ -190,7 +189,7 @@ public class PageController {
     }
 
     @GET
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]*}/duplicate")
+    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/duplicate")
     public Response duplicate(@PathParam("gameModelId") String gameModelId,
             @PathParam("pageId") String pageId) throws RepositoryException, IOException {
         final Pages pages = new Pages(gameModelId);
@@ -259,7 +258,7 @@ public class PageController {
      * @throws WegasException
      */
     @DELETE
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]*}")
+    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     public Response deletePage(@PathParam("gameModelId") String gameModelId,
             @PathParam("pageId") String pageId)
             throws RepositoryException, WegasException {
@@ -284,7 +283,7 @@ public class PageController {
      * @throws WegasException
      */
     @PUT
-    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]*}")
+    @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response patch(@PathParam("gameModelId") String gameModelId,
             @PathParam("pageId") String pageId,
