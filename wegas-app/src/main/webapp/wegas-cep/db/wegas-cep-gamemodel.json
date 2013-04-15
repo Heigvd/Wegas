@@ -3,7 +3,8 @@
     "name": "CEP Game",
     "properties": {
         "cssUri": "wegas-cep/css/wegas-cep.css",
-        "pagesUri": "wegas-cep/db/wegas-cep-pages.json#"
+        "pagesUri": "wegas-cep/db/wegas-cep-pages.json#",
+        "googleTranslateId": "61fa0b2a634dfa83-0bc9c6c9944b17ff-g74a2fb91471873ad-10"
     },
     "scriptLibrary": {
         "default": {

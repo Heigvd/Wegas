@@ -19,7 +19,8 @@ YUI.add('wegas-entity', function(Y) {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
         _inputex: {
-            _type: HIDDEN
+            _type: HIDDEN,
+            //wrapperClassName: 'wegas-advanced-feature'
         }
     }, Wegas = Y.namespace("Wegas"), Entity;
 
@@ -650,7 +651,7 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     wrapperClassName: 'wegas-advanced-feature',
                     label: "Script alias",
-                    regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
                     description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
                 },
                 validator: function(s) {
