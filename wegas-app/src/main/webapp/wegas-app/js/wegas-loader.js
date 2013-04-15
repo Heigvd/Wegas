@@ -256,6 +256,10 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-action-min.js',
                     requires: ['plugin']
                 },
+                'wegas-popup': {
+                    path: 'wegas-app/js/plugin/wegas-popup-min.js',
+                    provides: ["Popup"]
+                },
                 'wegas-tooltip': {
                     path: 'wegas-app/js/plugin/wegas-tooltip-min.js',
                     requires: ["wegas-action", "event-mouseenter", "widget", "widget-stack",
@@ -355,12 +359,6 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', 'inputex-textarea', 'tinymce', 'panel',
                         'wegas-fileexplorer'],
                     ix_provides: 'html'
-                },
-                'wegas-inputex-yui2rte': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-yui2rte-min.js',
-                    requires: ['wegas-inputex', 'inputex-field', 'yui2-editor', 'panel',
-                        'wegas-fileexplorer', 'wegas-inputex-url'],
-                    ix_provides: 'yui2html'
                 },
                 'wegas-inputex-list': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-list-min.js',

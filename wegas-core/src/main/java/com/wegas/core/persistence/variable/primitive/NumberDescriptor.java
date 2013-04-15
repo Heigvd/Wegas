@@ -106,6 +106,10 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         this.getInstance(p).setValue(value);
     }
 
+    public double getDefaultValue() {
+        return ((NumberInstance) this.getDefaultInstance()).getValue();
+    }
+
     /**
      *
      * @param p
