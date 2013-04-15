@@ -67,7 +67,7 @@ YUI.add('wegas-cssstyles', function(Y) {
                 for (var style in styles){
                     var value = styles[style];                 
                     if (value){
-                        if (style === "font-size" || style === "top" || style === "right" || style === "bottom" || style === "left"){
+                        if (style === "font-size" || style === "top" || style === "right" || style === "bottom" || style === "left" || style === "min-width"){
                             if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-2) !== "%"){
                                   styles[style] = value + "pt";
                             }
@@ -109,6 +109,9 @@ YUI.add('wegas-cssstyles', function(Y) {
                             type: "select",
                             name: "text-align",
                             choices: ["", "left", "right", "center", "justify", "inherit"]
+                        }, {
+                            type: "string",
+                            name: "min-width"
                         }]
                     }
                 }

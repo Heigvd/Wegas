@@ -12,7 +12,7 @@
 YUI.add('wegas-datasource', function(Y) {
     "use strict";
 
-    var HOST = "host", ID = "id", POST = "POST",
+    var HOST = "host", ID = "id", POST = "POST", PUT = "PUT",
             Lang = Y.Lang, Wegas = Y.Wegas, WegasCache, VariableDescriptorCache,
             GameModelCache, GameCache, PageCache,
             DEFAULTHEADERS = {
@@ -527,7 +527,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         updateCache: function(method, entity) {
             if (entity instanceof Wegas.persistence.VariableInstance) {
-                return this.find(ID, entity.get("descriptorId") * 1, function(found, needle) {
+                return this.find(ID, +entity.get("descriptorId"), function(found, needle) {
                     var i, instances = found.get("scope").get("variableInstances");
 
                     for (i in instances) {
@@ -935,7 +935,7 @@ YUI.add('wegas-datasource', function(Y) {
             this.sendRequest({
                 request: "" + pageId,
                 cfg: {
-                    method: 'PUT',
+                    method: PUT,
                     data: Y.JSON.stringify(pe)
                 },
                 callback: callback
@@ -944,13 +944,13 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @function
          */
-        post: function(entity, callback) {
+        createPage: function(entity, callback) {
             var pe = Y.clone(entity);
             delete pe["@pageId"];
             this.sendRequest({
-                request: "new",
+                request: "",
                 cfg: {
-                    method: POST,
+                    method: PUT,
                     data: Y.JSON.stringify(pe)
                 },
                 callback: callback
@@ -1028,16 +1028,34 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        getPage: function(pageId) {
+        /**
+         * 
+         * @param {String} pageId
+         * @param {Function} callback asyc calling function with page as first param
+         * @returns {Page} or null if page missing in cache.
+         */
+        getPage: function(pageId, callback) {
             var page = null;
             if (this.getCache(pageId)) {
                 page = Y.clone(this.getCache(pageId));
                 page["@pageId"] = pageId;
+                if (callback instanceof Function) {
+                    callback(page);
+                }
             } else if (!this.pageQuery[pageId]) {
                 this.pageQuery[pageId] = true;
                 this.sendRequest({
                     request: "" + pageId,
-                    sync: true
+                    callback: {
+                        success: Y.bind(function(id, e) {
+                            var page;
+                            if (callback instanceof Function) {
+                                page = Y.clone(this.getCache(pageId));
+                                page["@pageId"] = pageId;
+                                callback(page);
+                            }
+                        }, this, pageId)
+                    }
                 });
             }
             return page;

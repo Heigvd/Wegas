@@ -5,8 +5,17 @@
         "type": "List",
         "cssClass": "layout wegas-crimesim",
         "plugins": [{
-            "fn": "Popup"
-        }],
+                "fn": "Popup"
+            }, {
+                "fn": "BlockRightclick"
+            }, {
+                "fn": "CSSStyles",
+                "cfg": {
+                    "styles": {
+                        "min-width": "700px"
+                    }
+                }
+            }],
         "children": [{
                 "type": "List",
                 "cssClass": "header",

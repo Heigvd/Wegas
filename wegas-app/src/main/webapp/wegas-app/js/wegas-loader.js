@@ -338,6 +338,10 @@ YUI().use(function(Y) {
                     requires: ['inputex-keyvalue'],
                     ix_provides: 'wegaskeyvalue'
                 },
+                "wegas-blockrightclick": {
+                    path: 'wegas-app/js/plugin/wegas-blockrightclick-min.js',
+                    ws_provides: 'BlockRightclick'
+                },
                 "wegas-visibilitytimer": {
                     path: 'wegas-app/js/plugin/wegas-visibilitytimer-min.js',
                     requires: ["wegas-editable", "plugin", "wegas-action"],
