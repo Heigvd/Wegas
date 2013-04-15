@@ -167,7 +167,6 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     public void joinTeam(Team team, Player player) {
         team.addPlayer(player);
         em.flush();
-        em.refresh(player);
         team.getGame().getGameModel().propagateDefaultInstance(false);
     }
 
@@ -180,6 +179,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     public Player createPlayer(Long teamId, Player p) {
         Team t = this.find(teamId);
         this.joinTeam(t, p);
+        em.refresh(p);
         return p;
     }
 

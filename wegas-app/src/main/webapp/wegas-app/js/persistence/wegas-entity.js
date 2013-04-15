@@ -345,8 +345,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deleteGame-button"
             }, {
-                type: "Linkwidget",
-                cssClass: "editor-playerlink-button"
+                type: "Linkwidget"
             }]
     });
 
@@ -399,6 +398,8 @@ YUI.add('wegas-entity', function(Y) {
             }, {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deleteTeam-button"
+            }, {
+                type: "Linkwidget"
             }]
 
                 //{ // We allow the player to open its pages with the widget
