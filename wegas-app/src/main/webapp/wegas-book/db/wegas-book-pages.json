@@ -5,7 +5,7 @@
         "type": "List",
         "cssClass": "layout",
         "plugins": [{
-            "fn": "PopupPlg"
+            "fn": "Popup"
         }],
         "children": [
             {
@@ -14,18 +14,22 @@
                 "cssClass": "menu",
                 "children": [
                     {
-                        "type": "VariableDisplay",
-                        "label": "Combat skills",
-                        "view": "text",
+                        "type": "Template",
+                        "template": "text",
                         "variable": {
                             "name": "combatSkill"
+                        },
+                        "data": {
+                            "label": "Combat skills"
                         }
                     }, {
-                        "type": "VariableDisplay",
-                        "label": "Stamina",
-                        "view": "text",
+                        "type": "Template",
+                        "template": "text",
                         "variable": {
                             "name": "stamina"
+                        },
+                        "data": {
+                            "label": "Stamina"
                         }
                     }
                 ]

@@ -944,6 +944,10 @@ YUI.add('wegas-entity', function(Y) {
                     label: 'Maximum'
                 }
             },
+            defaultValue: {
+                type: STRING,
+                "transient": true
+            },
             defaultInstance: {
                 properties: {
                     "@class": {

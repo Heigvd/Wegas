@@ -14,8 +14,6 @@ YUI.add('wegas-action', function(Y) {
 
     var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas");
 
-    "use strict";
-
     /**
      *  @name Y.Wegas.Plugin
      *  @class Extension that adds editable capacities to plugins
@@ -298,43 +296,5 @@ YUI.add('wegas-action', function(Y) {
         }
     });
     Plugin.SaveEntityAction = SaveEntityAction;
-
-    /**
-     *  @class Show a message when the host widget is rendered, useful for welcome
-     *  messages
-     *  @name Y.Plugin.PopupPlg
-     *  @extends Y.Plugin.Base
-     *  @constructor
-     */
-    var PopupPlg = function() {
-        PopupPlg.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(PopupPlg, Plugin.Base, {
-        initializer: function() {
-            if (this.get("content")){
-                this.afterHostEvent("render", function() {
-                    this.get(HOST).showMessage("info", this.get("content"));
-                });
-            }
-            
-            Y.Wegas.Facade.VariableDescriptor.on(this.get("event"), function(e){
-                this.get(HOST).showMessage("info", e.content);
-            }, this);
-        }
-    }, {
-        NS: "PopupPlg",
-        NAME: "PopupPlg",
-        ATTRS: {
-            content: {
-                type: "string",
-                format: "text"
-            },
-            event: {
-                value: "popupEvent",
-                type: "string"
-            }
-        }
-    });
-    Plugin.PopupPlg = PopupPlg;
-
+    
 });

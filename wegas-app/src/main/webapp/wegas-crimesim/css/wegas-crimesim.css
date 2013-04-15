@@ -3,6 +3,7 @@
     width:100%;
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 9pt;
+min-width: 800px;
 }
 .header {
     height:55px;
@@ -29,11 +30,11 @@
     padding: 5px 25px 0px 10px;
     letter-spacing: -2px;
 }
-.wegas-variabledisplay {
+.wegas-template {
     padding:5px;
     max-width:150px;
 }
-.wegas-variabledisplay-box-unit {
+.wegas-template-box-unit {
     width:5px;
     height:10px;
     background:steelblue;

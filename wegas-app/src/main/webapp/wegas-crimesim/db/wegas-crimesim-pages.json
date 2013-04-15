@@ -5,7 +5,7 @@
         "type": "List",
         "cssClass": "layout wegas-crimesim",
         "plugins": [{
-            "fn": "PopupPlg"
+            "fn": "Popup"
         }],
         "children": [{
                 "type": "List",

@@ -5,7 +5,7 @@
         "type": "List",
         "cssClass": "layout wegas-monopoly",
         "plugins": [{
-            "fn": "PopupPlg"
+            "fn": "Popup"
         }],
         "children": [
         {

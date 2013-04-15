@@ -10,11 +10,13 @@
                 "type": "List",
                 "cssClass": "menu",
                 "children": [{
-                        "type": "VariableDisplay",
-                        "label": "Money",
-                        "view": "text",
+                        "type": "Template",
+                        "template": "text",
                         "variable": {
                             "name": "money"
+                        },
+                        "data": {
+                            "label": "Money"
                         }
                     }, {
                         "type": "Text",
@@ -184,7 +186,7 @@
                     }]
             }],
         "plugins": [{
-                "fn": "PopupPlg",
+                "fn": "Popup",
                 "cfg": {
                     "content": "Bienvenue dans le jeu de la programation. Vous êtes malheureusement coincé à l'intérieur du jeu, et le seul moyen de vous en sortir est de coder vos propres <i>algorightme</i> pour contrôler votre avatar.<div class=\"wegas-proggame-def\">Le mot algorithme est dérivé du nom d'un mathématicien perse qui a vécu au IXème siècle,  Mohammed al-Khwârizmî (en latin Algorismus). Il a proposé un ensemble d'opérations élémentaires à exécuter séquentiellement, pour additionner, soustraire, multiplier et diviser des nombres  décimaux. Voici donc une définition : Un algorithme consiste en la description d'un certain nombre d'opérations élémentaires selon un ordre logique permettant de résoudre un problème sur des données en un nombre fini d'étapes.</div>Pour sortir de ce niveau il faut atteindre la porte de sortie. Vous avez à disposition la fonction <i>move</i> pour l'atteindre: entre simplement le nom de la fonction, suivie de parenthèses et d'un point virgule, comme ceci:<div class=\"wegas-proggame-code\">move();</div>Puis cliquez sur RUN. Vous pouvez appeler plusieurs fois la même fonction."
                 }
@@ -329,7 +331,7 @@
                     }]
             }],
         "plugins": [{
-                "fn": "PopupPlg",
+                "fn": "Popup",
                 "cfg": {
                     "content": "Bien joué! Je vois que la fonction n'a plus de secrets pour vous!<br /><br />Mais ça ne sera pas si façile cette fois, des obstacles se dressent sur votre route. Utilisez les fonctions<i>rotateLeft</i> et <i>rotateRight</i> pour le contourner."
                 }
@@ -447,7 +449,7 @@
                 "y": 17
             }],
         "plugins": [{
-                "fn": "PopupPlg",
+                "fn": "Popup",
                 "cfg": {
                     "content": "Oh non un ennemi vous barre la route. Vous devrez déchiffrer son intelligence artificielle pour en venir à bout.<br /><br />Vous disposez de la métode <i>fire</i> pour vous débarasser de cet ennemi."
                 }
@@ -562,7 +564,7 @@
                 "y": 5
             }],
         "plugins": [{
-                "fn": "PopupPlg",
+                "fn": "Popup",
                 "cfg": {
                     "content": "Pour passer ce niveau, vous devrez répondre à la question de l'ordinateur. Mais comme tout ordinateur, il utilise des paramêtres au lieu de phrase pour poser sa question. Vous allez devoir manipuler ces paramêtre pour trouver la réponse à la question, puis utiliser la méthode <i>say</i> pour lui répondre.<br /><br />Dans ce cas l'ordinateur veut que vous le saluiez. Vous pouvez le faire comme cela: <div class=\"wegas-proggame-code\">say(\"Hello computer\");</div>"
                 }
@@ -671,7 +673,7 @@
                 "y": 5
             }],
         "plugins": [{
-                "fn": "PopupPlg",
+                "fn": "Popup",
                 "cfg": {
                     "content": "Encore une fois bravo, mais ce n'était pas si dur. Pour passer le prochain niveau vous allez devoire utiliser des <i>variables</i>.<div class=\"wegas-proggame-def\">Dans un programme informatique, on va avoir en permanence besoin de stocker provisoirement des valeurs. Il peut s'agir de données issues d'un fichier sur disque dur, fournies par l'utilisateur (saisies au clavier), ou extraites d'une base de données. Il peut aussi s'agir de résultats obtenus au cours de l'exécution du programme. Ces données sont stockées en mémoire et ont une durée de vie égale au temps d'exécution du programme. Elles peuvent être de plusieurs types : des nombres, du texte, etc. Dès que l'on a besoin de stocker une valeur dans un programme, on utilise une variable.<br /><br />Pour employer une image, une variable est une boîte, repérée par une étiquette. Pour avoir accès au contenu de la boîte, il suffit de la désigner par son étiquette. En réalité, pour un ordinateur, Ces variables sont stockées dans la mémoire vive et elles sont désignées par des adresses binaires. Il est beaucoup plus facile d'employer des étiquettes de son choix, que de devoir manipuler des adresses binaires. Ainsi, la première chose à faire avant de pouvoir utiliser une variable est de définir « la boîte » et de lui donner une étiquette. Ceci se fait tout au début de l'algorithme, avant même les instructions proprement dites. C'est ce qu'on appelle la déclaration des variables.<br /><br />Le nom de la variable (l'étiquette de la boîte) obéit à des impératifs changeant selon les langages. Toutefois, une règle absolue est qu'ils peuvent comporter des lettres et des chiffres, mais qu'ils excluent tous les signes de ponctuation, en particulier les espaces. Un nom de variable correct commence impérativement par une lettre minuscule.<br /><br />Si pour des raisons purement pratiques on évite généralement les noms à rallonge, il faut tout de même veiller à choisir un nom pertinent en rapport à ce que représente la variable. Ainsi, on évitera d'utiliser de simples lettres souvent utilisées en mathématiques comme x, y, i, j,... qui sont peu explicites. On préférera des noms comme :compteur, temperature, abscisse, ordonnee, point, somme, moyenne...Des noms explicites apportent du sens, et rendent tout simplement les algorithmes plus lisibles et compréhensibles.</div>Dans cette exercice, recevrez votre première variable vous recevrez votre première variable en <i>paramètre</i> de votre fonction <i>main</i>. Cette variable contient le nom du charactère qui se tient en face de vous. Vous devez le saluer en utilisant ce nom, comme ceci:<div class=\"wegas-proggame-code\">var salutation = \"Hello \";<br />salutation = salutation + name;<br />say(salutation);</div>"
                 }
