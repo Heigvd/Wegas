@@ -8,6 +8,8 @@
         <ui:define name="title">#{editorGameController.currentGameModel.name} - #{editorGameController.currentGame.name}</ui:define>
 
         <ui:define name="head">
+
+            <meta name="google-translate-customization" content="#editorGameController.currentGameModel.getProperty('googleTranslateId')" />
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
             <style type="text/css">
                 .yui3-skin-sam .yui3-button.wegas-title,
@@ -101,7 +103,7 @@
                                         fn: "WegasCache"
                                     }]
                             }
-                            
+
                             /* THIS IS NOT A COMMENT
                              * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
                              */
@@ -109,7 +111,7 @@
                             "Pusher":{
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
-                                applicationKey:"#{editorGameController.currentGameModel.getProperty('websocket')}"  
+                                applicationKey:"#{editorGameController.currentGameModel.getProperty('websocket')}"
                             }
                             /* THIS IS NOT A COMMENT
                              * </ui:fragment>
@@ -165,7 +167,7 @@
                                     }
                                 ]
                             }
-                            
+
                         },
                         /**
                          * This field is used to override Entities edition menus.
