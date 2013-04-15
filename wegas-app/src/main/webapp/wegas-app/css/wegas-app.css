@@ -13,9 +13,49 @@
 select {
     margin: 0;
 }
+
 input[type="submit"], input[type="reset"] {
     padding:2px 4px;
     cursor: pointer;
+}
+
+/*
+* Counter YUI's cssreset. 
+*/
+strong{
+    font-weight: 700;
+}
+
+em{
+    font-style: italic;
+}
+
+h1, h2, h3, h4, h5, h6 { 
+    font-weight: 700;
+}
+
+h1{
+    font-size: 2.2em;
+}
+
+h2{
+    font-size: 1.8em;
+}
+
+h3{
+    font-size: 1.4em;
+}
+
+h4{
+    font-size: 1.3em;
+}
+
+body h5{
+    font-size: 1.2em;
+}
+
+body h6{
+    font-size: 1.1em;
 }
 
 /* YUI3 Button Widget styles redefinition */
@@ -226,44 +266,4 @@ font{
 */
 .timed-hidden-node{
     visibility: hidden;
-}
-
-
-/*
-* Counter YUI's cssreset. 
-*/
-body strong{
-    font-weight: 700;
-}
-
-body em{
-    font-style: italic;
-}
-
-body h1, h2, h3, h4, h5, h6 { 
-    font-weight: 700;
-}
-
-body h1{
-    font-size: 2.2em;
-}
-
-body h2{
-    font-size: 1.8em;
-}
-
-body h3{
-    font-size: 1.4em;
-}
-
-body h4{
-    font-size: 1.3em;
-}
-
-body h5{
-    font-size: 1.2em;
-}
-
-body h6{
-    font-size: 1.1em;
 }
