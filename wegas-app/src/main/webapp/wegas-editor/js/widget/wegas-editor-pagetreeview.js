@@ -32,7 +32,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         },
         bindUI: function() {
             this.on("*:newPage", function(e) {
-                this.dataSource.post(NEWPAGE);
+                this.dataSource.createPage(NEWPAGE);
             });
             this.tw.on("treenode:click", function(e) {
                 var node = e.node;

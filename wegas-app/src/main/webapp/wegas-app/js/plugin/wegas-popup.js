@@ -18,19 +18,16 @@ YUI.add('wegas-popup', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Popup = function() {
-        Popup.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(Popup, Plugin.Base, {
+    var Popup = Y.Base.create("wegas-popup", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
             if (this.get("content")){
                 this.afterHostEvent("render", function() {
-                    this.get(HOST).showMessage("info", this.get("content"));
+                    this.get("host").showMessage("info", this.get("content"));
                 });
             }
 
             Y.Wegas.Facade.VariableDescriptor.on(this.get("event"), function(e){
-                this.get(HOST).showMessage("info", e.content);
+                this.get("host").showMessage("info", e.content);
             }, this);
         }
     }, {

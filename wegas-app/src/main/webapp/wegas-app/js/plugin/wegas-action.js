@@ -296,5 +296,5 @@ YUI.add('wegas-action', function(Y) {
         }
     });
     Plugin.SaveEntityAction = SaveEntityAction;
-    
+
 });

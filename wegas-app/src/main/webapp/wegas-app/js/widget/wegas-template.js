@@ -55,8 +55,7 @@ YUI.add("wegas-template", function(Y) {
             var template = this.get("custom"), hashCode = "" + Y.Wegas.Helper.hashCode(template),
                     data = this.computeData();
             if (template === "" && this.TEMPLATES[this.get("template")]) {
-                this.get("contentBox").
-                        setHTML(this.TEMPLATES[this.get("template")](data));
+                this.get("contentBox").setHTML(this.TEMPLATES[this.get("template")](data));
             } else {
                 if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
                     this.TEMPLATES[hashCode] = engine.compile(template);
@@ -67,7 +66,7 @@ YUI.add("wegas-template", function(Y) {
         },
         bindUI: function() {
             this.after(["dataChange", "variableChange", "templateChange"], this.syncUI);
-            this.vdUpdateHander = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI);
+            this.vdUpdateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI);
         },
         computeData: function() {
             var data = {}, desc = this.get("variable.evaluated");
@@ -88,10 +87,11 @@ YUI.add("wegas-template", function(Y) {
             return Y.mix(Y.merge(this.get("data")), data, false, null, 0, true);
         },
         destructor: function() {
-            this.vdUpdateHander.detach();
+            this.vdUpdateHandler.detach();
         }
-    },
-    {/*@lends Y.Wegas.Template*/
+
+    }, {
+        /*@lends Y.Wegas.Template*/
         EDITORNAME: "Variable template",
         ATTRS: {
             /**

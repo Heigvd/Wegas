@@ -1,240 +1,237 @@
 {
     "type": "Layout",
-    "plugins": [{
-        "fn": "Injector"
-    }],
     "top": {
         "height": 25,
         "scroll": null,
         "zIndex": 2,
         "children": [{
-            "type": "Button",
-            "content": "",
-            "cssClass": "wegas-title",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": [{
-                        "type": "Button",
-                        "label": "Properties",
-                        "plugins": [{
-                            "fn": "EditEntityAction",
-                            "cfg": {
-                                "entity": "currentGameModel",
-                                "dataSource": "GameModelFacade"
-                            }
-                        }]
-                    }]
-                }
-            }]
-        }, {
-            "type": "SelectGameButton",
-            "cssClass": "editor-game-button"
-        }, {
-            "type": "SelectPlayerButton",
-            "cssClass": "editor-player-button"
-        }, {
-            "type": "Button",
-            "label": "Developer",
-            "cssClass": "editor-developer-button",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": [{
-                        "type": "OpenTabButton",
-                        "label": "Console",
-                        "wchildren": [{
-                            "type": "Console",
-                            "cssClass": "wegas-console",
-                            "plugins": [{
-                                "fn": "WidgetToolbar",
-                                "cfg": {
-                                    "children": [{
-                                        "type": "SelectPlayerButton"
-                                    }]
-                                }
-                            }]
-                        }]
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Log",
-                        "wchildren": [{
-                            "type": "Log"
-                        }]
-                    }]
-                }
-            }]
-        }, {
-            "type": "Button",
-            "label": "Administrator",
-            "cssClass": "editor-administrator-button",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": [{
-                        "type": "OpenTabButton",
-                        "label": "Users",
-                        "wchildren": [{
-                            "type": "EditorTreeView",
-                            "dataSource": "User",
-                            "request": {
-                                "request": "/"
-                            },
-                            "plugins": [{
-                                "fn": "WidgetToolbar",
-                                "cfg": {
-                                    "children": [{
-                                        "type": "NewEntityButton",
-                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                        "targetClass": "JpaAccount",
-                                        "dataSource": "User"
-                                    }]
-                                }
-                            }]
-                        }]
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Groups",
-                        "wchildren": [{
-                            "type": "EditorTreeView",
-                            "dataSource": "Role",
-                            "request": {
-                                "request": "/"
-                            },
-                            "plugins": [{
-                                "fn": "WidgetToolbar",
-                                "cfg": {
-                                    "children": [{
-                                        "type": "NewEntityButton",
-                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                        "targetClass": "Role",
-                                        "dataSource": "Role"
-                                    }]
-                                }
-                            }]
-                        }]
-                    }]
-                }
-            }]
-        }, {
-            "type": "Button",
-            "label": "Scenarist",
-            "cssClass": "editor-scenarist-button",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": [ {
-                        "type": "OpenTabButton",
-                        "label": "Files",
-                        "wchildren": [{
-                            "type": "FileExplorer",
-                            "plugins": [{
-                                "fn": "WidgetToolbar"
-                            }]
-                        }]
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Pages",
-                        "cssClass":"experimental",
-                        "tabSelector": "#leftTabView",
-                        "wchildren": [{
-                            "type": "PageTreeview",
-                            "pageLoader": "previewPageLoader"
-                        }]
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Styles",
-                        "wchildren": [{
-                            "type": "ScriptLibrary",
-                            "library": "CSS",
-                            "cssClass": "wegas-csseditor"
-                        }]
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Scripts",
-                        "wchildren": [{
-                            "type": "ScriptLibrary"
-                        }]
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Client scripts",
-                        "wchildren": [{
-                            "type": "ScriptLibrary",
-                            "library": "ClientScript"
-                        }]
-                    }]
-                }
-            }]
-        }, {
-            "type": "Button",
-            "label": "Animator",
-            "cssClass": "editor-animator-button",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": [{
-                        "type": "OpenTabButton",
-                        "label": "Players",
-                        "wchildren": [{
-                            "type": "EditorTreeView",
-                            "dataSource": "Game"
-                        }]
-                    },{
-                        "type": "OpenTabButton",
-                        "label": "Impact game",
-                        "wchildren": [{
-                            "type": "ImpactGame",
-                            "cssClass": "wegas-console",
-                            "plugins": [{
-                                "fn": "WidgetToolbar",
-                                "cfg": {
-                                    "children": [{
-                                        "type": "SelectPlayerButton"
-                                    }]
-                                }
-                            }]
-                        }]
-                    }]
-                }
-            }]
-        }, {
-            "type": "GoogleTranslate"
-        },{
-            "type": "LoginButton",
-            "cssClass": "editor-login-button",
-            "labelIsUser": true,
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": [{
-                        "type": "Button",
-                        "label": "Preferences",
-                        "plugins": [{
-                            "fn": "OpenTabAction",
-                            "cfg": {
-                                "wchildren": [{
-                                    "type": "Form",
+                "type": "Button",
+                "content": "",
+                "cssClass": "wegas-title",
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "Button",
+                                    "label": "Properties",
                                     "plugins": [{
-                                        "fn": "UserPreferences"
-                                    }]
+                                            "fn": "EditEntityAction",
+                                            "cfg": {
+                                                "entity": "currentGameModel",
+                                                "dataSource": "GameModelFacade"
+                                            }
+                                        }]
                                 }]
-                            }
-                        }]
-                    }, {
-                        "type": "Button",
-                        "label": "Logout",
-                        "plugins": [{
-                            "fn": "OpenUrlAction",
-                            "cfg": {
-                                "url": "wegas-app/logout",
-                                "target": "self"
-                            }
                         }
-                        ]
                     }]
-                }
+            }, {
+                "type": "SelectGameButton",
+                "cssClass": "editor-game-button"
+            }, {
+                "type": "SelectPlayerButton",
+                "cssClass": "editor-player-button"
+            }, {
+                "type": "Button",
+                "label": "Developer",
+                "cssClass": "editor-developer-button",
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "OpenTabButton",
+                                    "label": "Console",
+                                    "wchildren": [{
+                                            "type": "Console",
+                                            "cssClass": "wegas-console",
+                                            "plugins": [{
+                                                    "fn": "WidgetToolbar",
+                                                    "cfg": {
+                                                        "children": [{
+                                                                "type": "SelectPlayerButton"
+                                                            }]
+                                                    }
+                                                }]
+                                        }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Log",
+                                    "wchildren": [{
+                                            "type": "Log"
+                                        }]
+                                }]
+                        }
+                    }]
+            }, {
+                "type": "Button",
+                "label": "Administrator",
+                "cssClass": "editor-administrator-button",
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "OpenTabButton",
+                                    "label": "Users",
+                                    "wchildren": [{
+                                            "type": "EditorTreeView",
+                                            "dataSource": "User",
+                                            "request": {
+                                                "request": "/"
+                                            },
+                                            "plugins": [{
+                                                    "fn": "WidgetToolbar",
+                                                    "cfg": {
+                                                        "children": [{
+                                                                "type": "NewEntityButton",
+                                                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                                                "targetClass": "JpaAccount",
+                                                                "dataSource": "User"
+                                                            }]
+                                                    }
+                                                }]
+                                        }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Groups",
+                                    "wchildren": [{
+                                            "type": "EditorTreeView",
+                                            "dataSource": "Role",
+                                            "request": {
+                                                "request": "/"
+                                            },
+                                            "plugins": [{
+                                                    "fn": "WidgetToolbar",
+                                                    "cfg": {
+                                                        "children": [{
+                                                                "type": "NewEntityButton",
+                                                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                                                "targetClass": "Role",
+                                                                "dataSource": "Role"
+                                                            }]
+                                                    }
+                                                }]
+                                        }]
+                                }]
+                        }
+                    }]
+            }, {
+                "type": "Button",
+                "label": "Scenarist",
+                "cssClass": "editor-scenarist-button",
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "OpenTabButton",
+                                    "label": "Files",
+                                    "wchildren": [{
+                                            "type": "FileExplorer",
+                                            "plugins": [{
+                                                    "fn": "WidgetToolbar"
+                                                }]
+                                        }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Pages",
+                                    "cssClass": "experimental",
+                                    "tabSelector": "#leftTabView",
+                                    "wchildren": [{
+                                            "type": "PageTreeview",
+                                            "pageLoader": "previewPageLoader"
+                                        }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Styles",
+                                    "wchildren": [{
+                                            "type": "ScriptLibrary",
+                                            "library": "CSS",
+                                            "cssClass": "wegas-csseditor"
+                                        }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Scripts",
+                                    "wchildren": [{
+                                            "type": "ScriptLibrary"
+                                        }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Client scripts",
+                                    "wchildren": [{
+                                            "type": "ScriptLibrary",
+                                            "library": "ClientScript"
+                                        }]
+                                }]
+                        }
+                    }]
+            }, {
+                "type": "Button",
+                "label": "Animator",
+                "cssClass": "editor-animator-button",
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "OpenTabButton",
+                                    "label": "Players",
+                                    "wchildren": [{
+                                            "type": "EditorTreeView",
+                                            "dataSource": "Game"
+                                        }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Impact game",
+                                    "wchildren": [{
+                                            "type": "ImpactGame",
+                                            "cssClass": "wegas-console",
+                                            "plugins": [{
+                                                    "fn": "WidgetToolbar",
+                                                    "cfg": {
+                                                        "children": [{
+                                                                "type": "SelectPlayerButton"
+                                                            }]
+                                                    }
+                                                }]
+                                        }]
+                                }]
+                        }
+                    }]
+            }, {
+                "type": "GoogleTranslate"
+            }, {
+                "type": "LoginButton",
+                "cssClass": "editor-login-button",
+                "labelIsUser": true,
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "Button",
+                                    "label": "Preferences",
+                                    "plugins": [{
+                                            "fn": "OpenTabAction",
+                                            "cfg": {
+                                                "wchildren": [{
+                                                        "type": "Form",
+                                                        "plugins": [{
+                                                                "fn": "UserPreferences"
+                                                            }]
+                                                    }]
+                                            }
+                                        }]
+                                }, {
+                                    "type": "Button",
+                                    "label": "Logout",
+                                    "plugins": [{
+                                            "fn": "OpenUrlAction",
+                                            "cfg": {
+                                                "url": "wegas-app/logout",
+                                                "target": "self"
+                                            }
+                                        }
+                                    ]
+                                }]
+                        }
+                    }]
             }]
-        }]
     },
     "left": {
         "width": 300,
@@ -242,98 +239,101 @@
         "scroll": true,
         "animate": true,
         "children": [{
-            "type": "TabView",
-            "id": "leftTabView",
-            "cssClass": "editor-tab",
-            "children": [{
-                "type": "Tab",
-                "label": "Variables",
+                "type": "TabView",
+                "id": "leftTabView",
+                "cssClass": "editor-tab",
                 "children": [{
-                    "type": "EditorTreeView",
-                    "dataSource": "VariableDescriptor",
-                    "excludeClasses": {
-                        "MCQDescriptor": true
-                    },
-                    "plugins": [{
-                          "fn": "EditorTVNodeLoader"
-                    }, {
-                        "fn": "WidgetToolbar",
-                        "cfg": {
-                            "children": [{
-                                "type": "Button",
-                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                "cssClass": "editor-newVariable-button",
+                        "type": "Tab",
+                        "label": "Variables",
+                        "children": [{
+                                "type": "EditorTreeView",
+                                "dataSource": "VariableDescriptor",
+                                "excludeClasses": {
+                                    "MCQDescriptor": true
+                                },
                                 "plugins": [{
-                                    "fn": "WidgetMenu",
-                                    "cfg": {
-                                        "children": [{
-                                            "type": "NewEntityButton",
-                                            "label": "Number",
-                                            "targetClass": "NumberDescriptor"
-                                        }, {
-                                            "type": "NewEntityButton",
-                                            "label": "String",
-                                            "targetClass": "StringDescriptor"
-                                        }, {
-                                            "type": "NewEntityButton",
-                                            "label": "List",
-                                            "targetClass": "ListDescriptor"
-                                        }, {
-                                            "type": "NewEntityButton",
-                                            "label": "Question",
-                                            "targetClass": "QuestionDescriptor"
-                                        }, {
-                                            "type": "NewEntityButton",
-                                            "label": "Trigger",
-                                            "targetClass": "TriggerDescriptor"
-                                        }, {
-                                            "type": "NewEntityButton",
-                                            "label": "Object",
-                                            "targetClass": "ObjectDescriptor"
-                                        }]
-                                    }
-                                }],
-                                "targetClass": "VariableDescriptor"
-                            }, {
-                                "type": "Button",
-                                "cssClass": "editor-restart-button",
-                                "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
-                                "plugins": [{
-                                    "fn": "ResetAction"
-                                }]
+                                        "fn": "EditorTVNodeLoader"
+                                    }, {
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": [{
+                                                    "type": "Button",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                                    "cssClass": "editor-newVariable-button",
+                                                    "plugins": [{
+                                                            "fn": "WidgetMenu",
+                                                            "cfg": {
+                                                                "children": [{
+                                                                        "type": "NewEntityButton",
+                                                                        "label": "Number",
+                                                                        "targetClass": "NumberDescriptor"
+                                                                    }, {
+                                                                        "type": "NewEntityButton",
+                                                                        "label": "String",
+                                                                        "targetClass": "StringDescriptor"
+                                                                    }, {
+                                                                        "type": "NewEntityButton",
+                                                                        "label": "List",
+                                                                        "targetClass": "ListDescriptor"
+                                                                    }, {
+                                                                        "type": "NewEntityButton",
+                                                                        "label": "Question",
+                                                                        "targetClass": "QuestionDescriptor"
+                                                                    }, {
+                                                                        "type": "NewEntityButton",
+                                                                        "label": "Trigger",
+                                                                        "targetClass": "TriggerDescriptor"
+                                                                    }, {
+                                                                        "type": "NewEntityButton",
+                                                                        "label": "Object",
+                                                                        "targetClass": "ObjectDescriptor"
+                                                                    }]
+                                                            }
+                                                        }],
+                                                    "targetClass": "VariableDescriptor"
+                                                }, {
+                                                    "type": "Button",
+                                                    "cssClass": "editor-restart-button",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
+                                                    "plugins": [{
+                                                            "fn": "ResetAction"
+                                                        }]
+                                                }]
+                                        }
+                                    }]
                             }]
-                        }
                     }]
-                }]
             }]
-        }]
     },
     "center": {
         "children": [{
-            "id": "centerTabView",
-            "type": "TabView",
-            "cssClass": "editor-tab",
-            "children": [{
-                "type": "Tab",
-                "label": "Preview",
+                "id": "centerTabView",
+                "type": "TabView",
+                "cssClass": "editor-tab",
                 "children": [{
-                    "type": "PageLoader",
-                    "pageLoaderId": "previewPageLoader",
-                    "defaultPageId": 1,
-                    "cssClass": "editor-preview",
-                    "plugins": [{
-                        "fn": "WidgetToolbar",
-                        "cfg": {
-                            "children": []
-                        }
-                    }, {
-                        "fn": "PageEditor"
-                    }, {
-                        "fn": "CSSLoader"
+                        "type": "Tab",
+                        "label": "Preview",
+                        "children": [{
+                                "type": "PageLoader",
+                                "pageLoaderId": "previewPageLoader",
+                                "defaultPageId": 1,
+                                "cssClass": "editor-preview",
+                                "plugins": [{
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": []
+                                        }
+                                    }, {
+                                        "fn": "PageEditor"
+                                    }, {
+                                        "fn": "CSSLoader"
+                                    }, {
+                                        "fn": "Injector"
+                                    }
+                                ]
+                            }]
                     }]
-                }]
             }]
-        }]
     },
     "right": {
         "width": 50,
@@ -342,13 +342,13 @@
         "scroll": true,
         "animate": true,
         "children": [{
-            "type": "TabView",
-            "id": "rightTabView",
-            "cssClass": "editor-tab",
-            "children": [],
-            "plugins": [{
-                "fn": "LayoutToggleTab"
+                "type": "TabView",
+                "id": "rightTabView",
+                "cssClass": "editor-tab",
+                "children": [],
+                "plugins": [{
+                        "fn": "LayoutToggleTab"
+                    }]
             }]
-        }]
     }
 }

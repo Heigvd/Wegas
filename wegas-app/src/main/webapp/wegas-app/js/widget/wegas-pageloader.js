@@ -69,12 +69,12 @@ YUI.add('wegas-pageloader', function(Y) {
                 }
             };
             //Y.Wegas.Facade.Page.after("response", this.syncUI, this);
-            this.handlers.push(Y.Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
-                if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
-                    this.currentPageId = null; // @hack force update
-                    this.syncUI();
-                }
-            }, this));
+//            this.handlers.push(Y.Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
+//                if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
+//                    this.currentPageId = null; // @hack force update
+//                    this.syncUI();
+//                }
+//            }, this));
 
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("response", onUpdate, this));
 
@@ -194,29 +194,31 @@ YUI.add('wegas-pageloader', function(Y) {
                     if (!val || val === this.currentPageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded, escape
                         return val;
                     }
-                    var widgetCfg = Y.Wegas.Facade.Page.cache.getPage(val);
+                    Y.Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {
+                        if (!widgetCfg) {
+                            return val;
+                        }
+                        this.currentPageId = val;
+                        if (this.get("widget")) {
+                            this.get("widget").destroy();                           // @fixme we should remove the widget instead of destroying it
+                        }
+                        this.get(CONTENTBOX).empty();
+                        this.showOverlay();
+                        try {
+                            Y.Wegas.Widget.use(widgetCfg, Y.bind(function(cfg) {    // Load the subwidget dependencies
+                                var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
+                                widget.render(this.get(CONTENTBOX));
+                                widget['@pageId'] = cfg['@pageId'];
+                                this.set("widget", widget);
+                                widget.addTarget(this);                             // Event on the loaded widget will be forwarded
+                                this.hideOverlay();
+                            }, this, widgetCfg));
+                        } catch (e) {
+                            Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
+                        }
+                    }, this));
 
-                    if (!widgetCfg) {
-                        return val;
-                    }
-                    this.currentPageId = val;
-                    if (this.get("widget")) {
-                        this.get("widget").destroy();                           // @fixme we should remove the widget instead of destroying it
-                    }
-                    this.get(CONTENTBOX).empty();
-                    this.showOverlay();
-                    try {
-                        Y.Wegas.Widget.use(widgetCfg, Y.bind(function(cfg) {    // Load the subwidget dependencies
-                            var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
-                            widget.render(this.get(CONTENTBOX));
-                            widget['@pageId'] = cfg['@pageId'];
-                            this.set("widget", widget);
-                            widget.addTarget(this);                             // Event on the loaded widget will be forwarded
-                            this.hideOverlay();
-                        }, this, widgetCfg));
-                    } catch (e) {
-                        Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
-                    }
+
                     return val;
                 }
             },
