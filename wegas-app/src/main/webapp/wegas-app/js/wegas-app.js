@@ -51,7 +51,6 @@ YUI.add('wegas-app', function(Y) {
          * @private
          */
         dataSources: [],
-
         /**
          * Lifecycle methods
          * @function
@@ -67,7 +66,6 @@ YUI.add('wegas-app', function(Y) {
              */
             this.publish("render", {});
         },
-
         /**
          * Destructor methods.
          * @function
@@ -79,7 +77,6 @@ YUI.add('wegas-app', function(Y) {
                 this.dataSources[i].destroy();
             }
         },
-
         /**
          * Render function
          * @function
@@ -100,7 +97,7 @@ YUI.add('wegas-app', function(Y) {
                 var exception = e.responseText.substring(e.responseText.indexOf('"exception'), e.responseText.length);
                 exception = exception.split(",");
                 if (e.status === 400 && exception[0] === '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
-                    exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {
+                        exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {
                     // Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login
                     alert("You have been logged out or does not have permissions");
                 }
@@ -113,12 +110,11 @@ YUI.add('wegas-app', function(Y) {
              * Event keypress '°'
              */
             Y.one("body").on("keypress", function(e) {
-                if (e.charCode === 176 && e.target === this) {
+                if ((e.charCode === 176 || e.charCode === 167) /*&& e.target === this*/) {
                     Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
                 }
             });
         },
-
         // *** Private methods ** //
         /**
          * @function
@@ -127,7 +123,7 @@ YUI.add('wegas-app', function(Y) {
          */
         initDataSources: function() {
             var k, dataSource, dataSources = this.get('dataSources'),
-            onInitialRequest = function() {
+                    onInitialRequest = function() {
                 this.requestCounter -= 1;
                 if (this.requestCounter === 0) {
                     this.initPage();                                       // Run the initPage() method when they all arrived.
@@ -139,7 +135,7 @@ YUI.add('wegas-app', function(Y) {
             for (k in dataSources) {
                 if (dataSources.hasOwnProperty(k)) {
                     dataSources[k].source = this.get("base") + dataSources[k].source; // Set up datasource path
-                    dataSource = dataSources[k]["type"] ? new Y.Wegas[dataSources[k]["type"]](dataSources[k]):new Y.Wegas.DataSource(dataSources[k]);        // Instantiate the datasource
+                    dataSource = dataSources[k]["type"] ? new Y.Wegas[dataSources[k]["type"]](dataSources[k]) : new Y.Wegas.DataSource(dataSources[k]);        // Instantiate the datasource
                     Y.namespace("Wegas.Facade")[k] = dataSource;                 // Set up global references
                     dataSource.once("response", onInitialRequest, this);        // Listen to the datasources initial requests
                     if (Y.Lang.isNumber(dataSource.sendInitialRequest())) {     // Send the initial request
@@ -152,7 +148,6 @@ YUI.add('wegas-app', function(Y) {
                 this.initPage();
             }
         },
-
         /**
          * @function
          * @private
@@ -178,16 +173,16 @@ YUI.add('wegas-app', function(Y) {
                             this.fire("render");                         // Fire a render event for some eventual post processing
                         }, this, cfg));
 
-                    //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
-                    //this.pageLoader.render();
-                    // cfg.id = -100;
-                    // this.dataSources.Page.data.push(cfg);
-                    //try {
-                    //    this.pageLoader.set("pageId", -100);
-                    //} catch (renderException) {
-                    //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack)
-                    //     ? renderException.stack : renderException), 'error', 'Wegas.App');
-                    //}
+                        //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
+                        //this.pageLoader.render();
+                        // cfg.id = -100;
+                        // this.dataSources.Page.data.push(cfg);
+                        //try {
+                        //    this.pageLoader.set("pageId", -100);
+                        //} catch (renderException) {
+                        //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack)
+                        //     ? renderException.stack : renderException), 'error', 'Wegas.App');
+                        //}
 
                     }
                 }
@@ -228,15 +223,15 @@ YUI.add('wegas-app', function(Y) {
                 value: false,
                 setter: function(val) {
                     if (val) {
-                        Y.one("body").addClass("wegas-devmode");
+                        Y.one("body").addClass("wegas-devmode").removeClass("wegas-stdmode");
                         //if (YUI_config.debug) {
                         window.Y = Y;
-                    //}
+                        //}
                     } else {
-                        Y.one("body").removeClass("wegas-devmode");
+                        Y.one("body").removeClass("wegas-devmode").addClass("wegas-stdmode");
                         // if (YUI_config.debug) {
                         delete window.Y;
-                    //}
+                        //}
                     }
                 }
             },
