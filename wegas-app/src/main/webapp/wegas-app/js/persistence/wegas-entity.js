@@ -647,6 +647,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
+                    wrapperClassName: 'wegas-advanced-feature',
                     label: "Script alias",
                     regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
                     description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
@@ -692,6 +693,7 @@ YUI.add('wegas-entity', function(Y) {
                                 label: 'game'
                             }],
                         _inputex: {
+                            wrapperClassName: 'wegas-advanced-feature',
                             label: 'Broadcast with'
                         }
                     }
