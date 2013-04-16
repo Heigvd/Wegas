@@ -741,6 +741,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             privateInstances: {
+                value: {},
                 "transient": true
             },
             broadcastScope: {}
@@ -1064,9 +1065,11 @@ YUI.add('wegas-entity', function(Y) {
             currentItem: {
                 "transient": true,
                 getter: function() {
-                    if (this.get("items").length > 0) {
-                        return this.get("items")[this.getInstance().
-                                get(VALUE)];
+                    var inst = this.getInstance();
+                    if (!Y.Lang.isUndefined(inst)
+                            && this.get("items")[inst.get(VALUE)]) {
+
+                        return this.get("items")[inst.get(VALUE)];
                     } else {
                         return null;
                     }

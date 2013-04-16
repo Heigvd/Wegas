@@ -11,8 +11,8 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.List;
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -27,7 +27,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     /**
      *
      */
-    @Column(length = 4096)
+    @Lob
     private String description;
 
     /**

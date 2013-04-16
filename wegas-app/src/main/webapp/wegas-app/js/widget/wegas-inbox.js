@@ -135,7 +135,7 @@ YUI.add('wegas-inbox', function(Y) {
                             + '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
                             + '<div class="msg-from">From: ' + from + '</div>'
                             + '</div>'
-                            + '<div class="msg-body"><center><em><i>Loading</i></center></div>'
+                            + '<div class="msg-body"><center><em><i>Loading</i></em></center></div>'
                 });
                 tab.msg = msg;
                 tabs.push(tab);

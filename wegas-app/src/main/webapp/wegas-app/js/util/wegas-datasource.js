@@ -152,7 +152,10 @@ YUI.add('wegas-datasource', function(Y) {
             Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
                 payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                if (payload.updateCache !== false) {
+                if (payload.serverResponse.get("entities").length > 0) {
+                    payload.response.entity = payload.serverResponse.get("entities")[0];                                 // Shortcut, useful if there is only one instance
+                }
+                if (payload.cfg.updateCache !== false) {
                     this.onResponseRevived(payload);
                 }
                 this.get(HOST).fire("response", payload);
@@ -182,7 +185,6 @@ YUI.add('wegas-datasource', function(Y) {
                         if (Lang.isObject(entity)) {
                             this.updated = this.updateCache(e.cfg.method, entity) || this.updated;
                         }
-                        e.response.entity = entity;                                 // Shortcut, useful if there is only one instance
                     }
                 }
 
@@ -371,6 +373,14 @@ YUI.add('wegas-datasource', function(Y) {
         getObject: function(data, cfg) {
             this.sendRequest(this.generateRequest(data), cfg);
         },
+
+        getWithView: function(entity, view, cfg) {
+            cfg.request = "/" + entity.get('id') + "?view=" + (view || "Editor");
+            cfg.cfg = {
+                updateCache: false
+            };
+            return this.sendRequest(cfg);
+        },
         /**
          * @function
          * @private
@@ -503,7 +513,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
 
-            this.on("CustomEvent", function (e) {
+            this.on("CustomEvent", function(e) {
                 this.get("host").fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
             });
         },

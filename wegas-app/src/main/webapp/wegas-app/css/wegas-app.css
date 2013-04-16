@@ -61,6 +61,11 @@ input[type="submit"], input[type="reset"] {
     right: 0;
     z-index: 10;
 }
+/* a different way of displaying a loading */
+.wegas-loading-div {
+    background: transparent url(../images/loading.gif) center center no-repeat;
+    min-height: 80px;
+}
 /* System messages */
 .wegas-systemmessage {
     position:absolute;
@@ -227,10 +232,12 @@ font{
 .timed-hidden-node{
     visibility: hidden;
 }
-
+.yui3-skin-sam .userPreferences .wegas-toolbar{
+    background: rgba(255, 255, 255, 0.6);
+}
 
 /*
-* Counter YUI's cssreset. 
+* Counter YUI's cssreset.
 */
 body strong{
     font-weight: 700;
@@ -240,7 +247,7 @@ body em{
     font-style: italic;
 }
 
-body h1, h2, h3, h4, h5, h6 { 
+body h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
 }
 
