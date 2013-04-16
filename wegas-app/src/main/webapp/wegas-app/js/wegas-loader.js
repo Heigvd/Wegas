@@ -258,7 +258,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-popup': {
                     path: 'wegas-app/js/plugin/wegas-popup-min.js',
-                    provides: ["Popup"]
+                    ws_provides: ["Popup"]
                 },
                 'wegas-tooltip': {
                     path: 'wegas-app/js/plugin/wegas-tooltip-min.js',

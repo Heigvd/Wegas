@@ -123,7 +123,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             container.one(".msg").setContent("");                               // Reset layout
 
             try {
-                tree = window.esprima.parse(this.el.value, {                    // Generate the syntaxic tree using esprima
+                tree = window.esprima.parse(this.el.value, {// Generate the syntaxic tree using esprima
                     raw: true
                 });
 
@@ -152,7 +152,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 fields: fields,
                 useButtons: true,
                 parentEl: this.fieldContainer,
-                addType: (this.options.expects === "condition") ? "variabledescriptorcondition" : "variabledescriptorsetter"
+                addType: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline" //variabledescriptorsetter"
             });
 
             if (this.options.mode !== "wysiwyg") {
@@ -175,6 +175,14 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
 
                 case "UnaryExpression":
                     return expression.operator + this.generateExpression(expression.argument);
+
+                case "ObjectExpression":
+                    var args = {};
+
+                    Y.Array.each(expression.properties, function(i) {
+                        args[i.key.value] = this.generateExpression(i.value);
+                    }, this);
+                    return args;
 
                 case "ArrayExpression":
                     var args = [];
@@ -206,13 +214,20 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             switch (expression.callee.object.name) {
                                 case "VariableDescriptorFacade":
                                     return {
-                                        type: "variabledescriptorsetter",
+                                        type: "wysiwygline", // wysiwygline/variabledescriptorsetter
                                         value: expression.arguments[0].value
                                     };
-//                                case "RequestManager":
-//                                    return {
-//                                        type
-//                                    }
+                                case "RequestManager":
+                                    var args = [];
+
+                                    Y.Array.each(expression.arguments, function(i) {
+                                        args.push(this.generateExpression(i));
+                                    }, this);
+                                    return {
+                                        type: "wysiwygline",
+                                        value: "GLOBAL" + expression.callee.object.name + "." + expression.callee.property.name,
+                                        arguments: args
+                                    };
                             }
                             break;
                         default:

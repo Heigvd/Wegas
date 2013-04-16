@@ -5,61 +5,67 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add("wegas-inputex-variableselect", function (Y) {
+YUI.add("wegas-inputex-variableselect", function(Y) {
     "use strict";
 
     var inputEx = Y.inputEx;
 
     /**
+     * Edit an object referencing a variable with format:
+     *    {
+     *      name: "name",
+     *      expr: "expr",
+     *      dataSource: "ds"
+     *    }
+     *
      * @class inputEx.Variableselect
      * @extends inputEx.StringGroup
      **/
-    Y.namespace("inputEx.Wegas").Variableselect = function (options) {
+    Y.namespace("inputEx.Wegas").Variableselect = function(options) {
         inputEx.Wegas.Variableselect.superclass.constructor.call(this, options);
     };
-    Y.extend(inputEx.Wegas.Variableselect, inputEx.Group,  {
-        setOptions: function (options) {
+    Y.extend(inputEx.Wegas.Variableselect, inputEx.Group, {
+        setOptions: function(options) {
             inputEx.Wegas.Variableselect.superclass.setOptions.call(this, options);
             this.options.mode = options.mode || "wysiwyg";
             this.options.label = options.label;
             this.options.fields = [{
-                type: 'variabledescriptorgetter',
-                name: 'id'
-            }, {
-                type: 'text',
-                name: 'expr',
-                required: true
-            }];
+                    type: 'variabledescriptorgetter',
+                    name: 'id'
+                }, {
+                    type: 'text',
+                    name: 'expr',
+                    required: true
+                }];
         },
-        setValue: function (val, fireUpdatedEvent) {
+        setValue: function(val, fireUpdatedEvent) {
             var findVal;
             inputEx.Wegas.Variableselect.superclass.setValue.call(this, val, fireUpdatedEvent);
             if (val.name) {
                 findVal = Y.Wegas.Facade.VariableDescriptor.cache.find('name', val.name);
             } else if (val.expr) {
                 this.setMode("text");
-                this.inputs[1].el.value =  val.expr;
+                this.inputs[1].el.value = val.expr;
                 return;
             } else if (val.id) {
                 findVal = Y.Wegas.Facade.VariableDescriptor.cache.findById(val.id);
             }
             this.inputs[0].setValue(findVal.get("id"));                         // @fixme
         },
-        renderFields: function () {
+        renderFields: function() {
             inputEx.Wegas.Variableselect.superclass.renderFields.apply(this, arguments);
             this.options.mode = "text";
-            this.viewSrc = new Y.Wegas.Button({                                 // Add the "view src" button
+            this.viewSrc = new Y.Wegas.Button({// Add the "view src" button
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>"
             });
             var divLabel = Y.Node.create('<div class="inputEx-label"><label>Variable</label></div>'); //Add label
             this.options.mode = "text";
             this.setMode((this.options.mode === "wysiwyg") ? "text" : "wysiwyg");
-            this.viewSrc.after("click", function () {
+            this.viewSrc.after("click", function() {
                 if (!this.viewSrc.get("disabled")) {
                     if (this.options.mode === "wysiwyg") {                      // If current mode is wysiwyg
                         this.updateTextarea();                                  // update textatea content
@@ -75,7 +81,7 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
             container.prepend(divLabel.getDOMNode());
             container.prepend(this.viewSrc.get("boundingBox"));
         },
-        setMode: function (mode) {
+        setMode: function(mode) {
             var wysiwygmode = (mode === "wysiwyg");
 
             this.options.mode = mode;
@@ -90,22 +96,22 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
             }
 
         },
-        updateTextarea: function () {
+        updateTextarea: function() {
             if (this.options.mode === "wysiwyg") {                              // If current mode is wysiwyg
-                this.inputs[1].el.value =  this.getValue().id;                  // update textatea content
+                this.inputs[1].el.value = this.getValue().id;                  // update textatea content
             }
         },
-        updateExpressionList: function () {
+        updateExpressionList: function() {
             var tree, newVal = null, valObj = {};
 
             try {
-                tree = window.esprima.parse(this.inputs[1].el.value, {          // Generate the syntaxic tree using esprima
+                tree = window.esprima.parse(this.inputs[1].el.value, {// Generate the syntaxic tree using esprima
                     raw: true
                 });
                 if (tree.body[0].expression.callee && tree.body[0].expression.arguments) {
-                    if (tree.body[0].expression.callee.object.name === "VariableDescriptorFacade"  &&
-                        tree.body[0].expression.callee.property.name === "find" &&
-                        tree.body[0].expression.arguments[0].value !== null) {
+                    if (tree.body[0].expression.callee.object.name === "VariableDescriptorFacade" &&
+                            tree.body[0].expression.callee.property.name === "find" &&
+                            tree.body[0].expression.arguments[0].value !== null) {
                         newVal = Y.Wegas.Facade.VariableDescriptor.cache.find('id', tree.body[0].expression.arguments[0].value);
                     }
                 }
@@ -121,7 +127,7 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
                 this.fire("exception", e.response.results);
             }
         },
-        destroy: function () {
+        destroy: function() {
             inputEx.Wegas.Variableselect.superclass.destroy.call(this);
             this.viewSrc.destroy();
         }
