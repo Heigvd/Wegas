@@ -47,6 +47,10 @@ YUI.add('wegas-inbox', function(Y) {
          * Current selected message in tabview;
          */
         msg: null,
+        /**
+         * 
+         */
+        readRequestTid: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -82,7 +86,11 @@ YUI.add('wegas-inbox', function(Y) {
          */
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
-            this.handlers.dataUpdated = this.dataSource.after("update", this.syncUI, this);
+            this.handlers.dataUpdated = this.dataSource.after("update", function (e) {
+                if (e.tId !== this.readRequestTid) {
+                    this.syncUI();
+                }
+            }, this);
             this.handlers.deleteEMail = this.deleteButton.on("click", function(e) {
                 if (!this.msg) {
                     return;
@@ -127,7 +135,7 @@ YUI.add('wegas-inbox', function(Y) {
                             + '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
                             + '<div class="msg-from">From: ' + from + '</div>'
                             + '</div>'
-                            + '<div class="msg-body"><center><em><i>Loading</i></center></div>'
+                            + '<div class="msg-body"><center><em><i>Loading</i></em></center></div>'
                 });
                 tab.msg = msg;
                 tabs.push(tab);
@@ -197,6 +205,9 @@ YUI.add('wegas-inbox', function(Y) {
             if (e.newVal && e.newVal.msg) {
                 this.dataSource.sendRequest({// Retrieve the message body from the server
                     request: "/Inbox/Message/" + e.newVal.msg.get("id") + "?view=Export",
+                    cfg: {
+                        updateCache: false
+                    },
                     on: {
                         success: Y.bind(function(e) {
                             if (e.response.entity.get("attachements") && e.response.entity.get("attachements").length > 0) {
@@ -219,16 +230,21 @@ YUI.add('wegas-inbox', function(Y) {
                 this.msg = e.newVal.msg;
 
                 if (e.newVal.msg.get("unread")) {                               // If the message is currently unread,
-                    this.timer = Y.later(2000, this, function() {              // Send a request to mark it as read
+                    this.timer = Y.later(2000, this, function(msg, tab) {            // Send a request to mark it as read
                         Y.log("Sending message read update", "info", "InboxDisplay");
-                        this.msg.set("unread", false);
-                        this.dataSource.sendRequest({
-                            request: "/Inbox/Message/Read/" + this.msg.get("id"),
+                        msg.set("unread", false);
+                        this.readRequestTid = this.dataSource.sendRequest({
+                            request: "/Inbox/Message/Read/" + msg.get("id"),
                             cfg: {
                                 method: "PUT"
+                            },
+                            on: {
+                                success: Y.bind(function(tab) {
+                                    tab.get("contentBox").one(".unread").removeClass("unread").addClass("read");
+                                }, this, tab)
                             }
                         });
-                    });
+                    }, [e.newVal.msg, e.newVal]);
                 }
             }
         }

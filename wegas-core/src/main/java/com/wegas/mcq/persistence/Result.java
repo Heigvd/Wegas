@@ -43,7 +43,9 @@ public class Result extends AbstractEntity {
     /**
      *
      */
+    @JsonView(Views.EditorI.class)
     @Column(length = 4096)
+    @Basic(fetch = FetchType.LAZY)
     private String answer;
 
     /*

@@ -152,7 +152,12 @@ YUI.add('wegas-datasource', function(Y) {
             Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
                 payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                this.onResponseRevived(payload);
+                if (payload.serverResponse.get("entities").length > 0) {
+                    payload.response.entity = payload.serverResponse.get("entities")[0];                                 // Shortcut, useful if there is only one instance
+                }
+                if (payload.cfg.updateCache !== false) {
+                    this.onResponseRevived(payload);
+                }
                 this.get(HOST).fire("response", payload);
             }, this, payload));
 
@@ -180,14 +185,13 @@ YUI.add('wegas-datasource', function(Y) {
                         if (Lang.isObject(entity)) {
                             this.updated = this.updateCache(e.cfg.method, entity) || this.updated;
                         }
-                        e.response.entity = entity;                                 // Shortcut, useful if there is only one instance
                     }
                 }
 
                 for (i = 0; i < response.get("events").length; i += 1) {
-                    evtPayload = {
+                    evtPayload = Y.mix({
                         serverEvent: response.get("events")[i]
-                    };
+                    }, e);
                     this.fire(evtPayload.serverEvent.get("@class"), evtPayload);
                     //this.fire("serverEvent", evtPayload);
                 }
@@ -366,8 +370,16 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        getObject: function(data) {
-            this.sendRequest(this.generateRequest(data));
+        getObject: function(data, cfg) {
+            this.sendRequest(this.generateRequest(data), cfg);
+        },
+
+        getWithView: function(entity, view, cfg) {
+            cfg.request = "/" + entity.get('id') + "?view=" + (view || "Editor");
+            cfg.cfg = {
+                updateCache: false
+            };
+            return this.sendRequest(cfg);
         },
         /**
          * @function
@@ -501,7 +513,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
 
-            this.on("CustomEvent", function (e) {
+            this.on("CustomEvent", function(e) {
                 this.get("host").fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
             });
         },
@@ -1029,7 +1041,7 @@ YUI.add('wegas-datasource', function(Y) {
             });
         },
         /**
-         * 
+         *
          * @param {String} pageId
          * @param {Function} callback asyc calling function with page as first param
          * @returns {Page} or null if page missing in cache.
