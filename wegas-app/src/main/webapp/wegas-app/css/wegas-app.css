@@ -20,7 +20,7 @@ input[type="submit"], input[type="reset"] {
 }
 
 /*
-* Counter YUI's cssreset. 
+* Counter YUI's cssreset.
 */
 strong{
     font-weight: 700;
@@ -30,7 +30,7 @@ em{
     font-style: italic;
 }
 
-h1, h2, h3, h4, h5, h6 { 
+h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
 }
 
@@ -100,6 +100,11 @@ body h6{
     left: 0;
     right: 0;
     z-index: 10;
+}
+/* a different way of displaying a loading */
+.wegas-loading-div {
+    background: transparent url(../images/loading.gif) center center no-repeat;
+    min-height: 80px;
 }
 /* System messages */
 .wegas-systemmessage {
@@ -266,4 +271,7 @@ font{
 */
 .timed-hidden-node{
     visibility: hidden;
+}
+.yui3-skin-sam .userPreferences .wegas-toolbar{
+    background: rgba(255, 255, 255, 0.6);
 }

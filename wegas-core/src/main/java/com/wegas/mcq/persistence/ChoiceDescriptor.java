@@ -39,14 +39,16 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
-    @OrderBy("id")
     private List<Result> results = new ArrayList<>();
     /**
      *
      */
-    @Column(length = 4096)
+    @Basic(fetch = FetchType.LAZY)
+    @Lob
+    @JsonView(Views.EditorI.class)
     private String description;
     /**
      *

@@ -19,7 +19,8 @@ YUI.add('wegas-entity', function(Y) {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
         _inputex: {
-            _type: HIDDEN
+            _type: HIDDEN,
+            //wrapperClassName: 'wegas-advanced-feature'
         }
     }, Wegas = Y.namespace("Wegas"), Entity;
 
@@ -650,7 +651,7 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     wrapperClassName: 'wegas-advanced-feature',
                     label: "Script alias",
-                    regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
                     description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
                 },
                 validator: function(s) {
@@ -740,6 +741,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             privateInstances: {
+                value: {},
                 "transient": true
             },
             broadcastScope: {}
@@ -1063,9 +1065,11 @@ YUI.add('wegas-entity', function(Y) {
             currentItem: {
                 "transient": true,
                 getter: function() {
-                    if (this.get("items").length > 0) {
-                        return this.get("items")[this.getInstance().
-                                get(VALUE)];
+                    var inst = this.getInstance();
+                    if (!Y.Lang.isUndefined(inst)
+                            && this.get("items")[inst.get(VALUE)]) {
+
+                        return this.get("items")[inst.get(VALUE)];
                     } else {
                         return null;
                     }
