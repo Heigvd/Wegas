@@ -38,7 +38,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
 
             this.handlers.response = // If data changes, refresh
-                    Y.Wegas.Facade.VariableDescriptor.after("response",
+                    Y.Wegas.Facade.VariableDescriptor.after("update",
                     this.syncUI, this);
         },
         destructor: function() {
@@ -94,7 +94,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         },
         genData: function() {
             var i, j, k, questionInstance, reply, replyData, status,
-                    questions = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").get("items"),
+                    questions = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").flatten(),
                     data = [],
                     responsesByStartTime = {},
                     period = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period"),
@@ -151,7 +151,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
          */
         setUnread: function() {
             var i, j, questionInstance, reply,
-                    questions = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").get("items");
+                    questions = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").flatten();
             for (i = 0; i < questions.length; i = i + 1) {
                 questionInstance = questions[i].getInstance();
                 for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
