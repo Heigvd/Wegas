@@ -305,7 +305,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         syncDetailsPanel: function() {
             var i, k, reply, status, replyData, cb = this.get(CONTENTBOX),
                     question = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentQuestionId),
-                    questionInstance = question.getInstance(), topValue,
+                    questionInstance = question.getInstance(), topValue, maxWidth,
                     extendedQuestion = this.extendedQuestions.find(this.currentQuestionId);
             this.data.length = 0;
 
@@ -344,13 +344,21 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             }
             this.datatable.syncUI(this.data);
 
+            //Set width and Y position of the ".schedule-detail".
             topValue = cb.one(".schedule-leftcolum-selected").getDOMNode().getBoundingClientRect().top - cb.one(".schedule-leftcolum-selected").ancestor("table").getDOMNode().getBoundingClientRect().top;
+            if (topValue > cb.one(".schedule-leftcolum-selected").ancestor("table").getHeight() - cb.one(".schedule-detail").getDOMNode().getBoundingClientRect().height) {
+                topValue = cb.one(".schedule-leftcolum-selected").ancestor("table").getHeight() - cb.one(".schedule-detail").getDOMNode().getBoundingClientRect().height;
+            }
+            maxWidth = cb.one(".schedule-item").getDOMNode().getBoundingClientRect().width * Y.Wegas.Facade.VariableDescriptor.cache.find("name", "period").get("maxValue");
             cb.one(".schedule-detail").setStyles({
                 position: 'display',
                 display: "block",
                 overflowX: "auto",
-                top: topValue
+                top: topValue,
+                width: maxWidth
             }, this);
+
+
             /* gallery : [{srcUrl:'url', description:'text'},{}, ...]*/
             this.gallery.set("gallery", Y.clone(question.get("pictures")));     // @hack clone since Gallery will replay the string by an object
         },
