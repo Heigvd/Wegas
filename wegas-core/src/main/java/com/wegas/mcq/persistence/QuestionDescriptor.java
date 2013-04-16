@@ -38,7 +38,7 @@ public class QuestionDescriptor extends ListDescriptor {
      */
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    //@JsonView(Views.EditorI.class)
+    @JsonView(Views.EditorI.class)
     private String description;
     /**
      *
@@ -48,6 +48,7 @@ public class QuestionDescriptor extends ListDescriptor {
      *
      */
     @ElementCollection
+    //@JsonView(Views.EditorI.class)
     private List<String> pictures = new ArrayList<>();
 
     /**
@@ -70,7 +71,7 @@ public class QuestionDescriptor extends ListDescriptor {
      * @param value
      */
     public void setActive(Player p, boolean value) {
-        ( (QuestionInstance) this.getInstance(p) ).setActive(value);
+        ((QuestionInstance) this.getInstance(p)).setActive(value);
     }
 
     /**
