@@ -93,9 +93,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
          * Display a message if there is no message.
          */
         syncUI: function() {
-            var i, j, cReplyLabel, cQuestion, firstChild, cQuestionInstance,
-                    tab, cChoices, choiceDescriptor,
-                    questions = this.get("variable.evaluated"),
+            var questions = this.get("variable.evaluated"),
                     selectedTab = this.tabView.get('selection'),
                     lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
@@ -128,20 +126,17 @@ YUI.add('wegas-mcqtabview', function(Y) {
         },
         addQuestions: function(questions) {
 
-            var i, j, cReplyLabel, cQuestion, firstChild, cQuestionInstance,
-                    tab, cChoices, choiceDescriptor;
+            var i, cReplyLabel, cQuestion, cQuestionInstance,
+                    tab, choiceDescriptor;
 
             for (i = 0; i < questions.length; i += 1) {
                 cQuestion = questions[i];
                 cQuestionInstance = cQuestion.getInstance();
-                firstChild = "first-child";
                 cReplyLabel = null;
-                cChoices = cQuestion.get("items");
-
                 if (cQuestion instanceof Y.Wegas.persistence.QuestionDescriptor
-                        && cQuestionInstance.get("active")) {           // If current question is active
+                        && cQuestionInstance.get("active")) {                    // If current question is active
 
-                    if (cQuestionInstance.get("replies").length > 0) {  // Find the selected replies
+                    if (cQuestionInstance.get("replies").length > 0) {          // Find the selected replies
                         choiceDescriptor = cQuestionInstance.get("replies")[0].getChoiceDescriptor();
                         cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15) + "...";
                     }
@@ -159,13 +154,12 @@ YUI.add('wegas-mcqtabview', function(Y) {
                 } else if (cQuestion instanceof Y.Wegas.persistence.ListDescriptor) {
                     this.addQuestions(cQuestion.get("items"));
                 }
-
             }
         },
         /**
          * @function
          * @private
-         * @description retrieve selected question's description on current tab.
+         * @description Display selected question's description on current tab.
          */
         onTabSelected: function(e) {
 
@@ -178,7 +172,6 @@ YUI.add('wegas-mcqtabview', function(Y) {
                             var question = e.serverResponse.get("entities")[0];
 
                             this.renderTab(tab, question);
-                            //                    tab.get("panelNode").one(".description").setHTML(question.get("description"));
 
                             if (question.get("pictures").length > 0) {
                                 this.gallery = new Y.Wegas.util.FileExplorerGallery({
@@ -235,9 +228,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
                     choiceDescriptor = reply.getChoiceDescriptor();
                     ret.push('<div class="reply"><div class="name">', choiceDescriptor.get("label"), '</div>',
                             //'<div>', choiceDescriptor.get("description"), '</div>',
-                            '<div>', Y.Array.find(extendedQuestion.get("items"), function(item) {
-                        return item.get("id") === choiceDescriptor.get("id")
-                    }).get("description"), '</div>',
+                            '<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
                             '<div style="clear:both"></div></div>');
 
                     if (reply.get("result").get("answer")) {

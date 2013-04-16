@@ -1037,8 +1037,44 @@ YUI.add('wegas-entity', function(Y) {
                 object.items.push(this.get("items")[i].clone());
             }
             return object;
-        }
+        },
+        flatten: function() {
+            var acc = [],
+                    doFlatten = function(items) {
+                var i, it;
+                for (i = 0; i < items.length; i += 1) {
+                    it = items[i];
+                    if (it instanceof Wegas.persistence.QuestionDescriptor) {
+                        acc.push(it);
+                    } else if (it instanceof Wegas.persistence.ListDescriptor) {
+                        doFlatten(it.get("items"));
+                    } else {
+                        acc.push(it);
+                    }
+                }
+            };
+            doFlatten(this.get("items"));
+            return acc;
 
+        },
+        find: function(id) {
+            return this.depthFirstSearch(id);
+        },
+        depthFirstSearch: function(id) {
+            var needle,
+                    filterFn = function(it) {
+                if (it.get("id") === +id) {
+                    needle = it;
+                    return false;
+                } else if (it instanceof Y.Wegas.persistence.ListDescriptor) {
+                    return Y.Array.every(it.get("items"), filterFn);
+                } else {
+                    return true;
+                }
+            };
+            Y.Array.every(this.get("items"), filterFn);
+            return needle;
+        }
     }, {
         ATTRS: {
             "@class": {
