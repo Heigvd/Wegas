@@ -5,8 +5,8 @@
         "type": "List",
         "cssClass": "layout wegas-cep",
         "plugins": [{
-            "fn": "PopupPlg"
-        }],
+                "fn": "Popup"
+            }],
         "children": [{
                 "type": "List",
                 "cssClass": "header",
@@ -25,12 +25,9 @@
                                 "cssClass": "timeIndicators",
                                 "children": [{
                                         "type": "Template",
-                                        "template": "title",
+                                        "custom": "<div class='wegas-template-title'><label>Phase</label><div><%= this.variable.getPublicLabel() || 'Undefined' %></div></div>",
                                         "variable": {
                                             "name": "phases"
-                                        },
-                                        "data": {
-                                            "label": "Phase"
                                         }
                                     }, {
                                         "type": "Template",

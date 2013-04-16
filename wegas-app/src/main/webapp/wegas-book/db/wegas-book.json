@@ -19,7 +19,7 @@
         },
         "minValue":1,
         "maxValue":20
-    },{
+    }, {
         "@class":"NumberDescriptor",
         "name":"stamina",
         "editorLabel":"Vigueur",

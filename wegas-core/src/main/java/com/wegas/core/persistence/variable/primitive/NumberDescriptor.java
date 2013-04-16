@@ -11,6 +11,8 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +106,16 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      */
     public void setValue(Player p, int value) {
         this.getInstance(p).setValue(value);
+    }
+
+    @Transient
+    public double getDefaultValue() {
+        return ((NumberInstance) this.getDefaultInstance()).getValue();
+    }
+
+    @JsonIgnore
+    public void setDefaultValue() {
+        // only used to explicitely ignore while serializing
     }
 
     /**

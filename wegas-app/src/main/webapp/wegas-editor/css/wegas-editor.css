@@ -15,6 +15,11 @@ body {
     overflow: hidden;
 }
 
+/** Hide all advanced feature while in dev mode */
+.wegas-stdmode .wegas-advanced-feature {
+    display: none;
+}
+
 /* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
 .yui3-skin-sam .wegas-layout .yui3-tabview,
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content ,
@@ -335,11 +340,11 @@ body {
 
 
 /* Player link menu */
-.yui3-menu-content .editor-playerlink-button {
+.yui3-menu-content .wegas-playerlink-buttons {
     padding: 0.4em 0.6em .1em;
     border-top: 1px solid lightgray;
 }
-.yui3-menu-content .editor-playerlink-button input {
+.yui3-menu-content .wegas-playerlink-buttons input {
     width: 300px
 }
 

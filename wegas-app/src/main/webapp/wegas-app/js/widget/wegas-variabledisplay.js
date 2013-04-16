@@ -7,6 +7,7 @@
  */
 /**
  * @fileoverview
+ * @deprecated Use Y.Wegas.Template instead
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-variabledisplay', function(Y) {
@@ -39,6 +40,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
          * @description Set variable with initials values.
          */
         initializer: function() {
+            Y.log("Y.Wegas.VariableDisplay is deprecated, use Y.Wegas.Template instead.", "info", "Y.Wegas.VariableDisplay");
             this.handlers = [];
         },
         /**

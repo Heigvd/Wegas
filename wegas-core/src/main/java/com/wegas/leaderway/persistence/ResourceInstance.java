@@ -76,7 +76,7 @@ public class ResourceInstance extends VariableInstance {
         this.assignments = new ArrayList<>();
         this.activities = new ArrayList<>();
     }
-    
+
     /**
      *
      * @param a
@@ -154,7 +154,7 @@ public class ResourceInstance extends VariableInstance {
         activity.setResourceInstance(this);
     }
     /**
-     * 
+     *
      * @param task
      * @return the activity
      */
