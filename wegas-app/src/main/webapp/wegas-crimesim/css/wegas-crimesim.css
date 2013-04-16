@@ -121,11 +121,12 @@ min-width: 800px;
 .schedule-detail h1,
 .schedule-detail h2 {
     background: lightSteelBlue;
-    padding: 4px 5px;
+    padding: 0px 5px 1px;
     border-top: 1px solid gray;
     border-bottom: 1px solid gray;
     font-weight: bold;
     margin: 0;
+    min-height: 32px;
 }
 .schedule-detail h3 {
     padding: 5px 5px 1px;
@@ -135,6 +136,7 @@ min-width: 800px;
 }
 .schedule-detail .content {
     padding: 10px 5px;
+    min-height:29px;
 }
 /* CrimeSim Analyisis table styles */
 .schedule-table {
