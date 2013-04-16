@@ -214,7 +214,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     choiceInstance = choiceDescriptor.getInstance();
 
                     cols[cIndex] = ["schedule-unavailable", "schedule-task",
-                        "schedule-unavailable-", choiceDescriptor.get("duration")];
+                        "schedule-unavailable-" + choiceDescriptor.get("duration")];
 
                     if (currentTime >= reply.get("startTime")
                             && currentTime < reply.get("startTime") + choiceDescriptor.get("duration")) {
