@@ -134,7 +134,9 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
     var i, j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),
             budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
             clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskRequirementKey, wish, hate,
-            taskRequirementValue, listTaskRequirement = taskDescriptor.getRequirements(), taskDuration = taskInstance.getDescriptor().defaultInstance.getDuration(), workerInstance,
+            taskRequirementValue, listTaskRequirement = taskDescriptor.getRequirements(),
+            taskDuration = taskInstance.getDescriptor().defaultInstance.getDuration(), //don't work
+            workerInstance,
             workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,
             sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber, existingSkills = new Array(),
             punderationMoral = 0.1,

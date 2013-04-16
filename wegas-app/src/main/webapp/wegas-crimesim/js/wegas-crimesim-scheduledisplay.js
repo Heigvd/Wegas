@@ -29,7 +29,6 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         datatable: null,
         data: null,
         currentQuestionId: null,
-
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.data = [];
@@ -38,7 +37,6 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 width: "250px"
             });
         },
-
         renderUI: function() {
             // cb.on("clickoutside", this.hideMenu, this);
             this.menu.on("button:mouseenter", function(e) {
@@ -70,7 +68,6 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 selectedWidth: 235
             });
         },
-
         bindUI: function() {
             var cb = this.get(CONTENTBOX);
             this.handlers = {};
@@ -93,6 +90,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 this.get("contentBox").all(".schedule-leftcolum-selected").removeClass("schedule-leftcolum-selected");
                 e.target.addClass("schedule-leftcolum-selected");
                 this.syncDetailsPanel();
+                console.log(e)
             }, "td.schedule-leftcolum", this);
 
             cb.delegate("click", this.hideDetails, // Hide the question detail on close icon click
@@ -107,12 +105,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.handlers.playerChange = // If current user changes, refresh (editor only)
                     Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
-
         /**
          *
          */
         syncUI: function() {
-             var cb = this.get(CONTENTBOX).one(".schedule-questions");
+            var cb = this.get(CONTENTBOX).one(".schedule-questions");
 
             if (!Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period")) {
                 cb.setContent("Unable to find time variable.");
@@ -129,7 +126,6 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.hideOverlay();
             this.datatable.syncUI();
         },
-
         /**
          *
          */
@@ -139,7 +135,6 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 this.handlers[i].detach();
             }
         },
-
         // *** Rendering methods *** //
         syncSchedule: function() {
             var perPeriodLoad = [], cIndex, choiceDescriptor, choiceInstance,
@@ -213,7 +208,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         "schedule-unavailable-" + choiceDescriptor.get("duration")];
 
                     if (currentTime >= reply.get("startTime")
-                        && currentTime < reply.get("startTime") + choiceDescriptor.get("duration")) {
+                            && currentTime < reply.get("startTime") + choiceDescriptor.get("duration")) {
                         cols[cIndex].push("schedule-ongoingtask");
                     }
 
@@ -303,7 +298,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         syncDetailsPanel: function() {
             var i, k, reply, status, replyData, cb = this.get(CONTENTBOX),
                     question = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentQuestionId),
-                    questionInstance = question.getInstance();
+                    questionInstance = question.getInstance(), topValue;
 
             this.data.length = 0;
 
@@ -340,15 +335,17 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 this.data.push(replyData);
             }
             this.datatable.syncUI(this.data);
-
+            
+            topValue = cb.one(".schedule-leftcolum-selected").getDOMNode().getBoundingClientRect().top - cb.one(".schedule-leftcolum-selected").ancestor("table").getDOMNode().getBoundingClientRect().top;
             cb.one(".schedule-detail").setStyles({
                 position: 'display',
                 display: "block",
-                overflowX: "auto"
-            });
+                overflowX: "auto",
+                top: topValue
+            }, this);
             /* gallery : [{srcUrl:'url', description:'text'},{}, ...]*/
             this.gallery.set("gallery",
-                Y.clone(question.get("pictures")));                 // @hack clone since Gallery will replay the string by an object
+                    Y.clone(question.get("pictures")));                 // @hack clone since Gallery will replay the string by an object
         },
         renderDetails: function(reply) {
             var choiceDescriptor = reply.getChoiceDescriptor(),
