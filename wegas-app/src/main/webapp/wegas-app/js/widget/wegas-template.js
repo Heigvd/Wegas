@@ -14,15 +14,15 @@
 YUI.add("wegas-template", function(Y) {
     "use strict";
     var TEMPLATE = {
-        TEXT: "<div class='wegas-text-template'><span><%= this.label || '{label}' %></span><br/><span><%= this.value || '{value}' %></span></div>",
-        BOX: "<div class='wegas-box-template'><%= this.label || '{label}'%><br/><span><% for(var i=0; i < this.value; i+=1){%>" +
+        TEXT: "<div class='wegas-template-text'><span><%= this.label || '{label}' %></span><br/><span><%= this.value || '{value}' %></span></div>",
+        BOX: "<div class='wegas-template-box'><label><%= this.label || '{label}'%></label><br/><span><% for(var i=0; i < this.value; i+=1){%>" +
                 "<div class='wegas-template-box-unit'></div><% } %></span><br/>" +
-                "<span>(<%= this.value || '{value}' %><% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>)</span></div>",
-        VALUEBOX: "<div class='wegas-valuebox-template'><%= this.label || '{label}'%><br/><span><% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
-                "<div class='wegas-template-valuebox-unit<%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div><% } %></span><br/>" +
-                "</span></div>",
-        TITLE: "<div class='wegas-title-template'><%= this.label || '{label}'%></div>",
-        FRACTION: "<div class='wegas-fraction-template'><%= (this.minValue || '{minValue}') + '/' + (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>"
+                "<span class='wegas-template-box-value'>(<%= this.value || '{value}' %><% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>)</span></div>",
+        VALUEBOX: "<div class='wegas-template-valuebox'><label><%= this.label || '{label}'%></label</div><br/></label><div class='wegas-template-valuebox-units'><% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
+                "<div class='wegas-template-valuebox-unit <%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div><% } %></span>" +
+                "</div></div>",
+        TITLE: "<div class='wegas-template-title'><%= this.label || '{label}'%></div>",
+        FRACTION: "<div class='wegas-template-fraction'><%= (this.minValue || '{minValue}') + '/' + (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>"
     },
     engine = new Y.Template(Y.Template.Micro),
             undefinedToEmpty = function(value) {
@@ -48,10 +48,6 @@ YUI.add("wegas-template", function(Y) {
             title: engine.compile(TEMPLATE.TITLE),
             fraction: engine.compile(TEMPLATE.FRACTION)
         },
-        initializer: function() {
-            /*Store variable descriptor cache update event reference. Destructor purpose*/
-            this.vdUpdate = null;
-        },
         renderUI: function() {
             this.set("variable", this.get("variable"));
         },
@@ -70,27 +66,32 @@ YUI.add("wegas-template", function(Y) {
         },
         bindUI: function() {
             this.after(["dataChange", "variableChange", "templateChange"], this.syncUI);
-            this.vdUpdate = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI);
+            this.vdUpdateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI);
         },
         computeData: function() {
             var data = {}, desc = this.get("variable.evaluated");
 
             if (desc) {
+
+                if (desc instanceof Y.Wegas.persistence.ListDescriptor) {       // If the widget is a list,
+                    desc = desc.get("currentItem");                             // display it with the current list and the current element
+                }
+
                 data.label = undefinedToEmpty(desc.getPublicLabel());
                 data.value = undefinedToEmpty(desc.getInstance().get("value"));
                 data.maxValue = undefinedToEmpty(desc.get("maxValue"));
                 data.minValue = undefinedToEmpty(desc.get("minValue"));
-                data.defaultValue = undefinedToEmpty(desc.get("defaultInstance").
-                        get("value"));
+                data.defaultValue = undefinedToEmpty(desc.get("defaultValue"));
                 data.variable = desc;
             }
             return Y.mix(Y.merge(this.get("data")), data, false, null, 0, true);
         },
         destructor: function() {
-            this.vdUpdate.detach();
+            this.vdUpdateHandler.detach();
         }
-    },
-    {/*@lends Y.Wegas.Template*/
+
+    }, {
+        /*@lends Y.Wegas.Template*/
         EDITORNAME: "Variable template",
         ATTRS: {
             /**

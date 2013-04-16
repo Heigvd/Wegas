@@ -71,7 +71,7 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
             }, this);
             this.viewSrc.render(this.fieldset);
 
-            var container = new Y.Node(this.fieldset);                    // Render a div where the wysiwyg list will be rendered
+            var container = new Y.Node(this.fieldset);                          // Render a div where the wysiwyg list will be rendered
             container.prepend(divLabel.getDOMNode());
             container.prepend(this.viewSrc.get("boundingBox"));
         },
@@ -99,7 +99,7 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
             var tree, newVal = null, valObj = {};
 
             try {
-                tree = window.esprima.parse(this.inputs[1].el.value, {                    // Generate the syntaxic tree using esprima
+                tree = window.esprima.parse(this.inputs[1].el.value, {          // Generate the syntaxic tree using esprima
                     raw: true
                 });
                 if (tree.body[0].expression.callee && tree.body[0].expression.arguments) {
@@ -127,6 +127,6 @@ YUI.add("wegas-inputex-variableselect", function (Y) {
         }
 
     });
+    inputEx.registerType("variableselect", inputEx.Wegas.Variableselect);       // Register this class as "wegasurl" type
 
-    inputEx.registerType("variableselect", inputEx.Wegas.Variableselect);             // Register this class as "wegasurl" type
 });

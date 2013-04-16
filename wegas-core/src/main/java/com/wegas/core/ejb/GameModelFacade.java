@@ -15,6 +15,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel_;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -147,6 +148,15 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         } catch (RepositoryException ex) {
             System.err.println(ex);
         }
+    }
+
+    @Override
+    public List<GameModel> findAll() {
+        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        final CriteriaQuery query = criteriaBuilder.createQuery();
+        Root e = query.from(entityClass);
+        query.select(e).orderBy(criteriaBuilder.asc(e.get("name")));
+        return getEntityManager().createQuery(query).getResultList();
     }
 
     /**

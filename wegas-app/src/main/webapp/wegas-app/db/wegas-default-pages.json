@@ -21,19 +21,17 @@
                                 "cssClass": "timeIndicators",
                                 "direction": "vertical",
                                 "children": [{
-                                        "type": "VariableDisplay",
+                                        "type": "Template",
                                         "variable": {
                                             "name": "phases"
                                         },
-                                        "label": "Phase",
-                                        "view": "title"
+                                        "template": "title"
                                     }, {
-                                        "type": "VariableDisplay",
+                                        "type": "Template",
                                         "variable": {
                                             "name": "phases"
                                         },
-                                        "label": "Period",
-                                        "view": "valuebox"
+                                        "template": "valuebox"
                                     }]
                             }, {
                                 "disabled": false,
@@ -57,13 +55,15 @@
                                         }
                                     }]
                             }, {
-                                "type": "VariableDisplay",
+                                "type": "Template",
                                 "cssClass": "fr timecards",
                                 "variable": {
                                     "name": "humanResources"
                                 },
-                                "label": "Time cards",
-                                "view": "box"
+                                "template": "box",
+                                "data": {
+                                    "label": "Time cards"
+                                }
                             }, {
                                 "type": "GaugeDisplay",
                                 "cssClass": "fr",
