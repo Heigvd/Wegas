@@ -119,9 +119,7 @@ YUI.add('wegas-datasource', function(Y) {
             });
 
             this.doBefore("_defDataFn", this.onData, this);                     // When the host receives some data, we parse the result
-            this.afterHostEvent("sourceChange", this.clear, this);         // When the source changes, clear the cache
-
-            this.aft
+            this.afterHostEvent("sourceChange", this.clear, this);              // When the source changes, clear the cache
         },
         /**
          * Server requests methods
@@ -152,7 +150,7 @@ YUI.add('wegas-datasource', function(Y) {
             Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
                 payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                if (payload.serverResponse.get("entities").length > 0) {
+                if (payload.serverResponse.get("entities") && payload.serverResponse.get("entities").length > 0) {
                     payload.response.entity = payload.serverResponse.get("entities")[0];                                 // Shortcut, useful if there is only one instance
                 }
                 if (payload.cfg.updateCache !== false) {

@@ -181,7 +181,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             });
         }
     }, {
-    CSS_PREFIX: "wegas-crimesim-treeble",
+        CSS_PREFIX: "wegas-crimesim-treeble",
         ATTRS: {
             columns: {
                 validator: Y.Lang.isArray
