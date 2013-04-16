@@ -346,8 +346,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             //Set width and Y position of the ".schedule-detail".
             topValue = cb.one(".schedule-leftcolum-selected").getDOMNode().getBoundingClientRect().top - cb.one(".schedule-leftcolum-selected").ancestor("table").getDOMNode().getBoundingClientRect().top;
-            if (topValue > cb.one(".schedule-leftcolum-selected").ancestor("table").getHeight() - cb.one(".schedule-detail").getDOMNode().getBoundingClientRect().height) {
-                topValue = cb.one(".schedule-leftcolum-selected").ancestor("table").getHeight() - cb.one(".schedule-detail").getDOMNode().getBoundingClientRect().height;
+            if (topValue > cb.one(".schedule-leftcolum-selected").ancestor("table").getDOMNode().getBoundingClientRect().height - cb.one(".schedule-detail").getDOMNode().getBoundingClientRect().height) {
+                topValue = cb.one(".schedule-leftcolum-selected").ancestor("table").getDOMNode().getBoundingClientRect().height - cb.one(".schedule-detail").getDOMNode().getBoundingClientRect().height;
             }
             maxWidth = cb.one(".schedule-item").getDOMNode().getBoundingClientRect().width * Y.Wegas.Facade.VariableDescriptor.cache.find("name", "period").get("maxValue");
             cb.one(".schedule-detail").setStyles({
