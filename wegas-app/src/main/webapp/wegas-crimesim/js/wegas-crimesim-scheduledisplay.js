@@ -39,6 +39,19 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         },
         renderUI: function() {
             // cb.on("clickoutside", this.hideMenu, this);
+
+            this.renderDetailsPanel(this.get(CONTENTBOX).one(".schedule-analysis"));
+
+            this.gallery = new Y.Wegas.util.FileExplorerGallery({
+                render: this.get(CONTENTBOX).one(".schedule-gallery"),
+                selectedHeight: 150,
+                selectedWidth: 235
+            });
+        },
+        bindUI: function() {
+            var cb = this.get(CONTENTBOX);
+            this.handlers = {};
+
             this.menu.on("button:mouseenter", function(e) {
                 var choice = e.target.get("data").choice,
                         extendedChoice = this.extendedQuestions.find(choice.get("id"));
@@ -62,17 +75,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 }
             }, this);
 
-            this.renderDetailsPanel(this.get(CONTENTBOX).one(".schedule-analysis"));
-
-            this.gallery = new Y.Wegas.util.FileExplorerGallery({
-                render: this.get(CONTENTBOX).one(".schedule-gallery"),
-                selectedHeight: 150,
-                selectedWidth: 235
-            });
-        },
-        bindUI: function() {
-            var cb = this.get(CONTENTBOX);
-            this.handlers = {};
+            this.menu.on("button:click", this.onMenuClick, this);               // Listen for the choice menu click event
 
             cb.delegate("click", function(e) {                                  // Show the available menu options on cell click
                 var questionId = e.target.ancestor("tr").getAttribute("data-questionid"),
@@ -83,8 +86,6 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 this.menu.add(this.genMenuItems(question, startTime));
                 this.menu.attachTo(e.target);                                   // Display the menu button next to the arrow
             }, ".schedule-available .icon", this);
-
-            this.menu.on("button:click", this.onMenuClick, this);               // Listen for the choice menu click event
 
             cb.delegate("click", function(e) {                                  // Show the question detail on left label click
                 var questionId = e.target.ancestor("tr").getAttribute("data-questionid");
@@ -98,12 +99,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             cb.delegate("click", this.onCancelReplyClick, ".icon .close-icon", this);// Hide the question detail on close icon click
 
+            this.handlers.response =
+                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);// If data changes, refresh
 
-            this.handlers.response = // If data changes, refresh
-                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-
-            this.handlers.playerChange = // If current user changes, refresh (editor only)
-                    Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
+            this.handlers.playerChange =
+                    Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);// If current user changes, refresh (editor only)
         },
         /**
          *
@@ -121,11 +121,12 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 return;
             }
 
+            this.syncSchedule();
+            
             Y.Wegas.Facade.VariableDescriptor.cache.getWithView(evidences, "Editor", {// Retrieve the question/choice description from the server
                 on: {
                     success: Y.bind(function(e) {
                         this.extendedQuestions = e.response.entity;
-                        this.syncSchedule();
                         if (this.currentQuestionId) {
                             this.syncDetailsPanel();
                         }
