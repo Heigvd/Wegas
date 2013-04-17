@@ -53,8 +53,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.handlers = {};
 
             this.menu.on("button:mouseenter", function(e) {
+                if (!ScheduleDisplay.EXTENDEDQUESTIONS) {
+                    return;                                                     // @fixme @hack
+                }
                 var choice = e.target.get("data").choice,
-                        extendedChoice = this.extendedQuestions.find(choice.get("id"));
+                        extendedChoice =  ScheduleDisplay.EXTENDEDQUESTIONS.find(choice.get("id"));
 
                 this.menuDetails.set("align", {
                     node: this.menu.get("boundingBox"),
@@ -122,11 +125,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             }
 
             this.syncSchedule();
-            
+
             Y.Wegas.Facade.VariableDescriptor.cache.getWithView(evidences, "Editor", {// Retrieve the question/choice description from the server
                 on: {
                     success: Y.bind(function(e) {
-                        this.extendedQuestions = e.response.entity;
+                         ScheduleDisplay.EXTENDEDQUESTIONS = e.response.entity;
                         if (this.currentQuestionId) {
                             this.syncDetailsPanel();
                         }
@@ -304,12 +307,14 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.datatable.render(this.get(CONTENTBOX).one(".schedule-analysis"));
         },
         syncDetailsPanel: function() {
+            if (!ScheduleDisplay.EXTENDEDQUESTIONS) {   // sync will be sent on reply received
+                return;
+            }
             var i, k, reply, status, replyData, cb = this.get(CONTENTBOX),
                     question = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentQuestionId),
                     questionInstance = question.getInstance(), topValue, maxWidth,
-                    extendedQuestion = this.extendedQuestions.find(this.currentQuestionId);
+                    extendedQuestion =  ScheduleDisplay.EXTENDEDQUESTIONS.find(this.currentQuestionId);
             this.data.length = 0;
-
 
             cb.one("h1").setContent(question.getPublicLabel() || "undefined");
             cb.one(".content").setContent(extendedQuestion.get("description") || "<em>No description</em>");
@@ -359,9 +364,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 width: maxWidth
             }, this);
 
-
             /* gallery : [{srcUrl:'url', description:'text'},{}, ...]*/
-            this.gallery.set("gallery", Y.clone(question.get("pictures")));     // @hack clone since Gallery will replay the string by an object
+            this.gallery.set("gallery", Y.clone(question.get("pictures")));     // @hack clone since Gallery will replace the string by an object
         },
         renderDetails: function(reply) {
             var choiceDescriptor = reply.getChoiceDescriptor(),
@@ -443,6 +447,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             }
             return ret;
         }
+    }, {
+        EXTENDEDQUESTIONS: null
     });
 
     Y.namespace('Wegas').ScheduleDisplay = ScheduleDisplay;
