@@ -169,7 +169,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
                 Y.Wegas.Facade.VariableDescriptor.cache.getWithView(e.newVal.cQuestion, "Editor", {// Retrieve the question/choice description from the server
                     on: {
                         success: Y.bind(function(tab, e) {
-                            var question = e.serverResponse.get("entities")[0];
+                            var question = e.response.entity;
 
                             this.renderTab(tab, question);
 
