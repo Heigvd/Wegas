@@ -26,9 +26,11 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         handlers: null,
         gallery: null,
         datatable: null,
+        unreadRepliesId: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
+            this.unreadRepliesId = [];
         },
         renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
@@ -48,9 +50,11 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
             }
         },
         syncUI: function() {
+            this.unreadRepliesId.length = 0;
             if (Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences")) {
-                this.setUnread();
                 this.datatable.syncUI(this.genData());
+                this.setUnread();
+                this.higlightNewsEvidences();
             } else {
                 this.datatable.syncUI([]);
             }
@@ -108,6 +112,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs());
                     replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
                     status = reply.getStatus(currentTime);
+
+                    if (reply.get("unread")) {
+                        this.unreadRepliesId.push(replyData.choiceDescriptorId);
+                    }
 
                     replyData.evidence = questions[i].getPublicLabel();
                     replyData.analyis = reply.getChoiceDescriptor().getPublicLabel();
@@ -171,6 +179,19 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     }
                 }
             }
+        },
+        higlightNewsEvidences: function() {
+            var j;
+            if (this.unreadRepliesId.length === 0){
+                return;
+            }
+            this.get(CONTENTBOX).all('.yui3-datatable-col-choiceDescriptorId').each(function(cell, i) {
+                for (j = 0; j < this.unreadRepliesId.length; j++) {
+                    if (+cell.getContent() === this.unreadRepliesId[j]) {
+                        cell.ancestor("tr").addClass('unread');
+                    }
+                }
+            }, this);
         }
     });
 

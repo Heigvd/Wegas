@@ -133,7 +133,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             }, this);
         },
         getTreebleDatas: function() {
-            var i, j, data = this.data.slice(0), reply,
+            var i, data = this.data.slice(0), reply,
                     description, kiddies;
             if (!data) {
                 return null;
