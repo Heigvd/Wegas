@@ -64,7 +64,7 @@ public class Message extends NamedEntity {
      *
      */
     @ElementCollection
-    @JsonView(Views.Export.class)
+    @JsonView(Views.ExtendedI.class)
     private List<String> attachements;
     /**
      *

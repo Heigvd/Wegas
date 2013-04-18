@@ -50,8 +50,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
             var ds = this.get(DATASOURCE),
                     request = this.get("request");
             if (ds) {
-                ds.after("response", this.syncUI, this);                        // Listen updates on the target datasource
-                ds.after("error", function(e) {                                // GLOBAL error message
+                ds.after("update", this.syncUI, this);                           // Listen updates on the target datasource
+                ds.after("error", function(e) {                                 // GLOBAL error message
                     this.showMessage("error", e.response.results.message);
                 }, this);
 
@@ -65,6 +65,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
          * @private
          */
         syncUI: function() {
+
+            Y.log("sync()", "info", "Wegas.EditorTreeView");
+
             if (!this.get(DATASOURCE)) {
                 this.get(CONTENTBOX).append("Unable to find datasource");
                 return;

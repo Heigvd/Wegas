@@ -38,7 +38,7 @@ public class QuestionDescriptor extends ListDescriptor {
      */
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.EditorI.class)
+    @JsonView(Views.ExtendedI.class)
     private String description;
     /**
      *

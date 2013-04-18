@@ -59,7 +59,7 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
         switch (firstPathSeg) {
 
             case "Private":
-            case "PrivateEditor":
+            case "EditorPrivate":
                 String id = cr.getPathSegments().get(1).getPath();
                 rmf.setView(this.stringToView(firstPathSeg));
                 rmf.setPlayer(Long.valueOf(id));
@@ -68,8 +68,10 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
 
             case "Index":
             case "Public":
+            case "Extended":
             case "Export":
             case "Editor":
+            case "EditorExtended":
                 rmf.setView(this.stringToView(firstPathSeg));
                 newUri = newUri.replace(firstPathSeg + "/", "");
                 break;
@@ -102,17 +104,24 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
             case "Index":
                 return Views.Index.class;
 
+            case "Extended":
+                return Views.Extended.class;
+
             case "Private":
                 return Views.Private.class;
 
-            case "PrivateEditor":
-                return Views.PrivateEditor.class;
 
             case "Export":
                 return Views.Export.class;
 
             case "Editor":
                 return Views.Editor.class;
+
+            case "EditorPrivate":
+                return Views.EditorPrivate.class;
+
+            case "EditorExtended":
+                return Views.Extended.class;
 
             case "Public":
             default:

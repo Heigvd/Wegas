@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
