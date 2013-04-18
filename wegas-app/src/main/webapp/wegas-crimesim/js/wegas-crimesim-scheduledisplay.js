@@ -126,7 +126,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             this.syncSchedule();
 
-            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(evidences, "Editor", {// Retrieve the question/choice description from the server
+            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(evidences, "Extended", {// Retrieve the question/choice description from the server
                 on: {
                     success: Y.bind(function(e) {
                          ScheduleDisplay.EXTENDEDQUESTIONS = e.response.entity;

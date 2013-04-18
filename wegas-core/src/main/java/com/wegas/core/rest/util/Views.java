@@ -34,15 +34,17 @@ public class Views {
     }
 
     /**
-     * Player view (w/ instances)
+     * Player view (w/ all players instances)
      */
-    public static interface PlayerI {
-    }
-
+//    public static interface PlayerI {
+//    }
     /**
      * Only display current player's VariableInstance
      */
-    public static interface SinglePlayerI extends PlayerI {
+    public static interface WithScopeI {
+    }
+
+    public static interface SinglePlayerI extends WithScopeI {
     }
 
     /**
@@ -58,6 +60,12 @@ public class Views {
     }
 
     /**
+     *
+     */
+    public static class Extended extends Public implements ExtendedI {
+    }
+
+    /**
      * Variable Descriptor with a single instance for the current player
      */
     public static class Private extends Public implements SinglePlayerI {
@@ -66,19 +74,25 @@ public class Views {
     /**
      *
      */
-    public static class Editor extends Public implements IndexI, PlayerI, EditorI {
+    public static class Editor extends Public implements IndexI, EditorI, WithScopeI {
     }
 
     /**
      * Variable Descriptor with a single instance for the current player
      */
-    public static class PrivateEditor extends Public implements SinglePlayerI, EditorI {
+    public static class EditorPrivate extends Public implements SinglePlayerI, EditorI {
+    }
+
+    /**
+     * Variable Descriptor with a single instance for the current player
+     */
+    public static class EditorExtended extends Public implements IndexI, EditorI, ExtendedI {
     }
 
     /**
      *
      */
-    public static class Export implements EditorI {
+    public static class Export implements EditorI, ExtendedI {
     }
 
     /**
