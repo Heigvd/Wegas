@@ -24,6 +24,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         // *** Fields *** /
         menu: null,
         handlers: null,
+        timer: null,
         gallery: null,
         datatable: null,
         unreadRepliesId: null,
@@ -31,9 +32,13 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         initializer: function() {
             this.handlers = {};
             this.unreadRepliesId = [];
+            this.considerateAsRead = false;
         },
         renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
+            this.timer = Y.later(5000, this, function() {
+                this.considerateAsRead = true;
+            });
         },
         bindUI: function() {
             this.handlers.playerChange = // If current user changes, refresh (editor only)
@@ -44,6 +49,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     this.syncUI, this);
         },
         destructor: function() {
+            if (this.considerateAsRead) {
+                this.setUnread();
+            }
+            this.timer.cancel();
             this.datatable.destroy();
             for (var i in this.handlers) {
                 this.handlers[i].detach();
@@ -53,7 +62,6 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
             this.unreadRepliesId.length = 0;
             if (Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences")) {
                 this.datatable.syncUI(this.genData());
-                this.setUnread();
                 this.higlightNewsEvidences();
             } else {
                 this.datatable.syncUI([]);
@@ -167,10 +175,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     if (reply.get("unread")) {
                         reply.set("unread", false);
                         Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                            request: "/" + reply.getAttrs().id + "/Reply/" + reply.getAttrs().id,
-                            headers: {
-                                'Content-Type': 'application/json; charset=ISO-8859-1'
-                            },
+                            request: "/QuestionDescriptor/Reply/" + reply.get("id"),
                             cfg: {
                                 method: "PUT",
                                 data: reply
@@ -182,7 +187,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         },
         higlightNewsEvidences: function() {
             var j;
-            if (this.unreadRepliesId.length === 0){
+            if (this.unreadRepliesId.length === 0) {
                 return;
             }
             this.get(CONTENTBOX).all('.yui3-datatable-col-choiceDescriptorId').each(function(cell, i) {
