@@ -27,31 +27,27 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         timer: null,
         gallery: null,
         datatable: null,
-        unreadRepliesId: null,
+        unreadRows: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
-            this.unreadRepliesId = [];
-            this.considerateAsRead = false;
+            this.unreadRows = [];
         },
         renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
-            this.timer = Y.later(5000, this, function() {
-                this.considerateAsRead = true;
+            this.timer = Y.later(3000, this, function() {
+                this.setUnread();
             });
         },
         bindUI: function() {
-            this.handlers.playerChange = // If current user changes, refresh (editor only)
-                    Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
-
             this.handlers.response = // If data changes, refresh
-                    Y.Wegas.Facade.VariableDescriptor.after("update",
-                    this.syncUI, this);
+                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.handlers.toggleRow = //don't work
+                    this.get(CONTENTBOX).one("table").delegate("click", function() {
+                this.highlightNewEvidences();
+            }, ".yui3-datatable-col-treeblenub", this);
         },
         destructor: function() {
-            if (this.considerateAsRead) {
-                this.setUnread();
-            }
             this.timer.cancel();
             this.datatable.destroy();
             for (var i in this.handlers) {
@@ -59,10 +55,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
             }
         },
         syncUI: function() {
-            this.unreadRepliesId.length = 0;
+            this.unreadRows.length = 0;
             if (Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences")) {
                 this.datatable.syncUI(this.genData());
-                this.higlightNewsEvidences();
+                this.highlightNewEvidences();
             } else {
                 this.datatable.syncUI([]);
             }
@@ -72,17 +68,17 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     key: "choiceDescriptorId",
                     className: "hidden"
                 }, {
-                    sortable: true,
+                    //sortable: true, //Don't sort with treeble !
                     key: "startTime",
                     //className: 'hidden',
                     label: "Period",
                     className: "period"
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "evidence",
                     label: "Evidences"
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "analyis",
                     label: "Analyse"
                 }, {
@@ -90,7 +86,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     label: "Result",
                     allowHTML: true
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "fileLinks",
                     allowHTML: true,
                     label: "Files",
@@ -111,7 +107,8 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     responsesByStartTime = {},
                     period = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period"),
                     periodInstance = period.getInstance(),
-                    currentTime = periodInstance.get("value") - period.get("minValue");
+                    currentTime = periodInstance.get("value") - period.get("minValue"),
+                    rowCount = 0;
 
             for (i = 0; i < questions.length; i = i + 1) {
                 questionInstance = questions[i].getInstance();
@@ -122,7 +119,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     status = reply.getStatus(currentTime);
 
                     if (reply.get("unread")) {
-                        this.unreadRepliesId.push(replyData.choiceDescriptorId);
+                        this.unreadRows.push(rowCount);
                     }
 
                     replyData.evidence = questions[i].getPublicLabel();
@@ -154,6 +151,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                         responsesByStartTime[reply.get("startTime")] = [];
                     }
                     responsesByStartTime[reply.get("startTime")].push(replyData);
+                    rowCount++;
                 }
             }
             for (i in responsesByStartTime) {
@@ -185,16 +183,13 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                 }
             }
         },
-        higlightNewsEvidences: function() {
-            var j;
-            if (this.unreadRepliesId.length === 0) {
+        highlightNewEvidences: function() {
+            if (this.unreadRows.length === 0) {
                 return;
             }
-            this.get(CONTENTBOX).all('.yui3-datatable-col-choiceDescriptorId').each(function(cell, i) {
-                for (j = 0; j < this.unreadRepliesId.length; j++) {
-                    if (+cell.getContent() === this.unreadRepliesId[j]) {
-                        cell.ancestor("tr").addClass('unread');
-                    }
+            this.get(CONTENTBOX).all('.yui3-datatable-data .yui3-datatable-col-choiceDescriptorId').each(function(cell, i) {
+                if (this.unreadRows.indexOf(i) > -1) {
+                    cell.ancestor("tr").addClass('unread');
                 }
             }, this);
         }
