@@ -34,12 +34,8 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
             this.renderDetailsPanel(this.get(CONTENTBOX));
         },
         bindUI: function() {
-            this.handlers.playerChange = // If current user changes, refresh (editor only)
-                    Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
-
-            this.handlers.response = // If data changes, refresh
-                    Y.Wegas.Facade.VariableDescriptor.after("update",
-                    this.syncUI, this);
+            this.handlers.response = Y.Wegas.Facade.VariableDescriptor.after("update",
+                    this.syncUI, this);                                         // If data changes, refresh
         },
         destructor: function() {
             this.datatable.destroy();

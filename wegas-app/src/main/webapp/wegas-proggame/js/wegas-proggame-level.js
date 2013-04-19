@@ -90,11 +90,9 @@ YUI.add('wegas-proggame-level', function (Y) {
             this.resetUI();
         },
         bindUI: function () {
-            this.handlers.response = Y.Wegas.Facade.VariableDescriptor.after("response",
+            this.handlers.response = Y.Wegas.Facade.VariableDescriptor.after("update",
                 this.syncUI, this);                                             // If data changes, refresh
-            this.handlers.playerChange = Y.Wegas.app.after('currentPlayerChange',
-                this.syncUI, this);                                             // If current user changes, refresh (editor only)
-
+   
             this.runButton.on("click", this.run, this);
 
             this.display.after('commandExecuted', this.consumeCommand, this);

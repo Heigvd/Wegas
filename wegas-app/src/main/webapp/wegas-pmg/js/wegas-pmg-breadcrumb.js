@@ -30,7 +30,7 @@ YUI.add("wegas-pmg-breadcrumb", function (Y) {
             cb.append(node);
         },
         bindUI: function () {
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("response", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         syncUI: function () {
             var i, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,

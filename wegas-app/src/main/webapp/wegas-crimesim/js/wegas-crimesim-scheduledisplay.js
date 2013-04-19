@@ -32,13 +32,13 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.data = [];
+            this.handlers = {};
+        },
+        renderUI: function() {
             this.menu = new Y.Wegas.Menu();
             this.menuDetails = new Y.Wegas.Menu({
                 width: "250px"
             });
-        },
-        renderUI: function() {
-            // cb.on("clickoutside", this.hideMenu, this);
 
             this.renderDetailsPanel(this.get(CONTENTBOX).one(".schedule-analysis"));
 
@@ -50,14 +50,15 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         },
         bindUI: function() {
             var cb = this.get(CONTENTBOX);
-            this.handlers = {};
+
+            // cb.on("clickoutside", this.hideMenu, this);
 
             this.menu.on("button:mouseenter", function(e) {
                 if (!ScheduleDisplay.EXTENDEDQUESTIONS) {
                     return;                                                     // @fixme @hack
                 }
                 var choice = e.target.get("data").choice,
-                        extendedChoice =  ScheduleDisplay.EXTENDEDQUESTIONS.find(choice.get("id"));
+                        extendedChoice = ScheduleDisplay.EXTENDEDQUESTIONS.find(choice.get("id"));
 
                 this.menuDetails.set("align", {
                     node: this.menu.get("boundingBox"),
@@ -104,9 +105,6 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             this.handlers.response =
                     Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);// If data changes, refresh
-
-            this.handlers.playerChange =
-                    Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);// If current user changes, refresh (editor only)
         },
         /**
          *
@@ -129,7 +127,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             Y.Wegas.Facade.VariableDescriptor.cache.getWithView(evidences, "Extended", {// Retrieve the question/choice description from the server
                 on: {
                     success: Y.bind(function(e) {
-                         ScheduleDisplay.EXTENDEDQUESTIONS = e.response.entity;
+                        ScheduleDisplay.EXTENDEDQUESTIONS = e.response.entity;
                         if (this.currentQuestionId) {
                             this.syncDetailsPanel();
                         }
@@ -143,6 +141,10 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
          */
         destructor: function() {
             var i;
+            this.menu.destroy();
+            this.menuDetails.destroy();
+            this.gallery.destroy();
+            this.datatable.destroy();
             for (i in this.handlers) {
                 this.handlers[i].detach();
             }
@@ -313,7 +315,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var i, k, reply, status, replyData, cb = this.get(CONTENTBOX),
                     question = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentQuestionId),
                     questionInstance = question.getInstance(), topValue, maxWidth,
-                    extendedQuestion =  ScheduleDisplay.EXTENDEDQUESTIONS.find(this.currentQuestionId);
+                    extendedQuestion = ScheduleDisplay.EXTENDEDQUESTIONS.find(this.currentQuestionId);
             this.data.length = 0;
 
             cb.one("h1").setContent(question.getPublicLabel() || "undefined");
