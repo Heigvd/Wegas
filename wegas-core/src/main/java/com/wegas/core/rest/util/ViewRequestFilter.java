@@ -121,7 +121,7 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
                 return Views.EditorPrivate.class;
 
             case "EditorExtended":
-                return Views.Extended.class;
+                return Views.EditorExtended.class;
 
             case "Public":
             default:

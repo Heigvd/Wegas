@@ -25,8 +25,10 @@ EvtTarget.prototype = {
     },
     fire: function (evt, args) {
         var i, evts = this.evts[evt];
-        for (i = 0; i < evts.length; i += 1) {
-            evts[i].fn(args);
+        if (evts) {
+            for (i = 0; i < evts.length; i += 1) {
+                evts[i].fn(args);
+            }
         }
     }
 };
@@ -55,23 +57,32 @@ function lookupBean(name) {
 function nextWeek() {
     period.value += 1;
 
-    var qdf = lookupBean("QuestionDescriptorFacade"),
-    items = evidences.descriptor.items;
+    var qdf = lookupBean("QuestionDescriptorFacade");
 
     humanResources.value = humanResources.descriptor.defaultInstance.value;
 
-    for (var i = 0; i < items.size(); i += 1) {
-        var questionInstance = items.get(i).getInstance(self);
-        for (var j = 0; j< questionInstance.replies.size(); j += 1) {
-            var reply = questionInstance.replies.get(j);
-            if (+reply.startTime + +reply.result.choiceDescriptor.duration + 1 === period.value) {
-                reply.setUnread(true);
-                qdf.validateReply(self, reply);
-            }
+    var walkDescriptor = function (descriptor) {
+        var desc, questionInstance;
+        for (var i = 0; i < descriptor.items.size(); i += 1) {
+            var desc = descriptor.items.get(i);
 
-            if (+reply.startTime + 1  === +period.value ) {
-                humanResources.value -= reply.result.choiceDescriptor.cost;
+            if (desc instanceof com.wegas.mcq.persistence.QuestionDescriptor) {
+                questionInstance = desc.getInstance(self);
+                for (var j = 0; j< questionInstance.replies.size(); j += 1) {
+                    var reply = questionInstance.replies.get(j);
+                    if (+reply.startTime + +reply.result.choiceDescriptor.duration + 1 === period.value) {
+                        reply.setUnread(true);
+                        qdf.validateReply(self, reply);
+                    }
+
+                    if (+reply.startTime + 1  === +period.value ) {
+                        humanResources.value -= reply.result.choiceDescriptor.cost;
+                    }
+                }
+            } else  if (desc instanceof com.wegas.core.persistence.variable.ListDescriptor) {
+                walkDescriptor(desc);
             }
         }
-    }
+    };
+    walkDescriptor(evidences.descriptor);
 }

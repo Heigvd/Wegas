@@ -16,7 +16,9 @@ import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -35,6 +37,13 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     private static final long serialVersionUID = 1L;
     // private static final Logger logger = LoggerFactory.getLogger(ChoiceDescriptor.class);
+    /**
+     *
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @XmlTransient
+    @JsonBackReference
+    private QuestionDescriptor question;
     /**
      *
      */
@@ -211,5 +220,20 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     public void setCost(Long cost) {
         this.cost = cost;
+    }
+
+    /**
+     * @return the question
+     */
+    public QuestionDescriptor getQuestion() {
+        return question;
+    }
+
+    /**
+     * @param question the question to set
+     */
+    @JsonBackReference
+    public void setQuestion(QuestionDescriptor question) {
+        this.question = question;
     }
 }

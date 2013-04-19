@@ -23,19 +23,19 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @NamedQuery(name = "findListDescriptorByChildId",
-query = "SELECT DISTINCT listDescriptor FROM ListDescriptor listDescriptor LEFT JOIN listDescriptor.items AS item WHERE item.id = :itemId")
+        query = "SELECT DISTINCT listDescriptor FROM ListDescriptor listDescriptor LEFT JOIN listDescriptor.items AS item WHERE item.id = :itemId")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class)
 })
-public class ListDescriptor extends VariableDescriptor<VariableInstance> {
+public class ListDescriptor extends VariableDescriptor<VariableInstance> implements ListDescriptorI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(ListDescriptor.class);
     /**
-     * @fixme if we use a joint table here, it does not do the cascading on
-     * delete a child for the joint table. @JoinTable(joinColumns = {
+     *
      */
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
+    //@BatchFetch(BatchFetchType.IN)
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @OrderBy("id")
     private List<VariableDescriptor> items = new ArrayList<VariableDescriptor>();
@@ -64,6 +64,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> {
     /**
      * @return the variableDescriptors
      */
+    @Override
     public List<VariableDescriptor> getItems() {
         return items;
     }
@@ -71,6 +72,11 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> {
     /**
      * @param items
      */
+//    @Override
+//    public void setItems(List<VariableDescriptor> items) {
+//        this.items = items;
+//    }
+    @Override
     public void setItems(List<VariableDescriptor> items) {
         this.items = items;
     }
@@ -79,10 +85,10 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> {
      *
      * @param item
      */
-    @XmlTransient
+    @Override
     public void addItem(VariableDescriptor item) {
         this.items.add(item);
-        if((item.getEditorLabel() == null || item.getEditorLabel().isEmpty()) && item.getLabel() != null){
+        if ((item.getEditorLabel() == null || item.getEditorLabel().isEmpty()) && item.getLabel() != null) {
             item.setEditorLabel(item.getLabel());
         }
         item.setGameModel(this.getGameModel());
@@ -93,6 +99,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> {
      * @param index
      * @return
      */
+    @Override
     public VariableDescriptor item(int index) {
         return this.items.get(index);
     }
