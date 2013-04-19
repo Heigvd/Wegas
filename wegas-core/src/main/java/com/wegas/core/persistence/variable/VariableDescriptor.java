@@ -25,7 +25,6 @@ import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.mononpoly.persistence.ObjectDescriptor;
-import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
@@ -76,6 +75,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      */
     @NotNull
+    //@JsonView(Views.EditorExtendedI.class)
     protected String name;
     /**
      *
@@ -99,7 +99,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @NotNull
-    @JsonView(Views.EditorI.class)
+    @JsonView(Views.EditorExtendedI.class)
     private VariableInstance defaultInstance;
     /*
      * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name

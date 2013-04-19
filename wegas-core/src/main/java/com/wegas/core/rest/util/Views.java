@@ -26,6 +26,8 @@ public class Views {
      */
     public static interface ExtendedI {
     }
+    public static interface EditorExtendedI extends ExtendedI{
+    }
 
     /**
      * Extend view (w/ scripts, impacts)
@@ -65,6 +67,7 @@ public class Views {
     public static class Extended extends Public implements ExtendedI {
     }
 
+
     /**
      * Variable Descriptor with a single instance for the current player
      */
@@ -74,7 +77,7 @@ public class Views {
     /**
      *
      */
-    public static class Editor extends Public implements IndexI, EditorI, WithScopeI {
+    public static class Editor extends Public implements EditorI, WithScopeI {
     }
 
     /**
@@ -86,13 +89,13 @@ public class Views {
     /**
      * Variable Descriptor with a single instance for the current player
      */
-    public static class EditorExtended extends Public implements IndexI, EditorI, ExtendedI {
+    public static class EditorExtended extends Public implements EditorI, ExtendedI, EditorExtendedI {
     }
 
     /**
      *
      */
-    public static class Export implements EditorI, ExtendedI {
+    public static class Export implements EditorI, ExtendedI, EditorExtendedI {
     }
 
     /**
