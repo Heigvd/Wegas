@@ -48,17 +48,17 @@ import org.codehaus.jackson.map.annotate.JsonView;
 })
 @NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptor variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
 @JsonSubTypes(value = {
+    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
     @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
-    @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
     @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
-    @JsonSubTypes.Type(name = "MCQDescriptor", value = QuestionDescriptor.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
     @JsonSubTypes.Type(name = "FSMDescriptor", value = StateMachineDescriptor.class),
-    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ResourceDescriptor", value = ResourceDescriptor.class),
     @JsonSubTypes.Type(name = "TaskDescriptor", value = TaskDescriptor.class),
+    @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
+    @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),})
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity {
@@ -98,29 +98,30 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * correctly
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    //@JsonView(Views.EditorI.class)
     @NotNull
+    @JsonView(Views.EditorI.class)
     private VariableInstance defaultInstance;
     /*
      * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
      * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
      * updatable = true)
      */
-    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
     @NotNull
     //@JsonManagedReference
+    @JsonView(Views.WithScopeI.class)
     private AbstractScope scope;
+
     /**
      *
      */
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinTable(joinColumns = {
-        @JoinColumn(referencedColumnName = "variabledescriptor_id")},
-            inverseJoinColumns = {
-        @JoinColumn(referencedColumnName = "tag_id")})
-    @XmlTransient
-    private List<Tag> tags;
-
+    //@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    //@JoinTable(joinColumns = {
+    //    @JoinColumn(referencedColumnName = "variabledescriptor_id")},
+    //        inverseJoinColumns = {
+    //    @JoinColumn(referencedColumnName = "tag_id")})
+    //@XmlTransient
+    //private List<Tag> tags;
     /**
      *
      */
@@ -278,20 +279,6 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void setDefaultInstance(T defaultInstance) {
         this.defaultInstance = defaultInstance;
-    }
-
-    /**
-     * @return the tags
-     */
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    /**
-     * @param tags the tags to set
-     */
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
     }
 
     /**

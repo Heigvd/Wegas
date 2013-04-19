@@ -9,17 +9,23 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.persistence.variable.ListDescriptorI;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -29,10 +35,9 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Entity
 @XmlType(name = "QuestionDescriptor")
 @Table(name = "MCQQuestionDescriptor")
-public class QuestionDescriptor extends ListDescriptor {
+public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements ListDescriptorI<ChoiceDescriptor> {
 
     private static final long serialVersionUID = 1L;
-    // private static final Logger logger = LoggerFactory.getLogger(QuestionDescriptor.class);
     /**
      *
      */
@@ -44,6 +49,15 @@ public class QuestionDescriptor extends ListDescriptor {
      *
      */
     private boolean allowMultipleReplies = false;
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "question", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    //@BatchFetch(BatchFetchType.IN)
+    @JoinColumn(referencedColumnName = "variabledescriptor_id")
+    @JsonManagedReference
+    @OrderBy("id")
+    private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
      */
@@ -150,5 +164,42 @@ public class QuestionDescriptor extends ListDescriptor {
     public Boolean isReplied(Player p) {
         QuestionInstance instance = (QuestionInstance) this.getInstance(p);
         return !instance.getReplies().isEmpty();
+    }
+
+    /**
+     * @return the variableDescriptors
+     */
+    @Override
+    public List<ChoiceDescriptor> getItems() {
+        return items;
+    }
+
+    /**
+     * @param items
+     */
+    @Override
+    public void setItems(List<ChoiceDescriptor> items) {
+        this.items = items;
+    }
+
+    /**
+     *
+     * @param item
+     */
+    @Override
+    public void addItem(ChoiceDescriptor item) {
+        this.items.add(item);
+        item.setQuestion(this);
+        item.setGameModel(this.getGameModel());
+    }
+
+    /**
+     *
+     * @param index
+     * @return
+     */
+    @Override
+    public ChoiceDescriptor item(int index) {
+        return this.items.get(index);
     }
 }
