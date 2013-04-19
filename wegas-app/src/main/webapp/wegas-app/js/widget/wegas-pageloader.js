@@ -76,9 +76,7 @@ YUI.add('wegas-pageloader', function(Y) {
 //                }
 //            }, this));
 
-            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("response", onUpdate, this));
-
-            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', onUpdate, this));
+            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", onUpdate, this));
 
             this.on("*:exception", function(e) {
                 var test;
