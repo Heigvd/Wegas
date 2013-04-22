@@ -101,9 +101,6 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             this.handlers.response = // If data changes, refresh
                     Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-
-            this.handlers.playerChange = // If current user changes, refresh (editor only)
-                    Y.Wegas.app.after('currentPlayerChange', this.syncUI, this);
         },
         /**
          *
@@ -268,7 +265,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             }
             acc.push("</tr></tfoot></table>");
 
-            cb.set("innerHTML", acc.join(""));                                  // Update ContentBox
+            if (cb) {
+                cb.set("innerHTML", acc.join(""));                                  // Update ContentBox   
+            }
         },
         renderDetailsPanel: function(node) {
             var columns = [{

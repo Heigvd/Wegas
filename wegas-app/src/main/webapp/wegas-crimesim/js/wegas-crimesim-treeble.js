@@ -21,7 +21,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
         root: null,
         handlers: null,
         data: null,
-        dataSource: null,
+        datasource: null,
         descriptionColumn: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
@@ -44,14 +44,26 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             this.datatable.render(this.get(CONTENTBOX));
         },
         bindUI: function() {
-            if (this.dataSource) {
-                this.handlers.openRow = this.dataSource.on('toggled', this.mergeColumns, this);
+            if (this.datasource) {
+                this.handlers.openRow = this.datasource.on('toggled', function(e) {
+                    this.mergeColumns();
+                    if (e.open) {
+                        this.setKiddiesWithDescription(e.path[0]);
+                    }
+                }, this);
             }
         },
         syncUI: function(data) {
-            this.data = data || [];
+            //var i;
+            if (data) {
+                this.data = data.slice(0);
+            }
             if (this.get('isTreeble')) {
-                Y.bind(this.treebleTwistdown(), this);
+                // this.datatable.datasource.get("datasource").isOpen([3])
+                //for()//close all node
+                //this.datatable.datasource.get("datasource")._open.length
+                this.addKiddiesToData();
+                this.treebleTwistdown();
             } else {
                 this.datatable.addRows(this.data);
             }
@@ -65,7 +77,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
         },
         /*** private functions ***/
         initTreeble: function(columns) {
-            var i, treeble_config, schema_plugin_config, schema, resultFields, dataSource;
+            var i, treeble_config, schema_plugin_config, schema, resultFields, datasource;
             this.handlers = [];
 
             //Create and add datasource to Treeble Datatable
@@ -121,7 +133,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             this.root.plug(schema_plugin_config);
 
             //Create the datasource of the table
-            this.dataSource = new Y.DataSource.Treeble({
+            this.datasource = new Y.DataSource.Treeble({
                 root: this.root,
                 paginateChildren: false,
                 uniqueIdKey: 'startTime'
@@ -129,28 +141,47 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
 
             //plug datasource to the Treeble Datatable
             this.datatable.plug(Y.Plugin.DataTableDataSource, {
-                datasource: this.dataSource
+                datasource: this.datasource
             }, this);
         },
-        getTreebleDatas: function() {
-            var i, data = this.data.slice(0), reply,
-                    description, kiddies;
-            if (!data) {
-                return null;
+        addKiddiesToData: function() {
+            var i, kiddies;
+            if (!this.data) {
+                return [];
             }
-            for (i = 0; i < data.length; i += 1) {
-                reply = Y.Wegas.Facade.VariableDescriptor.cache.findById(data[i].choiceDescriptorId);
-                if (reply && reply.get('description')) {
-                    description = reply.get('description');
-                    kiddies = [{}];
-                    kiddies[0][this.descriptionColumn] = description;
-                    data[i].kiddies = kiddies;
-                }
+            for (i = 0; i < this.data.length; i += 1) {
+                kiddies = [{}];
+                kiddies[0][this.descriptionColumn] = "<em>Loading<em>";
+                this.data[i].kiddies = kiddies;
             }
-            return data;
+        },
+        setKiddiesWithDescription: function(position) {
+            var reply, data = this.data.slice(0);
+            if (!data[position]) {
+                return;
+            }
+            reply = Y.Wegas.Facade.VariableDescriptor.cache.findById(data[position].choiceDescriptorId);
+            if (!reply) {
+                data[position].kiddies[0].evidence = "No description";
+                this.treebleTwistdown(data);
+            } else{
+                Y.Wegas.Facade.VariableDescriptor.cache.getWithView(reply, "Editor", {// Retrieve the reply description from the server
+                    cfg:{
+                        updateCache: false
+                    },
+                    on: {
+                        success: Y.bind(function(data, position, e) {
+                            var reply = e.serverResponse.get("entities")[0];
+                            data[position].kiddies[0].evidence =
+                                    reply.get("description") || "No description";
+                            this.treebleTwistdown(data);
+                        }, this, data, position)
+                    }
+                }); 
+            }
         },
         treebleTwistdown: function() {
-            this.root.set('source', this.getTreebleDatas());                    //Get currents datas and set datasource
+            this.root.set('source', this.data);                    //Get currents datas and set datasource
             this.datatable.datasource.load({//Request max 100 rows per trebble's level
                 request: {
                     startIndex: 0,

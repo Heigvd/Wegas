@@ -35,17 +35,11 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         },
         renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
-            this.timer = Y.later(3000, this, function() {
-                this.setUnread();
-            });
+            this.timer = Y.later(3000, this,this.setUnread);
         },
         bindUI: function() {
-            this.handlers.response = // If data changes, refresh
+            this.handlers.update = // If data changes, refresh
                     Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-            this.handlers.toggleRow = //don't work
-                    this.get(CONTENTBOX).one("table").delegate("click", function() {
-                this.highlightNewEvidences();
-            }, ".yui3-datatable-col-treeblenub", this);
         },
         destructor: function() {
             this.timer.cancel();
@@ -60,7 +54,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                 this.datatable.syncUI(this.genData());
                 this.highlightNewEvidences();
             } else {
-                this.datatable.syncUI([]);
+                this.datatable.syncUI();
             }
         },
         renderDetailsPanel: function(node) {
