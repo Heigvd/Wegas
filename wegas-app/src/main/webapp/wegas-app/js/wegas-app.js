@@ -73,8 +73,8 @@ YUI.add('wegas-app', function(Y) {
          */
         destructor: function() {
             var i;
-            for (i = 0; i < this.dataSources.length; i = i + 1) {
-                this.dataSources[i].destroy();
+            for (i in Y.Wegas.Facade) {
+                Y.Wegas.Facade[i].destroy();
             }
         },
         /**

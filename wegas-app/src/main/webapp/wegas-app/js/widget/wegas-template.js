@@ -60,13 +60,17 @@ YUI.add("wegas-template", function(Y) {
                 if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
                     this.TEMPLATES[hashCode] = engine.compile(template);
                 }
-                this.get("contentBox").setHTML(this.TEMPLATES[hashCode](data));
+                try {
+                    this.get("contentBox").setHTML(this.TEMPLATES[hashCode](data));
+                } catch (e) {
+                    Y.log("Error rendering template: " + template, "error", "Wegas.Template");
+                }
             }
 
         },
         bindUI: function() {
             this.after(["dataChange", "variableChange", "templateChange"], this.syncUI);
-            this.vdUpdateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI);
+            this.vdUpdateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         computeData: function() {
             var data = {}, desc = this.get("variable.evaluated");
