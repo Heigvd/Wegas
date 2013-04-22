@@ -168,11 +168,7 @@ body {
     margin-bottom:0;
 }
 .wegas-scriptlibrary .ace_editor {
-    top:0px;
-    left:0px;
-    right:0px;
-    bottom:0px;
-    height: auto;
+    height: 100%;
 }
 
 /* Panel Widget Styles */
@@ -265,6 +261,9 @@ body {
     box-shadow: 0px 0px 5px black;
     content: "";
 }*/
+.wegas-pageeditor-ace {
+    height: 100%;
+}
 .wegas-pageeditor-overlay-hidden {
     display: none;
 }
@@ -315,24 +314,22 @@ body {
 }
 
 /* Pageloader view src plugin styles */
+.wegas-pageloader > .inputEx-fieldWrapper  {
+    position: absolute;
+    top: 31px;
+    bottom: 26px;
+    left: 0px;
+    right: 0px;
+    overflow: auto;
+    margin: 0px;
+}
 .wegas-pageloader > .inputEx-fieldWrapper  .inputEx-Field {
     float:none;
     height:100%;
 }
-.wegas-pageloader > .inputEx-fieldWrapper .inputEx-fieldWrapper {
-    height:100%;
-    margin-bottom:0;
-}
 .wegas-pageloader > .inputEx-fieldWrapper .ace_editor {
-    top:0px;
-    left:0px;
-    right:40px;
-    bottom:0px;
-    height: auto;
-    margin-top: 33px;
-    margin-bottom: 30px;
+    height: 100%;
 }
-
 .lobbyOr {
     margin-left: 135px;
     font-weight: bold;

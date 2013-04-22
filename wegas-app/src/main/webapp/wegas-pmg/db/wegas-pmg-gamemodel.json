@@ -3,7 +3,7 @@
     "name": "Project Management Game",
     "properties": {
         "cssUri": "wegas-pmg/css/wegas-pmg.css",
-        "pagesUri": "wegas-pmg/db/wegas-pmg-pages.json#"
+        "pagesUri": "wegas-pmg/db/wegas-pmg-pages.json?"
     },
     "childVariableDescriptors": [
         {

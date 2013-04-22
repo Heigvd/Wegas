@@ -111,6 +111,6 @@
     },
     "properties": {
         "cssUri": "wegas-flexitests/css/wegas-flexitests.css",
-        "pagesUri": "wegas-flexitests/db/wegas-flexitests-pages.json#"
+        "pagesUri": "wegas-flexitests/db/wegas-flexitests-pages.json?"
     }
 }

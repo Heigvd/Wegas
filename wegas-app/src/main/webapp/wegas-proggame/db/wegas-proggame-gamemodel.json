@@ -40,7 +40,7 @@
     }],
     "properties": {
         "cssUri":"wegas-proggame/css/wegas-proggame.css",
-        "pagesUri":"wegas-proggame/db/wegas-proggame-pages.json#"
+        "pagesUri":"wegas-proggame/db/wegas-proggame-pages.json?"
     },
     "scriptLibrary": {
         "default": {

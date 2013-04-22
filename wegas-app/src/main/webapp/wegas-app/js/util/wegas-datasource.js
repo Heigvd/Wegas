@@ -36,17 +36,17 @@ YUI.add('wegas-datasource', function(Y) {
         initializer: function() {
             this.after("sourceChange", this.sendInitialRequest);
 
-//            this.on("error",function(e) {
-//                //console.log("WegasCache._failureHandler", e);
-//                Y.log("Exception while sending request \"" + (e.request || "") + "\": "
-//                    + (e.response.results.message || e.response.results.exception || e), "error", 'Y.Wegas.WegasCache');
-//            });
-//            this.on("response", function(e) {
-//                Y.log("Datasource response:" + e.response, 'log', 'Y.Wegas.WegasCache');
-//            });
-//            this.on("data", function(e) {
-//                Y.log("Datasource data:" + e.response, 'log', 'Y.Wegas.WegasCache');
-//            });
+            //this.on("error",function(e) {
+            //    //console.log("WegasCache._failureHandler", e);
+            //    Y.log("Exception while sending request \"" + (e.request || "") + "\": "
+            //        + (e.response.results.message || e.response.results.exception || e), "error", 'Y.Wegas.WegasCache');
+            //});
+            //this.on("response", function(e) {
+            //    Y.log("Datasource response:" + e.response, 'log', 'Y.Wegas.WegasCache');
+            //});
+            //this.on("data", function(e) {
+            //    Y.log("Datasource data:" + e.response, 'log', 'Y.Wegas.WegasCache');
+            //});
         },
         /**
          * @function
@@ -1057,15 +1057,15 @@ YUI.add('wegas-datasource', function(Y) {
                 this.pageQuery[pageId] = true;
                 this.sendRequest({
                     request: "" + pageId,
-                    callback: {
-                        success: Y.bind(function(id, e) {
+                    on: {
+                        success: Y.bind(function(id, callback, e) {
                             var page;
                             if (callback instanceof Function) {
                                 page = Y.clone(this.getCache(pageId));
                                 page["@pageId"] = pageId;
                                 callback(page);
                             }
-                        }, this, pageId)
+                        }, this, pageId, callback)
                     }
                 });
             }
@@ -1087,11 +1087,7 @@ YUI.add('wegas-datasource', function(Y) {
 
         },
         _failureHandler: function(e) {
-            try {
-                console.error(e.error.message);
-            } catch (ex) {
-                Y.error("PageDatasource reply:", e, 'Y.Wegas.DataSourceRest');
-            }
+            Y.error("PageDatasource reply:", e, 'Y.Wegas.DataSourceRest');
         }
     });
     Y.namespace('Plugin').PageCache = PageCache;
