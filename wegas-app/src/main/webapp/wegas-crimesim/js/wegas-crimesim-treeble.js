@@ -45,23 +45,19 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
         },
         bindUI: function() {
             if (this.datasource) {
-                this.handlers.openRow = this.datasource.on('toggled', function(e) {
-                    this.mergeColumns();
+                this.handlers.openRow = this.datasource.on("toggled", function(e) {
                     if (e.open) {
                         this.setKiddiesWithDescription(e.path[0]);
                     }
                 }, this);
+                this.handlers.treebleRefreshed = this.after("treebleRefreshed", function() {
+                    this.mergeColumns();
+                }, this);
             }
         },
         syncUI: function(data) {
-            //var i;
-            if (data) {
-                this.data = data.slice(0);
-            }
+            this.data = data || [];
             if (this.get('isTreeble')) {
-                // this.datatable.datasource.get("datasource").isOpen([3])
-                //for()//close all node
-                //this.datatable.datasource.get("datasource")._open.length
                 this.addKiddiesToData();
                 this.treebleTwistdown();
             } else {
@@ -136,7 +132,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             this.datasource = new Y.DataSource.Treeble({
                 root: this.root,
                 paginateChildren: false,
-                uniqueIdKey: 'startTime'
+                uniqueIdKey: 'id'
             }, this);
 
             //plug datasource to the Treeble Datatable
@@ -156,28 +152,28 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             }
         },
         setKiddiesWithDescription: function(position) {
-            var reply, data = this.data.slice(0);
+            var choice, data = this.data.slice(0);
             if (!data[position]) {
                 return;
             }
-            reply = Y.Wegas.Facade.VariableDescriptor.cache.findById(data[position].choiceDescriptorId);
-            if (!reply) {
+            choice = Y.Wegas.Facade.VariableDescriptor.cache.findById(data[position].choiceDescriptorId);
+            if (!choice) {
                 data[position].kiddies[0].evidence = "No description";
                 this.treebleTwistdown(data);
-            } else{
-                Y.Wegas.Facade.VariableDescriptor.cache.getWithView(reply, "Editor", {// Retrieve the reply description from the server
-                    cfg:{
+            } else {
+                Y.Wegas.Facade.VariableDescriptor.cache.getWithView(choice, "Extended", {// Retrieve the reply description from the server
+                    cfg: {
                         updateCache: false
                     },
                     on: {
                         success: Y.bind(function(data, position, e) {
-                            var reply = e.serverResponse.get("entities")[0];
+                            var choice = e.serverResponse.get("entities")[0];
                             data[position].kiddies[0].evidence =
-                                    reply.get("description") || "No description";
+                                    choice.get("description") || "No description";
                             this.treebleTwistdown(data);
                         }, this, data, position)
                     }
-                }); 
+                });
             }
         },
         treebleTwistdown: function() {
@@ -188,21 +184,23 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                     resultCount: 100
                 }
             });
+            this.fire("treebleRefreshed");
         },
         mergeColumns: function() {                                             //add a colspan to description to merge columns of description's row.
             var colName = 'yui3-datatable-col-' + this.descriptionColumn,
                     nbCols = this.get('columns').length,
-                    isAfterCol = false;
+                    isAfterCol, className = "className";
             this.get(CONTENTBOX).all('tr').each(function(row, i) {
-                if (row.get('className').indexOf('treeble-depth-') > -1) {           //is a treeble row
-                    if (row.get('className').indexOf('treeble-depth-0') <= -1) {     //and isn't a firste-level treeble row
-                        if (row.get('className').indexOf(colName) <= -1) {           //and if the column exist
+                isAfterCol = false;
+                if (row.get(className).indexOf('treeble-depth-') > -1) {           //is a treeble row
+                    if (row.get(className).indexOf('treeble-depth-0') <= -1) {     //and isn't a firste-level treeble row
+                        if (row.get(className).indexOf(colName) <= -1) {           //and if the column exist
                             row.one('.' + colName).setAttribute('colspan', nbCols);  //add colspan value
                             row.all('td').each(function(cell, i) {                  //hide overflowed columns
                                 if (isAfterCol) {
                                     cell.addClass('hidden');
                                 }
-                                if (cell.get('className').indexOf(colName) > -1) {
+                                if (cell.get(className).indexOf(colName) > -1) {
                                     isAfterCol = true;
                                 }
                             });
