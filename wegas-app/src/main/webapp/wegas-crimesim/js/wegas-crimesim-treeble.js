@@ -168,7 +168,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                     on: {
                         success: Y.bind(function(data, position, e) {
                             var choice = e.serverResponse.get("entities")[0];
-                            data[position].kiddies[0].evidence =
+                            data[position].kiddies[0][this.get("descriptionColumn")] =
                                     choice.get("description") || "No description";
                             this.treebleTwistdown(data);
                         }, this, data, position)

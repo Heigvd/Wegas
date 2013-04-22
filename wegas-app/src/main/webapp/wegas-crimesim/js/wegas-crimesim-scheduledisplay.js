@@ -281,16 +281,16 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         },
         renderDetailsPanel: function(node) {
             var columns = [{
-                    key: "choiceDescriptorId",
+                    key: "id", //evidence id
                     className: "hidden"
                 }, {
-                    sortable: true,
+                    //sortable: true, don't sort with treeble
                     key: "startTime",
                     //className: 'hidden',
                     label: "Period",
                     className: "period"
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "analyis",
                     label: "Analyse"
                 }, {
@@ -298,7 +298,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     label: "Result",
                     allowHTML: true
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "fileLinks",
                     label: "Files",
                     allowHTML: true,
@@ -307,7 +307,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
                 isTreeble: true,
-                node: node
+                node: node,
+                descriptionColumn: "analyis"
             });
             this.datatable.render(this.get(CONTENTBOX).one(".schedule-analysis"));
         },
