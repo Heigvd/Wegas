@@ -235,7 +235,7 @@
 "clientScriptLibrary":{},
 "properties":{
     "cssUri":"wegas-monopoly/css/wegas-monopoly.css",
-    "pagesUri":"wegas-monopoly/db/wegas-monopoly-pages.json#",
+    "pagesUri":"wegas-monopoly/db/wegas-monopoly-pages.json?",
     "allGameVariables":"true",
     "websocket":"732a1df75d93d028e4f9"
 }

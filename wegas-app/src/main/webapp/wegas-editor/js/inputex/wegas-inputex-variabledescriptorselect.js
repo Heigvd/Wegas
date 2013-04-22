@@ -386,7 +386,6 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
         genChoices: function(entity) {
             var i, choices = WysiwygLine.superclass.genChoices.apply(this, arguments);
-            console.log(arguments);
             if (!entity) {                                                      // If the entity is at root level of its hierarchy (game model level)
 
                 for (i in WysiwygLine.GLOBALMETHODS) {                          // Adds all global methods

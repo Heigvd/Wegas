@@ -352,6 +352,6 @@
     },
     "properties": {
         "cssUri": "wegas-crimesim/css/wegas-crimesim.css",
-        "pagesUri": "wegas-crimesim/db/wegas-crimesim-pages.json#"
+        "pagesUri": "wegas-crimesim/db/wegas-crimesim-pages.json?"
     }
 }

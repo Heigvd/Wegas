@@ -3,7 +3,7 @@
     "name": "Leaderway",
     "properties": {
         "cssUri": "wegas-leaderway/css/wegas-leaderway.css",
-        "pagesUri": "wegas-leaderway/db/wegas-leaderway-pages.json#"
+        "pagesUri": "wegas-leaderway/db/wegas-leaderway-pages.json?"
     },
     "childVariableDescriptors": [{
             "@class": "NumberDescriptor",

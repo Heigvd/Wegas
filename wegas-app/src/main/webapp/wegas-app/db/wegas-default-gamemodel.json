@@ -15,7 +15,7 @@
     },
     "properties": {
         "cssUri": "wegas-app/db/wegas-default.css",
-        "pagesUri": "wegas-app/db/wegas-default-pages.json#"
+        "pagesUri": "wegas-app/db/wegas-default-pages.json?"
     },
     "childVariableDescriptors": [{
         "@class":"ListDescriptor",
