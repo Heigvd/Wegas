@@ -13,8 +13,8 @@ YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
     var Linkwidget, EditFSMAction,
-    Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
-    CONTENTBOX = 'contentBox';
+            Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
+            CONTENTBOX = 'contentBox';
 
     /**
      *  @name Y.Plugin.EditFSMAction
@@ -104,7 +104,6 @@ YUI.add('wegas-editor-action', function(Y) {
 
         NS: "wegas",
         NAME: "OpenTabAction",
-
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -145,37 +144,37 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         execute: function() {
             var params,
-                    entity = this.get("entity"),
-                    testPlayer = function(game) {
-                var teams = game.get("teams"), i, ret = false;
-                for (i = 0; i < teams.length; i += 1) {
-                    ret = teams[i].get("players").length > 0;
-                    if (ret) {
-                        break;
-                    }
-                }
-                return ret;
-            };
+                    entity = this.get("entity");
+                    //        testPlayer = function(game) {
+                    //    var teams = game.get("teams"), i, ret = false;
+                    //    for (i = 0; i < teams.length; i += 1) {
+                    //        ret = teams[i].get("players").length > 0;
+                    //        if (ret) {
+                    //            break;
+                    //        }
+                    //    }
+                    //    return ret;
+                    //};
 
             if (entity instanceof Wegas.persistence.GameModel) {
                 params = "gameModelId=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Player) {
                 params = "id=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Team) {
-                if (entity.get("players").length < 1) {
-                    alert("Team " + entity.get("name") + " has no player");
-                    return;
-                }
+                //if (entity.get("players").length < 1) {
+                //    alert("Team " + entity.get("name") + " has no player");
+                //    return;
+                //}
                 params = "teamId=" + entity.get("id");
             } else {
-                if (entity.get("teams").length < 1) {
-                    alert("Game " + entity.get("name") + " has no Team");
-                    return;
-                }
-                else if (!testPlayer(entity)) {
-                    alert("Game " + entity.get("name") + " has no player");
-                    return;
-                }
+                //if (entity.get("teams").length < 1) {
+                //    alert("Game " + entity.get("name") + " has no Team");
+                //    return;
+                //}
+                //else if (!testPlayer(entity)) {
+                //    alert("Game " + entity.get("name") + " has no player");
+                //    return;
+                //}
                 params = "gameId=" + entity.get("id");
             }
             this.set("url", this.get("editorUrl") + params);
@@ -186,7 +185,6 @@ YUI.add('wegas-editor-action', function(Y) {
 
         NS: "wegas",
         NAME: "OpenGameAction",
-
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -246,7 +244,6 @@ YUI.add('wegas-editor-action', function(Y) {
 
         NS: "LoadTreeviewNodeAction",
         NAME: "LoadTreeviewNodeAction",
-
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -322,7 +319,6 @@ YUI.add('wegas-editor-action', function(Y) {
                 this.textField.el.select();
             }, this);
         },
-
         /**
          * Add the new url
          * @function

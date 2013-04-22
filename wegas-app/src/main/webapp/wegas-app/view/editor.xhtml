@@ -196,7 +196,7 @@
                         app.after('currentPlayerChange', function(e) {             // Whenever the current player changes
                             //"rest/Private/xx/GameModel/xx/VariableDescriptor",
                             this.set('currentTeam',
-                            this.dataSources.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
+                            Y.Wegas.Facade.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
 
                         Y.Wegas.Facade.VariableDescriptor.set("source",
                                 this.get("base") + "rest/EditorPrivate/" + e.newVal + "/GameModel/"
