@@ -16,7 +16,9 @@ import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -38,6 +40,13 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @XmlTransient
+    @JsonBackReference
+    private QuestionDescriptor question;
+    /**
+     *
+     */
     @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @JsonManagedReference
@@ -48,7 +57,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     @Basic(fetch = FetchType.LAZY)
     @Lob
-    @JsonView(Views.EditorI.class)
+    @JsonView(Views.ExtendedI.class)
     private String description;
     /**
      *
@@ -211,5 +220,20 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     public void setCost(Long cost) {
         this.cost = cost;
+    }
+
+    /**
+     * @return the question
+     */
+    public QuestionDescriptor getQuestion() {
+        return question;
+    }
+
+    /**
+     * @param question the question to set
+     */
+    @JsonBackReference
+    public void setQuestion(QuestionDescriptor question) {
+        this.question = question;
     }
 }

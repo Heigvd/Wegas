@@ -32,6 +32,8 @@ min-width: 800px;
 }
 .wegas-template {
     padding:5px;
+}
+.wegas-template-box {
     max-width:150px;
 }
 .wegas-template-box-unit {
@@ -39,7 +41,6 @@ min-width: 800px;
     height:10px;
     background:steelblue;
     border:1px solid gray;
-    margin-right:2px;
     float:left;
 }
 .wegas-valuebox-unit {

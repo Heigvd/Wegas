@@ -603,7 +603,7 @@ YUI.add("wegas-gallery", function(Y) {
             img.index = i;
             img.once("error", function(e) {
                 e.target.get("parentNode").setStyles({
-                    background: "url('../../wegas-editor/images/wegas-icon-error-48.png') no-repeat 50%"
+                    background: "url('../../wegas-app/images/wegas-icon-error-48.png') no-repeat 50%"
                 });
             });
             img.once("load", function(e) {

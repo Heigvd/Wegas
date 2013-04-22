@@ -29,17 +29,14 @@
                         "template": "valuebox",
                         "variable": {
                             "name": "period"
-                        },
-                        "data": {
-                            "label": "Period"
                         }
                     }, {
                         "disabled": false,
                         "type": "Button",
-                        "label": "Next period",
+                        "label": "Période suivante",
                         "plugins": [{
                                 "cfg": {
-                                    "content": "Advance to next period"
+                                    "content": "Avancer à la période suivante"
                                 },
                                 "fn": "Tooltip"
                             }, {
@@ -57,9 +54,6 @@
                     }, {
                         "type": "Template",
                         "template": "text",
-                        "data": {
-                            "label": "Cost"
-                        },
                         "variable": {
                             "name": "cost"
                         }
@@ -67,7 +61,6 @@
                         "type": "Template",
                         "template": "box",
                         "data": {
-                            "label": "Human resources",
                             "maxValue": 15
                         },
                         "variable": {
@@ -136,7 +129,7 @@
                     }, {
                         "type": "Button",
                         "disabled": false,
-                        "label": "Analyses results",
+                        "label": "Résultat des analyses",
                         "cssClass": "menu-button",
                         "plugins": [
                             {
@@ -155,7 +148,7 @@
                     }, {
                         "type": "Button",
                         "disabled": false,
-                        "label": "Mails",
+                        "label": "Messages",
                         "cssClass": "menu-button",
                         "plugins": [
                             {
@@ -194,7 +187,7 @@
     },
     "2": {
         "type": "Template",
-        "custom": "<%= this.value || 'Unable to find welcome text' %>",
+        "custom": "<%== this.value || 'Unable to find welcome text' %>",
         "variable": {
             "name": "welcomeText"
         }

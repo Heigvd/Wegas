@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.persistence.variable.ListDescriptorI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -91,8 +92,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param entity
      * @return
      */
-    public ListDescriptor createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
-        return this.createChild((ListDescriptor) this.find(variableDescriptorId), entity);
+    public ListDescriptorI createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
+        return this.createChild((ListDescriptorI) this.find(variableDescriptorId), entity);
     }
 
     /**
@@ -103,7 +104,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param entity
      * @return
      */
-    public ListDescriptor createChild(final ListDescriptor listDescriptor, final VariableDescriptor entity) {
+    public ListDescriptorI createChild(final ListDescriptorI listDescriptor, final VariableDescriptor entity) {
         final Iterator<VariableDescriptor> iterator = listDescriptor.getItems().iterator();
         final List<String> usedNames = new ArrayList<>();
         while (iterator.hasNext()) {

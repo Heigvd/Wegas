@@ -150,7 +150,9 @@ YUI.add('wegas-datasource', function(Y) {
             Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
                 payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                if (payload.serverResponse.get("entities") && payload.serverResponse.get("entities").length > 0) {
+                if (payload.serverResponse.get
+                        && payload.serverResponse.get("entities")
+                        && payload.serverResponse.get("entities").length > 0) {
                     payload.response.entity = payload.serverResponse.get("entities")[0];                                 // Shortcut, useful if there is only one instance
                 }
                 if (payload.cfg.updateCache !== false) {
@@ -371,7 +373,6 @@ YUI.add('wegas-datasource', function(Y) {
         getObject: function(data, cfg) {
             this.sendRequest(this.generateRequest(data), cfg);
         },
-
         getWithView: function(entity, view, cfg) {
             cfg.request = "/" + entity.get('id') + "?view=" + (view || "Editor");
             cfg.cfg = {

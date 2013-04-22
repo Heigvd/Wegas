@@ -48,7 +48,7 @@ YUI.add('wegas-inbox', function(Y) {
          */
         msg: null,
         /**
-         * 
+         *
          */
         readRequestTid: null,
         // *** Lifecycle Methods *** //
@@ -204,7 +204,7 @@ YUI.add('wegas-inbox', function(Y) {
 
             if (e.newVal && e.newVal.msg) {
                 this.dataSource.sendRequest({// Retrieve the message body from the server
-                    request: "/Inbox/Message/" + e.newVal.msg.get("id") + "?view=Export",
+                    request: "/Inbox/Message/" + e.newVal.msg.get("id") + "?view=Extended",
                     cfg: {
                         updateCache: false
                     },
