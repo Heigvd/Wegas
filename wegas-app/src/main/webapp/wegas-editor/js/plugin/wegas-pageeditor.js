@@ -37,7 +37,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.handlers = [];
         },
         render: function() {
-            var el, host = this.get('host'), processSource, processSave;
+            var el, host = this.get('host');
 
             if (host.toolbar) {
                 el = host.toolbar.get('header');
@@ -53,7 +53,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                             } else {
                                 this.detach();
                                 this.highlightOverlay.hide();
-                                if(this.layoutbutton.get("pressed")){
+                                if (this.layoutbutton.get("pressed")) {
                                     this.layoutbutton.toggle();
                                     this.get("host").get(BOUNDINGBOX).removeClass("wegas-pageeditor-layoutmode");
                                 }
@@ -72,55 +72,31 @@ YUI.add('wegas-pageeditor', function(Y) {
                     },
                     visible: false
                 }).render(el);
+
                 /** Source view**/
                 this.jsonView = new Y.inputEx.AceField({
-                    parentEl: this.get("host").get("boundingBox")._node,
+                    parentEl: this.get("host").get("boundingBox"),
                     name: 'text',
                     type: 'ace',
                     height: "100%",
                     language: "json",
-                    value: ''
+                    value: '',
+                    wrapperClass: "wegas-pageeditor-ace"
                 });
                 this.jsonView.hide();
-                processSource = function() {
-                    if (this.sourceButton.get("pressed")) {
-                        this.jsonView.setValue(Y.JSON.stringify(host.get("widget").toObject("@pageId"), null, "\t"));
-                        this.get("host").get("contentBox").hide();
-                        this.jsonView.show();
-                        this.jsonView.editor.resize();
-                        this.jsonView.focus();
-                        this.designButton.disable();
-                        this.saveButton.show();
-                    } else {
-                        this.get("host").get("contentBox").show();
-                        this.jsonView.hide();
-                        this.designButton.enable();
-                        this.saveButton.hide();
-                    }
-                };
+
                 this.sourceButton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>Source",
                     on: {
-                        click: Y.bind(processSource, this)
+                        click: Y.bind(this.processSource, this)
                     }
                 }).render(el);
-                this.afterHostEvent("widgetChange", processSource);
+                this.afterHostEvent("widgetChange", this.processSource);
 
-                processSave = function() {
-                    var page = Y.JSON.parse(this.jsonView.getValue());
-                    this.sourceButton.set("pressed", false);
-                    this.get("host").get("contentBox").show();
-                    this.jsonView.hide();
-                    this.designButton.enable();
-                    this.saveButton.hide();
-                    //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
-                    page["@pageId"] = host.get("widget")["@pageId"];
-                    Y.Wegas.Facade.Page.cache.patch(page);
-                };
                 this.saveButton = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
                     on: {
-                        click: Y.bind(processSave, this)
+                        click: Y.bind(this.processSave, this)
                     }
                 }).render(el);
             }
@@ -161,6 +137,35 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.hideOverlay();
             }, '.wegas-widget', this));
         },
+        processSave: function() {
+            var host = this.get("host"),
+                    page = Y.JSON.parse(this.jsonView.getValue());
+            this.sourceButton.set("pressed", false);
+            host.get("contentBox").show();
+            this.jsonView.hide();
+            this.designButton.enable();
+            this.saveButton.hide();
+            //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
+            page["@pageId"] = host.get("widget")["@pageId"];
+            Y.Wegas.Facade.Page.cache.patch(page);
+        },
+        processSource: function() {
+            var host = this.get("host");
+            if (this.sourceButton.get("pressed")) {
+                this.jsonView.setValue(Y.JSON.stringify(host.get("widget").toObject("@pageId"), null, "\t"));
+                host.get("contentBox").hide();
+                this.jsonView.show();
+                this.jsonView.editor.resize();
+                this.jsonView.focus();
+                this.designButton.disable();
+                this.saveButton.show();
+            } else {
+                host.get("contentBox").show();
+                this.jsonView.hide();
+                this.designButton.enable();
+                this.saveButton.hide();
+            }
+        },
         genMenu: function(widget) {
             this.highlightOverlay.menu.set("children", widget.getMenuCfg({
                 widget: widget
@@ -197,16 +202,4 @@ YUI.add('wegas-pageeditor', function(Y) {
     });
     Y.namespace('Plugin').PageEditor = PageEditor;
 
-    Y.Node.prototype.getWidth = function() {
-        return parseInt(this.getComputedStyle('width'));
-        //        + parseInt(this.getComputedStyle('margin-left')) + parseInt(this.getComputedStyle('margin-right'))
-        //  + parseInt(this.getComputedStyle('padding-left')) + parseInt(this.getComputedStyle('padding-right'));
-    };
-    Y.Node.prototype.getHeight = function() {
-        return parseInt(this.getComputedStyle('height'));
-        //      + parseInt(this.getComputedStyle('margin-top')) + parseInt(this.getComputedStyle('margin-bottom'))
-        //  + parseInt(this.getComputedStyle('padding-top')) + parseInt(this.getComputedStyle('padding-bottom'));
-    };
 });
-
-
