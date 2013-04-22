@@ -18,21 +18,21 @@
                         window.Muscula = {settings: {
                                 logId: "1f9e3058-27dc-4fec-b633-1070e60f2fca", suppressErrors: false, branding: 'none'
                             }};
-                        (function () {
+                        (function() {
                             var m = document.createElement('script');
                             m.type = 'text/javascript';
                             m.async = true;
                             m.src = (window.location.protocol === 'https:' ? 'https:' : 'http:') +
-                                '//musculahq.appspot.com/Muscula.js';
+                                    '//musculahq.appspot.com/Muscula.js';
                             var s = document.getElementsByTagName('script')[0];
                             s.parentNode.insertBefore(m, s);
-                            window.Muscula.run = function (c) {
+                            window.Muscula.run = function(c) {
                                 eval(c);
-                                window.Muscula.run = function () {
+                                window.Muscula.run = function() {
                                 };
                             };
                             window.Muscula.errors = [];
-                            window.onerror = function () {
+                            window.onerror = function() {
                                 window.Muscula.errors.push(arguments);
                                 return window.Muscula.settings.suppressErrors === undefined;
                             };
@@ -76,43 +76,41 @@
                 </ui:fragment>
 
                 <script type="text/javascript">
-                    // Set up some YUI3 default parameters. Will be use for every call to
-                    // the YUI(cfg) function. Can be overridden by the cfg parameter.
-                    YUI_config.useBrowserConsole = true;
-                    YUI_config.insertBefore = 'customstyles';
-                    YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
-                    YUI_config.charset = "#{wegasConfig.encoding}";
-                    YUI_config.debug = #{requestController.debugMode()};
-                    YUI_config.throwFail = true;                        // If throwFail is set, Y.error will generate or re-throw
-                    // a JS Error. Otherwise the failure is logged.
-                    YUI_config.errorFn = function (msg, e, src) {
-                        // console.log("ERRORFN", msg, e, src);
-                        // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", 'Wegas.App');
-                        // jslogger.log({error: {msg: msg, e: e, src: src}});    // Js logger msg
-                        // _gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
-                        // throw msg;
-                        return false;                      // Returning true from this function will stop the Error from being thrown.
-                    };
-                    //YUI_config.gallery = 'gallery-2011.02.18-23-10';
-                    //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
-                    //YUI_config.loadOptional = true;
+                        // Set up some YUI3 default parameters. Will be use for every call to
+                        // the YUI(cfg) function. Can be overridden by the cfg parameter.
+                        YUI_config.useBrowserConsole = true;
+                        YUI_config.insertBefore = 'customstyles';
+                        YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
+                        YUI_config.charset = "#{wegasConfig.encoding}";
+                        YUI_config.debug = #{requestController.debugMode()};
+                        YUI_config.throwFail = true;                        // If throwFail is set, Y.error will generate or re-throw
+                        // a JS Error. Otherwise the failure is logged.
+                        YUI_config.errorFn = function(msg, e, src) {
+                            // console.log("ERRORFN", msg, e, src);
+                            // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", 'Wegas.App');
+                            // jslogger.log({error: {msg: msg, e: e, src: src}});    // Js logger msg
+                            // _gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
+                            // throw msg;
+                            return false;                      // Returning true from this function will stop the Error from being thrown.
+                        };
+                        //YUI_config.gallery = 'gallery-2011.02.18-23-10';
+                        //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
+                        //YUI_config.loadOptional = true;
 
-                    var base = "#{request.requestURL
-                            .substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                    comboBase = base + '/rest/combo?';
-                    function setupLocalPath (groupName) {
-                        YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
-                        YUI_config.groups[groupName].comboBase = comboBase;
-                    }
-                    YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
-                    YUI_config.groups.inputex.combine = #{!requestController.debugMode()};
-                    YUI_config.groups.wegas.combine = #{!requestController.debugMode()};
-                    YUI_config.groups.wegas.filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
-                    setupLocalPath("wegas");
-                    setupLocalPath("inputex");
-                    setupLocalPath("ace");                                      // Set up ace path
-                    setupLocalPath("jsplumb");                                  // Set up jsplumb path
-                    setupLocalPath("libraries");                                // Set up libraries path
+                        var base = "#{request.requestURL
+                                  .substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
+                                comboBase = base + '/rest/combo?';
+                        function setupLocalPath(groupName) {
+                            YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
+                            YUI_config.groups[groupName].comboBase = comboBase;
+                        }
+                        YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
+                        YUI_config.groups.inputex.combine = #{!requestController.debugMode()};
+                        YUI_config.groups.wegas.combine = #{!requestController.debugMode()};
+                        YUI_config.groups.wegas.filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
+                        setupLocalPath("wegas");
+                        setupLocalPath("inputex");
+                        setupLocalPath("libraries");                                // Set up libraries path
                 </script>
 
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
@@ -127,7 +125,7 @@
 
                 <ui:insert name="body">
                     <script type="text/javascript">
-                        YUI().use('wegas-app', function (Y) {
+                        YUI().use('wegas-app', function(Y) {
                             var app = new Y.Wegas.App({
                                 layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                                 debug: #{requestController.debugMode()},
@@ -136,20 +134,19 @@
                                 currentTeam: #{gameController.currentPlayer.team.id},
                                 currentPlayer: #{gameController.currentPlayer.id},
                                 currentUser: #{requestController.getCurrentUser().toJson()},
-
                                 /**
                                  * This field is used to override Entities edition menus.
                                  * Use the target class name as the key.
                                  */
                                 dataSources: {
-                                    "GameModel": {
+                                    GameModel: {
                                         source: "rest/GameModel",
                                         initialRequest: "/#{gameController.currentGameModel.id}",
                                         plugins: [{
                                                 fn: "GameModelCache"
                                             }]
                                     },
-                                    "Game": {
+                                    Game: {
                                         source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
                                         initialRequest: "/#{gameController.currentGame.id}",
                                         plugins: [{
@@ -157,65 +154,62 @@
                                             }
                                         ]
                                     },
-                                    "Page": {
-
+                                    Page: {
                                         /*
                                          *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
                                          */
-                                            source: "rest/Page/#{editorGameController.currentGameModel.id}/",
+                                        source: "rest/Page/#{editorGameController.currentGameModel.id}/",
                                         /* THIS IS NOT A COMMENT
-                                        * </ui:fragment>
-                                        */
+                                         * </ui:fragment>
+                                         */
                                         /*
                                          *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
                                          */
-                                            source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
-                                        /* THIS IS NOT A COMMENT
-                                        * </ui:fragment>
-                                        */
+                                        source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
+                                                /* THIS IS NOT A COMMENT
+                                                 * </ui:fragment>
+                                                 */
 
-                                        plugins: [{
+                                                plugins: [{
                                                 fn: "DataSourceJSONSchema",
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                        //resultFields: ["name", "id", "@class"]
+                                                                //resultFields: ["name", "id", "@class"]
                                                     }
                                                 }
                                             }, {
                                                 fn: "PageCache"
                                             }
                                         ]
-                                    }
+                                    },
                                     /* THIS IS NOT A COMMENT
-                                    * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
-                                    */
-                                    ,
-                                    "Pusher":{
+                                     * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
+                                     */
+                                    Pusher: {
                                         type: "PusherDataSource",
                                         source: "rest/Pusher/",
-                                        applicationKey:"#{editorGameController.currentGameModel.getProperty('websocket')}"
-                                    }
+                                        applicationKey: "#{editorGameController.currentGameModel.getProperty('websocket')}"
+                                    },
                                     /* THIS IS NOT A COMMENT
-                                    * </ui:fragment>
-                                    */
-                                    ,
-                                    "VariableDescriptor": {
+                                     * </ui:fragment>
+                                     */
+                                    VariableDescriptor: {
                                         //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                         /* THIS IS NOT A COMMENT
                                          * <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
                                          */
-                                            source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                        source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                         /* THIS IS NOT A COMMENT
-                                        * </ui:fragment>
-                                        */
+                                         * </ui:fragment>
+                                         */
                                         /* THIS IS NOT A COMMENT
                                          * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
                                          */
-                                            source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                        /* THIS IS NOT A COMMENT
-                                        * </ui:fragment>
-                                        */
+                                        source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                                /* THIS IS NOT A COMMENT
+                                                 * </ui:fragment>
+                                                 */
                                         initialRequest: "",
                                         plugins: [{
                                                 fn: "VariableDescriptorCache"
@@ -223,34 +217,34 @@
                                                 fn: "ScriptEval"
                                             }
                                             /* THIS IS NOT A COMMENT
-                                            * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
-                                            */
+                                             * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
+                                             */
                                             , {
                                                 fn: "WebSocketListener",
-                                                cfg:{
+                                                cfg: {
                                                     dataSource: "Pusher"
                                                 }
                                             }
                                             /* THIS IS NOT A COMMENT
-                                            * </ui:fragment>
-                                            */
+                                             * </ui:fragment>
+                                             */
                                         ]
                                     },
-                                    "User": {
+                                    User: {
                                         source: "rest/User",
                                         initialRequest: "/" + #{requestController.currentUser.id},
                                         plugins: [{
                                                 fn: "UserCache"
                                             }]
                                     },
-                                    "File": {
+                                    File: {
                                         source: "rest/File/GameModelId/#{gameController.currentGameModel.id}/",
                                         plugins: [{
                                                 fn: "DataSourceJSONSchema",
                                                 cfg: {
                                                     schema: {
                                                         resultListLocator: "."
-                                                        //resultFields: ["name", "id", "@class"]
+                                                                //resultFields: ["name", "id", "@class"]
                                                     }
                                                 }
                                             }]
@@ -258,7 +252,7 @@
                                 }
                             });
 
-                            app.after("render", function () {
+                            app.after("render", function() {
                                 try {
                                     #{editorGameController.getClientScripts()}  // Add game model specific js footer
                                 } catch (e) {

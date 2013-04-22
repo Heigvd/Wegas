@@ -74,16 +74,6 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }).render(el);
 
                 /** Source view**/
-                this.jsonView = new Y.inputEx.AceField({
-                    parentEl: this.get("host").get("boundingBox"),
-                    name: 'text',
-                    type: 'ace',
-                    height: "100%",
-                    language: "json",
-                    value: '',
-                    wrapperClass: "wegas-pageeditor-ace"
-                });
-                this.jsonView.hide();
 
                 this.sourceButton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>Source",
@@ -118,7 +108,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.highlightOverlay.menu.on("menuOpen", function(e) {
                 this.highlightOverlay.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                 this.targetWidget = this.overlayWidget;
-                this.genMenu(this.targetWidget);
+                this.highlightOverlay.menu.set("children", this.targetWidget.getMenuCfg({
+                    widget: this.targetWidget
+                }));
             }, this);
 
             this.handlers.push(cb.delegate("mousemove", function(e) {
@@ -151,7 +143,12 @@ YUI.add('wegas-pageeditor', function(Y) {
         },
         processSource: function() {
             var host = this.get("host");
+
             if (this.sourceButton.get("pressed")) {
+                if (!this.jsonView) {
+                    this.initJsonView();
+                    return;
+                }
                 this.jsonView.setValue(Y.JSON.stringify(host.get("widget").toObject("@pageId"), null, "\t"));
                 host.get("contentBox").hide();
                 this.jsonView.show();
@@ -161,15 +158,29 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.saveButton.show();
             } else {
                 host.get("contentBox").show();
-                this.jsonView.hide();
+                if (this.jsonView) {
+                    this.jsonView.hide();
+                }
                 this.designButton.enable();
                 this.saveButton.hide();
             }
         },
-        genMenu: function(widget) {
-            this.highlightOverlay.menu.set("children", widget.getMenuCfg({
-                widget: widget
-            }));
+        initJsonView: function() {
+            if (!this.jsonView) {
+                Y.use("wegas-inputex-ace", Y.bind(function(Y) {
+                    this.jsonView = new Y.inputEx.AceField({
+                        parentEl: this.get("host").get("boundingBox"),
+                        name: 'text',
+                        type: 'ace',
+                        height: "100%",
+                        language: "json",
+                        value: '',
+                        wrapperClass: "wegas-pageeditor-ace"
+                    });
+                    this.jsonView.hide();
+                    this.processSource();
+                }, this));
+            }
         },
         detach: function() {
             var i;
