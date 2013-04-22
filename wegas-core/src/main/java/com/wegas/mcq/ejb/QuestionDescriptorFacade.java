@@ -71,7 +71,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
     public Reply selectChoice(Long choiceId, Player player, Long startTime) throws WegasException {
         ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
 
-        QuestionDescriptor questionDescriptor = (QuestionDescriptor) variableDescriptorFacade.findParentListDescriptor(choice);
+        QuestionDescriptor questionDescriptor = choice.getQuestion();
 
         QuestionInstance questionInstance = (QuestionInstance) questionDescriptor.getInstance(player);
         Reply reply = new Reply();

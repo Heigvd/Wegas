@@ -121,7 +121,7 @@
                                 /* THIS IS NOT A COMMENT
                                  * <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
                                  */
-                                source: "rest/PrivateEditor/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 /* THIS IS NOT A COMMENT
                                  * </ui:fragment>
                                  */
@@ -199,7 +199,7 @@
                             this.dataSources.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
 
                         Y.Wegas.Facade.VariableDescriptor.set("source",
-                                this.get("base") + "rest/PrivateEditor/" + e.newVal + "/GameModel/"
+                                this.get("base") + "rest/EditorPrivate/" + e.newVal + "/GameModel/"
                                 + this.get("currentGameModel") + "/VariableDescriptor");
 
                         //Y.Wegas.Facade.VariableDescriptor.fire("update");      // Fire an update event on the variable datasource

@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,21 +18,23 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-@Table(name = "TriggerDescriptor")
 @XmlRootElement
 @XmlType(name = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private Boolean oneShot;
     @Transient
+    @JsonView(Views.EditorExtendedI.class)
     private Script triggerEvent;
     @Transient
+    @JsonView(Views.EditorExtendedI.class)
     private Script postTriggerEvent;
 
     /**
@@ -79,6 +82,12 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return
      */
     public Script getTriggerEvent() {
+
+        try {
+            this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
+        } catch (NullPointerException e) {
+            this.triggerEvent = null;
+        }
         return triggerEvent;
     }
 
@@ -114,7 +123,8 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     }
 
     /**
-     *
+     * @fixme This means we will have to query multiple table, every time the
+     * bean is loaded. Move this logic to the getter.
      */
     @PostLoad
     public void onLoad() {

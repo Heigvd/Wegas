@@ -71,7 +71,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @XmlTransient
     @JsonIgnore
     private AbstractScope scope;
