@@ -26,7 +26,8 @@ public class Views {
      */
     public static interface ExtendedI {
     }
-    public static interface EditorExtendedI extends ExtendedI{
+    
+    public static interface EditorExtendedI extends ExtendedI {
     }
 
     /**
@@ -66,7 +67,6 @@ public class Views {
      */
     public static class Extended extends Public implements ExtendedI {
     }
-
 
     /**
      * Variable Descriptor with a single instance for the current player
