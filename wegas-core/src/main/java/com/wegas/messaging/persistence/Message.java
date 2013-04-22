@@ -42,9 +42,9 @@ public class Message extends NamedEntity {
     /**
      *
      */
-    @JsonView(Views.Export.class)
     @Lob
     @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
     private String body;
     /**
      *

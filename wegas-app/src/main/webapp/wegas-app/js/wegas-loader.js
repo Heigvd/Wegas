@@ -29,7 +29,9 @@ YUI().use(function(Y) {
             base: './',
             root: '/',
             modules: {
-                /** Base **/
+                /**
+                 * Base
+                 */
                 'wegas-app': {
                     path: 'wegas-app/js/wegas-app-min.js',
                     requires: [
@@ -68,7 +70,9 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
                     requires: ['pusher', 'wegas-datasource']
                 },
-                /** Persistence **/
+                /**
+                 * Persistence
+                 */
                 'wegas-entity': {
                     path: 'wegas-app/js/persistence/wegas-entity-min.js',
                     requires: ['wegas-editable'],
@@ -88,7 +92,9 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/persistence/wegas-content-entities.js',
                     requires: ['wegas-entity']
                 },
-                /** Widgets **/
+                /**
+                 * Widgets
+                 */
                 'wegas-widget': {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
                     requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable']
@@ -389,7 +395,7 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
                         'wegas-inputex-variabledescriptorselect',
                         'wegas-button', 'inputex-jsonschema', 'inputex-list',
-                        'wegas-inputex-url', "wegas-inputex-rte",               // for mail attachements in script
+                        'wegas-inputex-url', "wegas-inputex-rte", // for mail attachements in script
                         'esprima'],
                     ix_provides: ['script']
                 },
@@ -457,7 +463,9 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/css/gallery-colorpicker.css',
                     type: 'css'
                 },
-                /** Editor's Widgets **/
+                /**
+                 *  Editor's Widgets
+                 */
                 'wegas-editor-action': {
                     path: 'wegas-editor/js/plugin/wegas-editor-action-min.js',
                     requires: ['wegas-action', 'wegas-editor-entityaction'],
@@ -486,17 +494,11 @@ YUI().use(function(Y) {
                 'wegas-pageeditor': {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
                     ws_provides: 'PageEditor',
-                    requires: ['diff_match_patch', "wegas-inputex-ace", "ace-json",
-                        "wegas-editor-widgetaction"]
-                },
-                'wegas-csseditor': {
-                    path: 'wegas-editor/js/widget/wegas-csseditor-min.js',
-                    requires: ['ace-css', 'wegas-inputex-ace'],
-                    ws_provides: 'CSSEditor'
+                    requires: ['diff_match_patch', "wegas-editor-widgetaction"]
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',
-                    requires: ['ace-javascript'],
+                    requires: ['ace'],
                     ws_provides: 'Console'
                 },
                 'wegas-impactgame': {
@@ -529,7 +531,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-scriptlibrary': {
                     path: 'wegas-editor/js/widget/wegas-scriptlibrary-min.js',
-                    requires: ['ace-javascript', 'ace-css', 'button', 'wegas-inputex-ace', 'inputex-select'],
+                    requires: ['button', 'wegas-inputex-ace', 'inputex-select'],
                     ws_provides: 'ScriptLibrary'
                 },
                 'wegas-fileexplorercss': {
@@ -568,7 +570,9 @@ YUI().use(function(Y) {
                     requires: ['wegas-datasource'],
                     ws_provides: "PageTreeview"
                 },
-                /** Project Management Game **/
+                /**
+                 * Project Management Game
+                 */
                 'wegas-pmg': {
                     path: 'wegas-pmg/js/wegas-pmg-breadcrumb-min.js',
                     requires: ['wegas-pmg-breadcrumb'],
@@ -584,7 +588,6 @@ YUI().use(function(Y) {
                 //    requires: ['wegas-pmg-treebletasklist', 'wegas-pmg-datatable'],
                 //    ws_provides: "PmgTreebleTasklist"
                 //},
-
                 'wegas-pmg-gantt': {
                     path: 'wegas-pmg/js/wegas-pmg-gantt-min.js',
                     requires: ['wegas-pmg-gantt', 'wegas-pmg-datatable'],
@@ -699,7 +702,7 @@ YUI().use(function(Y) {
                 /** MMO **/
                 'wegas-proggame-level': {
                     path: 'wegas-proggame/js/wegas-proggame-level-min.js',
-                    requires: ['wegas-widget', 'ace-javascript', 'wegas-inputex-ace', 'wegas-proggame-display'],
+                    requires: ['wegas-widget', 'wegas-inputex-ace', 'wegas-proggame-display'],
                     ws_provides: 'ProgGameLevel'
                 },
                 'wegas-proggame-display': {
@@ -722,68 +725,6 @@ YUI().use(function(Y) {
                 }
             }
         },
-        /* Ace */
-        ace: {
-            base: './lib/ace/',
-            root: '/lib/ace/',
-            combine: false,
-            modules: {
-                'ace': {
-                    path: 'src/ace.js'
-                },
-                'ace-javascript': {
-                    path: 'src/mode-javascript.js',
-                    requires: ['ace']
-                },
-                'ace-css': {
-                    path: 'src/mode-css.js',
-                    requires: ['ace']
-                },
-                'ace-json': {
-                    path: 'src/mode-json.js',
-                    requires: ['ace']
-                }
-            }
-        },
-        /* jsPlumb */
-        jsplumb: {
-            combine: true,
-            base: './lib/jsPlumb/',
-            root: '/lib/jsPlumb/',
-            modules: {
-                'jsplumb': {
-                    path: 'jsPlumb-1.3.10-RC1.js',
-                    requires: ['jsplumb-utils', 'dd']
-                },
-                'jsplumb-utils': {
-                    path: 'jsPlumb-util-1.3.10-RC1.js',
-                    requires: []
-                },
-                'jsplumb-svg': {
-                    path: 'jsPlumb-renderers-svg-1.3.10-RC1.js',
-                    requires: ['jsplumb']
-                },
-                'jsplumb-defaults': {
-                    path: 'jsPlumb-defaults-1.3.10-RC1.js',
-                    requires: ['jsplumb']
-                },
-                'jsplumb-statemachine': {
-                    path: 'jsPlumb-connectors-statemachine-1.3.10-RC1.js',
-                    requires: ['jsplumb', 'jsbezier']
-                },
-                'jsplumb-yui': {
-                    path: 'yui.jsPlumb-1.3.10-RC1.js',
-                    requires: ['jsplumb']
-                },
-                'jsplumb-yui-all': {
-                    path: 'yui.jsPlumb-1.3.15-all-min.js',
-                    requires: ["node", "dd", "anim"/*, "node-event-simulate"*/]
-                },
-                'jsbezier': {
-                    path: 'jsBezier-0.3-min.js'
-                }
-            }
-        },
         /* Other libraries */
         libraries: {
             async: false,
@@ -791,31 +732,68 @@ YUI().use(function(Y) {
             base: "./lib/",
             root: "/lib/",
             modules: {
-                'esprima': {
+                /* jsPlumb */
+                jsplumb: {
+                    path: 'jsPlumb/jsPlumb-1.3.10-RC1.js',
+                    requires: ['jsplumb-utils', 'dd']
+                },
+                'jsplumb-utils': {
+                    path: 'jsPlumb/jsPlumb-util-1.3.10-RC1.js',
+                    requires: []
+                },
+                'jsplumb-svg': {
+                    path: 'jsPlumb/jsPlumb-renderers-svg-1.3.10-RC1.js',
+                    requires: ['jsplumb']
+                },
+                'jsplumb-defaults': {
+                    path: 'jsPlumb/jsPlumb-defaults-1.3.10-RC1.js',
+                    requires: ['jsplumb']
+                },
+                'jsplumb-statemachine': {
+                    path: 'jsPlumb/jsPlumb-connectors-statemachine-1.3.10-RC1.js',
+                    requires: ['jsplumb', 'jsbezier']
+                },
+                'jsplumb-yui': {
+                    path: 'jsPlumb/yui.jsPlumb-1.3.10-RC1.js',
+                    requires: ['jsplumb']
+                },
+                'jsplumb-yui-all': {
+                    path: 'jsPlumb/yui.jsPlumb-1.3.15-all-min.js',
+                    requires: ["node", "dd", "anim"/*, "node-event-simulate"*/]
+                },
+                jsbezier: {
+                    path: 'jsPlumb/jsBezier-0.3-min.js'
+                },
+                esprima: {
                     path: 'esprima/esprima-min.js'
                 },
-                'escodegen': {
+                escodegen: {
                     path: 'escodegen/escodegen-min.js'
                 },
-                'gauge': {
+                gauge: {
                     path: "gauge-min.js"
                 },
-                'pusher': {
+                pusher: {
                     fullpath: "http://js.pusher.com/1.12/pusher.min.js"
                 },
-                'tinymce': {
+                tinymce: {
                     path: "tiny_mce/tiny_mce.js"
                 },
-                'diff_match_patch': {
+                diff_match_patch: {
                     path: "diffmatchpatch/diff_match_patch.js"
                 },
-                'excanvas': {
+                excanvas: {
                     path: 'excanvas/excanvas.compiled.js'
                 },
-                'crafty': {
+                crafty: {
                     path: 'crafty/crafty-min.js'
                 },
-                'googletranslate': {
+                ace: {
+                    //charset: 'utf-8',
+                    fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
+                            // path: 'src/ace.js'
+                },
+                googletranslate: {
                     async: false,
                     fullpath: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
                             //fullpath: "//translate.google.com/translate_a/element.js?cb=googleSectionalElementInit&"
@@ -860,7 +838,5 @@ YUI().use(function(Y) {
     }
 
     loadModules(YUI_config.groups.wegas);
-    loadModules(YUI_config.groups.ace);
     loadModules(YUI_config.groups.libraries);
-    loadModules(YUI_config.groups.jsplumb);
 });
