@@ -28,6 +28,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         gallery: null,
         datatable: null,
         unreadRows: null,
+        requests: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
@@ -35,7 +36,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         },
         renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
-            this.timer = Y.later(3000, this,this.setUnread);
+            this.timer = Y.later(3000, this, this.setUnread);
         },
         bindUI: function() {
             this.handlers.update = // If data changes, refresh
@@ -49,13 +50,16 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
             }
         },
         syncUI: function() {
+            var data = [];
             this.unreadRows.length = 0;
+            this.requests = 0;
             if (Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences")) {
-                this.datatable.syncUI(this.genData());
+                data = this.genData();
                 this.highlightNewEvidences();
             } else {
-                this.datatable.syncUI();
+                this.datatable.syncUI(data);
             }
+            this.hideOverlay();
         },
         renderDetailsPanel: function(node) {
             var columns = [{
@@ -104,6 +108,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     currentTime = periodInstance.get("value") - period.get("minValue"),
                     rowCount = 0;
 
+            this.showOverlay();
             for (i = 0; i < questions.length; i = i + 1) {
                 questionInstance = questions[i].getInstance();
                 for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
