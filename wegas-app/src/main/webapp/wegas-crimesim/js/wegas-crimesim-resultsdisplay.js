@@ -24,61 +24,138 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         // *** Fields *** /
         menu: null,
         handlers: null,
+        timer: null,
         gallery: null,
         datatable: null,
+        consideredAsRead: null,
+        unreadEvidences: null,
+        requestedAnswers: null,
+        translator: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
+            this.unreadEvidences = [];
+            this.consideredAsRead = false;
+            this.translator = new Y.Wegas.Translator();
         },
         renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
+            this.timer = Y.later(1500, this, function() {
+                this.consideredAsRead = true;
+            });
         },
         bindUI: function() {
-            this.handlers.response = Y.Wegas.Facade.VariableDescriptor.after("update",
-                    this.syncUI, this);                                         // If data changes, refresh
+            this.handlers.update = // If data changes, refresh
+                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.handlers.openRow = this.datatable.after('treebleRefreshed', this.highlightNewEvidences, this);
         },
         destructor: function() {
+            if (this.consideredAsRead) {
+                this.setUnread();
+            }
+            this.timer.cancel();
             this.datatable.destroy();
             for (var i in this.handlers) {
                 this.handlers[i].detach();
             }
         },
         syncUI: function() {
+            this.unreadEvidences.length = 0;
+            this.requestedAnswers = 0;
             if (Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences")) {
-                this.setUnread();
+                //this.syncAnswers(this.genData()); //and continue sync
                 this.datatable.syncUI(this.genData());
+                this.highlightNewEvidences();
+                this.hideOverlay();
             } else {
-                this.datatable.syncUI([]);
+                this.datatable.syncUI();
             }
         },
+//        syncAnswers: function(data) {
+//            var i, reply;
+//            if (!data) {
+//                return;
+//            }
+//            for (i = 0; i < data.length; i++) {
+//                reply = Y.Wegas.Facade.VariableDescriptor.cache.findById(data[i].choiceDescriptorId);
+//                Y.Wegas.Facade.VariableDescriptor.cache.getWithView(reply, "Editor", {// Retrieve the result answer from the server
+//                    cfg: {
+//                        updateCache: false
+//                    },
+//                    on: {
+//                        success: Y.bind(function(data, position, e) {
+//                            var i, j, k, reply = e.serverResponse.get("entities")[0],
+//                                    questionInstance, instanceReply, found = false,
+//                            questions = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").flatten();
+//                            //find corresponding reply;
+//                            for (i = 0; i < questions.length; i = i + 1) {
+//                                questionInstance = questions[i].getInstance();
+//                                for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
+//                                    instanceReply = questionInstance.get("replies")[j];
+//                                    for (k = 0; k < instanceReply.get("result").length; k = k + 1) {
+//                                        if (reply.get("results")[k].get("id") === instanceReply.get("result").get("id")) {
+//                                            found = true;
+//                                            break;
+//                                        }
+//                                    }
+//                                    if (found) {
+//                                        break;
+//                                    }
+//                                }
+//                                if (found) {
+//                                    break;
+//                                }
+//                            }
+//                            data[position].answer =
+//                                    reply.get("results")[k].get("answer") || " + this.translator.getRB().No_description + ";
+//                            this.requestedAnswers++;
+//                            this.syncTreeble(data);
+//                        }, this, data, i),
+//                        failure: Y.bind(function(data) {
+//                            this.requestedAnswers++;
+//                            this.syncTreeble(data);
+//                        }, this, data)
+//                    }
+//                });
+//            }
+//            this.requestedAnswers = 3;
+//            this.syncTreeble(data);
+//        },
+//        syncTreeble: function(data) {
+//            if (this.requestedAnswers === data.length) {
+//                this.highlightNewEvidences();
+//                this.hideOverlay();
+//                this.datatable.syncUI(data);
+//            }
+//        },
         renderDetailsPanel: function(node) {
             var columns = [{
-                    key: "choiceDescriptorId",
+                    key: "id", //evidenceId
                     className: "hidden"
                 }, {
-                    sortable: true,
+                    //sortable: true, //Don't sort with treeble !
                     key: "startTime",
                     //className: 'hidden',
-                    label: "Period",
+                    label: this.translator.getRB().Period,
                     className: "period"
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "evidence",
-                    label: "Evidences"
+                    label: this.translator.getRB().Evidence
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "analyis",
-                    label: "Analyse"
+                    label: this.translator.getRB().Analyse
                 }, {
                     key: "answer",
-                    label: "Result",
+                    label: this.translator.getRB().Result,
                     allowHTML: true
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "fileLinks",
                     allowHTML: true,
-                    label: "Files",
-                    emptyCellValue: "no files"
+                    label: this.translator.getRB().File,
+                    emptyCellValue: this.translator.getRB().No_File
                 }];
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
@@ -96,7 +173,8 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     period = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period"),
                     periodInstance = period.getInstance(),
                     currentTime = periodInstance.get("value") - period.get("minValue");
-
+            
+            this.showOverlay();
             for (i = 0; i < questions.length; i = i + 1) {
                 questionInstance = questions[i].getInstance();
                 for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
@@ -104,6 +182,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs());
                     replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
                     status = reply.getStatus(currentTime);
+
+                    if (reply.get("unread")) {
+                        this.unreadEvidences.push(replyData.id);
+                    }
 
                     replyData.evidence = questions[i].getPublicLabel();
                     replyData.analyis = reply.getChoiceDescriptor().getPublicLabel();
@@ -155,10 +237,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     if (reply.get("unread")) {
                         reply.set("unread", false);
                         Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                            request: "/" + reply.getAttrs().id + "/Reply/" + reply.getAttrs().id,
-                            headers: {
-                                'Content-Type': 'application/json; charset=ISO-8859-1'
-                            },
+                            request: "/QuestionDescriptor/Reply/" + reply.get("id"),
                             cfg: {
                                 method: "PUT",
                                 data: reply
@@ -167,6 +246,16 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     }
                 }
             }
+        },
+        highlightNewEvidences: function() {
+            if (this.unreadEvidences.length === 0) {
+                return;
+            }
+            this.get(CONTENTBOX).all('.yui3-datatable-data .treeble-depth-0 .yui3-datatable-col-id').each(function(cell, i) {
+                if (this.unreadEvidences.indexOf(+cell.getContent()) > -1) {
+                    cell.ancestor("tr").addClass('unread');
+                }
+            }, this);
         }
     });
 

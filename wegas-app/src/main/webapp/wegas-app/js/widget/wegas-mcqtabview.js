@@ -40,6 +40,10 @@ YUI.add('wegas-mcqtabview', function(Y) {
          * Reference to each used functions
          */
         handlers: null,
+        /**
+         * JS translator
+         */
+        jsTranslator: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -52,6 +56,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
             this.gallery = null;
             this.handlers = {};
             this.isRemovingTabs = false;
+            this.jsTranslator = new Y.Wegas.JSTranslator();
         },
         /**
          * @function
@@ -145,7 +150,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
                         label: '<div class="'
                                 + (cQuestionInstance.get("replies").length === 0 ? "unread" : "")
                                 + '"><div class="label">' + (cQuestion.getPublicLabel() || "undefined") + '</div>'
-                                + '<div class="status">' + (cReplyLabel || "unanswered") + '</div></div>',
+                                + '<div class="status">' + (cReplyLabel || this.jsTranslator.getRB().Unanswered) + '</div></div>',
                         content: "<div class=\"wegas-loading-div\"><div>"
                     });
                     tab.loaded = false;

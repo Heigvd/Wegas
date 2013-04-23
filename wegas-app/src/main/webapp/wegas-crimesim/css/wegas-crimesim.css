@@ -420,3 +420,7 @@ min-width: 800px;
 .wegas-crimesim .hidden{
     display:none;
 }
+
+.wegas-crimesim .yui3-datatable-table .unread{
+    font-weight: bold;
+}
