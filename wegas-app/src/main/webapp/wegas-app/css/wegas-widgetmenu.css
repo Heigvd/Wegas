@@ -43,7 +43,11 @@
     text-align: left;
     display: block;
 }
-
+.yui3-menu-content:empty::before{
+    padding-left: 5px;
+    content: "empty";
+    font-style: italic;
+}
 .yui3-menu .yui3-button:hover {
     background: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0, 0, 0, 0.05)),to(rgba(0, 0, 0, 0.15)));
     background: -webkit-linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
