@@ -220,13 +220,15 @@ YUI.add("wegas-button", function(Y) {
                 return 0;
             }
 
-            if (descriptor instanceof Y.Wegas.persistence.QuestionDescriptor) { // For ListDescriptors, we count the children instance's
+            if (descriptor instanceof Y.Wegas.persistence.ListDescriptor) { // For ListDescriptors, we count the children instance's
                 items = descriptor.flatten();
                 for (i = 0; i < items.length; i = i + 1) {
-                    instance = items[i].getInstance();
-                    //count += instance.get("unread") ? 1 : 0;
-                    if (instance.get("replies")) {
-                        count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
+                    if (items[i] instanceof Y.Wegas.persistence.QuestionDescriptor) {
+                        instance = items[i].getInstance();
+                        //count += instance.get("unread") ? 1 : 0;
+                        if (instance.get("replies")) {
+                            count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
+                        }
                     }
                 }
             }
