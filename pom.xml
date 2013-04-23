@@ -68,12 +68,13 @@
     </distributionManagement>
 
     <properties>
-        <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
+        <maven.build.timestamp.format>MMddHHmm</maven.build.timestamp.format>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <build.optimize>false</build.optimize>
 
         <wegas.debug>true</wegas.debug>
+        <wegas.build>${maven.build.timestamp}</wegas.build>
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
