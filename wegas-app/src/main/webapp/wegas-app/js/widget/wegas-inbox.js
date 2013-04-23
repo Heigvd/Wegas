@@ -235,7 +235,7 @@ YUI.add('wegas-inbox', function(Y) {
                 this.msg = e.newVal.msg;
 
                 if (e.newVal.msg.get("unread")) {                               // If the message is currently unread,
-                    this.timer = Y.later(2000, this, function(msg, tab) {            // Send a request to mark it as read
+                    this.timer = Y.later(50, this, function(msg, tab) {            // Send a request to mark it as read
                         Y.log("Sending message read update", "info", "InboxDisplay");
                         msg.set("unread", false);
                         this.readRequestTid = this.dataSource.sendRequest({
