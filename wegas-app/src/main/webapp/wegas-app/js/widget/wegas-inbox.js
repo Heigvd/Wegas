@@ -51,6 +51,10 @@ YUI.add('wegas-inbox', function(Y) {
          *
          */
         readRequestTid: null,
+        /**
+         * JS translator
+         */
+        jsTranslator: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -61,9 +65,10 @@ YUI.add('wegas-inbox', function(Y) {
         initializer: function() {
             this.dataSource = Y.Wegas.Facade.VariableDescriptor;
             this.handlers = {};
+            this.jsTranslator = new Y.Wegas.JSTranslator();
             this.plug(Y.Plugin.WidgetToolbar);
             this.deleteButton = new Y.Wegas.Button({
-                label: "<span class='wegas-icon wegas-icon-cancel'></span>Delete"
+                label: "<span class='wegas-icon wegas-icon-cancel'></span>"+this.jsTranslator.getRB().Delete
             });
             this.toolbar.add(this.deleteButton);
             this.tabView = new Y.TabView();

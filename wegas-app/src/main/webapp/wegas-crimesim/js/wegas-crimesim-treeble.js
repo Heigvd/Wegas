@@ -21,11 +21,13 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
         data: null,
         datasource: null,
         descriptionColumn: null,
+        translator: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
             this.data = [];
             this.descriptionColumn = this.get('descriptionColumn');
+            this.translator = new Y.Wegas.Translator();
         },
         renderUI: function() {
             var columns = this.get('columns');
@@ -155,7 +157,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             }
             choice = Y.Wegas.Facade.VariableDescriptor.cache.findById(data[position].choiceDescriptorId);
             if (!choice) {
-                data[position].kiddies[0].evidence = "No description";
+                data[position].kiddies[0].evidence = this.translator.getRB().No_description;
                 this.treebleTwistdown(data);
             } else {
                 Y.Wegas.Facade.VariableDescriptor.cache.getWithView(choice, "Extended", {// Retrieve the reply description from the server
@@ -166,7 +168,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                         success: Y.bind(function(data, position, e) {
                             var choice = e.serverResponse.get("entities")[0];
                             data[position].kiddies[0][this.get("descriptionColumn")] =
-                                    choice.get("description") || "No description";
+                                    choice.get("description") || this.translator.getRB().No_description;
                             this.treebleTwistdown(data);
                         }, this, data, position)
                     }

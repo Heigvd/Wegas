@@ -30,11 +30,13 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         consideredAsRead: null,
         unreadEvidences: null,
         requestedAnswers: null,
+        translator: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
             this.unreadEvidences = [];
             this.consideredAsRead = false;
+            this.translator = new Y.Wegas.Translator();
         },
         renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
@@ -105,7 +107,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
 //                                }
 //                            }
 //                            data[position].answer =
-//                                    reply.get("results")[k].get("answer") || "No description";
+//                                    reply.get("results")[k].get("answer") || " + this.translator.getRB().No_description + ";
 //                            this.requestedAnswers++;
 //                            this.syncTreeble(data);
 //                        }, this, data, i),
@@ -134,26 +136,26 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     //sortable: true, //Don't sort with treeble !
                     key: "startTime",
                     //className: 'hidden',
-                    label: "Period",
+                    label: this.translator.getRB().Period,
                     className: "period"
                 }, {
                     //sortable: true,
                     key: "evidence",
-                    label: "Evidences"
+                    label: this.translator.getRB().Evidence
                 }, {
                     //sortable: true,
                     key: "analyis",
-                    label: "Analyse"
+                    label: this.translator.getRB().Analyse
                 }, {
                     key: "answer",
-                    label: "Result",
+                    label: this.translator.getRB().Result,
                     allowHTML: true
                 }, {
                     //sortable: true,
                     key: "fileLinks",
                     allowHTML: true,
-                    label: "Files",
-                    emptyCellValue: "no files"
+                    label: this.translator.getRB().File,
+                    emptyCellValue: this.translator.getRB().No_File
                 }];
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
