@@ -103,8 +103,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             cb.delegate("click", this.onCancelReplyClick, ".icon .close-icon", this);// Hide the question detail on close icon click
 
-            this.handlers.response =
-                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);// If data changes, refresh
+
+            this.handlers.response = // If data changes, refresh
+                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         /**
          *
@@ -274,20 +275,22 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             }
             acc.push("</tr></tfoot></table>");
 
-            cb.set("innerHTML", acc.join(""));                                  // Update ContentBox
+            if (cb) {
+                cb.set("innerHTML", acc.join(""));                                  // Update ContentBox   
+            }
         },
         renderDetailsPanel: function(node) {
             var columns = [{
-                    key: "choiceDescriptorId",
+                    key: "id", //evidence id
                     className: "hidden"
                 }, {
-                    sortable: true,
+                    //sortable: true, don't sort with treeble
                     key: "startTime",
                     //className: 'hidden',
                     label: "Period",
                     className: "period"
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "analyis",
                     label: "Analyse"
                 }, {
@@ -295,7 +298,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     label: "Result",
                     allowHTML: true
                 }, {
-                    sortable: true,
+                    //sortable: true,
                     key: "fileLinks",
                     label: "Files",
                     allowHTML: true,
@@ -304,7 +307,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
                 isTreeble: true,
-                node: node
+                node: node,
+                descriptionColumn: "analyis"
             });
             this.datatable.render(this.get(CONTENTBOX).one(".schedule-analysis"));
         },
@@ -320,7 +324,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             cb.one("h1").setContent(question.getPublicLabel() || "undefined");
             cb.one(".content").setContent(extendedQuestion.get("description") || "<em>No description</em>");
-
+            
             while (this.datatable.datatable.getRow(0)) {
                 this.datatable.datatable.removeRow(0);
             }
