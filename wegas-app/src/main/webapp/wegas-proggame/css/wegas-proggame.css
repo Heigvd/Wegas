@@ -179,7 +179,7 @@
     float:none;
 }
 .wegas-proggame-level .ace-tm .ace_gutter {
-    background: #6e6e6e;
+    /*background: #6e6e6e;*/
     color: #7e8a00;
     border-right: 1px solid #7e8a00;
 }

@@ -789,9 +789,10 @@ YUI().use(function(Y) {
                     path: 'crafty/crafty-min.js'
                 },
                 ace: {
-                    //charset: 'utf-8',
+                    charset: 'utf-8',
+                    //path: "ace/src-min-noconflict/ace.js"
                     fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
-                            // path: 'src/ace.js'
+
                 },
                 googletranslate: {
                     async: false,

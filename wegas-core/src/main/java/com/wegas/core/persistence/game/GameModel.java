@@ -19,6 +19,8 @@ import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -174,6 +176,23 @@ public class GameModel extends NamedEntity {
             this.addGame(g);
         }
     }
+
+//    public Boolean canRead() {
+//        return SecurityUtils.getSubject().isPermitted("Game:View:g" + this.id);
+//    }
+//
+//    public Boolean canEdit() {
+//        return SecurityUtils.getSubject().isPermitted("Game:Edit:g" + this.id);
+//    }
+//
+//    /**
+//     * For serialization
+//     *
+//     * @return
+//     */
+//    public Boolean getCanEdit() {
+//        return this.canEdit();
+//    }
 
     /**
      *
@@ -358,7 +377,8 @@ public class GameModel extends NamedEntity {
     public void setProperty(String key, String value) {
         this.properties.put(key, value);
     }
-    public Boolean hasProperty (String key){
+
+    public Boolean hasProperty(String key) {
         return this.properties.containsKey(key);
     }
 

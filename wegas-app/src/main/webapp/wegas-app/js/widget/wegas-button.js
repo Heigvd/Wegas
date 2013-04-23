@@ -220,7 +220,8 @@ YUI.add("wegas-button", function(Y) {
                 return 0;
             }
 
-            if (descriptor instanceof Y.Wegas.persistence.QuestionDescriptor) { // For ListDescriptors, we count the children instance's
+            if (Y.Wegas.persistence.QuestionDescriptor
+                    && descriptor instanceof Y.Wegas.persistence.QuestionDescriptor) { // For ListDescriptors, we count the children instance's
                 items = descriptor.flatten();
                 for (i = 0; i < items.length; i = i + 1) {
                     instance = items[i].getInstance();
@@ -232,7 +233,7 @@ YUI.add("wegas-button", function(Y) {
             }
 
             if (descriptor instanceof Y.Wegas.persistence.InboxDescriptor) {
-                messages = descriptor.getInstance().get("messages");                // For InboxVariableDescriptors, we count the replies
+                messages = descriptor.getInstance().get("messages");            // For InboxVariableDescriptors, we count the replies
                 for (i = 0; i < messages.length; i = i + 1) {
                     count += messages[i].get("unread") ? 1 : 0;
                 }
