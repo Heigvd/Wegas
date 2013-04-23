@@ -30,11 +30,13 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         consideredAsRead: null,
         unreadEvidences: null,
         requestedAnswers: null,
+        translator: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
             this.unreadEvidences = [];
             this.consideredAsRead = false;
+            this.translator = new Y.Wegas.Translator();
         },
         renderUI: function() {
             this.renderDetailsPanel(this.get(CONTENTBOX));
@@ -45,7 +47,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         bindUI: function() {
             this.handlers.update = // If data changes, refresh
                     Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-            this.handlers.openRow = this.datatable.after('treebleRefreshed', this.highlightNewEvidences, this);
+            this.handlers.openRow = this.datatable.datasource.after('response', this.highlightNewEvidences, this);
         },
         destructor: function() {
             if (this.consideredAsRead) {
@@ -105,7 +107,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
 //                                }
 //                            }
 //                            data[position].answer =
-//                                    reply.get("results")[k].get("answer") || "No description";
+//                                    reply.get("results")[k].get("answer") || " + this.translator.getRB().No_description + ";
 //                            this.requestedAnswers++;
 //                            this.syncTreeble(data);
 //                        }, this, data, i),
@@ -134,26 +136,26 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     //sortable: true, //Don't sort with treeble !
                     key: "startTime",
                     //className: 'hidden',
-                    label: "Period",
+                    label: this.translator.getRB().Period,
                     className: "period"
                 }, {
                     //sortable: true,
                     key: "evidence",
-                    label: "Evidences"
+                    label: this.translator.getRB().Evidence
                 }, {
                     //sortable: true,
                     key: "analyis",
-                    label: "Analyse"
+                    label: this.translator.getRB().Analyse
                 }, {
                     key: "answer",
-                    label: "Result",
+                    label: this.translator.getRB().Result,
                     allowHTML: true
                 }, {
                     //sortable: true,
                     key: "fileLinks",
                     allowHTML: true,
-                    label: "Files",
-                    emptyCellValue: "no files"
+                    label: this.translator.getRB().File,
+                    emptyCellValue: this.translator.getRB().No_File
                 }];
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
@@ -173,9 +175,9 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     currentTime = periodInstance.get("value") - period.get("minValue");
             
             this.showOverlay();
-            for (i = 0; i < questions.length; i = i + 1) {
+            for (i = 0; i < questions.length; i += 1) {
                 questionInstance = questions[i].getInstance();
-                for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
+                for (j = 0; j < questionInstance.get("replies").length; j += 1) {
                     reply = questionInstance.get("replies")[j];
                     replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs());
                     replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
@@ -219,6 +221,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
             for (i in responsesByStartTime) {
                 data = data.concat(responsesByStartTime[i]);
             }
+            data.reverse();
             return data;
         },
         /**

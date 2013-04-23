@@ -29,10 +29,12 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         datatable: null,
         data: null,
         currentQuestionId: null,
+        translator: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.data = [];
             this.handlers = {};
+            this.translator = new Y.Wegas.Translator();
         },
         renderUI: function() {
             this.menu = new Y.Wegas.Menu();
@@ -65,8 +67,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ? ["tr", "tl"] : ["tl", "tr"]
                 });
                 this.menuDetails.get("contentBox").setHTML('<div style="padding:5px 10px">'
-                        //+ (choice.get("description") || "<i>No description</i>")// Removed cause description is dynamic
-                        + (extendedChoice.get("description") || "<i>No description</i>")// Removed cause description is dynamic
+                        //+ (choice.get("description") || "<em> + this.translator.getRB().No_description + </em>")// Removed cause description is dynamic
+                        + (extendedChoice.get("description") || "<em> + this.translator.getRB().No_description + </em>")// Removed cause description is dynamic
                         + "<br /><br />Human resources needed: " + choice.get("cost")
                         + "<br />Duration: " + choice.get("duration")
                         + '</div>');
@@ -160,7 +162,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     periodInstance = period.getInstance(),
                     maxValue = period.get("maxValue"),
                     totalPeriods = period.get("maxValue") - period.get("minValue"),
-                    acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">Evidences</th>'],
+                    acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">' + this.translator.getRB().Evidence + '</th>'],
                     cb = this.get(CONTENTBOX).one(".schedule-questions"),
                     currentTime = periodInstance.get("value") - period.get("minValue");
 
@@ -267,7 +269,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             acc.push('<tfoot><tr>', // Generate table footer
                     //'<td class="schedule-leftcolum">Available human resources</td>');
-                    '<td class="schedule-leftcolum">Total human resources</td>');
+                    '<td class="schedule-leftcolum">' + this.translator.getRB().Total_human_resources + '</td>');
 
             for (i = 0; i < perPeriodLoad.length; i += 1) {
                 //acc.push('<td>' + (perPeriodBudget - perPeriodLoad[i]) + '/' + perPeriodBudget + '</td>');
@@ -287,22 +289,22 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     //sortable: true, don't sort with treeble
                     key: "startTime",
                     //className: 'hidden',
-                    label: "Period",
+                    label: this.translator.getRB().Period,
                     className: "period"
                 }, {
                     //sortable: true,
                     key: "analyis",
-                    label: "Analyse"
+                    label: this.translator.getRB().Analyse
                 }, {
                     key: "answer",
-                    label: "Result",
+                    label: this.translator.getRB().Result,
                     allowHTML: true
                 }, {
                     //sortable: true,
                     key: "fileLinks",
-                    label: "Files",
+                    label: this.translator.getRB().File,
                     allowHTML: true,
-                    emptyCellValue: "no files"
+                    emptyCellValue: this.translator.getRB().NoFiles
                 }];
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
@@ -323,8 +325,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.data.length = 0;
 
             cb.one("h1").setContent(question.getPublicLabel() || "undefined");
-            cb.one(".content").setContent(extendedQuestion.get("description") || "<em>No description</em>");
-            
+            cb.one(".content").setContent(extendedQuestion.get("description") || "<em>" + this.translator.getRB().No_description + "</em>");
+
             while (this.datatable.datatable.getRow(0)) {
                 this.datatable.datatable.removeRow(0);
             }
@@ -354,6 +356,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 replyData.startTime = replyData.startTime + 1;
                 this.data.push(replyData);
             }
+            this.data.reverse();
             this.datatable.syncUI(this.data);
 
             //Set width and Y position of the ".schedule-detail".

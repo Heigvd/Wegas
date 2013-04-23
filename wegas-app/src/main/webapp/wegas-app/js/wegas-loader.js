@@ -179,7 +179,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inbox': {
                     path: 'wegas-app/js/widget/wegas-inbox-min.js',
-                    requires: ["tabview", "wegas-inboxcss", "wegas-widgettoolbar"],
+                    requires: ["tabview", "wegas-inboxcss", "wegas-widgettoolbar", "wegas-jstranslator"],
                     ws_provides: 'InboxDisplay'
                 },
                 'wegas-inboxcss': {
@@ -243,6 +243,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-googletranslate-min.js',
                     //requires: ["googletranslate"],
                     ws_provides: "GoogleTranslate"
+                },
+                "wegas-jstranslator": {
+                    path: 'wegas-app/js/util/jstranslator/wegas-jstranslator-min.js',
+                    pkg: 'wegas-app/js/util/jstranslator',
+                    lang: ["fr"]
                 },
                 'wegas-choicelist': {
                     path: "wegas-app/js/widget/wegas-choicelist-min.js",
@@ -562,7 +567,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-mcqtabview': {
                     path: 'wegas-app/js/widget/wegas-mcqtabview-min.js',
-                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery'],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator"],
                     ws_provides: "MCQTabView"
                 },
                 'wegas-editor-pagetreeview': {
@@ -644,12 +649,12 @@ YUI().use(function(Y) {
                 /** CrimeSim **/
                 'wegas-crimesim-scheduledisplay': {
                     path: 'wegas-crimesim/js/wegas-crimesim-scheduledisplay-min.js',
-                    requires: ['wegas-widget', 'wegas-widgetmenu', 'wegas-crimesim-treeble', 'wegas-gallery'],
+                    requires: ['wegas-widget', 'wegas-widgetmenu', 'wegas-crimesim-treeble', 'wegas-gallery', 'wegas-crimesim-translator'],
                     ws_provides: "ScheduleDisplay"
                 },
                 'wegas-crimesim-resultsdisplay': {
                     path: 'wegas-crimesim/js/wegas-crimesim-resultsdisplay-min.js',
-                    requires: ['wegas-widget', 'wegas-crimesim-treeble'],
+                    requires: ['wegas-widget', 'wegas-crimesim-treeble', 'wegas-crimesim-translator'],
                     ws_provides: "ResultsDisplay"
                 },
                 'wegas-crimesim-choicesrepliesunreadcount': {
@@ -659,8 +664,13 @@ YUI().use(function(Y) {
                 },
                 'wegas-crimesim-treeble': {
                     path: 'wegas-crimesim/js/wegas-crimesim-treeble-min.js',
-                    requires: ['datatable', 'datasource-arrayschema', 'gallery-treeble'],
+                    requires: ['datatable', 'datasource-arrayschema', 'gallery-treeble', 'wegas-crimesim-translator'],
                     ws_provides: "CrimeSimTreeble"
+                },
+                "wegas-crimesim-translator": {
+                    path: 'wegas-crimesim/js/wegas-crimesim-translator/wegas-crimesim-translator-min.js',
+                    pkg: 'wegas-crimesim/js/wegas-crimesim-translator',
+                    lang: ["fr"]
                 },
                 /**Leaderway**/
                 'wegas-leaderway-entities': {
