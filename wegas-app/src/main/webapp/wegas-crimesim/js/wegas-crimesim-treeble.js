@@ -12,11 +12,9 @@
 
 YUI.add('wegas-crimesim-treeble', function(Y) {
     "use strict";
-
     var CONTENTBOX = 'contentBox', Treeble;
-
     Treeble = Y.Base.create("wegas-crimesim-treeble", Y.Widget, [], {
-        // *** Fields *** /
+// *** Fields *** /
         datatable: null,
         root: null,
         handlers: null,
@@ -58,6 +56,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
         syncUI: function(data) {
             this.data = data || [];
             if (this.get('isTreeble')) {
+                this.clearTreebleCache(); //to close all node. Else, with next function, all opens nodes display "loading" 
                 this.addKiddiesToData();
                 this.treebleTwistdown();
             } else {
@@ -75,7 +74,6 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
         initTreeble: function(columns) {
             var i, treeble_config, schema_plugin_config, schema, resultFields, datasource;
             this.handlers = [];
-
             //Create and add datasource to Treeble Datatable
             //Add formatter to the "name column" (for indentation)
             for (i = 0; i < this.datatable.get('columns').length; i += 1) {
@@ -91,7 +89,6 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                 label: '&nbsp;',
                 nodeFormatter: Y.Treeble.buildTwistdownFormatter(Y.bind(this.treebleTwistdown, this))
             }, 0, this);
-
             //Create the schema of the table's datas
             resultFields = columns.slice(0);
             resultFields.push('_open');
@@ -102,7 +99,6 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             schema = {
                 resultFields: resultFields
             };
-
             //Create the schema plugin for the datasource's root
             schema_plugin_config = {
                 fn: Y.Plugin.DataSourceArraySchema,
@@ -110,7 +106,6 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                     schema: schema
                 }
             };
-
             //Create the config object for the datasource's root
             treeble_config = {
                 generateRequest: function() {
@@ -120,25 +115,27 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                 nodeOpenKey: '_open',
                 totalRecordsReturnExpr: '.meta.totalRecords'
             };
-
             //Create the root object for the datasource
             this.root = new Y.DataSource.Local({
                 source: null                                                     //because dynamic change of datas
             });
             this.root.treeble_config = Y.clone(treeble_config, true);
             this.root.plug(schema_plugin_config);
-
             //Create the datasource of the table
             this.datasource = new Y.DataSource.Treeble({
                 root: this.root,
                 paginateChildren: false,
                 uniqueIdKey: 'id'
-            }, this);
-
+            });
             //plug datasource to the Treeble Datatable
             this.datatable.plug(Y.Plugin.DataTableDataSource, {
                 datasource: this.datasource
-            }, this);
+            });
+        },
+        clearTreebleCache: function() {
+            for (var key in this.datasource._open_cache) {
+                delete this.datasource._open_cache[key];
+            }
         },
         addKiddiesToData: function() {
             var i, kiddies;
@@ -177,7 +174,8 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             }
         },
         treebleTwistdown: function() {
-            this.root.set('source', this.data);                    //Get currents datas and set datasource
+            this.datasource._open.length = 0;
+            this.root.set('source', this.data); //Get currents datas and set datasource
             this.datatable.datasource.load({//Request max 100 rows per trebble's level
                 request: {
                     startIndex: 0,
@@ -195,7 +193,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                 if (row.get(className).indexOf('treeble-depth-') > -1) {           //is a treeble row
                     if (row.get(className).indexOf('treeble-depth-0') <= -1) {     //and isn't a firste-level treeble row
                         if (row.get(className).indexOf(colName) <= -1) {           //and if the column exist
-                            row.one('.' + colName).setAttribute('colspan', nbCols);  //add colspan value
+                            row.one('.' + colName).setAttribute('colspan', nbCols); //add colspan value
                             row.all('td').each(function(cell, i) {                  //hide overflowed columns
                                 if (isAfterCol) {
                                     cell.addClass('hidden');
@@ -231,7 +229,6 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
         }
     });
     Y.namespace('Wegas').CrimeSimTreeble = Treeble;
-
     //Below : Hack because current verion of TreebleDataSource isn't on YUI (this is the worked version from Guithub).
     Y.TreebleDataSource.prototype.toggle = function(path, request, completion) {
         var searchOpen = function(
@@ -245,7 +242,6 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
 
             return false;
         };
-
         function toggleSuccess(e, node, completion, path) {
             if (node.ds.treeble_config.totalRecordsExpr) {
                 eval('node.childTotal=e.response' + node.ds.treeble_config.totalRecordsExpr);
@@ -257,7 +253,6 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             node.open = true;
             node.children = [];
             complete(completion);
-
             this.fire('toggled',
                     {
                         path: path,
@@ -265,14 +260,11 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                     });
         }
         ;
-
         function toggleFailure(e, node, completion, path) {
             node.childTotal = 0;
-
             node.open = true;
             node.children = [];
             complete(completion);
-
             this.fire('toggled',
                     {
                         path: path,
@@ -314,7 +306,6 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
         } else {
             node.open = !node.open;
             complete(completion);
-
             this.fire('toggled',
                     {
                         path: path,

@@ -324,7 +324,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             cb.one("h1").setContent(question.getPublicLabel() || "undefined");
             cb.one(".content").setContent(extendedQuestion.get("description") || "<em>No description</em>");
-
+            
             while (this.datatable.datatable.getRow(0)) {
                 this.datatable.datatable.removeRow(0);
             }
