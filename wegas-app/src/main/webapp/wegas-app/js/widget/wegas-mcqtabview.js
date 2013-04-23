@@ -134,7 +134,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
             var i, cReplyLabel, cQuestion, cQuestionInstance,
                     tab, choiceDescriptor;
 
-            for (i = 0; i < questions.length; i += 1) {
+            for (i = questions.length - 1; i >= 0; i -= 1) {
                 cQuestion = questions[i];
                 cQuestionInstance = cQuestion.getInstance();
                 cReplyLabel = null;
