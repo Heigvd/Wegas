@@ -112,6 +112,10 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         return ((NumberInstance) this.getDefaultInstance()).getValue();
     }
 
+    public void setDefaultValue() {
+        // only used to explicitely ignore while serializing
+    }
+
     /**
      *
      * @param p
