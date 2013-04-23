@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "TeamScope", propOrder = {"@class", "id", "name"})
+@XmlType(name = "TeamScope")
 public class TeamScope extends AbstractScope {
 
     private static final Logger logger = LoggerFactory.getLogger(TeamScope.class.getName());
@@ -38,11 +38,11 @@ public class TeamScope extends AbstractScope {
      * referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name =
      * "variableinstance_id", referencedColumnName = "variableinstance_id"))
      */
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     @XmlTransient
     @JsonIgnore
-    private Map<Long, VariableInstance> teamVariableInstances = new HashMap<Long, VariableInstance>();
+    private Map<Long, VariableInstance> teamVariableInstances = new HashMap<>();
 
     /**
      *

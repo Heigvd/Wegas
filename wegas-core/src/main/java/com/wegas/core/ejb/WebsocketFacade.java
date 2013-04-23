@@ -31,16 +31,18 @@ import javax.enterprise.event.Observes;
 @Stateless
 @LocalBean
 public class WebsocketFacade {
+
     /**
      *
      */
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
+
     public String send(String filter, String entityType, String entityId, String data) throws IOException {
         Pusher p = new Pusher();
-        return Pusher.triggerPush(entityType+"-" + entityId, filter, data);
+        return Pusher.triggerPush(entityType + "-" + entityId, filter, data);
     }
-    
+
     public void onRequestCommit(@Observes EntityUpdatedEvent events) throws IOException {
         VariableInstance v;
         EntityUpdatedEvent player = new EntityUpdatedEvent();
@@ -49,33 +51,33 @@ public class WebsocketFacade {
         Long playerId = null;
         Long teamId = null;
         Long gameId = null;
-        
-        for (int i=0; i<events.getUpdatedEntities().size(); i++){
+
+        for (int i = 0; i < events.getUpdatedEntities().size(); i++) {
             v = events.getUpdatedEntities().get(i);
-            if (v.getScope() instanceof GameModelScope /*|| 
-                    v.getScope().getBroadcastScope().equals(GameModelScope.class.getSimpleName())*/){
+            if (v.getScope() instanceof GameModelScope /*||
+                     v.getScope().getBroadcastScope().equals(GameModelScope.class.getSimpleName())*/) {
                 //Not supported yet
-            } else if (v.getScope() instanceof GameScope /*|| 
-                    v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())*/){
+            } else if (v.getScope() instanceof GameScope /*||
+                     v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())*/) {
                 game.addEntity(v);
                 gameId = variableInstanceFacade.findGame(v).getId();
-            } else if (v.getScope() instanceof TeamScope /*|| 
-                    v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())*/){
+            } else if (v.getScope() instanceof TeamScope /*||
+                     v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())*/) {
                 team.addEntity(v);
                 teamId = variableInstanceFacade.findTeam(v).getId();
-            } else if (events.getUpdatedEntities().get(i).getScope() instanceof PlayerScope /*|| 
-                    v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())*/){
+            } else if (events.getUpdatedEntities().get(i).getScope() instanceof PlayerScope /*||
+                     v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())*/) {
                 player.addEntity(v);
                 playerId = variableInstanceFacade.findAPlayer(v).getId();
             }
         }
-        if (game.getUpdatedEntities().size() > 0){
-            Pusher.triggerPush("Game-" +gameId, "EntityUpdatedEvent", game.toJson());
+        if (game.getUpdatedEntities().size() > 0) {
+            Pusher.triggerPush("Game-" + gameId, "EntityUpdatedEvent", game.toJson());
         }
-        if (team.getUpdatedEntities().size() > 0){
+        if (team.getUpdatedEntities().size() > 0) {
             Pusher.triggerPush("Team-" + teamId, "EntityUpdatedEvent", team.toJson());
         }
-        if (player.getUpdatedEntities().size() > 0){
+        if (player.getUpdatedEntities().size() > 0) {
             Pusher.triggerPush("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
         }
     }

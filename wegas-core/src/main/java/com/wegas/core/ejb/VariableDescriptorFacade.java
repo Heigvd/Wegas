@@ -16,6 +16,7 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -161,10 +162,17 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         }
 
         try {                                                                   // If the duplicated var is in a List
-            final ListDescriptor parentVar =
-                    this.findParentListDescriptor(oldEntity);                   // Add the entity to this list
-            this.createChild(parentVar, newEntity);
-            return parentVar;
+
+            ListDescriptorI parentVar;
+            if (oldEntity instanceof ChoiceDescriptor) {                        // QuestionDescriptor descriptor case
+                parentVar = ((ChoiceDescriptor) oldEntity).getQuestion();
+                this.createChild(parentVar, newEntity);
+                return (VariableDescriptor) parentVar;
+            } else {                                                            // ListDescriptor case
+                parentVar = this.findParentListDescriptor(oldEntity);           // Add the entity to this list
+                this.createChild(parentVar, newEntity);
+                return (VariableDescriptor) parentVar;
+            }
         } catch (NoResultException e) {
             this.create(oldEntity.getGameModel(), newEntity);                   // Store the newly created entity in db
             return newEntity;                                                   // Otherwise return it directly
