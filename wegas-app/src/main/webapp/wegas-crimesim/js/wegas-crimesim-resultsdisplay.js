@@ -47,7 +47,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         bindUI: function() {
             this.handlers.update = // If data changes, refresh
                     Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-            this.handlers.openRow = this.datatable.after('treebleRefreshed', this.highlightNewEvidences, this);
+            this.handlers.openRow = this.datatable.datasource.after('response', this.highlightNewEvidences, this);
         },
         destructor: function() {
             if (this.consideredAsRead) {

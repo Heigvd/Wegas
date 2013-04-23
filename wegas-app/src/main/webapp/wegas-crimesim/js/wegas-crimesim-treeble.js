@@ -50,7 +50,7 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                         this.setKiddiesWithDescription(e.path[0]);
                     }
                 }, this);
-                this.handlers.treebleRefreshed = this.after("treebleRefreshed", function() {
+                this.handlers.datasourceResponse = this.datasource.after("response", function() {
                     this.mergeColumns();
                 }, this);
             }
@@ -184,7 +184,6 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
                     resultCount: 100
                 }
             });
-            this.fire("treebleRefreshed");
         },
         mergeColumns: function() {                                             //add a colspan to description to merge columns of description's row.
             var colName = 'yui3-datatable-col-' + this.descriptionColumn,
