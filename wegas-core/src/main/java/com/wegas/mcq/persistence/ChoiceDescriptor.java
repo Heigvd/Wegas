@@ -9,6 +9,7 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -87,6 +88,16 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
         ListUtils.mergeLists(this.getResults(), other.getResults());
+    }
+
+    @Override
+    public GameModel getGameModel() { //@todo correct this, due to missing elements while duplication. Fix it
+        GameModel gm = super.getGameModel();
+        if (gm == null) {
+            gm = this.getQuestion().getGameModel();
+            this.setGameModel(gm);
+        }
+        return gm;
     }
 
     /**

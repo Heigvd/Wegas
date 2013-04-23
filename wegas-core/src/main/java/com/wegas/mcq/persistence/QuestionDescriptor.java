@@ -179,6 +179,9 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void setItems(List<ChoiceDescriptor> items) {
+        for (ChoiceDescriptor cd : items) {     //@todo: due to duplication, fix this
+            cd.setQuestion(this);
+        }
         this.items = items;
     }
 

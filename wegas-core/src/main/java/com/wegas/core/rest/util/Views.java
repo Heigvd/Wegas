@@ -95,7 +95,7 @@ public class Views {
     /**
      *
      */
-    public static class Export implements EditorI, ExtendedI, EditorExtendedI {
+    public static class Export implements EditorI, ExtendedI, EditorExtendedI, WithScopeI {
     }
 
     /**

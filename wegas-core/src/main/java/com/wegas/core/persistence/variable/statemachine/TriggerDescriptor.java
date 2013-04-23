@@ -65,6 +65,15 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return
      */
     public Script getPostTriggerEvent() {
+        try {
+            if (this.oneShot) {
+                this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
+            } else {
+                this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
+            }
+        } catch (NullPointerException e) {
+            this.postTriggerEvent = null;
+        }
         return postTriggerEvent;
     }
 
@@ -115,33 +124,11 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     @Override
     public void merge(AbstractEntity a) {
         TriggerDescriptor entity = (TriggerDescriptor) a;
+        entity.buildStateMachine();
         this.oneShot = entity.isOneShot();
         this.postTriggerEvent = entity.getPostTriggerEvent();
         this.triggerEvent = entity.getTriggerEvent();
-        entity.buildStateMachine();
         super.merge(entity);
-    }
-
-    /**
-     * @fixme This means we will have to query multiple table, every time the
-     * bean is loaded. Move this logic to the getter.
-     */
-    @PostLoad
-    public void onLoad() {
-        try {
-            this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
-        } catch (NullPointerException e) {
-            this.triggerEvent = null;
-        }
-        try {
-            if (this.oneShot) {
-                this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
-            } else {
-                this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
-            }
-        } catch (NullPointerException e) {
-            this.postTriggerEvent = null;
-        }
     }
 
     /**

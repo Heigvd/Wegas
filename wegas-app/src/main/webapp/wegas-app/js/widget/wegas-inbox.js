@@ -51,6 +51,10 @@ YUI.add('wegas-inbox', function(Y) {
          *
          */
         readRequestTid: null,
+        /**
+         * JS translator
+         */
+        jsTranslator: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -61,9 +65,10 @@ YUI.add('wegas-inbox', function(Y) {
         initializer: function() {
             this.dataSource = Y.Wegas.Facade.VariableDescriptor;
             this.handlers = {};
+            this.jsTranslator = new Y.Wegas.JSTranslator();
             this.plug(Y.Plugin.WidgetToolbar);
             this.deleteButton = new Y.Wegas.Button({
-                label: "<span class='wegas-icon wegas-icon-cancel'></span>Delete"
+                label: "<span class='wegas-icon wegas-icon-cancel'></span>" + this.jsTranslator.getRB().Delete
             });
             this.toolbar.add(this.deleteButton);
             this.tabView = new Y.TabView();
@@ -86,7 +91,7 @@ YUI.add('wegas-inbox', function(Y) {
          */
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
-            this.handlers.dataUpdated = this.dataSource.after("update", function (e) {
+            this.handlers.dataUpdated = this.dataSource.after("update", function(e) {
                 if (e.tId !== this.readRequestTid) {
                     this.syncUI();
                 }
@@ -198,10 +203,6 @@ YUI.add('wegas-inbox', function(Y) {
                 return;
             }
 
-            if (this.timer) {                                                   // If there is an active unread
-                this.timer.cancel();                                            // message timer, we cancel it.
-            }
-
             if (e.newVal && e.newVal.msg) {
                 this.dataSource.sendRequest({// Retrieve the message body from the server
                     request: "/Inbox/Message/" + e.newVal.msg.get("id") + "?view=Extended",
@@ -230,21 +231,19 @@ YUI.add('wegas-inbox', function(Y) {
                 this.msg = e.newVal.msg;
 
                 if (e.newVal.msg.get("unread")) {                               // If the message is currently unread,
-                    this.timer = Y.later(2000, this, function(msg, tab) {            // Send a request to mark it as read
-                        Y.log("Sending message read update", "info", "InboxDisplay");
-                        msg.set("unread", false);
-                        this.readRequestTid = this.dataSource.sendRequest({
-                            request: "/Inbox/Message/Read/" + msg.get("id"),
-                            cfg: {
-                                method: "PUT"
-                            },
-                            on: {
-                                success: Y.bind(function(tab) {
-                                    tab.get("contentBox").one(".unread").removeClass("unread").addClass("read");
-                                }, this, tab)
-                            }
-                        });
-                    }, [e.newVal.msg, e.newVal]);
+                    Y.log("Sending message read update", "info", "InboxDisplay"); // Send a request to mark it as read
+                    e.newVal.msg.set("unread", false);
+                    this.readRequestTid = this.dataSource.sendRequest({
+                        request: "/Inbox/Message/Read/" + e.newVal.msg.get("id"),
+                        cfg: {
+                            method: "PUT"
+                        },
+                        on: {
+                            success: Y.bind(function(tab) {
+                                tab.get("contentBox").one(".unread").removeClass("unread").addClass("read");
+                            }, this, e.newVal)
+                        }
+                    });
                 }
             }
         }
