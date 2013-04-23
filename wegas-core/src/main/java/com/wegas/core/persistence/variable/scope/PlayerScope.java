@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "PlayerScope", propOrder = {"@class", "id", "name"})
+@XmlType(name = "PlayerScope")
 public class PlayerScope extends AbstractScope {
 
     private static final Logger logger = LoggerFactory.getLogger(PlayerScope.class);
@@ -35,7 +35,7 @@ public class PlayerScope extends AbstractScope {
      * FIXME Here we should use UserEntity reference and add a key deserializer
      * module
      */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
     @XmlTransient
     private Map<Long, VariableInstance> variableInstances = new HashMap<Long, VariableInstance>();
@@ -65,8 +65,8 @@ public class PlayerScope extends AbstractScope {
      * @param v
      */
     @Override
-    public void setVariableInstance(Long playerId, VariableInstance v) {
-        this.variableInstances.put(playerId, v);
+    public void setVariableInstance(Long key, VariableInstance v) {
+        this.variableInstances.put(key, v);
         v.setScope(this);
     }
 
