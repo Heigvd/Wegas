@@ -356,6 +356,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 replyData.startTime = replyData.startTime + 1;
                 this.data.push(replyData);
             }
+            this.data.reverse();
             this.datatable.syncUI(this.data);
 
             //Set width and Y position of the ".schedule-detail".

@@ -175,9 +175,9 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     currentTime = periodInstance.get("value") - period.get("minValue");
             
             this.showOverlay();
-            for (i = 0; i < questions.length; i = i + 1) {
+            for (i = 0; i < questions.length; i += 1) {
                 questionInstance = questions[i].getInstance();
-                for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
+                for (j = 0; j < questionInstance.get("replies").length; j += 1) {
                     reply = questionInstance.get("replies")[j];
                     replyData = Y.mix(reply.getAttrs(), reply.get("result").getAttrs());
                     replyData.choiceDescriptorId = reply.get('result').get('choiceDescriptorId');
@@ -221,6 +221,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
             for (i in responsesByStartTime) {
                 data = data.concat(responsesByStartTime[i]);
             }
+            data.reverse();
             return data;
         },
         /**
