@@ -99,7 +99,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @NotNull
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class)
     private VariableInstance defaultInstance;
     /*
      * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
