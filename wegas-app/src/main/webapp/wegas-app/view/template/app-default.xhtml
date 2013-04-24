@@ -156,16 +156,16 @@
                                     },
                                     Page: {
                                         /*
-                                         *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                         *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!gameController.currentGameModel.properties.containsKey('pagesUri')}">
                                          */
-                                        source: "rest/Page/#{editorGameController.currentGameModel.id}/",
+                                        source: "rest/Page/#{gameController.currentGameModel.id}/",
                                         /* THIS IS NOT A COMMENT
                                          * </ui:fragment>
                                          */
                                         /*
-                                         *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                         *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.properties.containsKey('pagesUri')}">
                                          */
-                                        source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
+                                        source: "#{gameController.currentGameModel.properties.get('pagesUri')}",
                                                 /* THIS IS NOT A COMMENT
                                                  * </ui:fragment>
                                                  */
@@ -184,12 +184,12 @@
                                         ]
                                     },
                                     /* THIS IS NOT A COMMENT
-                                     * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
+                                     * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
                                      */
                                     Pusher: {
                                         type: "PusherDataSource",
                                         source: "rest/Pusher/",
-                                        applicationKey: "#{editorGameController.currentGameModel.getProperty('websocket')}"
+                                        applicationKey: "#{gameController.currentGameModel.getProperty('websocket')}"
                                     },
                                     /* THIS IS NOT A COMMENT
                                      * </ui:fragment>
@@ -197,16 +197,16 @@
                                     VariableDescriptor: {
                                         //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                         /* THIS IS NOT A COMMENT
-                                         * <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                         * <ui:fragment rendered="#{!gameController.currentGameModel.getProperty('allGameVariables')}">
                                          */
                                         source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                         /* THIS IS NOT A COMMENT
                                          * </ui:fragment>
                                          */
                                         /* THIS IS NOT A COMMENT
-                                         * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
+                                         * <ui:fragment rendered="#{gameController.currentGameModel.getProperty('allGameVariables')}">
                                          */
-                                        source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                        source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                                 /* THIS IS NOT A COMMENT
                                                  * </ui:fragment>
                                                  */
@@ -217,7 +217,7 @@
                                                 fn: "ScriptEval"
                                             }
                                             /* THIS IS NOT A COMMENT
-                                             * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
+                                             * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
                                              */
                                             , {
                                                 fn: "WebSocketListener",
@@ -254,7 +254,7 @@
 
                             app.after("render", function() {
                                 try {
-                                    #{editorGameController.getClientScripts()}  // Add game model specific js footer
+                                    #{gameController.clientScripts}  // Add game model specific js footer
                                 } catch (e) {
                                     Y.log("Error running footer scripts.", "error");
                                 }
