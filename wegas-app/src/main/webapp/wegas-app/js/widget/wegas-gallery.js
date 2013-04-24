@@ -90,6 +90,9 @@ YUI.add("wegas-gallery", function(Y) {
             if (!this.constructor.prototype.FULLSCREENNODE) {
                 this.constructor.prototype.FULLSCREENNODE = new Y.Node.create("<div class='gallery-fullscreen' style='position:absolute;top:0;left:0;width:100%;z-index:40'><span><span></div>");
                 this.constructor.prototype.FULLSCREENNODE.appendTo(Y.one("body"));
+                this.constructor.prototype.FULLSCREENNODE.on('contextmenu', function(e) {
+                    e.preventDefault();
+                });
                 this.constructor.prototype.FULLSCREENNODE = this.FULLSCREENNODE.get("firstChild");
             }
 
