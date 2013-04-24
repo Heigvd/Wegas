@@ -13,6 +13,7 @@
 .wegas-gallery img{
     display: inline-block;
     background-color: white;
+    /* Not system friendly */
     transition: max-height 0.5s, max-width 0.5s;
     -o-transition: max-height 0.5s, max-width 0.5s;
     -ms-transition: max-height 0.5s, max-width 0.5s;
