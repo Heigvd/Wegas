@@ -67,9 +67,11 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            Wegas.Facade.VariableDescriptor.sendRequest({
-                request: '/Reset/'
-            });
+            if (confirm("This will restart every game depending on this model. Are you sure?")) {
+                Wegas.Facade.VariableDescriptor.sendRequest({
+                    request: '/Reset/'
+                });
+            }
         }
     }, {
         NS: "wegas",
@@ -145,16 +147,16 @@ YUI.add('wegas-editor-action', function(Y) {
         execute: function() {
             var params,
                     entity = this.get("entity");
-                    //        testPlayer = function(game) {
-                    //    var teams = game.get("teams"), i, ret = false;
-                    //    for (i = 0; i < teams.length; i += 1) {
-                    //        ret = teams[i].get("players").length > 0;
-                    //        if (ret) {
-                    //            break;
-                    //        }
-                    //    }
-                    //    return ret;
-                    //};
+            //        testPlayer = function(game) {
+            //    var teams = game.get("teams"), i, ret = false;
+            //    for (i = 0; i < teams.length; i += 1) {
+            //        ret = teams[i].get("players").length > 0;
+            //        if (ret) {
+            //            break;
+            //        }
+            //    }
+            //    return ret;
+            //};
 
             if (entity instanceof Wegas.persistence.GameModel) {
                 params = "gameModelId=" + entity.get("id");
