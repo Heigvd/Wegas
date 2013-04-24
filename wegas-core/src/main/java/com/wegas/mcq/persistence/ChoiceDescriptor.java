@@ -88,6 +88,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
         ListUtils.mergeLists(this.getResults(), other.getResults());
+        ListUtils.mergeLists(this.getResults(), other.getResults()); ///// @todo: WHY !!!!!
     }
 
     @Override
