@@ -234,7 +234,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     parentEntity = this.get("parentEntity"),
                     newEntity, targetArray;
 
-            switch (this.get("method")) {
+            switch (this.get("method").toString().toLowerCase()) {
                 case "put":
                     EditEntityAction.showEditForm(entity, function(newVal) {
 
