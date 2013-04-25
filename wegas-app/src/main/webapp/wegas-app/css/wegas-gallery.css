@@ -139,13 +139,18 @@
 img:hover + .gallery-text{
     max-height: 15px !important;
 }
-body > .yui3-scrollview{
+.gallery-fullscreen{
+    position: fixed;  
+    width: 100%;
+    top: 0;
+}
+.gallery-fullscreen > .yui3-scrollview{
     z-index:30;
     padding-top: 50px !important;
-    position:fixed;
     background-color: rgba(255,255,255,0.7);
+
 }
-body > .yui3-scrollview .gallery-toggle{
+.gallery-fullscreen > .yui3-scrollview .gallery-toggle{
     background: url(../../wegas-app/images/wegas-app-sprite.png) no-repeat 0px -1083px;
 }
 body > .wegas-lightGallery .gallery-toggle{

@@ -88,7 +88,7 @@ YUI.add("wegas-gallery", function(Y) {
          */
         initializer: function() {
             if (!this.constructor.prototype.FULLSCREENNODE) {
-                this.constructor.prototype.FULLSCREENNODE = new Y.Node.create("<div class='gallery-fullscreen' style='position:absolute;top:0;left:0;width:100%;z-index:40'><span><span></div>");
+                this.constructor.prototype.FULLSCREENNODE = new Y.Node.create("<div class='gallery-fullscreen'><span><span></div>");
                 this.constructor.prototype.FULLSCREENNODE.appendTo(Y.one("body"));
                 this.constructor.prototype.FULLSCREENNODE.on('contextmenu', function(e) {
                     e.preventDefault();
@@ -163,7 +163,7 @@ YUI.add("wegas-gallery", function(Y) {
             }
             if (this.get("fullScreen") || this.get("lightGallery")) {
                 selH = (Y.one("body").get("winHeight") - 100);
-                selW = Y.one("body").get("winWidth") / 2;
+                selW = Y.one("body").get("winWidth") / 1.7;
                 if (!this.isFullScreen) {
                     this.isFullScreen = true;
                     this.scrollView.get(BOUNDING_BOX).swap(this.FULLSCREENNODE);
