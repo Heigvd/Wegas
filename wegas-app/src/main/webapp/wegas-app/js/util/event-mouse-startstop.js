@@ -12,7 +12,7 @@
  */
 YUI.add("event-mouse-startstop", function(Y) {
     "use strict";
-    //@TODO : new file
+    
     Y.Event.define("mousestart", {
         on: function(node, subscription, notifier) {
             subscription._handle = node.on("mousemove", function(e) {

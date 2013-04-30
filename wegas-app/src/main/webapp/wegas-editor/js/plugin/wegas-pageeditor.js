@@ -104,13 +104,13 @@ YUI.add('wegas-pageeditor', function(Y) {
         bind: function() {
             var cb = this.get('host').get(CONTENTBOX);
 
-            this.highlightOverlay.menu.on("menuOpen", function(e) {
+            this.handlers.push(this.highlightOverlay.menu.on("menuOpen", function(e) {
                 this.highlightOverlay.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                 this.targetWidget = this.overlayWidget;
                 this.highlightOverlay.menu.set("children", this.targetWidget.getMenuCfg({
                     widget: this.targetWidget
                 }));
-            }, this);
+            }, this));
             this.handlers.push(this.get("host").get(BOUNDINGBOX).delegate("mousestart", function(e) {
                 e.halt(true);
                 this.highlightOverlay.hide();
