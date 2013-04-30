@@ -6,6 +6,9 @@
     <ui:composition template="template/app-default.xhtml">
 
         <ui:define name="title">#{gameController.currentGameModel.name} - #{gameController.currentGame.name}</ui:define>
+        <ui:define name="head">
+            <style type="text/css">#{gameController.styleSheets}</style>
+        </ui:define>
 
     </ui:composition>
 
