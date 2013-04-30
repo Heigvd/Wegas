@@ -1,15 +1,18 @@
 YUI.add("lang/wegas-crimesim-translator_fr", function(Y) {
     Y.Intl.add("wegas-crimesim-translator", "fr",
             {
-                Period: "Période",
-                Evidence: "Preuve",
                 Analyse: "Analyse",
-                Result: "Résultat",
+                Duration: "Durée ",
+                Empty: "Vide",
+                Evidence: "Preuve",
                 File: "Fichier",
-                No_File: "Pas de fichier",
+                Human_resources_needed: "Ressources humaines requises ",
+                Period: "Période",
                 No_data_to_display: "Aucune donnée à afficher.",
-                Total_human_resources: "Ressources humaines totales",
-                No_description: "Aucune description"
+                No_description: "Aucune description",
+                No_file: "Pas de fichier",
+                Result: "Résultat",
+                Total_human_resources: "Ressources humaines totales"
             }
     );
 });

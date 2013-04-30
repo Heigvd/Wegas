@@ -67,10 +67,10 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ? ["tr", "tl"] : ["tl", "tr"]
                 });
                 this.menuDetails.get("contentBox").setHTML('<div style="padding:5px 10px">'
-                        //+ (choice.get("description") || "<em> + this.translator.getRB().No_description + </em>")// Removed cause description is dynamic
-                        + (extendedChoice.get("description") || "<em> + this.translator.getRB().No_description + </em>")// Removed cause description is dynamic
-                        + "<br /><br />Human resources needed: " + choice.get("cost")
-                        + "<br />Duration: " + choice.get("duration")
+                        //+ (choice.get("description") || "<em>" + this.translator.getRB().No_description + "</em>")// Removed cause description is dynamic
+                        + (extendedChoice.get("description") || "<em>" + this.translator.getRB().No_description + "</em>")// Removed cause description is dynamic
+                        + "<br /><br />" + this.translator.getRB().Human_resources_needed + ": " + choice.get("cost")
+                        + "<br />" + this.translator.getRB().Duration + ": " + choice.get("duration")
                         + '</div>');
                 this.menuDetails.show();
             }, this);

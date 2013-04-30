@@ -155,7 +155,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     key: "fileLinks",
                     allowHTML: true,
                     label: this.translator.getRB().File,
-                    emptyCellValue: this.translator.getRB().No_File
+                    emptyCellValue: this.translator.getRB().No_file
                 }];
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
