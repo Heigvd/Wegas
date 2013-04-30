@@ -96,11 +96,10 @@ YUI.add('wegas-pageeditor', function(Y) {
                 render: true,
                 visible: false
             });
-
             this.highlightOverlay.plug(Y.Plugin.WidgetMenu, {
                 event: "click"
-                        /*selector: ".wegas-icon"*/
             });
+            this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
         },
         bind: function() {
             var cb = this.get('host').get(CONTENTBOX);
@@ -112,21 +111,22 @@ YUI.add('wegas-pageeditor', function(Y) {
                     widget: this.targetWidget
                 }));
             }, this);
-
-            this.handlers.push(cb.delegate("mousemove", function(e) {
-                var widget;
-                e.halt();
+            this.handlers.push(this.get("host").get(BOUNDINGBOX).delegate("mousestart", function(e) {
+                e.halt(true);
                 this.highlightOverlay.hide();
-                widget = Y.Widget.getByNode(window.document.elementFromPoint(e.clientX, e.clientY));
-                this.highlightOverlay.show();
+            }, '.wegas-widget', this));
+            this.handlers.push(this.get("host").get(BOUNDINGBOX).delegate("mousestop", function(e) {
+                var widget = Y.Widget.getByNode(window.document.elementFromPoint(e.clientX, e.clientY));
+                e.halt(true);
+                if (widget === this.get("host")) {
+                    this.highlightOverlay.hide();
+                    return;
+                }
                 if (this.overlayWidget !== widget) {
                     this.showOverlay(widget);
+                } else {
+                    this.highlightOverlay.show();
                 }
-            }, '.wegas-widget', this));
-
-            this.handlers.push(cb.delegate("mouseleave", function(e) {
-                e.halt();
-                this.hideOverlay();
             }, '.wegas-widget', this));
         },
         processSave: function() {
@@ -196,9 +196,13 @@ YUI.add('wegas-pageeditor', function(Y) {
 
             this.overlayWidget = widget;
 
-            targetNode.prepend(this.highlightOverlay.get(BOUNDINGBOX));
+            //targetNode.prepend(this.highlightOverlay.get(BOUNDINGBOX));
             this.highlightOverlay.get(CONTENTBOX).setContent("<div>" + widget.getName() + "</div>");
             this.highlightOverlay.align(targetNode, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.TL]);
+            this.highlightOverlay.get(BOUNDINGBOX).setStyles({
+                width: widget.get(BOUNDINGBOX).getDOMNode().offsetWidth,
+                height: widget.get(BOUNDINGBOX).getDOMNode().offsetHeight
+            });
             this.highlightOverlay.show();
         },
         hideOverlay: function() {
