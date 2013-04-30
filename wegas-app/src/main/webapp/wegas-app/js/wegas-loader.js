@@ -70,6 +70,10 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
                     requires: ['pusher', 'wegas-datasource']
                 },
+                'event-mouse-startstop':{
+                    path: "wegas-app/js/util/event-mouse-startstop-min.js",
+                    requires: ["event-base"]
+                },
                 /**
                  * Persistence
                  */
@@ -499,7 +503,7 @@ YUI().use(function(Y) {
                 'wegas-pageeditor': {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
                     ws_provides: 'PageEditor',
-                    requires: ['diff_match_patch', "wegas-editor-widgetaction"]
+                    requires: ['diff_match_patch', "wegas-editor-widgetaction", "event-mouse-startstop"]
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',
@@ -572,7 +576,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
-                    requires: ['wegas-datasource'],
+                    requires: ['wegas-datasource', 'wegas-list'],
                     ws_provides: "PageTreeview"
                 },
                 /**
