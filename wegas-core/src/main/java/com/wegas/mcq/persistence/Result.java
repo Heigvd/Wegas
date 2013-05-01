@@ -44,7 +44,7 @@ public class Result extends AbstractEntity {
      *
      */
     @Column(length = 4096)
-    @Basic(fetch = FetchType.LAZY)
+    //@Basic(fetch = FetchType.LAZY)
     //@JsonView(Views.ExtendedI.class)
     private String answer;
 
@@ -57,7 +57,7 @@ public class Result extends AbstractEntity {
      *
      */
     @Embedded
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.EditorI.class) //@TODO FIX: extended but correct clientside
     private Script impact;
     /**
      *
