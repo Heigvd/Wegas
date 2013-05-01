@@ -12,25 +12,25 @@
  */
 YUI.add("event-mouse-startstop", function(Y) {
     "use strict";
-    
+    var STARTTIME = 20, STOPTIME = 20;
     Y.Event.define("mousestart", {
         on: function(node, subscription, notifier) {
             subscription._handle = node.on("mousemove", function(e) {
                 if (!subscription._stoptimer) {
-                    subscription._tremblingtimer = Y.later(80, this, this._startdetected, [e, notifier]);
+                    subscription._tremblingtimer = Y.later(STARTTIME, this, this._startdetected, [e, notifier]);
                 } else {
                     subscription._stoptimer.cancel();
                 }
-                subscription._stoptimer = Y.later(100, this, this._onmousestop, [subscription]);
+                subscription._stoptimer = Y.later(STOPTIME, this, this._onmousestop, [subscription]);
             }, this);
         }, delegate: function(node, subscription, notifier, filter) {
             subscription._handle = node.delegate("mousemove", function(e) {
                 if (!subscription._stoptimer) {
-                    subscription._tremblingtimer = Y.later(80, this, this._startdetected, [e, notifier]);
+                    subscription._tremblingtimer = Y.later(STARTTIME, this, this._startdetected, [e, notifier]);
                 } else {
                     subscription._stoptimer.cancel();
                 }
-                subscription._stoptimer = Y.later(100, this, this._onmousestop, [subscription]);
+                subscription._stoptimer = Y.later(STOPTIME, this, this._onmousestop, [subscription]);
             }, filter, this);
         },
         _onmousestop: function(subscription) {
@@ -65,20 +65,20 @@ YUI.add("event-mouse-startstop", function(Y) {
         on: function(node, subscription, notifier) {
             subscription._handle = node.on("mousemove", function(e) {
                 if (!subscription._stoptimer) {
-                    subscription._tremblingtimer = Y.later(80, this, this._startdetected, [e, notifier]);
+                    subscription._tremblingtimer = Y.later(STARTTIME, this, this._startdetected, [e, notifier]);
                 } else {
                     subscription._stoptimer.cancel();
                 }
-                subscription._stoptimer = Y.later(100, this, this._onmousestop, [e, subscription, notifier]);
+                subscription._stoptimer = Y.later(STOPTIME, this, this._onmousestop, [e, subscription, notifier]);
             }, this);
         }, delegate: function(node, subscription, notifier, filter) {
             subscription._handle = node.delegate("mousemove", function(e) {
                 if (!subscription._stoptimer) {
-                    subscription._tremblingtimer = Y.later(80, this, this._startdetected, [e, subscription, notifier]);
+                    subscription._tremblingtimer = Y.later(STARTTIME, this, this._startdetected, [e, subscription, notifier]);
                 } else {
                     subscription._stoptimer.cancel();
                 }
-                subscription._stoptimer = Y.later(100, this, this._onmousestop, [e, subscription, notifier]);
+                subscription._stoptimer = Y.later(STOPTIME, this, this._onmousestop, [e, subscription, notifier]);
             }, filter, this);
         },
         _onmousestop: function(event, subscription, notifier) {

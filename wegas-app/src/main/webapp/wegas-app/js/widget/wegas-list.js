@@ -112,7 +112,8 @@ YUI.add('wegas-list', function(Y) {
                 cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "EditWidgetAction"
-                    }]
+                    }
+                ]
             }, {
                 type: "Button",
                 label: "Add",
@@ -132,7 +133,8 @@ YUI.add('wegas-list', function(Y) {
                                             cfg: {
                                                 "childType": "Text"
                                             }
-                                        }]
+                                        }
+                                    ]
                                 }, {
                                     type: "Button",
                                     label: "Image",
@@ -141,17 +143,132 @@ YUI.add('wegas-list', function(Y) {
                                             cfg: {
                                                 "childType": "Image"
                                             }
-                                        }]
-                                }]
+                                        }
+                                    ]
+                                }, {
+                                    type: "Button",
+                                    label: "Button",
+                                    plugins: [{
+                                            fn: "AddChildWidgetAction",
+                                            cfg: {
+                                                "childType": "Button"
+                                            }
+                                        }
+                                    ]
+                                }, {
+                                    "fn": "WidgetMenu",
+                                    "label": "Variable display",
+                                    plugins: [{
+                                            "fn": "WidgetMenu",
+                                            "cfg": {
+                                                "menuCfg": {
+                                                    points: ["tl", "tr"]
+                                                },
+                                                "event": "mouseenter",
+                                                "children": [{
+                                                        type: "Button",
+                                                        label: "Template",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Template"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Gauge",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "GaugeDisplay"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }, {
+                                    type: "Button",
+                                    label: "Containers",
+                                    plugins: [{
+                                            "fn": "WidgetMenu",
+                                            "cfg": {
+                                                "menuCfg": {
+                                                    points: ["tl", "tr"]
+                                                },
+                                                "event": "mouseenter",
+                                                "children": [{
+                                                        type: "Button",
+                                                        label: "List",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "List"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Choice list",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "ChoiceList"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Absolute layout",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "AbsoluteLayout"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }, {
+                                    type: "Button",
+                                    label: "Page loader",
+                                    plugins: [{
+                                            fn: "AddChildWidgetAction",
+                                            cfg: {
+                                                "childType": "PageLoader"
+                                            }
+                                        }
+                                    ]
+                                }, {
+                                    type: "Button",
+                                    label: "Inbox",
+                                    plugins: [{
+                                            fn: "AddChildWidgetAction",
+                                            cfg: {
+                                                "childType": "InboxDisplay"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
                         }
-                    }]
+                    }
+                ]
             }, {
                 type: "Button",
                 label: "Delete",
                 cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "DeleteWidgetAction"
-                    }]
+                    }
+                ]
             }]
     });
     Y.namespace('Wegas').List = List;
