@@ -2,6 +2,8 @@ YUI.add("lang/wegas-crimesim-translator", function(Y) {
     Y.Intl.add("wegas-crimesim-translator", "default",
             {
                 Analyse: "Analyse",
+                Analysis_in_progress : "Analysis in progress",
+                Analysis_planified : "Analysis planified",
                 Duration: "Duration",
                 Empty: "Vide",
                 Evidence: "Evidence",

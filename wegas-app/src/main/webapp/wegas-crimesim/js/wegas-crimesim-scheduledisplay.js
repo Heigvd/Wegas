@@ -338,9 +338,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 status = reply.getStatus(this.currentTime);
 
                 if (status === 1) {
-                    replyData.answer = "analysis in progress";
+                    replyData.answer = this.translator.getRB().Analysis_in_progress;
                 } else if (status === 2) {
-                    replyData.answer = "analysis planified";
+                    replyData.answer = this.translator.getRB().Analysis_planified;
                 } else {
                     replyData.fileLinks = "";
                     for (k = 0; k < replyData.files.length; k = k + 1) {
@@ -386,9 +386,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             if (status === 0) {
                 ret.push(reply.get("result").get("answer"));
             } else if (status === 1) {
-                ret.push("analysis in progress");
+                ret.push(this.translator.getRB().Analysis_in_progress);
             } else {
-                ret.push("analysis planified");
+                ret.push(this.translator.getRB().Analysis_planified);
             }
             ret.push("</div>");
             return ret.join("");
