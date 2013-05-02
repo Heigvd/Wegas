@@ -69,8 +69,8 @@
 }
 
 /* Tabview's closable plugin */
-/*.yui3-tab .closable-closeicon{
-        background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;*/
+.yui3-tab .closable-closeicon{
+/*        background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;*/
     background: url(../../wegas-app/images/sprite_icons.png) no-repeat 1px 2px,
         url(../../lib/yui3/build/tabview/assets/skins/sam/sprite.png) repeat-x left -1300px;
     position: absolute;
