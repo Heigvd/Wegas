@@ -141,8 +141,8 @@ YUI.add('wegas-mcqtabview', function(Y) {
                 if (cQuestion instanceof Y.Wegas.persistence.QuestionDescriptor
                         && cQuestionInstance.get("active")) {                    // If current question is active
 
-                    if (cQuestionInstance.get("replies").length > 0) {          // Find the selected replies
-                        choiceDescriptor = cQuestionInstance.get("replies")[0].getChoiceDescriptor();
+                    if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
+                        choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length -1 ].getChoiceDescriptor();
                         cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15) + "...";
                     }
 
@@ -200,7 +200,8 @@ YUI.add('wegas-mcqtabview', function(Y) {
                     cQuestion = tab.cQuestion,
                     cQuestionInstance = cQuestion.getInstance(),
                     firstChild = "first-child",
-                    cChoices = cQuestion.get("items");
+                    numberOfReplies, isReplied;
+            cChoices = cQuestion.get("items");
             extendedQuestion = extendedQuestion || cQuestion;
 
             ret = ['<div class="content">',
@@ -213,8 +214,22 @@ YUI.add('wegas-mcqtabview', function(Y) {
                 ret.push('<div class="replies">');                              // we display its available replies
                 for (j = 0; j < cChoices.length; j += 1) {
                     if (cChoices[j].getInstance().get("active")) {
-                        ret.push('<div class="reply ', firstChild, '">',
-                                '<div class="name">', cChoices[j].get("label"), '</div>',
+
+                        numberOfReplies = '';                                   //add informations about number of replies for MultipleReplies questions
+                        isReplied = '';
+                        if (cQuestion.get("allowMultipleReplies")) {
+                            numberOfReplies = -1;
+                            numberOfReplies = this.getNumberOfReplies(cQuestionInstance, cChoices[j]);
+                            if (numberOfReplies === 0) {
+                                numberOfReplies = '<span class="numberOfReplies zeroReplie">' + 0 + '<span class="symbole">x</span></span>';
+                            } else if (numberOfReplies > 0) {
+                                isReplied = 'replied';
+                                numberOfReplies = '<span class="numberOfReplies">' + numberOfReplies + '<span class="symbole">x</span></span>';
+                            }
+                        }
+
+                        ret.push('<div class="reply ', firstChild, ' ', isReplied, '">',
+                                '<div class="name">', cChoices[j].get("label"), numberOfReplies, '</div>',
                                 //'<div class="content">', cChoices[j].get("description"), '</div>',
                                 '<div class="content">', extendedQuestion.get("items")[j].get("description"), '</div>',
                                 '<input type="submit" id="', cChoices[j].get("id"), '" value="Submit"></input>',
@@ -231,13 +246,13 @@ YUI.add('wegas-mcqtabview', function(Y) {
                 for (j = 0; j < cQuestionInstance.get("replies").length; j += 1) {
                     reply = cQuestionInstance.get("replies")[j];
                     choiceDescriptor = reply.getChoiceDescriptor();
-                    ret.push('<div class="reply"><div class="name">', choiceDescriptor.get("label"), '</div>',
+                    ret.push('<div class="replyDiv"><div class="reply"><div class="name">', choiceDescriptor.get("label"), '</div>',
                             //'<div>', choiceDescriptor.get("description"), '</div>',
                             '<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
                             '<div style="clear:both"></div></div>');
 
                     if (reply.get("result").get("answer")) {
-                        ret.push('<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div>');
+                        ret.push('<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div></div>');
                     }
                 }
                 ret.push("</div>");
@@ -245,6 +260,23 @@ YUI.add('wegas-mcqtabview', function(Y) {
             ret.push("</div>");
 
             tab.set("content", ret.join(""));
+        },
+        /**
+         * @function
+         * @private
+         * @param {type} questionInstance
+         * @param {type} choice
+         * @returns {integer} a number
+         * @description Return the number of replies corresponding to the given choice.
+         */
+        getNumberOfReplies: function(cQuestionInstance, choice) {
+            var i, occurrence = 0;
+            for (i = 0; i < cQuestionInstance.get("replies").length; i++) {
+                if (cQuestionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
+                    occurrence++;
+                }
+            }
+            return occurrence;
         },
         /**
          * @function
