@@ -381,6 +381,7 @@ min-width: 800px;
 }
 .wegas-mcqtabview .numberOfReplies{
    float:right;
+   margin-left: 1em;
 }
 .wegas-mcqtabview .replyDiv{
     border-top: 1px #888 solid;
