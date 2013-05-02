@@ -143,7 +143,8 @@ YUI.add('wegas-mcqtabview', function(Y) {
 
                     if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
                         choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length -1 ].getChoiceDescriptor();
-                        cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15) + "...";
+                        cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15);
+                        cReplyLabel  = (cReplyLabel.length >= 15) ? cReplyLabel + "..." : cReplyLabel;
                     }
 
                     tab = new Y.Tab({
@@ -229,9 +230,10 @@ YUI.add('wegas-mcqtabview', function(Y) {
                         }
 
                         ret.push('<div class="reply ', firstChild, ' ', isReplied, '">',
-                                '<div class="name">', cChoices[j].get("label"), numberOfReplies, '</div>',
+                                '<div class="name">', cChoices[j].get("label"), '</div>',
                                 //'<div class="content">', cChoices[j].get("description"), '</div>',
                                 '<div class="content">', extendedQuestion.get("items")[j].get("description"), '</div>',
+                                numberOfReplies,
                                 '<input type="submit" id="', cChoices[j].get("id"), '" value="Submit"></input>',
                                 '<div style="clear:both"></div>',
                                 '</div>');
