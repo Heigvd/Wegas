@@ -371,6 +371,9 @@ h2{
     /*font-weight: bold;*/
     margin-bottom:5px;
 }
+.wegas-mcqtabview .numberOfReplies{
+   float:right;
+}
 .wegas-mcqtabview .unread {
     font-weight:bold;
 }
