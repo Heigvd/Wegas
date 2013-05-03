@@ -42,7 +42,7 @@
     background: url(../images/loading.gif) no-repeat 50%;
 }
 .wegas-gallery li:last-child{
-    margin-right: 100%;
+    margin-right: 150%;
 }
 .wegas-gallery .gallery-selected img{
     box-shadow: 0 0 25px black;
@@ -140,12 +140,12 @@ img:hover + .gallery-text{
     max-height: 15px !important;
 }
 .gallery-fullscreen{
+    z-index:30;
     position: fixed;  
     width: 100%;
     top: 0;
 }
 .gallery-fullscreen > .yui3-scrollview{
-    z-index:30;
     padding-top: 50px !important;
     background-color: rgba(255,255,255,0.7);
 
