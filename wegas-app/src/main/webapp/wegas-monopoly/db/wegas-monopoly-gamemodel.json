@@ -15,7 +15,6 @@
             "@class":"TeamScope",
             "broadcastScope":"GameScope"
         },
-        "tags":[],
         "minValue":null,
         "maxValue":null
     },{
@@ -31,7 +30,6 @@
             "@class":"TeamScope",
             "broadcastScope":null
         },
-        "tags":[],
         "minValue":1,
         "maxValue":6
     },{
@@ -47,7 +45,6 @@
             "@class":"GameModelScope",
             "broadcastScope":null
         },
-        "tags":[],
         "minValue":null,
         "maxValue":null
     },{
@@ -63,7 +60,6 @@
             "@class":"TeamScope",
             "broadcastScope":null
         },
-        "tags":[],
         "minValue":1,
         "maxValue":40
     },{
@@ -79,7 +75,6 @@
             "@class":"TeamScope",
             "broadcastScope":null
         },
-        "tags":[],
         "validationPattern":null
     },{
         "@class":"StringDescriptor",
@@ -94,7 +89,6 @@
             "@class":"TeamScope",
             "broadcastScope":null
         },
-        "tags":[],
         "validationPattern":null
     },{
         "@class":"ListDescriptor",
@@ -108,7 +102,6 @@
             "@class":"GameModelScope",
             "broadcastScope":null
         },
-        "tags":[],
         "items":[{
             "@class":"ObjectDescriptor",
             "name":"box1",
@@ -125,7 +118,6 @@
             "@class":"GameModelScope",
             "broadcastScope":null
         },
-        "tags":[],
         "description":"",
         "properties":{}
 },{
@@ -144,7 +136,6 @@
     "@class":"GameModelScope",
     "broadcastScope":null
 },
-"tags":[],
 "description":"",
 "properties":{}
 },{
@@ -163,7 +154,6 @@
     "@class":"GameModelScope",
     "broadcastScope":null
 },
-"tags":[],
 "description":"",
 "properties":{}
 },{
@@ -182,7 +172,6 @@
     "@class":"GameModelScope",
     "broadcastScope":null
 },
-"tags":[],
 "description":"",
 "properties":{}
 },{
@@ -201,7 +190,6 @@
     "@class":"GameModelScope",
     "broadcastScope":null
 },
-"tags":[],
 "description":"",
 "properties":{}
 },{
@@ -220,7 +208,6 @@
     "@class":"GameModelScope",
     "broadcastScope":null
 },
-"tags":[],
 "description":"",
 "properties":{}
 },{
@@ -239,7 +226,6 @@
     "@class":"GameModelScope",
     "broadcastScope":null
 },
-"tags":[],
 "description":"",
 "properties":{}
 }]
@@ -249,7 +235,7 @@
 "clientScriptLibrary":{},
 "properties":{
     "cssUri":"wegas-monopoly/css/wegas-monopoly.css",
-    "pagesUri":"wegas-monopoly/db/wegas-monopoly-pages.json#",
+    "pagesUri":"wegas-monopoly/db/wegas-monopoly-pages.json?",
     "allGameVariables":"true",
     "websocket":"732a1df75d93d028e4f9"
 }

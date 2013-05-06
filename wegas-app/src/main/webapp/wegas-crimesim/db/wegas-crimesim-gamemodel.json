@@ -22,7 +22,6 @@
             "scope": {
                 "@class": "TeamScope"
             },
-            "tags": [],
             "minValue": null,
             "maxValue": null
         }, {
@@ -35,7 +34,6 @@
             "scope": {
                 "@class": "TeamScope"
             },
-            "tags": [],
             "minValue": 1,
             "maxValue": null
         }, {
@@ -48,7 +46,6 @@
             "scope": {
                 "@class": "TeamScope"
             },
-            "tags": [],
             "minValue": 1,
             "maxValue": 10
         }, {
@@ -61,7 +58,6 @@
             "scope": {
                 "@class": "TeamScope"
             },
-            "tags": [],
             "label": null,
             "description": null
         }, {
@@ -74,7 +70,6 @@
             "scope": {
                 "@class": "GameModelScope"
             },
-            "tags": [],
             "items": [{
                     "@class": "QuestionDescriptor",
                     "name": "Sac poubelle n°5",
@@ -87,7 +82,6 @@
                     "scope": {
                         "@class": "TeamScope"
                     },
-                    "tags": [],
                     "items": [{
                             "@class": "ChoiceDescriptor",
                             "name": "Traces ED",
@@ -99,7 +93,6 @@
                             "scope": {
                                 "@class": "TeamScope"
                             },
-                            "tags": [],
                             "description": "",
                             "results": [{
                                     "@class": "Result",
@@ -132,7 +125,6 @@
                             "scope": {
                                 "@class": "TeamScope"
                             },
-                            "tags": [],
                             "description": "",
                             "results": [{
                                     "@class": "Result",
@@ -165,7 +157,6 @@
                             "scope": {
                                 "@class": "TeamScope"
                             },
-                            "tags": [],
                             "description": "",
                             "results": [{
                                     "@class": "Result",
@@ -198,7 +189,6 @@
                             "scope": {
                                 "@class": "TeamScope"
                             },
-                            "tags": [],
                             "description": "",
                             "results": [{
                                     "@class": "Result",
@@ -236,7 +226,6 @@
                     "scope": {
                         "@class": "TeamScope"
                     },
-                    "tags": [],
                     "items": [{
                             "@class": "ChoiceDescriptor",
                             "name": "ADN",
@@ -248,7 +237,6 @@
                             "scope": {
                                 "@class": "TeamScope"
                             },
-                            "tags": [],
                             "description": "",
                             "results": [{
                                     "@class": "Result",
@@ -285,7 +273,6 @@
             "scope": {
                 "@class": "GameModelScope"
             },
-            "tags": [],
             "items": [{
                     "@class": "QuestionDescriptor",
                     "name": "Qui est la victime?",
@@ -298,7 +285,6 @@
                     "scope": {
                         "@class": "TeamScope"
                     },
-                    "tags": [],
                     "items": [{
                             "@class": "ChoiceDescriptor",
                             "name": "a) Marc",
@@ -310,7 +296,6 @@
                             "scope": {
                                 "@class": "TeamScope"
                             },
-                            "tags": [],
                             "description": "",
                             "results": [{
                                     "@class": "Result",
@@ -335,7 +320,6 @@
                             "scope": {
                                 "@class": "TeamScope"
                             },
-                            "tags": [],
                             "description": "",
                             "results": [{
                                     "@class": "Result",
@@ -368,6 +352,6 @@
     },
     "properties": {
         "cssUri": "wegas-crimesim/css/wegas-crimesim.css",
-        "pagesUri": "wegas-crimesim/db/wegas-crimesim-pages.json#"
+        "pagesUri": "wegas-crimesim/db/wegas-crimesim-pages.json?"
     }
 }

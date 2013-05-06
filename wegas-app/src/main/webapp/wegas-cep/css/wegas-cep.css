@@ -107,30 +107,36 @@ h3 {
 }
 
 /* Variable display 's styles */
-.wegas-valuebox-unit {
+.wegas-template-valuebox-unit {
     float:left;
     padding: 0px 4px;
     color: white;
     margin: 1px 0;
+    border:none;
     border-right: 1px solid lightgray;
+    background: none;
 }
-.wegas-valuebox-unit:last-child {
+.wegas-template-valuebox-unit:last-child {
     border-right:none;
 }
-.wegas-valuebox-selected {
+.wegas-template-valuebox-selected {
     background-color:white;
     color: black;
 }
-.timeIndicators .wegas-variabledisplay {
+.timeIndicators .wegas-template-title {
     padding-top:13px;
 }
-.timeIndicators .wegas-label {
+.timeIndicators .wegas-template {
+    clear:both;
+}
+.timeIndicators label {
     float:left;
     width: 42px;
     display: block;
     padding-top: 5px;
 }
-.timeIndicators .wegas-value {
+.timeIndicators .wegas-template-valuebox-units,
+.wegas-template-title div {
     float:left;
     display: block;
     padding:0px 2px;
@@ -150,22 +156,29 @@ h3 {
     -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
 }
+
+.timeIndicators .wegas-template-title div {
+    padding:2px 6px 1px;
+    margin-right: 6px;
+    max-width:235px;
+}
+
+/** Time cards styles */
 .timecards {
     width: 72px;
     padding-top: 10px;
 }
-.timecards .wegas-variabledisplay-box-label {
+.timecards label {
     line-height:normal;
 }
-.timecards .wegas-variabledisplay-box-value {
+.timecards .wegas-template-box-value {
     font-size: 10px;
 }
-
-.timecards .wegas-variabledisplay-box-unit {
+.timecards .wegas-template-box-unit {
     width: 7px;
     height:10px;
     float:left;
-    border: inset 1px solid #999;
+    border: none;
     border-radius: 2px;
     background-color: #0981A9;
     margin: 1px 1px 0 0;
@@ -181,11 +194,6 @@ h3 {
     -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);
 
-}
-.timeIndicators .wegas-variabledisplay-text-value {
-    padding:2px 6px 1px;
-    margin-right: 6px;
-    max-width:235px;
 }
 .variables .yui3-button {
     margin: 16px 6px 0;
@@ -336,6 +344,9 @@ h3 {
 .wegas-mcqtabview .reply content {
     /*font-weight: bold;*/
     margin-bottom:5px;
+}
+.wegas-mcqtabview .numberOfReplies{
+   float:right;
 }
 .wegas-mcqtabview .unread {
     font-weight:bold;

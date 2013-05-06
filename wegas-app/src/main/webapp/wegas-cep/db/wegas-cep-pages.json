@@ -5,8 +5,8 @@
         "type": "List",
         "cssClass": "layout wegas-cep",
         "plugins": [{
-            "fn": "PopupPlg"
-        }],
+                "fn": "Popup"
+            }],
         "children": [{
                 "type": "List",
                 "cssClass": "header",
@@ -25,12 +25,9 @@
                                 "cssClass": "timeIndicators",
                                 "children": [{
                                         "type": "Template",
-                                        "template": "title",
+                                        "custom": "<div class='wegas-template-title'><label>Phase</label><div><%= this.variable.getPublicLabel() || 'Undefined' %></div></div>",
                                         "variable": {
                                             "name": "phases"
-                                        },
-                                        "data": {
-                                            "label": "Phase"
                                         }
                                     }, {
                                         "type": "Template",
@@ -204,7 +201,7 @@
                                 "disabled": false,
                                 "label": "",
                                 "labelIsUser": false,
-                                "preferencePageId": 1000,
+                                "preferencePageId": "UserPreferences",
                                 "targetPageLoader": "maindisplayarea",
                                 "type": "LoginButton"
                             }
@@ -312,12 +309,5 @@
     "7": {
         "id": 7,
         "type": "ResultsDisplay"
-    },
-    "1000": {
-        "id": 1000,
-        "type": "Form",
-        "plugins": [{
-                "fn": "UserPreferences"
-            }]
     }
 }

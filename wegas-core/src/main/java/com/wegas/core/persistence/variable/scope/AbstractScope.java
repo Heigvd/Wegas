@@ -20,7 +20,6 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -28,7 +27,6 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity                                                                         // Database serialization
-@Inheritance(strategy = InheritanceType.JOINED)                                 // JSon Serialisation
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "GameModelScope", value = GameModelScope.class),
     @JsonSubTypes.Type(name = "GameScope", value = GameScope.class),
@@ -50,7 +48,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     @OneToOne
     //@JsonBackReference
     private VariableDescriptor variableDescriptor;
-    
+
     //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     private String broadcastScope = TeamScope.class.getSimpleName();
 
@@ -59,7 +57,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      * @param userId
      * @param v
      */
-    abstract public void setVariableInstance(Long userId, VariableInstance v);
+    abstract public void setVariableInstance(Long key, VariableInstance v);
 
     /**
      *
@@ -74,7 +72,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      */
     @JsonView(Views.Editor.class)
     abstract public Map<Long, VariableInstance> getVariableInstances();
-    
+
     /**
      *
      * @return The variable instance associated to the current player, which is

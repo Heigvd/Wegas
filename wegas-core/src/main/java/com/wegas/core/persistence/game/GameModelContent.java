@@ -27,6 +27,7 @@ public class GameModelContent implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *

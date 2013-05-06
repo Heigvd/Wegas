@@ -44,6 +44,8 @@ public class Result extends AbstractEntity {
      *
      */
     @Column(length = 4096)
+    //@Basic(fetch = FetchType.LAZY) // CARE, lazy fetch on Basics has some trouble.
+    //@JsonView(Views.ExtendedI.class)
     private String answer;
 
     /*
@@ -55,6 +57,7 @@ public class Result extends AbstractEntity {
      *
      */
     @Embedded
+    @JsonView(Views.EditorI.class) //@TODO FIX: extended but correct clientside
     private Script impact;
     /**
      *

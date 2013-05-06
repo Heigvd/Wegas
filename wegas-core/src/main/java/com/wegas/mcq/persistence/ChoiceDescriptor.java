@@ -9,6 +9,7 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -16,7 +17,9 @@ import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -38,15 +41,24 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @XmlTransient
+    @JsonBackReference
+    private QuestionDescriptor question;
+    /**
+     *
+     */
     @OneToMany(mappedBy = "choiceDescriptor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
     @JsonManagedReference
     @JsonView(Views.EditorI.class)
-    @OrderBy("id")
     private List<Result> results = new ArrayList<>();
     /**
      *
      */
-    @Column(length = 4096)
+    @Basic(fetch = FetchType.LAZY)
+    @Lob
+    @JsonView(Views.ExtendedI.class)
     private String description;
     /**
      *
@@ -76,6 +88,16 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
         ListUtils.mergeLists(this.getResults(), other.getResults());
+    }
+
+    @Override
+    public GameModel getGameModel() { //@todo correct this, due to missing elements while duplication. Fix it
+        GameModel gm = super.getGameModel();
+        if (gm == null) {
+            gm = this.getQuestion().getGameModel();
+            this.setGameModel(gm);
+        }
+        return gm;
     }
 
     /**
@@ -209,5 +231,20 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     public void setCost(Long cost) {
         this.cost = cost;
+    }
+
+    /**
+     * @return the question
+     */
+    public QuestionDescriptor getQuestion() {
+        return question;
+    }
+
+    /**
+     * @param question the question to set
+     */
+    @JsonBackReference
+    public void setQuestion(QuestionDescriptor question) {
+        this.question = question;
     }
 }

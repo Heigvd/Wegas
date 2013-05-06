@@ -3,7 +3,7 @@
     "name": "Project Management Game",
     "properties": {
         "cssUri": "wegas-pmg/css/wegas-pmg.css",
-        "pagesUri": "wegas-pmg/db/wegas-pmg-pages.json#"
+        "pagesUri": "wegas-pmg/db/wegas-pmg-pages.json?"
     },
     "childVariableDescriptors": [
         {
@@ -424,16 +424,19 @@
                         "randomDurationInf": 17,
                         "randomDurationSup": 26
                     },
-                    "requirements": {
-                        "Web designer": {
+                    "requirements": [{
                             "@class": "WRequirement",
-                            "limit": 100,
-                            "needs": {
-                                "4": "1",
-                                "7": "1"
-                            }
-                        }
-                    },
+                            "purview": "Web designer",
+                            "level": "40",
+                            "limit": "100",
+                            "number": "1"
+                        }, {
+                            "@class": "WRequirement",
+                            "purview": "Web designer",
+                            "level": "70",
+                            "limit": "100",
+                            "number": "1"
+                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
                         "active": true,
@@ -457,23 +460,25 @@
                         "fixedCosts": 700,
                         "predecessorsDependances": 1000
                     },
-                    "requirements": {
-                        "Fitter": {
+                    "requirements": [{
                             "@class": "WRequirement",
-                            "limit": 100,
-                            "needs": {
-                                "8": 1
-                            }
-                        },
-                        "Business Specialist": {
+                            "purview": "Fitter",
+                            "level": "80",
+                            "limit": "100",
+                            "number": "1"
+                        }, {
                             "@class": "WRequirement",
-                            "limit": 100,
-                            "needs": {
-                                "4": 2,
-                                "8": 1
-                            }
-                        }
-                    },
+                            "purview": "Business Specialist",
+                            "level": "40",
+                            "limit": "100",
+                            "number": "2"
+                        }, {
+                            "@class": "WRequirement",
+                            "purview": "Business Specialist",
+                            "level": "80",
+                            "limit": "100",
+                            "number": "1"
+                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
                         "active": true,

@@ -13,8 +13,6 @@
             "scope": {
                 "@class": "PlayerScope"
             },
-            "tags": [
-            ],
             "minValue": 2,
             "maxValue": null
         },
@@ -33,8 +31,6 @@
             "scope": {
                 "@class": "TeamScope"
             },
-            "tags": [
-            ],
             "items": [
                 {
                     "@class": "SingleResultChoiceDescriptor",
@@ -49,8 +45,6 @@
                     "scope": {
                         "@class": "TeamScope"
                     },
-                    "tags": [
-                    ],
                     "results": [
                         {
                             "@class": "Result",
@@ -83,8 +77,6 @@
                     "scope": {
                         "@class": "TeamScope"
                     },
-                    "tags": [
-                    ],
                     "results": [
                         {
                             "@class": "Result",
@@ -119,6 +111,6 @@
     },
     "properties": {
         "cssUri": "wegas-flexitests/css/wegas-flexitests.css",
-        "pagesUri": "wegas-flexitests/db/wegas-flexitests-pages.json#"
+        "pagesUri": "wegas-flexitests/db/wegas-flexitests-pages.json?"
     }
 }

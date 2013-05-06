@@ -19,7 +19,8 @@ YUI.add('wegas-entity', function(Y) {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
         _inputex: {
-            _type: HIDDEN
+            _type: HIDDEN,
+            //wrapperClassName: 'wegas-advanced-feature'
         }
     }, Wegas = Y.namespace("Wegas"), Entity;
 
@@ -345,8 +346,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deleteGame-button"
             }, {
-                type: "Linkwidget",
-                cssClass: "editor-playerlink-button"
+                type: "Linkwidget"
             }]
     });
 
@@ -399,6 +399,8 @@ YUI.add('wegas-entity', function(Y) {
             }, {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deleteTeam-button"
+            }, {
+                type: "Linkwidget"
             }]
 
                 //{ // We allow the player to open its pages with the widget
@@ -647,8 +649,9 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
+                    wrapperClassName: 'wegas-advanced-feature',
                     label: "Script alias",
-                    regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
                     description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
                 },
                 validator: function(s) {
@@ -692,6 +695,7 @@ YUI.add('wegas-entity', function(Y) {
                                 label: 'game'
                             }],
                         _inputex: {
+                            wrapperClassName: 'wegas-advanced-feature',
                             label: 'Broadcast with'
                         }
                     }
@@ -737,6 +741,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             privateInstances: {
+                value: {},
                 "transient": true
             },
             broadcastScope: {}
@@ -944,6 +949,10 @@ YUI.add('wegas-entity', function(Y) {
                     label: 'Maximum'
                 }
             },
+            defaultValue: {
+                type: STRING,
+                "transient": true
+            },
             defaultInstance: {
                 properties: {
                     "@class": {
@@ -1028,8 +1037,44 @@ YUI.add('wegas-entity', function(Y) {
                 object.items.push(this.get("items")[i].clone());
             }
             return object;
-        }
+        },
+        flatten: function() {
+            var acc = [],
+                    doFlatten = function(items) {
+                var i, it;
+                for (i = 0; i < items.length; i += 1) {
+                    it = items[i];
+                    if (it instanceof Wegas.persistence.QuestionDescriptor) {
+                        acc.push(it);
+                    } else if (it instanceof Wegas.persistence.ListDescriptor) {
+                        doFlatten(it.get("items"));
+                    } else {
+                        acc.push(it);
+                    }
+                }
+            };
+            doFlatten(this.get("items"));
+            return acc;
 
+        },
+        find: function(id) {
+            return this.depthFirstSearch(id);
+        },
+        depthFirstSearch: function(id) {
+            var needle,
+                    filterFn = function(it) {
+                if (it.get("id") === +id) {
+                    needle = it;
+                    return false;
+                } else if (it instanceof Y.Wegas.persistence.ListDescriptor) {
+                    return Y.Array.every(it.get("items"), filterFn);
+                } else {
+                    return true;
+                }
+            };
+            Y.Array.every(this.get("items"), filterFn);
+            return needle;
+        }
     }, {
         ATTRS: {
             "@class": {
@@ -1056,9 +1101,11 @@ YUI.add('wegas-entity', function(Y) {
             currentItem: {
                 "transient": true,
                 getter: function() {
-                    if (this.get("items").length > 0) {
-                        return this.get("items")[this.getInstance().
-                                get(VALUE)];
+                    var inst = this.getInstance();
+                    if (!Y.Lang.isUndefined(inst)
+                            && this.get("items")[inst.get(VALUE)]) {
+
+                        return this.get("items")[inst.get(VALUE)];
                     } else {
                         return null;
                     }

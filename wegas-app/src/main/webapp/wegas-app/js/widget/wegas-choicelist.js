@@ -26,7 +26,9 @@ YUI.add('wegas-choicelist', function(Y) {
     List = Y.Base.create("wegas-choicelist", Y.Wegas.List, [], {
         /** @lends Y.Wegas.ChoiceList# */
         bindUI: function() {
-
+            this.after("addChild", function() {
+                this.set("element", this.get("element"));
+            });
         },
         syncUI: function() {
             this.constructor.superclass.syncUI.apply(this);
@@ -69,6 +71,7 @@ YUI.add('wegas-choicelist', function(Y) {
             element: {
                 value: 0,
                 "transient": true,
+                type:"number",
                 setter: function(val) {
                     if (this.size() > 0) {
                         val = val % this.size();

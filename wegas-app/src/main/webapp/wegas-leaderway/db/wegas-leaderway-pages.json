@@ -4,7 +4,7 @@
         "type": "List",
         "cssClass": "layout",
         "plugins": [{
-            "fn": "PopupPlg"
+            "fn": "Popup"
         }],
         "children": [{
                 "label": "indicateurs",

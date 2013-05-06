@@ -70,8 +70,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
                     websocketFacade.onRequestCommit(e);
-                } catch (IOException ex) {
-                    java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (NamingException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 }

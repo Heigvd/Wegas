@@ -9,7 +9,7 @@
         <meta charset="ISO-8859-1" />
         <meta http-equiv="Content-Type" content="text/html" />
         <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
-        <title><ui:insert name="title"><ui:insert name="title">Default Title</ui:insert></ui:insert></title>
+        <title><ui:insert name="title">Default Title</ui:insert></title>
         <meta name="description" content="" />
         <meta name="keywords" content="" />
         <meta name="robots" content="index, follow" />
@@ -17,7 +17,6 @@
         <meta name="audience" content="General" />
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="30 days" />
-        <meta name="google-translate-customization" content="61fa0b2a634dfa83-0bc9c6c9944b17ff-g74a2fb91471873ad-10" />
         <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
 
         <!-- YUI -->
@@ -27,7 +26,7 @@
         </ui:fragment>
         <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
             <!-- Self hosted -->
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo?/lib/yui3/build/cssfonts/fonts-min.css&amp;/lib/yui3/build/cssreset/reset-min.css&amp;/lib/yui3/build/cssgrids/grids-min.css&amp;/lib/yui3/build/widget-base/assets/skins/sam/widget-base.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/#{wegasConfig.timestamp}?/lib/yui3/build/cssfonts/fonts-min.css&amp;/lib/yui3/build/cssreset/reset-min.css&amp;/lib/yui3/build/cssgrids/grids-min.css&amp;/lib/yui3/build/widget-base/assets/skins/sam/widget-base.css" />
         </ui:fragment>
 
         <!-- Those styles are placed here, since they should be above any other in the CSS cascading

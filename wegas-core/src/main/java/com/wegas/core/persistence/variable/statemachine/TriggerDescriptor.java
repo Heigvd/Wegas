@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,21 +18,23 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-@Table(name = "TriggerDescriptor")
 @XmlRootElement
 @XmlType(name = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private Boolean oneShot;
     @Transient
+    @JsonView(Views.EditorExtendedI.class)
     private Script triggerEvent;
     @Transient
+    @JsonView(Views.EditorExtendedI.class)
     private Script postTriggerEvent;
 
     /**
@@ -62,6 +65,15 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return
      */
     public Script getPostTriggerEvent() {
+        try {
+            if (this.oneShot) {
+                this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
+            } else {
+                this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
+            }
+        } catch (NullPointerException e) {
+            this.postTriggerEvent = null;
+        }
         return postTriggerEvent;
     }
 
@@ -79,6 +91,12 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @return
      */
     public Script getTriggerEvent() {
+
+        try {
+            this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
+        } catch (NullPointerException e) {
+            this.triggerEvent = null;
+        }
         return triggerEvent;
     }
 
@@ -106,32 +124,11 @@ public class TriggerDescriptor extends StateMachineDescriptor {
     @Override
     public void merge(AbstractEntity a) {
         TriggerDescriptor entity = (TriggerDescriptor) a;
+        entity.buildStateMachine();
         this.oneShot = entity.isOneShot();
         this.postTriggerEvent = entity.getPostTriggerEvent();
         this.triggerEvent = entity.getTriggerEvent();
-        entity.buildStateMachine();
         super.merge(entity);
-    }
-
-    /**
-     *
-     */
-    @PostLoad
-    public void onLoad() {
-        try {
-            this.triggerEvent = this.getStates().get(1L).getTransitions().get(0).getTriggerCondition();
-        } catch (NullPointerException e) {
-            this.triggerEvent = null;
-        }
-        try {
-            if (this.oneShot) {
-                this.postTriggerEvent = this.getStates().get(2L).getOnEnterEvent();
-            } else {
-                this.postTriggerEvent = this.getStates().get(1L).getOnEnterEvent();
-            }
-        } catch (NullPointerException e) {
-            this.postTriggerEvent = null;
-        }
     }
 
     /**

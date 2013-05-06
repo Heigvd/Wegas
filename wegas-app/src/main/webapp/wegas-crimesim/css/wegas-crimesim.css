@@ -3,6 +3,7 @@
     width:100%;
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 9pt;
+min-width: 800px;
 }
 .header {
     height:55px;
@@ -29,16 +30,17 @@
     padding: 5px 25px 0px 10px;
     letter-spacing: -2px;
 }
-.wegas-variabledisplay {
+.wegas-template {
     padding:5px;
+}
+.wegas-template-box {
     max-width:150px;
 }
-.wegas-variabledisplay-box-unit {
+.wegas-template-box-unit {
     width:5px;
     height:10px;
     background:steelblue;
     border:1px solid gray;
-    margin-right:2px;
     float:left;
 }
 .wegas-valuebox-unit {
@@ -120,11 +122,12 @@
 .schedule-detail h1,
 .schedule-detail h2 {
     background: lightSteelBlue;
-    padding: 4px 5px;
+    padding: 0px 5px 1px;
     border-top: 1px solid gray;
     border-bottom: 1px solid gray;
     font-weight: bold;
     margin: 0;
+    min-height: 32px;
 }
 .schedule-detail h3 {
     padding: 5px 5px 1px;
@@ -134,6 +137,7 @@
 }
 .schedule-detail .content {
     padding: 10px 5px;
+    min-height:29px;
 }
 /* CrimeSim Analyisis table styles */
 .schedule-table {
@@ -375,6 +379,13 @@
     /*font-weight: bold;*/
     margin-bottom:5px;
 }
+.wegas-mcqtabview .numberOfReplies{
+   float:right;
+   margin-left: 1em;
+}
+.wegas-mcqtabview .replyDiv{
+    border-top: 1px #888 solid;
+}
 .wegas-mcqtabview .unread {
     font-weight:bold;
 }
@@ -415,4 +426,8 @@
 
 .wegas-crimesim .hidden{
     display:none;
+}
+
+.wegas-crimesim .yui3-datatable-table .unread{
+    font-weight: bold;
 }

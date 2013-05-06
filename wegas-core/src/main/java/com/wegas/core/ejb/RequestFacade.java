@@ -135,7 +135,7 @@ public class RequestFacade {
 
             } else {
                 //stateMachineRunner.playerUpdated(null);
-                 playerActionEvent.fire(new PlayerAction(this.getPlayer()));
+                playerActionEvent.fire(new PlayerAction(this.getPlayer()));
                 //PlayerAction action = new PlayerAction();
                 //playerActionEvent.fire(action);
 

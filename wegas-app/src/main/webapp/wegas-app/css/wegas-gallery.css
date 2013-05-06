@@ -1,12 +1,19 @@
+/*
+ * Wegas
+ * http://www.albasim.ch/wegas/
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 .wegas-gallery-content{
     white-space: nowrap;
 }
 .yui3-scrollview{
-    background-color: rgba(255,255,255,0.7);
 }
 .wegas-gallery img{
     display: inline-block;
     background-color: white;
+    /* Not system friendly */
     transition: max-height 0.5s, max-width 0.5s;
     -o-transition: max-height 0.5s, max-width 0.5s;
     -ms-transition: max-height 0.5s, max-width 0.5s;
@@ -35,7 +42,7 @@
     background: url(../images/loading.gif) no-repeat 50%;
 }
 .wegas-gallery li:last-child{
-    margin-right: 100%;
+    margin-right: 150%;
 }
 .wegas-gallery .gallery-selected img{
     box-shadow: 0 0 25px black;
@@ -132,12 +139,18 @@
 img:hover + .gallery-text{
     max-height: 15px !important;
 }
-body > .yui3-scrollview{
+.gallery-fullscreen{
     z-index:30;
-    padding-top: 50px !important;
-    position:fixed;
+    position: fixed;  
+    width: 100%;
+    top: 0;
 }
-body > .yui3-scrollview .gallery-toggle{
+.gallery-fullscreen > .yui3-scrollview{
+    padding-top: 50px !important;
+    background-color: rgba(255,255,255,0.7);
+
+}
+.gallery-fullscreen > .yui3-scrollview .gallery-toggle{
     background: url(../../wegas-app/images/wegas-app-sprite.png) no-repeat 0px -1083px;
 }
 body > .wegas-lightGallery .gallery-toggle{
