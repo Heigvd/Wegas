@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("combo")
+@Path("combo/{timestamp : [0-9]+}")
 public class ComboController {
 
     final static private String MediaTypeCss = "text/css; charset=ISO-8859-1";

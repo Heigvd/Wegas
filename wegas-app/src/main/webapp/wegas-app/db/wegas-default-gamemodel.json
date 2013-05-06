@@ -15,7 +15,7 @@
     },
     "properties": {
         "cssUri": "wegas-app/db/wegas-default.css",
-        "pagesUri": "wegas-app/db/wegas-default-pages.json#"
+        "pagesUri": "wegas-app/db/wegas-default-pages.json?"
     },
     "childVariableDescriptors": [{
         "@class":"ListDescriptor",
@@ -89,7 +89,6 @@
         "scope":{
             "@class":"TeamScope"
         },
-        "tags":[],
         "minValue":1,
         "maxValue":15
     },{
@@ -102,7 +101,6 @@
         "scope":{
             "@class":"TeamScope"
         },
-        "tags":[],
         "minValue":1,
         "maxValue":10
     },{
@@ -116,7 +114,6 @@
         "scope":{
             "@class":"TeamScope"
         },
-        "tags":[],
         "minValue":0,
         "maxValue":100
     },{
@@ -130,7 +127,6 @@
         "scope":{
             "@class":"TeamScope"
         },
-        "tags":[],
         "minValue":1,
         "maxValue":10
     },{
@@ -144,7 +140,6 @@
         "scope":{
             "@class":"TeamScope"
         },
-        "tags":[],
         "minValue":1,
         "maxValue":10
     },{

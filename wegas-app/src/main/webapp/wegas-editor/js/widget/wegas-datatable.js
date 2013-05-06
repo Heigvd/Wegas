@@ -40,7 +40,7 @@ YUI.add('wegas-datatable', function(Y) {
             return;
 
             var that = this;
-            this._dataSource.after("response", function (e) {			// Listen for datasource updates
+            this._dataSource.after("update", function (e) {			// Listen for datasource updates
                 this._table.set('recordset', e.data);
             }, this);
 

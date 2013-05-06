@@ -3,7 +3,7 @@
     "name": "Book",
     "properties": {
         "cssUri":"wegas-book/css/wegas-book.css",
-        "pagesUri":"wegas-book/db/wegas-book-pages.json#"
+        "pagesUri":"wegas-book/db/wegas-book-pages.json?"
     },
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
@@ -19,7 +19,7 @@
         },
         "minValue":1,
         "maxValue":20
-    },{
+    }, {
         "@class":"NumberDescriptor",
         "name":"stamina",
         "editorLabel":"Vigueur",

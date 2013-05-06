@@ -4,11 +4,10 @@
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
-*/
-
+ */
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
-*/
+ */
 
 /* Inbox styles *//* Overide default tabview styles */
 .yui3-skin-sam  .wegas-inbox .yui3-tabview-list {
@@ -57,7 +56,9 @@
 
 .yui3-skin-sam .wegas-inbox .read {
     padding: 0 10px;
+    margin-left: 20px;
 }
+
 .yui3-skin-sam .wegas-inbox .msg-header{
     background: rgba(178, 210, 255, 0.6);
     border-bottom: 1px solid lightgray;
@@ -75,5 +76,8 @@
 
 .yui3-skin-sam .wegas-inbox .unread {
     padding: 0 10px;
-    font-weight:bold;
+    margin-left: 20px;
+    font-weight: bold;
+    display: list-item;
+    list-style: disc outside none;
 }

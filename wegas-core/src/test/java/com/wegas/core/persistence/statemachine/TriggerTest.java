@@ -38,6 +38,7 @@ public class TriggerTest {
         this.scriptEntity.setContent("var x=10; x+=2;");
         this.triggerDescriptor.setTriggerEvent(scriptEntity);
         this.triggerDescriptor.setPostTriggerEvent(scriptEntity);
+        this.triggerDescriptor.buildStateMachine();
     }
 
     /**
@@ -54,7 +55,6 @@ public class TriggerTest {
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(null);
         this.triggerDescriptor.setPostTriggerEvent(null);
-        this.triggerDescriptor.onLoad();
         assert this.triggerDescriptor.getPostTriggerEvent().equals(this.scriptEntity);
         assert this.triggerDescriptor.getTriggerEvent().equals(this.scriptEntity);
     }
@@ -73,7 +73,6 @@ public class TriggerTest {
         //testing onLoad method
         this.triggerDescriptor.setTriggerEvent(null);
         this.triggerDescriptor.setPostTriggerEvent(null);
-        this.triggerDescriptor.onLoad();
         assert this.triggerDescriptor.getPostTriggerEvent().equals(this.scriptEntity);
         assert this.triggerDescriptor.getTriggerEvent().equals(this.scriptEntity);
     }
@@ -87,7 +86,6 @@ public class TriggerTest {
         this.triggerDescriptor.buildStateMachine();
         this.triggerDescriptor.setPostTriggerEvent(this.scriptEntity);
         this.triggerDescriptor.setTriggerEvent(this.scriptEntity);
-        this.triggerDescriptor.onLoad();
         assert this.triggerDescriptor.getPostTriggerEvent() == null;
         assert this.triggerDescriptor.getTriggerEvent() == null;
     }

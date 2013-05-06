@@ -10,7 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.variable.ListDescriptor;
+import com.wegas.core.persistence.variable.ListDescriptorI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.IOException;
 import java.util.Collection;
@@ -98,7 +98,7 @@ public class VariableDescriptorController {
      */
     @POST
     @Path("{variableDescriptorId : [1-9][0-9]*}")
-    public ListDescriptor createChild(@PathParam("variableDescriptorId") Long entityId, VariableDescriptor entity) {
+    public ListDescriptorI createChild(@PathParam("variableDescriptorId") Long entityId, VariableDescriptor entity) {
 
         SecurityUtils.getSubject().
                 checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());

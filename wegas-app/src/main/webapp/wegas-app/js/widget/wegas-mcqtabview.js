@@ -40,6 +40,10 @@ YUI.add('wegas-mcqtabview', function(Y) {
          * Reference to each used functions
          */
         handlers: null,
+        /**
+         * JS translator
+         */
+        jsTranslator: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -51,6 +55,8 @@ YUI.add('wegas-mcqtabview', function(Y) {
             this.tabView = new Y.TabView();
             this.gallery = null;
             this.handlers = {};
+            this.isRemovingTabs = false;
+            this.jsTranslator = new Y.Wegas.JSTranslator();
         },
         /**
          * @function
@@ -70,18 +76,19 @@ YUI.add('wegas-mcqtabview', function(Y) {
          * When datasource is updated, do syncUI;
          */
         bindUI: function() {
+
+            this.tabView.after("selectionChange", this.onTabSelected, this);
+
             this.get(CONTENTBOX).delegate("click", function(e) {
                 this.showOverlay();
                 this.dataSource.sendRequest({
                     request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
-                            + "/Player/" + Y.Wegas.app.get('currentPlayer'),
-                    on: {
-                        failure: Y.bind(this.defaultExceptionHandler, this)
-                    }
+                            + "/Player/" + Y.Wegas.app.get('currentPlayer')
                 });
             }, "input[type=submit]", this);
 
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
+
         },
         /**
          * @function
@@ -91,93 +98,20 @@ YUI.add('wegas-mcqtabview', function(Y) {
          * Display a message if there is no message.
          */
         syncUI: function() {
-            var i, j, cReplyLabel, cQuestion, ret, firstChild, cQuestionInstance, cQuestionLabel, tab, cChoices, choiceDescriptor, reply,
-                    questions = this.get("variable.evaluated"),
+            var questions = this.get("variable.evaluated"),
                     selectedTab = this.tabView.get('selection'),
                     lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
+            this.isRemovingTabs = true;
             this.tabView.removeAll();                                           // Empty the tabview
+            this.isRemovingTabs = false;
+
             if (this.gallery) {
                 this.gallery.destroy();
                 this.gallery = null;
             }
             if (questions) {
-
-                questions = questions.get("items");
-
-                for (i = 0; i < questions.length; i += 1) {
-                    cQuestion = questions[i];
-                    cQuestionLabel = cQuestion.getPublicLabel() || "undefined";
-                    ret = [//'<div class="title">Details</div>',
-                        '<div class="content">',
-                        '<div class="title">', cQuestionLabel, '</div>',
-                        '<div class="description">',
-                        (cQuestion.get("description") || "<em>No description</em>"), '</div>'];
-                    cQuestionInstance = cQuestion.getInstance();
-                    firstChild = "first-child";
-                    cReplyLabel = null;
-                    cChoices = cQuestion.get("items");
-
-                    if (cQuestionInstance.get("active")) {
-                        if (cQuestionInstance.get("replies").length === 0        // If the question is not replied, we display its reply set
-                                || cQuestion.get("allowMultipleReplies")) {
-
-                            ret.push('<div class="replies">');
-
-                            for (j = 0; j < cChoices.length; j += 1) {
-                                if (cChoices[j].getInstance().get("active")) {
-                                    ret.push('<div class="reply ', firstChild, '">',
-                                            '<div class="name">', cChoices[j].get("label"), '</div>',
-                                            '<div class="content">', cChoices[j].get("description"), '</div>',
-                                            '<input type="submit" id="', cChoices[j].get("id"), '" value="Submit"></input>',
-                                            '<div style="clear:both"></div>',
-                                            '</div>');
-                                    firstChild = "";
-                                }
-                            }
-                            ret.push('</div>');
-                        }
-
-                        if (cQuestionInstance.get("replies").length > 0) {       // Display the selected replies
-                            ret.push('<div class="subtitle">Selected replies</div><div class="replies">');
-                            for (j = 0; j < cQuestionInstance.get("replies").length; j += 1) {
-                                reply = cQuestionInstance.get("replies")[j];
-                                choiceDescriptor = reply.getChoiceDescriptor();
-                                ret.push('<div class="reply"><div class="name">', choiceDescriptor.get("label"), '</div>',
-                                        '<div>', choiceDescriptor.get("description"), '</div>',
-                                        '<div style="clear:both"></div></div>');
-
-                                if (reply.get("result").get("answer")) {
-                                    ret.push('<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div>');
-                                }
-
-                                if (!cReplyLabel) {
-                                    cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15) + "...";
-                                }
-                            }
-                            ret.push("</div>");
-                        }
-
-                        ret.push("</div>");
-                        tab = new Y.Tab({
-                            label: '<div class="'
-                                    + (cQuestionInstance.get("replies").length === 0 ? "unread" : "")
-                                    + '"><div class="label">' + cQuestionLabel + '</div>'
-                                    + '<div class="status">' + (cReplyLabel || "unanswered") + '</div></div>',
-                            content: ret.join('')
-                        });
-                        tab.questionInstance = cQuestionInstance;
-                        this.tabView.add(tab);
-                    }
-                    if (cQuestion.get("pictures").length > 0) {
-                        this.gallery = new Y.Wegas.util.FileExplorerGallery({
-                            render: this.get(CONTENTBOX).one(".description"),
-                            selectedHeight: 150,
-                            selectedWidth: 235,
-                            gallery: Y.clone(cQuestion.get("pictures"))
-                        });
-                    }
-                }
+                this.addQuestions(questions.get("items"));
             }
 
             if (this.tabView.isEmpty()) {
@@ -185,13 +119,166 @@ YUI.add('wegas-mcqtabview', function(Y) {
                     label: "",
                     content: "<center><i><br /><br /><br />No questions available yet.</i></center>"
                 }));
-//                this.tabView.selectChild(0);
+                this.tabView.selectChild(0);
+            } else {
+                this.tabView.selectChild(lastSelection);
             }
-            this.tabView.selectChild(lastSelection);
+
             this.hideOverlay();
             if (this.gallery) {
                 this.gallery.syncUI();
             }
+        },
+        addQuestions: function(questions) {
+
+            var i, cReplyLabel, cQuestion, cQuestionInstance,
+                    tab, choiceDescriptor;
+
+            for (i = questions.length - 1; i >= 0; i -= 1) {
+                cQuestion = questions[i];
+                cQuestionInstance = cQuestion.getInstance();
+                cReplyLabel = null;
+                if (cQuestion instanceof Y.Wegas.persistence.QuestionDescriptor
+                        && cQuestionInstance.get("active")) {                    // If current question is active
+
+                    if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
+                        choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length -1 ].getChoiceDescriptor();
+                        cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15);
+                        cReplyLabel  = (cReplyLabel.length >= 15) ? cReplyLabel + "..." : cReplyLabel;
+                    }
+
+                    tab = new Y.Tab({
+                        label: '<div class="'
+                                + (cQuestionInstance.get("replies").length === 0 ? "unread" : "")
+                                + '"><div class="label">' + (cQuestion.getPublicLabel() || "undefined") + '</div>'
+                                + '<div class="status">' + (cReplyLabel || this.jsTranslator.getRB().Unanswered) + '</div></div>',
+                        content: "<div class=\"wegas-loading-div\"><div>"
+                    });
+                    tab.loaded = false;
+                    tab.cQuestion = cQuestion;
+                    this.tabView.add(tab);
+                } else if (cQuestion instanceof Y.Wegas.persistence.ListDescriptor) {
+                    this.addQuestions(cQuestion.get("items"));
+                }
+            }
+        },
+        /**
+         * @function
+         * @private
+         * @description Display selected question's description on current tab.
+         */
+        onTabSelected: function(e) {
+
+            if (e.newVal && e.newVal.cQuestion
+                    && !this.isRemovingTabs && !e.newVal.loaded) {
+                e.newVal.loaded = true;
+                Y.Wegas.Facade.VariableDescriptor.cache.getWithView(e.newVal.cQuestion, "Extended", {// Retrieve the question/choice description from the server
+                    on: {
+                        success: Y.bind(function(tab, e) {
+                            var question = e.response.entity;
+
+                            this.renderTab(tab, question);
+
+                            if (question.get("pictures").length > 0) {
+                                this.gallery = new Y.Wegas.util.FileExplorerGallery({
+                                    render: tab.get("panelNode").one(".description"),
+                                    selectedHeight: 150,
+                                    selectedWidth: 235,
+                                    gallery: Y.clone(question.get("pictures"))
+                                });
+                            }
+                        }, this, e.newVal)
+                    }
+                });
+            }
+        },
+        /**
+         *
+         * @param {type} tab
+         */
+        renderTab: function(tab, extendedQuestion) {
+            var j, ret, firstChild, cChoices, choiceDescriptor, reply,
+                    cQuestion = tab.cQuestion,
+                    cQuestionInstance = cQuestion.getInstance(),
+                    firstChild = "first-child",
+                    numberOfReplies, isReplied;
+            cChoices = cQuestion.get("items");
+            extendedQuestion = extendedQuestion || cQuestion;
+
+            ret = ['<div class="content">',
+                '<div class="title">', cQuestion.getPublicLabel() || "undefined", '</div>',
+                '<div class="description">', extendedQuestion.get("description"), '</div>'];
+
+
+            if (cQuestionInstance.get("replies").length === 0                   // If the question is not replied,
+                    || cQuestion.get("allowMultipleReplies")) {                 // or it allows to reply multiple times
+                ret.push('<div class="replies">');                              // we display its available replies
+                for (j = 0; j < cChoices.length; j += 1) {
+                    if (cChoices[j].getInstance().get("active")) {
+
+                        numberOfReplies = '';                                   //add informations about number of replies for MultipleReplies questions
+                        isReplied = '';
+                        if (cQuestion.get("allowMultipleReplies")) {
+                            numberOfReplies = -1;
+                            numberOfReplies = this.getNumberOfReplies(cQuestionInstance, cChoices[j]);
+                            if (numberOfReplies === 0) {
+                                numberOfReplies = '<span class="numberOfReplies zeroReplie">' + 0 + '<span class="symbole">x</span></span>';
+                            } else if (numberOfReplies > 0) {
+                                isReplied = 'replied';
+                                numberOfReplies = '<span class="numberOfReplies">' + numberOfReplies + '<span class="symbole">x</span></span>';
+                            }
+                        }
+
+                        ret.push('<div class="reply ', firstChild, ' ', isReplied, '">',
+                                '<div class="name">', cChoices[j].get("label"), '</div>',
+                                //'<div class="content">', cChoices[j].get("description"), '</div>',
+                                '<div class="content">', extendedQuestion.get("items")[j].get("description"), '</div>',
+                                numberOfReplies,
+                                '<input type="submit" id="', cChoices[j].get("id"), '" value="Submit"></input>',
+                                '<div style="clear:both"></div>',
+                                '</div>');
+                        firstChild = "";
+                    }
+                }
+                ret.push('</div>');
+            }
+
+            if (cQuestionInstance.get("replies").length > 0) {                  // Display the selected replies
+                ret.push('<div class="subtitle">Selected replies</div><div class="replies">');
+                for (j = 0; j < cQuestionInstance.get("replies").length; j += 1) {
+                    reply = cQuestionInstance.get("replies")[j];
+                    choiceDescriptor = reply.getChoiceDescriptor();
+                    ret.push('<div class="replyDiv"><div class="reply"><div class="name">', choiceDescriptor.get("label"), '</div>',
+                            //'<div>', choiceDescriptor.get("description"), '</div>',
+                            '<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
+                            '<div style="clear:both"></div></div>');
+
+                    if (reply.get("result").get("answer")) {
+                        ret.push('<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div></div>');
+                    }
+                }
+                ret.push("</div>");
+            }
+            ret.push("</div>");
+
+            tab.set("content", ret.join(""));
+        },
+        /**
+         * @function
+         * @private
+         * @param {type} questionInstance
+         * @param {type} choice
+         * @returns {integer} a number
+         * @description Return the number of replies corresponding to the given choice.
+         */
+        getNumberOfReplies: function(cQuestionInstance, choice) {
+            var i, occurrence = 0;
+            for (i = 0; i < cQuestionInstance.get("replies").length; i++) {
+                if (cQuestionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
+                    occurrence++;
+                }
+            }
+            return occurrence;
         },
         /**
          * @function
@@ -201,7 +288,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
          */
         destructor: function() {
             var i;
-            if(this.gallery){
+            if (this.gallery) {
                 this.gallery.destroy();
             }
             this.tabView.destroy();

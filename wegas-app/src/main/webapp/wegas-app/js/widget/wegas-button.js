@@ -169,9 +169,9 @@ YUI.add("wegas-button", function(Y) {
          * When VariableDescriptorFacade is updated, do sync.
          * When plugin's host is render, do sync.
          */
-        bindUI: function () {
+        bindUI: function() {
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-            this.handlers.render = this.afterHostEvent("render", this.syncUI, this);
+            this.afterHostEvent("render", this.syncUI, this);
         },
         /**
          * @function
@@ -213,26 +213,29 @@ YUI.add("wegas-button", function(Y) {
          * @description Count the number of unread reply in given variable.
          */
         getUnreadCount: function() {
-            var i, instance, messages, count = 0,
+            var i, instance, messages, items, count = 0,
                     descriptor = this.get('variable.evaluated');
 
             if (!descriptor) {
                 return 0;
             }
 
-            if (descriptor.get("items")) {                                      // For ListDescriptors, we count the children instance's
-                for (i = 0; i < descriptor.get("items").length; i = i + 1) {
-                    instance = descriptor.get("items")[i].getInstance();
-                    //count += instance.get("unread") ? 1 : 0;
-                    if (instance.get("replies")) {
-                        count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
+            if (descriptor instanceof Y.Wegas.persistence.ListDescriptor) {     // For ListDescriptors, we count the children instance's
+                items = descriptor.flatten();
+                for (i = 0; i < items.length; i = i + 1) {
+                    if (Y.Wegas.persistence.QuestionDescriptor
+                            && items[i] instanceof Y.Wegas.persistence.QuestionDescriptor) {
+                        instance = items[i].getInstance();
+                        //count += instance.get("unread") ? 1 : 0;
+                        if (instance.get("replies")) {
+                            count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
+                        }
                     }
                 }
             }
 
-            messages = descriptor.getInstance().
-                    get("messages");                // For InboxVariableDescriptors, we count the replies
-            if (messages) {
+            if (descriptor instanceof Y.Wegas.persistence.InboxDescriptor) {
+                messages = descriptor.getInstance().get("messages");            // For InboxVariableDescriptors, we count the replies
                 for (i = 0; i < messages.length; i = i + 1) {
                     count += messages[i].get("unread") ? 1 : 0;
                 }

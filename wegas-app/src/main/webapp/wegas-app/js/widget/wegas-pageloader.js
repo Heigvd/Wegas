@@ -76,9 +76,7 @@ YUI.add('wegas-pageloader', function(Y) {
 //                }
 //            }, this));
 
-            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("response", onUpdate, this));
-
-            this.handlers.push(Y.Wegas.app.after('currentPlayerChange', onUpdate, this));
+            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", onUpdate, this));
 
             this.on("*:exception", function(e) {
                 var test;
@@ -194,11 +192,11 @@ YUI.add('wegas-pageloader', function(Y) {
                     if (!val || val === this.currentPageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded, escape
                         return val;
                     }
+                    this.currentPageId = val;
                     Y.Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {
                         if (!widgetCfg) {
                             return val;
                         }
-                        this.currentPageId = val;
                         if (this.get("widget")) {
                             this.get("widget").destroy();                           // @fixme we should remove the widget instead of destroying it
                         }

@@ -134,6 +134,18 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
 
     /**
      *
+     * @param teamId
+     * @param p
+     * @return
+     */
+    public Player createPlayer(Long teamId, Player p) {
+        Team t = this.find(teamId);
+        this.joinTeam(t, p);
+        return p;
+    }
+
+    /**
+     *
      * @param team
      * @param user
      * @return
@@ -143,9 +155,21 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         Player p = new Player();
         p.setUser(user);
         this.joinTeam(team, p);
-
         this.addRights(p.getGame());
         return p;
+    }
+
+    /**
+     *
+     * @param team
+     * @param player
+     */
+    private void joinTeam(Team team, Player player) {
+        team.addPlayer(player);
+        em.persist(player);
+        //em.flush();
+        //em.refresh(player);
+        team.getGame().getGameModel().propagateDefaultInstance(false);
     }
 
     /**
@@ -157,30 +181,6 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     public Player joinTeam(Long teamId, Long userId) {
         // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
         return this.joinTeam(this.find(teamId), userFacade.find(userId));
-    }
-
-    /**
-     *
-     * @param team
-     * @param player
-     */
-    public void joinTeam(Team team, Player player) {
-        team.addPlayer(player);
-        em.flush();
-        em.refresh(player);
-        team.getGame().getGameModel().propagateDefaultInstance(false);
-    }
-
-    /**
-     *
-     * @param teamId
-     * @param p
-     * @return
-     */
-    public Player createPlayer(Long teamId, Player p) {
-        Team t = this.find(teamId);
-        this.joinTeam(t, p);
-        return p;
     }
 
     /**

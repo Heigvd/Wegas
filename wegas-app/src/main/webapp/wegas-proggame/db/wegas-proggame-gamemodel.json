@@ -11,7 +11,6 @@
         "scope":{
             "@class":"PlayerScope"
         },
-        "tags":[],
         "minValue":null,
         "maxValue":null
     },{
@@ -24,7 +23,6 @@
         "scope":{
             "@class":"PlayerScope"
         },
-        "tags":[],
         "minValue":null,
         "maxValue":null
     },{
@@ -37,13 +35,12 @@
         "scope":{
             "@class":"PlayerScope"
         },
-        "tags":[],
         "label":null,
         "description":null
     }],
     "properties": {
         "cssUri":"wegas-proggame/css/wegas-proggame.css",
-        "pagesUri":"wegas-proggame/db/wegas-proggame-pages.json#"
+        "pagesUri":"wegas-proggame/db/wegas-proggame-pages.json?"
     },
     "scriptLibrary": {
         "default": {

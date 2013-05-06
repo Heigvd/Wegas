@@ -9,14 +9,14 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-editor-treeview', function (Y) {
+YUI.add('wegas-editor-treeview', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', DATASOURCE = "dataSource", ID = "id",
-    CLASS = "@class", NAME = "name", HOST = "host", RENDER = "render",
-    EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>",
-    Wegas = Y.Wegas,
-    EditorTreeView;
+            CLASS = "@class", NAME = "name", HOST = "host", RENDER = "render",
+            EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>",
+            Wegas = Y.Wegas,
+            EditorTreeView;
 
     /**
      * @name Y.Wegas.EditorTreeView
@@ -31,29 +31,27 @@ YUI.add('wegas-editor-treeview', function (Y) {
         /** @lends Y.Wegas.EditorTreeView# */
         // *** Private fields ** //
         treeView: null,
-
         // ** Lifecycle methods ** //
         /**
          *
          */
-        renderUI: function () {
+        renderUI: function() {
             this.treeView = new Y.TreeView();
             this.treeView.render(this.get(CONTENTBOX));
 
             this.plug(Y.Plugin.EditorTVAdminMenu);
             this.plug(Y.Plugin.RememberExpandedTreeView);
         },
-
         /**
          * @function
          * @private
          */
-        bindUI: function () {
+        bindUI: function() {
             var ds = this.get(DATASOURCE),
-            request = this.get("request");
+                    request = this.get("request");
             if (ds) {
-                ds.after("response", this.syncUI, this);                        // Listen updates on the target datasource
-                ds.after("error", function (e) {                                // GLOBAL error message
+                ds.after("update", this.syncUI, this);                           // Listen updates on the target datasource
+                ds.after("error", function(e) {                                 // GLOBAL error message
                     this.showMessage("error", e.response.results.message);
                 }, this);
 
@@ -62,21 +60,23 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 }
             }
         },
-
         /**
          * @function
          * @private
          */
-        syncUI: function () {
+        syncUI: function() {
+
+            Y.log("sync()", "info", "Wegas.EditorTreeView");
+
             if (!this.get(DATASOURCE)) {
                 this.get(CONTENTBOX).append("Unable to find datasource");
                 return;
             }
 
             var ds = this.get(DATASOURCE),
-            selector = this.get("dataSelector"),
-            entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll(),
-            msg = this.get(CONTENTBOX).one(".wegas-smallmessage");
+                    selector = this.get("dataSelector"),
+                    entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll(),
+                    msg = this.get(CONTENTBOX).one(".wegas-smallmessage");
 
             if (msg) {
                 msg.remove(true);
@@ -89,15 +89,14 @@ YUI.add('wegas-editor-treeview', function (Y) {
             this.treeView.add(this.genTreeViewElements(entities));
             this.treeView.syncUI();
         },
-
         // *** Private Methods *** //
         /**
          * @function
          * @private
          */
-        genTreeViewElements: function (elements) {
+        genTreeViewElements: function(elements) {
             var ret = [], i, el, elClass, text, collapsed, selected,
-            l, result, children = [];
+                    l, result, children = [];
 
             for (i in elements) {
                 if (elements.hasOwnProperty(i)) {
@@ -131,7 +130,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
                                 selected: selected,
                                 rightWidget: Y.Node.create(EDITBUTTONTPL),
                                 iconCSS: "wegas-icon-variabledescriptor"
-                            //iconCSS: "wegas-icon-" + el.get(CLASS)
+                                        //iconCSS: "wegas-icon-" + el.get(CLASS)
                             });
                             break;
 
@@ -214,30 +213,33 @@ YUI.add('wegas-editor-treeview', function (Y) {
 
                         case 'Game':
                             var createdBy = el.get("createdBy"),
-                            gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
-
-                            ret.push({
-                                type: 'TreeNode',
-                                //label: 'Game: ' + el.get(NAME) + ' (token:' + el.get("token") + ')',
-                                label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                + '<div class="yui3-u-1-4">'
-                                + Wegas.Helper.smartDate(el.get("createdTime"))
-                                + '</div>'
-                                + '<div class="yui3-u-1-4">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
-                                + '<div class="yui3-u-1-4">' + el.get("token") + '</div>'
-                                + '<div class="yui3-u-1-4">' + gameModel.get(NAME) + '</div></div>'
-                                + '</div>',
-                                collapsed: collapsed,
-                                selected: selected,
-                                children: this.genTreeViewElements(el.get("teams")),
-                                data: {
-                                    entity: el
-                                },
-                                iconCSS: 'wegas-icon-game',
-                                rightWidget: Y.Node.create(EDITBUTTONTPL)
-                            });
+                                    gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
+                            if (!gameModel) {
+                                Y.log("Unable to find GameModel for game" + el.get("name"), "erroe");
+                            } else {
+                                ret.push({
+                                    type: 'TreeNode',
+                                    //label: 'Game: ' + el.get(NAME) + ' (token:' + el.get("token") + ')',
+                                    label: '<div class="yui3-g wegas-editor-treeview-table">'
+                                            + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                            + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                            + '<div class="yui3-u-1-4">'
+                                            + Wegas.Helper.smartDate(el.get("createdTime"))
+                                            + '</div>'
+                                            + '<div class="yui3-u-1-4">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
+                                            + '<div class="yui3-u-1-4">' + el.get("token") + '</div>'
+                                            + '<div class="yui3-u-1-4">' + gameModel.get(NAME) + '</div></div>'
+                                            + '</div>',
+                                    collapsed: collapsed,
+                                    selected: selected,
+                                    children: this.genTreeViewElements(el.get("teams")),
+                                    data: {
+                                        entity: el
+                                    },
+                                    iconCSS: 'wegas-icon-game',
+                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
+                            }
                             break;
 
                         case 'Team':
@@ -327,14 +329,13 @@ YUI.add('wegas-editor-treeview', function (Y) {
             }
             return ret;
         },
-
         /**
          * @function
          * @private
          */
-        genScopeTreeViewElements: function (el) {
+        genScopeTreeViewElements: function(el) {
             var children = [], i, label, team, player, instance,
-            instances = el.get("scope").get("variableInstances");
+                    instances = el.get("scope").get("variableInstances");
 
             for (i in instances) {
                 if (instances.hasOwnProperty(i)) {
@@ -344,14 +345,16 @@ YUI.add('wegas-editor-treeview', function (Y) {
                         case 'PlayerScope':
                             player = Wegas.Facade.Game.cache.getPlayerById(i);
 
-                            if (!player) continue;
+                            if (!player)
+                                continue;
 
                             label = (player) ? player.get(NAME) : "undefined";
                             break;
                         case 'TeamScope':
                             team = Wegas.Facade.Game.cache.getTeamById(i);
 
-                            if (!team) continue;
+                            if (!team)
+                                continue;
 
                             label = (team) ? team.get(NAME) : "undefined";
                             break;
@@ -365,14 +368,13 @@ YUI.add('wegas-editor-treeview', function (Y) {
             }
             return children;
         },
-
         /**
          * @function
          * @private
          */
-        genVariableInstanceElements: function (label, el) {
+        genVariableInstanceElements: function(label, el) {
             var l,
-            selected = (this.currentSelection == el.get(ID)) ? 2 : 0;
+                    selected = (this.currentSelection == el.get(ID)) ? 2 : 0;
 
             switch (el.get(CLASS)) {
                 case 'StringInstance':
@@ -428,12 +430,11 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     };
             }
         },
-
         /**
          * @function
          * @private
          */
-        genPageTreeViewElements: function (elts) {
+        genPageTreeViewElements: function(elts) {
             var ret = [], j, text, el;
             if (!Y.Lang.isArray(elts)) {
                 elts = [elts];
@@ -491,12 +492,11 @@ YUI.add('wegas-editor-treeview', function (Y) {
             }
             return ret;
         },
-
         /**
          * @function
          * @private
          */
-        isNodeExpanded: function (entity) {
+        isNodeExpanded: function(entity) {
             return this.RememberExpandedTreeView.expandedIds[entity.get(ID)] || false;
         }
     }, {
@@ -523,7 +523,7 @@ YUI.add('wegas-editor-treeview', function (Y) {
             },
             dataSelector: {},
             dataSource: {
-                getter: function (val) {
+                getter: function(val) {
                     if (Y.Lang.isString(val)) {
                         return Wegas.Facade[val];
                     }
@@ -541,18 +541,17 @@ YUI.add('wegas-editor-treeview', function (Y) {
      *
      */
     var GameModelTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
-
         /**
          * @function
          * @private
          */
-        bindUI: function () {
+        bindUI: function() {
             GameModelTreeView.superclass.bindUI.apply(this);
 
-            this.treeView.on("*:click", function (e) {
+            this.treeView.on("*:click", function(e) {
                 var entity = e.node.get("data.entity"),
-                sourceUri = "rest/GameModel//Game",                             // If click on "All game models" node
-                registeredGamesUri = "rest/RegisteredGames/" + Wegas.app.get("currentUser.id");
+                        sourceUri = "rest/GameModel//Game", // If click on "All game models" node
+                        registeredGamesUri = "rest/RegisteredGames/" + Wegas.app.get("currentUser.id");
 
                 if (entity) {                                                   // If click on a particular game model
                     sourceUri = "rest/GameModel/" + entity.get(ID) + "/Game";
@@ -574,14 +573,13 @@ YUI.add('wegas-editor-treeview', function (Y) {
                 //tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
 
                 Wegas.Facade.Game.set("source",
-                    Wegas.app.get("base") + sourceUri);                       // Change the source attribute on the datasource
+                        Wegas.app.get("base") + sourceUri);                       // Change the source attribute on the datasource
 
                 Wegas.Facade.RegisteredGames.set("source",
-                    Wegas.app.get("base") + registeredGamesUri);              // Change the source attribute on the datasource
+                        Wegas.app.get("base") + registeredGamesUri);              // Change the source attribute on the datasource
             }, this);
         },
-
-        syncUI: function () {
+        syncUI: function() {
             GameModelTreeView.superclass.syncUI.apply(this);
             this.treeView.add({
                 label: "All game models",
@@ -597,14 +595,14 @@ YUI.add('wegas-editor-treeview', function (Y) {
      */
     var CreatedGameTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
         CONTENT_TEMPLATE: '<div class="wegas-editor-treeviewgame">'
-    + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd">'
-    + '<div class="yui3-u yui3-u-col1">Name</div>'
-    + '<div class="yui3-u yui3-u-col2 yui3-g">'
-    + '<div class="yui3-u-1-4 yui3-u-selected">Created</div>'
-    + '<div class="yui3-u-1-4">Created by</div>'
-    + '<div class="yui3-u-1-4">Token</div>'
-    + '<div class="yui3-u-1-4">Game model</div></div>'
-    + '</div></div>'
+                + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd">'
+                + '<div class="yui3-u yui3-u-col1">Name</div>'
+                + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                + '<div class="yui3-u-1-4 yui3-u-selected">Created</div>'
+                + '<div class="yui3-u-1-4">Created by</div>'
+                + '<div class="yui3-u-1-4">Token</div>'
+                + '<div class="yui3-u-1-4">Game model</div></div>'
+                + '</div></div>'
     });
     Y.namespace("Wegas").CreatedGameTreeView = CreatedGameTreeView;
 
@@ -612,34 +610,30 @@ YUI.add('wegas-editor-treeview', function (Y) {
      *
      */
     var JoinedGameTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
-
         CONTENT_TEMPLATE: '<div class="wegas-editor-treeviewgame">'
-        + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
-        + '<div class="yui3-u yui3-u-col1">Name</div>'
-        + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
-        + '<div class="yui3-u-1-3 yui3-u-selected">Joined</div>'
-        + '<div class="yui3-u-1-3">Created by</div>'
-        + '<div class="yui3-u-1-3">Game model</div></div>'
-        + '</div></div>',
-
+                + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
+                + '<div class="yui3-u yui3-u-col1">Name</div>'
+                + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
+                + '<div class="yui3-u-1-3 yui3-u-selected">Joined</div>'
+                + '<div class="yui3-u-1-3">Created by</div>'
+                + '<div class="yui3-u-1-3">Game model</div></div>'
+                + '</div></div>',
         // ** Lifecycle methods ** //
-        renderUI: function () {
+        renderUI: function() {
             this.treeView = new Y.TreeView();
             this.treeView.render(this.get(CONTENTBOX));
         },
-
-        bindUI: function () {
+        bindUI: function() {
             JoinedGameTreeView.superclass.bindUI.apply(this);
             //this.treeView.on("*:click", this.onTreeViewClick, this);
-            this.treeView.on("addChild", function (e) {
+            this.treeView.on("addChild", function(e) {
                 e.child.plug(Y.Plugin.OpenUrlAction, {
                     url: "wegas-app/view/play.html?gameId=" + e.child.get("data.entity").get(ID),
                     target: "self"
                 });
             })
         },
-
-        genTreeViewElements: function (elements) {
+        genTreeViewElements: function(elements) {
             var ret = [], i, el;
 
             for (i in elements) {
@@ -649,19 +643,19 @@ YUI.add('wegas-editor-treeview', function (Y) {
                     switch (el.get(CLASS)) {
                         case 'Game':
                             var createdBy = el.get("createdBy"),
-                            gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
+                                    gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
 
                             ret.push({
                                 //label: el.get(NAME),
                                 label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                + '<div class="yui3-u-1-3">'
-                                + Wegas.Helper.smartDate(el.get("createdTime"))
-                                + '</div>'
-                                + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
-                                + '<div class="yui3-u-1-3">' + gameModel.get(NAME) + '</div></div>'
-                                + '</div>',
+                                        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                        + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                        + '<div class="yui3-u-1-3">'
+                                        + Wegas.Helper.smartDate(el.get("createdTime"))
+                                        + '</div>'
+                                        + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
+                                        + '<div class="yui3-u-1-3">' + gameModel.get(NAME) + '</div></div>'
+                                        + '</div>',
                                 data: {
                                     entity: el
                                 },
@@ -684,16 +678,16 @@ YUI.add('wegas-editor-treeview', function (Y) {
      */
     Y.Plugin.RememberExpandedTreeView = Y.Base.create("wegas-rememberexpandedtreeview", Y.Plugin.Base, [], {
         expandedIds: null,
-        initializer: function () {
+        initializer: function() {
             this.expandedIds = {};
-            this.afterHostEvent(RENDER, function () {
+            this.afterHostEvent(RENDER, function() {
                 var host = this.get(HOST);
 
-                host.treeView.before("*:nodeExpanded", function (e) {
+                host.treeView.before("*:nodeExpanded", function(e) {
                     this.expandedIds[e.node.get("data").entity.get(ID)] = true;
                 }, this);
 
-                host.treeView.before("*:nodeCollapsed", function (e) {
+                host.treeView.before("*:nodeCollapsed", function(e) {
                     delete this.expandedIds[e.node.get("data").entity.get(ID)];
                 }, this);
             });
@@ -710,34 +704,33 @@ YUI.add('wegas-editor-treeview', function (Y) {
     Y.Plugin.EditorTVNodeLoader = Y.Base.create("admin-action", Y.Plugin.Base, [], {
         expandedIds: {},
         lastOpenedNode: null,
-        initializer: function () {
-            this.afterHostEvent(RENDER, function () {
+        initializer: function() {
+            this.afterHostEvent(RENDER, function() {
                 this.get(HOST).treeView.before("*:nodeExpanded",
-                    this.fillsLeaf, this);                              //if treeleaf is empty, load elements from sever
+                        this.fillsLeaf, this);                              //if treeleaf is empty, load elements from sever
             });
 
-        //this.afterHostMethod("syncUI", function () {
-        //    var i, doExpand = function (e) {
-        //        for (i = 0; i < e.size(); i += 1) {
-        //            if (!e.item(i).get("collapsed")) {
-        //                this.fillsLeaf(e.item(i));
-        //                doExpand.call(this, e.item(i));
-        //            }
-        //        }
-        //    };
-        //
-        //    doExpand.call(this, this.get(HOST).treeView);         // Recursively walk treeview to reload expanded nodes
-        //});
+            //this.afterHostMethod("syncUI", function () {
+            //    var i, doExpand = function (e) {
+            //        for (i = 0; i < e.size(); i += 1) {
+            //            if (!e.item(i).get("collapsed")) {
+            //                this.fillsLeaf(e.item(i));
+            //                doExpand.call(this, e.item(i));
+            //            }
+            //        }
+            //    };
+            //
+            //    doExpand.call(this, this.get(HOST).treeView);         // Recursively walk treeview to reload expanded nodes
+            //});
         },
-
-        fillsLeaf: function (e) {
+        fillsLeaf: function(e) {
             var node = e.node,
-            id = node.get("data").entity.get(ID),
-            entity = node.get("data").entity;
+                    id = node.get("data").entity.get(ID),
+                    entity = node.get("data").entity;
 
             if (entity instanceof Wegas.persistence.VariableDescriptor
-                && !(entity instanceof Wegas.persistence.ListDescriptor)      // @hack
-                && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
+                    && !(entity instanceof Wegas.persistence.ListDescriptor)      // @hack
+                    && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
 
                 if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
                     return;
@@ -760,19 +753,19 @@ YUI.add('wegas-editor-treeview', function (Y) {
      * @constructor
      */
     Y.Plugin.EditorTVAdminMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
-        initializer: function () {
+        initializer: function() {
             this.menu = new Wegas.Menu();
 
-            this.afterHostEvent(RENDER, function () {
+            this.afterHostEvent(RENDER, function() {
                 this.get(HOST).treeView.on("*:click", this.onTreeViewClick, this);
             });
         },
-        onTreeViewClick: function (e) {
+        onTreeViewClick: function(e) {
             //Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.EditorTreeView");
 
             var menuItems, data = e.node.get("data"),
-            domTarget = e.domEvent.target,
-            host = this.get(HOST);
+                    domTarget = e.domEvent.target,
+                    host = this.get(HOST);
 
             if (data) {
                 host.currentSelection = data.entity.get(ID);
@@ -806,14 +799,14 @@ YUI.add('wegas-editor-treeview', function (Y) {
      * Not yet in usese
      */
     var SortableTreeview = Y.Base.create("wegas-sortabletreeview", Y.Plugin.Base, [], {
-        initializer: function () {
-            this.afterHostEvent(RENDER, function () {
+        initializer: function() {
+            this.afterHostEvent(RENDER, function() {
                 //this.sortable = new Y.Sortable({
                 //    container: this.get("contentBox"),
                 //    nodes: 'li',
                 //    opacity: '.2'
                 //});
-                });
+            });
         }
     }, {
         NS: "treeviewmenu",
