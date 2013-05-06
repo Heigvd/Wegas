@@ -117,6 +117,11 @@ YUI().use(function(Y) {
                     requires: ['inputex-field', 'inputex-textarea', 'button'],
                     ws_provides: 'Chat'
                 },
+                'wegas-chart': {
+                    path: 'wegas-app/js/widget/wegas-chart-min.js',
+                    requires: ['charts'],
+                    ws_provides: 'Chart'
+                },
                 'wegas-langselector': {
                     path: 'wegas-app/js/widget/wegas-langselector-min.js',
                     ws_provides: 'LangSelector'

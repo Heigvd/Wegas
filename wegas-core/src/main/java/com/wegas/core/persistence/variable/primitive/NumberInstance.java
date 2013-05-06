@@ -10,7 +10,12 @@ package com.wegas.core.persistence.variable.primitive;
 import com.wegas.core.exception.ConstraintViolationException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +32,12 @@ public class NumberInstance extends VariableInstance {
      *
      */
     private double val;
+    /**
+     *
+     */
+    @ElementCollection
+    @JsonView(Views.Export.class)
+    private List<Double> history = new ArrayList<>();
 
     /**
      *
@@ -67,6 +78,15 @@ public class NumberInstance extends VariableInstance {
         }
 
         this.val = value;
+        this.history.add(value);
+    }
+    
+    public List<Double> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<Double> history) {
+        this.history = history;
     }
 
     /**
