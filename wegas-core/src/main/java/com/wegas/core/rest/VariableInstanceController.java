@@ -65,6 +65,22 @@ public class VariableInstanceController {
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         return vd.getScope().getVariableInstances().values();
     }
+    
+    /**
+     *
+     * @param variableInstanceId
+     *
+     * @return
+     */
+    @GET
+    @Path("{variableInstanceId: [1-9][0-9]*}")
+    public VariableInstance get(@PathParam("variableInstanceId") Long variableInstanceId) {
+        VariableInstance vi = variableInstanceFacade.find(variableInstanceId);
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + vi.getDescriptor().getGameModelId());
+        
+        return vi;  
+    }
 
     /**
      *
