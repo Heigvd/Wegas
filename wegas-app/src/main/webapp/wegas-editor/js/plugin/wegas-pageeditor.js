@@ -102,8 +102,6 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
         },
         bind: function() {
-            var cb = this.get('host').get(CONTENTBOX);
-
             this.handlers.push(this.highlightOverlay.menu.on("menuOpen", function(e) {
                 this.highlightOverlay.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                 this.targetWidget = this.overlayWidget;
