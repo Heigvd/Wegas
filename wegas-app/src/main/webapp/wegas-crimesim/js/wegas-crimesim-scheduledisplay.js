@@ -230,7 +230,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         cols[cIndex].push("schedule-ongoingtask");
                     }
 
-                    names[cIndex] = choiceDescriptor.get("name");
+                    names[cIndex] = choiceDescriptor.get("label") || choiceDescriptor.get("name");
                     replies[cIndex] = reply;
 
                     for (k = 1; k < choiceDescriptor.get("duration"); k += 1) {
