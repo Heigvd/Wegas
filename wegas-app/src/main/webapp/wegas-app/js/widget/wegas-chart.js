@@ -14,41 +14,52 @@ YUI.add('wegas-chart', function(Y) {
     var CONTENTBOX = 'contentBox',
             Chart = Y.Base.create("wegas-chart", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         renderUI: function() {
-            this.vdList = [];
+            this.handlers = [];
             var cb = this.get(CONTENTBOX);
             cb.setContent(
-                    '<div style="width: 250px; height: 200px;" class="chart"></div>' //@fixme width and height
+                    '<div style="width:' + this.checkType(this.get("chartWidth")) + '; height:' + this.checkType(this.get("chartHeight")) + ';" class="chart"></div>'
                     );
         },
         bindUI: function() {
+            this.handlers.push(
+                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
         },
         syncUI: function() {
-            var cb = this.get(CONTENTBOX),
-                i;
-//            var variableDescriptor = this.get("variable.evaluated");
+            var i;
+            this.vdList = [];
             var variable = this.get("variables");
-            for (i=0; i<variable.length; i++){
+            for (i = 0; i < variable.length; i++) {
                 var vd = Y.Wegas.Facade.VariableDescriptor.cache.find("name", variable[i].name);
-                this.historyRequest(vd, variable[i].name);
+                vd.position = i;
+                if (variable[i].label)
+                    vd.label = variable[i].label;
+                else
+                    vd.label = variable[i].name;
+                this.historyRequest(vd);
+
             }
         },
         destructor: function() {
+            for (var i = 0; i < this.handlers.length; i = i + 1) {
+                this.handlers[i].detach();
+            }
         },
-        historyRequest: function(vd, label){
-            Y.io(Y.Wegas.app.get("base") + "rest/Export/GameModel/"+ Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id") + "/VariableDescriptor/" + vd.get("id") +"/VariableInstance/" + vd.getInstance().get("id"), {
-                method: "GET",
+        historyRequest: function(vd) {
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/" + vd.get("id") + "/VariableInstance/" + vd.getInstance().get("id") + "?view=Export",
                 on: {
-                    success: Y.bind(function(a, event) {
-                        var a = Y.JSON.parse(event.responseText);
-                        a.label = label;
-                        this.vdList.push(a);
-                        if (this.vdList.length === this.get("variables").length){
+                    success: Y.bind(function(r) {
+                        var a = Y.JSON.parse(r.data.responseText);    
+                        a.entities[0].label = vd.label;
+                        this.vdList.splice(vd.position, 0, a.entities[0]);
+                        if (this.vdList.length === this.get("variables").length) {
+                            this.clear(this.get(CONTENTBOX));
                             this.createChart();
                         }
                     }, this),
-                    failure: Y.bind(function(a, event) {
-                        console.log(event);
-                    }, this)
+                    failure: function(r) {
+                        Y.error("Error by loading history data");
+                    }
                 }
             });
         },
@@ -62,22 +73,20 @@ YUI.add('wegas-chart', function(Y) {
                 this.chart.destroy();
             if (this.vdList.length < 1)
                 return;
-            var i, seriesCollection = [
-                {
-                    yDisplayName: 'moral'
-                },
-                {
-                    yDisplayName: 'confiance'
-                }
-            ],
-                    rawSeries = [];
-            for (i=0; i<this.vdList.length; i++){
-                console.log(this.vdList[i].label);
-                console.log(this.vdList[i].history);
+            var i,
+                    seriesCollection = [],
+                    rawSeries = [],
+                    obj;
+            for (i = 0; i < this.vdList.length; i++) {
+                obj = {
+                    yDisplayName: this.vdList[i].label
+                };
+                seriesCollection.push(obj);
                 rawSeries.push(this.vdList[i].history);
             }
+            
             this.chart = new Y.Chart({
-                type: 'combospline',
+                type: this.get("chartType"),
                 seriesCollection: seriesCollection,
                 axes: {
                     values: {
@@ -89,15 +98,12 @@ YUI.add('wegas-chart', function(Y) {
                     styles: {
                         gap: 0
                     },
-                    chart: this.chart,
-                    position: "bottom",
-                    width: this.get("width"),
-                    height: this.get("height")
+                    position: this.get("legendPosition")
                 },
-                tooltip: this.chartTooltip,
+                tooltip: this.chartTooltip,                
                 dataProvider: this.getChartValues(this.get("numberOfValue"), rawSeries),
-                horizontalGridlines: true,
-                verticalGridlines: true
+                horizontalGridlines: this.get("horizontalGridlines"),
+                verticalGridlines: this.get("verticalGridlines")
             });
             this.chart.render(".chart");
         },
@@ -112,16 +118,14 @@ YUI.add('wegas-chart', function(Y) {
         getChartValues: function(numberOfValues, rawSeries) {
             var i, j, fitSeries = new Array(), serieRawData = new Array(), serieFitData = new Array();
             for (i = 0; i < numberOfValues; i++) {
-                serieFitData.push(i);
+                serieFitData.push(i+1);
             }
             fitSeries.push(serieFitData.slice());
             for (i = 0; i < rawSeries.length; i++) {
                 serieRawData = rawSeries[i];
                 serieFitData.length = 0;
                 for (j = numberOfValues - 1; j >= 0; j--) {
-                    if (serieRawData.length - 1 < j) {
-                        serieFitData.push(serieRawData[0]);
-                    } else {
+                    if (serieRawData.length - 1 >= j) {
                         serieFitData.push(serieRawData[serieRawData.length - (j + 1)]);
                     }
                 }
@@ -129,9 +133,26 @@ YUI.add('wegas-chart', function(Y) {
             }
             return fitSeries;
         },
+        chartTooltip: {
+            markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex) {
+                var msg = document.createElement("div"),
+                        boldTextBlock = document.createElement("div");
+                boldTextBlock.appendChild(document.createTextNode(valueItem.displayName + ': ' + valueItem.axis.get("labelFunction").apply(this, [valueItem.value])));
+                msg.appendChild(boldTextBlock);
+                return msg;
+            }
+        },
         clear: function(cb) {
             this.chart = null;
             cb.one('.chart').setHTML();
+        },
+        checkType: function(value){
+            if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-1) !== "%"){
+                return value + "px";
+            } else {
+                return value;
+            }
+            
         }
     }, {
         ATTRS: {
@@ -139,27 +160,93 @@ YUI.add('wegas-chart', function(Y) {
              * The target variable, returned either based on the variableName attribute,
              * and if absent by evaluating the expr attribute.
              */
-            variables: [{
+            variables: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
-                    _type: "variableselect",
-                    label: "variable"
+                    _type: "list",
+                    useButtons: true,
+                    elementType: {
+                        type: "variableselect",
+                        label: "variable"
+                    },
+                    index: 1
                 }
-            }],
+            },
+            chartType: {
+                value: "combo",
+                _inputex: {
+                    _type: "select",
+                    value: "bottom",
+                    label: "Chart type",
+                    choices: [{ value: 'combo' }, { value: 'line' }],
+                    index: 0
+                }
+            },
             minValue: {
-                value: 0
+                value: 0,
+                _inputex: {
+                    _type: "integer",
+                    label: "Min. value",
+                    index: 2
+                }
             },
             maxValue: {
-                value: 100
+                value: 100,
+                _inputex: {
+                    _type: "integer",
+                    label: "Max. value",
+                    index: 3
+                }
             },
-            width: {
-                value: 250
+            chartWidth: {
+                value: "250px",
+                _inputex: {
+                    _type: "string",
+                    label: "Width",
+                    index: 5
+                }
             },
-            height: {
-                value: 50
+            chartHeight: {
+                value: "200px",
+                _inputex: {
+                    _type: "string",
+                    label: "Height",
+                    index: 6
+                }
             },
             numberOfValue: {
-                value: 5
+                value: 5,
+                _inputex: {
+                    _type: "integer",
+                    label: "Number of value",
+                    index: 4
+                }
+            },
+            horizontalGridlines: {
+                value: true,
+                _inputex: {
+                    _type: "boolean",
+                    label: "Horizontal Gridlines",
+                    index: 8
+                }
+            },
+            verticalGridlines: {
+                value: true,
+                _inputex: {
+                    _type: "boolean",
+                    label: "Vertical Gridlines",
+                    index: 9
+                }
+            },
+            legendPosition: {
+                value: "bottom",
+                _inputex: {
+                    _type: "select",
+                    value: "bottom",
+                    label: "Legend position",
+                    choices: [{ value: 'bottom' }, { value: 'left' }, { value: 'right' }, { value: 'top' }],
+                    index: 7
+                }            
             }
         }
     });
