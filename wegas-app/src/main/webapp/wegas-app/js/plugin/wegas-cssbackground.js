@@ -32,7 +32,7 @@ YUI.add('wegas-cssbackground', function(Y) {
                     fields: [{
                         type: "colorpicker",
                         palette:3,
-                        name:"background-color",
+                        name:"backgroundColor",
                         label: "backroung color"
                     }]
                 }

@@ -35,16 +35,16 @@ YUI.add('wegas-csstext', function(Y) {
                         label: "text color"
                     }, {
                         type: "string",
-                        name:"font-size",
+                        name:"fontSize",
                         label: "text size"
                     }, {
                         type: "select",
-                        name: "font-style",
+                        name: "fontStyle",
                         choices: ["", "normal", "italic", "oblique", "inherit"],
                         label: "text style"
                     }, {
                         type: "select",
-                        name: "text-align",
+                        name: "textAlign",
                         choices: ["", "left", "right", "center", "justify", "inherit"],
                         label: "text align"
                     }]
