@@ -127,6 +127,11 @@ YUI().use(function(Y) {
                     requires: ['inputex-field', 'inputex-textarea', 'button'],
                     ws_provides: 'Chat'
                 },
+                'wegas-chart': {
+                    path: 'wegas-app/js/widget/wegas-chart-min.js',
+                    requires: ['charts', 'charts-legend'],
+                    ws_provides: 'Chart'
+                },
                 'wegas-langselector': {
                     path: 'wegas-app/js/widget/wegas-langselector-min.js',
                     ws_provides: 'LangSelector'
@@ -337,6 +342,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-cssposition-min.js',
                     requires: ['wegas-cssstyles'],
                     ws_provides: 'CSSPosition'
+                },
+                "wegas-csssize": {
+                    path: 'wegas-app/js/plugin/wegas-csssize-min.js',
+                    requires: ['wegas-cssstyles'],
+                    ws_provides: 'CSSSize'
                 },
                 "wegas-inputex-object": {
                     path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
