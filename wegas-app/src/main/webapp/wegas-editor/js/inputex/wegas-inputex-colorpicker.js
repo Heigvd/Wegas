@@ -130,7 +130,7 @@ YUI.add("wegas-inputex-colorpicker", function(Y) {
             value = value || this.getValue();
             
             // set background color on colorEl
-            Y.one(this.el).setStyle('background-color', value);
+            Y.one(this.el).setStyle('backgroundColor', value);
 
         },
         setValue: function(value, sendUpdatedEvt) {
