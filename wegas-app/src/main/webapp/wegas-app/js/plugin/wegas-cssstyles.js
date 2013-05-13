@@ -28,7 +28,40 @@ YUI.add('wegas-cssstyles', function(Y) {
          * @function
          * @private
          */
-        initializer: function() {   
+        initializer: function() {
+            this.setValue(this.get("styles"));
+            this.after("stylesChange", function(e){
+                this.removeStyle(e);
+                this.setValue(e.newVal);
+            });
+        },
+
+        removeStyle: function(e) {
+            var styleToRemove;
+            for (styleToRemove in e.prevVal){
+                if (!e.newVal.hasOwnProperty(styleToRemove)){
+                    node.setStyle(styleToRemove, "");
+                    styleList.splice(styleList.indexOf(styleToRemove));
+                }
+            }
+        },
+                
+        setStyle: function(newStylesList, style){
+            if (styleList.indexOf(style) === -1){
+                styleList.push(style);
+            }
+            node.setStyle(style, newStylesList[style]);
+        },
+        
+        destructor: function(){
+            var styleToRemove;
+            for (styleToRemove in this.get("styles")){
+                node.setStyle(styleToRemove, "");
+                styleList.splice(styleList.indexOf(styleToRemove));
+            }
+        },
+        
+        setValue: function(styles) {
             if (this.get("host") instanceof Y.Widget) {
                 node = this.get("host").get(this.get("targetNode"));
             } else if (this.get("host") instanceof Y.Node){
@@ -37,61 +70,31 @@ YUI.add('wegas-cssstyles', function(Y) {
                 Y.log("Host's type mistmach", "warn", "Y.Plugin.CSSStyles");
                 return;
             }
-            this.set("styles",  this.get("styles"));
-        },
-        
-        removeStyle: function(style) {
-            var i;
-            for (i=0; i<styleList.length; i++){
-                if (styleList[i] === style){
-                    styleList.splice(i);
-                    node.setStyle(style, "");
-                }
-            }
-        },
-        
-        addStyle: function(stylesList, style) {
-            styleList.push(style);
-            node.setStyle(style, stylesList[style]);
-        },
-        
-        destructor: function(){
-            var i;
-            for (i=0; i<styleList.length; i++){
-                this.removeStyle(styleList[i]);
-            }
-        },
-        
-        setValue: function(styles) {
+
             if (styles){
                 for (var style in styles){
-                    var value = styles[style];                 
+                    var value = styles[style];                    
                     if (value){
-                        if (style === "font-size" || style === "top" || style === "right" || style === "bottom" || style === "left" || style === "min-width"){
-                            if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-2) !== "%"){
+                        if (style === "fontSize" || style === "top" || style === "right" || style === "bottom" || style === "left" || style === "minWidth" || style === "width" || style === "height"){
+                            if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-1) !== "%"){
                                   styles[style] = value + "pt";
                             }
                         }
                     }
-                    this.removeStyle(style);
-                    this.addStyle(styles, style);
+                    this.setStyle(styles, style);
                 }
             }
         }
     }, {
         ATTRS: {
-            styles: {
-                setter: function(value) {
-                    this.setValue(value);
-                    return value;
-                },            
+            styles: {         
                 value: {},
                 _inputex: {
                     _type: "wegasobject",
                     elementType: {
                         type:"wegaskeyvalue",
                         availableFields: [{
-                            name: "background-color",
+                            name: "backgroundColor",
                             type: "colorpicker",
                             palette:3
                         }, {
@@ -100,18 +103,18 @@ YUI.add('wegas-cssstyles', function(Y) {
                             palette:3
                         }, {
                             type: "string",
-                            name: "font-size"
+                            name: "fontSize"
                         }, {
                             type: "select",
-                            name: "font-style",
+                            name: "fontStyle",
                             choices: ["", "normal", "italic", "oblique", "inherit"]
                         }, {
                             type: "select",
-                            name: "text-align",
+                            name: "textAlign",
                             choices: ["", "left", "right", "center", "justify", "inherit"]
                         }, {
                             type: "string",
-                            name: "min-width"
+                            name: "minWidth"
                         }]
                     }
                 }

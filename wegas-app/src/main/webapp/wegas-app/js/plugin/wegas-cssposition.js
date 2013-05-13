@@ -41,7 +41,7 @@ YUI.add('wegas-cssposition', function(Y) {
                         
                     }, {
                         type: "hidden",
-                        name: "z-index",
+                        name: "zIndex",
                         value: "10"                        
                     }, {
                         type: "string",
