@@ -136,6 +136,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         }
                         this.hideOverlay();
                         this.datatable.syncUI();
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this.hideOverlay();
                     }, this)
                 }});
         },
@@ -230,7 +233,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         cols[cIndex].push("schedule-ongoingtask");
                     }
 
-                    names[cIndex] = choiceDescriptor.get("name");
+                    names[cIndex] = choiceDescriptor.get("label") || choiceDescriptor.get("name");
                     replies[cIndex] = reply;
 
                     for (k = 1; k < choiceDescriptor.get("duration"); k += 1) {
@@ -409,8 +412,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             this.showOverlay();
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.app.get('currentPlayer')
-            });
+                request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.app.get('currentPlayer'),
+                on: {failure: Y.bind(function(e) {
+                        this.hideOverlay();
+                    }, this)
+                }});
         },
         onMenuClick: function(e) {
             var data = e.target.get("data");
@@ -418,8 +424,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.showOverlay();
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/QuestionDescriptor/SelectChoice/" + data.choice.get("id")
-                        + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/"
-            });
+                        + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/",
+                on: {failure: Y.bind(function(e) {
+                        this.hideOverlay();
+                    }, this)
+                }});
         },
         /**
          * Return a list of possible actions on a given action at a given time.
