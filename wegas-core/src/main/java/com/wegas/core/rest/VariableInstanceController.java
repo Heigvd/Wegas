@@ -62,7 +62,11 @@ public class VariableInstanceController {
      */
     @GET
     public Collection<VariableInstance> index(@PathParam("variableDescriptorId") Long variableDescriptorId) {
+ 
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + vd.getGameModelId());
+        
         return vd.getScope().getVariableInstances().values();
     }
     
@@ -74,10 +78,12 @@ public class VariableInstanceController {
      */
     @GET
     @Path("{variableInstanceId: [1-9][0-9]*}")
-    public VariableInstance get(@PathParam("variableInstanceId") Long variableInstanceId) {
+    public VariableInstance get(@PathParam("variableDescriptorId") Long variableDescriptorId, @PathParam("variableInstanceId") Long variableInstanceId) {
         VariableInstance vi = variableInstanceFacade.find(variableInstanceId);
-        
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + vi.getDescriptor().getGameModelId());
+        if (!vi.getDescriptorId().equals(variableDescriptorId)){
+            return null;
+        }
         
         return vi;  
     }

@@ -97,5 +97,6 @@ public class NumberInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         NumberInstance vi = (NumberInstance) a;
         this.setValue(vi.getValue());
+        //this.setHistory(vi.getHistory());     @fixme By setting value from editor view history is cleaned.
     }
 }
