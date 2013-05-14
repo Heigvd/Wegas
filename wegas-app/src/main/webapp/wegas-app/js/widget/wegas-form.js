@@ -39,6 +39,9 @@ YUI.add('wegas-form', function(Y) {
             this.publish("submit", {
                 emitFacade: true
             });
+            this.publish("updated", {
+                emitFacade: false
+            });
         },
         /**
          * @function
@@ -110,6 +113,7 @@ YUI.add('wegas-form', function(Y) {
          * @description set the given form to null
          */
         destroyForm: function() {
+            this.get("form").destroy();
             this.set("form", null);
         }
 
@@ -169,6 +173,9 @@ YUI.add('wegas-form', function(Y) {
                             var form = Y.inputEx(cfg);                          // Initialize and render form
                             form.setValue(this.get("values"));                  // Sync form with "values" ATTR
                             this.set("form", form);
+                            form.on("updated", function(e) {
+                                this.fire("updated", e);
+                            }, this);
                         }, this, cfg));
                     }
 
