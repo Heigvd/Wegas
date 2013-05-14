@@ -11,9 +11,7 @@
  */
 YUI.add("wegas-inputex-variableselect", function(Y) {
     "use strict";
-
     var inputEx = Y.inputEx;
-
     /**
      * Edit an object referencing a variable with format:
      *    {
@@ -35,12 +33,29 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
             this.options.label = options.label;
             this.options.fields = [{
                     type: 'variabledescriptorgetter',
-                    name: 'id'
+                    name: 'id',
+                    required: true
                 }, {
                     type: 'text',
                     name: 'expr',
                     required: true
                 }];
+        },
+        validate: function() {
+            if (this.options.mode === "text") {
+                return this.inputs[1].validate();
+            } else {
+                return this.inputs[0].validate();
+            }
+        },
+        getValue: function() {
+            if (this.options.mode === "text") {
+                return {expr: this.inputs[1].getValue()};
+            } else {
+                return { //save name for portability instead of id
+                    name: Y.Wegas.Facade.VariableDescriptor.cache.findById(this.inputs[0].currentEntityField.getValue()).get("name")
+                };
+            }
         },
         setValue: function(val, fireUpdatedEvent) {
             var findVal;
@@ -54,7 +69,7 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
             } else if (val.id) {
                 findVal = Y.Wegas.Facade.VariableDescriptor.cache.findById(val.id);
             }
-            this.inputs[0].setValue(findVal.get("id"));                         // @fixme
+            this.inputs[0].setValue(findVal.get("id")); // @fixme
         },
         renderFields: function() {
             inputEx.Wegas.Variableselect.superclass.renderFields.apply(this, arguments);
@@ -68,7 +83,7 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
             this.viewSrc.after("click", function() {
                 if (!this.viewSrc.get("disabled")) {
                     if (this.options.mode === "wysiwyg") {                      // If current mode is wysiwyg
-                        this.updateTextarea();                                  // update textatea content
+                        this.updateTextarea(); // update textatea content
                     } else {
                         this.updateExpressionList();
                     }
@@ -76,17 +91,14 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
                 }
             }, this);
             this.viewSrc.render(this.fieldset);
-
-            var container = new Y.Node(this.fieldset);                          // Render a div where the wysiwyg list will be rendered
+            var container = new Y.Node(this.fieldset); // Render a div where the wysiwyg list will be rendered
             container.prepend(divLabel.getDOMNode());
             container.prepend(this.viewSrc.get("boundingBox"));
         },
         setMode: function(mode) {
             var wysiwygmode = (mode === "wysiwyg");
-
             this.options.mode = mode;
             this.viewSrc.set("selected", wysiwygmode ? 0 : 1);
-
             if (wysiwygmode) {
                 this.inputs[0].show();
                 this.inputs[1].hide();
@@ -98,12 +110,11 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
         },
         updateTextarea: function() {
             if (this.options.mode === "wysiwyg") {                              // If current mode is wysiwyg
-                this.inputs[1].el.value = this.getValue().id;                  // update textatea content
+                this.inputs[1].el.value = this.inputs[0].getValue();                  // update textatea content
             }
         },
         updateExpressionList: function() {
             var tree, newVal = null, valObj = {};
-
             try {
                 tree = window.esprima.parse(this.inputs[1].el.value, {// Generate the syntaxic tree using esprima
                     raw: true
@@ -133,6 +144,6 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
         }
 
     });
-    inputEx.registerType("variableselect", inputEx.Wegas.Variableselect);       // Register this class as "wegasurl" type
+    inputEx.registerType("variableselect", inputEx.Wegas.Variableselect); // Register this class as "wegasurl" type
 
 });
