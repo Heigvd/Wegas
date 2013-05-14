@@ -91,6 +91,9 @@ YUI.add("wegas-inputex-colorpicker", function(Y) {
             }
             
             this.colorpicker.set("hex", this.el.value.substr(1));
+            if (this.el.value === "#ffffff"){
+                this.colorpicker.set("hsl", {h: 0, s: 1, l: 1});
+            }
             this.colorGrid = this.grid;
             this.oOverlay.set('bodyContent', this.colorGrid);
 
