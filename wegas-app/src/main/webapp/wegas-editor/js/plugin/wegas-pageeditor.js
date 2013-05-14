@@ -50,8 +50,10 @@ YUI.add('wegas-pageeditor', function(Y) {
                             if (e.target.get("pressed")) {
                                 this.bind();
                                 this.layoutbutton.show();
+                                this.get("host").get(CONTENTBOX).prepend(this.overlayMask);
                             } else {
                                 this.detach();
+                                this.overlayMask.remove(false);
                                 this.highlightOverlay.hide();
                                 if (this.layoutbutton.get("pressed")) {
                                     this.layoutbutton.toggle();
@@ -96,28 +98,41 @@ YUI.add('wegas-pageeditor', function(Y) {
                 render: true,
                 visible: false
             });
+            this.overlayMask = new Y.Node.create("<div></div>");
             this.highlightOverlay.plug(Y.Plugin.WidgetMenu, {
                 event: "click"
+            });
+            this.overlayMask.setStyles({
+                zIndex: 30,
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                top: 0,
+                left: 0
             });
             this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
         },
         bind: function() {
             this.handlers.push(this.highlightOverlay.menu.on("menuOpen", function(e) {
+                if (!this.highlightOverlay.get("visible")) {
+                    this.highlightOverlay.menu.menu.hide();
+                    return;
+                }
                 this.highlightOverlay.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                 this.targetWidget = this.overlayWidget;
                 this.highlightOverlay.menu.set("children", this.targetWidget.getMenuCfg({
                     widget: this.targetWidget
                 }));
             }, this));
-            this.handlers.push(this.get("host").get(BOUNDINGBOX).delegate("mousestart", function(e) {
+
+            this.handlers.push(this.overlayMask.on("mousemove", function(e) {
+                var widget;
                 e.halt(true);
+                this.overlayMask.hide();
                 this.highlightOverlay.hide();
-            }, '.wegas-widget', this));
-            this.handlers.push(this.get("host").get(BOUNDINGBOX).delegate("mousestop", function(e) {
-                var widget = Y.Widget.getByNode(window.document.elementFromPoint(e.clientX, e.clientY));
-                e.halt(true);
-                if (widget === this.get("host")) {
-                    this.highlightOverlay.hide();
+                widget = Y.Widget.getByNode(window.document.elementFromPoint(e.clientX, e.clientY));
+                this.overlayMask.show();
+                if (this.get("host") === widget) {
                     return;
                 }
                 if (this.overlayWidget !== widget) {
@@ -125,7 +140,14 @@ YUI.add('wegas-pageeditor', function(Y) {
                 } else {
                     this.highlightOverlay.show();
                 }
-            }, '.wegas-widget', this));
+            }, this));
+            this.handlers.push(this.overlayMask.on("click", function(e) {
+                e.halt(true);
+                this.highlightOverlay.get(CONTENTBOX).simulate("click", e);
+            }, this));
+            this.get("host").get(CONTENTBOX).after("mouseout", function() {
+                this.hideOverlay();
+            }, this);
         },
         processSave: function() {
             var host = this.get("host"),
