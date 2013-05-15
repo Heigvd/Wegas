@@ -77,7 +77,11 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 }
                 targetWidget.syncUI();
                 this.get("dataSource").cache.patch(targetWidget.get("root").toObject());
+            }, this), Y.bind(function() {
+                this.get("widget").highlight(false);
             }, this));
+
+            this.get("widget").highlight(true);
         }
     }, {
         NS: "EditWidgetAction",

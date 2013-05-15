@@ -233,7 +233,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         cols[cIndex].push("schedule-ongoingtask");
                     }
 
-                    names[cIndex] = choiceDescriptor.get("label") || choiceDescriptor.get("name");
+                    names[cIndex] = choiceDescriptor.getPublicLabel();
                     replies[cIndex] = reply;
 
                     for (k = 1; k < choiceDescriptor.get("duration"); k += 1) {
@@ -355,7 +355,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         delete replyData.fileLinks;
                     }
                 }
-                replyData.analyis = reply.getChoiceDescriptor().get("name");
+                replyData.analyis = reply.getChoiceDescriptor().getPublicLabel();
                 replyData.startTime = replyData.startTime + 1;
                 this.data.push(replyData);
             }
@@ -383,7 +383,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var choiceDescriptor = reply.getChoiceDescriptor(),
                     status = reply.getStatus(this.currentTime),
                     ret = ['<div class="schedule-detail-reply"><h3>Period ',
-                reply.get("startTime") + 1, ': ', choiceDescriptor.get("name") || "undefined",
+                reply.get("startTime") + 1, ': ', choiceDescriptor.getPublicLabel() || "undefined",
                 '</h3><div class="content">'];
 
             if (status === 0) {
