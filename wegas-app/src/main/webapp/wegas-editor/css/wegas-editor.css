@@ -312,6 +312,12 @@ body {
 .wegas-page-editor .content-header{
     cursor: pointer;
 }
+.highlighted{
+    -moz-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
+    -webkit-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
+    box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
+    z-index:5;
+}
 
 /* Pageloader view src plugin styles */
 .wegas-pageloader > .inputEx-fieldWrapper  {

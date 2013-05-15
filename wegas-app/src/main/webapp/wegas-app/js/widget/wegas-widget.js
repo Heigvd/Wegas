@@ -11,7 +11,6 @@
  */
 YUI.add("wegas-widget", function(Y) {
     "use strict";
-
     var Lang = Y.Lang,
             BOUNDING_BOX = "boundingBox",
             LEVEL = {
@@ -27,7 +26,7 @@ YUI.add("wegas-widget", function(Y) {
      */
     destroySelf = function() {
         if (!this._node) {
-            return;                                                             // The node has already been destroyed
+            return; // The node has already been destroyed
         }
 
         if (this.timeout) {
@@ -44,7 +43,6 @@ YUI.add("wegas-widget", function(Y) {
         anim.on("end", this.remove, this, true);
         anim.run();
     };
-
     /**
      * @name Y.Wegas.Widget
      * @class Extension common to all wegas widgets
@@ -58,9 +56,8 @@ YUI.add("wegas-widget", function(Y) {
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
-                || this.constructor.NAME.toLowerCase();                         // the usual "yui3-" prefix)
+                || this.constructor.NAME.toLowerCase(); // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
-
         this.publish("exception", {
             emitFacade: true
         });
@@ -103,11 +100,11 @@ YUI.add("wegas-widget", function(Y) {
          * @description clear message (see function 'showMessage')
          */
         emptyMessage: function() {						// Form msgs logic
-            var msgNode = this.get(BOUNDING_BOX).one(".wegas-systemmessage");
-            if (!msgNode) {
-                return;
+            var statusNode = this._getStatusNode();
+            if (statusNode === null) {
+                return false;
             }
-            msgNode.empty();
+            statusNode.empty();
         },
         /**
          * Display a closable message with a status-image.
@@ -135,7 +132,6 @@ YUI.add("wegas-widget", function(Y) {
             msgNode.append(message);
             message.closeHandler = message.one(".close").
                     once("click", destroySelf, message);
-
             if (timeout) {
                 message.timeout = Y.later(timeout, message, destroySelf);
             }
@@ -170,6 +166,9 @@ YUI.add("wegas-widget", function(Y) {
             statusNode.setContent(txt);
             return true;
         },
+        highlight: function(bool) {
+            bool ? this.get(BOUNDING_BOX).addClass("highlighted") : this.get(BOUNDING_BOX).removeClass("highlighted");
+        },
         /**
          * @function
          * @private
@@ -192,7 +191,6 @@ YUI.add("wegas-widget", function(Y) {
             return statusNode;
         }
     });
-
     Y.mix(Widget, {
         /**
          *  Defines edition menu to be used in editor
@@ -535,7 +533,6 @@ YUI.add("wegas-widget", function(Y) {
          */
         create: function(config) {
             var child, Fn, type = config.childType || config.type;
-
             if (type) {
                 Fn = Lang.isString(type) ? Y.Wegas[type] || Y[type] : type;
             }
@@ -598,9 +595,7 @@ YUI.add("wegas-widget", function(Y) {
             return val;
         }
     });
-
     Y.namespace("Wegas").Widget = Widget;
-
     /**
      * @hack We override this function so widget are looked for in Wegas ns.
      */
@@ -610,7 +605,6 @@ YUI.add("wegas-widget", function(Y) {
                 child,
                 Fn,
                 FnConstructor;
-
         if (altType) {
             Fn = Lang.isString(altType) ? Y.Wegas[altType] || Y[altType] : altType;           // @hacked
         }
@@ -629,14 +623,12 @@ YUI.add("wegas-widget", function(Y) {
         }
         return child;
     };
-
     /*
      * @hack Override so plugin host accepts string definition of classes and
      * look it up in the Y.Wegas.* package.
      */
     Y.Widget.prototype.plug = function(Plugin, config) {
         var i, ln, ns;
-
         if (Lang.isArray(Plugin)) {
             for (i = 0, ln = Plugin.length; i < ln; i += 1) {
                 this.plug(Plugin[i]);
@@ -653,10 +645,8 @@ YUI.add("wegas-widget", function(Y) {
             // Plugin should be fn by now
             if (Plugin && Plugin.NS) {
                 ns = Plugin.NS;
-
                 config = config || {};
                 config.host = this;
-
                 if (this.hasPlugin(ns)) {
                     // Update config
                     this[ns].setAttrs(config);
