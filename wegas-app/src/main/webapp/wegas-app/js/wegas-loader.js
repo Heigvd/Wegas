@@ -70,7 +70,7 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
                     requires: ['pusher', 'wegas-datasource']
                 },
-                'event-mouse-startstop':{
+                'event-mouse-startstop': {
                     path: "wegas-app/js/util/event-mouse-startstop-min.js",
                     requires: ["event-base"]
                 },
@@ -180,8 +180,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-absolutelayout': {
                     path: 'wegas-app/js/widget/wegas-absolutelayout-min.js',
-                    requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss", "wegas-list"],
-                    ws_provides: ['AbsoluteLayout', 'Position']
+                    requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss", "wegas-list", "wegas-cssposition"],
+                    ws_provides: ['AbsoluteLayout', "Position"]
                 },
                 'wegas-absolutelayoutcss': {
                     path: 'wegas-app/css/wegas-absolutelayout.css'

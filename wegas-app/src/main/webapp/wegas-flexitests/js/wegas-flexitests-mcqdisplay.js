@@ -109,7 +109,7 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                         question = this.get("variable.evaluated");
                 inputDiv.empty();
                 for (var i in question.get("items")) {
-                    inputDiv.append("<span data-reference='" + question.get("items")[i].get("label") + "'>" + question.get("items")[i].get("description") + "</span><br/>");
+                    inputDiv.append("<span data-reference='" + question.get("items")[i].get("name") + "'>" + question.get("items")[i].getPublicLabel() + "</span><br/>");
                 }
             },
             selector: function() {
@@ -120,7 +120,7 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                 inputDiv.append("<select><option value='" + INITIALVALUE + "'>Choose:</option></select>");
                 inputDiv = inputDiv.get("firstChild");
                 for (var i in question.get("items")) {
-                    inputDiv.append("<option value='" + question.get("items")[i].get("label") + "'>" + question.get("items")[i].get("description") + "</option>");
+                    inputDiv.append("<option value='" + question.get("items")[i].get("name") + "'>" + question.get("items")[i].getPublicLabel() + "</option>");
                 }
             },
             key: function() {

@@ -34,6 +34,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.publish("visibility-timer:restart", {
                 broadcast: 1
             });
+            this.get("contentBox").hide();
         },
         /**
          * Lifecycle method
@@ -53,6 +54,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     }
                 }
                 if (!noready) {
+                    this.get("contentBox").show();
                     this.startStimuli();
                 }
             });
