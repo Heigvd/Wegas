@@ -142,7 +142,6 @@ min-width: 800px;
 /* CrimeSim Analyisis table styles */
 .schedule-table {
     width: 100%;
-    table-layout: fixed;
     font-size: 9pt;
 }
 .schedule-table th, .schedule-table td {
