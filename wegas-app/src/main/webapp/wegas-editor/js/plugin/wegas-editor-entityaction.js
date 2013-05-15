@@ -78,9 +78,9 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     }, {
         NS: "editentity",
         NAME: "EditEntityAction",
-        STATUS:{
-            "NEW":1,
-            "EDITING":2
+        STATUS: {
+            "NEW": 1,
+            "EDITING": 2
         },
         /**
          *
@@ -95,7 +95,11 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         showEditForm: function(entity, callback, cancelCallback) {
             if (EditEntityAction.cancelCallback) {                              //A cancel action was defined. By changing form, assume cancel
-                EditEntityAction.cancelCallback(EditEntityAction.currentEntity);
+                try {
+                    EditEntityAction.cancelCallback(EditEntityAction.currentEntity);
+                } finally {
+                    EditEntityAction.cancelCallback = null;
+                }
             }
             EditEntityAction.callback = callback;
             EditEntityAction.currentEntity = entity;
