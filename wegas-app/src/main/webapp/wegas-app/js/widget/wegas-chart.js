@@ -109,37 +109,23 @@ YUI.add('wegas-chart', function(Y) {
         },
         findMinValue: function(){
             var i, h, minVal = null;
-            if (this.get("minValue") === null){
-                for (i = 0; i < this.vdList.length; i++) {
-                    for (h = 0; h < this.vdList[i].history.length; h++){
-                        if (minVal === null || this.vdList[i].history[h] < minVal){
-                            minVal = this.vdList[i].history[h];
-                        }
-                    }
-                }
-                return minVal - minVal % 10;
+            if (!this.get("minValue")){
+                return null;
             } else {
                 return this.get("minValue");
             }
         },
         findMaxValue: function(){
             var i, h, maxVal = null;
-            if (this.get("maxValue") === null){
-                for (i = 0; i < this.vdList.length; i++) {
-                    for (h = 0; h < this.vdList[i].history.length; h++){
-                        if (maxVal === null || this.vdList[i].history[h] > maxVal){
-                            maxVal = this.vdList[i].history[h];
-                        }
-                    }
-                }
-                return maxVal + (10 - maxVal % 10);
+            if (!this.get("maxValue")){
+                return null;
             } else {
                 return this.get("maxValue");
             }
         },
         findNumberOfValue: function(){
             var i, number = null;
-            if (this.get("numberOfValue") === null){
+            if (!this.get("numberOfValue")){
                 for (i = 0; i < this.vdList.length; i++) {
                     if (number === null || this.vdList[i].history.length > number){
                         number = this.vdList[i].history.length;
@@ -227,19 +213,21 @@ YUI.add('wegas-chart', function(Y) {
                 }
             },
             minValue: {
-                value: null,
                 _inputex: {
                     _type: "integer",
                     label: "Min. value",
-                    index: 2
+                    index: 2,
+                    negative:true,
+                    required: false
                 }
             },
             maxValue: {
-                value: null,
                 _inputex: {
                     _type: "integer",
                     label: "Max. value",
-                    index: 3
+                    index: 3,
+                    negative:true,
+                    required: false
                 }
             },
             chartWidth: {
@@ -259,11 +247,11 @@ YUI.add('wegas-chart', function(Y) {
                 }
             },
             numberOfValue: {
-                value: null,
                 _inputex: {
                     _type: "integer",
                     label: "Number of value",
-                    index: 4
+                    index: 4,
+                    required: false
                 }
             },
             horizontalGridlines: {
