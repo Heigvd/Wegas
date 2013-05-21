@@ -256,6 +256,16 @@ YUI.add('wegas-list', function(Y) {
                                             }
                                         }
                                     ]
+                                }, {
+                                    type: "Button",
+                                    label: "Chart",
+                                    plugins: [{
+                                            fn: "AddChildWidgetAction",
+                                            cfg: {
+                                                "childType": "Chart"
+                                            }
+                                        }
+                                    ]
                                 }
                             ]
                         }
