@@ -12,10 +12,14 @@ body > .wegas-pageloader, html{
     margin:auto;
     font-weight: bold;
 }
+.fix-point{
+    z-index:30 !important;
+}
 .test-page{
     outline: none;
     width: 1024px;
     height: 768px;
+    font-size: 14pt;
     margin:auto;
 }
 .wegas-flexitests-controller-content{
@@ -29,7 +33,8 @@ body > .wegas-pageloader, html{
 }
 .wegas-flexitests-controller > .wegas-loading-overlay{
     background-color: rgb(77, 77, 77);
-    background-image: url(../../wegas-flexitests/images/FixPoint.png);
+    background-image: none;
+    z-index: 20;
 }
 .flexitests-title{
     display: inline-block;
@@ -43,9 +48,6 @@ body > .wegas-pageloader, html{
     margin: 0;
     padding: 5px 25px 0px 10px;
     letter-spacing: -2px;
-}
-.test-page{
-    font-size: 14pt;
 }
 .wegas-flexitests-controller-content > .feedback{
     width: 50px;

@@ -9,8 +9,12 @@
                 }
             }
         ],
-        "fixPoint": "1000",
+        "fixPoint": 1000,
         "random": true,
+        "endPage": "2",
+        "store": {
+            "name": "results"
+        },
         "children": [
             {
                 "id": "leftElement",
@@ -202,6 +206,26 @@
                 "variable": {
                     "name": "test1"
                 }
+            }, 
+            {
+                "type": "Image",
+                "cssClass": "fix-point",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "200pt",
+                                "left": "300pt",
+                                "bottom": "200pt",
+                                "right": "300pt"
+                            }
+                        }
+                    }
+                ],
+                "url": "../../wegas-flexitests/images/FixPoint.png"
             }
         ]
     },
@@ -221,26 +245,6 @@
             {
                 "id": 2,
                 "type": "Form",
-                "plugins": [
-                    {
-                        "fn": "SaveEntityAction",
-                        "cfg": {
-                            "targetEvent": "submit",
-                            "variable": "VariableDescriptorFacade.find(851)"
-                        }
-                    }, 
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "submit",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": ""
-                            }
-                        }
-                    }
-                ],
                 "cfg": {
                     "fields": [
                         {
@@ -267,11 +271,6 @@
                         }, 
                         {
                             "fields": [
-                                {
-                                    "name": "oo",
-                                    "type": "string",
-                                    "value": ""
-                                }
                             ],
                             "type": "variabledescriptorselect",
                             "value": "VariableDescriptorFacade.find(851)"
@@ -306,5 +305,15 @@
         "variable": {
             "name": "currentPage"
         }
+    },
+    "4": {
+        "type": "List",
+        "direction": "vertical",
+        "children": [
+            {
+                "type": "Text",
+                "content": "<p>__Results__</p>"
+            }
+        ]
     }
 }
