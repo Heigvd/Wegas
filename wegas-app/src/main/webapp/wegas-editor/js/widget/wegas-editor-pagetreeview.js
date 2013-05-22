@@ -43,6 +43,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     this.get("pageLoader").set("pageId", node.get("data")["page"]);
                     node.get("rightWidget").menu.getMenu().item(0).fire("click");
                 }else if(node.get("data.widget")){
+                    node.get("data.widget").get(BOUNDING_BOX).scrollIntoView ();
                     node.get("rightWidget").simulate("click");
                     node.get("rightWidget").menu.getMenu().item(0).fire("click");
                     node.get("rightWidget").menu.menu.hide();
@@ -54,6 +55,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     return;
                 }
                 if(node.get("data.widget")){
+                    node.get("data.widget").get(BOUNDING_BOX).scrollIntoView ();
                     node.get("rightWidget").simulate("click");
                     node.get("rightWidget").menu.getMenu().item(0).fire("click");
                     node.get("rightWidget").menu.menu.hide();
