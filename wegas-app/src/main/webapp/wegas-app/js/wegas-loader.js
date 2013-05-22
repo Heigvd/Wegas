@@ -513,7 +513,7 @@ YUI().use(function(Y) {
                 'wegas-pageeditor': {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
                     ws_provides: 'PageEditor',
-                    requires: ['diff_match_patch', "wegas-editor-widgetaction", "event-mouse-startstop"]
+                    requires: ['diff_match_patch', "wegas-editor-widgetaction", "event-mouse-startstop", "node-scroll-info"]
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',
