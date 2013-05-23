@@ -57,4 +57,44 @@ body > .wegas-pageloader, html{
 .wegas-flexitests-mcqdisplay-feedback{
     position: relative;
     z-index: 20;
+}.wegas-flexitests-mcqdisplay-input table{
+    width:100%;
+}
+.wegas-flexitests-mcqdisplay-input label{
+    position: relative;
+    display: inline-block;
+    height: 5px;
+    background: whitesmoke;   
+}
+.wegas-flexitests-mcqdisplay-input span{
+    text-shadow: 0px 0px 10px whitesmoke;
+}
+.wegas-flexitests-mcqdisplay-input>span:hover,
+.wegas-flexitests-mcqdisplay-input label:hover span{
+    cursor:pointer;
+    text-shadow: 0px 0px 10px black;
+}
+.wegas-flexitests-mcqdisplay-input label input{
+    position: absolute;
+    margin-top: -5px;
+    width: 15px;
+    margin-left:15px;
+}
+.wegas-flexitests-mcqdisplay-input label input:hover{
+    cursor:inherit;
+}
+.wegas-flexitests-mcqdisplay-input label span{
+    width:45px;
+    background: none;
+    display: inline-block;
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    -webkit-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    transform-origin: 0 0;
+    -webkit-transform: rotate(-60deg) translate(20px,-100%);
+    -moz-transform: rotate(-60deg) translate(20px,-100%);
+    -o-transform: rotate(-60deg) translate(20px,-100%);
+    transform: rotate(-60deg) translate(20px,-100%);
+    font-size: 75%;
 }

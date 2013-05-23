@@ -744,7 +744,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-flexitests-mcqdisplay': {
                     path: "wegas-flexitests/js/wegas-flexitests-mcqdisplay-min.js",
-                    requires: ["wegas-widget"],
+                    requires: ["wegas-widget", "template"],
                     ws_provides: "FlexitestsMCQ"
                 }
             }
