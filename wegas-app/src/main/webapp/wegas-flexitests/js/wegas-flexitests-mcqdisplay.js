@@ -96,13 +96,13 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
         },
         success: function(time) {
             if (+this.get("feedback") > 0) {
-                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:lightgreen'>GOOD: " + time + " ms</i>");
+                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:lightgreen'>GOOD</i>");
                 Y.later(+this.get("feedback"), this, this.clearFeedBack);
             }
         },
         error: function(time) {
             if (+this.get("feedback") > 0) {
-                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:red'>BAD: " + time + "ms</i>");
+                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:red'>WRONG</i>");
                 Y.later(+this.get("feedback"), this, this.clearFeedBack);
             }
         },

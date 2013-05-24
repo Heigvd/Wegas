@@ -54,9 +54,12 @@ body > .wegas-pageloader, html{
     height: 50px;
     margin: auto;
 }
+.wegas-flexitests-mcqdisplay{
+    z-index: inherit !important;
+}
 .wegas-flexitests-mcqdisplay-feedback{
     position: relative;
-    z-index: 20;
+    z-index: 25;
 }.wegas-flexitests-mcqdisplay-input table{
     width:100%;
 }
@@ -97,4 +100,10 @@ body > .wegas-pageloader, html{
     -o-transform: rotate(-60deg) translate(20px,-100%);
     transform: rotate(-60deg) translate(20px,-100%);
     font-size: 75%;
+}
+.wegas-flexitests-results-content table{
+    width: 100%;
+}
+.wegas-flexitests-results-content table .row-odd{
+    background-color: #404040;
 }

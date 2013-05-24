@@ -746,6 +746,11 @@ YUI().use(function(Y) {
                     path: "wegas-flexitests/js/wegas-flexitests-mcqdisplay-min.js",
                     requires: ["wegas-widget", "template"],
                     ws_provides: "FlexitestsMCQ"
+                },
+                'wegas-flexitests-results': {
+                    path: "wegas-flexitests/js/wegas-flexitests-results-min.js",
+                    requires: ["wegas-widget"],
+                    ws_provides: "FlexitestsResults"
                 }
             }
         },
