@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,6 +27,7 @@ public class GameModelContent implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *

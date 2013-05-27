@@ -7,11 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.EntityUpdatedEvent;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
@@ -19,10 +15,14 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.websocket.pusher.Pusher;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import org.apache.http.client.ClientProtocolException;
 
 /**
  *
@@ -43,7 +43,13 @@ public class WebsocketFacade {
         return Pusher.triggerPush(entityType + "-" + entityId, filter, data);
     }
 
-    public void onRequestCommit(@Observes EntityUpdatedEvent events) throws IOException {
+    /**
+     * fire and forget pusher events
+     *
+     * @param events
+     */
+    @Asynchronous
+    public void onRequestCommit(@Observes EntityUpdatedEvent events) {
         VariableInstance v;
         EntityUpdatedEvent player = new EntityUpdatedEvent();
         EntityUpdatedEvent team = new EntityUpdatedEvent();
@@ -72,13 +78,25 @@ public class WebsocketFacade {
             }
         }
         if (game.getUpdatedEntities().size() > 0) {
-            Pusher.triggerPush("Game-" + gameId, "EntityUpdatedEvent", game.toJson());
+            try {
+                Pusher.triggerPush("Game-" + gameId, "EntityUpdatedEvent", game.toJson());
+            } catch (IOException ex) {
+                //
+            }
         }
         if (team.getUpdatedEntities().size() > 0) {
-            Pusher.triggerPush("Team-" + teamId, "EntityUpdatedEvent", team.toJson());
+            try {
+                Pusher.triggerPush("Team-" + teamId, "EntityUpdatedEvent", team.toJson());
+            } catch (IOException ex) {
+                //
+            }
         }
         if (player.getUpdatedEntities().size() > 0) {
-            Pusher.triggerPush("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
+            try {
+                Pusher.triggerPush("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
+            } catch (IOException ex) {
+                //
+            }
         }
     }
 }

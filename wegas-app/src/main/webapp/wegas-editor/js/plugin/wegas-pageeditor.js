@@ -50,8 +50,10 @@ YUI.add('wegas-pageeditor', function(Y) {
                             if (e.target.get("pressed")) {
                                 this.bind();
                                 this.layoutbutton.show();
+                                this.get("host").get(CONTENTBOX).prepend(this.overlayMask);
                             } else {
                                 this.detach();
+                                this.overlayMask.remove(false);
                                 this.highlightOverlay.hide();
                                 if (this.layoutbutton.get("pressed")) {
                                     this.layoutbutton.toggle();
@@ -96,38 +98,60 @@ YUI.add('wegas-pageeditor', function(Y) {
                 render: true,
                 visible: false
             });
-
+            this.overlayMask = new Y.Node.create("<div></div>");
             this.highlightOverlay.plug(Y.Plugin.WidgetMenu, {
                 event: "click"
-                        /*selector: ".wegas-icon"*/
             });
+            this.overlayMask.setStyles({
+                zIndex: 30,
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                top: 0,
+                left: 0
+            });
+            this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
+            host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
         },
         bind: function() {
-            var cb = this.get('host').get(CONTENTBOX);
-
-            this.highlightOverlay.menu.on("menuOpen", function(e) {
+            this.handlers.push(this.highlightOverlay.menu.on("menuOpen", function(e) {
+                if (!this.highlightOverlay.get("visible")) {
+                    this.highlightOverlay.menu.menu.hide();
+                    return;
+                }
                 this.highlightOverlay.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                 this.targetWidget = this.overlayWidget;
                 this.highlightOverlay.menu.set("children", this.targetWidget.getMenuCfg({
                     widget: this.targetWidget
                 }));
-            }, this);
+            }, this));
 
-            this.handlers.push(cb.delegate("mousemove", function(e) {
+            this.handlers.push(this.overlayMask.on("mousemove", function(e) {
                 var widget;
-                e.halt();
+                e.halt(true);
+                this.overlayMask.hide();
                 this.highlightOverlay.hide();
                 widget = Y.Widget.getByNode(window.document.elementFromPoint(e.clientX, e.clientY));
-                this.highlightOverlay.show();
+                this.overlayMask.show();
+                if (this.get("host") === widget) {
+                    return;
+                }
                 if (this.overlayWidget !== widget) {
                     this.showOverlay(widget);
+                } else {
+                    this.highlightOverlay.show();
                 }
-            }, '.wegas-widget', this));
-
-            this.handlers.push(cb.delegate("mouseleave", function(e) {
-                e.halt();
+            }, this));
+            this.handlers.push(this.overlayMask.on("click", function(e) {
+                e.halt(true);
+                this.highlightOverlay.get(CONTENTBOX).simulate("click", e);
+            }, this));
+            this.get("host").get(CONTENTBOX).after("mouseout", function() {
                 this.hideOverlay();
-            }, '.wegas-widget', this));
+            }, this);
+            this.get("host").get(CONTENTBOX).scrollInfo.on("*:scroll", function(e) {
+                this.overlayMask.setStyles({top: e.scrollTop, left: e.scrollLeft});
+            }, this);
         },
         processSave: function() {
             var host = this.get("host"),
@@ -196,9 +220,13 @@ YUI.add('wegas-pageeditor', function(Y) {
 
             this.overlayWidget = widget;
 
-            targetNode.prepend(this.highlightOverlay.get(BOUNDINGBOX));
+            //targetNode.prepend(this.highlightOverlay.get(BOUNDINGBOX));
             this.highlightOverlay.get(CONTENTBOX).setContent("<div>" + widget.getName() + "</div>");
             this.highlightOverlay.align(targetNode, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.TL]);
+            this.highlightOverlay.get(BOUNDINGBOX).setStyles({
+                width: widget.get(BOUNDINGBOX).getDOMNode().offsetWidth,
+                height: widget.get(BOUNDINGBOX).getDOMNode().offsetHeight
+            });
             this.highlightOverlay.show();
         },
         hideOverlay: function() {

@@ -1,9 +1,10 @@
 YUI.add("lang/wegas-jstranslator_fr", function(Y) {
     Y.Intl.add("wegas-jstranslator", "fr",
             {
-                Unanswered: "Non répondu",
+                Delete: "Supprimer",
+                Empty: "Vide",
                 No_description: "Aucune description",
-                Delete: "Supprimer"
+                Unanswered: "Non répondu"
             }
     );
 });

@@ -85,6 +85,14 @@ public class AbstractGameController implements Serializable {
         return ret;
     }
 
+    public String getStyleSheets() {
+        String ret = "";
+        for (GameModelContent c : this.getCurrentGameModel().getCssLibrary().values()) {
+            ret += c.getContent();
+        }
+        return ret;
+    }
+
     /**
      *
      * @return the game the game the current player belongs to.

@@ -228,16 +228,18 @@ YUI.add("wegas-inputex-list", function(Y) {
          * @param {Object} value
          */
         addPluginField: function(fn, value) {
-            var cfg, targetPlg = Y.Plugin[fn],
-                    w = new Y.Wegas.Text();                                     // Use this hack to retrieve a plugin config
-            w.plug(targetPlg);
-            cfg = w[targetPlg.NS].getFormCfg();
-            cfg.name = targetPlg.NAME;
-            cfg.value = value;
-            inputEx.use(w[targetPlg.NS].getFormCfg(), Y.bind(function(cfg) {
-                this.addField(cfg);
-                this.fireUpdatedEvt();
-            }, this, cfg, value));
+            Y.use(Y.Wegas.Editable.getRawModulesFromDefinition({type: fn}), Y.bind(function() { //load required modules
+                var cfg, targetPlg = Y.Plugin[fn],
+                        w = new Y.Wegas.Text();                                     // Use this hack to retrieve a plugin config
+                w.plug(targetPlg);
+                cfg = w[targetPlg.NS].getFormCfg();
+                cfg.name = targetPlg.NAME;
+                cfg.value = value;
+                inputEx.use(w[targetPlg.NS].getFormCfg(), Y.bind(function(cfg) {
+                    this.addField(cfg);
+                    this.fireUpdatedEvt();
+                }, this, cfg, value));
+            }, this));
         }
     });
     inputEx.registerType("pluginlist", PluginList);                             // Register this class as "list" type
