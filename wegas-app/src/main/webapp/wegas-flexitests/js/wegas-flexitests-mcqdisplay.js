@@ -57,15 +57,22 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.get("contentBox").delegate("click", function(e) {
+            this.events.push(this.get("contentBox").delegate("click", function(e) {
                 e.halt(true);
                 this.fire("clientResponse", {value: e.currentTarget.getData("reference")});
-            }, "." + this.getClassName("input") + " > span", this);
-            this.get("contentBox").one("." + this.getClassName("input")).delegate("change", function(e) {
+            }, "." + this.getClassName("input") + " > span", this));
+            this.events.push(this.get("contentBox").one("." + this.getClassName("input")).delegate("change", function(e) {
                 e.halt(true);
                 this.fire("clientResponse", {value: e.target.getDOMNode().value});
                 e.target.getDOMNode().value = INITIALVALUE;
-            }, "select", this);
+            }, "select", this));
+            this.events.push(this.get("contentBox").one("." + this.getClassName("input")).delegate("change", function(e) {
+                e.halt(true);
+                if (e.target.getDOMNode().value) {
+                    this.fire("clientResponse", {value: e.target.getDOMNode().value});
+                    e.target.getDOMNode().checked = false;
+                }
+            }, "form", this));
             this.events.push(this.get("root").get("boundingBox").after("keypress", function(e) {
                 this.keyPressed(String.fromCharCode(e.keyCode));
             }, this));
@@ -89,18 +96,22 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
         },
         success: function(time) {
             if (+this.get("feedback") > 0) {
-                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:lightgreen'>GOOD: " + time + " ms</i>");
+                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:lightgreen'>GOOD</i>");
                 Y.later(+this.get("feedback"), this, this.clearFeedBack);
             }
         },
         error: function(time) {
             if (+this.get("feedback") > 0) {
-                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:red'>BAD: " + time + "ms</i>");
+                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:red'>WRONG</i>");
                 Y.later(+this.get("feedback"), this, this.clearFeedBack);
             }
         },
         clearFeedBack: function() {
-            this.get("contentBox").one("." + this.getClassName("feedback")).empty();
+            try {
+                this.get("contentBox").one("." + this.getClassName("feedback")).empty();
+            } catch (e) {
+                //page changed?
+            }
         },
         generators: {
             link: function() {
@@ -109,22 +120,37 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                         question = this.get("variable.evaluated");
                 inputDiv.empty();
                 for (var i in question.get("items")) {
-                    inputDiv.append("<span data-reference='" + question.get("items")[i].get("label") + "'>" + question.get("items")[i].get("description") + "</span><br/>");
+                    inputDiv.append("<span data-reference='" + question.get("items")[i].get("name") + "'>" + question.get("items")[i].getPublicLabel() + "</span><br/>");
                 }
             },
             selector: function() {
                 var cb = this.get("contentBox"),
                         inputDiv = cb.one("." + this.getClassName("input")),
-                        question = this.get("variable.evaluated");
+                        question = this.get("variable.evaluated"),
+                        engine = new Y.Template(Y.Template.Micro),
+                        render = engine.compile("<select><option value='" + INITIALVALUE + "'>Choose:</option>" +
+                        "<% for(var i in this.get('items')){ %>" +
+                        "<option value='<%= this.get('items')[i].get('name')%>'><%= this.get('items')[i].getPublicLabel() %></option>" +
+                        "<% } %></select>");
                 inputDiv.empty();
-                inputDiv.append("<select><option value='" + INITIALVALUE + "'>Choose:</option></select>");
-                inputDiv = inputDiv.get("firstChild");
-                for (var i in question.get("items")) {
-                    inputDiv.append("<option value='" + question.get("items")[i].get("label") + "'>" + question.get("items")[i].get("description") + "</option>");
-                }
+                inputDiv.append(render(question));
             },
             key: function() {
+                this.get("contentBox").one("." + this.getClassName("input")).empty();
                 this.choices = this.get("variable.evaluated").get("items");
+            },
+            radio: function() {
+                var cb = this.get("contentBox"),
+                        inputDiv = cb.one("." + this.getClassName("input")),
+                        question = this.get("variable.evaluated"),
+                        engine = new Y.Template(Y.Template.Micro),
+                        render = engine.compile("<form>" +
+                        "<% for(var i in this.get('items')){ %>" +
+                        "<label><input type='radio' name='mcq-flexi-radio' value='<%= this.get('items')[i].get('name')%>'><span><%= this.get('items')[i].getPublicLabel() %></span></label>" +
+                        "<% } %>" +
+                        "</form>");
+                inputDiv.empty();
+                inputDiv.append(render(question));
             }
         },
         /**
@@ -163,6 +189,10 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                     {
                         value: "key",
                         label: "Keyboard F/H"
+                    },
+                    {
+                        value: "radio",
+                        label: "Horizontal scale"
                     }
                 ]
             },

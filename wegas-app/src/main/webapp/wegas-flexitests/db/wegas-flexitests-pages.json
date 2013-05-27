@@ -1,65 +1,287 @@
 {
-    "1": {
-        "type": "PageLoader",
-        "pageLoaderId": "mainarea",
-        "cssClass": "flexitests",
-        "variable": {
-            "name": "currentPage"
-        },
+    "3": {
+        "type": "FlexitestsController",
+        "cssClass": "test-page",
         "plugins": [{
-            "fn": "Popup"
-        }]
+                "fn": "SwapZone",
+                "cfg": {
+                    "after": 1
+                }
+            }
+        ],
+        "fixPoint": 1000,
+        "random": true,
+        "endPage": "2",
+        "store": {
+            "name": "results"
+        },
+        "children": [
+            {
+                "id": "leftElement",
+                "type": "ChoiceList",
+                "plugins": [
+                    {
+                        "fn": "HideAfter",
+                        "cfg": {
+                            "time": "0,1000"
+                        }
+                    }, 
+                    {
+                        "fn": "ShowAfter",
+                        "cfg": {
+                            "time": "500"
+                        }
+                    }, 
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "50pt",
+                                "left": "50pt",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "Male"
+                    }
+                ]
+            }, 
+            {
+                "id": "rightElement",
+                "type": "ChoiceList",
+                "plugins": [
+                    {
+                        "fn": "HideAfter",
+                        "cfg": {
+                            "time": "0,1500"
+                        }
+                    }, 
+                    {
+                        "fn": "ShowAfter",
+                        "cfg": {
+                            "time": "1000"
+                        }
+                    }, 
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "50pt",
+                                "left": "",
+                                "bottom": "",
+                                "right": "50pt"
+                            }
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "Female"
+                    }
+                ]
+            }, 
+            {
+                "id": "centerElement",
+                "type": "ChoiceList",
+                "plugins": [
+                    {
+                        "fn": "HideAfter",
+                        "cfg": {
+                            "time": "0"
+                        }
+                    }, 
+                    {
+                        "fn": "ShowAfter",
+                        "cfg": {
+                            "time": "1500"
+                        }
+                    }, 
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "300px",
+                                "left": "300px",
+                                "bottom": "",
+                                "right": "300px"
+                            }
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "Image",
+                        "plugins": [
+                            {
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "male"
+                                }
+                            }
+                        ],
+                        "url": "/hectorPerplexe.png"
+                    }, 
+                    {
+                        "type": "Image",
+                        "plugins": [
+                            {
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "female"
+                                }
+                            }
+                        ],
+                        "url": "/jessicaPerplexe.png"
+                    }, 
+                    {
+                        "type": "Image",
+                        "plugins": [
+                            {
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "male"
+                                }
+                            }
+                        ],
+                        "url": "/lucienPortrait.png"
+                    }, 
+                    {
+                        "type": "Image",
+                        "plugins": [
+                            {
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "female"
+                                }
+                            }
+                        ],
+                        "url": "/danielaConfiant.png"
+                    }, 
+                    {
+                        "type": "Image",
+                        "plugins": [
+                            {
+                                "fn": "FlexiResponse",
+                                "cfg": {
+                                    "value": "male"
+                                }
+                            }
+                        ],
+                        "url": "/fernandPensif.png"
+                    }
+                ]
+            }, 
+            {
+                "id": "flexi-mcq",
+                "type": "FlexitestsMCQ",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "",
+                                "left": "200px",
+                                "bottom": "30px",
+                                "right": "200px"
+                            }
+                        }
+                    }
+                ],
+                "feedback": 1000,
+                "responseType": "link",
+                "variable": {
+                    "name": "test1"
+                }
+            }, 
+            {
+                "type": "Image",
+                "cssClass": "fix-point",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "200pt",
+                                "left": "300pt",
+                                "bottom": "200pt",
+                                "right": "300pt"
+                            }
+                        }
+                    }
+                ],
+                "url": "../../wegas-flexitests/images/FixPoint.png"
+            }
+        ]
     },
     "2": {
         "type": "List",
         "direction": "vertical",
-        "children": [{
+        "children": [
+            {
                 "type": "Text",
-                "content": "FlexiTests",
-                "cssClass": "flexitests-title"
-            }, {
+                "cssClass": "flexitests-title",
+                "content": "FlexiTests"
+            }, 
+            {
                 "type": "Text",
                 "content": "_INSTRUCTIONS_"
-            }, {
+            }, 
+            {
                 "id": 2,
                 "type": "Form",
                 "cfg": {
-                    "type": "group",
-                    "fields": [{
+                    "fields": [
+                        {
                             "name": "fullname",
-                            "label": "Name"
-                        }, {
+                            "label": "Name",
+                            "type": "string",
+                            "value": ""
+                        }, 
+                        {
                             "name": "gender",
                             "label": "Gender",
+                            "choices": [
+                                {
+                                    "value": "m",
+                                    "label": "M"
+                                }, 
+                                {
+                                    "value": "f",
+                                    "label": "F"
+                                }
+                            ],
                             "type": "select",
-                            "choices": [{"label": "M", "value": "m"}, {"label": "F", "value": "f"}]
-                        }]
-                },
-                "plugins": [{
-                        "fn": "SaveEntityAction",
-                        "cfg": {
-                            "targetEvent": "submit",
-                            "variable": {
-                                "name": "demographics"
-                            }
+                            "value": "m"
+                        }, 
+                        {
+                            "fields": [
+                            ],
+                            "type": "variabledescriptorselect",
+                            "value": "VariableDescriptorFacade.find(851)"
                         }
-                    }, {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "submit",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "/*currentPage.value = 10;*/"
-                            }
-                        }
-                    }]
-
-            }, {
-                "type": "Button",
-                "label": "Submit",
-                "cssClass": null,
+                    ]
+                }
+            }, 
+            {
                 "disabled": false,
+                "label": "Submit",
+                "type": "Button",
                 "plugins": [
                     {
                         "fn": "ExecuteScriptAction",
@@ -76,188 +298,21 @@
             }
         ]
     },
-    "3": {
-        "type": "FlexitestsController",
-        "cssClass": "test-page",
-        "fixPoint": "1000",
-        "random": true,
+    "1": {
+        "type": "PageLoader",
+        "pageLoaderId": "mainarea",
+        "cssClass": "flexitests",
+        "variable": {
+            "name": "currentPage"
+        }
+    },
+    "4": {
+        "type": "List",
+        "direction": "vertical",
         "children": [
             {
-                "id": "leftElement",
-                "type": "ChoiceList",
-                "plugins": [
-                    {
-                        "fn": "Position",
-                        "cfg": {
-                            "left": "50",
-                            "top": "50"
-                        }
-                    },
-                    {
-                        "fn": "HideAfter",
-                        "cfg": {
-                            "time": "0,1000"
-                        }
-                    },
-                    {
-                        "fn": "ShowAfter",
-                        "cfg": {
-                            "time": "500"
-                        }
-                    }
-                ],
-                "children": [
-                    {
-                        "type": "Text",
-                        "content": "Male"
-                    }
-                ]
-            },
-            {
-                "id": "rightElement",
-                "type": "ChoiceList",
-                "plugins": [
-                    {
-                        "fn": "Position",
-                        "cfg": {
-                            "top": "50",
-                            "right": "50"
-                        }
-                    },
-                    {
-                        "fn": "HideAfter",
-                        "cfg": {
-                            "time": "0,1500"
-                        }
-                    },
-                    {
-                        "fn": "ShowAfter",
-                        "cfg": {
-                            "time": "1000"
-                        }
-                    }
-                ],
-                "children": [
-                    {
-                        "type": "Text",
-                        "content": "Female"
-                    }
-                ]
-            },
-            {
-                "id": "centerElement",
-                "type": "ChoiceList",
-                "plugins": [
-                    {
-                        "fn": "Position",
-                        "cfg": {
-                            "left": "300",
-                            "top": "300",
-                            "right": "300"
-                        }
-                    },
-                    {
-                        "fn": "HideAfter",
-                        "cfg": {
-                            "time": "0"
-                        }
-                    },
-                    {
-                        "fn": "ShowAfter",
-                        "cfg": {
-                            "time": "1500"
-                        }
-                    }
-                ],
-                "children": [
-                    {
-                        "type": "Image",
-                        "plugins": [
-                            {
-                                "fn": "FlexiResponse",
-                                "cfg": {
-                                    "value": "male"
-                                }
-                            }
-                        ],
-                        "url": "/hectorPerplexe.png"
-                    },
-                    {
-                        "type": "Image",
-                        "plugins": [
-                            {
-                                "fn": "FlexiResponse",
-                                "cfg": {
-                                    "value": "female"
-                                }
-                            }
-                        ],
-                        "url": "/jessicaPerplexe.png"
-                    },
-                    {
-                        "type": "Image",
-                        "plugins": [
-                            {
-                                "fn": "FlexiResponse",
-                                "cfg": {
-                                    "value": "male"
-                                }
-                            }
-                        ],
-                        "url": "/lucienPortrait.png"
-                    },
-                    {
-                        "type": "Image",
-                        "plugins": [
-                            {
-                                "fn": "FlexiResponse",
-                                "cfg": {
-                                    "value": "female"
-                                }
-                            }
-                        ],
-                        "url": "/danielaConfiant.png"
-                    },
-                    {
-                        "type": "Image",
-                        "plugins": [
-                            {
-                                "fn": "FlexiResponse",
-                                "cfg": {
-                                    "value": "male"
-                                }
-                            }
-                        ],
-                        "url": "/fernandPensif.png"
-                    }
-                ]
-            },
-            {
-                "id": "flexi-mcq",
-                "type": "FlexitestsMCQ",
-                "plugins": [
-                    {
-                        "fn": "Position",
-                        "cfg": {
-                            "left": "200",
-                            "right": "200",
-                            "bottom": "30"
-                        }
-                    }
-                ],
-                "feedback": 1000,
-                "responseType": "link",
-                "variable": {
-                    "name": "test1"
-                }
-            }
-        ],
-        "plugins": [
-            {
-                "fn": "SwapZone",
-                "cfg": {
-                    "after": 1
-                }
+                "type": "Text",
+                "content": "<p>__Results__</p>"
             }
         ]
     }

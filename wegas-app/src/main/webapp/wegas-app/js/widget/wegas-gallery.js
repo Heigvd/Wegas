@@ -57,12 +57,6 @@ YUI.add("wegas-gallery", function(Y) {
          */
         scrollView: null,
         /**
-         * Default styleSheet of this widget
-         * @field
-         * @private
-         */
-        styleSheet: null,
-        /**
          * Current display mode of this widget (boolean fullscreen)
          * @field
          * @private
@@ -88,7 +82,7 @@ YUI.add("wegas-gallery", function(Y) {
          */
         initializer: function() {
             if (!this.constructor.prototype.FULLSCREENNODE) {
-                this.constructor.prototype.FULLSCREENNODE = new Y.Node.create("<div class='gallery-fullscreen' style='position:absolute;top:0;left:0;width:100%;z-index:40'><span><span></div>");
+                this.constructor.prototype.FULLSCREENNODE = new Y.Node.create("<div class='gallery-fullscreen'><span><span></div>");
                 this.constructor.prototype.FULLSCREENNODE.appendTo(Y.one("body"));
                 this.constructor.prototype.FULLSCREENNODE.on('contextmenu', function(e) {
                     e.preventDefault();
@@ -114,6 +108,7 @@ YUI.add("wegas-gallery", function(Y) {
                 this.render();
             }
 
+            Y.StyleSheet.register(new Y.StyleSheet(), this.get("id"));
         },
         /**
          * @function
@@ -142,28 +137,29 @@ YUI.add("wegas-gallery", function(Y) {
          *  @returns {undefined}
          */
         syncUI: function() {
-            var styles = [],
-                    scrollViewId,
+            var galleryId,
                     selW,
                     selH,
                     smaH,
-                    smaW;
+                    smaW,
+                    container,
+                    styleSheet = Y.StyleSheet(this.get("id"));
             if (!this.scrollView.get("rendered")) {
                 return;
             }
             this.set("selectedWidth", this.get("selectedWidth"));
             this.set("selectedHeight", this.get("selectedHeight"));
-            scrollViewId = "#" + this.scrollView.get("id") + " ", // prefix css with id, allow multiple instance with different style
+            galleryId = "#" + this.scrollView.get("id") + " ", // prefix css with id, allow multiple instance with different style
                     selW = parseInt(this.get("selectedWidth")),
                     selH = this.get("selectedHeight"),
                     smaH,
                     smaW;
-            if (this.styleSheet) {
-                this.styleSheet.disable();
+            if (styleSheet) {
+                styleSheet.disable();
             }
             if (this.get("fullScreen") || this.get("lightGallery")) {
                 selH = (Y.one("body").get("winHeight") - 100);
-                selW = Y.one("body").get("winWidth") / 2;
+                selW = Y.one("body").get("winWidth") / 1.7;
                 if (!this.isFullScreen) {
                     this.isFullScreen = true;
                     this.scrollView.get(BOUNDING_BOX).swap(this.FULLSCREENNODE);
@@ -174,7 +170,8 @@ YUI.add("wegas-gallery", function(Y) {
                     this.scrollView.get(BOUNDING_BOX).swap(this.FULLSCREENNODE);
                 }
             }
-            smaW = (this.scrollView.get(BOUNDING_BOX).get("parentNode").get("region").width - parseInt(this.scrollView.get(BOUNDING_BOX).get("parentNode").getStyle("padding-right")) - parseInt(this.scrollView.get(BOUNDING_BOX).get("parentNode").getStyle("padding-left")) - selW - 90) / 2;
+            container = this.scrollView.get(BOUNDING_BOX).get("parentNode");
+            smaW = (parseInt(container.getComputedStyle("width")) - selW - 90) / 2;
             smaH = selH * 0.5;
             //smaW = selW * 0.6;
             if (this.get("gallery").length > 0) {
@@ -184,35 +181,13 @@ YUI.add("wegas-gallery", function(Y) {
                 return;
             }
             this.scrollView.set("width", selW + 30);
-            styles.push(scrollViewId,
-                    ".wegas-gallery li{width:",
-                    (selW + 30),
-                    "px;height:",
-                    (selH + 30),
-                    "px;}",
-                    scrollViewId,
-                    ".wegas-gallery img{max-width:",
-                    (smaW),
-                    "px;max-height:",
-                    (smaH),
-                    "px;}",
-                    scrollViewId,
-                    ".wegas-gallery .gallery-selected img{max-width:",
-                    (selW),
-                    "px;max-height:",
-                    (selH),
-                    "px;}",
-                    scrollViewId,
-                    ".gallery-mask{width:",
-                    (smaW + 30),
-                    "px;}",
-                    scrollViewId,
-                    ".gallery-text{width:",
-                    (selW + 24),
-                    "px;max-height:",
-                    (selH),
-                    "px;}");
-            this.styleSheet = new Y.StyleSheet(styles.join(""));
+            styleSheet.set(galleryId + ".wegas-gallery li", {width: (selW + 30) + "px", height: (selH + 30) + "px"});
+            styleSheet.set(galleryId + ".gallery-mask", {width: (smaW + 30) + "px"});
+            styleSheet.set(galleryId + ".gallery-text", {width: (selW + 24) + "px", "max-height": selH + "px"});
+            styleSheet.set(galleryId + ".wegas-gallery img", {"max-width": smaW + "px", "max-height": (selH + 30) + "px"});
+            styleSheet.set(galleryId + ".wegas-gallery .gallery-selected img", {"max-width": selW + "px", "max-height": selH + "px"});
+
+            styleSheet.enable();
             this.scrollView.get(BOUNDING_BOX).setStyles({
                 padding: "0 " + (smaW + 45) + "px 0 " + (smaW + 15) + "px"
             });
@@ -368,12 +343,13 @@ YUI.add("wegas-gallery", function(Y) {
          *  all functions created by this widget.
          */
         destructor: function() {
-            if (this.styleSheet) {
-                this.styleSheet.disable();
+            if (Y.StyleSheet(this.get("id"))) {
+                Y.StyleSheet(this.get("id")).disable();
             }
             for (var i = 0; i < this.handlers.length; i = i + 1) {
                 this.handlers[i].detach();
             }
+            this.scrollView.destroy();
         },
         // *** Private Methods *** //
         /**Generate index indicator

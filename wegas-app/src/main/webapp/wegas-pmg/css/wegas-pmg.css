@@ -195,10 +195,11 @@
 }
 
 h2{
-    padding:5px 0 5px 5px;
+    padding:3px 0 5px 5px;
     font-weight: bold;
     border:solid 1px black;
     border-width: 0 0 1px 0;
+    font-size: 1.2em
 }
 
 
@@ -369,6 +370,9 @@ h2{
 .wegas-mcqtabview .reply content {
     /*font-weight: bold;*/
     margin-bottom:5px;
+}
+.wegas-mcqtabview .numberOfReplies{
+   float:right;
 }
 .wegas-mcqtabview .unread {
     font-weight:bold;

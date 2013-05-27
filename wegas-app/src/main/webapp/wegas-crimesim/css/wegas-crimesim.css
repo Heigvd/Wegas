@@ -142,7 +142,6 @@ min-width: 800px;
 /* CrimeSim Analyisis table styles */
 .schedule-table {
     width: 100%;
-    table-layout: fixed;
     font-size: 9pt;
 }
 .schedule-table th, .schedule-table td {
@@ -378,6 +377,13 @@ min-width: 800px;
 .wegas-mcqtabview .reply content {
     /*font-weight: bold;*/
     margin-bottom:5px;
+}
+.wegas-mcqtabview .numberOfReplies{
+   float:right;
+   margin-left: 1em;
+}
+.wegas-mcqtabview .replyDiv{
+    border-top: 1px #888 solid;
 }
 .wegas-mcqtabview .unread {
     font-weight:bold;

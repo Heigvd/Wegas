@@ -67,10 +67,10 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ? ["tr", "tl"] : ["tl", "tr"]
                 });
                 this.menuDetails.get("contentBox").setHTML('<div style="padding:5px 10px">'
-                        //+ (choice.get("description") || "<em> + this.translator.getRB().No_description + </em>")// Removed cause description is dynamic
-                        + (extendedChoice.get("description") || "<em> + this.translator.getRB().No_description + </em>")// Removed cause description is dynamic
-                        + "<br /><br />Human resources needed: " + choice.get("cost")
-                        + "<br />Duration: " + choice.get("duration")
+                        //+ (choice.get("description") || "<em>" + this.translator.getRB().No_description + "</em>")// Removed cause description is dynamic
+                        + (extendedChoice.get("description") || "<em>" + this.translator.getRB().No_description + "</em>")// Removed cause description is dynamic
+                        + "<br /><br />" + this.translator.getRB().Human_resources_needed + ": " + choice.get("cost")
+                        + "<br />" + this.translator.getRB().Duration + ": " + choice.get("duration")
                         + '</div>');
                 this.menuDetails.show();
             }, this);
@@ -136,6 +136,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         }
                         this.hideOverlay();
                         this.datatable.syncUI();
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this.hideOverlay();
                     }, this)
                 }});
         },
@@ -230,7 +233,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         cols[cIndex].push("schedule-ongoingtask");
                     }
 
-                    names[cIndex] = choiceDescriptor.get("name");
+                    names[cIndex] = choiceDescriptor.getPublicLabel();
                     replies[cIndex] = reply;
 
                     for (k = 1; k < choiceDescriptor.get("duration"); k += 1) {
@@ -338,9 +341,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 status = reply.getStatus(this.currentTime);
 
                 if (status === 1) {
-                    replyData.answer = "analysis in progress";
+                    replyData.answer = this.translator.getRB().Analysis_in_progress;
                 } else if (status === 2) {
-                    replyData.answer = "analysis planified";
+                    replyData.answer = this.translator.getRB().Analysis_planified;
                 } else {
                     replyData.fileLinks = "";
                     for (k = 0; k < replyData.files.length; k = k + 1) {
@@ -352,7 +355,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         delete replyData.fileLinks;
                     }
                 }
-                replyData.analyis = reply.getChoiceDescriptor().get("name");
+                replyData.analyis = reply.getChoiceDescriptor().getPublicLabel();
                 replyData.startTime = replyData.startTime + 1;
                 this.data.push(replyData);
             }
@@ -380,15 +383,15 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var choiceDescriptor = reply.getChoiceDescriptor(),
                     status = reply.getStatus(this.currentTime),
                     ret = ['<div class="schedule-detail-reply"><h3>Period ',
-                reply.get("startTime") + 1, ': ', choiceDescriptor.get("name") || "undefined",
+                reply.get("startTime") + 1, ': ', choiceDescriptor.getPublicLabel() || "undefined",
                 '</h3><div class="content">'];
 
             if (status === 0) {
                 ret.push(reply.get("result").get("answer"));
             } else if (status === 1) {
-                ret.push("analysis in progress");
+                ret.push(this.translator.getRB().Analysis_in_progress);
             } else {
-                ret.push("analysis planified");
+                ret.push(this.translator.getRB().Analysis_planified);
             }
             ret.push("</div>");
             return ret.join("");
@@ -409,8 +412,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             this.showOverlay();
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.app.get('currentPlayer')
-            });
+                request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.app.get('currentPlayer'),
+                on: {failure: Y.bind(function(e) {
+                        this.hideOverlay();
+                    }, this)
+                }});
         },
         onMenuClick: function(e) {
             var data = e.target.get("data");
@@ -418,8 +424,11 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.showOverlay();
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/QuestionDescriptor/SelectChoice/" + data.choice.get("id")
-                        + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/"
-            });
+                        + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/",
+                on: {failure: Y.bind(function(e) {
+                        this.hideOverlay();
+                    }, this)
+                }});
         },
         /**
          * Return a list of possible actions on a given action at a given time.

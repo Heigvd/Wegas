@@ -155,7 +155,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     key: "fileLinks",
                     allowHTML: true,
                     label: this.translator.getRB().File,
-                    emptyCellValue: this.translator.getRB().No_File
+                    emptyCellValue: this.translator.getRB().No_file
                 }];
             this.datatable = new Y.Wegas.CrimeSimTreeble({
                 columns: columns,
@@ -197,9 +197,9 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     }
 
                     if (status === 1) {
-                        replyData.answer = "analysis in progress";
+                        replyData.answer = this.translator.getRB().Analysis_in_progress;
                     } else if (status === 2) {
-                        replyData.answer = "analysis planified";
+                        replyData.answer = this.translator.getRB().Analysis_planified;
                     } else {
                         replyData.fileLinks = "";
                         for (k = 0; k < replyData.files.length; k = k + 1) {

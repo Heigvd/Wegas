@@ -34,6 +34,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.publish("visibility-timer:restart", {
                 broadcast: 1
             });
+            this.get("contentBox").hide();
         },
         /**
          * Lifecycle method
@@ -53,6 +54,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     }
                 }
                 if (!noready) {
+                    this.get("contentBox").show();
                     this.startStimuli();
                 }
             });
@@ -69,41 +71,87 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          * @returns {undefined}
          */
         syncUI: function() {
+            this.mask();
             this.leftElement = this.getChildById("leftElement");
             this.rightElement = this.getChildById("rightElement");
             this.centerElement = this.getChildById("centerElement");
+            this.fixPoint = this.get("contentBox").all(".fix-point");
+            this.fixPoint.hide();
             this.mcq = this.getChildById("flexi-mcq");
             this.maxSize = Math.max(this.leftElement.size(), this.rightElement.size(), this.centerElement.size());
             for (var i = 0; i < this.maxSize; i += 1) {
                 this.questionToDo[i] = i;
             }
-            this.mask();
             this.next();
         },
         responseGiven: function(response) {
-            var responseTime = Y.Lang.now() - this.startTime, reponseElement;
+            var responseTime = Y.Lang.now() - this.startTime,
+                    reponseElement,
+                    elements = this.collectElements();
             this.ongoing = false;
+            this.mask();
+            elements.index = +this.maxSize - this.questionToDo.length;
+            elements.id = this.currentQuestionId;
+            elements.response = response;
+            elements.delay = responseTime;
             if ((reponseElement = this.centerElement.getActiveElement().flexiresponse) instanceof Y.Plugin.FlexiResponse &&
                     reponseElement.get("value") === response) {
+                elements.valid = true;
                 this.mcq.success(responseTime);
             } else {
+                elements.valid = false;
                 this.mcq.error(responseTime);
             }
-            if (this.questionToDo.length === 0) {
-                this.mask();
-                alert("Test finished");
-            } else {
+            this.save(elements);
+            if (this.questionToDo.length !== 0) {
                 this.next();
             }
         },
+        save: function(el) {
+            var id = el.index;
+            delete el.index;
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                cfg: {
+                    method: "POST",
+                    data: Y.JSON.stringify({
+                        "@class": "Script",
+                        "language": "JavaScript",
+                        "content": "store(" + this.get("store.evaluated").get("name") + ",'" + id + "','" + Y.JSON.stringify(el) + "');"
+                    })
+                },
+                on: {
+                    failure: Y.bind(function(e) {
+                        Y.log("error", "Failed to store data", "Y.Wegas.FlexitestController");
+                    }, this)
+                }
+            });
+        },
         next: function() {
             this.mask();
+            this.fixPoint.show();
             this.set("currentLoading", {"left": true, "center": true, "right": true});
             this.currentQuestionId = this.generateNextId();
             this.centerElement.set("element", +this.currentQuestionId);
             this.leftElement.set("element", +this.currentQuestionId);
             this.rightElement.set("element", +this.currentQuestionId);
             Y.later(this.get("fixPoint"), this, this.createLoadingEvent);
+        },
+        collectElements: function() {
+            var elements = {},
+                    swaped = this.swapzone ? this.swapzone.swaped : false,
+                    left = this.leftElement.getActiveElement(),
+                    center = this.centerElement.getActiveElement(),
+                    right = this.rightElement.getActiveElement();
+            if (swaped) {
+                elements.left = right.get("content") || right.get("url");
+                elements.right = left.get("content") || left.get("url");
+            } else {
+                elements.left = left.get("content") || left.get("url");
+                elements.right = right.get("content") || right.get("url");
+            }
+            elements.center = center.get("content") || center.get("url");
+            return elements;
         },
         createLoadingEvent: function() {
             this.centerElement.getActiveElement().onceAfter("render", function(e) {
@@ -131,6 +179,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.showOverlay();
         },
         unmask: function() {
+            this.fixPoint.hide();
             this.hideOverlay();
             this.startTime = Y.Lang.now();
         },
@@ -172,6 +221,13 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             random: {
                 value: true,
                 type: "boolean"
+            },
+            store: {
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "variable (Object)"
+                }
             }
         }
     });

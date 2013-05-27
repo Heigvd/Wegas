@@ -80,6 +80,16 @@ YUI.add('wegas-monopoly-entities', function(Y) {
                 format: HTML,
                 optional: true
             }
+        },
+        METHODS:{
+           size:{
+                label: "size",
+                returns: "number",
+                arguments: [{
+                        type: "hidden",
+                        value: "self"
+                    }]
+            }
         }
     });
 

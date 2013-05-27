@@ -8,14 +8,45 @@
             "label": "Page",
             "defaultInstance": {
                 "@class": "NumberInstance",
+                "history": [
+                ],
                 "value": 2.0
             },
             "scope": {
-                "@class": "PlayerScope"
+                "@class": "PlayerScope",
+                "broadcastScope": null
             },
             "minValue": 2,
             "maxValue": null
-        },
+        }, 
+        {
+            "@class": "TriggerDescriptor",
+            "name": "end",
+            "editorLabel": "end",
+            "label": "end",
+            "defaultInstance": {
+                "@class": "TriggerInstance",
+                "currentStateId": 1,
+                "enabled": true,
+                "transitionHistory": [
+                ]
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "oneShot": true,
+            "triggerEvent": {
+                "@class": "Script",
+                "content": "VariableDescriptorFacade.find(7802).size(self)>4",
+                "language": "JavaScript"
+            },
+            "postTriggerEvent": {
+                "@class": "Script",
+                "content": "VariableDescriptorFacade.find(851).setValue(self, 4);",
+                "language": "JavaScript"
+            }
+        }, 
         {
             "@class": "QuestionDescriptor",
             "name": "test1",
@@ -31,19 +62,22 @@
             "scope": {
                 "@class": "TeamScope"
             },
+            "description": "",
+            "allowMultipleReplies": true,
             "items": [
                 {
                     "@class": "SingleResultChoiceDescriptor",
                     "name": "male",
                     "editorLabel": "Homme",
-                    "label": "male",
+                    "label": "Male",
                     "defaultInstance": {
                         "@class": "ChoiceInstance",
                         "active": true,
                         "unread": true
                     },
                     "scope": {
-                        "@class": "TeamScope"
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
                     },
                     "results": [
                         {
@@ -63,19 +97,20 @@
                     "impact": null,
                     "duration": 1,
                     "cost": 0
-                },
+                }, 
                 {
                     "@class": "SingleResultChoiceDescriptor",
                     "name": "female",
                     "editorLabel": "Femme",
-                    "label": "female",
+                    "label": "Female",
                     "defaultInstance": {
                         "@class": "ChoiceInstance",
                         "active": true,
                         "unread": true
                     },
                     "scope": {
-                        "@class": "TeamScope"
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
                     },
                     "results": [
                         {
@@ -97,20 +132,365 @@
                     "cost": 0
                 }
             ],
-            "description": "",
-            "allowMultipleReplies": true,
             "pictures": [
             ]
+        }, 
+        {
+            "@class": "ObjectDescriptor",
+            "name": "results",
+            "editorLabel": "",
+            "label": "Results",
+            "defaultInstance": {
+                "@class": "ObjectInstance",
+                "properties": {
+                }
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {
+            }
         }
     ],
     "scriptLibrary": {
         "default": {
             "@class": "GameModelContent",
-            "content": "Y.use(\"wegas-flexitests-controller\", function(Z){ Y.Wegas.FlexitestsController.EDITMENU= [{type: \"Button\", label: \"Properties\", cssClass: \"editor-exploreGameModel-button\", plugins: [{ fn: \"EditWidgetAction\" }] }, { type: \"Button\", label: \"Add\", cssClass: \"editor-exploreGameModel-button\", plugins: [{ \"fn\": \"WidgetMenu\", \"cfg\": { \"menuCfg\": { points: [\"tl\", \"tr\"] }, \"event\": \"mouseenter\", \"children\": [{ type: \"Button\", label: \"ChoiceList\", plugins: [{ fn: \"AddChildWidgetAction\", cfg: { \"childType\": \"ChoiceList\" } }] }] } }] }]; Y.Wegas.FlexitestsController.ATTRS.plugins= Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins); Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push( { type: \"Button\", label: \"Swap top zones\", data: \"SwapZone\" },{ type: \"Button\", label: \"Expected response\", data: \"FlexiResponse\" }); });"
+            "contentType": null,
+            "content": "function store(object, key, value){\n    eval(object).properties.put(key, value);    \n}"
+        }
+    },
+    "cssLibrary": {
+    },
+    "clientScriptLibrary": {
+        "load": {
+            "@class": "GameModelContent",
+            "contentType": null,
+            "content": "Y.use(\"wegas-flexitests-controller\", function(Z){\r\n    Y.Wegas.FlexitestsController.EDITMENU= [{type: \"Button\",\r\n                label: \"Properties\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        fn: \"EditWidgetAction\"\r\n                    }]\r\n            }, {\r\n                type: \"Button\",\r\n                label: \"Add\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        \"fn\": \"WidgetMenu\",\r\n                        \"cfg\": {\r\n                            \"menuCfg\": {\r\n                                points: [\"tl\", \"tr\"]\r\n                            },\r\n                            \"event\": \"mouseenter\",\r\n                            \"children\": [{\r\n                                    type: \"Button\",\r\n                                    label: \"ChoiceList\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"ChoiceList\"\r\n                                            }\r\n                                        }]\r\n                                },{\r\n                                    type: \"Button\",\r\n                                    label: \"Image (fix point)\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"Image\",\r\n                                                \"id\": \"fix-point\"\r\n                                            }\r\n                                        }]\r\n                                }]\r\n                        }\r\n                    }]\r\n            }];\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins= Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins);\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push(\r\n                        {\r\n                            type: \"Button\",\r\n                            label: \"Swap top zones\",\r\n                            data: \"SwapZone\"\r\n                        },{\r\n                            type: \"Button\",\r\n                            label: \"Expected response\",\r\n                            data: \"FlexiResponse\"\r\n                        });\r\n});"
         }
     },
     "properties": {
-        "cssUri": "wegas-flexitests/css/wegas-flexitests.css",
-        "pagesUri": "wegas-flexitests/db/wegas-flexitests-pages.json?"
+        "cssUri": "wegas-flexitests/css/wegas-flexitests.css"
+    },
+    "pages": {
+        "3": {
+            "type": "FlexitestsController",
+            "cssClass": "test-page",
+            "plugins": [
+                {
+                    "fn": "SwapZone",
+                    "cfg": {
+                        "after": 1
+                    }
+                }
+            ],
+            "fixPoint": 1000,
+            "random": true,
+            "endPage": "2",
+            "store": {
+                "name": "results"
+            },
+            "children": [
+                {
+                    "id": "leftElement",
+                    "type": "ChoiceList",
+                    "plugins": [
+                        {
+                            "fn": "HideAfter",
+                            "cfg": {
+                                "time": "0,1000"
+                            }
+                        }, 
+                        {
+                            "fn": "ShowAfter",
+                            "cfg": {
+                                "time": "500"
+                            }
+                        }, 
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "50pt",
+                                    "left": "50pt",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }
+                    ],
+                    "children": [
+                        {
+                            "type": "Text",
+                            "content": "Male"
+                        }
+                    ]
+                }, 
+                {
+                    "id": "rightElement",
+                    "type": "ChoiceList",
+                    "plugins": [
+                        {
+                            "fn": "HideAfter",
+                            "cfg": {
+                                "time": "0,1500"
+                            }
+                        }, 
+                        {
+                            "fn": "ShowAfter",
+                            "cfg": {
+                                "time": "1000"
+                            }
+                        }, 
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "50pt",
+                                    "left": "",
+                                    "bottom": "",
+                                    "right": "50pt"
+                                }
+                            }
+                        }
+                    ],
+                    "children": [
+                        {
+                            "type": "Text",
+                            "content": "Female"
+                        }
+                    ]
+                }, 
+                {
+                    "id": "centerElement",
+                    "type": "ChoiceList",
+                    "plugins": [
+                        {
+                            "fn": "HideAfter",
+                            "cfg": {
+                                "time": "0"
+                            }
+                        }, 
+                        {
+                            "fn": "ShowAfter",
+                            "cfg": {
+                                "time": "1500"
+                            }
+                        }, 
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "300px",
+                                    "left": "300px",
+                                    "bottom": "",
+                                    "right": "300px"
+                                }
+                            }
+                        }
+                    ],
+                    "children": [
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "male"
+                                    }
+                                }
+                            ],
+                            "url": "/hectorPerplexe.png"
+                        }, 
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "female"
+                                    }
+                                }
+                            ],
+                            "url": "/jessicaPerplexe.png"
+                        }, 
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "male"
+                                    }
+                                }
+                            ],
+                            "url": "/lucienPortrait.png"
+                        }, 
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "female"
+                                    }
+                                }
+                            ],
+                            "url": "/danielaConfiant.png"
+                        }, 
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "male"
+                                    }
+                                }
+                            ],
+                            "url": "/fernandPensif.png"
+                        }
+                    ]
+                }, 
+                {
+                    "id": "flexi-mcq",
+                    "type": "FlexitestsMCQ",
+                    "plugins": [
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "",
+                                    "left": "200px",
+                                    "bottom": "30px",
+                                    "right": "200px"
+                                }
+                            }
+                        }
+                    ],
+                    "feedback": 1000,
+                    "responseType": "link",
+                    "variable": {
+                        "name": "test1"
+                    }
+                }, 
+                {
+                    "type": "Image",
+                    "cssClass": "fix-point",
+                    "plugins": [
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "200pt",
+                                    "left": "300pt",
+                                    "bottom": "200pt",
+                                    "right": "300pt"
+                                }
+                            }
+                        }
+                    ],
+                    "url": "../../wegas-flexitests/images/FixPoint.png"
+                }
+            ]
+        },
+        "2": {
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "Text",
+                    "cssClass": "flexitests-title",
+                    "content": "FlexiTests"
+                }, 
+                {
+                    "type": "Text",
+                    "content": "_INSTRUCTIONS_"
+                }, 
+                {
+                    "id": 2,
+                    "type": "Form",
+                    "cfg": {
+                        "fields": [
+                            {
+                                "name": "fullname",
+                                "label": "Name",
+                                "type": "string",
+                                "value": ""
+                            }, 
+                            {
+                                "name": "gender",
+                                "label": "Gender",
+                                "choices": [
+                                    {
+                                        "value": "m",
+                                        "label": "M"
+                                    }, 
+                                    {
+                                        "value": "f",
+                                        "label": "F"
+                                    }
+                                ],
+                                "type": "select",
+                                "value": "m"
+                            }, 
+                            {
+                                "fields": [
+                                ],
+                                "type": "variabledescriptorselect",
+                                "value": "VariableDescriptorFacade.find(851)"
+                            }
+                        ]
+                    }
+                }, 
+                {
+                    "disabled": false,
+                    "label": "Submit",
+                    "type": "Button",
+                    "plugins": [
+                        {
+                            "fn": "ExecuteScriptAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "onClick": {
+                                    "@class": "Script",
+                                    "language": "JavaScript",
+                                    "content": "currentPage.value = 3;"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "1": {
+            "type": "PageLoader",
+            "pageLoaderId": "mainarea",
+            "cssClass": "flexitests",
+            "variable": {
+                "name": "currentPage"
+            }
+        },
+        "4": {
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "Text",
+                    "content": "<p>__Results__</p>"
+                }
+            ]
+        }
     }
 }

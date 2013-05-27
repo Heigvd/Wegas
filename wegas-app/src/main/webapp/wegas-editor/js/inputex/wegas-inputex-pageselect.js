@@ -50,7 +50,7 @@ YUI.add("wegas-inputex-pageselect", function (Y) {
                     label: "Page : " + i
                 });
                 if (i == this.options.value){
-                    this.choicesList[i-1].node.selected = "selected"
+                    this.choicesList[i-1].node.selected = "selected";
                 }
             }
         }

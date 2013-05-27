@@ -77,7 +77,11 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 }
                 targetWidget.syncUI();
                 this.get("dataSource").cache.patch(targetWidget.get("root").toObject());
+            }, this), Y.bind(function() {
+                this.get("widget").highlight(false);
             }, this));
+
+            this.get("widget").highlight(true);
         }
     }, {
         NS: "EditWidgetAction",
@@ -96,25 +100,28 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     };
     Y.extend(AddChildWidgetAction, WidgetAction, {
         execute: function() {
-            var newWidget = new Y.Wegas.Widget.create({
-                "type": this.get("childType")
-            });
+            Y.use(Y.Wegas.Editable.getRawModulesFromDefinition({type: this.get("childType")}), Y.bind(function() {
+                var newWidget = new Y.Wegas.Widget.create({
+                    "type": this.get("childType")
+                });
 
-            Wegas.Editable.use(newWidget, Y.bind(function() {                  // Load target widget dependencies
+                Wegas.Editable.use(newWidget, Y.bind(function() {                  // Load target widget dependencies
 
-                Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
-                    Plugin.EditEntityAction.hideEditFormOverlay();
-                    var targetWidget = this.get("widget"), widget = new Y.Wegas.Widget.create(val);
-                    targetWidget.add(widget);
-                    this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), {success: Y.bind(function() {
-                            var tw = new Y.Wegas.Text();
-                            tw.plug(Plugin.EditWidgetAction, {"widget": this});
-                            tw.EditWidgetAction.execute();
-                        }, widget)
-                    });
+                    Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
+                        Plugin.EditEntityAction.hideEditFormOverlay();
+                        var targetWidget = this.get("widget"), widget = new Y.Wegas.Widget.create(val);
+                        targetWidget.add(widget);
+                        this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), {success: Y.bind(function() {
+                                var tw = new Y.Wegas.Text();
+                                tw.plug(Plugin.EditWidgetAction, {"widget": this});
+                                tw.EditWidgetAction.execute();
+                            }, widget)
+                        });
+                    }, this));
+
                 }, this));
-
             }, this));
+
         }
     }, {
         NS: "AddChildWidgetAction",

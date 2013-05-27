@@ -70,6 +70,10 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
                     requires: ['pusher', 'wegas-datasource']
                 },
+                'event-mouse-startstop': {
+                    path: "wegas-app/js/util/event-mouse-startstop-min.js",
+                    requires: ["event-base"]
+                },
                 /**
                  * Persistence
                  */
@@ -123,6 +127,11 @@ YUI().use(function(Y) {
                     requires: ['inputex-field', 'inputex-textarea', 'button'],
                     ws_provides: 'Chat'
                 },
+                'wegas-chart': {
+                    path: 'wegas-app/js/widget/wegas-chart-min.js',
+                    requires: ['charts', 'charts-legend'],
+                    ws_provides: 'Chart'
+                },
                 'wegas-langselector': {
                     path: 'wegas-app/js/widget/wegas-langselector-min.js',
                     ws_provides: 'LangSelector'
@@ -171,8 +180,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-absolutelayout': {
                     path: 'wegas-app/js/widget/wegas-absolutelayout-min.js',
-                    requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss", "wegas-list"],
-                    ws_provides: ['AbsoluteLayout', 'Position']
+                    requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss", "wegas-list", "wegas-cssposition"],
+                    ws_provides: ['AbsoluteLayout', "Position"]
                 },
                 'wegas-absolutelayoutcss': {
                     path: 'wegas-app/css/wegas-absolutelayout.css'
@@ -333,6 +342,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-cssposition-min.js',
                     requires: ['wegas-cssstyles'],
                     ws_provides: 'CSSPosition'
+                },
+                "wegas-csssize": {
+                    path: 'wegas-app/js/plugin/wegas-csssize-min.js',
+                    requires: ['wegas-cssstyles'],
+                    ws_provides: 'CSSSize'
                 },
                 "wegas-inputex-object": {
                     path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
@@ -499,7 +513,7 @@ YUI().use(function(Y) {
                 'wegas-pageeditor': {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
                     ws_provides: 'PageEditor',
-                    requires: ['diff_match_patch', "wegas-editor-widgetaction"]
+                    requires: ['diff_match_patch', "wegas-editor-widgetaction", "event-mouse-startstop", "node-scroll-info"]
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',
@@ -572,7 +586,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
-                    requires: ['wegas-datasource'],
+                    requires: ['wegas-datasource', 'wegas-list'],
                     ws_provides: "PageTreeview"
                 },
                 /**
@@ -730,8 +744,13 @@ YUI().use(function(Y) {
                 },
                 'wegas-flexitests-mcqdisplay': {
                     path: "wegas-flexitests/js/wegas-flexitests-mcqdisplay-min.js",
-                    requires: ["wegas-widget"],
+                    requires: ["wegas-widget", "template"],
                     ws_provides: "FlexitestsMCQ"
+                },
+                'wegas-flexitests-results': {
+                    path: "wegas-flexitests/js/wegas-flexitests-results-min.js",
+                    requires: ["wegas-widget"],
+                    ws_provides: "FlexitestsResults"
                 }
             }
         },
