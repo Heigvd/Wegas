@@ -25,13 +25,13 @@
                         "cfg": {
                             "time": "0,1000"
                         }
-                    }, 
+                    },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "500"
                         }
-                    }, 
+                    },
                     {
                         "fn": "CSSPosition",
                         "cfg": {
@@ -52,7 +52,7 @@
                         "content": "Male"
                     }
                 ]
-            }, 
+            },
             {
                 "id": "rightElement",
                 "type": "ChoiceList",
@@ -62,13 +62,13 @@
                         "cfg": {
                             "time": "0,1500"
                         }
-                    }, 
+                    },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "1000"
                         }
-                    }, 
+                    },
                     {
                         "fn": "CSSPosition",
                         "cfg": {
@@ -89,7 +89,7 @@
                         "content": "Female"
                     }
                 ]
-            }, 
+            },
             {
                 "id": "centerElement",
                 "type": "ChoiceList",
@@ -99,13 +99,13 @@
                         "cfg": {
                             "time": "0"
                         }
-                    }, 
+                    },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "1500"
                         }
-                    }, 
+                    },
                     {
                         "fn": "CSSPosition",
                         "cfg": {
@@ -132,7 +132,7 @@
                             }
                         ],
                         "url": "/hectorPerplexe.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -144,7 +144,7 @@
                             }
                         ],
                         "url": "/jessicaPerplexe.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -156,7 +156,7 @@
                             }
                         ],
                         "url": "/lucienPortrait.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -168,7 +168,7 @@
                             }
                         ],
                         "url": "/danielaConfiant.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -182,7 +182,7 @@
                         "url": "/fernandPensif.png"
                     }
                 ]
-            }, 
+            },
             {
                 "id": "flexi-mcq",
                 "type": "FlexitestsMCQ",
@@ -206,7 +206,7 @@
                 "variable": {
                     "name": "test1"
                 }
-            }, 
+            },
             {
                 "type": "Image",
                 "cssClass": "fix-point",
@@ -237,11 +237,11 @@
                 "type": "Text",
                 "cssClass": "flexitests-title",
                 "content": "FlexiTests"
-            }, 
+            },
             {
                 "type": "Text",
                 "content": "_INSTRUCTIONS_"
-            }, 
+            },
             {
                 "id": 2,
                 "type": "Form",
@@ -252,7 +252,7 @@
                             "label": "Name",
                             "type": "string",
                             "value": ""
-                        }, 
+                        },
                         {
                             "name": "gender",
                             "label": "Gender",
@@ -260,7 +260,7 @@
                                 {
                                     "value": "m",
                                     "label": "M"
-                                }, 
+                                },
                                 {
                                     "value": "f",
                                     "label": "F"
@@ -268,7 +268,7 @@
                             ],
                             "type": "select",
                             "value": "m"
-                        }, 
+                        },
                         {
                             "fields": [
                             ],
@@ -276,8 +276,27 @@
                             "value": "VariableDescriptorFacade.find(851)"
                         }
                     ]
-                }
-            }, 
+                },
+                "plugins": [{
+                        "fn": "SaveObjectAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "variable": {
+                                "name": "demographics"
+                            }
+                        }
+                    }, {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "currentPage.value = 3;"
+                            }
+                        }
+                    }]
+            },
             {
                 "disabled": false,
                 "label": "Submit",
@@ -311,8 +330,10 @@
         "direction": "vertical",
         "children": [
             {
-                "type": "Text",
-                "content": "<p>__Results__</p>"
+                "type": "FlexitestsResults",
+                "variable": {
+                    "name":"results"
+                }
             }
         ]
     }
