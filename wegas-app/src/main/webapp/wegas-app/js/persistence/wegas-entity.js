@@ -1193,10 +1193,10 @@ YUI.add('wegas-entity', function(Y) {
             defaultInstance: {
                 properties: {
                     '@class': {
-                        type: 'InboxInstance',
+                        type: STRING,
                         _inputex: {
                             _type: HIDDEN,
-                            value: 'TaskInstance'
+                            value: 'InboxInstance'
                         }
                     },
                     id: IDATTRDEF
