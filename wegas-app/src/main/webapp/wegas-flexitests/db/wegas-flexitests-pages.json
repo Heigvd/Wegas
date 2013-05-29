@@ -11,10 +11,6 @@
         ],
         "fixPoint": 1000,
         "random": true,
-        "endPage": "2",
-        "store": {
-            "name": "results"
-        },
         "children": [
             {
                 "id": "leftElement",
@@ -25,13 +21,13 @@
                         "cfg": {
                             "time": "0,1000"
                         }
-                    },
+                    }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "500"
                         }
-                    },
+                    }, 
                     {
                         "fn": "CSSPosition",
                         "cfg": {
@@ -52,7 +48,7 @@
                         "content": "Male"
                     }
                 ]
-            },
+            }, 
             {
                 "id": "rightElement",
                 "type": "ChoiceList",
@@ -62,13 +58,13 @@
                         "cfg": {
                             "time": "0,1500"
                         }
-                    },
+                    }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "1000"
                         }
-                    },
+                    }, 
                     {
                         "fn": "CSSPosition",
                         "cfg": {
@@ -89,7 +85,7 @@
                         "content": "Female"
                     }
                 ]
-            },
+            }, 
             {
                 "id": "centerElement",
                 "type": "ChoiceList",
@@ -99,13 +95,13 @@
                         "cfg": {
                             "time": "0"
                         }
-                    },
+                    }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "1500"
                         }
-                    },
+                    }, 
                     {
                         "fn": "CSSPosition",
                         "cfg": {
@@ -127,62 +123,62 @@
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "male"
+                                    "value": "1"
                                 }
                             }
                         ],
                         "url": "/hectorPerplexe.png"
-                    },
+                    }, 
                     {
                         "type": "Image",
                         "plugins": [
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "female"
+                                    "value": "2"
                                 }
                             }
                         ],
                         "url": "/jessicaPerplexe.png"
-                    },
+                    }, 
                     {
                         "type": "Image",
                         "plugins": [
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "male"
+                                    "value": "1"
                                 }
                             }
                         ],
                         "url": "/lucienPortrait.png"
-                    },
+                    }, 
                     {
                         "type": "Image",
                         "plugins": [
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "female"
+                                    "value": "2"
                                 }
                             }
                         ],
                         "url": "/danielaConfiant.png"
-                    },
+                    }, 
                     {
                         "type": "Image",
                         "plugins": [
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "male"
+                                    "value": "1"
                                 }
                             }
                         ],
                         "url": "/fernandPensif.png"
                     }
                 ]
-            },
+            }, 
             {
                 "id": "flexi-mcq",
                 "type": "FlexitestsMCQ",
@@ -202,11 +198,11 @@
                     }
                 ],
                 "feedback": 1000,
-                "responseType": "link",
+                "responseType": "key",
                 "variable": {
-                    "name": "test1"
+                    "name": "results"
                 }
-            },
+            }, 
             {
                 "type": "Image",
                 "cssClass": "fix-point",
@@ -237,11 +233,11 @@
                 "type": "Text",
                 "cssClass": "flexitests-title",
                 "content": "FlexiTests"
-            },
+            }, 
             {
                 "type": "Text",
                 "content": "_INSTRUCTIONS_"
-            },
+            }, 
             {
                 "id": 2,
                 "type": "Form",
@@ -252,7 +248,7 @@
                             "label": "Name",
                             "type": "string",
                             "value": ""
-                        },
+                        }, 
                         {
                             "name": "gender",
                             "label": "Gender",
@@ -260,7 +256,7 @@
                                 {
                                     "value": "m",
                                     "label": "M"
-                                },
+                                }, 
                                 {
                                     "value": "f",
                                     "label": "F"
@@ -268,7 +264,7 @@
                             ],
                             "type": "select",
                             "value": "m"
-                        },
+                        }, 
                         {
                             "fields": [
                             ],
@@ -277,7 +273,8 @@
                         }
                     ]
                 },
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "SaveObjectAction",
                         "cfg": {
                             "targetEvent": "submit",
@@ -285,7 +282,8 @@
                                 "name": "demographics"
                             }
                         }
-                    }, {
+                    }, 
+                    {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "submit",
@@ -295,8 +293,9 @@
                                 "content": "currentPage.value = 3;"
                             }
                         }
-                    }]
-            },
+                    }
+                ]
+            }, 
             {
                 "disabled": false,
                 "label": "Submit",
@@ -332,7 +331,7 @@
             {
                 "type": "FlexitestsResults",
                 "variable": {
-                    "name":"results"
+                    "name": "results"
                 }
             }
         ]

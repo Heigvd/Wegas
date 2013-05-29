@@ -71,6 +71,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          * @returns {undefined}
          */
         syncUI: function() {
+            var props, exist = false, i, j, done = 0;
             this.mask();
             this.leftElement = this.getChildById("leftElement");
             this.rightElement = this.getChildById("rightElement");
@@ -78,9 +79,20 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.fixPoint = this.get("contentBox").all(".fix-point");
             this.fixPoint.hide();
             this.mcq = this.getChildById("flexi-mcq");
+            props = this.mcq.get("variable.evaluated").getInstance().get("properties");
             this.maxSize = Math.max(this.leftElement.size(), this.rightElement.size(), this.centerElement.size());
-            for (var i = 0; i < this.maxSize; i += 1) {
-                this.questionToDo[i] = i;
+            for (i = 0; i < this.maxSize; i += 1) {
+                exist = false;
+                for (j in props) {
+                    if (+(Y.JSON.parse(props[j]).id) === +i) {
+                        exist = true;
+                        done += 1;
+                        break;
+                    }
+                }
+                if (!exist) {
+                    this.questionToDo[i - done] = i;
+                }
             }
             this.next();
         },
@@ -102,30 +114,10 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 elements.valid = false;
                 this.mcq.error(responseTime);
             }
-            this.save(elements);
+            this.mcq.save(elements);
             if (this.questionToDo.length !== 0) {
                 this.next();
             }
-        },
-        save: function(el) {
-            var id = el.index;
-            delete el.index;
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                cfg: {
-                    method: "POST",
-                    data: Y.JSON.stringify({
-                        "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "store(" + this.get("store.evaluated").get("name") + ",'" + id + "','" + Y.JSON.stringify(el) + "');"
-                    })
-                },
-                on: {
-                    failure: Y.bind(function(e) {
-                        Y.log("error", "Failed to store data", "Y.Wegas.FlexitestController");
-                    }, this)
-                }
-            });
         },
         next: function() {
             this.mask();
@@ -221,13 +213,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             random: {
                 value: true,
                 type: "boolean"
-            },
-            store: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                _inputex: {
-                    _type: "variableselect",
-                    label: "variable (Object)"
-                }
             }
         }
     });
