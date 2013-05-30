@@ -8,8 +8,7 @@ Web Game Authoring system is a Jee-based framework for multiplayer web-games dev
 *   Yannick Lagger lagger.yannick@gmail.com
 
 ### Links
-* [Demo](http://wegas.albasim.ch)
-* [Website](http://www.albasim.ch/wegas/)
+* [Server](http://wegas.albasim.ch/)
 * [Documentation](http://heigvd.github.com/Wegas/)
 * [Tutorials](https://github.com/Heigvd/Wegas/wiki)
 * [Error tracking](https://musculahq.appspot.com/app#errors_1f9e3058-27dc-4fec-b633-1070e60f2fca)
