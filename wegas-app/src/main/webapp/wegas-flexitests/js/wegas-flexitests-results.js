@@ -22,24 +22,68 @@ YUI.add("wegas-flexitests-results", function(Y) {
         bindUI: function() {
         },
         syncUI: function() {
-            var props = this.get("variable.evaluated").getInstance().get("properties"),
+            var script = "getInstances([";
+            try {
+                script += "'" + this.get("demographics.evaluated").get("name") + "',";
+                script += "'" + this.get("variable.evaluated").get("name") + "'";
+            } catch (e) {
+            } finally {
+                script += "]);";
+            }
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                cfg: {
+                    method: "POST",
+                    data: Y.JSON.stringify({
+                        "@class": "Script",
+                        "language": "JavaScript",
+                        "content": script
+                    })
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        this.renderTable(Y.JSON.parse(e.data.response).entities);
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        Y.log("error", "Failed to store data", "Y.Wegas.FlexitestsMCQ");
+                    }, this)
+                }
+            });
+        },
+        renderTable: function(results) {
+            var demos = results[0],
+                    tests = results[1],
+                    props,
                     table = this.get("contentBox").one("table"),
-                    tmp, o, i;
+                    tmp, o, i, j, k;
             table.empty();
             table.append("<tr><th>order</th><th>question id</th><th>left</th><th>center</th><th>right</th><th>response</th><th>delay</th><th>valid</th></tr>");
-            for (i in props) {
-                o = Y.JSON.parse(props[i]);
-                tmp = ["<tr class='row-", (i % 2 === 0 ? 'even' : 'odd'), "'>",
-                    "<td>", i, "</td>",
-                    "<td>", o.id, "</td>",
-                    "<td>", o.left, "</td>",
-                    "<td>", o.center, "</td>",
-                    "<td>", o.right, "</td>",
-                    "<td>", o.response, "</td>",
-                    "<td>", o.delay, "</td>",
-                    "<td>", o.valid , "</td>",
-                    "</tr>"];
-                table.append(tmp.join(""));
+            for (i in demos) {
+                o = demos[i].properties;
+                for (j in o) {
+                    table.get("firstChild").append("<th>" + j + "</th>");
+                }
+                break;
+            }
+            for (i in tests) {
+                for (j in tests[i].properties) {
+                    o = Y.JSON.parse(tests[i].properties[j]);
+                    tmp = ["<tr class='row-", (j % 2 === 0 ? 'even' : 'odd'), "'>",
+                        "<td>", j, "</td>",
+                        "<td>", o.id, "</td>",
+                        "<td>", o.left, "</td>",
+                        "<td>", o.center, "</td>",
+                        "<td>", o.right, "</td>",
+                        "<td>", o.response, "</td>",
+                        "<td>", o.delay, "</td>",
+                        "<td>", o.valid, "</td>"];
+
+                    for (k in demos[i].properties) {
+                        tmp.push("<td>" + demos[i].properties[k] + "</td>");
+                    }
+                    tmp.push("</tr>");
+                    table.append(tmp.join(""));
+                }
             }
         }
     }, {
@@ -48,9 +92,16 @@ YUI.add("wegas-flexitests-results", function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Object variable"
+                    label: "Test variable (Object)"
+                }
+            }, demographics: {
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "Form variable"
                 }
             }
+
         }
     });
 });

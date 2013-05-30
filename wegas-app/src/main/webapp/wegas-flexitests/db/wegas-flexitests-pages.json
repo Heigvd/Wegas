@@ -198,7 +198,7 @@
                     }
                 ],
                 "feedback": 1000,
-                "responseType": "key",
+                "responseType": "radio",
                 "variable": {
                     "name": "results"
                 }
@@ -241,6 +241,28 @@
             {
                 "id": 2,
                 "type": "Form",
+                "plugins": [
+                    {
+                        "fn": "SaveObjectAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "variable": {
+                                "name": "demographics"
+                            }
+                        }
+                    }, 
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "currentPage.value = 3;"
+                            }
+                        }
+                    }
+                ],
                 "cfg": {
                     "fields": [
                         {
@@ -272,47 +294,7 @@
                             "value": "VariableDescriptorFacade.find(851)"
                         }
                     ]
-                },
-                "plugins": [
-                    {
-                        "fn": "SaveObjectAction",
-                        "cfg": {
-                            "targetEvent": "submit",
-                            "variable": {
-                                "name": "demographics"
-                            }
-                        }
-                    }, 
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "submit",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "currentPage.value = 3;"
-                            }
-                        }
-                    }
-                ]
-            }, 
-            {
-                "disabled": false,
-                "label": "Submit",
-                "type": "Button",
-                "plugins": [
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "currentPage.value = 3;"
-                            }
-                        }
-                    }
-                ]
+                }
             }
         ]
     },
@@ -332,6 +314,9 @@
                 "type": "FlexitestsResults",
                 "variable": {
                     "name": "results"
+                },
+                "demographics": {
+                    "name": "demographics"
                 }
             }
         ]
