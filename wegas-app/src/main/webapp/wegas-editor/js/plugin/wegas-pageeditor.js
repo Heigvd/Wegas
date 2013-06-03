@@ -103,7 +103,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 event: "click"
             });
             this.overlayMask.setStyles({
-                zIndex: 30,
+                zIndex: 49,
                 width: "100%",
                 height: "100%",
                 position: "absolute",
