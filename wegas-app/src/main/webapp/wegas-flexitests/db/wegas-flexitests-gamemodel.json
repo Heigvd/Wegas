@@ -15,7 +15,8 @@
                 "value": 2.0
             },
             "scope": {
-                "@class": "PlayerScope"
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
             },
             "minValue": 2,
             "maxValue": null
@@ -23,8 +24,8 @@
         {
             "@class": "TriggerDescriptor",
             "name": "end",
-            "editorLabel": "end",
-            "label": "end",
+            "editorLabel": "End",
+            "label": "End",
             "defaultInstance": {
                 "@class": "TriggerInstance",
                 "currentStateId": 1,
@@ -33,12 +34,13 @@
                 ]
             },
             "scope": {
-                "@class": "PlayerScope"
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
             },
             "oneShot": true,
             "triggerEvent": {
                 "@class": "Script",
-                "content": "VariableDescriptorFacade.find(7802).size(self)>4",
+                "content": "VariableDescriptorFacade.find(8034).size(self)>4",
                 "language": "JavaScript"
             },
             "postTriggerEvent": {
@@ -55,10 +57,12 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
+                    "": ""
                 }
             },
             "scope": {
-                "@class": "PlayerScope"
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
             },
             "description": "",
             "properties": {
@@ -67,7 +71,7 @@
         {
             "@class": "ObjectDescriptor",
             "name": "results",
-            "editorLabel": "Questions",
+            "editorLabel": "Results",
             "label": "Results",
             "defaultInstance": {
                 "@class": "ObjectInstance",
@@ -75,12 +79,13 @@
                 }
             },
             "scope": {
-                "@class": "PlayerScope"
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
             },
             "description": "",
             "properties": {
                 "1": "Male",
-                "2": "Femme"
+                "2": "Female"
             }
         }
     ],
@@ -97,7 +102,7 @@
         "load": {
             "@class": "GameModelContent",
             "contentType": null,
-            "content": "Y.use(\"wegas-flexitests-controller\", function(Z){\r\n    Y.Wegas.FlexitestsController.EDITMENU= [{type: \"Button\",\r\n                label: \"Properties\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        fn: \"EditWidgetAction\"\r\n                    }]\r\n            }, {\r\n                type: \"Button\",\r\n                label: \"Add\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        \"fn\": \"WidgetMenu\",\r\n                        \"cfg\": {\r\n                            \"menuCfg\": {\r\n                                points: [\"tl\", \"tr\"]\r\n                            },\r\n                            \"event\": \"mouseenter\",\r\n                            \"children\": [{\r\n                                    type: \"Button\",\r\n                                    label: \"ChoiceList\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"ChoiceList\"\r\n                                            }\r\n                                        }]\r\n                                },{\r\n                                    type: \"Button\",\r\n                                    label: \"Image (fix point)\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"Image\",\r\n                                                \"id\": \"fix-point\"\r\n                                            }\r\n                                        }]\r\n                                }]\r\n                        }\r\n                    }]\r\n            }];\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins= Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins);\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push(\r\n                        {\r\n                            type: \"Button\",\r\n                            label: \"Swap top zones\",\r\n                            data: \"SwapZone\"\r\n                        },{\r\n                            type: \"Button\",\r\n                            label: \"Expected response\",\r\n                            data: \"FlexiResponse\"\r\n                        });\r\n});"
+            "content": "Y.use(\"wegas-flexitests-controller\", function(Z){\r\n    Y.Wegas.FlexitestsController.EDITMENU= [{type: \"Button\",\r\n                label: \"Properties\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        fn: \"EditWidgetAction\"\r\n                    }]\r\n            }, {\r\n                type: \"Button\",\r\n                label: \"Add\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        \"fn\": \"WidgetMenu\",\r\n                        \"cfg\": {\r\n                            \"menuCfg\": {\r\n                                points: [\"tl\", \"tr\"]\r\n                            },\r\n                            \"event\": \"mouseenter\",\r\n                            \"children\": [{\r\n                                    type: \"Button\",\r\n                                    label: \"Single choice list\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"ChoiceList\"\r\n                                            }\r\n                                        }]\r\n                                },{\r\n                                    type: \"Button\",\r\n                                    label: \"Image (fix point)\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"Image\"\r\n                                            }\r\n                                        }]\r\n                                }]\r\n                        }\r\n                    }]\r\n            }];\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins= Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins);\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push(\r\n                        {\r\n                            type: \"Button\",\r\n                            label: \"Swap top zones\",\r\n                            data: \"SwapZone\"\r\n                        },{\r\n                            type: \"Button\",\r\n                            label: \"Expected response\",\r\n                            data: \"FlexiResponse\"\r\n                        });\r\n});"
         }
     },
     "properties": {
@@ -319,15 +324,15 @@
                                 "styles": {
                                     "position": "absolute",
                                     "zIndex": "10",
-                                    "top": "200pt",
-                                    "left": "300pt",
-                                    "bottom": "200pt",
-                                    "right": "300pt"
+                                    "top": "250pt",
+                                    "left": "350pt",
+                                    "bottom": "",
+                                    "right": ""
                                 }
                             }
                         }
                     ],
-                    "url": "../../wegas-flexitests/images/FixPoint.png"
+                    "url": "/fix-point/fix_red.png"
                 }
             ]
         },

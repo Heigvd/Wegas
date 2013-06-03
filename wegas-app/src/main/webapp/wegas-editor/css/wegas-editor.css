@@ -233,6 +233,7 @@ body {
 }
 .wegas-pageeditor-layoutmode .wegas-widget {
     box-shadow: 0px 0px 1px black;
+    display: inherit !important;
     background: rgba(0,0,0,0.05) !important;
     color: #990808 !important;
     min-width: 20px;
@@ -315,6 +316,7 @@ body {
 .highlighted{
     -moz-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
     -webkit-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
+    display: inherit !important;
     box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
     z-index:5;
 }

@@ -213,15 +213,15 @@
                             "styles": {
                                 "position": "absolute",
                                 "zIndex": "10",
-                                "top": "200pt",
-                                "left": "300pt",
-                                "bottom": "200pt",
-                                "right": "300pt"
+                                "top": "250pt",
+                                "left": "350pt",
+                                "bottom": "",
+                                "right": ""
                             }
                         }
                     }
                 ],
-                "url": "../../wegas-flexitests/images/FixPoint.png"
+                "url": "/fix-point/fix_red.png"
             }
         ]
     },
