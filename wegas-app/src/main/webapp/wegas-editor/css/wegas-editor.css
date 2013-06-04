@@ -16,7 +16,10 @@ body {
 }
 
 /** Hide all advanced feature while in dev mode */
-.wegas-stdmode .wegas-advanced-feature {
+.wegas-stdmode .editor-administrator-button,
+.wegas-stdmode .wegas-advanced-feature,
+.wegas-stdmode .editor-addPlayer-button,
+.wegas-stdmode .editor-playerProperties-button {
     display: none;
 }
 

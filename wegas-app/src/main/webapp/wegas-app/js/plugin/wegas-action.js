@@ -97,7 +97,7 @@ YUI.add('wegas-action', function(Y) {
 
     /**
      *  @class
-     *  @name Y.Plugin.OpenGameAction
+     *  @name Y.Plugin.OpenUrlAction
      *  @extends Y.Plugin.Action
      *  @constructor
      */

@@ -72,8 +72,7 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
         for (Role r : account.getRoles()) {
             try {
                 revivedRoles.add(roleFacade.find(r.getId()));
-            }
-            catch (EJBException e) {
+            } catch (EJBException e) {
                 // not able to revive this role
             }
         }

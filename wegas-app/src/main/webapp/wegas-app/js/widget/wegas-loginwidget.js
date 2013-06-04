@@ -160,7 +160,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             var cb = this.get(CONTENTBOX),
                     cUser = Y.Wegas.app.get("currentUser");
 
-            if (cUser.accounts[0]["@class"] !== "GuestAccount") {
+            if (cUser.accounts[0]["@class"] !== "GuestJpaAccount") {
                 this.showMessage("success", "You are already logged in.", 4000);
                 this.redirect();
             }
