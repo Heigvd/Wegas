@@ -9,12 +9,14 @@
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "history": [
+                    2.0, 
+                    2.0
                 ],
                 "value": 2.0
             },
             "scope": {
                 "@class": "PlayerScope",
-                "broadcastScope": null
+                "broadcastScope": "TeamScope"
             },
             "minValue": 2,
             "maxValue": null
@@ -22,8 +24,8 @@
         {
             "@class": "TriggerDescriptor",
             "name": "end",
-            "editorLabel": "end",
-            "label": "end",
+            "editorLabel": "End",
+            "label": "End",
             "defaultInstance": {
                 "@class": "TriggerInstance",
                 "currentStateId": 1,
@@ -32,13 +34,13 @@
                 ]
             },
             "scope": {
-                "@class": "TeamScope",
+                "@class": "PlayerScope",
                 "broadcastScope": "TeamScope"
             },
             "oneShot": true,
             "triggerEvent": {
                 "@class": "Script",
-                "content": "VariableDescriptorFacade.find(7802).size(self)>4",
+                "content": "VariableDescriptorFacade.find(8034).size(self)>4",
                 "language": "JavaScript"
             },
             "postTriggerEvent": {
@@ -48,97 +50,28 @@
             }
         }, 
         {
-            "@class": "QuestionDescriptor",
-            "name": "test1",
-            "editorLabel": "Test1",
-            "label": "Test1",
+            "@class": "ObjectDescriptor",
+            "name": "demographics",
+            "editorLabel": "demographics",
+            "label": "demographics",
             "defaultInstance": {
-                "@class": "QuestionInstance",
-                "replies": [
-                ],
-                "active": true,
-                "unread": true
+                "@class": "ObjectInstance",
+                "properties": {
+                    "": ""
+                }
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
             },
             "description": "",
-            "allowMultipleReplies": true,
-            "items": [
-                {
-                    "@class": "SingleResultChoiceDescriptor",
-                    "name": "male",
-                    "editorLabel": "Homme",
-                    "label": "Male",
-                    "defaultInstance": {
-                        "@class": "ChoiceInstance",
-                        "active": true,
-                        "unread": true
-                    },
-                    "scope": {
-                        "@class": "TeamScope",
-                        "broadcastScope": "TeamScope"
-                    },
-                    "results": [
-                        {
-                            "@class": "Result",
-                            "name": "",
-                            "answer": "",
-                            "files": [
-                            ],
-                            "impact": {
-                                "@class": "Script",
-                                "content": "",
-                                "language": "JavaScript"
-                            }
-                        }
-                    ],
-                    "description": "<p>C'est un homme</p>",
-                    "impact": null,
-                    "duration": 1,
-                    "cost": 0
-                }, 
-                {
-                    "@class": "SingleResultChoiceDescriptor",
-                    "name": "female",
-                    "editorLabel": "Femme",
-                    "label": "Female",
-                    "defaultInstance": {
-                        "@class": "ChoiceInstance",
-                        "active": true,
-                        "unread": true
-                    },
-                    "scope": {
-                        "@class": "TeamScope",
-                        "broadcastScope": "TeamScope"
-                    },
-                    "results": [
-                        {
-                            "@class": "Result",
-                            "name": "",
-                            "answer": "",
-                            "files": [
-                            ],
-                            "impact": {
-                                "@class": "Script",
-                                "content": "",
-                                "language": "JavaScript"
-                            }
-                        }
-                    ],
-                    "description": "<p>C'est une femme</p>",
-                    "impact": null,
-                    "duration": 1,
-                    "cost": 0
-                }
-            ],
-            "pictures": [
-            ]
+            "properties": {
+            }
         }, 
         {
             "@class": "ObjectDescriptor",
             "name": "results",
-            "editorLabel": "",
+            "editorLabel": "Results",
             "label": "Results",
             "defaultInstance": {
                 "@class": "ObjectInstance",
@@ -146,11 +79,13 @@
                 }
             },
             "scope": {
-                "@class": "TeamScope",
+                "@class": "PlayerScope",
                 "broadcastScope": "TeamScope"
             },
             "description": "",
             "properties": {
+                "1": "Male",
+                "2": "Female"
             }
         }
     ],
@@ -158,7 +93,7 @@
         "default": {
             "@class": "GameModelContent",
             "contentType": null,
-            "content": "function store(object, key, value){\n    eval(object).properties.put(key, value);    \n}"
+            "content": "importPackage(org.apache.shiro);\nfunction store(object, key, value){\n    eval(object).properties.put(key, value);    \n}\nfunction getInstances(descriptors){\n    var a=[];\n    if(SecurityUtils.getSubject().hasRole(\"Registered\")){\n        for(var i in descriptors){\n            a.push(eval(descriptors[i]).getScope().getVariableInstances());\n        }\n    }else{\n        for(var i in descriptors){\n            a.push(eval(descriptors[i]).getScope().getPrivateInstances());\n        }\n    }\n    \n    return a;\n}"
         }
     },
     "cssLibrary": {
@@ -167,7 +102,7 @@
         "load": {
             "@class": "GameModelContent",
             "contentType": null,
-            "content": "Y.use(\"wegas-flexitests-controller\", function(Z){\r\n    Y.Wegas.FlexitestsController.EDITMENU= [{type: \"Button\",\r\n                label: \"Properties\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        fn: \"EditWidgetAction\"\r\n                    }]\r\n            }, {\r\n                type: \"Button\",\r\n                label: \"Add\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        \"fn\": \"WidgetMenu\",\r\n                        \"cfg\": {\r\n                            \"menuCfg\": {\r\n                                points: [\"tl\", \"tr\"]\r\n                            },\r\n                            \"event\": \"mouseenter\",\r\n                            \"children\": [{\r\n                                    type: \"Button\",\r\n                                    label: \"ChoiceList\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"ChoiceList\"\r\n                                            }\r\n                                        }]\r\n                                },{\r\n                                    type: \"Button\",\r\n                                    label: \"Image (fix point)\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"Image\",\r\n                                                \"id\": \"fix-point\"\r\n                                            }\r\n                                        }]\r\n                                }]\r\n                        }\r\n                    }]\r\n            }];\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins= Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins);\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push(\r\n                        {\r\n                            type: \"Button\",\r\n                            label: \"Swap top zones\",\r\n                            data: \"SwapZone\"\r\n                        },{\r\n                            type: \"Button\",\r\n                            label: \"Expected response\",\r\n                            data: \"FlexiResponse\"\r\n                        });\r\n});"
+            "content": "Y.use(\"wegas-flexitests-controller\", function(Z){\r\n    Y.Wegas.FlexitestsController.EDITMENU= [{type: \"Button\",\r\n                label: \"Properties\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        fn: \"EditWidgetAction\"\r\n                    }]\r\n            }, {\r\n                type: \"Button\",\r\n                label: \"Add\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        \"fn\": \"WidgetMenu\",\r\n                        \"cfg\": {\r\n                            \"menuCfg\": {\r\n                                points: [\"tl\", \"tr\"]\r\n                            },\r\n                            \"event\": \"mouseenter\",\r\n                            \"children\": [{\r\n                                    type: \"Button\",\r\n                                    label: \"Single choice list\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"ChoiceList\"\r\n                                            }\r\n                                        }]\r\n                                },{\r\n                                    type: \"Button\",\r\n                                    label: \"Image (fix point)\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"Image\"\r\n                                            }\r\n                                        }]\r\n                                }]\r\n                        }\r\n                    }]\r\n            }];\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins= Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins);\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push(\r\n                        {\r\n                            type: \"Button\",\r\n                            label: \"Swap top zones\",\r\n                            data: \"SwapZone\"\r\n                        },{\r\n                            type: \"Button\",\r\n                            label: \"Expected response\",\r\n                            data: \"FlexiResponse\"\r\n                        });\r\n});"
         }
     },
     "properties": {
@@ -187,10 +122,6 @@
             ],
             "fixPoint": 1000,
             "random": true,
-            "endPage": "2",
-            "store": {
-                "name": "results"
-            },
             "children": [
                 {
                     "id": "leftElement",
@@ -303,7 +234,7 @@
                                 {
                                     "fn": "FlexiResponse",
                                     "cfg": {
-                                        "value": "male"
+                                        "value": "1"
                                     }
                                 }
                             ],
@@ -315,7 +246,7 @@
                                 {
                                     "fn": "FlexiResponse",
                                     "cfg": {
-                                        "value": "female"
+                                        "value": "2"
                                     }
                                 }
                             ],
@@ -327,7 +258,7 @@
                                 {
                                     "fn": "FlexiResponse",
                                     "cfg": {
-                                        "value": "male"
+                                        "value": "1"
                                     }
                                 }
                             ],
@@ -339,7 +270,7 @@
                                 {
                                     "fn": "FlexiResponse",
                                     "cfg": {
-                                        "value": "female"
+                                        "value": "2"
                                     }
                                 }
                             ],
@@ -351,7 +282,7 @@
                                 {
                                     "fn": "FlexiResponse",
                                     "cfg": {
-                                        "value": "male"
+                                        "value": "1"
                                     }
                                 }
                             ],
@@ -378,9 +309,9 @@
                         }
                     ],
                     "feedback": 1000,
-                    "responseType": "link",
+                    "responseType": "radio",
                     "variable": {
-                        "name": "test1"
+                        "name": "results"
                     }
                 }, 
                 {
@@ -393,15 +324,15 @@
                                 "styles": {
                                     "position": "absolute",
                                     "zIndex": "10",
-                                    "top": "200pt",
-                                    "left": "300pt",
-                                    "bottom": "200pt",
-                                    "right": "300pt"
+                                    "top": "250pt",
+                                    "left": "350pt",
+                                    "bottom": "",
+                                    "right": ""
                                 }
                             }
                         }
                     ],
-                    "url": "../../wegas-flexitests/images/FixPoint.png"
+                    "url": "/fix-point/fix_red.png"
                 }
             ]
         },
@@ -421,6 +352,28 @@
                 {
                     "id": 2,
                     "type": "Form",
+                    "plugins": [
+                        {
+                            "fn": "SaveObjectAction",
+                            "cfg": {
+                                "targetEvent": "submit",
+                                "variable": {
+                                    "name": "demographics"
+                                }
+                            }
+                        }, 
+                        {
+                            "fn": "ExecuteScriptAction",
+                            "cfg": {
+                                "targetEvent": "submit",
+                                "onClick": {
+                                    "@class": "Script",
+                                    "language": "JavaScript",
+                                    "content": "currentPage.value = 3;"
+                                }
+                            }
+                        }
+                    ],
                     "cfg": {
                         "fields": [
                             {
@@ -453,24 +406,6 @@
                             }
                         ]
                     }
-                }, 
-                {
-                    "disabled": false,
-                    "label": "Submit",
-                    "type": "Button",
-                    "plugins": [
-                        {
-                            "fn": "ExecuteScriptAction",
-                            "cfg": {
-                                "targetEvent": "click",
-                                "onClick": {
-                                    "@class": "Script",
-                                    "language": "JavaScript",
-                                    "content": "currentPage.value = 3;"
-                                }
-                            }
-                        }
-                    ]
                 }
             ]
         },
@@ -487,8 +422,13 @@
             "direction": "vertical",
             "children": [
                 {
-                    "type": "Text",
-                    "content": "<p>__Results__</p>"
+                    "type": "FlexitestsResults",
+                    "variable": {
+                        "name": "results"
+                    },
+                    "demographics": {
+                        "name": "demographics"
+                    }
                 }
             ]
         }

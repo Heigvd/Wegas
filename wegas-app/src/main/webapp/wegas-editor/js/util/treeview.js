@@ -234,8 +234,11 @@ YUI.add('treeview', function(Y) {
                 this.fire("toggleClick", {
                     node: this
                 });
-            },
-                    this);
+            }, this);
+            this.eventInstances.dblfullClick = this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).before("dblclick", function(e) {
+                e.halt(true);
+                this.toggleTree();
+            }, this);
             this.eventInstances.fullClick = this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).on("click", function(e) {
                 var node = e.target;
                 e.stopPropagation();

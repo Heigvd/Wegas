@@ -11,10 +11,6 @@
         ],
         "fixPoint": 1000,
         "random": true,
-        "endPage": "2",
-        "store": {
-            "name": "results"
-        },
         "children": [
             {
                 "id": "leftElement",
@@ -127,7 +123,7 @@
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "male"
+                                    "value": "1"
                                 }
                             }
                         ],
@@ -139,7 +135,7 @@
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "female"
+                                    "value": "2"
                                 }
                             }
                         ],
@@ -151,7 +147,7 @@
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "male"
+                                    "value": "1"
                                 }
                             }
                         ],
@@ -163,7 +159,7 @@
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "female"
+                                    "value": "2"
                                 }
                             }
                         ],
@@ -175,7 +171,7 @@
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "male"
+                                    "value": "1"
                                 }
                             }
                         ],
@@ -202,9 +198,9 @@
                     }
                 ],
                 "feedback": 1000,
-                "responseType": "link",
+                "responseType": "radio",
                 "variable": {
-                    "name": "test1"
+                    "name": "results"
                 }
             }, 
             {
@@ -217,15 +213,15 @@
                             "styles": {
                                 "position": "absolute",
                                 "zIndex": "10",
-                                "top": "200pt",
-                                "left": "300pt",
-                                "bottom": "200pt",
-                                "right": "300pt"
+                                "top": "250pt",
+                                "left": "350pt",
+                                "bottom": "",
+                                "right": ""
                             }
                         }
                     }
                 ],
-                "url": "../../wegas-flexitests/images/FixPoint.png"
+                "url": "/fix-point/fix_red.png"
             }
         ]
     },
@@ -245,6 +241,28 @@
             {
                 "id": 2,
                 "type": "Form",
+                "plugins": [
+                    {
+                        "fn": "SaveObjectAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "variable": {
+                                "name": "demographics"
+                            }
+                        }
+                    }, 
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "currentPage.value = 3;"
+                            }
+                        }
+                    }
+                ],
                 "cfg": {
                     "fields": [
                         {
@@ -277,24 +295,6 @@
                         }
                     ]
                 }
-            }, 
-            {
-                "disabled": false,
-                "label": "Submit",
-                "type": "Button",
-                "plugins": [
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "currentPage.value = 3;"
-                            }
-                        }
-                    }
-                ]
             }
         ]
     },
@@ -311,8 +311,13 @@
         "direction": "vertical",
         "children": [
             {
-                "type": "Text",
-                "content": "<p>__Results__</p>"
+                "type": "FlexitestsResults",
+                "variable": {
+                    "name": "results"
+                },
+                "demographics": {
+                    "name": "demographics"
+                }
             }
         ]
     }

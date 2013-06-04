@@ -168,7 +168,7 @@ YUI.add('wegas-pageloader', function(Y) {
                 type: "string",
                 value: "PageLoader" + Y.Lang.now(), //generate a default pageLoaderId
                 _inputex: {
-                    label: "Pageloader id"
+                    label: "Zone id"
                 }
             },
             /**

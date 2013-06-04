@@ -185,6 +185,16 @@ YUI.add('wegas-list', function(Y) {
                                                                 }
                                                             }
                                                         ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Question list",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "MCQTabView"
+                                                                }
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             }
@@ -238,7 +248,7 @@ YUI.add('wegas-list', function(Y) {
                                     ]
                                 }, {
                                     type: "Button",
-                                    label: "Page loader",
+                                    label: "Sub page",
                                     plugins: [{
                                             fn: "AddChildWidgetAction",
                                             cfg: {

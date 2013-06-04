@@ -13,7 +13,7 @@ body > .wegas-pageloader, html{
     font-weight: bold;
 }
 .fix-point{
-    z-index:30 !important;
+    z-index:20 !important;
 }
 .test-page{
     outline: none;
@@ -56,6 +56,9 @@ body > .wegas-pageloader, html{
 }
 .wegas-flexitests-mcqdisplay{
     z-index: inherit !important;
+}
+.wegas-flexitests-mcqdisplay-hidden{
+    display: none;
 }
 .wegas-flexitests-mcqdisplay-feedback{
     position: relative;

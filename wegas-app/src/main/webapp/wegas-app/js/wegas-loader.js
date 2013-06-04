@@ -530,7 +530,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',
-                    requires: ['ace'],
+                    requires: ['wegas-inputex-ace'],
                     ws_provides: 'Console'
                 },
                 'wegas-impactgame': {
