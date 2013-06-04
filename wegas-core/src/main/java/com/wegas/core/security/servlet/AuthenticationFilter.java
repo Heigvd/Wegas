@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.servlet;
 
+import com.wegas.core.Helper;
 import java.io.IOException;
 import java.net.URLEncoder;
 import javax.servlet.ServletRequest;
@@ -23,10 +24,10 @@ import org.apache.shiro.web.util.WebUtils;
 public class AuthenticationFilter extends PassThruAuthenticationFilter {
 
     /**
-     * Extend to authorie remembered login
+     * Extend to authorize remembered login
      *
-     * @todo It should not be authorized to do sensitive operations like pwd edition
-     * if credentials were not give for the current session.
+     * @todo It should not be authorized to do sensitive operations like pwd
+     * edition if credentials were not give for the current session.
      * @param request
      * @param response
      * @param mappedValue
@@ -35,8 +36,9 @@ public class AuthenticationFilter extends PassThruAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         Subject subject = getSubject(request, response);
-        return subject.isAuthenticated()|| subject.isRemembered();
+        return subject.isAuthenticated() || subject.isRemembered();
     }
+
     /**
      *
      * @param request

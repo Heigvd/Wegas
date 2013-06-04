@@ -8,109 +8,429 @@
             "label": "Page",
             "defaultInstance": {
                 "@class": "NumberInstance",
+                "history": [
+                    2.0, 
+                    2.0
+                ],
                 "value": 2.0
             },
             "scope": {
-                "@class": "PlayerScope"
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
             },
             "minValue": 2,
             "maxValue": null
-        },
+        }, 
         {
-            "@class": "QuestionDescriptor",
-            "name": "test1",
-            "editorLabel": "Test1",
-            "label": "Test1",
+            "@class": "TriggerDescriptor",
+            "name": "end",
+            "editorLabel": "End",
+            "label": "End",
             "defaultInstance": {
-                "@class": "QuestionInstance",
-                "replies": [
-                ],
-                "active": true,
-                "unread": true
+                "@class": "TriggerInstance",
+                "currentStateId": 1,
+                "enabled": true,
+                "transitionHistory": [
+                ]
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
             },
-            "items": [
-                {
-                    "@class": "SingleResultChoiceDescriptor",
-                    "name": "male",
-                    "editorLabel": "Homme",
-                    "label": "male",
-                    "defaultInstance": {
-                        "@class": "ChoiceInstance",
-                        "active": true,
-                        "unread": true
-                    },
-                    "scope": {
-                        "@class": "TeamScope"
-                    },
-                    "results": [
-                        {
-                            "@class": "Result",
-                            "name": "",
-                            "answer": "",
-                            "files": [
-                            ],
-                            "impact": {
-                                "@class": "Script",
-                                "content": "",
-                                "language": "JavaScript"
-                            }
-                        }
-                    ],
-                    "description": "<p>C'est un homme</p>",
-                    "impact": null,
-                    "duration": 1,
-                    "cost": 0
-                },
-                {
-                    "@class": "SingleResultChoiceDescriptor",
-                    "name": "female",
-                    "editorLabel": "Femme",
-                    "label": "female",
-                    "defaultInstance": {
-                        "@class": "ChoiceInstance",
-                        "active": true,
-                        "unread": true
-                    },
-                    "scope": {
-                        "@class": "TeamScope"
-                    },
-                    "results": [
-                        {
-                            "@class": "Result",
-                            "name": "",
-                            "answer": "",
-                            "files": [
-                            ],
-                            "impact": {
-                                "@class": "Script",
-                                "content": "",
-                                "language": "JavaScript"
-                            }
-                        }
-                    ],
-                    "description": "<p>C'est une femme</p>",
-                    "impact": null,
-                    "duration": 1,
-                    "cost": 0
+            "oneShot": true,
+            "triggerEvent": {
+                "@class": "Script",
+                "content": "VariableDescriptorFacade.find(8034).size(self)>4",
+                "language": "JavaScript"
+            },
+            "postTriggerEvent": {
+                "@class": "Script",
+                "content": "VariableDescriptorFacade.find(851).setValue(self, 4);",
+                "language": "JavaScript"
+            }
+        }, 
+        {
+            "@class": "ObjectDescriptor",
+            "name": "demographics",
+            "editorLabel": "demographics",
+            "label": "demographics",
+            "defaultInstance": {
+                "@class": "ObjectInstance",
+                "properties": {
+                    "": ""
                 }
-            ],
+            },
+            "scope": {
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
+            },
             "description": "",
-            "allowMultipleReplies": true,
-            "pictures": [
-            ]
+            "properties": {
+            }
+        }, 
+        {
+            "@class": "ObjectDescriptor",
+            "name": "results",
+            "editorLabel": "Results",
+            "label": "Results",
+            "defaultInstance": {
+                "@class": "ObjectInstance",
+                "properties": {
+                }
+            },
+            "scope": {
+                "@class": "PlayerScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {
+                "1": "Male",
+                "2": "Female"
+            }
         }
     ],
     "scriptLibrary": {
         "default": {
             "@class": "GameModelContent",
-            "content": "Y.use(\"wegas-flexitests-controller\", function(Z){ Y.Wegas.FlexitestsController.EDITMENU= [{type: \"Button\", label: \"Properties\", cssClass: \"editor-exploreGameModel-button\", plugins: [{ fn: \"EditWidgetAction\" }] }, { type: \"Button\", label: \"Add\", cssClass: \"editor-exploreGameModel-button\", plugins: [{ \"fn\": \"WidgetMenu\", \"cfg\": { \"menuCfg\": { points: [\"tl\", \"tr\"] }, \"event\": \"mouseenter\", \"children\": [{ type: \"Button\", label: \"ChoiceList\", plugins: [{ fn: \"AddChildWidgetAction\", cfg: { \"childType\": \"ChoiceList\" } }] }] } }] }]; Y.Wegas.FlexitestsController.ATTRS.plugins= Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins); Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push( { type: \"Button\", label: \"Swap top zones\", data: \"SwapZone\" },{ type: \"Button\", label: \"Expected response\", data: \"FlexiResponse\" }); });"
+            "contentType": null,
+            "content": "importPackage(org.apache.shiro);\nfunction store(object, key, value){\n    eval(object).properties.put(key, value);    \n}\nfunction getInstances(descriptors){\n    var a=[];\n    if(SecurityUtils.getSubject().hasRole(\"Registered\")){\n        for(var i in descriptors){\n            a.push(eval(descriptors[i]).getScope().getVariableInstances());\n        }\n    }else{\n        for(var i in descriptors){\n            a.push(eval(descriptors[i]).getScope().getPrivateInstances());\n        }\n    }\n    \n    return a;\n}"
+        }
+    },
+    "cssLibrary": {
+    },
+    "clientScriptLibrary": {
+        "load": {
+            "@class": "GameModelContent",
+            "contentType": null,
+            "content": "Y.use(\"wegas-flexitests-controller\", function(Z){\r\n    Y.Wegas.FlexitestsController.EDITMENU= [{type: \"Button\",\r\n                label: \"Properties\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        fn: \"EditWidgetAction\"\r\n                    }]\r\n            }, {\r\n                type: \"Button\",\r\n                label: \"Add\",\r\n                cssClass: \"editor-exploreGameModel-button\",\r\n                plugins: [{\r\n                        \"fn\": \"WidgetMenu\",\r\n                        \"cfg\": {\r\n                            \"menuCfg\": {\r\n                                points: [\"tl\", \"tr\"]\r\n                            },\r\n                            \"event\": \"mouseenter\",\r\n                            \"children\": [{\r\n                                    type: \"Button\",\r\n                                    label: \"Single choice list\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"ChoiceList\"\r\n                                            }\r\n                                        }]\r\n                                },{\r\n                                    type: \"Button\",\r\n                                    label: \"Image (fix point)\",\r\n                                    plugins: [{\r\n                                            fn: \"AddChildWidgetAction\",\r\n                                            cfg: {\r\n                                                \"childType\": \"Image\"\r\n                                            }\r\n                                        }]\r\n                                }]\r\n                        }\r\n                    }]\r\n            }];\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins= Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins);\r\n            Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push(\r\n                        {\r\n                            type: \"Button\",\r\n                            label: \"Swap top zones\",\r\n                            data: \"SwapZone\"\r\n                        },{\r\n                            type: \"Button\",\r\n                            label: \"Expected response\",\r\n                            data: \"FlexiResponse\"\r\n                        });\r\n});"
         }
     },
     "properties": {
-        "cssUri": "wegas-flexitests/css/wegas-flexitests.css",
-        "pagesUri": "wegas-flexitests/db/wegas-flexitests-pages.json?"
+        "cssUri": "wegas-flexitests/css/wegas-flexitests.css"
+    },
+    "pages": {
+        "3": {
+            "type": "FlexitestsController",
+            "cssClass": "test-page",
+            "plugins": [
+                {
+                    "fn": "SwapZone",
+                    "cfg": {
+                        "after": 1
+                    }
+                }
+            ],
+            "fixPoint": 1000,
+            "random": true,
+            "children": [
+                {
+                    "id": "leftElement",
+                    "type": "ChoiceList",
+                    "plugins": [
+                        {
+                            "fn": "HideAfter",
+                            "cfg": {
+                                "time": "0,1000"
+                            }
+                        }, 
+                        {
+                            "fn": "ShowAfter",
+                            "cfg": {
+                                "time": "500"
+                            }
+                        }, 
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "50pt",
+                                    "left": "50pt",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }
+                    ],
+                    "children": [
+                        {
+                            "type": "Text",
+                            "content": "Male"
+                        }
+                    ]
+                }, 
+                {
+                    "id": "rightElement",
+                    "type": "ChoiceList",
+                    "plugins": [
+                        {
+                            "fn": "HideAfter",
+                            "cfg": {
+                                "time": "0,1500"
+                            }
+                        }, 
+                        {
+                            "fn": "ShowAfter",
+                            "cfg": {
+                                "time": "1000"
+                            }
+                        }, 
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "50pt",
+                                    "left": "",
+                                    "bottom": "",
+                                    "right": "50pt"
+                                }
+                            }
+                        }
+                    ],
+                    "children": [
+                        {
+                            "type": "Text",
+                            "content": "Female"
+                        }
+                    ]
+                }, 
+                {
+                    "id": "centerElement",
+                    "type": "ChoiceList",
+                    "plugins": [
+                        {
+                            "fn": "HideAfter",
+                            "cfg": {
+                                "time": "0"
+                            }
+                        }, 
+                        {
+                            "fn": "ShowAfter",
+                            "cfg": {
+                                "time": "1500"
+                            }
+                        }, 
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "300px",
+                                    "left": "300px",
+                                    "bottom": "",
+                                    "right": "300px"
+                                }
+                            }
+                        }
+                    ],
+                    "children": [
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "1"
+                                    }
+                                }
+                            ],
+                            "url": "/hectorPerplexe.png"
+                        }, 
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "2"
+                                    }
+                                }
+                            ],
+                            "url": "/jessicaPerplexe.png"
+                        }, 
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "1"
+                                    }
+                                }
+                            ],
+                            "url": "/lucienPortrait.png"
+                        }, 
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "2"
+                                    }
+                                }
+                            ],
+                            "url": "/danielaConfiant.png"
+                        }, 
+                        {
+                            "type": "Image",
+                            "plugins": [
+                                {
+                                    "fn": "FlexiResponse",
+                                    "cfg": {
+                                        "value": "1"
+                                    }
+                                }
+                            ],
+                            "url": "/fernandPensif.png"
+                        }
+                    ]
+                }, 
+                {
+                    "id": "flexi-mcq",
+                    "type": "FlexitestsMCQ",
+                    "plugins": [
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "",
+                                    "left": "200px",
+                                    "bottom": "30px",
+                                    "right": "200px"
+                                }
+                            }
+                        }
+                    ],
+                    "feedback": 1000,
+                    "responseType": "radio",
+                    "variable": {
+                        "name": "results"
+                    }
+                }, 
+                {
+                    "type": "Image",
+                    "cssClass": "fix-point",
+                    "plugins": [
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "250pt",
+                                    "left": "350pt",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }
+                    ],
+                    "url": "/fix-point/fix_red.png"
+                }
+            ]
+        },
+        "2": {
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "Text",
+                    "cssClass": "flexitests-title",
+                    "content": "FlexiTests"
+                }, 
+                {
+                    "type": "Text",
+                    "content": "_INSTRUCTIONS_"
+                }, 
+                {
+                    "id": 2,
+                    "type": "Form",
+                    "plugins": [
+                        {
+                            "fn": "SaveObjectAction",
+                            "cfg": {
+                                "targetEvent": "submit",
+                                "variable": {
+                                    "name": "demographics"
+                                }
+                            }
+                        }, 
+                        {
+                            "fn": "ExecuteScriptAction",
+                            "cfg": {
+                                "targetEvent": "submit",
+                                "onClick": {
+                                    "@class": "Script",
+                                    "language": "JavaScript",
+                                    "content": "currentPage.value = 3;"
+                                }
+                            }
+                        }
+                    ],
+                    "cfg": {
+                        "fields": [
+                            {
+                                "name": "fullname",
+                                "label": "Name",
+                                "type": "string",
+                                "value": ""
+                            }, 
+                            {
+                                "name": "gender",
+                                "label": "Gender",
+                                "choices": [
+                                    {
+                                        "value": "m",
+                                        "label": "M"
+                                    }, 
+                                    {
+                                        "value": "f",
+                                        "label": "F"
+                                    }
+                                ],
+                                "type": "select",
+                                "value": "m"
+                            }, 
+                            {
+                                "fields": [
+                                ],
+                                "type": "variabledescriptorselect",
+                                "value": "VariableDescriptorFacade.find(851)"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "1": {
+            "type": "PageLoader",
+            "pageLoaderId": "mainarea",
+            "cssClass": "flexitests",
+            "variable": {
+                "name": "currentPage"
+            }
+        },
+        "4": {
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "FlexitestsResults",
+                    "variable": {
+                        "name": "results"
+                    },
+                    "demographics": {
+                        "name": "demographics"
+                    }
+                }
+            ]
+        }
     }
 }

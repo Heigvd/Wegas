@@ -1,5 +1,15 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('attribute-observable', function (Y, NAME) {
+
+    /*For log lines*/
+    /*jshint maxlen:200*/
+
 
     /**
      * The attribute module provides an augmentable Attribute implementation, which
@@ -21,8 +31,7 @@ YUI.add('attribute-observable', function (Y, NAME) {
     var EventTarget = Y.EventTarget,
 
         CHANGE = "Change",
-        BROADCAST = "broadcast",
-        PUBLISHED = "published";
+        BROADCAST = "broadcast";
 
     /**
      * Provides an augmentable implementation of attribute change events for
@@ -128,32 +137,36 @@ YUI.add('attribute-observable', function (Y, NAME) {
          * @param {Any} currVal The current value of the attribute
          * @param {Any} newVal The new value of the attribute
          * @param {Object} opts Any additional event data to mix into the attribute change event's event facade.
+         * @param {Object} [cfg] The attribute config stored in State, if already available.
          */
-        _fireAttrChange : function(attrName, subAttrName, currVal, newVal, opts) {
+        _fireAttrChange : function(attrName, subAttrName, currVal, newVal, opts, cfg) {
             var host = this,
-                eventName = attrName + CHANGE,
+                eventName = this._getFullType(attrName + CHANGE),
                 state = host._state,
                 facade,
                 broadcast,
-                evtCfg;
+                e;
 
-            if (!state.get(attrName, PUBLISHED)) {
+            if (!cfg) {
+                cfg = state.data[attrName] || {};
+            }
 
-                evtCfg = {
-                    queuable:false,
-                    defaultTargetOnly: true,
-                    defaultFn:host._defAttrChangeFn,
-                    silent:true
-                };
+            if (!cfg.published) {
 
-                broadcast = state.get(attrName, BROADCAST);
+                // PERF: Using lower level _publish() for
+                // critical path performance
+                e = host._publish(eventName);
+
+                e.emitFacade = true;
+                e.defaultTargetOnly = true;
+                e.defaultFn = host._defAttrChangeFn;
+
+                broadcast = cfg.broadcast;
                 if (broadcast !== undefined) {
-                    evtCfg.broadcast = broadcast;
+                    e.broadcast = broadcast;
                 }
 
-                host.publish(eventName, evtCfg);
-
-                state.add(attrName, PUBLISHED, true);
+                cfg.published = true;
             }
 
             facade = (opts) ? Y.merge(opts) : host._ATTR_E_FACADE;
@@ -180,9 +193,8 @@ YUI.add('attribute-observable', function (Y, NAME) {
          */
         _defAttrChangeFn : function(e) {
             if (!this._setAttrVal(e.attrName, e.subAttrName, e.prevVal, e.newVal, e.opts)) {
-                /*jshint maxlen:200*/
                 Y.log('State not updated and stopImmediatePropagation called for attribute: ' + e.attrName + ' , value:' + e.newVal, 'warn', 'attribute');
-                /*jshint maxlen:150*/
+
                 // Prevent "after" listeners from being invoked since nothing changed.
                 e.stopImmediatePropagation();
             } else {
@@ -209,4 +221,4 @@ YUI.add('attribute-observable', function (Y, NAME) {
     Y.AttributeEvents = AttributeObservable;
 
 
-}, '3.9.1', {"requires": ["event-custom"]});
+}, '3.10.1', {"requires": ["event-custom"]});

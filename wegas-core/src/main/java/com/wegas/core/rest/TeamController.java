@@ -9,7 +9,9 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.util.SecurityHelper;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -50,7 +52,7 @@ public class TeamController {
     @Path("{teamId : [1-9][0-9]*}")
     public Team get(@PathParam("teamId") Long teamId) {
         Team t = teamFacade.find(teamId);
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + t.getGameId());
+        SecurityHelper.checkPermission(t.getGame(), "View");
         return t;
     }
 
@@ -61,8 +63,9 @@ public class TeamController {
      */
     @GET
     public Collection<Team> index(@PathParam("gameId") Long gameId) {
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + gameId);
-        return gameFacade.find(gameId).getTeams();
+        final Game g = gameFacade.find(gameId);
+        SecurityHelper.checkPermission(g, "View");
+        return g.getTeams();
     }
 
     /**
@@ -73,7 +76,7 @@ public class TeamController {
      */
     @POST
     public Team create(@PathParam("gameId") Long gameId, Team entity) {
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
+        SecurityHelper.checkPermission(gameFacade.find(gameId), "Edit");
         this.teamFacade.create(gameId, entity);
         return entity;
     }
@@ -87,7 +90,7 @@ public class TeamController {
     @PUT
     @Path("{teamId : [1-9][0-9]*}")
     public Team update(@PathParam("teamId") Long teamId, Team entity) {
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + teamFacade.find(teamId).getGameId());
+        SecurityHelper.checkPermission(teamFacade.find(teamId).getGame(), "Edit");
         return teamFacade.update(teamId, entity);
     }
 
@@ -100,7 +103,8 @@ public class TeamController {
     @Path("{teamId: [1-9][0-9]*}")
     public Team delete(@PathParam("teamId") Long teamId) {
         Team entity = teamFacade.find(teamId);
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entity.getGameId());
+
+        SecurityHelper.checkPermission(entity.getGame(), "Edit");
         teamFacade.remove(entity);
         return entity;
     }

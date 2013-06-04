@@ -9,6 +9,7 @@ package com.wegas.messaging.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
@@ -112,7 +113,7 @@ public class InboxDescriptorController {
     }
 
     private void checkPermissions(Message m) {
-        if (!SecurityUtils.getSubject().isPermitted("Game:Edit:g" + variableInstanceFacade.findGame(m.getInboxInstance()).getId())) {
+        if (!SecurityHelper.isPermitted(variableInstanceFacade.findGame(m.getInboxInstance()), "Edit")) {
             try {
                 Long playerId = playerFacade.findCurrentPlayer(variableInstanceFacade.findGame(m.getInboxInstance())).getId();
                 //System.out.println(playerId + " playerid readMessage");

@@ -103,7 +103,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 event: "click"
             });
             this.overlayMask.setStyles({
-                zIndex: 30,
+                zIndex: 49,
                 width: "100%",
                 height: "100%",
                 position: "absolute",
@@ -111,6 +111,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 left: 0
             });
             this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
+            host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
         },
         bind: function() {
             this.handlers.push(this.highlightOverlay.menu.on("menuOpen", function(e) {
@@ -147,6 +148,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             }, this));
             this.get("host").get(CONTENTBOX).after("mouseout", function() {
                 this.hideOverlay();
+            }, this);
+            this.get("host").get(CONTENTBOX).scrollInfo.on("*:scroll", function(e) {
+                this.overlayMask.setStyles({top: e.scrollTop, left: e.scrollLeft});
             }, this);
         },
         processSave: function() {

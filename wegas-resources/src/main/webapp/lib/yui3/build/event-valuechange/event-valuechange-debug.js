@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('event-valuechange', function (Y, NAME) {
 
 /**
@@ -473,4 +479,4 @@ Y.Event.define('valueChange', config); // deprecated, but supported for backcomp
 Y.ValueChange = VC;
 
 
-}, '3.9.1', {"requires": ["event-focus", "event-synthetic"]});
+}, '3.10.1', {"requires": ["event-focus", "event-synthetic"]});

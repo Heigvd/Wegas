@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('io-base', function (Y, NAME) {
 
 /**
@@ -557,6 +563,8 @@ IO.prototype = {
     *       <dt>dataType</dt>
     *         <dd>Set the value to 'XML' if that is the expected response
     *         content type.</dd>
+    *       <dt>credentials</dt>
+    *         <dd>Set the value to 'true' to set XHR.withCredentials property to true.</dd>
     *     </dl></dd>
     *
     *   <dt>form</dt>
@@ -1010,4 +1018,4 @@ Y.mix(Y.IO.prototype, {
 
 
 
-}, '3.9.1', {"requires": ["event-custom-base", "querystring-stringify-simple"]});
+}, '3.10.1', {"requires": ["event-custom-base", "querystring-stringify-simple"]});

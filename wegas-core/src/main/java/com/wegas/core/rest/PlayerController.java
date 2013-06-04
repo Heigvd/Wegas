@@ -7,9 +7,11 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.security.util.SecurityHelper;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -34,6 +36,8 @@ public class PlayerController {
     private PlayerFacade playerFacade;
     @EJB
     private TeamFacade teamFacade;
+    @EJB
+    private GameFacade gameFacade;
 
     /**
      *
@@ -44,7 +48,7 @@ public class PlayerController {
     @Path("{playerId : [1-9][0-9]*}")
     public Player get(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + p.getGameId());
+        SecurityHelper.checkPermission(p.getGame(), "View");
         return playerFacade.find(playerId);
     }
 
@@ -57,7 +61,7 @@ public class PlayerController {
      */
     @GET
     public Collection<Player> index(@PathParam("gameId") Long gameId) {
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + gameId);
+        SecurityHelper.checkPermission(gameFacade.find(gameId), "View");
         return playerFacade.findAll();
     }
 
@@ -69,7 +73,7 @@ public class PlayerController {
      */
     @POST
     public Player create(@PathParam("teamId") Long teamId, Player entity) {
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + teamFacade.find(teamId).getGameId());
+        SecurityHelper.checkPermission(teamFacade.find(teamId).getGame(), "Edit");
         playerFacade.create(teamId, entity);
         return entity;
     }
@@ -83,7 +87,7 @@ public class PlayerController {
     @PUT
     @Path("{playerId: [1-9][0-9]*}")
     public Player update(@PathParam("playerId") Long playerId, Player entity) {
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + playerFacade.find(playerId).getGameId());
+        SecurityHelper.checkPermission(playerFacade.find(playerId).getGame(), "Edit");
         return playerFacade.update(playerId, entity);
     }
 
@@ -96,7 +100,7 @@ public class PlayerController {
     @Path("{playerId: [1-9][0-9]*}")
     public Player delete(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + p.getGameId());
+        SecurityHelper.checkPermission(p.getGame(), "Edit");
         playerFacade.remove(playerId);
         return p;
     }

@@ -24,7 +24,6 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
          */
         initializer: function() {
             this.events = [];
-            this.choices = null;
         },
         /**
          * Lifecycle method
@@ -57,21 +56,28 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.get("contentBox").delegate("click", function(e) {
+            this.events.push(this.get("contentBox").delegate("click", function(e) {
                 e.halt(true);
                 this.fire("clientResponse", {value: e.currentTarget.getData("reference")});
-            }, "." + this.getClassName("input") + " > span", this);
-            this.get("contentBox").one("." + this.getClassName("input")).delegate("change", function(e) {
+            }, "." + this.getClassName("input") + " > span", this));
+            this.events.push(this.get("contentBox").one("." + this.getClassName("input")).delegate("change", function(e) {
                 e.halt(true);
                 this.fire("clientResponse", {value: e.target.getDOMNode().value});
                 e.target.getDOMNode().value = INITIALVALUE;
-            }, "select", this);
+            }, "select", this));
+            this.events.push(this.get("contentBox").one("." + this.getClassName("input")).delegate("change", function(e) {
+                e.halt(true);
+                if (e.target.getDOMNode().value) {
+                    this.fire("clientResponse", {value: e.target.getDOMNode().value});
+                    e.target.getDOMNode().checked = false;
+                }
+            }, "form", this));
             this.events.push(this.get("root").get("boundingBox").after("keypress", function(e) {
                 this.keyPressed(String.fromCharCode(e.keyCode));
             }, this));
         },
         keyPressed: function(charCode) {
-            var choice;
+            var choice, counter = 0, i;
             if (this.get("responseType") !== "key") {
                 return;
             }
@@ -85,22 +91,53 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                 default:
                     return;
             }
-            this.fire("clientResponse", {value: this.choices[choice].get("label")});
+            for(i in this.get("variable.evaluated").get("properties")){
+                if(counter === choice){
+                    this.fire("clientResponse", {value: i});
+                    break;
+                }
+                counter ++;
+            }
+            
         },
-        success: function(time) {
+        success: function() {
             if (+this.get("feedback") > 0) {
-                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:lightgreen'>GOOD: " + time + " ms</i>");
+                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:lightgreen'>GOOD</i>");
                 Y.later(+this.get("feedback"), this, this.clearFeedBack);
             }
         },
-        error: function(time) {
+        error: function() {
             if (+this.get("feedback") > 0) {
-                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:red'>BAD: " + time + "ms</i>");
+                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:red'>WRONG</i>");
                 Y.later(+this.get("feedback"), this, this.clearFeedBack);
             }
         },
         clearFeedBack: function() {
-            this.get("contentBox").one("." + this.getClassName("feedback")).empty();
+            try {
+                this.get("contentBox").one("." + this.getClassName("feedback")).empty();
+            } catch (e) {
+                //page changed?
+            }
+        },
+        save: function(el) {
+            var id = el.index;
+            delete el.index;
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                cfg: {
+                    method: "POST",
+                    data: Y.JSON.stringify({
+                        "@class": "Script",
+                        "language": "JavaScript",
+                        "content": "store(" + this.get("variable.evaluated").get("name") + ",'" + id + "','" + Y.JSON.stringify(el) + "');"
+                    })
+                },
+                on: {
+                    failure: Y.bind(function(e) {
+                        Y.log("error", "Failed to store data", "Y.Wegas.FlexitestsMCQ");
+                    }, this)
+                }
+            });
         },
         generators: {
             link: function() {
@@ -108,23 +145,37 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                         inputDiv = cb.one("." + this.getClassName("input")),
                         question = this.get("variable.evaluated");
                 inputDiv.empty();
-                for (var i in question.get("items")) {
-                    inputDiv.append("<span data-reference='" + question.get("items")[i].get("label") + "'>" + question.get("items")[i].get("description") + "</span><br/>");
+                for (var i in question.get("properties")) {
+                    inputDiv.append("<span data-reference='" + i + "'>" + question.get("properties")[i] + "</span><br/>");
                 }
             },
             selector: function() {
                 var cb = this.get("contentBox"),
                         inputDiv = cb.one("." + this.getClassName("input")),
-                        question = this.get("variable.evaluated");
+                        question = this.get("variable.evaluated"),
+                        engine = new Y.Template(Y.Template.Micro),
+                        render = engine.compile("<select><option value='" + INITIALVALUE + "'>Choose:</option>" +
+                        "<% for(var i in this.get('properties')){ %>" +
+                        "<option value='<%= i%>'><%= this.get('properties')[i] %></option>" +
+                        "<% } %></select>");
                 inputDiv.empty();
-                inputDiv.append("<select><option value='" + INITIALVALUE + "'>Choose:</option></select>");
-                inputDiv = inputDiv.get("firstChild");
-                for (var i in question.get("items")) {
-                    inputDiv.append("<option value='" + question.get("items")[i].get("label") + "'>" + question.get("items")[i].get("description") + "</option>");
-                }
+                inputDiv.append(render(question));
             },
             key: function() {
-                this.choices = this.get("variable.evaluated").get("items");
+                this.get("contentBox").one("." + this.getClassName("input")).empty();
+            },
+            radio: function() {
+                var cb = this.get("contentBox"),
+                        inputDiv = cb.one("." + this.getClassName("input")),
+                        question = this.get("variable.evaluated"),
+                        engine = new Y.Template(Y.Template.Micro),
+                        render = engine.compile("<form>" +
+                        "<% for(var i in this.get('properties')){ %>" +
+                        "<label><input type='radio' name='mcq-flexi-radio' value='<%= i %>'><span><%= this.get('properties')[i] %></span></label>" +
+                        "<% } %>" +
+                        "</form>");
+                inputDiv.empty();
+                inputDiv.append(render(question));
             }
         },
         /**
@@ -163,6 +214,10 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                     {
                         value: "key",
                         label: "Keyboard F/H"
+                    },
+                    {
+                        value: "radio",
+                        label: "Horizontal scale"
                     }
                 ]
             },

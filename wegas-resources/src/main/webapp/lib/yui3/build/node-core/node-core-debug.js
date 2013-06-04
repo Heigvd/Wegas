@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('node-core', function (Y, NAME) {
 
 /**
@@ -637,10 +643,15 @@ Y.mix(Y_Node.prototype, {
      * @return {NodeList} A NodeList instance for the matching HTMLCollection/Array.
      */
     all: function(selector) {
-        var nodelist = Y.all(Y.Selector.query(selector, this._node));
-        nodelist._query = selector;
-        nodelist._queryRoot = this._node;
-        return nodelist;
+        var nodelist;
+        
+        if (this._node) {
+            nodelist = Y.all(Y.Selector.query(selector, this._node));
+            nodelist._query = selector;
+            nodelist._queryRoot = this._node;
+        }
+
+        return nodelist || Y.all([]);
     },
 
     // TODO: allow fn test
@@ -1600,4 +1611,4 @@ Y.NodeList.importMethod(Y.Node.prototype, [
 ]);
 
 
-}, '3.9.1', {"requires": ["dom-core", "selector"]});
+}, '3.10.1', {"requires": ["dom-core", "selector"]});

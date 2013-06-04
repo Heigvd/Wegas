@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('slider-base', function (Y, NAME) {
 
 /**
@@ -758,4 +764,4 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
 });
 
 
-}, '3.9.1', {"requires": ["widget", "dd-constrain", "event-key"], "skinnable": true});
+}, '3.10.1', {"requires": ["widget", "dd-constrain", "event-key"], "skinnable": true});

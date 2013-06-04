@@ -15,8 +15,12 @@ body {
     overflow: hidden;
 }
 
-/** Hide all advanced feature while in dev mode */
-.wegas-stdmode .wegas-advanced-feature {
+/** Hide all advanced feature while in std mode */
+.wegas-stdmode .wegas-advanced-feature,
+.wegas-stdmode .editor-administrator-button,
+.wegas-stdmode .editor-developer-button,
+.wegas-stdmode .editor-addPlayer-button,
+.wegas-stdmode .editor-playerProperties-button {
     display: none;
 }
 
@@ -163,6 +167,13 @@ body {
     float:none;
     height:100%;
 }
+.wegas-scriptlibrary .empty {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-style: italic;
+    top: 100px;
+}
 .wegas-scriptlibrary .inputEx-fieldWrapper {
     height:100%;
     margin-bottom:0;
@@ -233,6 +244,7 @@ body {
 }
 .wegas-pageeditor-layoutmode .wegas-widget {
     box-shadow: 0px 0px 1px black;
+    display: inherit !important;
     background: rgba(0,0,0,0.05) !important;
     color: #990808 !important;
     min-width: 20px;
@@ -315,6 +327,7 @@ body {
 .highlighted{
     -moz-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
     -webkit-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
+    display: inherit !important;
     box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
     z-index:5;
 }

@@ -1,85 +1,15 @@
 {
-    "1": {
-        "type": "PageLoader",
-        "pageLoaderId": "mainarea",
-        "cssClass": "flexitests",
-        "variable": {
-            "name": "currentPage"
-        },
-        "plugins": [{
-            "fn": "Popup"
-        }]
-    },
-    "2": {
-        "type": "List",
-        "direction": "vertical",
-        "children": [{
-                "type": "Text",
-                "content": "FlexiTests",
-                "cssClass": "flexitests-title"
-            }, {
-                "type": "Text",
-                "content": "_INSTRUCTIONS_"
-            }, {
-                "id": 2,
-                "type": "Form",
-                "cfg": {
-                    "type": "group",
-                    "fields": [{
-                            "name": "fullname",
-                            "label": "Name"
-                        }, {
-                            "name": "gender",
-                            "label": "Gender",
-                            "type": "select",
-                            "choices": [{"label": "M", "value": "m"}, {"label": "F", "value": "f"}]
-                        }]
-                },
-                "plugins": [{
-                        "fn": "SaveEntityAction",
-                        "cfg": {
-                            "targetEvent": "submit",
-                            "variable": {
-                                "name": "demographics"
-                            }
-                        }
-                    }, {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "submit",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "/*currentPage.value = 10;*/"
-                            }
-                        }
-                    }]
-
-            }, {
-                "type": "Button",
-                "label": "Submit",
-                "cssClass": null,
-                "disabled": false,
-                "plugins": [
-                    {
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "currentPage.value = 3;"
-                            }
-                        }
-                    }
-                ]
-            }
-        ]
-    },
     "3": {
         "type": "FlexitestsController",
         "cssClass": "test-page",
-        "fixPoint": "1000",
+        "plugins": [{
+                "fn": "SwapZone",
+                "cfg": {
+                    "after": 1
+                }
+            }
+        ],
+        "fixPoint": 1000,
         "random": true,
         "children": [
             {
@@ -87,22 +17,28 @@
                 "type": "ChoiceList",
                 "plugins": [
                     {
-                        "fn": "Position",
-                        "cfg": {
-                            "left": "50",
-                            "top": "50"
-                        }
-                    },
-                    {
                         "fn": "HideAfter",
                         "cfg": {
                             "time": "0,1000"
                         }
-                    },
+                    }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "500"
+                        }
+                    }, 
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "50pt",
+                                "left": "50pt",
+                                "bottom": "",
+                                "right": ""
+                            }
                         }
                     }
                 ],
@@ -112,28 +48,34 @@
                         "content": "Male"
                     }
                 ]
-            },
+            }, 
             {
                 "id": "rightElement",
                 "type": "ChoiceList",
                 "plugins": [
                     {
-                        "fn": "Position",
-                        "cfg": {
-                            "top": "50",
-                            "right": "50"
-                        }
-                    },
-                    {
                         "fn": "HideAfter",
                         "cfg": {
                             "time": "0,1500"
                         }
-                    },
+                    }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "1000"
+                        }
+                    }, 
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "50pt",
+                                "left": "",
+                                "bottom": "",
+                                "right": "50pt"
+                            }
                         }
                     }
                 ],
@@ -143,29 +85,34 @@
                         "content": "Female"
                     }
                 ]
-            },
+            }, 
             {
                 "id": "centerElement",
                 "type": "ChoiceList",
                 "plugins": [
                     {
-                        "fn": "Position",
-                        "cfg": {
-                            "left": "300",
-                            "top": "300",
-                            "right": "300"
-                        }
-                    },
-                    {
                         "fn": "HideAfter",
                         "cfg": {
                             "time": "0"
                         }
-                    },
+                    }, 
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "1500"
+                        }
+                    }, 
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "300px",
+                                "left": "300px",
+                                "bottom": "",
+                                "right": "300px"
+                            }
                         }
                     }
                 ],
@@ -176,87 +123,200 @@
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "male"
+                                    "value": "1"
                                 }
                             }
                         ],
                         "url": "/hectorPerplexe.png"
-                    },
+                    }, 
                     {
                         "type": "Image",
                         "plugins": [
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "female"
+                                    "value": "2"
                                 }
                             }
                         ],
                         "url": "/jessicaPerplexe.png"
-                    },
+                    }, 
                     {
                         "type": "Image",
                         "plugins": [
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "male"
+                                    "value": "1"
                                 }
                             }
                         ],
                         "url": "/lucienPortrait.png"
-                    },
+                    }, 
                     {
                         "type": "Image",
                         "plugins": [
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "female"
+                                    "value": "2"
                                 }
                             }
                         ],
                         "url": "/danielaConfiant.png"
-                    },
+                    }, 
                     {
                         "type": "Image",
                         "plugins": [
                             {
                                 "fn": "FlexiResponse",
                                 "cfg": {
-                                    "value": "male"
+                                    "value": "1"
                                 }
                             }
                         ],
                         "url": "/fernandPensif.png"
                     }
                 ]
-            },
+            }, 
             {
                 "id": "flexi-mcq",
                 "type": "FlexitestsMCQ",
                 "plugins": [
                     {
-                        "fn": "Position",
+                        "fn": "CSSPosition",
                         "cfg": {
-                            "left": "200",
-                            "right": "200",
-                            "bottom": "30"
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "",
+                                "left": "200px",
+                                "bottom": "30px",
+                                "right": "200px"
+                            }
                         }
                     }
                 ],
                 "feedback": 1000,
-                "responseType": "link",
+                "responseType": "radio",
                 "variable": {
-                    "name": "test1"
+                    "name": "results"
+                }
+            }, 
+            {
+                "type": "Image",
+                "cssClass": "fix-point",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "250pt",
+                                "left": "350pt",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    }
+                ],
+                "url": "/fix-point/fix_red.png"
+            }
+        ]
+    },
+    "2": {
+        "type": "List",
+        "direction": "vertical",
+        "children": [
+            {
+                "type": "Text",
+                "cssClass": "flexitests-title",
+                "content": "FlexiTests"
+            }, 
+            {
+                "type": "Text",
+                "content": "_INSTRUCTIONS_"
+            }, 
+            {
+                "id": 2,
+                "type": "Form",
+                "plugins": [
+                    {
+                        "fn": "SaveObjectAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "variable": {
+                                "name": "demographics"
+                            }
+                        }
+                    }, 
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "submit",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "currentPage.value = 3;"
+                            }
+                        }
+                    }
+                ],
+                "cfg": {
+                    "fields": [
+                        {
+                            "name": "fullname",
+                            "label": "Name",
+                            "type": "string",
+                            "value": ""
+                        }, 
+                        {
+                            "name": "gender",
+                            "label": "Gender",
+                            "choices": [
+                                {
+                                    "value": "m",
+                                    "label": "M"
+                                }, 
+                                {
+                                    "value": "f",
+                                    "label": "F"
+                                }
+                            ],
+                            "type": "select",
+                            "value": "m"
+                        }, 
+                        {
+                            "fields": [
+                            ],
+                            "type": "variabledescriptorselect",
+                            "value": "VariableDescriptorFacade.find(851)"
+                        }
+                    ]
                 }
             }
-        ],
-        "plugins": [
+        ]
+    },
+    "1": {
+        "type": "PageLoader",
+        "pageLoaderId": "mainarea",
+        "cssClass": "flexitests",
+        "variable": {
+            "name": "currentPage"
+        }
+    },
+    "4": {
+        "type": "List",
+        "direction": "vertical",
+        "children": [
             {
-                "fn": "SwapZone",
-                "cfg": {
-                    "after": 1
+                "type": "FlexitestsResults",
+                "variable": {
+                    "name": "results"
+                },
+                "demographics": {
+                    "name": "demographics"
                 }
             }
         ]

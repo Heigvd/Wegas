@@ -11,6 +11,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.util.SecurityHelper;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -48,8 +49,7 @@ public class VariableInstanceController {
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public VariableInstance update(@PathParam("entityId") Long entityId, VariableInstance entity) {
-
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + variableInstanceFacade.findGame(entityId).getId());
+        SecurityHelper.checkPermission(variableInstanceFacade.findGame(entityId), "Edit");
 
         return variableInstanceFacade.update(entityId, entity);
     }
@@ -62,14 +62,14 @@ public class VariableInstanceController {
      */
     @GET
     public Collection<VariableInstance> index(@PathParam("variableDescriptorId") Long variableDescriptorId) {
- 
+
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
-        
+
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + vd.getGameModelId());
-        
+
         return vd.getScope().getVariableInstances().values();
     }
-    
+
     /**
      *
      * @param variableInstanceId
@@ -84,8 +84,8 @@ public class VariableInstanceController {
         if (!vi.getDescriptorId().equals(variableDescriptorId)){
             return null;
         }
-        
-        return vi;  
+
+        return vi;
     }
 
     /**
