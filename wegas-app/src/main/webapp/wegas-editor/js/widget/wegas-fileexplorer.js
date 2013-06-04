@@ -5,6 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+/**
+ * @fileoverview
+ * @author Cyril Junod
+ */
 YUI.add('wegas-fileexplorer', function(Y) {
     'use strict';
 
@@ -63,7 +67,11 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     plugins: [{
                             fn: Y.Plugin.TreeViewFilter,
                             cfg: {
-                                searchAttrs: ["label", "data.mimeType"],
+                                validatorFn: function(searchVal){
+                                    var label = this.get("label").toLowerCase().indexOf(searchVal.toLowerCase()),
+                                            mimeType = this.get("data.mimeType").toLowerCase().indexOf(searchVal.toLowerCase());
+                                    return label + mimeType > -2;
+                                },
                                 regExp: false
                             }
                         }]
