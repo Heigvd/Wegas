@@ -212,6 +212,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                             break;
 
                         case 'Game':
+                        case 'DebugGame':
                             var createdBy = el.get("createdBy"),
                                     gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
                             if (!gameModel) {
@@ -279,7 +280,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                     entity: el
                                 },
                                 iconCSS: 'wegas-icon-gamemodel',
-                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                rightWidget: (el.get("canEdit")) ? Y.Node.create(EDITBUTTONTPL) : null
                             });
                             break;
 
@@ -537,7 +538,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
     /**
      *
-     *  A treeview used in lobby left tab.
+     *  A treeview used in lobby left panel.
      *
      */
     var GameModelTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
@@ -556,7 +557,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 if (entity) {                                                   // If click on a particular game model
                     sourceUri = "rest/GameModel/" + entity.get(ID) + "/Game";
                     registeredGamesUri += "/" + entity.get(ID);
-
                 }
                 GameModelTreeView.currentGameModel = entity;
 
@@ -573,10 +573,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 //tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
 
                 Wegas.Facade.Game.set("source",
-                        Wegas.app.get("base") + sourceUri);                       // Change the source attribute on the datasource
+                        Wegas.app.get("base") + sourceUri);                     // Change the source attribute on the datasource
 
                 Wegas.Facade.RegisteredGames.set("source",
-                        Wegas.app.get("base") + registeredGamesUri);              // Change the source attribute on the datasource
+                        Wegas.app.get("base") + registeredGamesUri);            // Change the source attribute on the datasource
             }, this);
         },
         syncUI: function() {
@@ -619,20 +619,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + '<div class="yui3-u-1-3">Game model</div></div>'
                 + '</div></div>',
         // ** Lifecycle methods ** //
-        renderUI: function() {
-            this.treeView = new Y.TreeView();
-            this.treeView.render(this.get(CONTENTBOX));
-        },
-        bindUI: function() {
-            JoinedGameTreeView.superclass.bindUI.apply(this);
-            //this.treeView.on("*:click", this.onTreeViewClick, this);
-            this.treeView.on("addChild", function(e) {
-                e.child.plug(Y.Plugin.OpenUrlAction, {
-                    url: "wegas-app/view/play.html?gameId=" + e.child.get("data.entity").get(ID),
-                    target: "self"
-                });
-            })
-        },
         genTreeViewElements: function(elements) {
             var ret = [], i, el;
 
@@ -643,7 +629,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     switch (el.get(CLASS)) {
                         case 'Game':
                             var createdBy = el.get("createdBy"),
-                                    gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
+                                    gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId")),
+                                    button = new Y.Button({label: "Resume"});
+                            button.get(CONTENTBOX).addClass("wegas-lobby-joinbutton");
 
                             ret.push({
                                 //label: el.get(NAME),
@@ -659,7 +647,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                 data: {
                                     entity: el
                                 },
-                                iconCSS: 'wegas-icon-game'
+                                iconCSS: 'wegas-icon-game',
+                                rightWidget: button
                             });
                             break;
 
@@ -670,6 +659,52 @@ YUI.add('wegas-editor-treeview', function(Y) {
         }
     });
     Y.namespace('Wegas').JoinedGameTreeView = JoinedGameTreeView;
+
+    /**
+     *
+     */
+    var PublicGameTreeView = Y.Base.create("wegas-editor-treeview", JoinedGameTreeView, [], {
+        // ** Lifecycle methods ** //
+        genTreeViewElements: function(elements) {
+            var ret = [], i, el;
+
+            for (i in elements) {
+                if (elements.hasOwnProperty(i)) {
+                    el = elements[i];
+
+                    switch (el.get(CLASS)) {
+                        case 'Game':
+                            var createdBy = el.get("createdBy"),
+                                    gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId")),
+                                    button = new Y.Button({label: "Join"});
+                            button.get(CONTENTBOX).addClass("wegas-lobby-joinbutton");
+
+                            ret.push({
+                                //label: el.get(NAME),
+                                label: '<div class="yui3-g wegas-editor-treeview-table">'
+                                        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                        + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                        + '<div class="yui3-u-1-3">'
+                                        + Wegas.Helper.smartDate(el.get("createdTime"))
+                                        + '</div>'
+                                        + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
+                                        + '<div class="yui3-u-1-3">' + gameModel.get(NAME) + '</div></div>'
+                                        + '</div>',
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-game',
+                                rightWidget: button
+                            });
+                            break;
+
+                    }
+                }
+            }
+            return ret;
+        }
+    });
+    Y.namespace('Wegas').PublicGameTreeView = PublicGameTreeView;
 
     /**
      * @class To be plugged on a an EditorTreeview, keeps track of the
@@ -763,14 +798,20 @@ YUI.add('wegas-editor-treeview', function(Y) {
         onTreeViewClick: function(e) {
             //Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.EditorTreeView");
 
-            var menuItems, data = e.node.get("data"),
+            var menuItems = this.get("children"),
+                    data = e.node.get("data"),
                     domTarget = e.domEvent.target,
                     host = this.get(HOST);
 
             if (data) {
                 host.currentSelection = data.entity.get(ID);
                 data.dataSource = host.get(DATASOURCE);
-                menuItems = data.entity.getMenuCfg(data);
+
+                if (menuItems) {
+                    Y.Wegas.Editable.mixMenuCfg(this.get("children"), data);
+                } else {
+                    menuItems = data.entity.getMenuCfg(data);                   // If no menu is provided, use entity default
+                }
 
                 if (menuItems.length === 0) {
                     return;
@@ -779,9 +820,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 this.menu.removeAll();                                  // Populate the menu with the elements associated to the
                 this.menu.add(menuItems);
 
-                if (domTarget.hasClass("wegas-treeview-editmenubutton")) {          // If user clicked on the edit button
-                    this.menu.attachTo(domTarget);                                  // Display the edit button next to it
-                } else {                                                            // Otherwise the user clicked on the node
+                if (domTarget.hasClass("wegas-treeview-editmenubutton")) {      // If user clicked on the edit button
+                    this.menu.attachTo(domTarget);                              // Display the edit button next to it
+                } else if (this.get("autoClick")) {                             // Otherwise the user clicked on the node
                     this.menu.item(0).fire("click");             // Excute the actions associated to the first item of the menu
                 }
             } else {
@@ -792,7 +833,13 @@ YUI.add('wegas-editor-treeview', function(Y) {
         }
     }, {
         NS: "EditorTVMenu",
-        NAME: "EditorTVAdminMenu"
+        NAME: "EditorTVAdminMenu",
+        ATTRS: {
+            children: {},
+            autoClick: {
+                value: true
+            }
+        }
     });
 
     /**

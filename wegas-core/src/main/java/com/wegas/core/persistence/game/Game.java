@@ -46,7 +46,7 @@ public class Game extends NamedEntity {
      */
     @NotNull
     //@Pattern(regexp = "^\\w+$")
-    private String name;
+    protected String name;
     /**
      *
      */

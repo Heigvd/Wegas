@@ -25,7 +25,7 @@ YUI().use(function(Y) {
     }
 
     Y.mix(YUI_config.groups, {
-        'wegas': {
+        wegas: {
             base: './',
             root: '/',
             modules: {
@@ -36,9 +36,9 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/wegas-app-min.js',
                     requires: [
                         'wegas-helper', 'wegas-entity', 'wegas-datasource',
-                        'wegas-scripteval', 'wegas-websocketlistener',
                         'wegas-pageloader', 'wegas-button'
-                                // 'wegas-appcss',     // @fixme There is a bug in css include order, this one got hardcoded in the jsp file
+                        // 'wegas-rights'
+                                // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
                 },
                 'wegas-appcss': {
@@ -60,7 +60,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-scripteval': {
                     path: 'wegas-app/js/plugin/wegas-scripteval-min.js',
-                    requires: ['plugin']
+                    requires: ['plugin'],
+                    ws_provides: ['ScriptEval']
                 },
                 'wegas-websocketlistener': {
                     path: 'wegas-app/js/plugin/wegas-websocketlistener-min.js',
@@ -68,7 +69,8 @@ YUI().use(function(Y) {
                 },
                 "wegas-pusher-connector": {
                     path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
-                    requires: ['pusher', 'wegas-datasource']
+                    requires: ['pusher', 'wegas-datasource'],
+                    ws_provides: ["PusherDataSource", "WebSocketListener"]
                 },
                 'event-mouse-startstop': {
                     path: "wegas-app/js/util/event-mouse-startstop-min.js",
@@ -218,6 +220,17 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-jointeamwidget-min.js',
                     requires: ['wegas-joingamewidget'],
                     ws_provides: "JoinTeamWidget"
+                },
+                'wegas-jointeam': {
+                    path: 'wegas-app/js/widget/wegas-jointeam-min.js',
+                    requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
+                        'wegas-editor-action', 'inputex-select', 'inputex-string'],
+                    ws_provides: "JoinTeam"
+                },
+                'wegas-joingame': {
+                    path: 'wegas-app/js/widget/wegas-joingame-min.js',
+                    requires: ['wegas-jointeam'],
+                    ws_provides: "JoinGame"
                 },
                 'wegas-panelwidget': {
                     path: 'wegas-app/js/widget/wegas-panelwidget-min.js',
