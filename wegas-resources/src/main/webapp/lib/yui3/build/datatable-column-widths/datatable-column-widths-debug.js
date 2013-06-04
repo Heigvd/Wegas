@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatable-column-widths', function (Y, NAME) {
 
 /**
@@ -101,7 +107,7 @@ To add a liner to all columns, either provide a custom `bodyView` to the
 DataTable constructor or update the default `bodyView`'s `CELL_TEMPLATE` like
 so:
 
-<pre><code>table.on('renderBody', function (e) {
+<pre><code>table.on('table:renderBody', function (e) {
     e.view.CELL_TEMPLATE = e.view.CELL_TEMPLATE.replace(/\{content\}/,
             '&lt;div class="yui3-datatable-liner">{content}&lt;/div>');
 });
@@ -297,4 +303,4 @@ Y.DataTable.ColumnWidths = ColumnWidths;
 Y.Base.mix(Y.DataTable, [ColumnWidths]);
 
 
-}, '3.9.1', {"requires": ["datatable-base"]});
+}, '3.10.1', {"requires": ["datatable-base"]});

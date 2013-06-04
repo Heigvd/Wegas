@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatable-message', function (Y, NAME) {
 
 /**
@@ -196,7 +202,7 @@ Y.mix(Message.prototype, {
         this._initMessageStrings();
 
         if (this.get('showMessages')) {
-            this.after('renderBody', Y.bind('_initMessageNode', this));
+            this.after('table:renderBody', Y.bind('_initMessageNode', this));
         }
 
         this.after(Y.bind('_bindMessageUI', this), this, 'bindUI');
@@ -288,4 +294,4 @@ if (Y.Lang.isFunction(Y.DataTable)) {
 }
 
 
-}, '3.9.1', {"requires": ["datatable-base"], "lang": ["en", "fr", "es"], "skinnable": true});
+}, '3.10.1', {"requires": ["datatable-base"], "lang": ["en", "fr", "es", "it"], "skinnable": true});
