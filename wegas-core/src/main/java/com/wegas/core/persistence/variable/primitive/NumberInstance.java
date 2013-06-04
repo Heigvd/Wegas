@@ -28,6 +28,7 @@ public class NumberInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(NumberInstance.class);
+    public static final int HISTORYSIZE = 20;
     /**
      *
      */
@@ -78,7 +79,13 @@ public class NumberInstance extends VariableInstance {
         }
 
         this.val = value;
-        this.history.add(value);
+    }
+    
+    public void saveHistory(){
+        this.history.add(this.val);
+        if (this.history.size() > HISTORYSIZE) {
+            this.history.remove(0);
+        }
     }
     
     public List<Double> getHistory() {
