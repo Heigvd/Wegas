@@ -70,6 +70,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
                     requires: ['pusher', 'wegas-datasource']
                 },
+                "wegas-pdf": {
+                    path: 'wegas-app/js/plugin/wegas-pdf-min.js',
+                    requires: ['jspdf', 'jspdfPlugin', 'plugin'],
+                    ws_provides: 'PDF'
+                },
                 'event-mouse-startstop':{
                     path: "wegas-app/js/util/event-mouse-startstop-min.js",
                     requires: ["event-base"]
