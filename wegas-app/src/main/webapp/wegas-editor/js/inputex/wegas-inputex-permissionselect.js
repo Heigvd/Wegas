@@ -174,9 +174,17 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             this.fieldContainer.div = this.fieldContainer.appendChild(logDiv.getDOMNode());
             this.permissionsCheckBoxes = [];
             Y.Array.forEach(this.options.permissions, function (item, i) {
-                var splitedPermissions = item.name.split(":"),
-                box = new inputEx.CheckBox({
-                    rightLabel: splitedPermissions[1],
+                var splitedPermissions,
+                    splitedLabel;
+                if (item.value){
+                    splitedPermissions = item.value.split(":");
+                    splitedLabel = item.name.split(":");
+                } else {
+                    splitedPermissions = item.name.split(":");
+                    splitedLabel = item.name.split(":");
+                }
+                var box = new inputEx.CheckBox({
+                    rightLabel: splitedLabel[1],
                     name: splitedPermissions[0] + ":" + splitedPermissions[1],
                     value: false,
                     parentEl: this.fieldContainer.div,
@@ -230,7 +238,8 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             Y.Array.forEach(this.getValue().permissions, function (perm) {
                 var splitedPermissions = perm.split(":");
                 Y.Array.forEach(this.permissionsCheckBoxes, function (box) {
-                    if (box.options.rightLabel === splitedPermissions[1]) {
+                    var splitedName = box.options.name.split(":");
+                    if (splitedName[1] === splitedPermissions[1]) {
                         box.setValue(true, false);
                     }
                 }, this);
