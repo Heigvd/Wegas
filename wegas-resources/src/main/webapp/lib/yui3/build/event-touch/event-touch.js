@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('event-touch', function (Y, NAME) {
 
 /**
@@ -169,4 +175,4 @@ else {
 Y.Event._GESTURE_MAP = GESTURE_MAP;
 
 
-}, '3.9.1', {"requires": ["node-base"]});
+}, '3.10.1', {"requires": ["node-base"]});

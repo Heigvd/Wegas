@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('model-list', function (Y, NAME) {
 
 /**
@@ -846,7 +852,9 @@ Y.ModelList = Y.extend(ModelList, Y.Base, {
     list. The default method just calls the callback without actually doing
     anything.
 
-    This method is called internally by `load()`.
+    This method is called internally by `load()` and its implementations relies
+    on the callback being called. This effectively means that when a callback is
+    provided, it must be called at some point for the class to operate correctly.
 
     @method sync
     @param {String} action Sync action to perform. May be one of the following:
@@ -1237,4 +1245,4 @@ Y.ModelList = Y.extend(ModelList, Y.Base, {
 Y.augment(ModelList, Y.ArrayList);
 
 
-}, '3.9.1', {"requires": ["array-extras", "array-invoke", "arraylist", "base-build", "escape", "json-parse", "model"]});
+}, '3.10.1', {"requires": ["array-extras", "array-invoke", "arraylist", "base-build", "escape", "json-parse", "model"]});

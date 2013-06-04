@@ -10,7 +10,9 @@ package com.wegas.mcq.rest;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.WegasException;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.ejb.ReplyFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
@@ -21,7 +23,6 @@ import javax.script.ScriptException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 
 /**
@@ -62,7 +63,7 @@ public class QuestionController {
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId) throws ScriptException, WegasException {
 
-        checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
+        checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         Reply reply = questionDescriptorFacade.selectAndValidateChoice(choiceId, playerId);
 
@@ -84,7 +85,7 @@ public class QuestionController {
             @PathParam("playerId") Long playerId,
             @PathParam("replyId") Long replyId) throws ScriptException {
 
-        checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
+        checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         Reply reply = questionDescriptorFacade.cancelReply(playerId, replyId);
         requestFacade.commit();
@@ -107,7 +108,7 @@ public class QuestionController {
             @PathParam("choiceId") Long choiceId,
             @PathParam("startTime") Long startTime) throws WegasException {
 
-        checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
+        checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
         requestFacade.commit();
@@ -123,8 +124,8 @@ public class QuestionController {
         return replyFacade.update(entityId, entity);
     }
 
-    private void checkPermissions(Long gameId, Long playerId) throws UnauthorizedException {
-        if (!SecurityUtils.getSubject().isPermitted("Game:Edit:g" + gameId) && !userFacade.matchCurrentUser(playerId)) {
+    private void checkPermissions(Game game, Long playerId) throws UnauthorizedException {
+        if (!SecurityHelper.isPermitted(game, "Edit") && !userFacade.matchCurrentUser(playerId)) {
             throw new UnauthorizedException();
         }
     }

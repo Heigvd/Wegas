@@ -30,7 +30,7 @@
 
             <script type="text/javascript">
 
-                YUI().use("wegas-app",  'wegas-rightscss', /*'wegas-editorcss',*/ function (Y) {
+                YUI().use("wegas-app",  /*'wegas-editorcss',*/ function (Y) {
                     var app = new Y.Wegas.App({
                         layoutSrc: 'rest/Page/#{editorGameController.currentGameModel.id}/EditorLayout',
                         debug: true,
@@ -187,7 +187,7 @@
 
 
                         try {
-                #{editorGameController.getClientScripts()}      // Display game model specific js footer
+                                #{editorGameController.getClientScripts()}      // Display game model specific js footer
                             } catch (e) {
                                 Y.log("Error running footer scripts.", "error");
                             }

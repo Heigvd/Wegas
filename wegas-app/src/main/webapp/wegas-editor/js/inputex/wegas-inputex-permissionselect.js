@@ -292,7 +292,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             var elementDiv = e.target._node.parentNode,
             i, subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
             for (i = 0; i < this.subFields.length; i++) {
-                if (this.subFields[i].getEl() == subFieldEl) {
+                if (this.subFields[i].getEl() === subFieldEl) {
                     Y.Wegas.Facade.User.cache.deleteAllRolePermissions(this.subFields[i].roleSelect.getValue().id, this.subFields[i].options.targetEntityId);
                     break;
                 }

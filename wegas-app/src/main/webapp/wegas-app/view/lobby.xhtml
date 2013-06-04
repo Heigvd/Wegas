@@ -8,61 +8,72 @@
         <ui:define name="head">
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
             <style type="text/css">
-                .wegas-joingamewidget {
+                .wegas-joingame, .wegas-jointeam {
                     padding-top: 20px;
                 }
-                .wegas-joingamewidget button {
+                .wegas-joingame button,
+                .wegas-jointeam button {
                     margin: 5px 0 25px 176px;
                 }
-                .wegas-joingamewidget .inputEx-label {
+                .wegas-jointeam .inputEx-label,
+                .wegas-joingame .inputEx-label {
                     width: 170px;
+                }
+                .yui3-treeleaf-content-rightwidget > .yui3-button.wegas-lobby-joinbutton {
+                    padding: 0.2em 0.9em 0.3em;
+                    min-height: 10px;
+                    font-size: 79%;
+                    font-weight: bold;
+                    margin-right: 5px;
                 }
             </style>
         </ui:define>
 
         <ui:define name="body">
             <script type="text/javascript">
-                YUI().use("wegas-app", "wegas-rightscss", function (Y) {
+                YUI().use("wegas-app", function(Y) {
+
                     var app = new Y.Wegas.App({
                         layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
-                        debug : true,
+                        debug: true,
                         currentUser: #{requestController.getCurrentUser().toJson()},
                         dataSources: {
-                            "GameModel": {
+                            GameModel: {
                                 source: "rest/Public/GameModel",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "GameModelCache"
                                     }]
                             },
-                            "Game": {
+                            Game: {
                                 source: "rest/GameModel//Game",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "GameCache"
                                     }]
                             },
-                            "RegisteredGames": {
+                            RegisteredGames: {
                                 source: "rest/RegisteredGames/#{requestController.currentUser.id}",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "GameCache"
                                     }]
                             },
-                            "PublicGames": {
+                            PublicGames: {
                                 source: "rest/PublicGames",
+                                initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
                                         fn: "GameCache"
                                     }]
                             },
-                            "Role": {
+                            Role: {
                                 source: "rest/Role",
                                 //initialRequest: "",
                                 plugins: [{
                                         fn: "WegasCache"
                                     }]
                             },
-                            "User": {
+                            User: {
                                 source: "rest/User",
                                 initialRequest: "/#{requestController.getCurrentUser().id}",
                                 plugins: [{
@@ -71,8 +82,22 @@
                             }
                         }
                     });
+
+                    app.after("render", function() {                            // If there player is registered to a game
+                        if (Y.Wegas.Facade.RegisteredGames.data.length > 0) {
+                            Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
+                        }
+                    });
                     app.render();                                               // Launch the editor as soon as Dom is ready
 
+                    Y.on("gameJoined", function(e) {                            // As soon as a game is joined
+                        Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
+                        Y.Wegas.Facade.RegisteredGames.cache.clear();           // reload datasources
+                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest();
+                        Y.Wegas.Facade.PublicGames.cache.clear();
+                        Y.Wegas.Facade.PublicGames.sendInitialRequest();
+                        window.open(app.get("base") + "wegas-app/view/play.html?gameId=" + e.gameId);// open the game in a new tab
+                    });
                 });
             </script>
         </ui:define>

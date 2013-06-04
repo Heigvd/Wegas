@@ -1,15 +1,8 @@
 ### Wegas
 Web Game Authoring system is a Jee-based framework for multiplayer web-games developement.
 
-### Authors
-*   Francois-Xavier Aeberhard fx@red-agent.com
-*   Cyril Junod cyril.junod@gmail.com
-*   Benjamin Gerber ger.benjamin@gmail.com
-*   Yannick Lagger lagger.yannick@gmail.com
-
 ### Links
-* [Demo](http://wegas.albasim.ch)
-* [Website](http://www.albasim.ch/wegas/)
+* [Server](http://wegas.albasim.ch/)
 * [Documentation](http://heigvd.github.com/Wegas/)
 * [Tutorials](https://github.com/Heigvd/Wegas/wiki)
 * [Error tracking](https://musculahq.appspot.com/app#errors_1f9e3058-27dc-4fec-b633-1070e60f2fca)
@@ -18,3 +11,9 @@ Web Game Authoring system is a Jee-based framework for multiplayer web-games dev
 ### License
 Copyright (C) 2013, School of Business and Engineering Vaud, Comem  
 Wegas is released under the [MIT License](http://www.opensource.org/licenses/MIT)
+
+### Authors
+*   Francois-Xavier Aeberhard fx@red-agent.com
+*   Cyril Junod cyril.junod@gmail.com
+*   Benjamin Gerber ger.benjamin@gmail.com
+*   Yannick Lagger lagger.yannick@gmail.com

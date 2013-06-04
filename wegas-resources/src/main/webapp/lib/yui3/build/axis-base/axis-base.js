@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('axis-base', function (Y, NAME) {
 
 /**
@@ -434,7 +440,7 @@ Y.AxisBase = Y.Base.create("axisBase", Y.Base, [Y.Renderer], {
     {
         var edgeOffset;
         if(this.get("calculateEdgeOffset")) {
-            edgeOffset = l/ct;
+            edgeOffset = (l/ct)/2;
         } else {
             edgeOffset = 0;
         }
@@ -805,4 +811,4 @@ Y.AxisBase = Y.Base.create("axisBase", Y.Base, [Y.Renderer], {
 });
 
 
-}, '3.9.1', {"requires": ["classnamemanager", "datatype-number", "datatype-date", "base", "event-custom"]});
+}, '3.10.1', {"requires": ["classnamemanager", "datatype-number", "datatype-date", "base", "event-custom"]});

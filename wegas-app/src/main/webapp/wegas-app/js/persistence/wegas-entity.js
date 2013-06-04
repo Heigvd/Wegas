@@ -179,11 +179,22 @@ YUI.add('wegas-entity', function(Y) {
                     useButtons: true,
                     required: false
                 }
+            },
+            canEdit: {
+                "transient": true
             }
         },
         EDITMENU: [{
+                type: "Text" // Fake, to prevent edition on click on the game model
+            }, {
                 type: BUTTON,
-                label: "Properties",
+                label: "Edit",
+                plugins: [{
+                        fn: "OpenGameAction"
+                    }]
+            }, {
+                type: BUTTON,
+                label: "Rename",
                 cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "EditEntityAction"
@@ -194,12 +205,6 @@ YUI.add('wegas-entity', function(Y) {
                         //        tabId: "gamesTreeViewTab"
                         //    }
                         //},
-            }, {
-                type: BUTTON,
-                label: "Edit",
-                plugins: [{
-                        fn: "OpenGameAction"
-                    }]
             }, {
                 type: BUTTON,
                 label: "Duplicate",
@@ -222,6 +227,8 @@ YUI.add('wegas-entity', function(Y) {
                                             name: "GameModel:Edit"
                                         }, {
                                             name: "GameModel:Duplicate"
+                                        }, {
+                                            name: "GameModel:Instantiate"
                                         }, {
                                             name: "GameModel:Delete"
                                         }]
@@ -350,6 +357,8 @@ YUI.add('wegas-entity', function(Y) {
             }]
     });
 
+    Wegas.persistence.DebugGame = Wegas.persistence.Game;
+
     /**
      * Team mapper
      */
@@ -377,15 +386,15 @@ YUI.add('wegas-entity', function(Y) {
             gameId: IDATTRDEF
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Properties",
-                cssClass: "editor-teamProperties-button"
-            }, {
                 type: BUTTON,
                 label: "View as",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
+            }, {
+                type: "EditEntityButton",
+                label: "Properties",
+                cssClass: "editor-teamProperties-button"
             }, {
                 type: BUTTON,
                 label: "Add player",
@@ -402,7 +411,6 @@ YUI.add('wegas-entity', function(Y) {
             }, {
                 type: "Linkwidget"
             }]
-
                 //{ // We allow the player to open its pages with the widget
                 //    type: BUTTON,
                 //    label: "Open",
@@ -426,15 +434,15 @@ YUI.add('wegas-entity', function(Y) {
             teamId: IDATTRDEF
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Properties",
-                cssClass: "editor-playerProperties-button"
-            }, {
                 type: BUTTON,
                 label: "View as",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
+            }, {
+                type: "EditEntityButton",
+                label: "Properties",
+                cssClass: "editor-playerProperties-button"
             }, {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deletePlayer-button"
@@ -603,6 +611,29 @@ YUI.add('wegas-entity', function(Y) {
                 disabled: true,
                 label: "Permissions"
             }, {
+                type: "DeleteEntityButton"
+            }]
+    });
+
+    /**
+     * JpaAccount mapper
+     */
+    Wegas.persistence.GuestJpaAccount = Y.Base.create("JpaAccount", Wegas.persistence.Entity, [], {
+        getPublicName: function() {
+            return "Guest";
+        }
+
+    }, {
+        ATTRS: {
+            "@class": {
+                type: STRING,
+                value: "GuestJpaAccount",
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
+        },
+        EDITMENU: [{
                 type: "DeleteEntityButton"
             }]
     });
@@ -1193,10 +1224,10 @@ YUI.add('wegas-entity', function(Y) {
             defaultInstance: {
                 properties: {
                     '@class': {
-                        type: 'InboxInstance',
+                        type: STRING,
                         _inputex: {
                             _type: HIDDEN,
-                            value: 'TaskInstance'
+                            value: 'InboxInstance'
                         }
                     },
                     id: IDATTRDEF

@@ -11,9 +11,7 @@
  */
 YUI.add('wegas-action', function(Y) {
     "use strict";
-
     var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas");
-
     /**
      *  @name Y.Wegas.Plugin
      *  @class Extension that adds editable capacities to plugins
@@ -54,7 +52,6 @@ YUI.add('wegas-action', function(Y) {
         }
     });
     Wegas.Plugin = WPlugin;
-
     /**
      *  @name Y.Plugin.Action
      *  @extends Y.Plugin.Base
@@ -94,21 +91,18 @@ YUI.add('wegas-action', function(Y) {
         }
     });
     Plugin.Action = Action;
-
     /**
      *  @class
-     *  @name Y.Plugin.OpenGameAction
+     *  @name Y.Plugin.OpenUrlAction
      *  @extends Y.Plugin.Action
      *  @constructor
      */
     var OpenUrlAction = function() {
         OpenUrlAction.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(OpenUrlAction, Action, {
         execute: function() {
             var targetUrl = Wegas.app.get("base") + this.get("url");
-
             if (this.get("target") === "blank") {
                 window.open(targetUrl);
             } else {
@@ -130,8 +124,6 @@ YUI.add('wegas-action', function(Y) {
         }
     });
     Plugin.OpenUrlAction = OpenUrlAction;
-
-
     /**
      *  @class
      *  @name Y.Plugin.OpenPageAction
@@ -172,13 +164,12 @@ YUI.add('wegas-action', function(Y) {
             targetPageLoaderId: {
                 type: "string",
                 _inputex: {
-                    label: "Target page loader"
+                    label: "Target zone"
                 }
             }
         }
     });
     Plugin.OpenPageAction = OpenPageAction;
-
     /**
      *  @class
      *  @name Y.Plugin.ExecuteScriptAction
@@ -230,37 +221,41 @@ YUI.add('wegas-action', function(Y) {
         }
     });
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
-
     /**
      *  @class
-     *  @name Y.Plugin.SaveEntityAction
+     *  @name Y.Plugin.SaveObjectAction
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var SaveEntityAction = function() {
-        SaveEntityAction.superclass.constructor.apply(this, arguments);
+    var SaveObjectAction = function() {
+        SaveObjectAction.superclass.constructor.apply(this, arguments);
     };
-    Y.extend(SaveEntityAction, Action, {
+    Y.extend(SaveObjectAction, Action, {
         execute: function(e) {
             var overlayGuest,
                     host = this.get(HOST),
                     guest = host.get("root"),
                     variable = this.get("variable.evaluated"),
-                    instance = variable.getInstance();
-
+                    data = variable.get("name") + ".properties",
+                    script = data + ".clear();", i;
             if (guest.showOverlay && guest.hideOverlay) {
                 overlayGuest = guest;
                 overlayGuest.showOverlay();
             }
 
-            //instance.setAttrs(e.value);
-            instance.set("properties", e.value);
+            for (i in e.value) {
+                script += data + ".put('" + i + "','" + e.value[i] + "');";
+            }
 
-            Wegas.VariableDescriptorFacade.sendRequest({
-                request: "/" + variable.get("id") + "/VariableInstance/" + instance.get("id"),
+            Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
-                    method: "PUT",
-                    data: instance.toObject()
+                    method: "POST",
+                    data: Y.JSON.stringify({
+                        "@class": "Script",
+                        "language": "JavaScript",
+                        "content": script
+                    })
                 },
                 on: {
                     success: function(r) {
@@ -277,8 +272,8 @@ YUI.add('wegas-action', function(Y) {
             });
         }
     }, {
-        NS: "SaveEntityAction",
-        NAME: "SaveEntityAction",
+        NS: "SaveObjectAction",
+        NAME: "SaveObjectAction",
         ATTRS: {
             variable: {
                 /**
@@ -287,7 +282,8 @@ YUI.add('wegas-action', function(Y) {
                  */
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
-                    _type: "variabledescriptorselect"
+                    _type: "variableselect",
+                    label: "Save to"
                 }
             },
             targetEvent: {
@@ -295,6 +291,5 @@ YUI.add('wegas-action', function(Y) {
             }
         }
     });
-    Plugin.SaveEntityAction = SaveEntityAction;
-
+    Plugin.SaveObjectAction = SaveObjectAction;
 });

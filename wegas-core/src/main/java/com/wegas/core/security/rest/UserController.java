@@ -24,7 +24,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 
@@ -149,12 +148,12 @@ public class UserController {
             @QueryParam("remember") @DefaultValue("false") boolean remember,
             @Context HttpServletRequest request) {
 
-        Subject currentUser = SecurityUtils.getSubject();
+        Subject subject = SecurityUtils.getSubject();
 
         //if (!currentUser.isAuthenticated()) {
         UsernamePasswordToken token = new UsernamePasswordToken(email, password);
         token.setRememberMe(remember);
-        currentUser.login(token);
+        subject.login(token);
         //}
     }
 
@@ -167,14 +166,14 @@ public class UserController {
     @POST
     @Path("Be/{accountId: [1-9][0-9]*}")
     public void runAs(@PathParam("accountId") Long accountId) {
-        Subject currentUser = SecurityUtils.getSubject();
+        Subject oSubject = SecurityUtils.getSubject();
 
-        if (currentUser.isRunAs()) {
-            currentUser.releaseRunAs(); //@TODO: check shiro version > 1.2.1 (SHIRO-380)
+        if (oSubject.isRunAs()) {
+            oSubject.releaseRunAs(); //@TODO: check shiro version > 1.2.1 (SHIRO-380)
         }
-        currentUser.checkRole("Administrator");
+        oSubject.checkRole("Administrator");
         SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm");
-        currentUser.runAs(subject);
+        oSubject.runAs(subject);
     }
 
     /**

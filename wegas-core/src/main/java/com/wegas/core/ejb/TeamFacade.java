@@ -64,7 +64,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         }
         g.addTeam(t);
 
-        this.addRights(g);
+        this.addRights(g);              // @fixme Should only be done for a player
         em.flush();
         em.refresh(t);
         g.getGameModel().propagateDefaultInstance(false);

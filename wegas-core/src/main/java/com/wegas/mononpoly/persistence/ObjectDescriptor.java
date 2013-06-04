@@ -8,6 +8,7 @@
 package com.wegas.mononpoly.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,6 +76,10 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
      */
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+    
+    public Integer size(Player p){
+        return this.getInstance(p).getProperties().size();
     }
 
 }
