@@ -175,7 +175,7 @@
                         "children": [{
                                 "type": "JoinedGameTreeView",
                                 "dataSource": "RegisteredGames",
-                                "emptyMessage": "You are not registered in any game.",
+                                "emptyMessage": "You have not joined any game yet.",
                                 "plugins": [{
                                         "fn": "EditorTVAdminMenu",
                                         "cfg": {
