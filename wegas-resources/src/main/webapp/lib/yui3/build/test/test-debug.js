@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('test', function (Y, NAME) {
 
 
@@ -20,7 +26,7 @@ if (YUI.YUITest) {
 
     //Make this global for back compat
     YUITest = {
-        version: "3.9.1",
+        version: "3.10.1",
         guid: function(pre) {
             return Y.guid(pre);
         }
@@ -3764,4 +3770,4 @@ if (!YUI.YUITest) {
 } //End if for YUI.YUITest
 
 
-}, '3.9.1', {"requires": ["event-simulate", "event-custom", "json-stringify"]});
+}, '3.10.1', {"requires": ["event-simulate", "event-custom", "json-stringify"]});

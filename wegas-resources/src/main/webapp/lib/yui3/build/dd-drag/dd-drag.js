@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dd-drag', function (Y, NAME) {
 
 
@@ -503,7 +509,7 @@ YUI.add('dd-drag', function (Y, NAME) {
                     if (!Y.Lang.isObject(config)) {
                         config = {};
                     }
-                    config.bubbleTargets = config.bubbleTargets || Y.Object.values(this._yuievt.targets);
+                    config.bubbleTargets = config.bubbleTargets || this.getTargets();
                     config.node = this.get(NODE);
                     config.groups = config.groups || this.get('groups');
                     this.target = new Y.DD.Drop(config);
@@ -1271,4 +1277,4 @@ YUI.add('dd-drag', function (Y, NAME) {
 
 
 
-}, '3.9.1', {"requires": ["dd-ddm-base"]});
+}, '3.10.1', {"requires": ["dd-ddm-base"]});

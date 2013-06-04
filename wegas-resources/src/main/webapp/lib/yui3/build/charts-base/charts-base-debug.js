@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('charts-base', function (Y, NAME) {
 
 /**
@@ -2932,6 +2938,9 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase], {
                 calculateEdgeOffset: "calculateEdgeOffset",
                 position: "position",
                 overlapGraph:"overlapGraph",
+                labelValues: "labelValues",
+                hideFirstMajorUnit: "hideFirstMajorUnit",
+                hideLastMajorUnit: "hideLastMajorUnit",
                 labelFunction:"labelFunction",
                 labelFunctionScope:"labelFunctionScope",
                 labelFormat:"labelFormat",
@@ -3509,7 +3518,7 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase], {
                 axis = set1[i];
                 overflow = Math.max(
                     overflow,
-                    Math.abs(axis.getMaxLabelBounds().top) - (axis.getEdgeOffset(axis.get("styles").majorTicks.count, height) * 0.5)
+                    Math.abs(axis.getMaxLabelBounds().top) - axis.getEdgeOffset(axis.get("styles").majorTicks.count, height)
                 );
             }
         }
@@ -3522,7 +3531,7 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase], {
                 axis = set2[i];
                 overflow = Math.max(
                     overflow,
-                    Math.abs(axis.getMaxLabelBounds().top) - (axis.getEdgeOffset(axis.get("styles").majorTicks.count, height) * 0.5)
+                    Math.abs(axis.getMaxLabelBounds().top) - axis.getEdgeOffset(axis.get("styles").majorTicks.count, height)
                 );
             }
         }
@@ -3553,7 +3562,7 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase], {
                 axis = set1[i];
                 overflow = Math.max(
                     overflow,
-                    axis.getMaxLabelBounds().right - (axis.getEdgeOffset(axis.get("styles").majorTicks.count, width) * 0.5)
+                    axis.getMaxLabelBounds().right - axis.getEdgeOffset(axis.get("styles").majorTicks.count, width)
                 );
             }
         }
@@ -3566,7 +3575,7 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase], {
                 axis = set2[i];
                 overflow = Math.max(
                     overflow,
-                    axis.getMaxLabelBounds().right - (axis.getEdgeOffset(axis.get("styles").majorTicks.count, width) * 0.5)
+                    axis.getMaxLabelBounds().right - axis.getEdgeOffset(axis.get("styles").majorTicks.count, width)
                 );
             }
         }
@@ -3597,7 +3606,7 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase], {
                 axis = set1[i];
                 overflow = Math.max(
                     overflow,
-                    Math.abs(axis.getMinLabelBounds().left) - (axis.getEdgeOffset(axis.get("styles").majorTicks.count, width) * 0.5)
+                    Math.abs(axis.getMinLabelBounds().left) - axis.getEdgeOffset(axis.get("styles").majorTicks.count, width)
                 );
             }
         }
@@ -3610,7 +3619,7 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase], {
                 axis = set2[i];
                 overflow = Math.max(
                     overflow,
-                    Math.abs(axis.getMinLabelBounds().left) - (axis.getEdgeOffset(axis.get("styles").majorTicks.count, width) * 0.5)
+                    Math.abs(axis.getMinLabelBounds().left) - axis.getEdgeOffset(axis.get("styles").majorTicks.count, width)
                 );
             }
         }
@@ -3641,7 +3650,7 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase], {
                 axis = set1[i];
                 overflow = Math.max(
                     overflow,
-                    axis.getMinLabelBounds().bottom - (axis.getEdgeOffset(axis.get("styles").majorTicks.count, height) * 0.5)
+                    axis.getMinLabelBounds().bottom - axis.getEdgeOffset(axis.get("styles").majorTicks.count, height)
                 );
             }
         }
@@ -3654,7 +3663,7 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase], {
                 axis = set2[i];
                 overflow = Math.max(
                     overflow,
-                    axis.getMinLabelBounds().bottom - (axis.getEdgeOffset(axis.get("styles").majorTicks.count, height) * 0.5)
+                    axis.getMinLabelBounds().bottom - axis.getEdgeOffset(axis.get("styles").majorTicks.count, height)
                 );
             }
         }
@@ -5030,7 +5039,7 @@ function Chart(cfg)
 Y.Chart = Chart;
 
 
-}, '3.9.1', {
+}, '3.10.1', {
     "requires": [
         "dom",
         "event-mouseenter",

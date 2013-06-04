@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('json-parse', function (Y, NAME) {
 
 var _JSON = Y.config.global.JSON;
@@ -8,4 +14,4 @@ Y.namespace('JSON').parse = function (obj, reviver, space) {
 };
 
 
-}, '3.9.1', {"requires": ["yui-base"]});
+}, '3.10.1', {"requires": ["yui-base"]});

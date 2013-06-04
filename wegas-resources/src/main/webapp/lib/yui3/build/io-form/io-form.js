@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('io-form', function (Y, NAME) {
 
 /**
@@ -12,10 +18,10 @@ YUI.add('io-form', function (Y, NAME) {
 var eUC = encodeURIComponent;
 
 /**
- * Method to enumerate through an HTML form's elements collection
+ * Enumerate through an HTML form's elements collection
  * and return a string comprised of key-value pairs.
  *
- * @method serialize
+ * @method stringify
  * @static
  * @param {Node|String} form YUI form node or HTML form id
  * @param {Object} [options] Configuration options.
@@ -37,7 +43,7 @@ Y.IO.stringify = function(form, options) {
 
 Y.mix(Y.IO.prototype, {
    /**
-    * Method to enumerate through an HTML form's elements collection
+    * Enumerate through an HTML form's elements collection
     * and return a string comprised of key-value pairs.
     *
     * @method _serialize
@@ -127,4 +133,4 @@ Y.mix(Y.IO.prototype, {
 }, true);
 
 
-}, '3.9.1', {"requires": ["io-base", "node-base"]});
+}, '3.10.1', {"requires": ["io-base", "node-base"]});

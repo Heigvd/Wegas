@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('router', function (Y, NAME) {
 
 /**
@@ -220,9 +226,7 @@ Y.Router = Y.extend(Router, Y.Base, {
         this.once(EVT_READY, function () {
             this._ready = true;
 
-            if (this._html5 && this.upgrade()) {
-                return;
-            } else {
+            if (!this.upgrade()) {
                 this._dispatch(this._getPath(), this._getURL());
             }
         });
@@ -1422,4 +1426,4 @@ version of YUI.
 Y.Controller = Y.Router;
 
 
-}, '3.9.1', {"optional": ["querystring-parse"], "requires": ["array-extras", "base-build", "history"]});
+}, '3.10.1', {"optional": ["querystring-parse"], "requires": ["array-extras", "base-build", "history"]});
