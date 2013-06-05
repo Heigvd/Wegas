@@ -119,7 +119,7 @@
     border-width: 0 0 1px;
 }*/
 
-.wegas-loginwidget .ask-pass-zone .submit{
+.wegas-loginwidget .ask-pass-zone .askPass{
     float:right;
     margin: -22px 10px 0 0;
     width:155px;
