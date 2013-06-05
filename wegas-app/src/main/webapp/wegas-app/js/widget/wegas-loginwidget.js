@@ -60,11 +60,6 @@ YUI.add('wegas-loginwidget', function(Y) {
          */
         askPassButton: null,
         /**
-         /**
-         * Entered email
-         */
-        email: null,
-        /**
          * Reference to each used functions
          */
         handlers: null,
@@ -92,7 +87,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             this.askPassButton = new Y.Button({
                 label: "Submit"
             });
-            this.askPassButton.get(CONTENTBOX).addClass("submit");
+            this.askPassButton.get(CONTENTBOX).addClass("askPass");
         },
         /**
          * @function
@@ -124,7 +119,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 <div class="content">\n\
                     <div class="main left">\n\
                         <h1>Welcom to Wegas</h1>\n\
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>\n\
+                        <p>WEGAS (Web Game Authoring System) est un moteur web permettant le développement rapide de Simulation Games. Sans connaissance en programmation il vous est possible de créer votre propre scénario ou d?en adapter un existant en ajoutant des éléments d?autres simulations. Les utilisateurs avancés peuvent même créer leur propre serious game de A à Z !</p>\n\
                         <div class="preview"><img src="../images/wegas-preview.jpg" alt="preview" height="200px" width="397px"/></div>\n\
                     </div>\n\
                     <div class="main right signin-zone">\n\
@@ -254,6 +249,10 @@ YUI.add('wegas-loginwidget', function(Y) {
          * @function
          * @private
          * @description bind function to events.
+         * Bind loginButton with login methode. 
+         * Bind signInButton with createAccount methode. 
+         * Bind askPassButton with sendNewPasswordForm methode. 
+         * Bind loginButton with logn methode. 
          * When return key is pressed, click on submitButton by a fire event.
          * When widget is render, set focus to 'input' node.
          */
@@ -265,7 +264,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 this.changeRightForms(true);
             }, ".forgot", this);
 
-            this.handlers.onAskingPass = cb.delegate("click", function() {
+            this.handlers.onAskingCreate = cb.delegate("click", function() {
                 this.changeRightForms(false);
             }, ".return", this);
 
@@ -291,46 +290,45 @@ YUI.add('wegas-loginwidget', function(Y) {
                     this.sendNewPassword(data.email);
                 }
             }, this);
-//            this.handlers.keypress = this.on("keypress", function(e) {
-//                if (e.domEvent.keyCode === 13) {
-//                    this.submitButton.fire("click");
-//                }
-//            });
+            this.handlers.keypress = this.on("keypress", function(e) {
+                if (e.domEvent.keyCode === 13) {
+                    this.loginButton.fire("click");
+                }
+            });
             this.handlers.render = this.after("render", inputNode.focus, inputNode);
         },
         /**
          * @function
          * @private
-         * @description do nothing
-         */
-        syncUI: function() {
-        },
-        /**
-         * @function
-         * @private
          * @description Detach all functions created by this widget.
+         * Destroy buttons.
          */
         destructor: function() {
             for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
+            this.submitButton.destroy();
+            this.askPassButton.destroy();
+            this.signInButton.destroy();
         },
         // *** Private methods *** //
         /**
          * @function
          * @private
          * @param showAskForm, a boolean
-         * @description if showAskForm is true, hide "signin" form and show "ask password" form
+         * @description if showAskForm is true, hide "signin" form and "forgot Password" <p/> and show "ask password" form
          * do the opposite else.
          */
         changeRightForms: function(showAskForm) {
             var cb = this.get(CONTENTBOX);
             if (showAskForm) {
                 cb.one(".signin-zone").hide();
+                cb.one(".forgot").hide();
                 cb.one(".ask-pass-zone").show();
             } else {
                 cb.one(".ask-pass-zone").hide();
                 cb.one(".signin-zone").show();
+                cb.one(".forgot").show();
             }
         },
         /**
@@ -405,7 +403,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
                         this.showMessage("success", "Your new password had been sent", 4000);
-                        this.set("mode", "login");
+                        this.changeRightForms(false);
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
@@ -451,22 +449,6 @@ YUI.add('wegas-loginwidget', function(Y) {
                 }
             }
             return null;
-        },
-        /**
-         * @function
-         * @private
-         * @param form, the setted form.
-         * @description Get current value of email field in current view (if defined), and
-         * put it in email fields of all views.
-         */
-        keepEmail: function(form) {
-            if (!form || !form.getValue() || !form.getValue().email) {
-                return;
-            }
-            this.email = form.getValue().email;
-            this.loginForm.getFieldByName("email").setValue(this.email);
-            this.createAccountForm.getFieldByName("email").setValue(this.email);
-            this.sendNewPasswordForm.getFieldByName("email").setValue(this.email);
         }
 
     }, {
