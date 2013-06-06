@@ -34,7 +34,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.publish("visibility-timer:restart", {
                 broadcast: 1
             });
-            this.get("contentBox").hide();
+            //this.get("contentBox").hide();
         },
         /**
          * Lifecycle method
@@ -94,7 +94,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     this.questionToDo[i - done] = i;
                 }
             }
-            this.next();
+            this.onceAfter("render", this.next, this);
         },
         responseGiven: function(response) {
             var responseTime = Y.Lang.now() - this.startTime,
@@ -120,14 +120,34 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             }
         },
         next: function() {
+            var onSuccess = Y.bind(function() {
+                Y.later(this.get("fixPoint"), this, this.createLoadingEvent);
+                this.fixPoint.show();
+            }, this);
             this.mask();
-            this.fixPoint.show();
             this.set("currentLoading", {"left": true, "center": true, "right": true});
             this.currentQuestionId = this.generateNextId();
             this.centerElement.set("element", +this.currentQuestionId);
             this.leftElement.set("element", +this.currentQuestionId);
             this.rightElement.set("element", +this.currentQuestionId);
-            Y.later(this.get("fixPoint"), this, this.createLoadingEvent);
+            if (this.get("popupAfter") > 0 &&
+                    (this.maxSize - this.questionToDo.length) !== 1 &&
+                    ((this.maxSize - this.questionToDo.length - 1) % this.get("popupAfter")) === 0) {
+
+                Y.fire("popup:show", {
+                    content: this.get("popupContent"),
+                    buttons: [{
+                            label: "Ok",
+                            action: function() {
+                                this.hide();
+                                onSuccess();
+                            }
+                        }]
+                });
+            } else {
+                onSuccess();
+            }
+
         },
         collectElements: function() {
             var elements = {},
@@ -164,7 +184,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         startStimuli: function() {
             this.get("boundingBox").focus();
             this.fire("visibility-timer:restart");
-            Y.later(1, this, this.unmask);
+            Y.soon(Y.bind(this.unmask, this));
             this.ongoing = true;
         },
         mask: function() {
@@ -212,7 +232,27 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             },
             random: {
                 value: true,
-                type: "boolean"
+                type: "boolean",
+                _inputex: {
+                    label: "Play lists randomly"
+                }
+            },
+            popupAfter: {
+                value: 0,
+                type: "number",
+                _inputex: {
+                    label: "Show popup message afer (ms)",
+                    description: "0 or less to disable"
+                }
+            },
+            popupContent: {
+                value: "",
+                type: "string",
+                optional: true,
+                format: "html",
+                _inputex: {
+                    label: "Popup content"
+                }
             }
         }
     });

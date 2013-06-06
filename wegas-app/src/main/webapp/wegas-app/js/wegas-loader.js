@@ -110,6 +110,20 @@ YUI().use(function(Y) {
                     ws_provides: 'PageLoader',
                     requires: ["wegas-widget"]
                 },
+                'wegas-popup-content':{
+                    path: 'wegas-app/js/widget/wegas-popup-content-min.js',
+                    ws_provides: 'PopupContent',
+                    requires: ["wegas-widget", "panel", "wegas-popup-contentcss"]
+                },
+                'wegas-popup-contentcss':{
+                   path: 'wegas-app/css/wegas-popup-content.css',
+                    type: 'css' 
+                },
+                'wegas-popuplistener':{
+                    path: 'wegas-app/js/util/wegas-popuplistener-min.js',
+                    ws_provides: 'PopupListener',
+                    requires: ["wegas-popup-content"]
+                },
                 'wegas-button': {
                     path: 'wegas-app/js/widget/wegas-button-min.js',
                     requires: ['wegas-widget', 'wegas-action', 'button', 'wegas-button-css'],
@@ -752,7 +766,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-flexitests-controller': {
                     path: "wegas-flexitests/js/wegas-flexitests-controller-min.js",
-                    requires: ["wegas-absolutelayout"],
+                    requires: ["wegas-absolutelayout", "timers"],
                     ws_provides: ["FlexitestsController", "FlexiResponse"]
                 },
                 'wegas-flexitests-mcqdisplay': {
