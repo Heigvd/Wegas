@@ -139,28 +139,7 @@ YUI.add('wegas-editable', function(Y) {
             }
             menu = menu || this.getStatic("EDITMENU", true)[0] || [];                // And if no form is defined we return the default one defined in the entity
 
-            function mixMenuCfg(elts, data) {
-                var i, j;
-                for (i = 0; i < elts.length; i += 1) {
-                    Y.mix(elts[i], data, true);                                 // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
-
-                    if (elts[i].plugins) {
-                        for (j = 0; j < elts[i].plugins.length; j = j + 1) {
-                            elts[i].plugins[j].cfg = elts[i].plugins[j].cfg || {};
-                            Y.mix(elts[i].plugins[j].cfg, data, true);
-                            if (elts[i].plugins[j].cfg.children) {
-                                mixMenuCfg(elts[i].plugins[j].cfg.children, data); // push data in children arg
-                            }
-                            if (elts[i].plugins[j].cfg.wchildren) {
-                                mixMenuCfg(elts[i].plugins[j].cfg.wchildren, data);// push data in wchildren
-                            }
-                        }
-                    }
-                }
-
-            }
-
-            mixMenuCfg(menu, data);
+            Editable.mixMenuCfg(menu, data);
             return menu;
         },
         /**
@@ -234,6 +213,26 @@ YUI.add('wegas-editable', function(Y) {
     Y.mix(Editable, {
         /** @lends Y.Wegas.Editable */
 
+        mixMenuCfg: function(elts, data) {
+            var i, j;
+            for (i = 0; i < elts.length; i += 1) {
+                Y.mix(elts[i], data, true);                                 // Attach self and the provided datasource to the menu items, to allow them to know which entity to update
+
+                if (elts[i].plugins) {
+                    for (j = 0; j < elts[i].plugins.length; j = j + 1) {
+                        elts[i].plugins[j].cfg = elts[i].plugins[j].cfg || {};
+                        Y.mix(elts[i].plugins[j].cfg, data, true);
+                        if (elts[i].plugins[j].cfg.children) {
+                            Editable.mixMenuCfg(elts[i].plugins[j].cfg.children, data); // push data in children arg
+                        }
+                        if (elts[i].plugins[j].cfg.wchildren) {
+                            Editable.mixMenuCfg(elts[i].plugins[j].cfg.wchildren, data);// push data in wchildren
+                        }
+                    }
+                }
+            }
+
+        },
         /**
          * Load the modules from an Wegas widget definition
          * @function
@@ -242,7 +241,12 @@ YUI.add('wegas-editable', function(Y) {
          * @param {Function} cb callback to be called when modules are loaded
          */
         use: function(cfg, cb) {
-            var modules = Editable.getModulesFromDefinition(cfg);
+            var modules = Y.Array.reject(Editable.getModulesFromDefinition(cfg), function (i){
+                return i === "";
+            });
+            if (modules.length > 0) {
+                Y.log("Asynchronous loading for modules:" + modules.join(), "info", "Wegas.Editable");
+            }
             modules.push(cb);
             Y.use.apply(Y, modules);
         },
@@ -261,6 +265,9 @@ YUI.add('wegas-editable', function(Y) {
                     modules = modules.concat(Editable.getModulesFromDefinition(field));
                 }
             };
+            if (Y.Lang.isArray(cfg)) {
+                return Y.Array.map(cfg, Editable.getModulesFromDefinition);
+            }
 
             if (module) {
                 modules.push(module);
@@ -382,5 +389,7 @@ YUI.add('wegas-editable', function(Y) {
         }
     });
     Y.namespace("Wegas").Editable = Editable;
+
+    Y.Wegas.use = Y.Wegas.Editable.use;                                         // Set up a shortcut
 
 });

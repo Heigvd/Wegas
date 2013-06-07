@@ -12,7 +12,9 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.util.SecurityHelper;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -23,7 +25,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  *
@@ -111,10 +112,7 @@ public class EditorGameController extends AbstractGameController {
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             externalContext.dispatch("/wegas-app/view/error/error.xhtml");
         } else {
-
-            try {
-                SecurityUtils.getSubject().checkPermission("Game:Edit:g" + currentPlayer.getGame().getId());
-            } catch (UnauthorizedException e) {
+            if (!SecurityHelper.isPermitted(currentPlayer.getGame(), "Edit")) {
                 externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml");
             }
         }

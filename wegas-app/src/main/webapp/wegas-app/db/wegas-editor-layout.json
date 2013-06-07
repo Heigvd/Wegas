@@ -284,7 +284,7 @@
                                                                         "type": "NewEntityButton",
                                                                         "label": "Object",
                                                                         "targetClass": "ObjectDescriptor"
-                                                                    },{
+                                                                    }, {
                                                                         "type": "NewEntityButton",
                                                                         "label": "Inbox",
                                                                         "targetClass": "InboxDescriptor"
@@ -330,6 +330,8 @@
                                         "fn": "CSSLoader"
                                     }, {
                                         "fn": "Injector"
+                                    }, {
+                                        "fn": "PopupListener"
                                     }
                                 ]
                             }]

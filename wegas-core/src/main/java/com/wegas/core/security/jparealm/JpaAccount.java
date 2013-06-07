@@ -7,10 +7,9 @@
  */
 package com.wegas.core.security.jparealm;
 
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlType;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
@@ -23,7 +22,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "JpaAccount")
 public class JpaAccount extends AbstractAccount {
 
     /**
@@ -74,7 +72,7 @@ public class JpaAccount extends AbstractAccount {
     public void preUpdate() {
         if (this.password != null && !this.password.isEmpty()) {
             this.passwordHex = new Sha256Hash(this.password,
-                    ( new SimpleByteSource(this.getSalt()) ).getBytes()).toHex();
+                    (new SimpleByteSource(this.getSalt())).getBytes()).toHex();
         }
     }
 

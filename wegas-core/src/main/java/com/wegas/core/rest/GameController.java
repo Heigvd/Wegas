@@ -15,6 +15,7 @@ import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.util.SecurityHelper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -24,7 +25,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
-import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -65,10 +65,11 @@ public class GameController {
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     public Game find(@PathParam("entityId") Long entityId) {
+        final Game g = gameFacade.find(entityId);
 
-        SecurityUtils.getSubject().checkPermission("Game:View:g" + entityId);
+        SecurityHelper.checkPermission(g, "View");
 
-        return gameFacade.find(entityId);
+        return g;
     }
 
     /**
@@ -79,14 +80,13 @@ public class GameController {
     @GET
     public Collection<Game> index(@PathParam("gameModelId") String gameModelId) {
         final Collection<Game> retGames = new ArrayList<>();
-        final Subject s = SecurityUtils.getSubject();
         final Collection<Game> games = (!gameModelId.isEmpty())
                 ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
                 : gameFacade.findAll("createdTime ASC");
 
         for (Iterator<Game> it = games.iterator(); it.hasNext();) {
             Game g = it.next();
-            if (s.isPermitted("Game:Edit:g" + g.getId())) {
+            if (SecurityHelper.isPermitted(g, "Edit")) {
                 retGames.add(g);
             }
         }
@@ -101,10 +101,9 @@ public class GameController {
      */
     @POST
     public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) {
+        SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
-        SecurityUtils.getSubject().checkPermission("Game:Create");
-
-        this.gameFacade.create(gameModelId, entity);
+        gameFacade.create(gameModelId, entity);
         return entity;
     }
 
@@ -131,7 +130,7 @@ public class GameController {
     @Path("{entityId: [1-9][0-9]*}")
     public Game update(@PathParam("entityId") Long entityId, Game entity) {
 
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
+        SecurityHelper.checkPermission(gameFacade.find(entityId), "Edit");
 
         return gameFacade.update(entityId, entity);
     }
@@ -145,9 +144,9 @@ public class GameController {
     @Path("{entityId: [1-9][0-9]*}")
     public Game delete(@PathParam("entityId") Long entityId) {
 
-        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + entityId);
-
         Game entity = gameFacade.find(entityId);
+        SecurityHelper.checkPermission(entity, "Edit");
+
         gameFacade.remove(entity);
         return entity;
     }

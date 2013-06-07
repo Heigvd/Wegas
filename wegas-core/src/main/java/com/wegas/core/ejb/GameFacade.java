@@ -11,7 +11,7 @@ import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.GuestAccount;
+import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
@@ -83,17 +83,17 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
         final User currentUser = userFacade.getCurrentUser();
 
-        if (!(currentUser.getMainAccount() instanceof GuestAccount)) {       // @hack @fixme, guest are not stored in the db so link wont work
+        if (!(currentUser.getMainAccount() instanceof GuestJpaAccount)) {       // @hack @fixme, guest are not stored in the db so link wont work
             game.setCreatedBy(currentUser);
         }
 
         GameModel gameModel = gameModelEntityFacade.find(gameModelId);
         gameModel.addGame(game);
+        em.flush();                                                             // To retrieve game id
 
         currentUser.getMainAccount().addPermission("Game:Edit:g" + game.getId());
         currentUser.getMainAccount().addPermission("Game:View:g" + game.getId());
 
-        super.create(game);
     }
 
     @Override

@@ -20,9 +20,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
 
@@ -33,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Entity
 @Table(uniqueConstraints =
         @UniqueConstraint(columnNames = "name"))
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GameModel extends NamedEntity {
     //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
 
@@ -167,32 +168,19 @@ public class GameModel extends NamedEntity {
      */
     @PrePersist
     public void prePersist() {
-        if (this.games.isEmpty()) {
-            Team t = new Team("Default");
-            t.addPlayer(new Player("Test player"));
-
-            Game g = new Game("Test game");
-            g.addTeam(t);
-            this.addGame(g);
-        }
+        //if (this.games.isEmpty()) {
+        this.addGame(new DebugGame());                                          // Every game has a debug game
+        //}
     }
 
-//    public Boolean canRead() {
-//        return SecurityUtils.getSubject().isPermitted("Game:View:g" + this.id);
-//    }
-//
-//    public Boolean canEdit() {
-//        return SecurityUtils.getSubject().isPermitted("Game:Edit:g" + this.id);
-//    }
-//
-//    /**
-//     * For serialization
-//     *
-//     * @return
-//     */
-//    public Boolean getCanEdit() {
-//        return this.canEdit();
-//    }
+    /**
+     * For serialization
+     *
+     * @return
+     */
+    public Boolean getCanEdit() {
+        return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
+    }
 
     /**
      *

@@ -7,6 +7,7 @@
  */
 /**
  * @fileoverview
+ * @deprecated User wegas-joingame instead
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-joingamewidget', function(Y) {

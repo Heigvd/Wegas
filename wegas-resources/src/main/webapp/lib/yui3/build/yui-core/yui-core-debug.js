@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 /**
 The YUI module contains the components required for building the YUI seed file.
 This includes the script loading mechanism, a simple queue, and the core
@@ -157,7 +163,7 @@ available.
 (function() {
 
     var proto, prop,
-        VERSION = '3.9.1',
+        VERSION = '3.10.1',
         PERIOD = '.',
         BASE = 'http://yui.yahooapis.com/',
         /*
@@ -1973,6 +1979,22 @@ supported native console. This function is executed with the YUI instance as its
 
 @property {Function} logFn
 @since 3.1.0
+**/
+
+/**
+The minimum log level to log messages for. Log levels are defined
+incrementally. Messages greater than or equal to the level specified will
+be shown. All others will be discarded. The order of log levels in
+increasing priority is:
+
+    debug
+    info
+    warn
+    error
+
+@property {String} logLevel
+@default 'debug'
+@since 3.10.0
 **/
 
 /**
@@ -3852,6 +3874,9 @@ YUI.Env.parseUA = function(subUA) {
                         m = ua.match(/rv:([^\s\)]*)/);
                         if (m && m[1]) {
                             o.gecko = numberify(m[1]);
+                            if (/Mobile|Tablet/.test(ua)) {
+                                o.mobile = "ffos";
+                            }
                         }
                     }
                 }
@@ -3982,4 +4007,4 @@ YUI.Env.aliases = {
 };
 
 
-}, '3.9.1');
+}, '3.10.1');

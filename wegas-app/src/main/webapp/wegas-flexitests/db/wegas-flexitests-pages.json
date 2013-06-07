@@ -11,6 +11,8 @@
         ],
         "fixPoint": 1000,
         "random": true,
+        "popupAfter": 3,
+        "popupContent": "<p>A popup shown after 3 questions</p>",
         "children": [
             {
                 "id": "leftElement",

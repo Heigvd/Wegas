@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.persistence;
 
+import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.facebook.FacebookAccount;
 import java.util.HashSet;
@@ -29,7 +30,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount WHERE abstractaccount.permissions LIKE :gameId"),})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
-    @JsonSubTypes.Type(name = "GuestAccount", value = GuestAccount.class),
+    @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
     @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
