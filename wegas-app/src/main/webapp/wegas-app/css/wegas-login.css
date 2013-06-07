@@ -75,28 +75,28 @@
     width: 155px;   
 }
 
-.wegas-loginwidget .signingroup div{
+.wegas-loginwidget .signupgroup div{
     float:left;
     width:165px;
     margin-bottom: 5px
 }
 
-.wegas-loginwidget .signingroup .email input{
+.wegas-loginwidget .signupgroup .email input{
     width:318px;
 }
 
-.wegas-loginwidget .signingroup .inputEx-Password-StrengthIndicator{
+.wegas-loginwidget .signupgroup .inputEx-Password-StrengthIndicator{
     position:absolute;
     margin:-15px 0 0 165px;
     width:157px;
 }
 
-.wegas-loginwidget .signingroup .inputEx-Password-StrengthIndicatorBlock{
+.wegas-loginwidget .signupgroup .inputEx-Password-StrengthIndicatorBlock{
     width:8px;
     margin: 0 2px 0 0;
 }
 
-.wegas-loginwidget .signin .signinbutton{
+.wegas-loginwidget .signup .signupbutton{
     float:right;
     margin: -40px 10px 0 0;
     width:155px;
@@ -114,7 +114,7 @@
     margin-top:0;
 }
 
-/*.wegas-loginwidget .signin{
+/*.wegas-loginwidget .signup{
     border: solid #888;
     border-width: 0 0 1px;
 }*/

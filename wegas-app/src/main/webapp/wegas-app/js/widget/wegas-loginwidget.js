@@ -54,7 +54,7 @@ YUI.add('wegas-loginwidget', function(Y) {
         /**
          * Button to submit form
          */
-        signinButton: null,
+        signUpButton: null,
         /**
          * Button to submit form
          */
@@ -79,10 +79,10 @@ YUI.add('wegas-loginwidget', function(Y) {
             });
             this.loginButton.get(CONTENTBOX).addClass("loginbutton");
 
-            this.signinButton = new Y.Button({
+            this.signUpButton = new Y.Button({
                 label: "Sign in"
             });
-            this.signinButton.get(CONTENTBOX).addClass("signinbutton");
+            this.signUpButton.get(CONTENTBOX).addClass("signupbutton");
 
             this.askPassButton = new Y.Button({
                 label: "Submit"
@@ -106,42 +106,42 @@ YUI.add('wegas-loginwidget', function(Y) {
             }
 
             //Core of the page
-            cb.append('<div class="header">\n\
-                    <div class="content">\n\
-                        <div class="left">\n\
-                            <div class="logo">\n\
-                                <img src="../images/wegas-logo_white.png" alt="logo" height="82px" width:"191px";/>\n\
+            cb.append("<div class='header'>\n\
+                    <div class='content'>\n\
+                        <div class='left'>\n\
+                            <div class='logo'>\n\
+                                <img src='../images/wegas-logo_white.png' alt='logo' height='82px' width:'191px';/>\n\
                             </div>\n\
                         </div>\n\
-                        <div class="right login"></div>\n\
+                        <div class='right login'></div>\n\
                     </div>\n\
                 </div>\n\
-                <div class="content">\n\
-                    <div class="main left">\n\
+                <div class='content'>\n\
+                    <div class='main left'>\n\
                         <h1>Welcom to Wegas</h1>\n\
-                        <p>WEGAS (Web Game Authoring System) est un moteur web permettant le développement rapide de Simulation Games. Sans connaissance en programmation il vous est possible de créer votre propre scénario ou d?en adapter un existant en ajoutant des éléments d?autres simulations. Les utilisateurs avancés peuvent même créer leur propre serious game de A à Z !</p>\n\
-                        <div class="preview"><img src="../images/wegas-preview.jpg" alt="preview" height="200px" width="397px"/></div>\n\
+                        <p>WEGAS (Web Game Authoring System) est un moteur web permettant le développement rapide de Simulation Games. Sans connaissance en programmation il vous est possible de créer votre propre scénario ou d'en adapter un existant en ajoutant des éléments d'autres simulations. Les utilisateurs avancés peuvent même créer leur propre serious game de A à Z !</p>\n\
+                        <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='200px' width='397px'/></div>\n\
                     </div>\n\
-                    <div class="main right signin-zone">\n\
-                        <h1 class="title">Create an account</h1>\n\
-                        <div class="signin"></div>\n\
+                    <div class='main right signup-zone'>\n\
+                        <h1 class='title'>Create an account</h1>\n\
+                        <div class='signup'></div>\n\
                     </div>\n\
-                    <div class="main right ask-pass-zone">\n\
-                        <h1 class="title">Get a new password</h1>\n\
-                        <div class="ask-pass"></div>\n\
+                    <div class='main right ask-pass-zone'>\n\
+                        <h1 class='title'>Get a new password</h1>\n\
+                        <div class='ask-pass'></div>\n\
                     </div>\n\
-                    <div class="footer">\n\
-                        <div class="partner">\n\
-                            <a href="http://www.heig-vd.ch/" target="_blank"><img src="../images/heigvd-logo.png" alt="Heig-vd" height="54px" width="146px"/></a>\n\
-                            <a href="http://www.albasim.com" target="_blank"><img src="../images/albasim-logo.png" alt="Albasim" height="54px" width="68px"/></a>\n\
+                    <div class='footer'>\n\
+                        <div class='partner'>\n\
+                            <a href='http://www.heig-vd.ch/' target='_blank'><img src='../images/heigvd-logo.png' alt='Heig-vd' height='54px' width='146px'/></a>\n\
+                            <a href='http://www.albasim.com' target='_blank'><img src='../images/albasim-logo.png' alt='Albasim' height='54px' width='68px'/></a>\n\
                         </div>\n\
-                        <div class="licence"><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
-                        <div class="followus">\n\
+                        <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
+                        <div class='followus'>\n\
                             <span>Follow us:</span>\n\
-                            <a href="https://github.com/Heigvd/Wegas" target="_blank"><img src="../images/github-icon.png" alt="Github" height="30px" width="30px"/></a>\n\
+                            <a href='https://github.com/Heigvd/Wegas' target='_blank'><img src='../images/github-icon.png' alt='Github' height='30px' width='30px'/></a>\n\
                         </div>\n\
                     </div>\n\
-                </div>');
+                </div>");
 
             //create and append login form
             this.loginForm = new Y.inputEx.Group({
@@ -219,15 +219,15 @@ YUI.add('wegas-loginwidget', function(Y) {
                         confirm: "password",
                         type: "password",
                         typeInvite: "Password confirmation",
-                        className: "passwordc"
+                        className: "passwordc password"
                     }],
-                parentEl: cb.one(".signin"),
-                className: "signingroup"
+                parentEl: cb.one(".signup"),
+                className: "signupgroup"
             });
             //To work with inputex, for css
-            cb.one(".signin .email").ancestor("div").setStyle("width", "330px");
-            cb.one(".signin .password").ancestor("div").setStyle("width", "330px");
-            this.signinButton.render(cb.one(".signin"));
+            cb.one(".signup .email").ancestor("div").setStyle("width", "330px");
+            cb.one(".signup .password").ancestor("div").setStyle("width", "330px");
+            this.signUpButton.render(cb.one(".signup"));
 
             //Create, append and hide from to ask a new password.
             this.sendNewPasswordForm = new Y.inputEx.Group({
@@ -250,7 +250,7 @@ YUI.add('wegas-loginwidget', function(Y) {
          * @private
          * @description bind function to events.
          * Bind loginButton with login methode. 
-         * Bind signInButton with createAccount methode. 
+         * Bind signUpButton with createAccount methode. 
          * Bind askPassButton with sendNewPasswordForm methode. 
          * Bind loginButton with logn methode. 
          * When return key is pressed, click on submitButton by a fire event.
@@ -276,7 +276,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 }
             }, this);
 
-            this.handlers.onSignIn = this.signinButton.on("click", function() {
+            this.handlers.onSignUp = this.signUpButton.on("click", function() {
                 if (this.createAccountForm.validate()) {
                     this.createAccount(this.createAccountForm.getValue());
                 }
@@ -309,25 +309,25 @@ YUI.add('wegas-loginwidget', function(Y) {
             }
             this.submitButton.destroy();
             this.askPassButton.destroy();
-            this.signInButton.destroy();
+            this.signUpButton.destroy();
         },
         // *** Private methods *** //
         /**
          * @function
          * @private
          * @param showAskForm, a boolean
-         * @description if showAskForm is true, hide "signin" form and "forgot Password" <p/> and show "ask password" form
+         * @description if showAskForm is true, hide "signup" form and "forgot Password" <p/> and show "ask password" form
          * do the opposite else.
          */
         changeRightForms: function(showAskForm) {
             var cb = this.get(CONTENTBOX);
             if (showAskForm) {
-                cb.one(".signin-zone").hide();
+                cb.one(".signup-zone").hide();
                 cb.one(".forgot").hide();
                 cb.one(".ask-pass-zone").show();
             } else {
                 cb.one(".ask-pass-zone").hide();
-                cb.one(".signin-zone").show();
+                cb.one(".signup-zone").show();
                 cb.one(".forgot").show();
             }
         },
@@ -467,4 +467,44 @@ YUI.add('wegas-loginwidget', function(Y) {
     });
     Y.namespace('Wegas').LoginWidget = LoginWidget;
 
+    /**
+     * Hack because "typeInvite" and password work bad (typeInvite is hid)
+     * Password field needs a "password" class.
+     */
+    Y.inputEx.StringField.prototype.updateTypeInvite = function() {
+
+        // field not focused
+        if (!Y.one(this.divEl).hasClass("inputEx-focused")) {
+
+            // show type invite if field is empty
+            if (this.isEmpty()) {
+                Y.one(this.divEl).addClass("inputEx-typeInvite");
+                if (this.fieldContainer.className.indexOf("password") > -1) {
+                    this.el.setAttribute("type", "");
+                }
+                this.el.value = this.options.typeInvite;
+
+                // important for setValue to work with typeInvite
+            } else {
+                if (this.fieldContainer.className.indexOf("password") > -1) {
+                    this.el.setAttribute("type", "password");
+                }
+                Y.one(this.divEl).removeClass("inputEx-typeInvite");
+            }
+
+            // field focused : remove type invite
+        } else {
+            if (Y.one(this.divEl).hasClass("inputEx-typeInvite")) {
+                // remove text
+                this.el.value = "";
+                // remove the "empty" state and class
+                this.previousState = null;
+                if (this.fieldContainer.className.indexOf("password") > -1) {
+                    this.el.setAttribute("type", "password");
+                }
+                Y.one(this.divEl).removeClass("inputEx-typeInvite");
+
+            }
+        }
+    };
 });
