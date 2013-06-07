@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('color-base', function (Y, NAME) {
 
 /**
@@ -115,20 +121,26 @@ Y.Color = {
     CONVERTS: CONVERTS,
 
     /**
-    @public
-    @method convert
-    @param {String} str
-    @param {String} to
-    @return {String}
-    @since 3.8.0
-    **/
-    convert: function (str, to) {
-        // check for a toXXX conversion method first
-        // if it doesn't exist, use the toXxx conversion method
-        var convert = Y.Color.CONVERTS[to],
-            clr = Y.Color[convert](str);
+     Converts the provided string to the provided type.
+     You can use the `Y.Color.TYPES` to get a valid `to` type.
+     If the color cannot be converted, the original color will be returned.
 
-        return clr.toLowerCase();
+     @public
+     @method convert
+     @param {String} str
+     @param {String} to
+     @return {String}
+     @since 3.8.0
+     **/
+    convert: function (str, to) {
+        var convert = Y.Color.CONVERTS[to.toLowerCase()],
+            clr = str;
+
+        if (convert && Y.Color[convert]) {
+            clr = Y.Color[convert](str).toLowerCase();
+        }
+
+        return clr;
     },
 
     /**
@@ -446,4 +458,4 @@ Y.Color = {
 
 
 
-}, '3.9.1', {"requires": ["yui-base"]});
+}, '3.10.1', {"requires": ["yui-base"]});

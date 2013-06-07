@@ -15,7 +15,6 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import javax.naming.AuthenticationException;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -72,7 +71,7 @@ public class SecurityInterceptor {
         if (requiresAuthentication) {
             log.debug("[security] checking for authenticated user.");
             try {
-                if (!subject.isAuthenticated()) {
+                if (!subject.isAuthenticated() && !subject.isRemembered()) {
                     throw new AuthenticationException("Subject is not logged in.");
                 }
             } catch (Exception e) {

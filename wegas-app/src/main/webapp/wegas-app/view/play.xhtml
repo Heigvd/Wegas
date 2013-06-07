@@ -10,6 +10,17 @@
             <style type="text/css">#{gameController.styleSheets}</style>
         </ui:define>
 
+        <ui:define name="head">
+
+            <meta name="google-translate-customization" content="#gameController.currentGameModel.getProperty('googleTranslateId')" />
+
+            <style type="text/css">
+                <!-- In player mode, CSS library for current game model is included directly in the model -->
+                #{gameController.getCSSs()}
+            </style>
+
+        </ui:define>
+
     </ui:composition>
 
 </html>

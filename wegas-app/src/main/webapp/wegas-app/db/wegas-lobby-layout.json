@@ -3,176 +3,238 @@
     "type": "Layout",
     "top": {
         "children": [{
-            "type": "Text",
-            "content": "Lobby",
-            "cssClass": "wegas-title"
-        }, {
-            "type": "Button",
-            "label": "Administrator",
-            "cssClass": "editor-administrator-button",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": [{
-                        "type": "OpenTabButton",
-                        "label": "Users",
-                        "wchildren": [{
-                            "type": "EditorTreeView",
-                            "dataSource": "User",
-                            "request": {
-                                "request": "/"
-                            },
-                            "plugins": [{
-                                "fn": "WidgetToolbar",
-                                "cfg": {
-                                    "children": [{
-                                        "type": "NewEntityButton",
-                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                        "targetClass": "JpaAccount",
-                                        "dataSource": "User"
-                                    }]
-                                }
-                            }]
-                        }]
-                    }, {
-                        "type": "OpenTabButton",
-                        "label": "Groups",
-                        "wchildren": [{
-                            "type": "EditorTreeView",
-                            "dataSource": "Role",
-                            "request": {
-                                "request": "/"
-                            },
-                            "plugins": [{
-                                "fn": "WidgetToolbar",
-                                "cfg": {
-                                    "children": [{
-                                        "type": "NewEntityButton",
-                                        "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                        "targetClass": "Role",
-                                        "dataSource": "Role"
-                                    }]
-                                }
-                            }]
-                        }]
-                    }]
-                }
-            }]
-        }, {
-            "type": "LoginButton",
-            "cssClass": "menu-loginbutton",
-            "plugins": [{
-                "fn": "WidgetMenu",
-                "cfg": {
-                    "children": [{
-                        "type": "Button",
-                        "label": "Preferences",
-                        "plugins": [{
-                            "fn": "OpenTabAction",
-                            "cfg": {
-                                "wchildren": [{
-                                    "type": "Form",
-                                    "plugins": [{
-                                        "fn": "UserPreferences"
-                                    }]
+                "type": "Text",
+                "content": "Wegas",
+                "cssClass": "wegas-title"
+            }, {
+                "type": "Button",
+                "label": "Administrator",
+                "cssClass": "editor-administrator-button",
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "OpenTabButton",
+                                    "label": "Users",
+                                    "wchildren": [{
+                                            "type": "EditorTreeView",
+                                            "dataSource": "User",
+                                            "request": {
+                                                "request": "/"
+                                            },
+                                            "plugins": [{
+                                                    "fn": "WidgetToolbar",
+                                                    "cfg": {
+                                                        "children": [{
+                                                                "type": "NewEntityButton",
+                                                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                                                "targetClass": "JpaAccount",
+                                                                "dataSource": "User"
+                                                            }]
+                                                    }
+                                                }]
+                                        }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Groups",
+                                    "wchildren": [{
+                                            "type": "EditorTreeView",
+                                            "dataSource": "Role",
+                                            "request": {
+                                                "request": "/"
+                                            },
+                                            "plugins": [{
+                                                    "fn": "WidgetToolbar",
+                                                    "cfg": {
+                                                        "children": [{
+                                                                "type": "NewEntityButton",
+                                                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                                                                "targetClass": "Role",
+                                                                "dataSource": "Role"
+                                                            }]
+                                                    }
+                                                }]
+                                        }]
                                 }]
-                            }
-                        }]
-                    }, {
-                        "type": "Button",
-                        "label": "Logout",
-                        "plugins": [{
-                            "fn": "OpenUrlAction",
-                            "cfg": {
-                                "url": "wegas-app/logout",
-                                "target": "self"
-                            }
-                        }]
+                        }
                     }]
-                }
+            }, {
+                "type": "LoginButton",
+                "cssClass": "menu-loginbutton",
+                "plugins": [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "children": [{
+                                    "type": "Button",
+                                    "label": "Preferences",
+                                    "plugins": [{
+                                            "fn": "OpenTabAction",
+                                            "cfg": {
+                                                "wchildren": [{
+                                                        "type": "Form",
+                                                        "plugins": [{
+                                                                "fn": "UserPreferences"
+                                                            }]
+                                                    }]
+                                            }
+                                        }]
+                                }, {
+                                    "type": "Button",
+                                    "label": "Logout",
+                                    "plugins": [{
+                                            "fn": "OpenUrlAction",
+                                            "cfg": {
+                                                "url": "wegas-app/logout",
+                                                "target": "self"
+                                            }
+                                        }]
+                                }]
+                        }
+                    }]
             }]
-        }]
     },
     "left": {
         "children": [{
-            "type": "TabView",
-            "id": "leftTabView",
-            "cssClass": "editor-tab",
-            "children": [{
-                "type": "Tab",
-                "label": "Game models",
+                "type": "TabView",
+                "id": "leftTabView",
+                "cssClass": "editor-tab",
                 "children": [{
-                    "type": "GameModelTreeView",
-                    "dataSource": "GameModel",
-                    "plugins": [{
-                        "fn": "WidgetToolbar",
-                        "cfg": {
-                            "children": [{
-                                "type": "NewEntityButton",
-                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
-                                "targetClass": "GameModel",
-                                "dataSource": "GameModel"
+                        "type": "Tab",
+                        "label": "Game models",
+                        "children": [{
+                                "type": "GameModelTreeView",
+                                "dataSource": "GameModel",
+                                "plugins": [{
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": [{
+                                                    "type": "NewEntityButton",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
+                                                    "targetClass": "GameModel",
+                                                    "dataSource": "GameModel"
+                                                }]
+                                        }
+                                    }]
                             }]
-                        }
                     }]
-                }]
             }]
-        }]
     },
     "center": {
         "children": [{
-            "id": "centerTabView",
-            "type": "TabView",
-            "cssClass": "editor-tab",
-            "children": [{
-                "type": "Tab",
-                "id": "joinedGamesTab",
-                "label": "Joined games",
+                "id": "centerTabView",
+                "type": "TabView",
+                "cssClass": "editor-tab",
                 "children": [{
-                    "type": "JoinedGameTreeView",
-                    "dataSource": "RegisteredGames",
-                    "emptyMessage": "You are not registered in any game.",
-                    "plugins": [{
-                        "fn": "WidgetToolbar",
-                        "cfg": {
-                            "children": [{
-                                "type": "Button",
-                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Join game",
+                        "type": "Tab",
+                        "id": "availableGamesTab",
+                        "label": "Available games",
+                        "children": [{
+                                "type": "PublicGameTreeView",
+                                "dataSource": "PublicGames",
+                                "emptyMessage": "No game is available for play.",
                                 "plugins": [{
-                                    "fn": "OpenTabAction",
-                                    "cfg": {
-                                        "tabSelector": "#rightTabView",
-                                        "wchildren": [{
-                                            "type": "JoinGameWidget"
-                                        }]
-                                    }
-                                }]
+                                        "fn": "EditorTVAdminMenu",
+                                        "cfg": {
+                                            "children": [{
+                                                    "type": "Button",
+                                                    "label": "Select team",
+                                                    "plugins": [{
+                                                            "fn": "OpenTabAction",
+                                                            "cfg": {
+                                                                "tabSelector": "#rightTabView",
+                                                                "wchildren": [{
+                                                                        "type": "JoinTeam"
+                                                                    }]
+                                                            }
+                                                        }]
+                                                }]
+                                        }
+                                    }, {
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": [{
+                                                    "type": "Button",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Enter token",
+                                                    "plugins": [{
+                                                            "fn": "OpenTabAction",
+                                                            "cfg": {
+                                                                "tabSelector": "#rightTabView",
+                                                                "wchildren": [{
+                                                                        "type": "JoinGame"
+                                                                    }]
+                                                            }
+                                                        }]
+                                                }]
+                                        }
+                                    }]
                             }]
-                        }
-                    }]
-                }]
-            }, {
-                "id": "gamesTreeViewTab",
-                "type": "Tab",
-                "label": "Created games",
-                "children": [{
-                    "type": "CreatedGameTreeView",
-                    "dataSource": "Game",
-                    "emptyMessage": "You have not created any game yet",
-                    "plugins": [{
-                        "fn": "WidgetToolbar",
-                        "cfg": {
-                            "children": [{
-                                "type": "NewEntityButton",
-                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
-                                "targetClass": "Game",
-                                "dataSource": "Game"
+                    }, {
+                        "type": "Tab",
+                        "id": "joinedGamesTab",
+                        "label": "Ongoing games",
+                        "children": [{
+                                "type": "JoinedGameTreeView",
+                                "dataSource": "RegisteredGames",
+                                "emptyMessage": "You have not joined any game yet.",
+                                "plugins": [{
+                                        "fn": "EditorTVAdminMenu",
+                                        "cfg": {
+                                            "children": [{
+                                                    "type": "Button",
+                                                    "plugins": [{
+                                                            "fn": "OpenGameAction",
+                                                            "cfg": {
+                                                                "editorUrl": "wegas-app/view/play.html?"
+                                                            }
+                                                        }]
+                                                }]
+                                        }
+                                    }, {
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": [{
+                                                    "type": "Button",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Enter token",
+                                                    "plugins": [{
+                                                            "fn": "OpenTabAction",
+                                                            "cfg": {
+                                                                "tabSelector": "#rightTabView",
+                                                                "wchildren": [{
+                                                                        "type": "JoinGame"
+                                                                    }]
+                                                            }
+                                                        }]
+                                                }]
+                                        }
+                                    }]
                             }]
-                        }
+                    }, {
+                        "id": "gamesTreeViewTab",
+                        "type": "Tab",
+                        "label": "Created games",
+                        "children": [{
+                                "type": "CreatedGameTreeView",
+                                "dataSource": "Game",
+                                "emptyMessage": "You have not created any game yet",
+                                "plugins": [{
+                                        "fn": "EditorTVAdminMenu",
+                                        "cfg": {
+                                            "autoClick": false
+                                        }
+                                    }, {
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": [{
+                                                    "type": "NewEntityButton",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
+                                                    "targetClass": "Game",
+                                                    "dataSource": "Game"
+                                                }]
+                                        }
+                                    }]
+                            }]
                     }]
-                }]
             }]
-        }]
     },
     "right": {
         "width": 50,
@@ -181,13 +243,13 @@
         "scroll": true,
         "animate": true,
         "children": [{
-            "type": "TabView",
-            "id": "rightTabView",
-            "cssClass": "editor-tab",
-            "children": [],
-            "plugins": [{
-                "fn": "LayoutToggleTab"
+                "type": "TabView",
+                "id": "rightTabView",
+                "cssClass": "editor-tab",
+                "children": [],
+                "plugins": [{
+                        "fn": "LayoutToggleTab"
+                    }]
             }]
-        }]
     }
 }

@@ -7,11 +7,12 @@
  */
 /**
  * @fileoverview
+ * @deprecated User wegas-jointeam instead
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 YUI.add('wegas-jointeamwidget', function (Y) {
     "use strict";
-    
+
     /**
     * @name Y.Wegas.JoinTeamWidget
     * @extends Y.Wegas.JoinGameWidget

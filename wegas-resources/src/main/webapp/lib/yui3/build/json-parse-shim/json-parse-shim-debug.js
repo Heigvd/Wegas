@@ -1,4 +1,10 @@
-/* YUI 3.9.1 (build 5852) Copyright 2013 Yahoo! Inc. http://yuilibrary.com/license/ */
+/*
+YUI 3.10.1 (build 8bc088e)
+Copyright 2013 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('json-parse-shim', function (Y, NAME) {
 
 /**
@@ -170,7 +176,7 @@ Y.JSON.parse = function (s,reviver) {
 
         // Eval the text into a JavaScript data structure, apply any
         // reviver function, and return
-        return _revive( eval('(' + s + ')'), reviver );
+        return _revive( EVAL_TOKEN('(' + s + ')'), reviver );
     }
 
     throw new SyntaxError('JSON.parse');
@@ -180,4 +186,4 @@ Y.JSON.parse = function (s,reviver) {
 // is native or a shim
 Y.JSON.parse.isShim = true;
 
-}, '3.9.1', {"requires": ["json-parse"]});
+}, '3.10.1', {"requires": ["json-parse"]});

@@ -11,14 +11,12 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.PersistenceException;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.GuestAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.exception.WegasException;
+import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,17 +88,25 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      */
     public User getCurrentUser() {
         final Subject subject = SecurityUtils.getSubject();
+
         if (subject.isRemembered() || subject.isAuthenticated()) {
-             return accountFacade.find((Long) subject.getPrincipal()).getUser();
+            return accountFacade.find((Long) subject.getPrincipal()).getUser();
+
         } else {
-            User newUser = new User(new GuestAccount());                        // return a Guest user
+
             if (Helper.getWegasProperty("guestallowed").equals("true")) {
-                //userFacade.create(newUser);                                   // @fixme For now we do not persist this new user
+                User newUser = new User(new GuestJpaAccount());                     // return a Guest user
+                //super.create(newUser);                                        // Persist it
+                //subject.login(new GuestToken(newUser.getMainAccount().getId()));
+                return newUser;
+
+            } else {
+                //  @todo Throw an error, should redirect to home page
+                throw new RuntimeException("Unable to find user.");
             }
-            return newUser;
+
         }
     }
-
 
     @Override
     public void create(User user) {
@@ -115,7 +121,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         try {
             user.getMainAccount().addRole(roleFacade.findByName("Public"));
         } catch (PersistenceException ex) {
-            logger.error("Unable to find Role: Administrator", ex);
+            logger.error("Unable to find Role: Public", ex);
         }
         try {
             user.getMainAccount().addRole(roleFacade.findByName("Registered"));
@@ -174,6 +180,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             return false;
         }
     }
+
     public boolean addAccountPermission(final Long abstractAccountId, final String permission) {
         final AbstractAccount r = accountFacade.find(abstractAccountId);
 

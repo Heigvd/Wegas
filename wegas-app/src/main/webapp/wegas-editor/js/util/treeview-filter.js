@@ -5,6 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+/**
+ * @fileoverview
+ * @author Cyril Junod
+ */
 YUI.add("treeview-filter", function(Y) {
     "use strict";
 
@@ -25,32 +29,13 @@ YUI.add("treeview-filter", function(Y) {
             });
         },
         filter: function(item, match) {
-            var matches = false, i,
-                    matcher;
+            var matches = false;
             if (item instanceof Y.TreeView) {
                 matches = false;
             } else {
-                if (this.get("regExp")) {
-                    try {
-                        matcher = new RegExp(match);
-                    } catch (e) {
-                        return;
-                    }
-                    for (i in this.get("searchAttrs")) {
-                        try {
-                            matches = matches || matcher.test(item.get(this.get("searchAttrs")[i]));
-                        } catch (e) {
-                            //SearchAttrs fail
-                        }
-                    }
-                } else {
-                    for (i in this.get("searchAttrs")) {
-                        try {
-                            matches = matches || (item.get(this.get("searchAttrs")[i]).toLowerCase().indexOf(match.toLowerCase()) > -1);
-                        } catch (e) {
-                            //SearchAttrs fail
-                        }
-                    }
+                try {
+                    matches = this.get("validatorFn").call(item, match) === true;
+                } catch (e) {
                 }
 
             }
@@ -79,15 +64,19 @@ YUI.add("treeview-filter", function(Y) {
         NAME: "TreeViewFilter",
         NS: "filter",
         ATTRS: {
+            /**
+             * A function to test current processed node.
+             * Executed in current node's scope (this = current node)
+             * @param {Any} SearchVal the given searchVal ATTRS
+             */
+            testFn: {
+                value: function(searchVal) {
+                    return true;
+                },
+                validator: Y.Lang.isFunction
+            },
             searchVal: {
                 value: ""
-            },
-            searchAttrs: {
-                value: ["label"]
-            },
-            regExp: {
-                value: false,
-                validator: Y.Lang.isBoolean
             }
         }
     });

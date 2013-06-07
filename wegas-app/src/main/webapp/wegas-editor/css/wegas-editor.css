@@ -15,8 +15,12 @@ body {
     overflow: hidden;
 }
 
-/** Hide all advanced feature while in dev mode */
-.wegas-stdmode .wegas-advanced-feature {
+/** Hide all advanced feature while in std mode */
+.wegas-stdmode .wegas-advanced-feature,
+.wegas-stdmode .editor-administrator-button,
+.wegas-stdmode .editor-developer-button,
+.wegas-stdmode .editor-addPlayer-button,
+.wegas-stdmode .editor-playerProperties-button {
     display: none;
 }
 
@@ -162,6 +166,13 @@ body {
 .wegas-scriptlibrary .inputEx-Field {
     float:none;
     height:100%;
+}
+.wegas-scriptlibrary .empty {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-style: italic;
+    top: 100px;
 }
 .wegas-scriptlibrary .inputEx-fieldWrapper {
     height:100%;
