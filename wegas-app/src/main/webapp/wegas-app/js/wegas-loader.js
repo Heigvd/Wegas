@@ -37,7 +37,7 @@ YUI().use(function(Y) {
                     requires: [
                         'wegas-helper', 'wegas-entity', 'wegas-datasource',
                         'wegas-pageloader', 'wegas-button'
-                        // 'wegas-rights'
+                                // 'wegas-rights'
                                 // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
                 },
@@ -110,16 +110,19 @@ YUI().use(function(Y) {
                     ws_provides: 'PageLoader',
                     requires: ["wegas-widget"]
                 },
-                'wegas-popup-content':{
+                'wegas-popup-content': {
                     path: 'wegas-app/js/widget/wegas-popup-content-min.js',
                     ws_provides: 'PopupContent',
-                    requires: ["wegas-widget", "panel", "wegas-popup-contentcss"]
+                    requires: ["wegas-popup-contentcss", "widget-buttons",
+                        "widget-modality", "widget-position",
+                        "widget-position-align", "widget-position-constrain",
+                        "widget-stack", "widget-stdmod"]
                 },
-                'wegas-popup-contentcss':{
-                   path: 'wegas-app/css/wegas-popup-content.css',
-                    type: 'css' 
+                'wegas-popup-contentcss': {
+                    path: 'wegas-app/css/wegas-popup-content.css',
+                    type: 'css'
                 },
-                'wegas-popuplistener':{
+                'wegas-popuplistener': {
                     path: 'wegas-app/js/util/wegas-popuplistener-min.js',
                     ws_provides: 'PopupListener',
                     requires: ["wegas-popup-content"]

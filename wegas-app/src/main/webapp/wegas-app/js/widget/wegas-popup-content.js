@@ -23,6 +23,10 @@ YUI.add('wegas-popup-content', function(Y) {
                 Y.WidgetStack], {
         syncUI: function() {
             this.set("content", this.get("content"));
+        },
+        hide: function() {
+            this.constructor.superclass.hide.apply(this);
+            this.destroy();
         }
     }, {
         CSS_PREFIX: "wegas-popup",
