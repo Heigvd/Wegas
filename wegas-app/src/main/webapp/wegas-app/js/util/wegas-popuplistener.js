@@ -12,7 +12,14 @@
  */
 YUI.add('wegas-popuplistener', function(Y) {
     "use strict";
-    var PopupListener = Y.Base.create("wegas-popuplistener", Y.Plugin.Base, [], {
+    var stringToObject = function(o) {
+        if (Y.Lang.isString(o)) {
+            o = {
+                content: o
+            };
+        }
+        return o;
+    }, PopupListener = Y.Base.create("wegas-popuplistener", Y.Plugin.Base, [], {
         DEFAULT_CONFIG: function() {
             return {
                 align: {
@@ -37,30 +44,32 @@ YUI.add('wegas-popuplistener', function(Y) {
         },
         handlers: [],
         initializer: function() {
+            var bb = this.get("host").get("boundingBox");
             this.handlers = [];
-            this.instance = new Y.Wegas.PopupContent({render: this.get("host").get("boundingBox")});
-            this.handlers.push(Y.on("popup:show", this._show, this));
-            this.handlers.push(Y.on("popup:error", this._error, this));
-            this.handlers.push(Y.on("popup:success", this._success, this));
-            this.handlers.push(Y.on("popup:info", this._info, this));
-            this.handlers.push(Y.on("popup:warning", this._warning, this));
+            //this.instance = new Y.Wegas.PopupContent({render: this.get("host").get("boundingBox")});
+            this.handlers.push(bb.on("dom-message:showPopup", this._show, this));
+            this.handlers.push(bb.on("dom-message:error", this._system, this, "error"));
+            this.handlers.push(bb.on("dom-message:success", this._system, this, "success"));
+            this.handlers.push(bb.on("dom-message:info", this._system, this, "info"));
+            this.handlers.push(bb.on("dom-message:warn", this._system, this, "warn"));
         },
         _show: function(event) {
+            var instance;
+            event = stringToObject(event);
             event = Y.mix(this.DEFAULT_CONFIG(), event, true, null, 0, false);
-            this.instance.setAttrs(event);
-            this.instance.show();
+            instance = new Y.Wegas.PopupContent(event).render(this.get("host").get("boundingBox")).show();
+            if (event.timeout) {
+                Y.later(event.timeout, instance, instance.hide);
+            }
+//            this.instance.setAttrs(event);
+//            this.instance.show();
         },
-        _error: function(data) {
-            this._show({content: "<div class='icon icon-error'>" + ((data && data.content) ? data.content : "") + "</div>"});
-        },
-        _success: function(data) {
-            this._show({content: "<div class='icon icon-success'>" + ((data && data.content) ? data.content : "") + "</div>"});
-        },
-        _info: function(data) {
-            this._show({content: "<div class='icon icon-info'>" + ((data && data.content) ? data.content : "") + "</div>"});
-        },
-        _warning: function(data) {
-            this._show({content: "<div class='icon icon-warning'>" + ((data && data.content) ? data.content : "") + "</div>"});
+        _system: function(event, lvl) {
+            event = stringToObject(event);
+            this._show({
+                content: "<div class='icon icon-" + lvl + "'>" + ((event && event.content) ? event.content : "") + "</div>",
+                timeout: event.timeout ? event.timeout : false
+            });
         },
         destructor: function() {
             for (var i in this.handlers) {
@@ -71,5 +80,21 @@ YUI.add('wegas-popuplistener', function(Y) {
     }, {
         NS: "popuplistener"
     });
+
     Y.namespace("Plugin").PopupListener = PopupListener;
+    /**
+     * Simulate a DOM Event bubbling up to a listener and stops.
+     * @param {String} type
+     * @param {Object} data
+     */
+    Y.Node.prototype.emitDOMMessage = function(type, data) {
+        var ev = "dom-message:" + type;
+        try {
+            this.ancestor(function(node) {
+                return node.getEvent(ev) ? true : false;
+            }, true).fire(ev, data);
+        } catch (e) {
+            //no ancestor found
+        }
+    };
 });
