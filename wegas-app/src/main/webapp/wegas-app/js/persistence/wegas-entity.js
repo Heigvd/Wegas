@@ -151,27 +151,19 @@ YUI.add('wegas-entity', function(Y) {
             games: {
                 type: ARRAY,
                 value: [],
-                _inputex: {
-                    _type: HIDDEN
-                }
+                "transient": true
             },
             scriptLibrary: {
                 value: {},
-                _inputex: {
-                    _type: HIDDEN
-                }
+                "transient": true
             },
             clientScriptLibrary: {
                 value: {},
-                _inputex: {
-                    _type: HIDDEN
-                }
+                "transient": true
             },
             cssLibrary: {
                 value: {},
-                _inputex: {
-                    _type: HIDDEN
-                }
+                "transient": true
             },
             properties: {
                 _inputex: {

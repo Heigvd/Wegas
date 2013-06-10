@@ -224,8 +224,12 @@ YUI().use(function(Y) {
                 'wegas-loginwidget': {
                     path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
                     requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
-                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button'],
+                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button', 'wegas-logincss'],
                     ws_provides: "LoginWidget"
+                },
+                'wegas-logincss': {
+                    path: 'wegas-app/css/wegas-login.css',
+                    type: 'css'
                 },
                 'wegas-joingamewidget': {
                     path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
@@ -557,7 +561,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-treeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-treeview-min.js',
-                    requires: ['wegas-widget', "treeview", "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
+                    requires: ['wegas-widget', "treeview", "treeview-filter",
+                        "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
                     ws_provides: ['EditorTreeView', "JoinedGameTreeView"]
                 },
                 'wegas-editor-treeviewcss': {
