@@ -1,11 +1,6 @@
 {
     "type" : "List",
-    "width": 410,
     "children": [{
-        "type": "Text",
-        "content": "Login",
-        "cssClass": "wegas-title"
-    }, {
         "type": "LoginWidget"
     }]
 }
