@@ -223,11 +223,15 @@ YUI.add('wegas-pageeditor', function(Y) {
             //targetNode.prepend(this.highlightOverlay.get(BOUNDINGBOX));
             this.highlightOverlay.get(CONTENTBOX).setContent("<div>" + widget.getName() + "</div>");
             this.highlightOverlay.align(targetNode, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.TL]);
-            this.highlightOverlay.get(BOUNDINGBOX).setStyles({
-                width: widget.get(BOUNDINGBOX).getDOMNode().offsetWidth,
-                height: widget.get(BOUNDINGBOX).getDOMNode().offsetHeight
-            });
-            this.highlightOverlay.show();
+            try {
+                this.highlightOverlay.get(BOUNDINGBOX).setStyles({
+                    width: widget.get(BOUNDINGBOX).getDOMNode().offsetWidth,
+                    height: widget.get(BOUNDINGBOX).getDOMNode().offsetHeight
+                });
+            } catch (e) {
+            } finally {
+                this.highlightOverlay.show();
+            }
         },
         hideOverlay: function() {
             this.overlayWidget = null;
