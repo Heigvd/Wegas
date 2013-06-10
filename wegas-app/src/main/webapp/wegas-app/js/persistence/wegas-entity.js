@@ -177,10 +177,17 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     _type: "object",
                     useButtons: true,
-                    required: false
+                    required: false,
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
             canEdit: {
+                "transient": true
+            },
+            canDuplicate: {
+                "transient": true
+            },
+            canInstantiate: {
                 "transient": true
             }
         },
@@ -276,7 +283,10 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 _inputex: {
                     _type: "gamemodelselect",
-                    label: "Game model"
+                    label: "Game model",
+                    filters: {
+                        canInstantiate: true
+                    }
                 }
             },
             name: {

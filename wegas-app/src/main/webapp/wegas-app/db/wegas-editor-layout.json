@@ -303,6 +303,12 @@
                                         }
                                     }]
                             }]
+                    }, {
+                        "type": "Tab",
+                        "label": "Pages",
+                        "children": [{
+                            "type": "PageTreeview"
+                        }]
                     }]
             }]
     },

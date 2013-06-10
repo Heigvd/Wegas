@@ -181,6 +181,12 @@ public class GameModel extends NamedEntity {
     public Boolean getCanEdit() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
     }
+    public Boolean getCanDuplicate() {
+        return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
+    }
+    public Boolean getCanInstantiate() {
+        return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
+    }
 
     /**
      *

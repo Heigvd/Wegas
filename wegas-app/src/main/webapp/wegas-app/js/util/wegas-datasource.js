@@ -622,6 +622,20 @@ YUI.add('wegas-datasource', function(Y) {
             }
             GameModelCache.superclass.onData.call(this, e);
         },
+        post: function(data, parentData, callback) {
+            if (data.templateId) {
+                this.sendRequest({
+                    request: "/"+ data.templateId,
+                    cfg: {
+                        method: POST,
+                        data: Y.JSON.stringify(data)
+                    },
+                    on: callback
+                });
+            } else {
+                GameModelCache.superclass.post.apply(this, arguments);
+            }
+        },
         getCurrentGameModel: function() {
             return this.findById(Wegas.app.get('currentGameModel'));
         }
