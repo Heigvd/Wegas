@@ -34,7 +34,7 @@ YUI.add("treeview-filter", function(Y) {
                 matches = false;
             } else {
                 try {
-                    matches = this.get("validatorFn").call(item, match) === true;
+                    matches = this.get("testFn").call(item, match) === true;
                 } catch (e) {
                 }
 

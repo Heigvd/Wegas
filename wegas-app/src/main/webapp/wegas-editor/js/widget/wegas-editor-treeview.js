@@ -560,6 +560,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 }
                 GameModelTreeView.currentGameModel = entity;
 
+                Y.all(".wegas-editor-treeviewgame").each(function() {           // Filter existing tabs
+                    Y.Widget.getByNode(this).treeView.filter.set("searchVal", entity);
+                });
+
                 //var entity = this.get("entity"),
                 //tabCfg = {
                 //    label: entity.get(NAME) || "Unnamed"
@@ -572,11 +576,11 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 ////tab.witem(0).set("emptyMessage", "This game model has no games.");
                 //tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
 
-                Wegas.Facade.Game.set("source",
-                        Wegas.app.get("base") + sourceUri);                     // Change the source attribute on the datasource
+                //Wegas.Facade.Game.set("source",
+                //        Wegas.app.get("base") + sourceUri);                     // Change the source attribute on the datasource
+                //Wegas.Facade.RegisteredGames.set("source",
+                //        Wegas.app.get("base") + registeredGamesUri);            // Change the source attribute on the datasource
 
-                Wegas.Facade.RegisteredGames.set("source",
-                        Wegas.app.get("base") + registeredGamesUri);            // Change the source attribute on the datasource
             }, this);
         },
         syncUI: function() {
@@ -589,7 +593,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
         }
     });
     Y.namespace("Wegas").GameModelTreeView = GameModelTreeView;
-
     /**
      *
      */
@@ -602,14 +605,28 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + '<div class="yui3-u-1-4">Created by</div>'
                 + '<div class="yui3-u-1-4">Token</div>'
                 + '<div class="yui3-u-1-4">Game model</div></div>'
-                + '</div></div>'
+                + '</div></div>',
+        renderUI: function() {
+            CreatedGameTreeView.superclass.renderUI.apply(this);
+            this.treeView.plug(Y.Plugin.TreeViewFilter, {
+                testFn: function(searchVal) {
+                    if (searchVal) {
+                        return this.get("data.entity").get("gameModelId") === searchVal.get("id");
+                    } else {
+                        return true;
+                    }
+                },
+                regExp: false
+            });
+        }
     });
     Y.namespace("Wegas").CreatedGameTreeView = CreatedGameTreeView;
+
 
     /**
      *
      */
-    var JoinedGameTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
+    var JoinedGameTreeView = Y.Base.create("wegas-editor-treeview", CreatedGameTreeView, [], {
         CONTENT_TEMPLATE: '<div class="wegas-editor-treeviewgame">'
                 + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
                 + '<div class="yui3-u yui3-u-col1">Name</div>'
