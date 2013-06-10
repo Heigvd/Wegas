@@ -555,6 +555,9 @@ YUI.add('wegas-entity', function(Y) {
                     _type: "email"
                 }
             },
+            hash: {
+                "transient": true
+            },
             password: {
                 type: STRING,
                 optional: true,

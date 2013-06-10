@@ -26,7 +26,7 @@
 
 /** Styles for table trees (Games) */
 .wegas-editor-treeviewgame > .yui3-treeview > ul > li {
-    border-top: 1px solid lightgray;
+    box-shadow: 0px 1px 0px lightgray;
 }
 .wegas-editor-treeview-table {
     padding-right: 450px;
@@ -43,7 +43,7 @@
 .wegas-editor-treeview-table .yui3-u-col2 > div {
     overflow: hidden;
     text-overflow: ellipsis;
-/*    text-align: center;*/
+    /*    text-align: center;*/
 }
 .wegas-editor-treeview-tablehd {
     font-weight: bolder;
