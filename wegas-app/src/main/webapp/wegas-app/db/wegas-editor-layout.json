@@ -18,7 +18,7 @@
                                             "fn": "EditEntityAction",
                                             "cfg": {
                                                 "entity": "currentGameModel",
-                                                "dataSource": "GameModelFacade"
+                                                "dataSource": "GameModel"
                                             }
                                         }]
                                 }]
