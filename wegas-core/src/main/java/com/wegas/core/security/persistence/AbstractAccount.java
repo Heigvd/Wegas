@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.persistence;
 
+import com.wegas.core.Helper;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.facebook.FacebookAccount;
@@ -173,6 +174,14 @@ public class AbstractAccount extends AbstractEntity {
     public String getEmail() {
         return email;
     }
+    public String getHash() {
+        if (email != null) {
+        return Helper.md5Hex(email);
+
+        }else {
+            return Helper.md5Hex("default");
+        }
+    }
 
     /**
      * @param email the email to set
@@ -232,4 +241,6 @@ public class AbstractAccount extends AbstractEntity {
     public void addPermission(String permission) {
         this.permissions.add(permission);
     }
+
+
 }
