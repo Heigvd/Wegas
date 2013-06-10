@@ -111,7 +111,15 @@
                                                     "type": "NewEntityButton",
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
                                                     "targetClass": "GameModel",
-                                                    "dataSource": "GameModel"
+                                                    "dataSource": "GameModel",
+                                                    "formCfg": [{
+                                                            "name": "templateId",
+                                                            "type": "gamemodelselect",
+                                                            "label": "Template",
+                                                            "filters": {
+                                                                "canEdit": true
+                                                            }
+                                                        }]
                                                 }]
                                         }
                                     }]
