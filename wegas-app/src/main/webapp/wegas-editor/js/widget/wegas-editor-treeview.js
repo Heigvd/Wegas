@@ -616,7 +616,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                         return true;
                     }
                 },
-                regExp: false
+                autoExpand: false
             });
         }
     });
