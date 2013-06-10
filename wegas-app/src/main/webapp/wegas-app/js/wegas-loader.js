@@ -37,7 +37,7 @@ YUI().use(function(Y) {
                     requires: [
                         'wegas-helper', 'wegas-entity', 'wegas-datasource',
                         'wegas-pageloader', 'wegas-button'
-                        // 'wegas-rights'
+                                // 'wegas-rights'
                                 // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
                 },
@@ -109,6 +109,23 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
                     ws_provides: 'PageLoader',
                     requires: ["wegas-widget"]
+                },
+                'wegas-popup-content': {
+                    path: 'wegas-app/js/widget/wegas-popup-content-min.js',
+                    ws_provides: 'PopupContent',
+                    requires: ["wegas-popup-contentcss", "widget-buttons",
+                        "widget-modality", "widget-position",
+                        "widget-position-align", "widget-position-constrain",
+                        "widget-stack", "widget-stdmod"]
+                },
+                'wegas-popup-contentcss': {
+                    path: 'wegas-app/css/wegas-popup-content.css',
+                    type: 'css'
+                },
+                'wegas-popuplistener': {
+                    path: 'wegas-app/js/util/wegas-popuplistener-min.js',
+                    ws_provides: 'PopupListener',
+                    requires: ["wegas-popup-content"]
                 },
                 'wegas-button': {
                     path: 'wegas-app/js/widget/wegas-button-min.js',
@@ -752,7 +769,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-flexitests-controller': {
                     path: "wegas-flexitests/js/wegas-flexitests-controller-min.js",
-                    requires: ["wegas-absolutelayout"],
+                    requires: ["wegas-absolutelayout", "timers"],
                     ws_provides: ["FlexitestsController", "FlexiResponse"]
                 },
                 'wegas-flexitests-mcqdisplay': {

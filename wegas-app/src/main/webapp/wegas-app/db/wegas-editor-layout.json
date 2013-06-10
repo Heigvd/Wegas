@@ -336,6 +336,8 @@
                                         "fn": "CSSLoader"
                                     }, {
                                         "fn": "Injector"
+                                    }, {
+                                        "fn": "PopupListener"
                                     }
                                 ]
                             }]
