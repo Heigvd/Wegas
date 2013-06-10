@@ -211,8 +211,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
                             });
                             break;
 
-                        case 'Game':
                         case 'DebugGame':
+                            break;
+
+                        case 'Game':
                             var createdBy = el.get("createdBy"),
                                     gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
                             if (!gameModel) {
