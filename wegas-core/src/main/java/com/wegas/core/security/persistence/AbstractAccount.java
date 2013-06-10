@@ -175,7 +175,12 @@ public class AbstractAccount extends AbstractEntity {
         return email;
     }
     public String getHash() {
+        if (email != null) {
         return Helper.md5Hex(email);
+
+        }else {
+            return Helper.md5Hex("default");
+        }
     }
 
     /**

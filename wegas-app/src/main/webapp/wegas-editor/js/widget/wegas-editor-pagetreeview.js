@@ -93,7 +93,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }
             }, ".content-header", this);
             this.dataSource.after("pageUpdated", this.syncUI, this);
-            this.get("pageLoader").after("pageIdChange", this.syncUI, this);
+//            this.get("pageLoader").after("pageIdChange", this.syncUI, this);
             //this.get("pageLoader").get("widget").after("*:destroy", this.syncUI, this);
         },
         buildWidgetTree: function(node) {
