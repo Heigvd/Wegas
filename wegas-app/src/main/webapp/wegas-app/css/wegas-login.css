@@ -17,8 +17,8 @@
     margin:0;
     width:100%;
     background-color:#072644;
-    height:100px;
-    padding-top: 15px;
+    height:80px;
+    padding-top: 7px;
     color:#FFF;
 }
 
@@ -37,9 +37,18 @@
     float:left;
 }
 
+.wegas-loginwidget .logo{
+    margin: 5px 0 0 -20px;
+}
+
 .wegas-loginwidget .logingroup div{
     float:left;
     width:165px;
+    margin:0;
+}
+
+.wegas-loginwidget div.inputEx-label{
+    padding-top:0;
 }
 
 .wegas-loginwidget .loginbutton{
@@ -49,18 +58,29 @@
 }
 
 .wegas-loginwidget .forgot{
-    margin:10px 10px 0 0;
+    margin:5px 10px 0 0;
     float:right;
     text-decoration: underline;
     cursor: pointer;
 }
 
 .wegas-loginwidget .main{
-    margin: 15px auto 30px;
+    margin: 15px auto 60px;
 }
 
 .wegas-loginwidget .main>*{
     margin-bottom:15px;
+}
+
+.wegas-loginwidget h1{
+    font-weight: normal;
+    color: #888;
+    font-size: 1.6em;
+    text-shadow:1px 1px #444;
+}
+
+.wegas-loginwidget .main p{
+    margin-bottom:30px;
 }
 
 .wegas-loginwidget .preview{
