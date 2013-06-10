@@ -67,10 +67,15 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     plugins: [{
                             fn: Y.Plugin.TreeViewFilter,
                             cfg: {
-                                testFn: function(searchVal){
-                                    var label = this.get("label").toLowerCase().indexOf(searchVal.toLowerCase()),
-                                            mimeType = this.get("data.mimeType").toLowerCase().indexOf(searchVal.toLowerCase());
-                                    return label + mimeType > -2;
+                                testFn: function(searchVal) {
+                                    var ret = (searchVal === "");
+                                    if (!ret) {
+                                        ret = this.get("label").toLowerCase().indexOf(searchVal.toLowerCase()) > -1;
+                                    }
+                                    if (!ret && this.get("data") && this.get("data.mimeType")) {
+                                        ret = this.get("data.mimeType").toLowerCase().indexOf(searchVal.toLowerCase()) === 0;
+                                    }
+                                    return ret;
                                 },
                                 regExp: false
                             }
