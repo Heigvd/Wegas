@@ -224,8 +224,12 @@ YUI().use(function(Y) {
                 'wegas-loginwidget': {
                     path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
                     requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
-                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button'],
+                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button', 'wegas-logincss'],
                     ws_provides: "LoginWidget"
+                },
+                'wegas-logincss': {
+                    path: 'wegas-app/css/wegas-login.css',
+                    type: 'css'
                 },
                 'wegas-joingamewidget': {
                     path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
