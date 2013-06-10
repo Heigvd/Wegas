@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-loginbutton", function (Y) {
+YUI.add("wegas-loginbutton", function(Y) {
     "use strict";
 
     var LoginButton;
@@ -34,7 +34,7 @@ YUI.add("wegas-loginbutton", function (Y) {
          * When UserFacade is updated, do syncUI
          * Add plugin menu with 2 options : open page "user preferences" and logout
          */
-        bindUI: function () {
+        bindUI: function() {
             Y.Wegas.LoginButton.superclass.bindUI.apply(this, arguments);
             Y.Wegas.Facade.User.after("update", this.syncUI, this);
 
@@ -44,42 +44,46 @@ YUI.add("wegas-loginbutton", function (Y) {
 
             this.plug(Y.Plugin.WidgetMenu, {
                 children: [{
-                    type: "Button",
-                    label: "Preferences",
-                    plugins: [{
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": this.get("preferencePageId"), // @fixme
-                            "targetPageLoaderId": this.get("targetPageLoader")
-                        }
+                        type: "Button",
+                        label: "Preferences",
+                        plugins: [{
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": this.get("preferencePageId"), // @fixme
+                                    "targetPageLoaderId": this.get("targetPageLoader")
+                                }
+                            }]
+                    }, {
+                        type: "Button",
+                        label: "Logout",
+                        plugins: [{
+                                fn: "OpenUrlAction",
+                                cfg: {
+                                    url: "wegas-app/logout",
+                                    target: "self"
+                                }
+                            }]
                     }]
-                }, {
-                    type: "Button",
-                    label: "Logout",
-                    plugins: [{
-                        fn: "OpenUrlAction",
-                        cfg: {
-                            url: "wegas-app/logout",
-                            target: "self"
-                        }
-                    }]
-                }]
             });
         },
-
         /**
          * @function
          * @private
          * @description Call widget parent to execute its proper sync function.
          * Set label of this button with team and/or player name.
          */
-        syncUI: function () {
+        syncUI: function() {
             Y.Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
             var cUser = Y.Wegas.Facade.User.cache.get("currentUser"),
-            cPlayer = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
-            cTeam = Y.Wegas.Facade.Game.cache.getCurrentTeam(),
-            name = cUser.get("name") || "undefined";
+                    cPlayer = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
+                    cTeam = Y.Wegas.Facade.Game.cache.getCurrentTeam(),
+                    name = cUser.get("name") || "undefined",
+                    mainAccount = cUser.getMainAccount();
+
+            if (mainAccount) {
+                name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
+            }
             if (!this.get('labelIsUser')) {
                 if (cPlayer) {
                     name = cPlayer.get("name");
@@ -110,7 +114,7 @@ YUI.add("wegas-loginbutton", function (Y) {
              */
             labelIsUser: {
                 value: false,
-                validator: function (b) {
+                validator: function(b) {
                     return (b === 'true' || b === true);
                 }
             },
