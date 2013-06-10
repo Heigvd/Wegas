@@ -41,7 +41,7 @@ YUI.add("treeview-filter", function(Y) {
             }
             if (item.each) {
                 item.each(function(node) {
-                    if (this.filter(node, match) && item.expand) {
+                    if (this.filter(node, match) && item.expand && this.get("autoExpand")) {
                         item.expand(false);
                     }
                 }, this);
@@ -77,6 +77,10 @@ YUI.add("treeview-filter", function(Y) {
             },
             searchVal: {
                 value: ""
+            },
+            autoExpand: {
+                value: true,
+                validator: Y.Lang.isBoolean
             }
         }
     });
