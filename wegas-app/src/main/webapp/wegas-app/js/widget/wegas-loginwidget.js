@@ -100,7 +100,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             var cb = this.get(CONTENTBOX),
                     cUser = Y.Wegas.app.get("currentUser");
 
-            if (cUser.accounts[0]["@class"] !== "GuestAccount") {
+            if (cUser.accounts[0]["@class"] !== "GuestJpaAccount") {
                 this.showMessage("success", "You are already logged in.", 4000);
                 this.redirect();
             }
@@ -119,7 +119,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 <div class='content'>\n\
                     <div class='main left'>\n\
                         <h1>Welcom to Wegas</h1>\n\
-                        <p>WEGAS (Web Game Authoring System) est un moteur web permettant le développement rapide de Simulation Games. Sans connaissance en programmation il vous est possible de créer votre propre scénario ou d'en adapter un existant en ajoutant des éléments d'autres simulations. Les utilisateurs avancés peuvent même créer leur propre serious game de A à Z !</p>\n\
+                        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games. No programming skills is required, you can create your own scenario or to adapt an existing by adding elements from other simulations. Advanced users can even create their own serious game from A to Z!</p>\n\
                         <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='200px' width='397px'/></div>\n\
                     </div>\n\
                     <div class='main right signup-zone'>\n\
@@ -133,7 +133,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                     <div class='footer'>\n\
                         <div class='partner'>\n\
                             <a href='http://www.heig-vd.ch/' target='_blank'><img src='../images/heigvd-logo.png' alt='Heig-vd' height='54px' width='146px'/></a>\n\
-                            <a href='http://www.albasim.com' target='_blank'><img src='../images/albasim-logo.png' alt='Albasim' height='54px' width='68px'/></a>\n\
+                            <a href='http://www.albasim.com' target='_blank'><img src='../images/albasim-logo.png' alt='Albasim' height='54px' width='48px'/></a>\n\
                         </div>\n\
                         <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
                         <div class='followus'>\n\
