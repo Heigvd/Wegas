@@ -277,7 +277,6 @@
                                                                 "label": "token",
                                                                 "name": "token",
                                                                 "description": "Leave blank for automatic generation"
-
                                                             }]
                                                     }
                                                 }]

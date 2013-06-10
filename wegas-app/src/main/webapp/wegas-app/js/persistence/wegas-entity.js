@@ -274,11 +274,7 @@ YUI.add('wegas-entity', function(Y) {
             gameModelId: {
                 type: STRING,
                 _inputex: {
-                    _type: "gamemodelselect",
-                    label: "Game model",
-                    filters: {
-                        canInstantiate: true
-                    }
+                    _type: "hidden"
                 }
             },
             name: {
