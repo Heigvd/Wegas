@@ -557,7 +557,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-treeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-treeview-min.js',
-                    requires: ['wegas-widget', "treeview", "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
+                    requires: ['wegas-widget', "treeview", "treeview-filter",
+                        "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
                     ws_provides: ['EditorTreeView', "JoinedGameTreeView"]
                 },
                 'wegas-editor-treeviewcss': {

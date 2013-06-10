@@ -144,11 +144,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             }
 
             EditEntityAction.tab.set("selected", 2);
-            var cfg = entity.getFormCfg();
-            if (formCfg) {
-                cfg.fields = formCfg.concat(cfg.fields);
-            }
-            EditEntityAction.form.set("cfg", cfg);
+            EditEntityAction.form.set("cfg", (formCfg) ? formCfg : entity.getFormCfg());
             EditEntityAction.form.set("values", entity.toObject());
             this.status = EditEntityAction.STATUS.NEW;
         },
@@ -180,6 +176,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          *
          */
         showUpdateForm: function(entity, dataSource) {
+            var dataSource = dataSource;
             EditEntityAction.showEditForm(entity, function(cfg) {           // Display the edit form
                 // entity.setAttrs(cfg);
                 dataSource.cache.put(cfg, {
