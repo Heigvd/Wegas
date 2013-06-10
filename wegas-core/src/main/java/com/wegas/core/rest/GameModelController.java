@@ -60,6 +60,17 @@ public class GameModelController {
         return gm;
     }
 
+    @POST
+    @Path("{templateGameModelId : [1-9][0-9]*}")
+    public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws IOException {
+        // logger.info(Level.INFO, "POST GameModel");
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
+        GameModel duplicate = gameModelFacade.duplicate(templateGameModelId);
+        duplicate.merge(gm);
+        return duplicate;
+    }
+
     /**
      *
      * @param entityId
@@ -139,7 +150,7 @@ public class GameModelController {
         }
         return games;
     }
-    
+
     /**
      *
      * @param entityId

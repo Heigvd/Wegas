@@ -99,7 +99,7 @@
 
                         var base = "#{request.requestURL
                                   .substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                                comboBase = base + '/rest/combo/#{wegasConfig.timestamp}?';
+                                comboBase = base + '/rest/combo/?v=#{wegasConfig.timestamp}&amp;';
                         function setupLocalPath(groupName) {
                             YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
                             YUI_config.groups[groupName].comboBase = comboBase;

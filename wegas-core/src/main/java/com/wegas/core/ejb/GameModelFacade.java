@@ -73,14 +73,10 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     @Override
     public void create(final GameModel entity) {
         super.create(entity);
-        if (entity.getId() != null) {
-            userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Edit:gm" + entity.getId());
-            userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View:gm" + entity.getId());
-            if (entity.getGames().get(0) != null) {
-                userFacade.getCurrentUser().getMainAccount().addPermission("Game:Edit:g" + entity.getGames().get(0).getId());
-                userFacade.getCurrentUser().getMainAccount().addPermission("Game:View:g" + entity.getGames().get(0).getId());
-            }
-        }
+
+        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete:gm" + entity.getId());
+        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Duplicate:gm" + entity.getId());
+        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Instantiate:gm" + entity.getId());
     }
 
     @Override
