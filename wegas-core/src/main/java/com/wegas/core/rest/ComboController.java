@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("combo/{timestamp : [0-9]+}")
+@Path("combo")
 public class ComboController {
 
     final static private String MediaTypeCss = "text/css; charset=ISO-8859-1";
@@ -60,8 +60,12 @@ public class ComboController {
     @Produces({MediaTypeJs, MediaTypeCss})
     public Response index(@Context Request req) throws IOException {
         final Set<String> files = this.uriInfo.getQueryParameters().keySet();
+        files.remove("v");
+        files.remove("version");
         final String mediaType = (files.iterator().next().endsWith("css"))
                 ? MediaTypeCss : MediaTypeJs;                            // Select the content-type based on the first file extension
+
+
 
         // MediaType types[] = {"application/json", "application/xml"};
         // List<Variant> vars = Variant.mediaTypes(types).add().build();
@@ -91,16 +95,15 @@ public class ComboController {
                 InputStream fis = (InputStream) servletContext.getResourceAsStream(fileName);
                 String content = IOUtils.toString(fis, Helper.getWegasProperty("encoding"));
                 //String content = new Scanner(fis, Helper.getWegasProperty("encoding"))
-                //.useDelimiter("\\A").next();          // Use a fake delimiter to read all lines at once
+                //.useDelimiter("\\A").next();                              // Use a fake delimiter to read all lines at once
 
-                if (mediaType.equals(MediaTypeCss)) {                           // @hack for css files, we correct the path
+                if (mediaType.equals(MediaTypeCss)) {                       // @hack for css files, we correct the path
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
                     content = content.replaceAll("url\\(\"?([^:\\)\"]+)\"?\\)",
                             "url(" + servletContext.getContextPath()
                             + dir + "$1)");              //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
                 }
                 acc.append(content);
-
             } catch (NullPointerException e) {
                 logger.error("Resource not found : {}", fileName);
             }
