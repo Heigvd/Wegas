@@ -80,11 +80,12 @@
     padding:2px 27px 2px 2px;
     white-space: nowrap;
     font-style: normal;
-    transition: max-height 1s;
-    -o-transition: max-height 1s;
-    -moz-transition: max-height 1s;
-    -ms-transition: max-height 1s;
-    -webkit-transition: max-height 1s;
+    overflow: hidden;
+    transition: max-height 1s, padding 1s;
+    -o-transition: max-height 1s, padding 1s;
+    -moz-transition: max-height 1s, padding 1s;
+    -ms-transition: max-height 1s, padding 1s;
+    -webkit-transition: max-height 1s, padding 1s;
 }
 .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget{

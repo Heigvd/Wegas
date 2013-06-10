@@ -34,14 +34,14 @@ YUI.add("treeview-filter", function(Y) {
                 matches = false;
             } else {
                 try {
-                    matches = this.get("validatorFn").call(item, match) === true;
+                    matches = this.get("testFn").call(item, match) === true;
                 } catch (e) {
                 }
 
             }
             if (item.each) {
                 item.each(function(node) {
-                    if (this.filter(node, match) && item.expand) {
+                    if (this.filter(node, match) && item.expand && this.get("autoExpand")) {
                         item.expand(false);
                     }
                 }, this);
@@ -77,6 +77,10 @@ YUI.add("treeview-filter", function(Y) {
             },
             searchVal: {
                 value: ""
+            },
+            autoExpand: {
+                value: true,
+                validator: Y.Lang.isBoolean
             }
         }
     });
