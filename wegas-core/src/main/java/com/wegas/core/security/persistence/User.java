@@ -32,13 +32,13 @@ public class User extends AbstractEntity {
     /**
      *
      */
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference(value = "player-user")
     private List<Player> players = new ArrayList<>();
     /**
      *
      */
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval=true)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference(value = "user-account")
     private List<AbstractAccount> accounts = new ArrayList<>();
 

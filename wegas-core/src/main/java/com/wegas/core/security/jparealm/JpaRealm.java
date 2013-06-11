@@ -48,11 +48,9 @@ public class JpaRealm extends AuthorizingRealm {
             SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
             info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
             return info;
-        }
-        catch (EJBException e) {
+        } catch (EJBException e) {
             return null;
-        }
-        catch (NamingException ex) {
+        } catch (NamingException ex) {
             logger.error("Unable to find AocountFacade EJB", ex);
             return null;
         }
@@ -71,11 +69,9 @@ public class JpaRealm extends AuthorizingRealm {
             }
             info.addStringPermissions(account.getPermissions());
             return info;
-        }
-        catch (EJBException e) {
+        } catch (EJBException e) {
             return null;
-        }
-        catch (NamingException ex) {
+        } catch (NamingException ex) {
             logger.error("Unable to find AocountFacade EJB", ex);
             return null;
         }
@@ -83,8 +79,7 @@ public class JpaRealm extends AuthorizingRealm {
 
     /**
      *
-     * @return
-     * @throws NamingException
+     * @return @throws NamingException
      */
     public AccountFacade accountFacade() throws NamingException {
         return Helper.lookupBy(AccountFacade.class);

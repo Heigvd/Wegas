@@ -26,18 +26,31 @@ import org.slf4j.LoggerFactory;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class)
 })
-public class ListDescriptor extends VariableDescriptor<VariableInstance> implements ListDescriptorI<VariableDescriptor> {
+public class ListDescriptor extends VariableDescriptor<VariableInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(ListDescriptor.class);
     /**
      *
      */
-    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL})
     //@BatchFetch(BatchFetchType.IN)
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
-    @OrderBy("id")
+    //@OrderBy("id")
+    @OrderColumn
     private List<VariableDescriptor> items = new ArrayList<VariableDescriptor>();
+
+    public ListDescriptor() {
+        super();
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public ListDescriptor(String name) {
+        super(name);
+    }
 
     /**
      *
@@ -93,6 +106,12 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         item.setGameModel(this.getGameModel());
     }
 
+    @Override
+    public void addItem(int index, VariableDescriptor vd) {
+        this.items.add(index, vd);
+        vd.setGameModel(this.getGameModel());
+    }
+
     /**
      *
      * @param index
@@ -101,5 +120,15 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @Override
     public VariableDescriptor item(int index) {
         return this.items.get(index);
+    }
+
+    @Override
+    public int size() {
+        return this.items.size();
+   }
+
+    @Override
+    public boolean remove(VariableDescriptor item) {
+        return this.items.remove(item);
     }
 }

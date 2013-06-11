@@ -10,7 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.variable.ListDescriptorI;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.IOException;
 import java.util.Collection;
@@ -98,7 +98,7 @@ public class VariableDescriptorController {
      */
     @POST
     @Path("{variableDescriptorId : [1-9][0-9]*}")
-    public ListDescriptorI createChild(@PathParam("variableDescriptorId") Long entityId, VariableDescriptor entity) {
+    public DescriptorListI createChild(@PathParam("variableDescriptorId") Long entityId, VariableDescriptor entity) {
 
         SecurityUtils.getSubject().
                 checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
@@ -119,6 +119,26 @@ public class VariableDescriptorController {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
 
         return variableDescriptorFacade.update(entityId, entity);
+    }
+
+    @PUT
+    @Path("{descriptorId: [1-9][0-9]*}/Move/{index: [0-9]*}")
+    public void move(@PathParam("descriptorId") Long descriptorId, @PathParam("index") int index) {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(descriptorId).getGameModelId());
+
+        variableDescriptorFacade.move(descriptorId, index);
+    }
+
+    @PUT
+    @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
+    public void move(@PathParam("descriptorId") Long descriptorId,
+            @PathParam("parentDescriptorId") Long parentDescriptorId,
+            @PathParam("index") int index) {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(descriptorId).getGameModelId());
+
+        variableDescriptorFacade.move(descriptorId, parentDescriptorId, index);
     }
 
     /**

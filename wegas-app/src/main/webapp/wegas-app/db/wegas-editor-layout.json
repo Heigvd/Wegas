@@ -249,7 +249,7 @@
                         "type": "Tab",
                         "label": "Variables",
                         "children": [{
-                                "type": "EditorTreeView",
+                                "type": "VariableTreeView",
                                 "dataSource": "VariableDescriptor",
                                 "plugins": [{
                                         "fn": "EditorTVNodeLoader"

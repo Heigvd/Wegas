@@ -46,7 +46,7 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
      */
     @Override
     public ObjectMapper getContext(Class<?> aClass) {
-        Class view  = RequestFacade.lookup().getView();
+        Class view = RequestFacade.lookup().getView();
 
         mapper.getSerializationConfig().setSerializationView(view);             // Set up which view to use
         //mapper.getSerializationConfig().withView(Views.Editor.class);         // This kind of declaration does not work with glassfish jersey 1.11

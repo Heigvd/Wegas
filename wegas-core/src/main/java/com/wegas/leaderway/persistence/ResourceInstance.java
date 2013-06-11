@@ -72,7 +72,7 @@ public class ResourceInstance extends VariableInstance {
     @ElementCollection
     private List<Integer> confidenceHistory = new ArrayList<>();
 
-    public ResourceInstance (){
+    public ResourceInstance() {
         this.assignments = new ArrayList<>();
         this.activities = new ArrayList<>();
     }
@@ -153,6 +153,7 @@ public class ResourceInstance extends VariableInstance {
         activities.add(activity);
         activity.setResourceInstance(this);
     }
+
     /**
      *
      * @param task

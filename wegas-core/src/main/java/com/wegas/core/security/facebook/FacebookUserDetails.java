@@ -13,9 +13,9 @@ import org.codehaus.jettison.json.JSONObject;
 /**
  * Simple class for holding data relating to a facebook user
  *
-* @author Mike
+ * @author Mike
  *
-*/
+ */
 public class FacebookUserDetails {
 
     private String id;
@@ -60,8 +60,7 @@ public class FacebookUserDetails {
             this.firstName = respjson.has("first_name") ? respjson.getString("first_name") : " no name" + id;
             this.lastName = respjson.has("last_name") ? respjson.getString("last_name") : "";
             this.email = respjson.has("email") ? respjson.getString("email") : "-no email-";
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             System.out.println("fbResponse:" + fbResponse);
             e.printStackTrace();
             throw new RuntimeException(e);
