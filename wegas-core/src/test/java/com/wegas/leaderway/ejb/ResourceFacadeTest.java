@@ -217,7 +217,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.remove(task.getId());
     }
 
-
     /**
      * Test of moveAssignment method, of class ResourceFacade.
      */
@@ -273,8 +272,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.remove(task2.getId());
         vdf.remove(task3.getId());
     }
-    
-
 //    /**
 //     * Test of requirements methods, of class resourceInstance
 //     */

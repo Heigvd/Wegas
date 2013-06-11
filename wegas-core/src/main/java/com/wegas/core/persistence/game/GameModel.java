@@ -11,6 +11,7 @@ import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.*;
@@ -34,7 +35,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Table(uniqueConstraints =
         @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GameModel extends NamedEntity {
+public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> {
     //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
 
     /**
@@ -68,10 +69,11 @@ public class GameModel extends NamedEntity {
      * hierarchy (other VariableDescriptor can be placed inside of a
      * ListDescriptor's items List).
      */
-    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinColumn(name = "rootgamemodel_id")
     @JsonView(Views.Export.class)
     //@JsonManagedReference
+    @OrderColumn
     private List<VariableDescriptor> childVariableDescriptors;
     /**
      *
@@ -181,9 +183,11 @@ public class GameModel extends NamedEntity {
     public Boolean getCanEdit() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
     }
+
     public Boolean getCanDuplicate() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
     }
+
     public Boolean getCanInstantiate() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
     }
@@ -267,8 +271,16 @@ public class GameModel extends NamedEntity {
      *
      * @param variableDescriptor
      */
-    public void addVariableDescriptor(VariableDescriptor variableDescriptor) {
+    @Override
+    public void addItem(VariableDescriptor variableDescriptor) {
         this.childVariableDescriptors.add(variableDescriptor);
+        this.variableDescriptors.add(variableDescriptor);
+        variableDescriptor.setGameModel(this);
+    }
+
+    @Override
+    public void addItem(int index, VariableDescriptor variableDescriptor) {
+        this.childVariableDescriptors.add(index, variableDescriptor);
         this.variableDescriptors.add(variableDescriptor);
         variableDescriptor.setGameModel(this);
     }
@@ -427,5 +439,33 @@ public class GameModel extends NamedEntity {
                 pagesDAO.store(new Page(p.getKey(), p.getValue()));
             }
         }
+    }
+
+    @Override
+    @JsonIgnore
+    public List<VariableDescriptor> getItems() {
+        return this.getChildVariableDescriptors();
+    }
+
+    @Override
+    @JsonIgnore
+    public void setItems(List<VariableDescriptor> items) {
+        this.setChildVariableDescriptors(items);
+        this.addItem(null);
+    }
+
+    @Override
+    public int size() {
+        return this.childVariableDescriptors.size();
+    }
+
+    @Override
+    public VariableDescriptor item(int index) {
+        return this.childVariableDescriptors.get(index);
+    }
+
+    @Override
+    public boolean remove(VariableDescriptor item) {
+        return this.childVariableDescriptors.remove(item);
     }
 }

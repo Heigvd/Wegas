@@ -569,6 +569,11 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/css/wegas-editor-treeview.css',
                     type: "css"
                 },
+                'wegas-editor-variabletreeview': {
+                    path: 'wegas-editor/js/widget/wegas-editor-variabletreeview-min.js',
+                    requires: ['wegas-editor-treeview', 'sortable', 'sortable-scroll'],
+                    ws_provides: 'VariableTreeView'
+                },
                 'wegas-datatable': {
                     path: 'wegas-editor/js/widget/wegas-datatable-min.js',
                     requires: ['datatable', 'datatable-sort'],

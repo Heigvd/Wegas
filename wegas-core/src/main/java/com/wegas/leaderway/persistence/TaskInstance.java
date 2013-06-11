@@ -42,7 +42,6 @@ public class TaskInstance extends VariableInstance {
     @JsonManagedReference
     @XmlTransient
     private List<Assignment> assignments;
-    
     /**
      *
      */
@@ -55,6 +54,7 @@ public class TaskInstance extends VariableInstance {
      */
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
+
     /**
      *
      * @param a

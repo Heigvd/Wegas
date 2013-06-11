@@ -21,7 +21,7 @@ import javax.persistence.*;
     @UniqueConstraint(columnNames = "name")
 })
 @NamedQueries({
-    @NamedQuery(name = "findPermissionByGameModelId", query = "SELECT DISTINCT roles FROM Role roles WHERE roles.permissions LIKE :gameId"),
+    @NamedQuery(name = "findPermissionByGameModelId", query = "SELECT DISTINCT roles FROM Role roles WHERE roles.permissions LIKE :gameId")
 })
 @Cacheable(true)
 public class Role extends AbstractEntity {

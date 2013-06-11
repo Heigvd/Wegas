@@ -18,6 +18,7 @@ import javax.persistence.Lob;
  */
 @Entity
 public class DialogueTransition extends Transition {
+
     @Lob
     private String actionText;
 
@@ -36,7 +37,7 @@ public class DialogueTransition extends Transition {
     }
 
     @Override
-    public void merge(AbstractEntity other){
+    public void merge(AbstractEntity other) {
         this.actionText = ((DialogueTransition) other).actionText;
         super.merge(other);
     }

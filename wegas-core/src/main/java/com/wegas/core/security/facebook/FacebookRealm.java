@@ -66,16 +66,13 @@ public class FacebookRealm extends AuthorizingRealm {
                 String fbResponse = readURL(url);
                 FacebookUserDetails fud = new FacebookUserDetails(fbResponse);
                 return new FacebookAuthenticationInfo(fud, this.getName());
-            }
-            catch (MalformedURLException e1) {
+            } catch (MalformedURLException e1) {
                 e1.printStackTrace();
                 throw new AuthenticationException(e1);
-            }
-            catch (IOException ioe) {
+            } catch (IOException ioe) {
                 ioe.printStackTrace();
                 throw new AuthenticationException(ioe);
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
@@ -89,7 +86,7 @@ public class FacebookRealm extends AuthorizingRealm {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         InputStream is = url.openStream();
         int r;
-        while (( r = is.read() ) != -1) {
+        while ((r = is.read()) != -1) {
             baos.write(r);
         }
         return new String(baos.toByteArray());

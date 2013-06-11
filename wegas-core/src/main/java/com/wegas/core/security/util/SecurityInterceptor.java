@@ -46,7 +46,7 @@ public class SecurityInterceptor {
     @AroundInvoke
     public Object interceptGet(InvocationContext ctx) throws Exception {
         log.info("Securing {}.{}({})", new Object[]{ctx.getClass().getName(),
-                    ctx.getMethod(), ctx.getParameters()});
+            ctx.getMethod(), ctx.getParameters()});
 
         final Class<? extends Object> runtimeClass = ctx.getTarget().getClass();
 

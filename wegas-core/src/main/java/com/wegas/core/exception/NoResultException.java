@@ -13,7 +13,7 @@ import javax.ejb.ApplicationException;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@ApplicationException(rollback=false)
+@ApplicationException(rollback = false)
 public class NoResultException extends PersistenceException {
 
     /**

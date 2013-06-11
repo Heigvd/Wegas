@@ -13,7 +13,7 @@ import javax.ejb.ApplicationException;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@ApplicationException(rollback=true)
+@ApplicationException(rollback = true)
 public class ConstraintViolationException extends RuntimeException {
 
     /**

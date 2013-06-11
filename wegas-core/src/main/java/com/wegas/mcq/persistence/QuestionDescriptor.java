@@ -9,7 +9,7 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.ListDescriptorI;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -35,7 +35,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Entity
 @XmlType(name = "QuestionDescriptor")
 @Table(name = "MCQQuestionDescriptor")
-public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements ListDescriptorI<ChoiceDescriptor> {
+public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -56,7 +56,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     //@BatchFetch(BatchFetchType.IN)
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     @JsonManagedReference
-    @OrderBy("id")
+    @OrderColumn
     private List<ChoiceDescriptor> items = new ArrayList<>();
     /**
      *
@@ -204,5 +204,22 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Override
     public ChoiceDescriptor item(int index) {
         return this.items.get(index);
+    }
+
+    @Override
+    public void addItem(int index, ChoiceDescriptor item) {
+        this.items.add(index, item);
+        item.setQuestion(this);
+        item.setGameModel(this.getGameModel());
+    }
+
+    @Override
+    public int size() {
+        return this.items.size();
+    }
+
+    @Override
+    public boolean remove(ChoiceDescriptor item) {
+        return this.items.remove(item);
     }
 }

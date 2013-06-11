@@ -56,7 +56,8 @@ public class VariableInstanceController {
 
     /**
      *
-     * @param variableDescriptorId @fixme Is this method still in use?
+     * @param variableDescriptorId
+     * @fixme Is this method still in use?
      *
      * @return
      */
@@ -81,7 +82,7 @@ public class VariableInstanceController {
     public VariableInstance get(@PathParam("variableDescriptorId") Long variableDescriptorId, @PathParam("variableInstanceId") Long variableInstanceId) {
         VariableInstance vi = variableInstanceFacade.find(variableInstanceId);
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + vi.getDescriptor().getGameModelId());
-        if (!vi.getDescriptorId().equals(variableDescriptorId)){
+        if (!vi.getDescriptorId().equals(variableDescriptorId)) {
             return null;
         }
 

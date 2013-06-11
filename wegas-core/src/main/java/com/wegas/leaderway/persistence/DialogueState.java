@@ -18,6 +18,7 @@ import javax.persistence.Lob;
  */
 @Entity
 public class DialogueState extends State {
+
     /**
      *
      */
@@ -39,9 +40,8 @@ public class DialogueState extends State {
     }
 
     @Override
-    public void merge(AbstractEntity other){
+    public void merge(AbstractEntity other) {
         this.text = ((DialogueState) other).text;
         super.merge(other);
     }
-
 }

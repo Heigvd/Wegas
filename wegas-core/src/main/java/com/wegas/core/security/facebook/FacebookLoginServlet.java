@@ -19,10 +19,10 @@ import org.apache.shiro.authc.AuthenticationException;
  * Simple Facebook Login Handling, doesn't actually do anything except display
  * page confirming login successfull.
  *
-*
+ *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  *
-*/
+ */
 public class FacebookLoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -43,8 +43,7 @@ public class FacebookLoginServlet extends HttpServlet {
         try {
             SecurityUtils.getSubject().login(facebookToken);
             //response.sendRedirect(response.encodeRedirectURL("index.jsp"));
-        }
-        catch (AuthenticationException ae) {
+        } catch (AuthenticationException ae) {
             throw new ServletException(ae);
         }
     }

@@ -189,5 +189,4 @@ public class UserFacadeTest {
         u.addAccount(abstractAccount);
         userFacade.create(u);
     }
-
 }

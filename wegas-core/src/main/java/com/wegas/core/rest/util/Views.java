@@ -26,7 +26,7 @@ public class Views {
      */
     public static interface ExtendedI {
     }
-    
+
     public static interface EditorExtendedI extends ExtendedI {
     }
 
