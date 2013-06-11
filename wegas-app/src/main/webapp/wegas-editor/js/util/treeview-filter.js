@@ -30,6 +30,8 @@ YUI.add("treeview-filter", function(Y) {
         },
         filter: function(item, match) {
             var matches = false;
+
+
             if (item instanceof Y.TreeView) {
                 matches = false;
             } else {
@@ -41,17 +43,18 @@ YUI.add("treeview-filter", function(Y) {
             }
             if (item.each) {
                 item.each(function(node) {
-                    if (this.filter(node, match) && item.expand && this.get("autoExpand")) {
-                        item.expand(false);
-                    }
+                    this.filter(node, match);
                 }, this);
             }
-            if (matches || item.get("boundingBox").one(".filter-match")) {
-                item.get("boundingBox").addClass("filter-match");
-                item.get("boundingBox").removeClass("filter-no-match");
+            if (matches) {
+                item.get("boundingBox").addClass("filter-match").removeClass("filter-no-match").removeClass("filter-sub-match");
+            } else if (item.get("boundingBox").one(".filter-match")) {
+                item.get("boundingBox").addClass("filter-sub-match").removeClass("filter-no-match").removeClass("filter-match");
+                if (item.expand) {
+                    item.expand(false);
+                }
             } else {
-                item.get("boundingBox").addClass("filter-no-match");
-                item.get("boundingBox").removeClass("filter-match");
+                item.get("boundingBox").addClass("filter-no-match").removeClass("filter-match").removeClass("filter-sub-match");
             }
             return matches;
 
@@ -66,7 +69,7 @@ YUI.add("treeview-filter", function(Y) {
         ATTRS: {
             /**
              * A function to test current processed node.
-             * Executed in current node's scope (this = current node)
+             * Executed in current node's context (this = current node)
              * @param {Any} SearchVal the given searchVal ATTRS
              */
             testFn: {
@@ -77,10 +80,6 @@ YUI.add("treeview-filter", function(Y) {
             },
             searchVal: {
                 value: ""
-            },
-            autoExpand: {
-                value: true,
-                validator: Y.Lang.isBoolean
             }
         }
     });

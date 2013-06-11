@@ -42,8 +42,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 if (node.get("data")["page"]) {
                     this.get("pageLoader").set("pageId", node.get("data")["page"]);
                     node.get("rightWidget").menu.getMenu().item(0).fire("click");
-                }else if(node.get("data.widget")){
-                    node.get("data.widget").get(BOUNDING_BOX).scrollIntoView ();
+                } else if (node.get("data.widget")) {
+                    node.get("data.widget").get(BOUNDING_BOX).scrollIntoView();
                     node.get("rightWidget").simulate("click");
                     node.get("rightWidget").menu.getMenu().item(0).fire("click");
                     node.get("rightWidget").menu.menu.hide();
@@ -54,8 +54,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 if (!node.get("data")) {
                     return;
                 }
-                if(node.get("data.widget")){
-                    node.get("data.widget").get(BOUNDING_BOX).scrollIntoView ();
+                if (node.get("data.widget")) {
+                    node.get("data.widget").get(BOUNDING_BOX).scrollIntoView();
                     node.get("rightWidget").simulate("click");
                     node.get("rightWidget").menu.getMenu().item(0).fire("click");
                     node.get("rightWidget").menu.menu.hide();
@@ -93,7 +93,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }
             }, ".content-header", this);
             this.dataSource.after("pageUpdated", this.syncUI, this);
-//            this.get("pageLoader").after("pageIdChange", this.syncUI, this);
+//            if (this.get("pageLoader")) {
+//                this.get("pageLoader").after("pageIdChange", this.syncUI, this);
+//            }
             //this.get("pageLoader").get("widget").after("*:destroy", this.syncUI, this);
         },
         buildWidgetTree: function(node) {
@@ -218,6 +220,15 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             pageLoader: {
                 value: "previewPageLoader",
                 getter: function(v) {
+                    return v;
+                },
+                setter: function(v) {
+                    if (Y.Wegas.PageLoader.find(v)) {
+                        if (this.get("previewPageLoader")) {
+                            this.get("previewPageLoader").detach("pageIdChange", this.syncUI, this);
+                        }
+                        Y.Wegas.PageLoader.find(v).after("pageIdChange", this.syncUI, this);
+                    }
                     return Y.Wegas.PageLoader.find(v);
                 }
             }

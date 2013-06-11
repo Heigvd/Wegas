@@ -150,10 +150,14 @@
 .yui3-treenode-collapsed>ul:empty::before{
     content: "";
 }
-.yui3-treeview-content .filter-match .content-header{
+.yui3-treeview-content .filter-match > .content-header,
+.yui3-treeview-content .filter-match > div > .content-header{
     max-height: 50px;
+    padding:2px 27px 2px 2px;
 }
-.yui3-treeview-content .filter-no-match .content-header{
+.yui3-treeview-content .filter-no-match > .content-header,
+.yui3-treeview-content .filter-no-match > div > .content-header,
+.yui3-treeview-content .filter-sub-match > .content-header{
     padding-top:0;
     padding-bottom: 0;
     max-height: 0;
@@ -161,4 +165,5 @@
 
 .yui3-treeview-content .filter-match .filter-no-match .content-header{
     max-height: 50px;
+    padding:2px 27px 2px 2px;
 }
