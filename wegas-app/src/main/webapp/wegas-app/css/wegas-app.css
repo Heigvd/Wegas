@@ -210,6 +210,10 @@ body h6{
 }
 .wegas-list-vertical > div {
 }
+.wegas-list-content:empty:before,
+.wegas-choicelist-content:empty:before{
+    content:"Empty list"
+}
 
 /* PROGRESSBAR */
 .yui3-wegas-progressbar-hidden{
