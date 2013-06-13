@@ -307,23 +307,37 @@ YUI.add('wegas-datasource', function(Y) {
          *  @param {page} The entity to update in the cache
          *  @return {Boolean} `true` if object could be located and method applied
          */
-        doFind: function(key, needle, onFindFn, stack) {
-            //Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.WegasCache');
-            var onWalkFn = Y.bind(this.doFind, this, key, needle, onFindFn);
-
-            this.ret = null;
-
-            Y.Array.find(stack, function(item, index, array) {
-                if (this.testEntity(item, key, needle)) {                       // We check the current element if it's a match
-                    if (onFindFn) {
-                        onFindFn(item, needle, index, array);
+        doFind: function(key, needle, onFindFn) {
+            // Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.WegasCache');
+            var ret, doFind = function(stack) {
+                return Y.Array.find(stack, function(item, index, array) {
+                    if (this.testEntity(item, key, needle)) {                   // We check the current element if it's a match
+                        ret = item;
+                        if (onFindFn) {
+                            onFindFn(item, needle, index, array);
+                        }
+                        return item;
                     }
-                    this.ret = item;
-                    return true;
-                }
-                return this.walkEntity(item, onWalkFn);
-            }, this);
-            return this.ret;
+                    return this.walkEntity(item, doFind);
+                }, this);
+            };
+            doFind.call(this, this.getCache());
+            return ret;
+
+            // Previous version of the find fn
+//            var onWalkFn = Y.bind(this.doFind, this, key, needle, onFindFn);
+//            this.ret = null;
+//            Y.Array.find(stack, function(item, index, array) {
+//                if (this.testEntity(item, key, needle)) {                       // We check the current element if it's a match
+//                    if (onFindFn) {
+//                        onFindFn(item, needle, index, array);
+//                    }
+//                    this.ret = item;
+//                    return true;
+//                }
+//                return this.walkEntity(item, onWalkFn);
+//            }, this);
+//            return this.ret;
         },
         /**
          * This method is used to walke down an entity hierarchy, can be overriden
@@ -522,9 +536,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         walkEntity: function(entity, callback) {
             if (entity.get && entity.get("items")) {
-                if (callback(entity.get("items"))) {
-                    return true;
-                }
+                return callback.call(this, entity.get("items"));
             }
             //            if (entity.get && entity.get("scope")) {
             //                if (callback(Y.Object.values(entity.get("scope").get("variableInstances")))) {
@@ -592,6 +604,64 @@ YUI.add('wegas-datasource', function(Y) {
                 },
                 on: callback
             });
+        },
+        findParentDescriptor: function(entity) {
+            var ret, doFind = function(stack) {
+                return Y.Array.find(stack, function(item) {
+                    if (item.get("id") === entity.get("id")) {                  // We check the current element if it's a match
+                        return true;
+                    }
+                    if (this.walkEntity(item, doFind)) {
+                        ret = item;
+                        return true;
+                    }
+                    return false;
+                }, this);
+            };
+
+            doFind.call(this, this.getCache());
+            return ret;
+        },
+        move: function(entity, parentEntity, index) {
+            var request,
+                    host = this.get("host"),
+                    oParentEntity = this.findParentDescriptor(entity),
+                    tArray;
+
+            tArray = (oParentEntity) ?
+                    oParentEntity.get("items") : this.getCache();               // Remove the item from it's existing position in the cache
+
+            Y.log("Moving cache object from position " + Y.Array.indexOf(tArray, entity) + " to position " + index, "log", "Wegas.VariableTreeView");
+
+            tArray.splice(Y.Array.indexOf(tArray, entity), 1);
+
+            tArray = (parentEntity) ?
+                    parentEntity.get("items") : this.getCache();
+            tArray.splice(index, 0, entity);                                    // Place the entity at the new position
+
+            if (parentEntity) {                                                   // Dropped on a list descriptor
+                request = "/" + entity.get("id") + "/Move/" + parentEntity.get("id") + "/" + index;
+            } else {                                                            // Dropped at root level
+                request = "/" + entity.get("id") + "/Move/" + index
+            }
+            host.sendRequest({
+                request: request,
+                cfg: {
+                    method: "PUT"
+                },
+                on: {
+                    success: function(tId, e) {
+                        Y.log("Item moved", "info", "Wegas.VariableTreeView");
+                    },
+                    failure: function(tId, e) {
+                        //@todo Reset the whole treeview
+                    }
+                }
+            });
+            this.find
+
+            // Now a hack to order cache and not need a full db refresh
+//            Y.Wegas.Facade.VariableDescriptor
         }
     });
 
@@ -659,20 +729,19 @@ YUI.add('wegas-datasource', function(Y) {
 
     Y.extend(GameCache, WegasCache, {
         walkEntity: function(entity, callback) {
+            var t;
             if (entity instanceof Wegas.persistence.Game) {
-                if (callback(entity.get("teams"))) {
-                    return true;
-                }
+                t = callback.call(this, entity.get("teams"));
+                if (t)
+                    return t;
             }
             if (entity instanceof Wegas.persistence.Team) {
-                if (callback(entity.get("players"))) {
-                    return true;
-                }
+                t = callback.call(this, entity.get("players"));
+                if (t)
+                    return t;
             }
             if (entity.get && entity.get("items")) {
-                if (callback(entity.get("items"))) {
-                    return true;
-                }
+                return callback(entity.get("items"));
             }
             return false;
         },
@@ -792,9 +861,7 @@ YUI.add('wegas-datasource', function(Y) {
     Y.extend(UserCache, WegasCache, {
         walkEntity: function(entity, callback) {
             if (entity.get("accounts")) {
-                if (callback(entity.get("accounts"))) {
-                    return true;
-                }
+                return callback.call(this, entity.get("accounts"));
             }
             return false;
         },

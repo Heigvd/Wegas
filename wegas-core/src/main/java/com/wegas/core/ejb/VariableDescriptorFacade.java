@@ -63,32 +63,6 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
     /**
      *
-     * @fixme Remove the pattern that getUsedNames, for get available name
-     *
-     * @param parentGameModel
-     * @param variableDescriptor
-     */
-    public void create(final GameModel parentGameModel, final VariableDescriptor variableDescriptor) {
-        final List<String> usedNames = this.getUsedNames(parentGameModel.getId());
-
-        if (variableDescriptor.getLabel() == null) {
-            variableDescriptor.setLabel((variableDescriptor.getName() == null)
-                    ? "unnamed" : variableDescriptor.getName());
-        }
-
-        //Fill name with label if it is empty
-        if (variableDescriptor.getName() == null || variableDescriptor.getName().isEmpty()) {
-            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getLabel(), usedNames));
-        }
-
-        if (usedNames.contains(variableDescriptor.getName())) {                 //build a unique name
-            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getName(), usedNames));
-        }
-        parentGameModel.addItem(variableDescriptor);
-    }
-
-    /**
-     *
      * @param variableDescriptorId
      * @param entity
      * @return
@@ -100,26 +74,38 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
     /**
      *
      * @fixme Remove the pattern that getUsedNames, for get available name
+     * @problem if we drag and drop the element, the name should also be checked
      *
      * @param listDescriptor
      * @param entity
      * @return
      */
-    public DescriptorListI createChild(final DescriptorListI listDescriptor, final VariableDescriptor entity) {
-        final Iterator<VariableDescriptor> iterator = listDescriptor.getItems().iterator();
-        final List<String> usedNames = new ArrayList<>();
-        while (iterator.hasNext()) {
-            usedNames.add(iterator.next().getName());
+    public DescriptorListI createChild(final DescriptorListI list, final VariableDescriptor entity) {
+
+        List<String> usedNames = new ArrayList<>();
+        if (list instanceof GameModel) {                                        // First case, entity is created at root level
+            usedNames = this.getUsedNames(((GameModel) list).getId());
+        } else {                                                                // Second case, in a descriptor
+            final Iterator<VariableDescriptor> iterator = list.getItems().iterator();
+            while (iterator.hasNext()) {
+                usedNames.add(iterator.next().getName());
+            }
+        }
+
+        //Fill name with label if it is empty
+        if (entity.getLabel() == null) {
+            entity.setLabel((entity.getName() == null)
+                    ? "unnamed" : entity.getName());
         }
         if (entity.getName() == null || entity.getName().isEmpty()) {
             entity.setName(Helper.buildUniqueName(entity.getLabel(), usedNames));
         }
-        //build a unique name
-        if (usedNames.contains(entity.getName())) {
+
+        if (usedNames.contains(entity.getName())) {                 //build a unique name
             entity.setName(Helper.buildUniqueName(entity.getName(), usedNames));
         }
-        listDescriptor.addItem(entity);
-        return listDescriptor;
+        list.addItem(entity);
+        return list;
     }
 
     /**
@@ -128,7 +114,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param variableDescriptor
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
-        this.create(this.gameModelFacade.find(gameModelId), variableDescriptor);
+        this.createChild(this.gameModelFacade.find(gameModelId), variableDescriptor);
     }
 
     /**
@@ -162,13 +148,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         }
 
         DescriptorListI list = this.findParentList(oldEntity);
-        if (list instanceof GameModel) {                                        // If the duplicated var is at root level
-            this.create(oldEntity.getGameModel(), newEntity);                   // store the newly created entity in db create it at root level
-            return newEntity;                                                   // and return it directly
-        } else {                                                                // Otherwise it's in a descriptor
-            this.createChild(list, newEntity);                                  // Add the entity to this list
-            return (VariableDescriptor) list;
-        }
+        this.createChild(list, newEntity);
+        return newEntity;
     }
 
     private DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {

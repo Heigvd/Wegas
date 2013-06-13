@@ -144,8 +144,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             }
 
             EditEntityAction.tab.set("selected", 2);
-            EditEntityAction.form.set("cfg", (formCfg) ? formCfg : entity.getFormCfg());
             EditEntityAction.form.set("values", entity.toObject());
+            EditEntityAction.form.set("cfg", (formCfg) ? formCfg : entity.getFormCfg());
             this.status = EditEntityAction.STATUS.NEW;
         },
         /**
