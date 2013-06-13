@@ -19,7 +19,6 @@ YUI.add('wegas-popup-content', function(Y) {
                 Y.WidgetButtons,
                 Y.WidgetModality,
                 Y.WidgetPositionAlign,
-                Y.WidgetPositionConstrain,
                 Y.WidgetStack], {
         syncUI: function() {
             this.set("content", this.get("content"));
@@ -62,7 +61,6 @@ YUI.add('wegas-popup-content', function(Y) {
             centered: {value: true,
                 "transient": true
             },
-            constrain: {value: false, "transient": true},
             defaultButton: {"transient": true},
             fillHeight: {"transient": true},
             focusOn: {"transient": true},
@@ -76,7 +74,6 @@ YUI.add('wegas-popup-content', function(Y) {
                     label: "Modal"
                 }
             },
-            preventOverlap: {"transient": true},
             visible: {value: false},
             shim: {"transient": true},
             x: {"transient": true},

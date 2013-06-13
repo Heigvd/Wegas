@@ -1,5 +1,7 @@
 .wegas-popup{
     position:absolute;
+    max-width: 100%;
+    max-height: 100%;
 }
 .wegas-popup-content {
     text-align: center;   
@@ -14,7 +16,7 @@
 }
 .wegas-popup-content .yui3-widget-bd{
     text-align: center;
-    min-width: 150px;
+    overflow: auto;
 }
 .wegas-popup-content .yui3-widget-ft{
     padding-top: 10px;
