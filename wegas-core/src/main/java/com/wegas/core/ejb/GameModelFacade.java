@@ -10,12 +10,15 @@ package com.wegas.core.ejb;
 import com.wegas.core.event.ResetEvent;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
+import com.wegas.core.jcr.page.Page;
+import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel_;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -29,6 +32,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.codehaus.jackson.JsonNode;
 
 /**
  *
@@ -117,9 +121,16 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         try {                                                                   //Clone jcr FILES
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newEntity.getId());
             connector.cloneWorkspace(oldEntity.getId());
+            Pages oldPages = new Pages(entityId.toString());
+            Pages newPages = new Pages(newEntity.getId().toString());
+            Map<String, String> pageMap = oldPages.getIndex();
+            for (String p : pageMap.keySet()) {
+                newPages.store(oldPages.getPage(p));
+            }
         } catch (RepositoryException ex) {
             System.err.println(ex);
         }
+
         return newEntity;
     }
 
