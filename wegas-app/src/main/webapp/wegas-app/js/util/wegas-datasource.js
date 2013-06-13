@@ -625,7 +625,7 @@ YUI.add('wegas-datasource', function(Y) {
         post: function(data, parentData, callback) {
             if (data.templateId) {
                 this.sendRequest({
-                    request: "/"+ data.templateId,
+                    request: "/" + data.templateId,
                     cfg: {
                         method: POST,
                         data: Y.JSON.stringify(data)
@@ -1072,18 +1072,21 @@ YUI.add('wegas-datasource', function(Y) {
                 this.sendRequest({
                     request: "" + pageId,
                     on: {
-                        success: Y.bind(function(id, callback, e) {
-                            var page;
-                            if (callback instanceof Function) {
-                                page = Y.clone(this.getCache(pageId));
-                                page["@pageId"] = pageId;
-                                callback(page);
-                            }
-                        }, this, pageId, callback)
+                        success: Y.bind(this.pageReceived, this, pageId, callback)
                     }
                 });
             }
             return page;
+        },
+        pageReceived: function(id, callback, e) {
+            var page;
+            if (callback instanceof Function) {
+                page = Y.clone(this.getCache(id));
+                if (page) {
+                    page["@pageId"] = id;
+                }
+                callback(page);
+            }
         },
         getIndex: function(callback) {
             this.sendRequest({
