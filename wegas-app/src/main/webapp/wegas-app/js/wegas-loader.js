@@ -103,7 +103,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-widget': {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
-                    requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable']
+                    requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable', 'wegas-popuplistener']
                 },
                 'wegas-pageloader': {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
@@ -115,7 +115,7 @@ YUI().use(function(Y) {
                     ws_provides: 'PopupContent',
                     requires: ["wegas-popup-contentcss", "widget-buttons",
                         "widget-modality", "widget-position",
-                        "widget-position-align", "widget-position-constrain",
+                        "widget-position-align",
                         "widget-stack", "widget-stdmod"]
                 },
                 'wegas-popup-contentcss': {
@@ -561,7 +561,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-treeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-treeview-min.js',
-                    requires: ['wegas-widget', "treeview", "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
+                    requires: ['wegas-widget', "treeview", "treeview-filter",
+                        "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
                     ws_provides: ['EditorTreeView', "JoinedGameTreeView"]
                 },
                 'wegas-editor-treeviewcss': {

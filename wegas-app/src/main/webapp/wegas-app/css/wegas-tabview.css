@@ -90,3 +90,8 @@
 .yui3-tab:hover .closable-closeicon{
     display:inline-block;
 }
+
+/* Icons are not displayed in tab labels */
+.yui3-tab .wegas-icon {
+    display: none;
+}

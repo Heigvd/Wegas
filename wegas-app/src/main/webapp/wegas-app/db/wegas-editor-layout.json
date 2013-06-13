@@ -18,7 +18,7 @@
                                             "fn": "EditEntityAction",
                                             "cfg": {
                                                 "entity": "currentGameModel",
-                                                "dataSource": "GameModelFacade"
+                                                "dataSource": "GameModel"
                                             }
                                         }]
                                 }]
@@ -240,6 +240,9 @@
         "animate": true,
         "children": [{
                 "type": "TabView",
+                "plugins": [{
+                        "fn": "PopupListener"
+                    }],
                 "id": "leftTabView",
                 "cssClass": "editor-tab",
                 "children": [{
@@ -307,14 +310,17 @@
                         "type": "Tab",
                         "label": "Pages",
                         "children": [{
-                            "type": "PageTreeview"
-                        }]
+                                "type": "PageTreeview"
+                            }]
                     }]
             }]
     },
     "center": {
         "children": [{
                 "id": "centerTabView",
+                "plugins": [{
+                        "fn": "PopupListener"
+                    }],
                 "type": "TabView",
                 "cssClass": "editor-tab",
                 "children": [{
@@ -357,6 +363,8 @@
                 "children": [],
                 "plugins": [{
                         "fn": "LayoutToggleTab"
+                    }, {
+                        "fn": "PopupListener"
                     }]
             }]
     }

@@ -12,7 +12,7 @@
     zoom: 1;
 }
 
-:focus{
+.yui3-treeview :focus{
     outline:none;
 }
 .yui3-treenode-content{
@@ -64,8 +64,13 @@
     text-decoration: none;
 }
 
-.yui3-treenode-collapsed > ul > li{
-    display:none;
+.yui3-treenode-collapsed ul > li > .content-header,
+.yui3-treenode-collapsed ul > li > div > .content-header{
+    max-height: 0px !important;
+    padding-top: 0px!important;
+    padding-bottom: 0px !important;
+    overflow: hidden;
+    *display:none;
 }
 
 .yui3-treenode-content-rightwidget,
@@ -80,11 +85,13 @@
     padding:2px 27px 2px 2px;
     white-space: nowrap;
     font-style: normal;
-    transition: max-height 1s;
-    -o-transition: max-height 1s;
-    -moz-transition: max-height 1s;
-    -ms-transition: max-height 1s;
-    -webkit-transition: max-height 1s;
+    max-height: 50px;
+    overflow: hidden;
+    transition: max-height 0.7s, padding 0.7s;
+    -o-transition: max-height 0.7s, padding 0.7s;
+    -moz-transition: max-height 0.7s, padding 0.7s;
+    -ms-transition: max-height 0.7s, padding 0.7s;
+    -webkit-transition: max-height 0.7s, padding 0.7s;
 }
 .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget{
@@ -149,11 +156,19 @@
 .yui3-treenode-collapsed>ul:empty::before{
     content: "";
 }
-.yui3-treeview-content .filter-match .content-header{
-    max-height: 50px;
+.yui3-treeview-content .filter-match > .content-header,
+.yui3-treeview-content .filter-match > div > .content-header{
+    padding:2px 27px 2px 2px;
 }
-.yui3-treeview-content .filter-no-match .content-header{
+.yui3-treeview-content .filter-no-match > .content-header,
+.yui3-treeview-content .filter-no-match > div > .content-header,
+.yui3-treeview-content .filter-sub-match > .content-header{
     padding-top:0;
     padding-bottom: 0;
     max-height: 0;
+}
+
+.yui3-treeview-content .filter-match .filter-no-match .content-header{
+    max-height: 50px;
+    padding:2px 27px 2px 2px;
 }

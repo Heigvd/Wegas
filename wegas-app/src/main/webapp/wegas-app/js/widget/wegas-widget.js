@@ -129,12 +129,15 @@ YUI.add("wegas-widget", function(Y) {
                     timeout = 800;
                 }
             }
-            msgNode.append(message);
-            message.closeHandler = message.one(".close").
-                    once("click", destroySelf, message);
-            if (timeout) {
-                message.timeout = Y.later(timeout, message, destroySelf);
+            else {
+                this.get("boundingBox").emitDOMMessage(LEVEL[level], {content: txt, timeout: timeout});
             }
+//            msgNode.append(message);
+//            message.closeHandler = message.one(".close").
+//                    once("click", destroySelf, message);
+//            if (timeout) {
+//                message.timeout = Y.later(timeout, message, destroySelf);
+//            }
         },
         /**
          * @function

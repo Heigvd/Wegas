@@ -105,6 +105,9 @@ public class Pages implements Serializable {
         try {
             if (n != null) {
                 ret = new Page(n.getName(), n.getProperty("content").getString());
+                if (n.hasProperty("pageName")) {
+                    ret.setName(n.getProperty("pageName").getString());
+                }
             }
         } catch (IOException ex) {
             //Well Stored String is wrong
