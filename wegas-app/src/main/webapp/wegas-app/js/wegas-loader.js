@@ -115,7 +115,7 @@ YUI().use(function(Y) {
                     ws_provides: 'PopupContent',
                     requires: ["wegas-popup-contentcss", "widget-buttons",
                         "widget-modality", "widget-position",
-                        "widget-position-align", "widget-position-constrain",
+                        "widget-position-align",
                         "widget-stack", "widget-stdmod"]
                 },
                 'wegas-popup-contentcss': {
