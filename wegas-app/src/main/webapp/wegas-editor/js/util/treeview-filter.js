@@ -20,12 +20,12 @@ YUI.add("treeview-filter", function(Y) {
             }
             this.after("searchValChange", function(e) {
                 if (e.prevVal !== e.newVal) {
-                    this.filter(this.get("host"), e.newVal);
+                    this.doFilter(this.get("host"), e.newVal);
                 }
             });
 
             this.afterHostEvent("*:addChild", function(e) {
-                this.filter(this.get("host"), this.get("searchVal"));
+                this.doFilter(this.get("host"), this.get("searchVal"));
             });
         },
         filter: function(item, match) {
@@ -59,8 +59,15 @@ YUI.add("treeview-filter", function(Y) {
             return matches;
 
         },
+        doFilter: function(item, match) {
+            this.filter(item, match);
+            item.get("contentBox").all(".filter-empty").remove(true);
+            if (!item.get("boundingBox").hasClass("filter-sub-match") && item.size() > 0) {
+                item.get("contentBox").append("<div class='wegas-smallmessage filter-empty'>" + this.get("emptyMsg") + "</div>");
+            }
+        },
         destructor: function() {
-
+            this.get("host").get("contentBox").all(".filter-empty").remove(true);
         }
 
     }, {
@@ -80,6 +87,10 @@ YUI.add("treeview-filter", function(Y) {
             },
             searchVal: {
                 value: ""
+            },
+            emptyMsg: {
+                value: "Nothing matches filter's criteria",
+                validator: Y.Lang.isString
             }
         }
     });
