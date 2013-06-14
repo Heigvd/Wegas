@@ -159,14 +159,14 @@ YUI.add('wegas-helper', function(Y) {
          *  the arguments collection the supplied to the function.
          * @param {Object} o the object with in functions to execute on the context object.
          * @param {Object} c the execution context.
-         * @param {any} c the execution context.
+         * @param {any} 0..n arguments to include before the arguments the function is executed with.
          * @returns An object with the wrapped functions.
          */
         superbind: function(o, c) {
             var i, args = arguments.length > 0 ? Y.Array(arguments, 0, true) : null;
                 for (i in o) {
                     args[0] = o[i];
-                    o[i] = Y.bind.apply(this, args);
+                    o[i] = Y.bind.apply(c, args);
                 }
             return o;
         }
