@@ -151,7 +151,26 @@ YUI.add('wegas-helper', function(Y) {
                 prev = ((prev << 5) - prev) + curr.charCodeAt(0);
                 return prev |= 0;                                               //Force 32 bits
             });
+        },
+        /**
+         * Return an object with functions (first level only, not objects in object...)
+         *  that will execute the supplied function in the supplied object's context,
+         *  optionally adding any additional supplied parameters to the beginning of
+         *  the arguments collection the supplied to the function.
+         * @param {Object} o the object with in functions to execute on the context object.
+         * @param {Object} c the execution context.
+         * @param {any} c the execution context.
+         * @returns An object with the wrapped functions.
+         */
+        superbind: function(o, c) {
+            var i, args = arguments.length > 0 ? Y.Array(arguments, 0, true) : null;
+                for (i in o) {
+                    args[0] = o[i];
+                    o[i] = Y.bind.apply(this, args);
+                }
+            return o;
         }
     };
     Y.namespace("Wegas").Helper = Helper;
+    Y.namespace("Wegas").superbind = Y.Wegas.Helper.superbind;
 });

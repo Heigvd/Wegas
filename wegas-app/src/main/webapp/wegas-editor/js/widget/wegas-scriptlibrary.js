@@ -91,19 +91,19 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 cfg: {
                     updateCache: false
                 },
-                on: {
-                    success: Y.bind(function(data) {
+                on: Y.Wegas.superbind({
+                    success: function(data) {
                         if (data.response.entity) {
                             this.scripts = data.response.entity;
                             this.syncWithLibrary();
                             this.syncEditor();
                             this.hideOverlay();
                         }
-                    }, this),
-                    failure: Y.bind(function() {
+                    },
+                    failure: function() {
                         this.hideOverlay();
-                    }, this)
-                }
+                    }
+                }, this)
             }, this);
         },
         /**
