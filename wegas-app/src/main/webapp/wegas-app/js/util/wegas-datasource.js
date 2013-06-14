@@ -892,10 +892,9 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          */
         sendRequest: function(requestCfg) {
-            requestCfg.callback = requestCfg.callback || {
-                success: this._successHandler,
-                failure: this._failureHandler
-            };
+            requestCfg.on = requestCfg.on || {};
+            requestCfg.on.success = requestCfg.on.success || this._successHandler;
+            requestCfg.on.failure = requestCfg.on.failure || this._failureHandler;
             requestCfg.cfg = requestCfg.cfg || {};
             requestCfg.cfg.Page = requestCfg.cfg.Page || '';
             requestCfg.cfg.headers = requestCfg.cfg.headers || {};
@@ -963,7 +962,11 @@ YUI.add('wegas-datasource', function(Y) {
                     method: PUT,
                     data: Y.JSON.stringify(pe)
                 },
-                callback: callback
+                on: {success: Y.bind(function(e) {
+                        if (callback instanceof Function) {
+                            callback(e.response.results);
+                        }
+                    }, this)}
             });
         },
         /**
@@ -978,7 +981,11 @@ YUI.add('wegas-datasource', function(Y) {
                     method: PUT,
                     data: Y.JSON.stringify(pe)
                 },
-                callback: callback
+                on: {success: Y.bind(function(e) {
+                        if (callback instanceof Function) {
+                            callback(e.response.results);
+                        }
+                    }, this)}
             });
         },
         /**
@@ -1005,7 +1012,11 @@ YUI.add('wegas-datasource', function(Y) {
                     },
                     data: patch
                 },
-                callback: callback
+                on: {success: Y.bind(function(e) {
+                        if (callback instanceof Function) {
+                            callback(e.response.results);
+                        }
+                    }, this)}
             });
         },
         editMeta: function(pageId, meta, callback) {
@@ -1015,7 +1026,7 @@ YUI.add('wegas-datasource', function(Y) {
                     method: 'PUT',
                     data: meta
                 },
-                callback: {
+                on: {
                     success: Y.bind(function(e) {
                         if (callback instanceof Function) {
                             callback(e.response.results);
@@ -1030,11 +1041,11 @@ YUI.add('wegas-datasource', function(Y) {
                 cfg: {
                     method: 'GET'
                 },
-                callback: Y.bind(function(e) {
-                    if (callback instanceof Function) {
-                        callback(e.response.results);
-                    }
-                }, this)
+                on: {success: Y.bind(function(e) {
+                        if (callback instanceof Function) {
+                            callback(e.response.results);
+                        }
+                    }, this)}
             });
         },
         /**
@@ -1046,7 +1057,7 @@ YUI.add('wegas-datasource', function(Y) {
                 cfg: {
                     method: 'DELETE'
                 },
-                callback: {
+                on: {
                     success: Y.bind(function(e) {
                         delete this.get(HOST).data[e.data.getResponseHeader("Page")];
                     }, this)
@@ -1072,39 +1083,35 @@ YUI.add('wegas-datasource', function(Y) {
                 this.sendRequest({
                     request: "" + pageId,
                     on: {
-                        success: Y.bind(this.pageReceived, this, pageId, callback)
-                    }
+                        success: Y.bind(function(e) {
+                            var page;
+                            if (callback instanceof Function) {
+                                page = Y.clone(this.getCache(pageId));
+                                if (page) {
+                                    page["@pageId"] = pageId;
+                                    callback(page);
+                                }
+
+                            }
+                        }, this)}
                 });
             }
             return page;
         },
-        pageReceived: function(id, callback, e) {
-            var page;
-            if (callback instanceof Function) {
-                page = Y.clone(this.getCache(id));
-                if (page) {
-                    page["@pageId"] = id;
-                }
-                callback(page);
-            }
-        },
         getIndex: function(callback) {
-            this.sendRequest({
-                request: "index",
-                callback: {
-                    success: Y.bind(function(e) {
-                        if (callback instanceof Function) {
-                            callback(e.response.results);
-                        }
-                    }, this)
-                }
-            });
+            var cfg = {request: "index", on: {}};
+            if (callback instanceof Function) {
+                cfg.on.success = function(e) {
+                    callback(e.response.results);
+                };
+            }
+            this.sendRequest(cfg);
         },
         _successHandler: function(e) {
-
+            Y.log("PageDatasource reply:" + e.response, "log", "Y.Plugin.PageCache");
         },
         _failureHandler: function(e) {
-            Y.error("PageDatasource reply:", e, 'Y.Wegas.DataSourceRest');
+            Y.error("PageDatasource reply:", e, 'Y.Plugin.PageCache');
         }
     });
     Y.namespace('Plugin').PageCache = PageCache;
