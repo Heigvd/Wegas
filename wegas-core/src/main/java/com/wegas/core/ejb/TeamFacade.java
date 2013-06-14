@@ -80,15 +80,10 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     }
 
     private void addRights(Game game) {
-        Subject s = SecurityUtils.getSubject();
-        boolean gExist = s.isPermitted("Game:View:g" + game.getId());
-        boolean gmExist = s.isPermitted("GameModel:View:gm" + game.getGameModel().getId());
-
-        if (!gExist) {
-            userFacade.getCurrentUser().getMainAccount().getPermissions().add("Game:View:g" + game.getId());
-        }
-        if (!gmExist) {
-            userFacade.getCurrentUser().getMainAccount().getPermissions().add("GameModel:View:gm" + game.getGameModel().getId());
+        if (!SecurityUtils.getSubject().isPermitted("Game:View:g" + game.getId())) {
+            userFacade.getCurrentUser().getMainAccount().addPermission(
+                    "Game:View:g" + game.getId(),                               // Add game view right
+                    "GameModel:View:gm" + game.getGameModel().getId());         // and also its associated game model
         }
     }
 

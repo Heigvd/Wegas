@@ -11,7 +11,9 @@ import com.wegas.core.Helper;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.facebook.FacebookAccount;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 import org.codehaus.jackson.annotate.JsonBackReference;
@@ -27,8 +29,6 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @Table(uniqueConstraints = {
     @UniqueConstraint(columnNames = "email")
 })
-@NamedQueries({
-    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount WHERE abstractaccount.permissions LIKE :gameId"),})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
     @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
@@ -72,7 +72,7 @@ public class AbstractAccount extends AbstractEntity {
      *
      */
     @ElementCollection
-    private Set<String> permissions = new HashSet<>();
+    private List<Permission> permissions = new ArrayList<>();
     /**
      *
      */
@@ -216,14 +216,14 @@ public class AbstractAccount extends AbstractEntity {
     /**
      * @return the permissions
      */
-    public Set<String> getPermissions() {
+    public List<Permission> getPermissions() {
         return permissions;
     }
 
     /**
      * @param permissions the permissions to set
      */
-    public void setPermissions(Set<String> permissions) {
+    public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
     }
 
@@ -232,14 +232,26 @@ public class AbstractAccount extends AbstractEntity {
      * @param permission
      */
     public void removePermission(String permission) {
-        this.permissions.remove(permission);
+        this.permissions.remove(new Permission(permission));
     }
 
     /**
      *
      * @param permission
      */
-    public void addPermission(String permission) {
-        this.permissions.add(permission);
+    public boolean addPermission(String permission, String inducedPermission) {
+        return this.addPermission(new Permission(permission, inducedPermission));
+    }
+
+    public boolean addPermission(String permission) {
+        return this.addPermission(new Permission(permission));
+    }
+
+    public boolean addPermission(Permission permission) {
+        if (!this.permissions.contains(permission)) {
+            return this.permissions.add(permission);
+        } else {
+            return false;
+        }
     }
 }

@@ -14,6 +14,7 @@ package com.wegas.core.security.jparealm;
 import com.wegas.core.Helper;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;
@@ -65,9 +66,17 @@ public class JpaRealm extends AuthorizingRealm {
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
             for (Role role : account.getRoles()) {
                 info.addRole(role.getName());
-                info.addStringPermissions(role.getPermissions());
+
+                for (Permission p : role.getPermissions()) {
+                    info.addStringPermission(p.getValue());
+//                    info.addStringPermission(p.getInducedPermission());
+                }
             }
-            info.addStringPermissions(account.getPermissions());
+
+            for (Permission p : account.getPermissions()) {
+                info.addStringPermission(p.getValue());
+//                info.addStringPermission(p.getInducedPermission());
+            }
             return info;
         } catch (EJBException e) {
             return null;
