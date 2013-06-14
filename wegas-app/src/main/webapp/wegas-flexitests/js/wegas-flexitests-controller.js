@@ -12,7 +12,6 @@
  */
 YUI.add("wegas-flexitests-controller", function(Y) {
     "use strict";
-
     Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [Y.Wegas.Widget, Y.Wegas.Editable], {
         /**
          * Lifecycle method
@@ -27,6 +26,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.mcq = null;
             this.maxSize = 0;
             this.ongoing = false;
+            this.config = {};
             this.currentQuestionId = -1;
             this.questionToDo = [];
             this.startTime = null;
@@ -71,7 +71,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          * @returns {undefined}
          */
         syncUI: function() {
-            var props, exist = false, i, j, done = 0;
+            var props, exist = false, i, j, done = 0, config = {};
             this.mask();
             this.leftElement = this.getChildById("leftElement");
             this.rightElement = this.getChildById("rightElement");
@@ -79,6 +79,9 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.fixPoint = this.get("contentBox").all(".fix-point");
             this.fixPoint.hide();
             this.mcq = this.getChildById("flexi-mcq");
+            config = this.collectConfig();
+            config.index = "config";
+            this.mcq.save(config);
             props = this.mcq.get("variable.evaluated").getInstance().get("properties");
             this.maxSize = Math.max(this.leftElement.size(), this.rightElement.size(), this.centerElement.size());
             for (i = 0; i < this.maxSize; i += 1) {
@@ -164,7 +167,51 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             elements.center = center.get("content") || center.get("url");
             return elements;
         },
-        createLoadingEvent: function() {
+        collectConfig: function() {
+            var cfg = {},
+                    left = this.leftElement,
+                    center = this.centerElement,
+                    right = this.rightElement,
+                    getPos = function(element, config) {
+                var style = element.CSSPosition ? element.CSSPosition.get("styles") : null;
+                if (style === null) {
+                    return;
+                } else {
+                    if (Y.Lang.isNumber(parseInt(style.top))) {
+                        config.top = parseInt(style.top);
+                    }
+                    if (Y.Lang.isNumber(parseInt(style.bottom))) {
+                        config.bottom = parseInt(style.bottom);
+                    }
+                    if (Y.Lang.isNumber(parseInt(style.left))) {
+                        config.left = parseInt(style.left);
+                    }
+                    if (Y.Lang.isNumber(parseInt(style.right))) {
+                        config.right = parseInt(style.right);
+                    }
+                }
+            },
+                    getTimers = function(element, config) {
+                if (element.hideafter) {
+                    config.hide = element.hideafter.get("time");
+                }
+                if (element.showafter) {
+                    config.show = element.showafter.get("time");
+                }
+            };
+            cfg.right = {};
+            cfg.left = {};
+            cfg.center = {};
+            getPos(right, cfg.right);
+            getPos(left, cfg.left);
+            getPos(center, cfg.center);
+            getTimers(right, cfg.right);
+            getTimers(left, cfg.left);
+            getTimers(center, cfg.center);
+            return cfg;
+        },
+        createLoadingEvent
+                : function() {
             this.centerElement.getActiveElement().onceAfter("render", function(e) {
                 this.set("currentLoading.center", false);
             }, this);
@@ -175,7 +222,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 this.set("currentLoading.right", false);
             }, this);
         },
-        generateNextId: function() {
+        generateNextId
+                : function() {
             return this.get("random") ?
                     this.questionToDo.splice(Math.round(Math.random() * (this.questionToDo.length - 1)), 1)[0] :
                     this.questionToDo.shift();
@@ -255,7 +303,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             }
         }
     });
-
     Y.Plugin.FlexiResponse = Y.Base.create("wegas-flexi-response", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
     }, {
         NS: "flexiresponse",

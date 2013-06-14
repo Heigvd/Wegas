@@ -56,6 +56,8 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     props,
                     table = this.get("contentBox").one("table"),
                     tmp, o, i, j, k;
+            delete demos["@class"];
+            delete tests["@class"];
             table.empty();
             table.append("<tr><th>order</th><th>question id</th><th>left</th><th>center</th><th>right</th><th>response</th><th>delay</th><th>valid</th></tr>");
             for (i in demos) {
@@ -66,8 +68,12 @@ YUI.add("wegas-flexitests-results", function(Y) {
                 break;
             }
             for (i in tests) {
+
+                var cfg = tests[i].properties["config"];
+                delete tests[i].properties["config"];
                 for (j in tests[i].properties) {
                     o = Y.JSON.parse(tests[i].properties[j]);
+
                     tmp = ["<tr class='row-", (j % 2 === 0 ? 'even' : 'odd'), "'>",
                         "<td>", j, "</td>",
                         "<td>", o.id, "</td>",
