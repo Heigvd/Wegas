@@ -15,6 +15,7 @@ YUI.add('wegas-entity', function(Y) {
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
             SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
             BUTTON = "Button", VALUE = "value", TEXT = "text", HTML = "html",
+            GROUP = "Group",
             IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
@@ -492,9 +493,14 @@ YUI.add('wegas-entity', function(Y) {
                 optional: true,
                 type: ARRAY,
                 items: {
-                    type: STRING,
-                    _inputex: {
-                        label: ""
+                    type: GROUP,
+                    items: {
+                        value: {
+                            type: STRING
+                        },
+                        inducedPermission: {
+                            type: STRING
+                        }
                     }
                 },
                 _inputex: {
@@ -602,7 +608,25 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     useButtons: true
                 }
+            },
+            permissions: {
+                optional: true,
+                type: ARRAY,
+                items: {
+                    items: {
+                        value: {
+                            type: STRING
+                        },
+                        inducedPermission: {
+                            type: STRING
+                        }
+                    }
+                },
+                _inputex: {
+                    useButtons: true
+                }
             }
+
         },
         EDITMENU: [{
                 type: "EditEntityButton",
