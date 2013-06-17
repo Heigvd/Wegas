@@ -8,7 +8,7 @@
 
 /**
  * @fileoverview
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>, Benjamin Gerber <ger.benjamin@gmail.com>
  */
 
 YUI.add('wegas-loginwidget', function(Y) {
@@ -50,11 +50,15 @@ YUI.add('wegas-loginwidget', function(Y) {
         /**
          * Button to submit form
          */
-        submitButton: null,
+        loginButton: null,
         /**
-         * Entered email
+         * Button to submit form
          */
-        email: null,
+        signUpButton: null,
+        /**
+         * Button to submit form
+         */
+        askPassButton: null,
         /**
          * Reference to each used functions
          */
@@ -70,84 +74,20 @@ YUI.add('wegas-loginwidget', function(Y) {
         initializer: function() {
             var cb = this.get(CONTENTBOX);
             this.handlers = {};
-            this.submitButton = new Y.Button();
-            this.loginForm = new Y.inputEx.Group({
-                fields: [{
-                        name: "email",
-                        label: "Email",
-                        required: true,
-                        type: "email"
-                    }, {
-                        name: "password",
-                        label: "Password",
-                        required: true,
-                        type: "password",
-                        capsLockWarning: true
-                    }, {
-                        label: "",
-                        type: "boolean",
-                        name: "remember",
-                        rightLabel: "&nbsp;Remember me"
-                    }],
-                parentEl: cb
+            this.loginButton = new Y.Button({
+                label: "Login"
             });
+            this.loginButton.get(CONTENTBOX).addClass("loginbutton");
 
-            this.createAccountForm = new Y.inputEx.Group({
-                parentEl: cb,
-                fields: [{
-                        name: "id",
-                        type: "hidden"
-                    }, {
-                        name: "@class",
-                        required: true,
-                        type: "hidden",
-                        value: "JpaAccount"
-                    }, {
-                        label: "First name",
-                        name: "firstname",
-                        required: true,
-                        type: "string",
-                        showMsg: true
-                    }, {
-                        label: "Last name",
-                        name: "lastname",
-                        required: true,
-                        type: "string",
-                        showMsg: true
-                    }, {
-                        label: "Email",
-                        name: "email",
-                        required: true,
-                        type: "email",
-                        showMsg: true
-                    }, {
-                        label: "Password",
-                        name: "password",
-                        strengthIndicator: true,
-                        capsLockWarning: true,
-                        id: "password",
-                        required: true,
-                        type: "password",
-                        showMsg: true
-                    }, {
-                        label: "Password (confirm)",
-                        name: "passwordConfirm",
-                        showMsg: true,
-                        required: true,
-                        confirm: "password",
-                        type: "password"
-                    }]
+            this.signUpButton = new Y.Button({
+                label: "Sign in"
             });
+            this.signUpButton.get(CONTENTBOX).addClass("signupbutton");
 
-            this.sendNewPasswordForm = new Y.inputEx.Group({
-                fields: [{
-                        name: "email",
-                        label: "Email",
-                        required: true,
-                        type: "email"
-                    }],
-                parentEl: cb
+            this.askPassButton = new Y.Button({
+                label: "Submit"
             });
+            this.askPassButton.get(CONTENTBOX).addClass("askPass");
         },
         /**
          * @function
@@ -165,19 +105,154 @@ YUI.add('wegas-loginwidget', function(Y) {
                 this.redirect();
             }
 
-            this.submitButton.render(cb);
-            cb.append('<div class="links" style="margin-left: 136px;margin-top:10px;">'
-                    + '<p><a class="alt-link" href="#"></a></p>'
-                    + '<p><a class="send-new-password" href="#">Forgot your password?</a></p>'
-                    + '</div>');
+            //Core of the page
+            cb.append("<div class='header'>\n\
+                    <div class='content'>\n\
+                        <div class='left'>\n\
+                            <div class='logo'>\n\
+                                <img src='../images/wegas-logo_white.png' alt='logo' height='60px' width='140px'/>\n\
+                            </div>\n\
+                        </div>\n\
+                        <div class='right login'></div>\n\
+                    </div>\n\
+                </div>\n\
+                <div class='content'>\n\
+                    <div class='main left'>\n\
+                        <h1>Welcome to Wegas</h1>\n\
+                        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games. No programming skills is required, you can create your own scenario or to adapt an existing by adding elements from other simulations. Advanced users can even create their own serious game from A to Z!</p>\n\
+                        <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='200px' width='397px'/></div>\n\
+                    </div>\n\
+                    <div class='main right signup-zone'>\n\
+                        <h1 class='title'>Create an account</h1>\n\
+                        <div class='signup'></div>\n\
+                    </div>\n\
+                    <div class='main right ask-pass-zone'>\n\
+                        <h1 class='title'>Get a new password</h1>\n\
+                        <div class='ask-pass'></div>\n\
+                    </div>\n\
+                    <div class='footer'>\n\
+                        <div class='partner'>\n\
+                            <a href='http://www.heig-vd.ch/' target='_blank'><img src='../images/heigvd-logo.png' alt='Heig-vd' height='54px' width='146px'/></a>\n\
+                            <a href='http://www.albasim.com' target='_blank'><img src='../images/albasim-logo.png' alt='Albasim' height='54px' width='48px'/></a>\n\
+                        </div>\n\
+                        <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
+                        <div class='followus'>\n\
+                            <span>Follow us:</span>\n\
+                            <a href='https://github.com/Heigvd/Wegas' target='_blank'><img src='../images/github-icon.png' alt='Github' height='30px' width='30px'/></a>\n\
+                        </div>\n\
+                    </div>\n\
+                </div>");
+
+            //create and append login form
+            this.loginForm = new Y.inputEx.Group({
+                fields: [{
+                        name: "email",
+                        required: true,
+                        type: "email",
+                        typeInvite: "Email",
+                        className: "email"
+                    }, {
+                        name: "password",
+                        required: true,
+                        type: "password",
+                        typeInvite: "Password",
+                        capsLockWarning: true,
+                        className: "password"
+                    }, {
+                        label: "",
+                        type: "boolean",
+                        name: "remember",
+                        rightLabel: "&nbsp;Remember me",
+                        className: "remember"
+                    }],
+                parentEl: cb.one(".login"),
+                className: "logingroup"
+            });
+            this.loginButton.render(cb.one(".login"));
+            cb.one(".login").append('<p class="forgot">Forgot password?</p>');
+
+            //Create and append "sign in" from
+            this.createAccountForm = new Y.inputEx.Group({
+                fields: [{
+                        name: "id",
+                        type: "hidden"
+                    }, {
+                        name: "@class",
+                        required: true,
+                        type: "hidden",
+                        value: "JpaAccount"
+                    }, {
+                        name: "firstname",
+                        required: true,
+                        type: "string",
+                        showMsg: true,
+                        typeInvite: "First name",
+                        className: "firstname"
+                    }, {
+                        name: "lastname",
+                        required: true,
+                        type: "string",
+                        showMsg: true,
+                        typeInvite: "Last name",
+                        className: "lastname"
+                    }, {
+                        name: "email",
+                        required: true,
+                        type: "email",
+                        showMsg: true,
+                        typeInvite: "Email",
+                        className: "email"
+                    }, {
+                        name: "password",
+                        strengthIndicator: true,
+                        capsLockWarning: true,
+                        id: "password",
+                        required: true,
+                        type: "password",
+                        showMsg: true,
+                        typeInvite: "Password",
+                        className: "password"
+                    }, {
+                        name: "passwordConfirm",
+                        showMsg: true,
+                        required: true,
+                        confirm: "password",
+                        type: "password",
+                        typeInvite: "Password confirmation",
+                        className: "passwordc password"
+                    }],
+                parentEl: cb.one(".signup"),
+                className: "signupgroup"
+            });
+            //To work with inputex, for css
+            cb.one(".signup .email").ancestor("div").setStyle("width", "330px");
+            cb.one(".signup .password").ancestor("div").setStyle("width", "330px");
+            this.signUpButton.render(cb.one(".signup"));
+
+            //Create, append and hide from to ask a new password.
+            this.sendNewPasswordForm = new Y.inputEx.Group({
+                fields: [{
+                        name: "email",
+                        required: true,
+                        type: "email",
+                        typeInvite: "Email",
+                        className: "email"
+                    }],
+                parentEl: cb.one(".ask-pass"),
+                className: "ask-pass-group"
+            });
+            this.askPassButton.render(cb.one(".ask-pass"));
+            cb.one(".ask-pass").append('<p class="return">Create an account</p>');
+            cb.one(".ask-pass-zone").hide();
         },
         /**
          * @function
          * @private
          * @description bind function to events.
-         * When node alt-link is clicked, do toggleCreateAccount.
-         * When node send-new-password is clicked, do toggleSendNewPassword.
-         * When submit button is clicked, do onSubmit;
+         * Bind loginButton with login methode. 
+         * Bind signUpButton with createAccount methode. 
+         * Bind askPassButton with sendNewPasswordForm methode. 
+         * Bind loginButton with logn methode. 
          * When return key is pressed, click on submitButton by a fire event.
          * When widget is render, set focus to 'input' node.
          */
@@ -185,13 +260,39 @@ YUI.add('wegas-loginwidget', function(Y) {
             var cb = this.get(CONTENTBOX),
                     inputNode = cb.one("input");
 
-            this.handlers.toggleCreateAccount = cb.one(".alt-link").on("click", this.toggleCreateAccount, this);
-            this.handlers.toggleSendNewPassword = cb.one(".send-new-password").on("click", this.toggleSendNewPassword, this);
+            this.handlers.onAskingPass = cb.delegate("click", function() {
+                this.changeRightForms(true);
+            }, ".forgot", this);
 
-            this.handlers.onSubmit = this.submitButton.on("click", this.onSubmit, this);
+            this.handlers.onAskingCreate = cb.delegate("click", function() {
+                this.changeRightForms(false);
+            }, ".return", this);
+
+            this.handlers.onLogin = this.loginButton.on("click", function() {
+                var data;
+                if (this.loginForm.validate()) {
+                    data = this.loginForm.getValue();
+                    this.login(data.email, data.password, data.remember);
+                }
+            }, this);
+
+            this.handlers.onSignUp = this.signUpButton.on("click", function() {
+                if (this.createAccountForm.validate()) {
+                    this.createAccount(this.createAccountForm.getValue());
+                }
+            }, this);
+
+            this.handlers.onAskPass = this.askPassButton.on("click", function() {
+                var data;
+                if (this.sendNewPasswordForm.validate()) {
+                    data = this.sendNewPasswordForm.getValue();
+                    this.showOverlay();
+                    this.sendNewPassword(data.email);
+                }
+            }, this);
             this.handlers.keypress = this.on("keypress", function(e) {
                 if (e.domEvent.keyCode === 13) {
-                    this.submitButton.fire("click");
+                    this.loginButton.fire("click");
                 }
             });
             this.handlers.render = this.after("render", inputNode.focus, inputNode);
@@ -199,78 +300,35 @@ YUI.add('wegas-loginwidget', function(Y) {
         /**
          * @function
          * @private
-         * @description set the displayed form with the current form
-         */
-        syncUI: function() {
-            this.set("mode", this.get("mode"));
-        },
-        /**
-         * @function
-         * @private
          * @description Detach all functions created by this widget.
+         * Destroy buttons.
          */
         destructor: function() {
             for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
+            this.submitButton.destroy();
+            this.askPassButton.destroy();
+            this.signUpButton.destroy();
         },
         // *** Private methods *** //
         /**
          * @function
          * @private
-         * @description toggle mode to createAccount or login one.
+         * @param showAskForm, a boolean
+         * @description if showAskForm is true, hide "signup" form and "forgot Password" <p/> and show "ask password" form
+         * do the opposite else.
          */
-        toggleCreateAccount: function() {
-            if (this.get("mode") === "login") {
-                this.set("mode", "createaccount");
+        changeRightForms: function(showAskForm) {
+            var cb = this.get(CONTENTBOX);
+            if (showAskForm) {
+                cb.one(".signup-zone").hide();
+                cb.one(".forgot").hide();
+                cb.one(".ask-pass-zone").show();
             } else {
-                this.set("mode", "login");
-            }
-        },
-        /**
-         * @function
-         * @private
-         * @description toggle mode to sendNewPassword or login one.
-         */
-        toggleSendNewPassword: function() {
-            if (this.get("mode") === "login") {
-                this.set("mode", "sendNewPassword");
-            } else {
-                this.set("mode", "login");
-            }
-        },
-        /**
-         * @function
-         * @private
-         * @param e
-         * @description On submit, call function depending on the current mode :
-         * Mode login, call function login.
-         * Mode createaccount, call function createaccount.
-         * Mode sendNewPassword, call function sendNewPassword.
-         */
-        onSubmit: function(e) {
-            var data;
-            switch (this.get("mode")) {
-                case "login":
-                    if (this.loginForm.validate()) {
-                        data = this.loginForm.getValue();
-                        this.login(data.email, data.password, data.remember);
-                    }
-                    break;
-
-                case "createaccount":
-                    if (this.createAccountForm.validate()) {
-                        this.createAccount(this.createAccountForm.getValue());
-                    }
-                    break;
-
-                case "sendNewPassword":
-                    if (this.sendNewPasswordForm.validate()) {
-                        data = this.sendNewPasswordForm.getValue();
-                        this.showOverlay();
-                        this.sendNewPassword(data.email);
-                    }
-                    break;
+                cb.one(".ask-pass-zone").hide();
+                cb.one(".signup-zone").show();
+                cb.one(".forgot").show();
             }
         },
         /**
@@ -345,7 +403,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
                         this.showMessage("success", "Your new password had been sent", 4000);
-                        this.set("mode", "login");
+                        this.changeRightForms(false);
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
@@ -391,22 +449,6 @@ YUI.add('wegas-loginwidget', function(Y) {
                 }
             }
             return null;
-        },
-        /**
-         * @function
-         * @private
-         * @param form, the setted form.
-         * @description Get current value of email field in current view (if defined), and
-         * put it in email fields of all views.
-         */
-        keepEmail: function(form) {
-            if (!form || !form.getValue() || !form.getValue().email) {
-                return;
-            }
-            this.email = form.getValue().email;
-            this.loginForm.getFieldByName("email").setValue(this.email);
-            this.createAccountForm.getFieldByName("email").setValue(this.email);
-            this.sendNewPasswordForm.getFieldByName("email").setValue(this.email);
         }
 
     }, {
@@ -418,50 +460,51 @@ YUI.add('wegas-loginwidget', function(Y) {
          * @description
          * <p><strong>Attributes</strong></p>
          * <ul>
-         *    <li>Mode: login, createaccount or sendNewPassword, setter change
-         *     the mode and thus, the displayed form</li>
+         *    <li> - no one - </li>
          * </ul>
          */
-        ATTRS: {
-            mode: {
-                value: "login",
-                setter: function(val) {
-                    var cb = this.get(CONTENTBOX), oldVal = this.get("mode");
-                    if (oldVal === "login") {
-                        this.keepEmail(this.loginForm);
-                    } else if (oldVal === "createaccount") {
-                        this.keepEmail(this.createAccountForm);
-                    } else {
-                        this.keepEmail(this.sendNewPasswordForm);
-                    }
-                    if (val === "login") {
-                        //this.loginForm.clear();
-                        this.loginForm.show();
-                        this.createAccountForm.hide();
-                        this.sendNewPasswordForm.hide();
-                        this.submitButton.set("label", "Login");
-                        cb.one(".alt-link").setContent("Create a new user");
-                        cb.one(".send-new-password").show();
-                    } else if (val === 'createaccount') {
-                        this.loginForm.hide();
-                        this.createAccountForm.show();
-                        this.sendNewPasswordForm.hide();
-                        //this.createAccountForm.clear();
-                        this.submitButton.set("label", "Submit");
-                        cb.one(".alt-link").setContent("Login with existing account");
-                        cb.one(".send-new-password").hide();
-                    } else {
-                        this.loginForm.hide();
-                        this.createAccountForm.hide();
-                        this.sendNewPasswordForm.show();
-                        this.submitButton.set("label", "Submit");
-                        cb.one(".alt-link").setContent("Return to the login page");
-                        cb.one(".send-new-password").hide();
-                    }
-                }
-            }
-        }
+        ATTRS: {}
     });
     Y.namespace('Wegas').LoginWidget = LoginWidget;
 
+    /**
+     * Hack because "typeInvite" and password work bad (typeInvite is hid)
+     * Password field needs a "password" class.
+     */
+    Y.inputEx.StringField.prototype.updateTypeInvite = function() {
+
+        // field not focused
+        if (!Y.one(this.divEl).hasClass("inputEx-focused")) {
+
+            // show type invite if field is empty
+            if (this.isEmpty()) {
+                Y.one(this.divEl).addClass("inputEx-typeInvite");
+                if (this.fieldContainer.className.indexOf("password") > -1) {
+                    this.el.setAttribute("type", "");
+                }
+                this.el.value = this.options.typeInvite;
+
+                // important for setValue to work with typeInvite
+            } else {
+                if (this.fieldContainer.className.indexOf("password") > -1) {
+                    this.el.setAttribute("type", "password");
+                }
+                Y.one(this.divEl).removeClass("inputEx-typeInvite");
+            }
+
+            // field focused : remove type invite
+        } else {
+            if (Y.one(this.divEl).hasClass("inputEx-typeInvite")) {
+                // remove text
+                this.el.value = "";
+                // remove the "empty" state and class
+                this.previousState = null;
+                if (this.fieldContainer.className.indexOf("password") > -1) {
+                    this.el.setAttribute("type", "password");
+                }
+                Y.one(this.divEl).removeClass("inputEx-typeInvite");
+
+            }
+        }
+    };
 });

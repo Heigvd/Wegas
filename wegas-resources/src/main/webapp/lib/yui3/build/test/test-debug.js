@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -26,7 +26,7 @@ if (YUI.YUITest) {
 
     //Make this global for back compat
     YUITest = {
-        version: "3.10.1",
+        version: "3.10.3",
         guid: function(pre) {
             return Y.guid(pre);
         }
@@ -3770,4 +3770,4 @@ if (!YUI.YUITest) {
 } //End if for YUI.YUITest
 
 
-}, '3.10.1', {"requires": ["event-simulate", "event-custom", "json-stringify"]});
+}, '3.10.3', {"requires": ["event-simulate", "event-custom", "json-stringify"]});

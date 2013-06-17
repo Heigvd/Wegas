@@ -252,7 +252,7 @@ public class UserController {
 
         checkGmOrGPermission(id, "GameModel:Edit:", "Game:Edit:");
 
-        return this.userFacade.findPermissionByInstance(id);
+        return this.userFacade.findRolePermissionByInstance(instance);
     }
 
     /**

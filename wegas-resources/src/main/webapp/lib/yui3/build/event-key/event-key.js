@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -141,7 +141,7 @@ eventDef.detachDelegate = eventDef.detach;
  * <p>Add a key listener.  The listener will only be notified if the
  * keystroke detected meets the supplied specification.  The
  * specification is a string that is defined as:</p>
- * 
+ *
  * <dl>
  *   <dt>spec</dt>
  *   <dd><code>[{type}:]{code}[,{code}]*</code></dd>
@@ -161,7 +161,7 @@ eventDef.detachDelegate = eventDef.detach;
  *   <li><code>Y.delegate("key", preventSubmit, "#forms", "enter", "input[type=text]");</code></li>
  *   <li><code>Y.one("doc").on("key", viNav, "j,k,l,;");</code></li>
  * </ul>
- *   
+ *
  * @event key
  * @for YUI
  * @param type {string} 'key'
@@ -175,4 +175,4 @@ eventDef.detachDelegate = eventDef.detach;
 Y.Event.define('key', eventDef, true);
 
 
-}, '3.10.1', {"requires": ["event-synthetic"]});
+}, '3.10.3', {"requires": ["event-synthetic"]});

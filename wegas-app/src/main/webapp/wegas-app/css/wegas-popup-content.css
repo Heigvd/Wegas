@@ -1,0 +1,50 @@
+.wegas-popup{
+    position:absolute;
+    max-width: 100%;
+    max-height: 100%;
+}
+.wegas-popup-content {
+    text-align: center;   
+    margin: 10px;
+    background: rgba(110, 110, 110, 0.8);
+    border-radius: 10px;
+    box-shadow: 1px 2px 4px #6D6D6D;
+    border: 1px solid #6E6E6E;
+    color: white;
+    padding: 1em 1em 0.2em 1em;
+    position: relative;
+}
+.wegas-popup-content .yui3-widget-bd{
+    text-align: center;
+    overflow: auto;
+}
+.wegas-popup-content .yui3-widget-ft{
+    padding-top: 10px;
+    text-align: right;
+}
+.wegas-popup-content .yui3-widget-ft button{
+    background-color: rgba(160, 160, 160, 0.8);
+    color: white;
+
+}
+.wegas-popup-content .yui3-widget-bd .icon{
+    background-repeat: no-repeat;
+    min-height: 48px;
+    padding-left: 48px;
+}
+.wegas-popup-content .yui3-widget-bd .icon-error{
+    background-image: url(../images/wegas-icon-error-48.png)
+}
+.wegas-popup-content .yui3-widget-bd .icon-success{
+    background-image: url(../images/wegas-icon-success-48.png)
+}
+.wegas-popup-content .yui3-widget-bd .icon-info{
+    background-image: url(../images/wegas-icon-info-48.png)
+}
+.wegas-popup-content .yui3-widget-bd .icon-warn{
+    background-image: url(../images/wegas-icon-warning-48.png)
+}
+.wegas-popup-hidden { 
+    display: none;
+}
+

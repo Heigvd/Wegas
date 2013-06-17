@@ -34,7 +34,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
         final QuestionDescriptorFacade qdf = lookupBy(QuestionDescriptorFacade.class);
 
-        final NumberDescriptor myNumber =  new NumberDescriptor();              // Create a number descriptor
+        final NumberDescriptor myNumber = new NumberDescriptor();              // Create a number descriptor
         myNumber.setName("mynumber");
         myNumber.setDefaultInstance(new NumberInstance(0));
         myNumber.setScope(new TeamScope());

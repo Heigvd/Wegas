@@ -3,8 +3,10 @@
     "type": "PageLoader",
     "defaultPageId": 1,
     "plugins": [{
-        "fn": "CSSLoader"
-    }, {
-        "fn": "Injector"
-    }]
+            "fn": "CSSLoader"
+        }, {
+            "fn": "Injector"
+        }, {
+            "fn": "PopupListener"
+        }]
 }

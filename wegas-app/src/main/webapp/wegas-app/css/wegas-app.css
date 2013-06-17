@@ -75,6 +75,19 @@ body h6{
     margin: -2px 2px 0 0;
 }
 
+/* YUI3 blue color redefinition */
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label{
+    border-color: #041526
+}
+
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label, .yui3-skin-sam .yui3-tab-selected .yui3-tab-label:focus, .yui3-skin-sam .yui3-tab-selected .yui3-tab-label:hover {
+    background:url("../images/yui_sprite.png") 0% -1400px repeat-x #072644;
+}
+
+.yui3-skin-sam .yui3-tabview-list{
+    border-color:#072644;
+}
+
 /*  App styles */
 .yui3-skin-sam .wegas-title  {
     font-weight: 900;
@@ -196,6 +209,10 @@ body h6{
     vertical-align:top;
 }
 .wegas-list-vertical > div {
+}
+.wegas-list-content:empty:before,
+.wegas-choicelist-content:empty:before{
+    content:"Empty list"
 }
 
 /* PROGRESSBAR */

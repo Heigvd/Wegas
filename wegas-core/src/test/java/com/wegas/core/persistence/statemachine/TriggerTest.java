@@ -15,8 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Testing Triggers, class TriggerInstance and class
- * TriggerDescriptor
+ * Testing Triggers, class TriggerInstance and class TriggerDescriptor
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
@@ -29,7 +28,7 @@ public class TriggerTest {
     @Before
     public void setUp() {
         this.trigger = new TriggerInstance();
-       // this.trigger.setId(666L);
+        // this.trigger.setId(666L);
         this.triggerDescriptor = new TriggerDescriptor();
         this.triggerDescriptor.setDefaultInstance(this.trigger);
         this.triggerDescriptor.setName("testTrigger");
@@ -94,15 +93,15 @@ public class TriggerTest {
     public void testMerge() {
         System.out.println("Merge trigger");
         TriggerInstance instanceEntity = new TriggerInstance();
-     //   instanceEntity.setId(45L);
+        //   instanceEntity.setId(45L);
         instanceEntity.setCurrentStateId(2L);
         this.triggerDescriptor.setOneShot(false);
-      //  this.triggerDescriptor.setId(4L);
+        //  this.triggerDescriptor.setId(4L);
         this.triggerDescriptor.buildStateMachine();
         this.triggerDescriptor.setScope(new TeamScope());
         TriggerDescriptor newTrigger = new TriggerDescriptor();
         newTrigger.setDefaultInstance(this.trigger);
-       // newTrigger.setId(5L);
+        // newTrigger.setId(5L);
         newTrigger.setOneShot(true);
         Script newTestScript = new Script();
         newTestScript.setLanguage("Python");
@@ -111,7 +110,7 @@ public class TriggerTest {
         newTrigger.setDefaultInstance(instanceEntity);
         newTrigger.setTriggerEvent(newTestScript);
         this.triggerDescriptor.merge(newTrigger);
-       // assert this.triggerDescriptor.getId() == 4L;
+        // assert this.triggerDescriptor.getId() == 4L;
         assert this.triggerDescriptor.getPostTriggerEvent().equals(newTestScript);
         assert this.triggerDescriptor.getTriggerEvent().equals(newTestScript);
         assert (this.triggerDescriptor.getPostTriggerEvent().getContent() == null ? newTestScript.getContent() == null : this.triggerDescriptor.getPostTriggerEvent().getContent().equals(newTestScript.getContent()));

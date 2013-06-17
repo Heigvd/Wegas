@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -98,7 +98,7 @@ var domEventProxies = Y.Env.evt.dom_wrappers,
 
             if (currentTarget) {
                 currentTarget = toArray(currentTarget);
-                
+
                 for (i = 0, len = currentTarget.length && (!e || !e.stopped); i < len; ++i) {
                     ct = currentTarget[0];
                     if (!contains(ct, related)) {
@@ -133,4 +133,4 @@ Y.Event.define("mouseleave", Y.merge(config, {
 }), true);
 
 
-}, '3.10.1', {"requires": ["event-synthetic"]});
+}, '3.10.3', {"requires": ["event-synthetic"]});

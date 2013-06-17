@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -900,4 +900,4 @@ Y.DataTable.Sortable = Sortable;
 Y.Base.mix(Y.DataTable, [Sortable]);
 
 
-}, '3.10.1', {"requires": ["datatable-base"], "lang": ["en", "fr", "es"], "skinnable": true});
+}, '3.10.3', {"requires": ["datatable-base"], "lang": ["en", "fr", "es"], "skinnable": true});

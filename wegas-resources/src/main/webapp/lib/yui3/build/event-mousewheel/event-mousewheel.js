@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -33,7 +33,7 @@ var DOM_MOUSE_SCROLL = 'DOMMouseScroll',
 
 /**
  * Mousewheel event.  This listener is automatically attached to the
- * correct target, so one should not be supplied.  Mouse wheel 
+ * correct target, so one should not be supplied.  Mouse wheel
  * direction and velocity is stored in the 'wheelDelta' field.
  * @event mousewheel
  * @param type {string} 'mousewheel'
@@ -54,4 +54,4 @@ Y.Env.evt.plugins.mousewheel = {
 };
 
 
-}, '3.10.1', {"requires": ["node-base"]});
+}, '3.10.3', {"requires": ["node-base"]});

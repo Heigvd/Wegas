@@ -78,6 +78,7 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
         }
         AbstractAccount oAccount = super.update(entityId, account);
         oAccount.setRoles(revivedRoles);
+
         return oAccount;
     }
 

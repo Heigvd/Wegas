@@ -24,7 +24,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"name", "parentgame_id"}))
+        @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({
     @NamedQuery(name = "findTeamByToken", query = "SELECT team FROM Team team WHERE team.token = :token")

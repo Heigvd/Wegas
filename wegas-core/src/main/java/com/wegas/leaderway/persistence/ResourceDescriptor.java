@@ -34,6 +34,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
+
     /**
      *
      * @param a

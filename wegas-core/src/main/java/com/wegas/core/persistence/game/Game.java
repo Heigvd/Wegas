@@ -30,7 +30,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @Table(uniqueConstraints =
-@UniqueConstraint(columnNames = {"game_id", "name"}))
+        @UniqueConstraint(columnNames = {"game_id", "name"}))
 public class Game extends NamedEntity {
 
     /**

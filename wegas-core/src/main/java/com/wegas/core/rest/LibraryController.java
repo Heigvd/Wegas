@@ -33,6 +33,18 @@ public class LibraryController {
     @EJB
     private GameModelFacade gameModelFacade;
 
+    @GET
+    @Path("{library:.*}")
+    public Map get(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("library") String library) {
+        
+        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
+        
+        return this.findLibrary(gameModelId, library);
+    }
+
+//    @GET
+//    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
     /**
      *
      * @param gameModelId

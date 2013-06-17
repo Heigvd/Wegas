@@ -21,7 +21,7 @@ public abstract class NamedEntity extends AbstractEntity {
      */
     @Override
     public void merge(AbstractEntity n) {
-        this.setName(( (NamedEntity) n ).getName());
+        this.setName(((NamedEntity) n).getName());
     }
 
     /**
@@ -45,7 +45,6 @@ public abstract class NamedEntity extends AbstractEntity {
         return this.getClass().getSimpleName() + "( " + getId() + ", " + getName() + ")";
     }
 
-
     @Override
     public int hashCode() {
         int hash = 7;
@@ -53,5 +52,4 @@ public abstract class NamedEntity extends AbstractEntity {
         hash = 37 * hash + Objects.hashCode(this.getId());
         return hash;
     }
-
 }

@@ -14,6 +14,7 @@ package com.wegas.core.security.jparealm;
 import com.wegas.core.Helper;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;
@@ -48,11 +49,9 @@ public class JpaRealm extends AuthorizingRealm {
             SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
             info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
             return info;
-        }
-        catch (EJBException e) {
+        } catch (EJBException e) {
             return null;
-        }
-        catch (NamingException ex) {
+        } catch (NamingException ex) {
             logger.error("Unable to find AocountFacade EJB", ex);
             return null;
         }
@@ -67,15 +66,19 @@ public class JpaRealm extends AuthorizingRealm {
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
             for (Role role : account.getRoles()) {
                 info.addRole(role.getName());
-                info.addStringPermissions(role.getPermissions());
+
+                for (Permission p : role.getPermissions()) {
+                    addPermissions(info, p);
+                }
             }
-            info.addStringPermissions(account.getPermissions());
+
+            for (Permission p : account.getPermissions()) {
+                addPermissions(info, p);
+            }
             return info;
-        }
-        catch (EJBException e) {
+        } catch (EJBException e) {
             return null;
-        }
-        catch (NamingException ex) {
+        } catch (NamingException ex) {
             logger.error("Unable to find AocountFacade EJB", ex);
             return null;
         }
@@ -83,10 +86,16 @@ public class JpaRealm extends AuthorizingRealm {
 
     /**
      *
-     * @return
-     * @throws NamingException
+     * @return @throws NamingException
      */
     public AccountFacade accountFacade() throws NamingException {
         return Helper.lookupBy(AccountFacade.class);
+    }
+
+    public static void addPermissions(SimpleAuthorizationInfo info, Permission p) {
+        info.addStringPermission(p.getValue());
+        if (p.getInducedPermission() != null && !p.getInducedPermission().isEmpty()) {
+            info.addStringPermission(p.getInducedPermission());
+        }
     }
 }

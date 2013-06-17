@@ -11,7 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ListDescriptor;
-import com.wegas.core.persistence.variable.ListDescriptorI;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -63,63 +63,49 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
     /**
      *
-     * @fixme Remove the pattern that getUsedNames, for get available name
-     *
-     * @param parentGameModel
-     * @param variableDescriptor
-     */
-    public void create(final GameModel parentGameModel, final VariableDescriptor variableDescriptor) {
-        final List<String> usedNames = this.getUsedNames(parentGameModel.getId());
-
-        if (variableDescriptor.getLabel() == null) {
-            variableDescriptor.setLabel((variableDescriptor.getName() == null)
-                    ? "unnamed" : variableDescriptor.getName());
-        }
-
-        //Fill name with label if it is empty
-        if (variableDescriptor.getName() == null || variableDescriptor.getName().isEmpty()) {
-            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getLabel(), usedNames));
-        }
-
-        if (usedNames.contains(variableDescriptor.getName())) {                 //build a unique name
-            variableDescriptor.setName(Helper.buildUniqueName(variableDescriptor.getName(), usedNames));
-        }
-        parentGameModel.addVariableDescriptor(variableDescriptor);
-    }
-
-    /**
-     *
      * @param variableDescriptorId
      * @param entity
      * @return
      */
-    public ListDescriptorI createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
-        return this.createChild((ListDescriptorI) this.find(variableDescriptorId), entity);
+    public DescriptorListI createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
+        return this.createChild((DescriptorListI) this.find(variableDescriptorId), entity);
     }
 
     /**
      *
      * @fixme Remove the pattern that getUsedNames, for get available name
+     * @problem if we drag and drop the element, the name should also be checked
      *
      * @param listDescriptor
      * @param entity
      * @return
      */
-    public ListDescriptorI createChild(final ListDescriptorI listDescriptor, final VariableDescriptor entity) {
-        final Iterator<VariableDescriptor> iterator = listDescriptor.getItems().iterator();
-        final List<String> usedNames = new ArrayList<>();
-        while (iterator.hasNext()) {
-            usedNames.add(iterator.next().getName());
+    public DescriptorListI createChild(final DescriptorListI list, final VariableDescriptor entity) {
+
+        List<String> usedNames = new ArrayList<>();
+        if (list instanceof GameModel) {                                        // First case, entity is created at root level
+            usedNames = this.getUsedNames(((GameModel) list).getId());
+        } else {                                                                // Second case, in a descriptor
+            final Iterator<VariableDescriptor> iterator = list.getItems().iterator();
+            while (iterator.hasNext()) {
+                usedNames.add(iterator.next().getName());
+            }
+        }
+
+        //Fill name with label if it is empty
+        if (entity.getLabel() == null) {
+            entity.setLabel((entity.getName() == null)
+                    ? "unnamed" : entity.getName());
         }
         if (entity.getName() == null || entity.getName().isEmpty()) {
             entity.setName(Helper.buildUniqueName(entity.getLabel(), usedNames));
         }
-        //build a unique name
-        if (usedNames.contains(entity.getName())) {
+
+        if (usedNames.contains(entity.getName())) {                 //build a unique name
             entity.setName(Helper.buildUniqueName(entity.getName(), usedNames));
         }
-        listDescriptor.addItem(entity);
-        return listDescriptor;
+        list.addItem(entity);
+        return list;
     }
 
     /**
@@ -128,7 +114,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param variableDescriptor
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
-        this.create(this.gameModelFacade.find(gameModelId), variableDescriptor);
+        this.createChild(this.gameModelFacade.find(gameModelId), variableDescriptor);
     }
 
     /**
@@ -161,21 +147,20 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
             }
         }
 
-        try {                                                                   // If the duplicated var is in a List
+        DescriptorListI list = this.findParentList(oldEntity);
+        this.createChild(list, newEntity);
+        return newEntity;
+    }
 
-            ListDescriptorI parentVar;
-            if (oldEntity instanceof ChoiceDescriptor) {                        // QuestionDescriptor descriptor case
-                parentVar = ((ChoiceDescriptor) oldEntity).getQuestion();
-                this.createChild(parentVar, newEntity);
-                return (VariableDescriptor) parentVar;
-            } else {                                                            // ListDescriptor case
-                parentVar = this.findParentListDescriptor(oldEntity);           // Add the entity to this list
-                this.createChild(parentVar, newEntity);
-                return (VariableDescriptor) parentVar;
+    private DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {
+        if (vd instanceof ChoiceDescriptor) {                                   // QuestionDescriptor descriptor case
+            return ((ChoiceDescriptor) vd).getQuestion();
+        } else {
+            try {
+                return this.findParentListDescriptor(vd);                           // ListDescriptor case
+            } catch (NoResultException e) {                                         // Descriptor is at root level
+                return vd.getGameModel();
             }
-        } catch (NoResultException e) {
-            this.create(oldEntity.getGameModel(), newEntity);                   // Store the newly created entity in db
-            return newEntity;                                                   // Otherwise return it directly
         }
     }
 
@@ -254,10 +239,14 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param gameModelId
      * @return
      */
-    public List<VariableDescriptor> findByGameModelId(final Long gameModelId) {
+    public List<VariableDescriptor> findAllByGameModelId(final Long gameModelId) {
         final Query findByRootGameModelId = em.createNamedQuery("findVariableDescriptorsByRootGameModelId");
         findByRootGameModelId.setParameter("gameModelId", gameModelId);
         return findByRootGameModelId.getResultList();
+    }
+
+    public List<VariableDescriptor> findByGameModelId(final Long gameModelId) {
+        return gameModelFacade.find(gameModelId).getChildVariableDescriptors();
     }
 
     /**
@@ -305,10 +294,25 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      */
     private List<String> getUsedNames(final Long gameModelId) {
         final List<String> unavailable = new ArrayList<>();
-        final List<VariableDescriptor> descriptors = this.findByGameModelId(gameModelId);
+        final List<VariableDescriptor> descriptors = this.findAllByGameModelId(gameModelId);
         for (VariableDescriptor d : descriptors) {
             unavailable.add(d.getName());
         }
         return unavailable;
+    }
+
+    public void move(final Long descriptorId, final int index) {
+        final VariableDescriptor vd = this.find(descriptorId);
+
+        this.findParentList(vd).remove(vd);
+        vd.getGameModel().addItem(index, vd);
+    }
+
+    public void move(final Long descriptorId, final Long targetListDescriptorId, final int index) {
+        final VariableDescriptor vd = this.find(descriptorId);
+        final DescriptorListI targetList = (DescriptorListI) this.find(targetListDescriptorId);
+
+        this.findParentList(vd).remove(vd);
+        targetList.addItem(index, vd);
     }
 }

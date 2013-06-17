@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public interface ListDescriptorI<T extends VariableDescriptor> {
+public interface DescriptorListI<T extends VariableDescriptor> {
 
     /**
      * @return the variableDescriptors
@@ -33,8 +33,22 @@ public interface ListDescriptorI<T extends VariableDescriptor> {
 
     /**
      *
+     * @param item
+     */
+    public void addItem(int index, T item);
+
+    /**
+     *
+     * @param item
+     */
+    public int size();
+
+    /**
+     *
      * @param index
      * @return
      */
     public T item(int index);
+
+    public boolean remove(T item);
 }

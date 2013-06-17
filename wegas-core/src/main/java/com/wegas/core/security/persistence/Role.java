@@ -8,8 +8,9 @@
 package com.wegas.core.security.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import java.util.HashSet;
-import java.util.Set;
+import com.wegas.core.persistence.ListUtils;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.*;
 
 /**
@@ -19,9 +20,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "roles", uniqueConstraints = {
     @UniqueConstraint(columnNames = "name")
-})
-@NamedQueries({
-    @NamedQuery(name = "findPermissionByGameModelId", query = "SELECT DISTINCT roles FROM Role roles WHERE roles.permissions LIKE :gameId"),
 })
 @Cacheable(true)
 public class Role extends AbstractEntity {
@@ -47,8 +45,9 @@ public class Role extends AbstractEntity {
     /**
      *
      */
-    @ElementCollection
-    private Set<String> permissions = new HashSet<>();
+    //@ElementCollection(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
+    private List<Permission> permissions = new ArrayList<>();
 
     /**
      *
@@ -69,7 +68,7 @@ public class Role extends AbstractEntity {
         Role r = (Role) other;
         this.setName(r.getName());
         this.setDescription(r.getDescription());
-        this.setPermissions(r.getPermissions());
+        ListUtils.mergeLists(this.permissions, r.getPermissions());
     }
 
     /**
@@ -125,7 +124,7 @@ public class Role extends AbstractEntity {
      *
      * @return
      */
-    public Set<String> getPermissions() {
+    public List<Permission> getPermissions() {
         return permissions;
     }
 
@@ -133,7 +132,32 @@ public class Role extends AbstractEntity {
      *
      * @param permissions
      */
-    public void setPermissions(Set<String> permissions) {
+    public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
+        for (Permission p: this.permissions) {
+            p.setRole(this);
+        }
+    }
+
+    public boolean addPermission(String permission) {
+        return this.addPermission(new Permission(permission));
+    }
+
+    public boolean addPermission(Permission permission) {
+        if (!this.permissions.contains(permission)) {
+            permission.setRole(this);
+            return this.permissions.add(permission);
+        } else {
+            return false;
+        }
+    }
+
+    public boolean removePermission(String permission) {
+        return this.permissions.remove(new Permission(permission));
+    }
+
+    @Override
+    public String toString() {
+        return "Role(" + this.id + ", " + this.name + ")";
     }
 }

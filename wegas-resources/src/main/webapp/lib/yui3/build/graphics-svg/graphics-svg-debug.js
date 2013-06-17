@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -36,6 +36,18 @@ function SVGDrawing(){}
  * @constructor
  */
 SVGDrawing.prototype = {
+    /**
+     * Rounds a value to the nearest hundredth.
+     *
+     * @method _round
+     * @param {Number} val Value to be rounded.
+     * @return Number
+     * @private
+     */
+    _round: function(val) {
+        return Math.round(val * 100)/100;
+    },
+
     /**
      * Maps path to methods
      *
@@ -472,8 +484,8 @@ SVGDrawing.prototype = {
             this._pathType = "L";
             pathArrayLen++;
             this._pathArray[pathArrayLen] = ["L"];
-            this._pathArray[pathArrayLen].push(Math.round(ax));
-            this._pathArray[pathArrayLen].push(Math.round(ay));
+            this._pathArray[pathArrayLen].push(this._round(ax));
+            this._pathArray[pathArrayLen].push(this._round(ay));
             pathArrayLen++;
             this._pathType = "Q";
             this._pathArray[pathArrayLen] = ["Q"];
@@ -485,10 +497,10 @@ SVGDrawing.prototype = {
                 by = y + Math.sin(angle) * yRadius;
                 cx = x + Math.cos(angleMid) * (radius / Math.cos(theta / 2));
                 cy = y + Math.sin(angleMid) * (yRadius / Math.cos(theta / 2));
-                this._pathArray[pathArrayLen].push(Math.round(cx));
-                this._pathArray[pathArrayLen].push(Math.round(cy));
-                this._pathArray[pathArrayLen].push(Math.round(bx));
-                this._pathArray[pathArrayLen].push(Math.round(by));
+                this._pathArray[pathArrayLen].push(this._round(cx));
+                this._pathArray[pathArrayLen].push(this._round(cy));
+                this._pathArray[pathArrayLen].push(this._round(bx));
+                this._pathArray[pathArrayLen].push(this._round(by));
             }
         }
         this._currentX = x;
@@ -3505,4 +3517,4 @@ Y.SVGGraphic = SVGGraphic;
 
 
 
-}, '3.10.1', {"requires": ["graphics"]});
+}, '3.10.3', {"requires": ["graphics"]});
