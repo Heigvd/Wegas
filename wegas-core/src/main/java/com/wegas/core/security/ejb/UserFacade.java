@@ -302,9 +302,9 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                 + "WHERE abstractaccount.permissions LIKE '%:" + instance + "'" 
                 + "AND abstractaccount.id =" + accountId);
         AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
-        em.detach(account);
-        for (Iterator<String> sit = account.getPermissions().iterator(); sit.hasNext();) {
-            String p = sit.next();
+        //em.detach(account);
+        for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
+            String p = sit.next().getValue();
             String splitedPermission[] = p.split(":");
             if (splitedPermission.length >= 3) {
                 if (splitedPermission[2].equals(instance)) {
@@ -312,7 +312,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                 }
             }
         }
-        em.merge(account);
+        //em.merge(account);
     }
 
     /**

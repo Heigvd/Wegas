@@ -247,10 +247,10 @@ public class UserController {
      * @return
      */
     @GET
-    @Path("FindPermissionByInstance/{gameModelId}")
-    public List<Map> findPermissionByInstance(@PathParam(value = "gameModelId") String id) {
+    @Path("FindPermissionByInstance/{instance}")
+    public List<Map> findPermissionByInstance(@PathParam(value = "instance") String instance) {
 
-        checkGmOrGPermission(id, "GameModel:Edit:", "Game:Edit:");
+        checkGmOrGPermission(instance, "GameModel:Edit:", "Game:Edit:");
 
         return this.userFacade.findRolePermissionByInstance(instance);
     }
