@@ -607,6 +607,16 @@ YUI().use(function(Y) {
                     requires: ['wegas-datasource', 'wegas-list'],
                     ws_provides: "PageTreeview"
                 },
+                'wegas-sharerole': {
+                    path: 'wegas-editor/js/widget/wegas-sharerole-min.js',
+                    requires: ['inputex-select', 'inputex-list', "inputex-checkbox"],
+                    ws_provides: "ShareRole"
+                }, 
+                'wegas-shareuser': {
+                    path: 'wegas-editor/js/widget/wegas-shareuser-min.js',
+                    requires: ['inputex-list', "inputex-checkbox", "inputex-autocomplete", 'autocomplete-highlighters', 'inputex-hidden'],
+                    ws_provides: "ShareUser"
+                },
                 /**
                  * Project Management Game
                  */

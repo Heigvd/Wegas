@@ -10,6 +10,7 @@ package com.wegas.core.security.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.exception.NoResultException;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
 public class UserFacade extends AbstractFacadeImpl<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
+    private static final int MAXRESULT = 30;
     /**
      *
      */
@@ -106,6 +108,25 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             }
 
         }
+    }
+    
+    public List<Map> findAccountByEmail(String email){
+        Query findByToken = em.createNamedQuery("findAccountByEmail");
+        findByToken.setParameter("email", "%" + email + "%");
+        findByToken.setMaxResults(MAXRESULT);
+        List<AbstractAccount> res = (List<AbstractAccount>) findByToken.getResultList();
+        List<Map> returnValue = new ArrayList<>();
+        for (AbstractAccount a : res){
+            Map account = new HashMap<>();
+            returnValue.add(account);
+            if (a.getFirstname() != null && a.getLastname() != null){
+                account.put("label", a.getFirstname() + " " + a.getLastname());
+            } else {
+                account.put("label", a.getEmail());
+            }
+            account.put("value", a.getId());
+        }
+        return returnValue;
     }
 
     @Override
@@ -254,6 +275,13 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             }
         }
     }
+    
+    public List<AbstractAccount> findAccountPermissionByInstance(String instance) {
+        Query findByToken = em.createNamedQuery("findUserPermissions");
+        findByToken.setParameter("gameId", "%:" + instance);
+        List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
+        return accounts;
+    }
 
     /**
      *
@@ -276,8 +304,24 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             }
             em.merge(a);
         }
-
-
+    }
+    
+    public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) throws NoResultException {
+        Query findByToken = em.createQuery("SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount "
+                + "WHERE abstractaccount.permissions LIKE '%:" + instance + "'" 
+                + "AND abstractaccount.id =" + accountId);
+        AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
+        em.detach(account);
+        for (Iterator<String> sit = account.getPermissions().iterator(); sit.hasNext();) {
+            String p = sit.next();
+            String splitedPermission[] = p.split(":");
+            if (splitedPermission.length >= 3) {
+                if (splitedPermission[2].equals(instance)) {
+                    sit.remove();
+                }
+            }
+        }
+        em.merge(account);
     }
 
     /**

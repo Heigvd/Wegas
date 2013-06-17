@@ -225,7 +225,7 @@ YUI.add('wegas-entity', function(Y) {
                                             name: "GameModel:View"
                                         }, {
                                             name: "GameModel:Edit",
-                                            value: "GameModel:Edit,View,Delete"
+                                            value: "GameModel:View,Edit,Delete"
                                         }, {
                                             name: "GameModel:Duplicate",
                                             value: "GameModel:View,Duplicate"
@@ -347,6 +347,38 @@ YUI.add('wegas-entity', function(Y) {
                                         }, {
                                             name: "Game:Token"
                                         }]
+                                }],
+                            tabSelector: '#rightTabView'
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "ShareNew",
+                cssClass: "editor-shareGame-button",
+                plugins: [{
+                        fn: "OpenTabAction",
+                        cfg: {
+                            wchildren: [{
+                                    type: "ShareUser",
+                                    permsList: [{
+                                            label: "View",
+                                            value: "Game:View"
+                                        }, {
+                                            label: "Edit",
+                                            value: "Game:View,Edit"
+                                        }, {
+                                            label: "Token",
+                                            value: "Game:Token"
+                                        }]
+//                                }, {
+//                                    type: "ShareRole",
+//                                    permsList: [{
+//                                            name: "Public",
+//                                            value: "Game:View"
+//                                        }, {
+//                                            name: "Link",
+//                                            value: "Game:Token"
+//                                        }]
                                 }],
                             tabSelector: '#rightTabView'
                         }
