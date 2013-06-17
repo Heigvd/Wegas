@@ -51,7 +51,7 @@ YUI.add('wegas-pageloader', function(Y) {
             if (this.get("defaultPageId")) {
                 this.set("pageId", this.get("defaultPageId"));
             }
-
+            this.publish("contentUpdated", {emitFacade: false});
         },
         /**
          * @function
@@ -204,12 +204,13 @@ YUI.add('wegas-pageloader', function(Y) {
                         this.showOverlay();
                         try {
                             Y.Wegas.Widget.use(widgetCfg, Y.bind(function(cfg) {    // Load the subwidget dependencies
-                                    var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
-                                    widget.render(this.get(CONTENTBOX));
-                                    widget['@pageId'] = cfg['@pageId'];
-                                    this.set("widget", widget);
-                                    widget.addTarget(this);                             // Event on the loaded widget will be forwarded
-                                    this.hideOverlay();
+                                var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
+                                widget.render(this.get(CONTENTBOX));
+                                widget['@pageId'] = cfg['@pageId'];
+                                this.set("widget", widget);
+                                widget.addTarget(this);                             // Event on the loaded widget will be forwarded
+                                this.hideOverlay();
+                                this.fire("contentUpdated");
                             }, this, widgetCfg));
                         } catch (e) {
                             Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
