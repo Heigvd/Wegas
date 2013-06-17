@@ -110,7 +110,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                     <div class='content'>\n\
                         <div class='left'>\n\
                             <div class='logo'>\n\
-                                <img src='../images/wegas-logo_white.png' alt='logo' height='82px' width:'191px';/>\n\
+                                <img src='../images/wegas-logo_white.png' alt='logo' height='60px' width='140px'/>\n\
                             </div>\n\
                         </div>\n\
                         <div class='right login'></div>\n\
@@ -118,7 +118,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 </div>\n\
                 <div class='content'>\n\
                     <div class='main left'>\n\
-                        <h1>Welcom to Wegas</h1>\n\
+                        <h1>Welcome to Wegas</h1>\n\
                         <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games. No programming skills is required, you can create your own scenario or to adapt an existing by adding elements from other simulations. Advanced users can even create their own serious game from A to Z!</p>\n\
                         <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='200px' width='397px'/></div>\n\
                     </div>\n\

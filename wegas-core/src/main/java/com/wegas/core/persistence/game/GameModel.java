@@ -89,7 +89,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "scriptlibrary_gamemodelid")
     //@ElementCollection(fetch = FetchType.LAZY)
-    @JsonView({Views.EditorI.class})
+    @JsonView({Views.Export.class})
     private Map<String, GameModelContent> scriptLibrary = new HashMap<>();
     /**
      *
@@ -97,7 +97,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "csslibrary_gamemodelid")
     //@ElementCollection(fetch = FetchType.LAZY)
-    @JsonView({Views.EditorI.class})
+    @JsonView({Views.Export.class})
     private Map<String, GameModelContent> cssLibrary = new HashMap<>();
     /**
      *
@@ -105,7 +105,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "clientscriptlibrary_gamemodelid")
     //@ElementCollection(fetch = FetchType.LAZY)
-    @JsonView({Views.EditorI.class})
+    @JsonView({Views.Export.class})
     private Map<String, GameModelContent> clientScriptLibrary = new HashMap<>();
     /**
      *
