@@ -62,7 +62,7 @@ public class GuestRealm extends AuthorizingRealm {
             info.addRole("Public");
             for (Permission p : role.getPermissions()) {
                 info.addStringPermission(p.getValue());
-             //   info.addStringPermission(p.getInducedPermission());
+                info.addStringPermission(p.getInducedPermission());
             }
             return info;
         } catch (EJBException e) {
