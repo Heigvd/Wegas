@@ -1,12 +1,7 @@
 package com.wegas.leaderway.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
