@@ -25,6 +25,7 @@ YUI.add('wegas-cssstyles', function(Y) {
         /** @lends Y.Plugin.CSSStyles */
 
         /**
+         * Lifecycle methods
          * @function
          * @private
          */
@@ -36,6 +37,11 @@ YUI.add('wegas-cssstyles', function(Y) {
             });
         },
 
+        /**
+         * @function
+         * @private
+         * @description remove a style
+         */
         removeStyle: function(e) {
             var styleToRemove;
             for (styleToRemove in e.prevVal){
@@ -45,7 +51,10 @@ YUI.add('wegas-cssstyles', function(Y) {
                 }
             }
         },
-                
+        /**
+         * @function
+         * @private
+         */        
         setStyle: function(newStylesList, style){
             if (styleList.indexOf(style) === -1){
                 styleList.push(style);
@@ -53,6 +62,11 @@ YUI.add('wegas-cssstyles', function(Y) {
             node.setStyle(style, newStylesList[style]);
         },
         
+        /**
+         * Destructor methods.
+         * @function
+         * @private
+         */
         destructor: function(){
             var styleToRemove;
             for (styleToRemove in this.get("styles")){
@@ -61,6 +75,11 @@ YUI.add('wegas-cssstyles', function(Y) {
             }
         },
         
+        /**
+         * @function
+         * @private
+         * @description setValue from style
+         */
         setValue: function(styles) {
             if (this.get("host") instanceof Y.Widget) {
                 node = this.get("host").get(this.get("targetNode"));
@@ -73,10 +92,10 @@ YUI.add('wegas-cssstyles', function(Y) {
 
             if (styles){
                 for (var style in styles){
-                    var value = styles[style];                    
+                    var value = styles[style].trim();
                     if (value){
                         if (style === "fontSize" || style === "top" || style === "right" || style === "bottom" || style === "left" || style === "minWidth" || style === "width" || style === "height"){
-                            if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-1) !== "%"){
+                            if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-1) !== "%" && value.substr(-2) !== "ex"){
                                   styles[style] = value + "pt";
                             }
                         }
