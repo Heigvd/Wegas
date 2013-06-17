@@ -69,13 +69,13 @@ public class JpaRealm extends AuthorizingRealm {
 
                 for (Permission p : role.getPermissions()) {
                     info.addStringPermission(p.getValue());
-//                    info.addStringPermission(p.getInducedPermission());
+                    info.addStringPermission(p.getInducedPermission());
                 }
             }
 
             for (Permission p : account.getPermissions()) {
                 info.addStringPermission(p.getValue());
-//                info.addStringPermission(p.getInducedPermission());
+                info.addStringPermission(p.getInducedPermission());
             }
             return info;
         } catch (EJBException e) {

@@ -8,7 +8,6 @@
 package com.wegas.core.security.persistence;
 
 import java.io.Serializable;
-import java.util.Objects;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -18,7 +17,8 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@Embeddable
+//@Embeddable
+@Entity
 @XmlRootElement
 @XmlType(name = "")                                                             // This forces to use Class's short name as type
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
@@ -29,6 +29,9 @@ public class Permission implements Serializable {
     private String value;
     @Basic
     private String inducedPermission;
+    @Id
+    @GeneratedValue
+    private Long id;
 
     public Permission() {
     }
@@ -48,15 +51,6 @@ public class Permission implements Serializable {
                 && obj instanceof Permission
                 && this.value.equals(((Permission) obj).getValue()));
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + Objects.hashCode(this.value);
-        hash = 29 * hash + Objects.hashCode(this.inducedPermission);
-        return hash;
-    }
-
 
     /**
      * @return the inducedPermission
@@ -89,5 +83,13 @@ public class Permission implements Serializable {
     @Override
     public String toString() {
         return "Permission(" + this.value + ")";
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

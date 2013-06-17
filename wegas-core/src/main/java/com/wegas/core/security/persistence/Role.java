@@ -45,7 +45,8 @@ public class Role extends AbstractEntity {
     /**
      *
      */
-    @ElementCollection
+//    @ElementCollection(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Permission> permissions = new ArrayList<>();
 
     /**
