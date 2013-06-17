@@ -90,8 +90,8 @@ YUI.add('wegas-chart', function(Y) {
                 seriesCollection: seriesCollection,
                 axes: {
                     values: {
-                        minimum: this.get("minValue"),
-                        maximum: this.get("maxValue")
+                        minimum: this.findMinValue(),
+                        maximum: this.findMaxValue()
                     }
                 },
                 legend: {
@@ -101,11 +101,40 @@ YUI.add('wegas-chart', function(Y) {
                     position: this.get("legendPosition")
                 },
                 tooltip: this.chartTooltip,                
-                dataProvider: this.getChartValues(this.get("numberOfValue"), rawSeries),
+                dataProvider: this.getChartValues(this.findNumberOfValue(), rawSeries),
                 horizontalGridlines: this.get("horizontalGridlines"),
                 verticalGridlines: this.get("verticalGridlines")
             });
             this.chart.render(".chart");
+        },
+        findMinValue: function(){
+            var i, h, minVal = null;
+            if (!this.get("minValue")){
+                return null;
+            } else {
+                return this.get("minValue");
+            }
+        },
+        findMaxValue: function(){
+            var i, h, maxVal = null;
+            if (!this.get("maxValue")){
+                return null;
+            } else {
+                return this.get("maxValue");
+            }
+        },
+        findNumberOfValue: function(){
+            var i, number = null;
+            if (!this.get("numberOfValue")){
+                for (i = 0; i < this.vdList.length; i++) {
+                    if (number === null || this.vdList[i].history.length > number){
+                        number = this.vdList[i].history.length;
+                    }
+                }
+                return number;
+            } else {
+                return this.get("numberOfValue");
+            }
         },
         /**
          * Create series for the chart.
@@ -135,9 +164,9 @@ YUI.add('wegas-chart', function(Y) {
         },
         chartTooltip: {
             markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex) {
-                var msg = document.createElement("div"),
-                        boldTextBlock = document.createElement("div");
-                boldTextBlock.appendChild(document.createTextNode(valueItem.displayName + ': ' + valueItem.axis.get("labelFunction").apply(this, [valueItem.value])));
+                var msg = new Y.Node.create("<div></div>"),
+                        boldTextBlock = new Y.Node.create("<div></div>");
+                boldTextBlock.appendChild('<p>' + valueItem.displayName + ': ' + valueItem.axis.get("labelFunction").apply(this, [valueItem.value]) +'</p>');
                 msg.appendChild(boldTextBlock);
                 return msg;
             }
@@ -147,7 +176,8 @@ YUI.add('wegas-chart', function(Y) {
             cb.one('.chart').setHTML();
         },
         checkType: function(value){
-            if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-1) !== "%"){
+            value = value.trim();
+            if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-1) !== "%" && value.substr(-2) !== "ex"){
                 return value + "px";
             } else {
                 return value;
@@ -183,19 +213,21 @@ YUI.add('wegas-chart', function(Y) {
                 }
             },
             minValue: {
-                value: 0,
                 _inputex: {
                     _type: "integer",
                     label: "Min. value",
-                    index: 2
+                    index: 2,
+                    negative:true,
+                    required: false
                 }
             },
             maxValue: {
-                value: 100,
                 _inputex: {
                     _type: "integer",
                     label: "Max. value",
-                    index: 3
+                    index: 3,
+                    negative:true,
+                    required: false
                 }
             },
             chartWidth: {
@@ -215,11 +247,11 @@ YUI.add('wegas-chart', function(Y) {
                 }
             },
             numberOfValue: {
-                value: 5,
                 _inputex: {
                     _type: "integer",
                     label: "Number of value",
-                    index: 4
+                    index: 4,
+                    required: false
                 }
             },
             horizontalGridlines: {
