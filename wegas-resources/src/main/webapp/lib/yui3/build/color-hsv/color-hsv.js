@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -186,4 +186,4 @@ Y.Color.TYPES = Y.mix(Y.Color.TYPES, {'HSV':'hsv', 'HSVA':'hsva'});
 Y.Color.CONVERTS = Y.mix(Y.Color.CONVERTS, {'hsv': 'toHSV', 'hsva': 'toHSVA'});
 
 
-}, '3.10.1', {"requires": ["color-base"]});
+}, '3.10.3', {"requires": ["color-base"]});

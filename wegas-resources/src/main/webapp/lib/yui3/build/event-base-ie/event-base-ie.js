@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -226,7 +226,7 @@ IELazyFacade._lazyProperties = {
         var e = this._event,
             val = e.pageX,
             doc, bodyScroll, docScroll;
-                
+
         if (val === undefined) {
             doc = Y.config.doc;
             bodyScroll = doc.body && doc.body.scrollLeft;
@@ -241,7 +241,7 @@ IELazyFacade._lazyProperties = {
         var e = this._event,
             val = e.pageY,
             doc, bodyScroll, docScroll;
-                
+
         if (val === undefined) {
             doc = Y.config.doc;
             bodyScroll = doc.body && doc.body.scrollTop;
@@ -302,9 +302,9 @@ if (imp && (!imp.hasFeature('Events', '2.0'))) {
             useLazyFacade = false;
         }
     }
-        
+
     Y.DOMEventFacade = (useLazyFacade) ? IELazyFacade : IEEventFacade;
 }
 
 
-}, '3.10.1', {"requires": ["node-base"]});
+}, '3.10.3', {"requires": ["node-base"]});

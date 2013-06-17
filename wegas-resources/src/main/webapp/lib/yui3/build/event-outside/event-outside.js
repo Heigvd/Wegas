@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -72,7 +72,7 @@ Y.Event.defineOutside = function (event, name) {
     name = name || (event + 'outside');
 
     var config = {
-    
+
         on: function (node, sub, notifier) {
             sub.handle = Y.one('doc').on(event, function(e) {
                 if (this.isOutside(node, e.target)) {
@@ -81,11 +81,11 @@ Y.Event.defineOutside = function (event, name) {
                 }
             }, this);
         },
-        
+
         detach: function (node, sub, notifier) {
             sub.handle.detach();
         },
-        
+
         delegate: function (node, sub, notifier, filter) {
             sub.handle = Y.one('doc').delegate(event, function (e) {
                 if (this.isOutside(node, e.target)) {
@@ -93,7 +93,7 @@ Y.Event.defineOutside = function (event, name) {
                 }
             }, filter, this);
         },
-        
+
         isOutside: function (node, target) {
             return target !== node && !target.ancestor(function (p) {
                     return p === node;
@@ -111,4 +111,4 @@ Y.Array.each(nativeEvents, function (event) {
 });
 
 
-}, '3.10.1', {"requires": ["event-synthetic"]});
+}, '3.10.3', {"requires": ["event-synthetic"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -9,7 +9,7 @@ YUI.add('event-focus', function (Y, NAME) {
 
 /**
  * Adds bubbling and delegation support to DOM events focus and blur.
- * 
+ *
  * @module event
  * @submodule event-focus
  */
@@ -75,7 +75,7 @@ function define(type, proxy, directEvent) {
                 yuid          = Y.stamp(currentTarget._node),
                 defer         = (useActivate || target !== currentTarget),
                 directSub;
-                
+
             notifier.currentTarget = (delegate) ? target : currentTarget;
             notifier.container     = (delegate) ? currentTarget : null;
 
@@ -202,7 +202,7 @@ function define(type, proxy, directEvent) {
                             break;
                         }
                     }
-                    
+
                     delete notifiers[yuid];
                     count--;
                 }
@@ -277,4 +277,4 @@ if (useActivate) {
 }
 
 
-}, '3.10.1', {"requires": ["event-synthetic"]});
+}, '3.10.3', {"requires": ["event-synthetic"]});

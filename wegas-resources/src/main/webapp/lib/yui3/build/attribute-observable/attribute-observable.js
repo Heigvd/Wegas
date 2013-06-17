@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -143,6 +143,7 @@ YUI.add('attribute-observable', function (Y, NAME) {
             var host = this,
                 eventName = this._getFullType(attrName + CHANGE),
                 state = host._state,
+                hasOpts = false,
                 facade,
                 broadcast,
                 e;
@@ -169,19 +170,26 @@ YUI.add('attribute-observable', function (Y, NAME) {
                 cfg.published = true;
             }
 
-            facade = (opts) ? Y.merge(opts) : host._ATTR_E_FACADE;
+            if (opts) {
+                facade = Y.merge(opts);
+                hasOpts = true;
+            } else {
+                facade = host._ATTR_E_FACADE;
+            }
 
             // Not using the single object signature for fire({type:..., newVal:...}), since
             // we don't want to override type. Changed to the fire(type, {newVal:...}) signature.
 
-            // facade.type = eventName;
             facade.attrName = attrName;
             facade.subAttrName = subAttrName;
             facade.prevVal = currVal;
             facade.newVal = newVal;
 
-            // host.fire(facade);
-            host.fire(eventName, facade);
+            if (hasOpts) {
+                host.fire(eventName, facade, opts);
+            } else {
+                host.fire(eventName, facade);
+            }
         },
 
         /**
@@ -192,10 +200,11 @@ YUI.add('attribute-observable', function (Y, NAME) {
          * @param {EventFacade} e The event object for attribute change events.
          */
         _defAttrChangeFn : function(e) {
-            if (!this._setAttrVal(e.attrName, e.subAttrName, e.prevVal, e.newVal, e.opts)) {
 
+            if (!this._setAttrVal(e.attrName, e.subAttrName, e.prevVal, e.newVal, e.details[1])) {
                 // Prevent "after" listeners from being invoked since nothing changed.
                 e.stopImmediatePropagation();
+
             } else {
                 e.newVal = this.get(e.attrName);
             }
@@ -220,4 +229,4 @@ YUI.add('attribute-observable', function (Y, NAME) {
     Y.AttributeEvents = AttributeObservable;
 
 
-}, '3.10.1', {"requires": ["event-custom"]});
+}, '3.10.3', {"requires": ["event-custom"]});

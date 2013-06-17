@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1187,10 +1187,11 @@ Y.CustomEvent.prototype = {
 
         if (!subs) {
             subs = (when === AFTER) ? this._afters : this._subscribers;
-            i = YArray.indexOf(subs, s, 0);
         }
 
         if (subs) {
+            i = YArray.indexOf(subs, s, 0);
+
             if (s && subs[i] === s) {
                 subs.splice(i, 1);
 
@@ -2175,12 +2176,15 @@ Y.log('EventTarget unsubscribeAll() is deprecated, use detachAll()', 'warn', 'de
             ce2,
             args;
 
-        if (typeIncluded && argCount <= 2) {
+        if (typeIncluded && argCount <= 3) {
 
             // PERF: Try to avoid slice/iteration for the common signatures
 
+            // Most common
             if (argCount === 2) {
                 args = [arguments[1]]; // fire("foo", {})
+            } else if (argCount === 3) {
+                args = [arguments[1], arguments[2]]; // fire("foo", {}, opts)
             } else {
                 args = []; // fire("foo")
             }
@@ -2473,4 +2477,4 @@ for that signature.
 **/
 
 
-}, '3.10.1', {"requires": ["oop"]});
+}, '3.10.3', {"requires": ["oop"]});
