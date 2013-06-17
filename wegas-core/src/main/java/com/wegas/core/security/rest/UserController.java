@@ -235,15 +235,15 @@ public class UserController {
      */
     @GET
     @Path("GameModelPermissions/{gameModelId}")
-    public List<Map> findPermissionByInstance(@PathParam(value = "gameModelId") String id) {
+    public List<Map> findPermissionByInstance(@PathParam(value = "gameModelId") String instance) {
 
-        if (id.substring(0, 2).equals("gm")) {
-            SecurityUtils.getSubject().checkPermission("GameModel:Edit:" + id);
+        if (instance.substring(0, 2).equals("gm")) {
+            SecurityUtils.getSubject().checkPermission("GameModel:Edit:" + instance);
         } else {
-            SecurityUtils.getSubject().checkPermission("Game:Edit:" + id);
+            SecurityUtils.getSubject().checkPermission("Game:Edit:" + instance);
         }
 
-        return this.userFacade.findPermissionByInstance(id);
+        return this.userFacade.findRolePermissionByInstance(instance);
     }
 
     /**

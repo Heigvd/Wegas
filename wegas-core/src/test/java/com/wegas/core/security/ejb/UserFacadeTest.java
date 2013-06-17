@@ -6,10 +6,8 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.exception.WegasException;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.List;
@@ -72,7 +70,7 @@ public class UserFacadeTest {
      * Test of find method, of class UserFacade.
      */
     @Test
-    public void testFind() throws Exception {
+    public void testFind() {
 
         // findAll()
         List<User> users = userFacade.findAll();
@@ -80,6 +78,43 @@ public class UserFacadeTest {
 
         // find
         Assert.assertEquals(u, userFacade.find(u.getId()));
+    }
+
+    @Test
+    public void testAccountUpdate() {
+        final String PERM = "Game:*:*";
+        final String PERM2 = "Game2:*:*";
+
+        abstractAccount.addPermission(PERM);
+        accountFacade.update(abstractAccount.getId(), abstractAccount);
+        AbstractAccount a = accountFacade.find(abstractAccount.getId());
+        Assert.assertEquals(PERM, a.getPermissions().get(0).getValue());
+
+        a.addPermission(PERM2);
+        accountFacade.update(abstractAccount.getId(), a);
+        a = accountFacade.find(abstractAccount.getId());
+        Assert.assertEquals(PERM2, a.getPermissions().get(1).getValue());
+
+        a.removePermission(PERM2);
+        a.removePermission(PERM);
+        accountFacade.update(a.getId(), a);
+        a = accountFacade.find(abstractAccount.getId());
+        Assert.assertTrue(a.getPermissions().isEmpty());
+    }
+
+    @Test
+    public void testRoleUpdate() throws Exception {
+        final String PERM = "Game:*:*";
+
+        roleP.addPermission(PERM);
+        roleFacade.update(roleP.getId(), roleP);
+        Role r = roleFacade.find(roleP.getId());
+        Assert.assertEquals(PERM, r.getPermissions().get(0).getValue());
+
+        r.removePermission(PERM);
+        roleFacade.update(r.getId(), r);
+        r = roleFacade.find(r.getId());
+        Assert.assertTrue(r.getPermissions().isEmpty());
     }
 
     /**
@@ -93,7 +128,7 @@ public class UserFacadeTest {
         Assert.assertFalse(userFacade.addRolePermission(roleP.getId(), "GameModel:View:gm1"));
 
         // Get all GameModel permissions by GameModel id or Game permissions by Game id
-        List<Map> rolePermissions = userFacade.findPermissionByInstance("gm1");
+        List<Map> rolePermissions = userFacade.findRolePermissionByInstance("gm1");
         Assert.assertEquals("Public", rolePermissions.get(0).get("name"));
         Assert.assertEquals("[GameModel:Edit:gm1, GameModel:View:gm1]", rolePermissions.get(0).get("permissions").toString());
 
@@ -110,11 +145,11 @@ public class UserFacadeTest {
         userFacade.addRolePermission(roleP.getId(), "GameModel:View:gm1");
 
         userFacade.deleteRolePermission(roleP.getId(), "GameModel:View:gm1");
-        List<Map> rolePermissions = userFacade.findPermissionByInstance("gm1");
+        List<Map> rolePermissions = userFacade.findRolePermissionByInstance("gm1");
         Assert.assertEquals("[GameModel:Edit:gm1]", rolePermissions.get(0).get("permissions").toString());
 
         userFacade.deleteRolePermission(roleP.getId(), "GameModel:Edit:gm1");
-        rolePermissions = userFacade.findPermissionByInstance("gm1");
+        rolePermissions = userFacade.findRolePermissionByInstance("gm1");
         Assert.assertEquals("[]", rolePermissions.toString());
     }
 
@@ -128,7 +163,7 @@ public class UserFacadeTest {
         userFacade.addRolePermission(roleR.getId(), "Game:Token:g20");
 
         // Delete all permission from a role in a Game or GameModel
-        List<Map> rolePermissions = userFacade.findPermissionByInstance("g20");
+        List<Map> rolePermissions = userFacade.findRolePermissionByInstance("g20");
         Assert.assertEquals("[Game:Edit:g20, Game:View:g20, Game:Token:g20]", rolePermissions.get(0).get("permissions").toString());
         userFacade.deleteRolePermissionsByIdAndInstance(roleR.getId(), "g20");
         Role r = roleFacade.findByName("Registered");
@@ -150,7 +185,7 @@ public class UserFacadeTest {
 
         userFacade.deleteRolePermissionsByInstance("g20");
 
-        List<Map> rolePermission = userFacade.findPermissionByInstance("g20");
+        List<Map> rolePermission = userFacade.findRolePermissionByInstance("g20");
         Assert.assertEquals("[]", rolePermission.toString());
     }
 
@@ -166,7 +201,8 @@ public class UserFacadeTest {
 
         userFacade.deleteAccountPermissionByInstance("gm100");
 
-        Assert.assertTrue(accountFacade.find(abstractAccount.getId()).getPermissions().contains("GameModel:Edit:gm200"));
+//        Assert.assertTrue(accountFacade.find(abstractAccount.getId()).getPermissions().contains(new Permission("GameModel:Edit:gm200")));
+        Assert.assertTrue(accountFacade.find(abstractAccount.getId()).getPermissions().get(0).getValue().equals("GameModel:Edit:gm200"));
     }
 
     /**

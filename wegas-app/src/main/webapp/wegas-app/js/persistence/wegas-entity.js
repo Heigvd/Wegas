@@ -15,6 +15,7 @@ YUI.add('wegas-entity', function(Y) {
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
             SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
             BUTTON = "Button", VALUE = "value", TEXT = "text", HTML = "html",
+            GROUP = "group",
             IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
@@ -98,6 +99,9 @@ YUI.add('wegas-entity', function(Y) {
     Wegas.persistence.DefaultEntity = Y.Base.create("DefaultEntity", Entity, [], {
         initializer: function(cfg) {
             this.set("val", cfg);
+        },
+        toJSON: function() {
+            return this.get("val");
         }
     }, {
         ATTRS: {
@@ -492,13 +496,27 @@ YUI.add('wegas-entity', function(Y) {
                 optional: true,
                 type: ARRAY,
                 items: {
-                    type: STRING,
                     _inputex: {
-                        label: ""
+                        _type: GROUP,
+                        fields: [{
+                                name: "id",
+                                type: HIDDEN,
+                                value: null
+                            }, {
+                                name: "@class",
+                                type: HIDDEN,
+                                value: "Permission"
+                            }, {
+                                name: "value"
+                            }, {
+                                name: "inducedPermission",
+                                value: null
+                            }]
                     }
                 },
                 _inputex: {
-                    useButtons: true
+                    useButtons: true,
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
         },
@@ -601,6 +619,33 @@ YUI.add('wegas-entity', function(Y) {
                 },
                 _inputex: {
                     useButtons: true
+                }
+            },
+            permissions: {
+                optional: true,
+                type: ARRAY,
+                items: {
+                    _inputex: {
+                        _type: GROUP,
+                        fields: [{
+                                name: "id",
+                                type: HIDDEN,
+                                value: null
+                            }, {
+                                name: "@class",
+                                type: HIDDEN,
+                                value: "Permission"
+                            }, {
+                                name: "value"
+                            }, {
+                                name: "inducedPermission",
+                                value:""
+                            }]
+                    }
+                },
+                _inputex: {
+                    useButtons: true,
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
         },
