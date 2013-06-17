@@ -10,6 +10,7 @@ package com.wegas.core.security.persistence;
 import com.wegas.core.Helper;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.security.facebook.FacebookAccount;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -71,8 +72,8 @@ public class AbstractAccount extends AbstractEntity {
     /**
      *
      */
-//    @ElementCollection(fetch = FetchType.EAGER)
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    //@ElementCollection(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
     private List<Permission> permissions = new ArrayList<>();
     /**
      *
@@ -103,7 +104,7 @@ public class AbstractAccount extends AbstractEntity {
         this.setLastname(a.getLastname());
         this.setEmail(a.getEmail());
         this.setUsername(a.getUsername());
-        this.setPermissions(a.getPermissions());
+        ListUtils.mergeLists(this.permissions, a.getPermissions());
     }
 
     /**
@@ -226,6 +227,9 @@ public class AbstractAccount extends AbstractEntity {
      */
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
+        for (Permission p : this.permissions) {
+            p.setAccount(this);
+        }
     }
 
     /**
@@ -250,6 +254,7 @@ public class AbstractAccount extends AbstractEntity {
 
     public boolean addPermission(Permission permission) {
         if (!this.permissions.contains(permission)) {
+            permission.setAccount(this);
             return this.permissions.add(permission);
         } else {
             return false;

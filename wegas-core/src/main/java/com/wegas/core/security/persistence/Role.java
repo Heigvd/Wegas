@@ -8,9 +8,9 @@
 package com.wegas.core.security.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -45,8 +45,8 @@ public class Role extends AbstractEntity {
     /**
      *
      */
-//    @ElementCollection(fetch = FetchType.EAGER)
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    //@ElementCollection(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
     private List<Permission> permissions = new ArrayList<>();
 
     /**
@@ -68,7 +68,7 @@ public class Role extends AbstractEntity {
         Role r = (Role) other;
         this.setName(r.getName());
         this.setDescription(r.getDescription());
-        this.setPermissions(r.getPermissions());
+        ListUtils.mergeLists(this.permissions, r.getPermissions());
     }
 
     /**
@@ -134,6 +134,9 @@ public class Role extends AbstractEntity {
      */
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
+        for (Permission p: this.permissions) {
+            p.setRole(this);
+        }
     }
 
     public boolean addPermission(String permission) {
@@ -142,6 +145,7 @@ public class Role extends AbstractEntity {
 
     public boolean addPermission(Permission permission) {
         if (!this.permissions.contains(permission)) {
+            permission.setRole(this);
             return this.permissions.add(permission);
         } else {
             return false;
