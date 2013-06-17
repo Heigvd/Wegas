@@ -55,7 +55,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             }
 
             Y.Wegas.Facade.User.sendRequest({
-                request: "/GameModelPermissions/" + this.targetEntityId,
+                request: "/FindPermissionByInstance/" + this.targetEntityId,
                 on: {
                     success: Y.bind(function (e) {
                         var data = e.response.results.entities,

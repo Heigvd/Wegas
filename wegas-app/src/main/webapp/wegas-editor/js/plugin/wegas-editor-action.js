@@ -96,9 +96,8 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            var childCfg = this.get("wchildren")[0];                             // @fixme currently we only render the first child
             Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
-                    this.get("tabSelector"), {}, childCfg);                         // Forward plugin data to the target widget
+                    this.get("tabSelector"), {}, this.get("wchildren"));        // Forward plugin data to the target widget
         }
 
     }, {

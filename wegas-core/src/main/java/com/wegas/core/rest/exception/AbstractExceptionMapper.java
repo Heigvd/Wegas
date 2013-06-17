@@ -41,7 +41,7 @@ public abstract class AbstractExceptionMapper {
                 || exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
                 || exception instanceof PersistenceException
-                || exception instanceof javax.persistence.PersistenceException
+//                || exception instanceof javax.persistence.PersistenceException
                 || exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK) {
             return processException(exception.getCause());
 
