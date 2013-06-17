@@ -69,7 +69,7 @@ YUI.add('treeview', function(Y) {
          * Lifecycle method
          * @private
          * @function
-         * @returns {undefined} 
+         * @returns {undefined}
          */
         bindUI: function() {
             this.on("*:click", function(e) {
@@ -83,7 +83,7 @@ YUI.add('treeview', function(Y) {
          * Lifecycle method
          * @private
          * @function
-         * @returns {undefined} 
+         * @returns {undefined}
          */
         renderUI: function() {
             if (this.get("visibleRightWidget")) {
@@ -118,7 +118,7 @@ YUI.add('treeview', function(Y) {
         }
     }, {
         /**
-         * @lends Y.TreeView 
+         * @lends Y.TreeView
          */
         NAME: 'treeview',
         ATTRS: {
@@ -187,7 +187,7 @@ YUI.add('treeview', function(Y) {
          * Lifecycle method
          * @private
          * @function
-         * @returns {undefined} 
+         * @returns {undefined}
          */
         renderUI: function() {
             var bb = this.get(BOUNDING_BOX), header;
@@ -208,7 +208,7 @@ YUI.add('treeview', function(Y) {
          * Lifecycle method
          * @private
          * @function
-         * @returns {undefined} 
+         * @returns {undefined}
          */
         bindUI: function() {
             /*
@@ -266,7 +266,7 @@ YUI.add('treeview', function(Y) {
          * Lifecycle method, sync attributes
          * @public
          * @function
-         * @returns {undefined} 
+         * @returns {undefined}
          */
         syncUI: function() {
             this.set("loading", this.get("loading"));
@@ -274,12 +274,13 @@ YUI.add('treeview', function(Y) {
             this.set("label", this.get("label"));
             this.set("rightWidget", this.get("rightWidget"));
             this.set("collapsed", this.get("collapsed"));
+            this.set("cssClass", this.get("cssClass"));
         },
         /**
          * Lifecycle method
          * @private
          * @function
-         * @returns {undefined} 
+         * @returns {undefined}
          */
         destructor: function() {
             var event;
@@ -451,6 +452,14 @@ YUI.add('treeview', function(Y) {
                     return v;
                 }
             },
+            cssClass: {
+                setter: function(v) {
+                    if (v) {
+                        this.get(BOUNDING_BOX).addClass(v);
+                    }
+                    return v;
+                }
+            },
             defaultChildType: {
                 value: "TreeLeaf"
             },
@@ -574,7 +583,7 @@ YUI.add('treeview', function(Y) {
          * Lifecycle method, sync attributes
          * @public
          * @function
-         * @returns {undefined} 
+         * @returns {undefined}
          */
         syncUI: function() {
             this.set("label", this.get("label"));
@@ -582,6 +591,7 @@ YUI.add('treeview', function(Y) {
             this.set("editable", this.get("editable"));
             this.set("loading", this.get("loading"));
             this.set("rightWidget", this.get("rightWidget"));
+            this.set("cssClass", this.get("cssClass"));
         },
         /**
          * Lifecycle method
@@ -615,6 +625,14 @@ YUI.add('treeview', function(Y) {
                 },
                 getter: function(v) {
                     return this.labelNode.getContent();
+                }
+            },
+            cssClass: {
+                setter: function(v) {
+                    if (v) {
+                        this.get(BOUNDING_BOX).addClass(v);
+                    }
+                    return v;
                 }
             },
             tabIndex: {

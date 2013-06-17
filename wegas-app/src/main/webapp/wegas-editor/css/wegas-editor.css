@@ -237,6 +237,11 @@ body {
     float:right  !important;
 }
 
+.yui3-skin-sam .wegas-layout-top .wegas-login img {
+    margin-top: -5px;
+    margin-right: 6px;
+}
+
 /* Pageeditor Plugin styles */
 .wegas-pageeditor-designmode .wegas-widget{
     position: relative;

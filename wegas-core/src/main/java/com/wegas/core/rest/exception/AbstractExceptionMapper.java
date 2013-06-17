@@ -81,10 +81,7 @@ public abstract class AbstractExceptionMapper {
 
             StringBuilder sb = new StringBuilder(
                     RequestFacade.lookup().getBundle("com.wegas.app.errors").getString("constraint")); //internationalised error (sample)
-            Iterator it = constraintViolationException.getConstraintViolations().iterator();
-
-            while (it.hasNext()) {
-                javax.validation.ConstraintViolation violation = (javax.validation.ConstraintViolation) it.next();
+            for (javax.validation.ConstraintViolation violation : constraintViolationException.getConstraintViolations()) {
                 sb.append("\n").append(violation.getLeafBean()).append(":").append(violation.getRootBean()).append(violation.getPropertyPath());
             }
             logger.error(sb.toString());

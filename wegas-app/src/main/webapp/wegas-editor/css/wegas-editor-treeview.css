@@ -26,7 +26,7 @@
 
 /** Styles for table trees (Games) */
 .wegas-editor-treeviewgame > .yui3-treeview > ul > li {
-    border-top: 1px solid lightgray;
+    box-shadow: 0px 1px 0px lightgray;
 }
 .wegas-editor-treeview-table {
     padding-right: 450px;
@@ -43,7 +43,7 @@
 .wegas-editor-treeview-table .yui3-u-col2 > div {
     overflow: hidden;
     text-overflow: ellipsis;
-/*    text-align: center;*/
+    /*    text-align: center;*/
 }
 .wegas-editor-treeview-tablehd {
     font-weight: bolder;
@@ -56,10 +56,22 @@
 .wegas-editor-treeview-tablehd .yui3-u-col2 > div {
     padding-top: 6px;
 }
+
 .yui3-u-selected {
     background: url("../../wegas-app/images/wegas-submenuindicator.png") no-repeat 56px 11px;
 }
 
+/** Variable Treeview **/
+.wegas-editor-variabletreeview .yui3-dd-drop > div > .yui3-treenode-content-icon,
+.wegas-editor-variabletreeview .yui3-dd-drop > div > div > .yui3-treeleaf-content-icon {
+    /*cursor: url(../images/openhand.cur) 7 5, default;*/
+    cursor: move;
+}
+.wegas-editor-dummy {
+    /*height: 10px;*/
+    font-style: italic;
+    min-height:5px;
+}
 /* Editor treeview icons */
 .wegas-icon-game,
 .wegas-icon-gamemodel,

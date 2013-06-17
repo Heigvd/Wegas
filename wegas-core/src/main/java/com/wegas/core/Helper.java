@@ -7,6 +7,9 @@
  */
 package com.wegas.core;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -91,11 +94,11 @@ public class Helper {
      * @return a String wich will be undestandable by JavaScript as a var
      */
     public static String encodeVariableName(String name) {
-        if(name.isEmpty()){
+        if (name.isEmpty()) {
             throw new NullPointerException("Name is empty");
         }
         StringBuilder sb = new StringBuilder();
-        StringTokenizer st = new StringTokenizer(name);       
+        StringTokenizer st = new StringTokenizer(name);
         String tmp;
         Boolean first = true;
         while (st.hasMoreTokens()) {                                            //CamelCase the name except first word (instance like)
@@ -225,5 +228,25 @@ public class Helper {
         } else {
             return ret;
         }
+    }
+
+    public static String hex(byte[] array) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < array.length; ++i) {
+            sb.append(Integer.toHexString((array[i]
+                    & 0xFF) | 0x100).substring(1, 3));
+        }
+        return sb.toString();
+    }
+
+    public static String md5Hex(String message) {
+        try {
+            MessageDigest md =
+                    MessageDigest.getInstance("MD5");
+            return hex(md.digest(message.getBytes("CP1252")));
+        } catch (NoSuchAlgorithmException e) {
+        } catch (UnsupportedEncodingException e) {
+        }
+        return null;
     }
 }

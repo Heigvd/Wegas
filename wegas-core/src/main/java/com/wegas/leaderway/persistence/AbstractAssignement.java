@@ -6,7 +6,5 @@ import com.wegas.core.persistence.AbstractEntity;
  *
  * @author Benjamin
  */
-
-public abstract class AbstractAssignement extends AbstractEntity  {
-    
+public abstract class AbstractAssignement extends AbstractEntity {
 }

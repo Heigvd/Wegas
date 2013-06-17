@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @param <U>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public abstract class AbstractRestController<T extends AbstractFacade, U extends AbstractEntity> {
+public abstract class AbstractRestController<T extends AbstractFacade, U extends AbstractEntity> implements AbstractRestControllerI<T, U> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractRestController.class);
     /**
@@ -47,6 +47,7 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Override
     public Collection<U> index() {
         return getFacade().findAll();
     }
@@ -72,6 +73,7 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Override
     public U create(U entity) {
         // logger.log(Level.INFO, "POST GameModel");
         getFacade().create(entity);
@@ -88,6 +90,7 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
     @Path("{entityId: [1-9][0-9]*}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Override
     public U update(@PathParam("entityId") Long entityId, U entity) {
         return (U) getFacade().update(entityId, entity);
     }
@@ -102,6 +105,7 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Override
     public U duplicate(@PathParam("entityId") Long entityId) throws IOException {
         return (U) getFacade().duplicate(entityId);
     }
@@ -114,6 +118,7 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Override
     public U delete(@PathParam("entityId") Long entityId) {
         AbstractEntity entity = getFacade().find(entityId);
         getFacade().remove(entity);

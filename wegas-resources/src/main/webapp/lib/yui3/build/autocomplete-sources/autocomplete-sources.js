@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -479,4 +479,4 @@ Y.mix(ACBase.SOURCE_TYPES, {
 }, true);
 
 
-}, '3.10.1', {"optional": ["io-base", "json-parse", "jsonp", "yql"], "requires": ["autocomplete-base"]});
+}, '3.10.3', {"optional": ["io-base", "json-parse", "jsonp", "yql"], "requires": ["autocomplete-base"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -112,7 +112,9 @@ Notifier.prototype.fire = function (e) {
 };
 
 /**
- * Manager object for synthetic event subscriptions to aggregate multiple synths on the same node without colliding with actual DOM subscription entries in the global map of DOM subscriptions.  Also facilitates proper cleanup on page unload.
+ * Manager object for synthetic event subscriptions to aggregate multiple synths on the
+ * same node without colliding with actual DOM subscription entries in the global map of
+ * DOM subscriptions.  Also facilitates proper cleanup on page unload.
  *
  * @class SynthRegistry
  * @constructor
@@ -242,7 +244,7 @@ Y.mix(SyntheticEvent, {
             yuid   = Y.stamp(el),
             key    = 'event:' + yuid + type + '_synth',
             events = DOMMap[yuid];
-            
+
         if (create) {
             if (!events) {
                 events = DOMMap[yuid] = {};
@@ -836,4 +838,4 @@ Y.Event.define = function (type, config, force) {
 };
 
 
-}, '3.10.1', {"requires": ["node-base", "event-custom-complex"]});
+}, '3.10.3', {"requires": ["node-base", "event-custom-complex"]});

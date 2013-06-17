@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -336,12 +336,6 @@ CEProto.fireComplex = function(args) {
             self.prevented = 0;
         }
 
-        // Kill the cached facade to free up memory.
-        // Otherwise we have the facade from the last fire, sitting around forever.
-        self._facade = null;
-
-        return ret;
-
     } else {
         defaultFn = self.defaultFn;
 
@@ -352,17 +346,20 @@ CEProto.fireComplex = function(args) {
                 defaultFn.apply(host, args);
             }
         }
-
-        return ret;
     }
 
+    // Kill the cached facade to free up memory.
+    // Otherwise we have the facade from the last fire, sitting around forever.
+    self._facade = null;
+
+    return ret;
 };
 
 CEProto._getFacade = function(fireArgs) {
 
     var userArgs = this.details,
         firstArg = userArgs && userArgs[0],
-        firstArgIsObj = (typeof firstArg === "object"),
+        firstArgIsObj = (firstArg && (typeof firstArg === "object")),
         ef = this._facade;
 
     if (!ef) {
@@ -611,4 +608,4 @@ for (key in FACADE) {
 }
 
 
-}, '3.10.1', {"requires": ["event-custom-base"]});
+}, '3.10.3', {"requires": ["event-custom-base"]});

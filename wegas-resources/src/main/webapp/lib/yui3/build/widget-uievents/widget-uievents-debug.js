@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -44,7 +44,7 @@ Y.mix(Widget.prototype, {
                 //  event listener.
                 delete info.instances[widgetGuid];
 
-                //  There are no more Widget instances using this delegated 
+                //  There are no more Widget instances using this delegated
                 //  event listener, so detach it.
 
                 if (Y.Object.isEmpty(info.instances)) {
@@ -59,7 +59,7 @@ Y.mix(Widget.prototype, {
     },
 
     /**
-     * Map of DOM events that should be fired as Custom Events by the  
+     * Map of DOM events that should be fired as Custom Events by the
      * Widget instance.
      *
      * @property UI_EVENTS
@@ -80,12 +80,12 @@ Y.mix(Widget.prototype, {
     },
 
     /**
-     * Binds a delegated DOM event listener of the specified type to the 
+     * Binds a delegated DOM event listener of the specified type to the
      * Widget's outtermost DOM element to facilitate the firing of a Custom
-     * Event of the same type for the Widget instance.  
+     * Event of the same type for the Widget instance.
      *
      * @method _createUIEvent
-     * @for Widget 
+     * @for Widget
      * @param type {String} String representing the name of the event
      * @private
      */
@@ -126,27 +126,27 @@ Y.mix(Widget.prototype, {
     /**
      * This method is used to determine if we should fire
      * the UI Event or not. The default implementation makes sure
-     * that for nested delegates (nested unrelated widgets), we don't 
+     * that for nested delegates (nested unrelated widgets), we don't
      * fire the UI event listener more than once at each level.
      *
-     * <p>For example, without the additional filter, if you have nested 
-     * widgets, each widget will have a delegate listener. If you 
-     * click on the inner widget, the inner delegate listener's 
-     * filter will match once, but the outer will match twice 
-     * (based on delegate's design) - once for the inner widget, 
+     * <p>For example, without the additional filter, if you have nested
+     * widgets, each widget will have a delegate listener. If you
+     * click on the inner widget, the inner delegate listener's
+     * filter will match once, but the outer will match twice
+     * (based on delegate's design) - once for the inner widget,
      * and once for the outer.</p>
      *
      * @method _filterUIEvent
-     * @for Widget 
+     * @for Widget
      * @param {DOMEventFacade} evt
      * @return {boolean} true if it's OK to fire the custom UI event, false if not.
      * @private
-     * 
+     *
      */
     _filterUIEvent: function(evt) {
-        // Either it's hitting this widget's delegate container (and not some other widget's), 
+        // Either it's hitting this widget's delegate container (and not some other widget's),
         // or the container it's hitting is handling this widget's ui events.
-        return (evt.currentTarget.compareTo(evt.container) || evt.container.compareTo(this._getUIEventNode()));        
+        return (evt.currentTarget.compareTo(evt.container) || evt.container.compareTo(this._getUIEventNode()));
     },
 
     /**
@@ -154,9 +154,9 @@ Y.mix(Widget.prototype, {
      *
      * @private
      * @method _isUIEvent
-     * @for Widget 
+     * @for Widget
      * @param type {String} String representing the name of the event
-     * @return {String} Event Returns the name of the UI Event, otherwise 
+     * @return {String} Event Returns the name of the UI Event, otherwise
      * undefined.
      */
     _getUIEvent: function (type) {
@@ -184,12 +184,12 @@ Y.mix(Widget.prototype, {
 
     /**
      * Sets up infrastructure required to fire a UI event.
-     * 
+     *
      * @private
      * @method _initUIEvent
      * @for Widget
      * @param type {String} String representing the name of the event
-     * @return {String}     
+     * @return {String}
      */
     _initUIEvent: function (type) {
         var sType = this._getUIEvent(type),
@@ -200,7 +200,7 @@ Y.mix(Widget.prototype, {
 
             this._uiEvtsInitQueue = queue[sType] = 1;
 
-            this.after(RENDER, function() { 
+            this.after(RENDER, function() {
                 this._createUIEvent(sType);
                 delete this._uiEvtsInitQueue[sType];
             });
@@ -209,7 +209,7 @@ Y.mix(Widget.prototype, {
 
     //  Override of "on" from Base to facilitate the firing of Widget events
     //  based on DOM events of the same name/type (e.g. "click", "mouseover").
-    //  Temporary solution until we have the ability to listen to when 
+    //  Temporary solution until we have the ability to listen to when
     //  someone adds an event listener (bug 2528230)
     on: function (type) {
         this._initUIEvent(type);
@@ -217,18 +217,18 @@ Y.mix(Widget.prototype, {
     },
 
     //  Override of "publish" from Base to facilitate the firing of Widget events
-    //  based on DOM events of the same name/type (e.g. "click", "mouseover").    
-    //  Temporary solution until we have the ability to listen to when 
-    //  someone publishes an event (bug 2528230)     
+    //  based on DOM events of the same name/type (e.g. "click", "mouseover").
+    //  Temporary solution until we have the ability to listen to when
+    //  someone publishes an event (bug 2528230)
     publish: function (type, config) {
         var sType = this._getUIEvent(type);
         if (sType && config && config.defaultFn) {
             this._initUIEvent(sType);
-        }        
+        }
         return Widget.superclass.publish.apply(this, arguments);
     }
 
 }, true); // overwrite existing EventTarget methods
 
 
-}, '3.10.1', {"requires": ["node-event-delegate", "widget-base"]});
+}, '3.10.3', {"requires": ["node-event-delegate", "widget-base"]});

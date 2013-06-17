@@ -108,12 +108,29 @@ YUI().use(function(Y) {
                  */
                 'wegas-widget': {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
-                    requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable']
+                    requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable', 'wegas-popuplistener']
                 },
                 'wegas-pageloader': {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
                     ws_provides: 'PageLoader',
                     requires: ["wegas-widget"]
+                },
+                'wegas-popup-content': {
+                    path: 'wegas-app/js/widget/wegas-popup-content-min.js',
+                    ws_provides: 'PopupContent',
+                    requires: ["wegas-popup-contentcss", "widget-buttons",
+                        "widget-modality", "widget-position",
+                        "widget-position-align",
+                        "widget-stack", "widget-stdmod"]
+                },
+                'wegas-popup-contentcss': {
+                    path: 'wegas-app/css/wegas-popup-content.css',
+                    type: 'css'
+                },
+                'wegas-popuplistener': {
+                    path: 'wegas-app/js/util/wegas-popuplistener-min.js',
+                    ws_provides: 'PopupListener',
+                    requires: ["wegas-popup-content"]
                 },
                 'wegas-button': {
                     path: 'wegas-app/js/widget/wegas-button-min.js',
@@ -212,8 +229,12 @@ YUI().use(function(Y) {
                 'wegas-loginwidget': {
                     path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
                     requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
-                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button'],
+                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button', 'wegas-logincss'],
                     ws_provides: "LoginWidget"
+                },
+                'wegas-logincss': {
+                    path: 'wegas-app/css/wegas-login.css',
+                    type: 'css'
                 },
                 'wegas-joingamewidget': {
                     path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
@@ -545,12 +566,18 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-treeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-treeview-min.js',
-                    requires: ['wegas-widget', "treeview", "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
+                    requires: ['wegas-widget', "treeview", "treeview-filter",
+                        "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
                     ws_provides: ['EditorTreeView', "JoinedGameTreeView"]
                 },
                 'wegas-editor-treeviewcss': {
                     path: 'wegas-editor/css/wegas-editor-treeview.css',
                     type: "css"
+                },
+                'wegas-editor-variabletreeview': {
+                    path: 'wegas-editor/js/widget/wegas-editor-variabletreeview-min.js',
+                    requires: ['wegas-editor-treeview', 'sortable', 'sortable-scroll'],
+                    ws_provides: 'VariableTreeView'
                 },
                 'wegas-datatable': {
                     path: 'wegas-editor/js/widget/wegas-datatable-min.js',
@@ -767,7 +794,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-flexitests-controller': {
                     path: "wegas-flexitests/js/wegas-flexitests-controller-min.js",
-                    requires: ["wegas-absolutelayout"],
+                    requires: ["wegas-absolutelayout", "timers"],
                     ws_provides: ["FlexitestsController", "FlexiResponse"]
                 },
                 'wegas-flexitests-mcqdisplay': {

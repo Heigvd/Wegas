@@ -61,7 +61,7 @@ public abstract class AbstractEntityTest<T extends AbstractEntity> {
         tx = em.getTransaction();
     }
 
-   // @Test
+    // @Test
     public void delete() throws InstantiationException, IllegalAccessException {
         System.out.println("[WeGAS Entity Test] delete [" + entityClass.getSimpleName() + "]");
         try {
@@ -81,13 +81,13 @@ public abstract class AbstractEntityTest<T extends AbstractEntity> {
         }
     }
 
-   // @Test
+    // @Test
     public void update() throws InstantiationException, IllegalAccessException {
         System.out.println("[WeGAS Entity Test] Update [" + entityClass.getSimpleName() + "]");
         this.merge();
     }
 
-   // @Test
+    // @Test
     public void read() throws IllegalAccessException, InstantiationException {
         System.out.println("[WeGAS Entity Test] Read [" + entityClass.getSimpleName() + "]");
         try {
@@ -103,7 +103,7 @@ public abstract class AbstractEntityTest<T extends AbstractEntity> {
         }
     }
 
-  //  @Test
+    //  @Test
     public void create() throws IllegalAccessException, InstantiationException {
         System.out.println("[WeGAS Entity Test] Create [" + entityClass.getSimpleName() + "]");
         try {

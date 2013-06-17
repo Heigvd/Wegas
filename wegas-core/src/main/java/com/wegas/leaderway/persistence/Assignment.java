@@ -26,7 +26,6 @@ public class Assignment extends AbstractAssignement {
     @Id
     @GeneratedValue
     private Long id;
-  
     @ManyToOne(optional = false)
     @JoinColumn(name = "taskinstance_id", nullable = false)
     @XmlTransient

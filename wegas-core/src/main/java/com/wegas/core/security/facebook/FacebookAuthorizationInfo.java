@@ -13,7 +13,7 @@ import org.apache.shiro.authz.Permission;
 
 /**
  *
-* @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class FacebookAuthorizationInfo implements AuthorizationInfo {
 
@@ -31,5 +31,4 @@ public class FacebookAuthorizationInfo implements AuthorizationInfo {
     public Collection<Permission> getObjectPermissions() {
         return null;
     }
-
 }

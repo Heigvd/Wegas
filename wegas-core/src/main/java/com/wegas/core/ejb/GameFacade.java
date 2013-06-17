@@ -12,6 +12,7 @@ import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
@@ -91,9 +92,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         gameModel.addGame(game);
         em.flush();                                                             // To retrieve game id
 
-        currentUser.getMainAccount().addPermission("Game:Edit:g" + game.getId());
-        currentUser.getMainAccount().addPermission("Game:View:g" + game.getId());
-
+        currentUser.getMainAccount().addPermission("Game:View,Edit:g" + game.getId());
     }
 
     @Override
@@ -206,7 +205,8 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         final Collection<Game> registerdGame = this.findRegisteredGames(userId);
         final Collection<Game> games = new ArrayList<>();
 
-        for (String permission : pRolle.getPermissions()) {
+        for (Permission p : pRolle.getPermissions()) {
+            String permission = p.getValue();
             if (permission.startsWith(PREFIX)) {
                 Game g = this.find(Long.parseLong(permission.replace(PREFIX, "")));
                 if (!registerdGame.contains(g)) {                               // Only add games a player is not already registered in

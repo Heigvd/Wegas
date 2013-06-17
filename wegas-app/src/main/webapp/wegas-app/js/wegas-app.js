@@ -91,6 +91,8 @@ YUI.add('wegas-app', function(Y) {
             });
 
             Y.on("io:failure", function(tId, e) {
+
+                Y.log("Global io:failure caught:", "error");
                 if (!e) {
                     return;
                 }
@@ -99,7 +101,8 @@ YUI.add('wegas-app', function(Y) {
                 if (e.status === 400 && exception[0] === '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
                         exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {
                     // Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login
-                    alert("You have been logged out or does not have permissions");
+                    // alert("You have been logged out or does not have permissions");
+                    Y.log("You have been logged out or does not have permissions");
                 }
             }, this);
 
@@ -130,7 +133,7 @@ YUI.add('wegas-app', function(Y) {
                         onInitialRequest = function() {
                     this.requestCounter -= 1;
                     if (this.requestCounter === 0) {
-                        this.initPage();                                       // Run the initPage() method when they all arrived.
+                        this.initPage();                                        // Run the initPage() method when they all arrived.
                     }
                 };
 
@@ -146,7 +149,7 @@ YUI.add('wegas-app', function(Y) {
                     }
                 }
 
-                if (this.requestCounter === 0) {                                    // If no request was sent, render directly
+                if (this.requestCounter === 0) {                                // If no request was sent, render directly
                     this.initPage();
                 }
             }, this));

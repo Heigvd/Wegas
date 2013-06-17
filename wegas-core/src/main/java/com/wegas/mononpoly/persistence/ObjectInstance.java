@@ -22,7 +22,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @Access(AccessType.FIELD)
-public class ObjectInstance extends VariableInstance  {
+public class ObjectInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     /**

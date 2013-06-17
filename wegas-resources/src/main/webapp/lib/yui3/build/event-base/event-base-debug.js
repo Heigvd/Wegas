@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -164,7 +164,7 @@ Y.extend(DOMEventFacade, Object, {
         // Webkit and IE9+? duplicate charCode in keyCode.
         // Opera never sets charCode, always keyCode (though with the charCode).
         // IE6-8 don't set charCode or which.
-        // All browsers other than IE6-8 set which=keyCode in keydown, keyup, and 
+        // All browsers other than IE6-8 set which=keyCode in keydown, keyup, and
         // which=charCode in keypress.
         //
         // Moral of the story: (e.which || e.keyCode) will always return the
@@ -383,6 +383,7 @@ Y.DOMEventFacade = DOMEventFacade;
      * on the current target will not be executed
      */
 (function() {
+
 /**
  * The event utility provides functions to add and remove event listeners,
  * event cleansing.  It also tries to automatically remove listeners it
@@ -404,8 +405,7 @@ Y.DOMEventFacade = DOMEventFacade;
 Y.Env.evt.dom_wrappers = {};
 Y.Env.evt.dom_map = {};
 
-var YDOM = Y.DOM,
-    _eventenv = Y.Env.evt,
+var _eventenv = Y.Env.evt,
     config = Y.config,
     win = config.win,
     add = YUI.Env.add,
@@ -428,7 +428,7 @@ var YDOM = Y.DOM,
     shouldIterate = function(o) {
         try {
             // TODO: See if there's a more performant way to return true early on this, for the common case
-            return (o && typeof o !== "string" && Y.Lang.isNumber(o.length) && !o.tagName && !YDOM.isWindow(o));
+            return (o && typeof o !== "string" && Y.Lang.isNumber(o.length) && !o.tagName && !Y.DOM.isWindow(o));
         } catch(ex) {
             Y.log("collection check failure", "warn", "event");
             return false;
@@ -713,6 +713,7 @@ Event._interval = setInterval(Event._poll, Event.POLL_INTERVAL);
                 cewrapper = Y.publish(key, {
                     silent: true,
                     bubbles: false,
+                    emitFacade:false,
                     contextFn: function() {
                         if (compat) {
                             return cewrapper.el;
@@ -798,7 +799,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
                 // oEl = (compat) ? Y.DOM.byId(el) : Y.Selector.query(el);
 
                 if (compat) {
-                    oEl = YDOM.byId(el);
+                    oEl = Y.DOM.byId(el);
                 } else {
 
                     oEl = Y.Selector.query(el);
@@ -915,7 +916,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
 
                 // el = (compat) ? Y.DOM.byId(el) : Y.all(el);
                 if (compat) {
-                    el = YDOM.byId(el);
+                    el = Y.DOM.byId(el);
                 } else {
                     el = Y.Selector.query(el);
                     l = el.length;
@@ -989,7 +990,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
          * @static
          */
         generateId: function(el) {
-            return YDOM.generateID(el);
+            return Y.DOM.generateID(el);
         },
 
         /**
@@ -1099,7 +1100,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
                 if (item && !item.checkReady) {
 
                     // el = (item.compat) ? Y.DOM.byId(item.id) : Y.one(item.id);
-                    el = (item.compat) ? YDOM.byId(item.id) : Y.Selector.query(item.id, null, true);
+                    el = (item.compat) ? Y.DOM.byId(item.id) : Y.Selector.query(item.id, null, true);
 
                     if (el) {
                         // Y.log('avail: ' + el);
@@ -1118,7 +1119,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
                 if (item && item.checkReady) {
 
                     // el = (item.compat) ? Y.DOM.byId(item.id) : Y.one(item.id);
-                    el = (item.compat) ? YDOM.byId(item.id) : Y.Selector.query(item.id, null, true);
+                    el = (item.compat) ? Y.DOM.byId(item.id) : Y.Selector.query(item.id, null, true);
 
                     if (el) {
                         // The element is available, but not necessarily ready
@@ -1318,6 +1319,7 @@ if (Y.UA.ie) {
 try {
     add(win, "unload", onUnload);
 } catch(e) {
+    /*jshint maxlen:300*/
     Y.log("Registering unload listener failed. This is known to happen in Chrome Packaged Apps and Extensions, which don't support unload, and don't provide a way to test for support", "warn", "event-base");
 }
 
@@ -1384,4 +1386,4 @@ Y.Env.evt.plugins.contentready = {
 };
 
 
-}, '3.10.1', {"requires": ["event-custom-base"]});
+}, '3.10.3', {"requires": ["event-custom-base"]});

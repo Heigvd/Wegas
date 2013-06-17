@@ -29,7 +29,6 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
      */
     @Lob
     private String description;
-    
     /**
      *
      */
@@ -63,7 +62,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
      * @return the properties
      */
@@ -77,9 +76,8 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
-    
-    public Integer size(Player p){
+
+    public Integer size(Player p) {
         return this.getInstance(p).getProperties().size();
     }
-
 }

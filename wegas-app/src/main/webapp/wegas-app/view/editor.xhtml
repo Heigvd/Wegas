@@ -32,7 +32,8 @@
 
                 YUI().use("wegas-app",  /*'wegas-editorcss',*/ function (Y) {
                     var app = new Y.Wegas.App({
-                        layoutSrc: 'rest/Page/#{editorGameController.currentGameModel.id}/EditorLayout',
+                        //layoutSrc: 'rest/Page/#{editorGameController.currentGameModel.id}/EditorLayout',
+                        layoutSrc: 'wegas-app/db/wegas-editor-layout.json',
                         debug: true,
                         currentGameModel: #{editorGameController.currentGameModel.id},
                         currentGame: #{editorGameController.currentGame.id},

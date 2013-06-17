@@ -111,7 +111,33 @@
                                                     "type": "NewEntityButton",
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
                                                     "targetClass": "GameModel",
-                                                    "dataSource": "GameModel"
+                                                    "dataSource": "GameModel",
+                                                    "formCfg": {
+                                                        "type": "group",
+                                                        "fields": [{
+                                                                "name": "@class",
+                                                                "type": "hidden"
+                                                            }, {
+                                                                "name": "templateId",
+                                                                "type": "gamemodelselect",
+                                                                "label": "Based on",
+                                                                "filters": {
+                                                                    "canDuplicate": true
+                                                                }
+                                                            }, {
+                                                                "label": "name",
+                                                                "name": "name",
+                                                                "required": true
+                                                            }, {
+                                                                "label": "properties",
+                                                                "name": "properties",
+                                                                "useButtons": true,
+                                                                "wrapperClassName": "inputEx-fieldWrapper wegas-advanced-feature",
+                                                                "type": "object",
+                                                                "fields": [],
+                                                                "showMsg": true
+                                                            }]
+                                                    }
                                                 }]
                                         }
                                     }]
@@ -228,7 +254,31 @@
                                                     "type": "NewEntityButton",
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
                                                     "targetClass": "Game",
-                                                    "dataSource": "Game"
+                                                    "dataSource": "Game",
+                                                    "formCfg": {
+                                                        "required": true,
+                                                        "type": "group",
+                                                        "fields": [{
+                                                                "name": "@class",
+                                                                "type": "hidden",
+                                                                "value": "null"
+                                                            }, {
+                                                                "label": "Game model",
+                                                                "name": "gameModelId",
+                                                                "required": true,
+                                                                "filters": {"canInstantiate": true},
+                                                                "type": "gamemodelselect"
+                                                            }, {
+                                                                "label": "name",
+                                                                "name": "name",
+                                                                "required": true,
+                                                                "showMsg": true
+                                                            }, {
+                                                                "label": "token",
+                                                                "name": "token",
+                                                                "description": "Leave blank for automatic generation"
+                                                            }]
+                                                    }
                                                 }]
                                         }
                                     }]
