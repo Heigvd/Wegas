@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -176,7 +176,7 @@ Y.JSON.parse = function (s,reviver) {
 
         // Eval the text into a JavaScript data structure, apply any
         // reviver function, and return
-        return _revive( EVAL_TOKEN('(' + s + ')'), reviver );
+        return _revive(eval('(' + s + ')'), reviver);
     }
 
     throw new SyntaxError('JSON.parse');
@@ -186,4 +186,5 @@ Y.JSON.parse = function (s,reviver) {
 // is native or a shim
 Y.JSON.parse.isShim = true;
 
-}, '3.10.1', {"requires": ["json-parse"]});
+
+}, '3.10.3', {"requires": ["json-parse"]});

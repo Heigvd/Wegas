@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -807,18 +807,23 @@ Y.mix(Y_Node.prototype, {
 
     /**
      * The implementation for showing nodes.
-     * Default is to toggle the style.display property.
+     * Default is to remove the hidden attribute and reset the CSS style.display property.
      * @method _show
      * @protected
      * @chainable
      */
     _show: function() {
+        this.removeAttribute('hidden');
+
+        // For back-compat we need to leave this in for browsers that
+        // do not visually hide a node via the hidden attribute
+        // and for users that check visibility based on style display.
         this.setStyle('display', '');
 
     },
 
     _isHidden: function() {
-        return Y.DOM.getStyle(this._node, 'display') === 'none';
+        return Y.DOM.getAttribute(this._node, 'hidden') === 'true';
     },
 
     /**
@@ -877,12 +882,17 @@ Y.mix(Y_Node.prototype, {
 
     /**
      * The implementation for hiding nodes.
-     * Default is to toggle the style.display property.
+     * Default is to set the hidden attribute to true and set the CSS style.display to 'none'.
      * @method _hide
      * @protected
      * @chainable
      */
     _hide: function() {
+        this.setAttribute('hidden', true);
+
+        // For back-compat we need to leave this in for browsers that
+        // do not visually hide a node via the hidden attribute
+        // and for users that check visibility based on style display.
         this.setStyle('display', 'none');
     }
 });
@@ -1161,4 +1171,4 @@ Y.mix(Y.NodeList.prototype, {
 });
 
 
-}, '3.10.1', {"requires": ["event-base", "node-core", "dom-base"]});
+}, '3.10.3', {"requires": ["event-base", "node-core", "dom-base"]});

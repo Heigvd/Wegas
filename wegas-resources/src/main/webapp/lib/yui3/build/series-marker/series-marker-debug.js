@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -93,4 +93,4 @@ Y.MarkerSeries = Y.Base.create("markerSeries", Y.CartesianSeries, [Y.Plots], {
 
 
 
-}, '3.10.1', {"requires": ["series-cartesian", "series-plot-util"]});
+}, '3.10.3', {"requires": ["series-cartesian", "series-plot-util"]});

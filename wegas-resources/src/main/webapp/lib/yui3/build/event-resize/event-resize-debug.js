@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -18,7 +18,7 @@ YUI.add('event-resize', function (Y, NAME) {
 /**
  * Old firefox fires the window resize event once when the resize action
  * finishes, other browsers fire the event periodically during the
- * resize.  This code uses timeout logic to simulate the Firefox 
+ * resize.  This code uses timeout logic to simulate the Firefox
  * behavior in other browsers.
  * @event windowresize
  * @for YUI
@@ -57,4 +57,4 @@ Y.Event.define('windowresize', {
 });
 
 
-}, '3.10.1', {"requires": ["node-base", "event-synthetic"]});
+}, '3.10.3', {"requires": ["node-base", "event-synthetic"]});

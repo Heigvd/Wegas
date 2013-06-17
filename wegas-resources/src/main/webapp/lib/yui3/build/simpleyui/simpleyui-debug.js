@@ -1,5 +1,5 @@
 /*
-YUI 3.10.1 (build 8bc088e)
+YUI 3.10.3 (build 2fb5187)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -2082,8 +2082,8 @@ relying on ES5 functionality, even when ES5 functionality is available.
 
 /**
 Delay the `use` callback until a specific event has passed (`load`, `domready`, `contentready` or `available`)
-@property delayUntil
-@type String|Object
+
+@property {Object|String} delayUntil
 @since 3.6.0
 @example
 
@@ -2107,8 +2107,6 @@ Or you can delay until a node is available (with `available` or `contentready`):
         // available in the DOM.
     });
 
-@property {Object|String} delayUntil
-@since 3.6.0
 **/
 YUI.add('yui-base', function (Y, NAME) {
 
@@ -7888,6 +7886,498 @@ Y.mix(Y.DOM, {
 
 
 }, '@VERSION@', {"requires": ["dom-core"]});
+YUI.add('color-base', function (Y, NAME) {
+
+/**
+Color provides static methods for color conversion.
+
+    Y.Color.toRGB('f00'); // rgb(255, 0, 0)
+
+    Y.Color.toHex('rgb(255, 255, 0)'); // #ffff00
+
+@module color
+@submodule color-base
+@class Color
+@since 3.8.0
+**/
+
+var REGEX_HEX = /^#?([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})(\ufffe)?/,
+    REGEX_HEX3 = /^#?([\da-fA-F]{1})([\da-fA-F]{1})([\da-fA-F]{1})(\ufffe)?/,
+    REGEX_RGB = /rgba?\(([\d]{1,3}), ?([\d]{1,3}), ?([\d]{1,3}),? ?([.\d]*)?\)/,
+    TYPES = { 'HEX': 'hex', 'RGB': 'rgb', 'RGBA': 'rgba' },
+    CONVERTS = { 'hex': 'toHex', 'rgb': 'toRGB', 'rgba': 'toRGBA' };
+
+
+Y.Color = {
+    /**
+    @static
+    @property KEYWORDS
+    @type Object
+    @since 3.8.0
+    **/
+    KEYWORDS: {
+        'black': '000', 'silver': 'c0c0c0', 'gray': '808080', 'white': 'fff',
+        'maroon': '800000', 'red': 'f00', 'purple': '800080', 'fuchsia': 'f0f',
+        'green': '008000', 'lime': '0f0', 'olive': '808000', 'yellow': 'ff0',
+        'navy': '000080', 'blue': '00f', 'teal': '008080', 'aqua': '0ff'
+    },
+
+    /**
+        NOTE: `(\ufffe)?` is added to the Regular Expression to carve out a
+        place for the alpha channel that is returned from toArray
+        without compromising any usage of the Regular Expression
+
+    @static
+    @property REGEX_HEX
+    @type RegExp
+    @default /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})(\ufffe)?/
+    @since 3.8.0
+    **/
+    REGEX_HEX: REGEX_HEX,
+
+    /**
+        NOTE: `(\ufffe)?` is added to the Regular Expression to carve out a
+        place for the alpha channel that is returned from toArray
+        without compromising any usage of the Regular Expression
+
+    @static
+    @property REGEX_HEX3
+    @type RegExp
+    @default /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})(\ufffe)?/
+    @since 3.8.0
+    **/
+    REGEX_HEX3: REGEX_HEX3,
+
+    /**
+    @static
+    @property REGEX_RGB
+    @type RegExp
+    @default /rgba?\(([0-9]{1,3}), ?([0-9]{1,3}), ?([0-9]{1,3}),? ?([.0-9]{1,3})?\)/
+    @since 3.8.0
+    **/
+    REGEX_RGB: REGEX_RGB,
+
+    re_RGB: REGEX_RGB,
+
+    re_hex: REGEX_HEX,
+
+    re_hex3: REGEX_HEX3,
+
+    /**
+    @static
+    @property STR_HEX
+    @type String
+    @default #{*}{*}{*}
+    @since 3.8.0
+    **/
+    STR_HEX: '#{*}{*}{*}',
+
+    /**
+    @static
+    @property STR_RGB
+    @type String
+    @default rgb({*}, {*}, {*})
+    @since 3.8.0
+    **/
+    STR_RGB: 'rgb({*}, {*}, {*})',
+
+    /**
+    @static
+    @property STR_RGBA
+    @type String
+    @default rgba({*}, {*}, {*}, {*})
+    @since 3.8.0
+    **/
+    STR_RGBA: 'rgba({*}, {*}, {*}, {*})',
+
+    /**
+    @static
+    @property TYPES
+    @type Object
+    @default {'rgb':'rgb', 'rgba':'rgba'}
+    @since 3.8.0
+    **/
+    TYPES: TYPES,
+
+    /**
+    @static
+    @property CONVERTS
+    @type Object
+    @default {}
+    @since 3.8.0
+    **/
+    CONVERTS: CONVERTS,
+
+    /**
+     Converts the provided string to the provided type.
+     You can use the `Y.Color.TYPES` to get a valid `to` type.
+     If the color cannot be converted, the original color will be returned.
+
+     @public
+     @method convert
+     @param {String} str
+     @param {String} to
+     @return {String}
+     @since 3.8.0
+     **/
+    convert: function (str, to) {
+        var convert = Y.Color.CONVERTS[to.toLowerCase()],
+            clr = str;
+
+        if (convert && Y.Color[convert]) {
+            clr = Y.Color[convert](str);
+        }
+
+        return clr;
+    },
+
+    /**
+    Converts provided color value to a hex value string
+
+    @public
+    @method toHex
+    @param {String} str Hex or RGB value string
+    @return {String} returns array of values or CSS string if options.css is true
+    @since 3.8.0
+    **/
+    toHex: function (str) {
+        var clr = Y.Color._convertTo(str, 'hex'),
+            isTransparent = clr.toLowerCase() === 'transparent';
+
+        if (clr.charAt(0) !== '#' && !isTransparent) {
+            clr = '#' + clr;
+        }
+
+        return isTransparent ? clr.toLowerCase() : clr.toUpperCase();
+    },
+
+    /**
+    Converts provided color value to an RGB value string
+    @public
+    @method toRGB
+    @param {String} str Hex or RGB value string
+    @return {String}
+    @since 3.8.0
+    **/
+    toRGB: function (str) {
+        var clr = Y.Color._convertTo(str, 'rgb');
+        return clr.toLowerCase();
+    },
+
+    /**
+    Converts provided color value to an RGB value string
+    @public
+    @method toRGBA
+    @param {String} str Hex or RGB value string
+    @return {String}
+    @since 3.8.0
+    **/
+    toRGBA: function (str) {
+        var clr = Y.Color._convertTo(str, 'rgba' );
+        return clr.toLowerCase();
+    },
+
+    /**
+    Converts the provided color string to an array of values where the
+        last value is the alpha value. Will return an empty array if
+        the provided string is not able to be parsed.
+
+        NOTE: `(\ufffe)?` is added to `HEX` and `HEX3` Regular Expressions to
+        carve out a place for the alpha channel that is returned from
+        toArray without compromising any usage of the Regular Expression
+
+        Y.Color.toArray('fff');              // ['ff', 'ff', 'ff', 1]
+        Y.Color.toArray('rgb(0, 0, 0)');     // ['0', '0', '0', 1]
+        Y.Color.toArray('rgba(0, 0, 0, 0)'); // ['0', '0', '0', 1]
+
+
+
+    @public
+    @method toArray
+    @param {String} str
+    @return {Array}
+    @since 3.8.0
+    **/
+    toArray: function(str) {
+        // parse with regex and return "matches" array
+        var type = Y.Color.findType(str).toUpperCase(),
+            regex,
+            arr,
+            length,
+            lastItem;
+
+        if (type === 'HEX' && str.length < 5) {
+            type = 'HEX3';
+        }
+
+        if (type.charAt(type.length - 1) === 'A') {
+            type = type.slice(0, -1);
+        }
+
+        regex = Y.Color['REGEX_' + type];
+
+        if (regex) {
+            arr = regex.exec(str) || [];
+            length = arr.length;
+
+            if (length) {
+
+                arr.shift();
+                length--;
+
+                if (type === 'HEX3') {
+                    arr[0] += arr[0];
+                    arr[1] += arr[1];
+                    arr[2] += arr[2];
+                }
+
+                lastItem = arr[length - 1];
+                if (!lastItem) {
+                    arr[length - 1] = 1;
+                }
+            }
+        }
+
+        return arr;
+
+    },
+
+    /**
+    Converts the array of values to a string based on the provided template.
+    @public
+    @method fromArray
+    @param {Array} arr
+    @param {String} template
+    @return {String}
+    @since 3.8.0
+    **/
+    fromArray: function(arr, template) {
+        arr = arr.concat();
+
+        if (typeof template === 'undefined') {
+            return arr.join(', ');
+        }
+
+        var replace = '{*}';
+
+        template = Y.Color['STR_' + template.toUpperCase()];
+
+        if (arr.length === 3 && template.match(/\{\*\}/g).length === 4) {
+            arr.push(1);
+        }
+
+        while ( template.indexOf(replace) >= 0 && arr.length > 0) {
+            template = template.replace(replace, arr.shift());
+        }
+
+        return template;
+    },
+
+    /**
+    Finds the value type based on the str value provided.
+    @public
+    @method findType
+    @param {String} str
+    @return {String}
+    @since 3.8.0
+    **/
+    findType: function (str) {
+        if (Y.Color.KEYWORDS[str]) {
+            return 'keyword';
+        }
+
+        var index = str.indexOf('('),
+            key;
+
+        if (index > 0) {
+            key = str.substr(0, index);
+        }
+
+        if (key && Y.Color.TYPES[key.toUpperCase()]) {
+            return Y.Color.TYPES[key.toUpperCase()];
+        }
+
+        return 'hex';
+
+    }, // return 'keyword', 'hex', 'rgb'
+
+    /**
+    Retrives the alpha channel from the provided string. If no alpha
+        channel is present, `1` will be returned.
+    @protected
+    @method _getAlpha
+    @param {String} clr
+    @return {Number}
+    @since 3.8.0
+    **/
+    _getAlpha: function (clr) {
+        var alpha,
+            arr = Y.Color.toArray(clr);
+
+        if (arr.length > 3) {
+            alpha = arr.pop();
+        }
+
+        return +alpha || 1;
+    },
+
+    /**
+    Returns the hex value string if found in the KEYWORDS object
+    @protected
+    @method _keywordToHex
+    @param {String} clr
+    @return {String}
+    @since 3.8.0
+    **/
+    _keywordToHex: function (clr) {
+        var keyword = Y.Color.KEYWORDS[clr];
+
+        if (keyword) {
+            return keyword;
+        }
+    },
+
+    /**
+    Converts the provided color string to the value type provided as `to`
+    @protected
+    @method _convertTo
+    @param {String} clr
+    @param {String} to
+    @return {String}
+    @since 3.8.0
+    **/
+    _convertTo: function(clr, to) {
+
+        if (clr === 'transparent') {
+            return clr;
+        }
+
+        var from = Y.Color.findType(clr),
+            originalTo = to,
+            needsAlpha,
+            alpha,
+            method,
+            ucTo;
+
+        if (from === 'keyword') {
+            clr = Y.Color._keywordToHex(clr);
+            from = 'hex';
+        }
+
+        if (from === 'hex' && clr.length < 5) {
+            if (clr.charAt(0) === '#') {
+                clr = clr.substr(1);
+            }
+
+            clr = '#' + clr.charAt(0) + clr.charAt(0) +
+                        clr.charAt(1) + clr.charAt(1) +
+                        clr.charAt(2) + clr.charAt(2);
+        }
+
+        if (from === to) {
+            return clr;
+        }
+
+        if (from.charAt(from.length - 1) === 'a') {
+            from = from.slice(0, -1);
+        }
+
+        needsAlpha = (to.charAt(to.length - 1) === 'a');
+        if (needsAlpha) {
+            to = to.slice(0, -1);
+            alpha = Y.Color._getAlpha(clr);
+        }
+
+        ucTo = to.charAt(0).toUpperCase() + to.substr(1).toLowerCase();
+        method = Y.Color['_' + from + 'To' + ucTo ];
+
+        // check to see if need conversion to rgb first
+        // check to see if there is a direct conversion method
+        // convertions are: hex <-> rgb <-> hsl
+        if (!method) {
+            if (from !== 'rgb' && to !== 'rgb') {
+                clr = Y.Color['_' + from + 'ToRgb'](clr);
+                from = 'rgb';
+                method = Y.Color['_' + from + 'To' + ucTo ];
+            }
+        }
+
+        if (method) {
+            clr = ((method)(clr, needsAlpha));
+        }
+
+        // process clr from arrays to strings after conversions if alpha is needed
+        if (needsAlpha) {
+            if (!Y.Lang.isArray(clr)) {
+                clr = Y.Color.toArray(clr);
+            }
+            clr.push(alpha);
+            clr = Y.Color.fromArray(clr, originalTo.toUpperCase());
+        }
+
+        return clr;
+    },
+
+    /**
+    Processes the hex string into r, g, b values. Will return values as
+        an array, or as an rgb string.
+    @protected
+    @method _hexToRgb
+    @param {String} str
+    @param {Boolean} [toArray]
+    @return {String|Array}
+    @since 3.8.0
+    **/
+    _hexToRgb: function (str, toArray) {
+        var r, g, b;
+
+        /*jshint bitwise:false*/
+        if (str.charAt(0) === '#') {
+            str = str.substr(1);
+        }
+
+        str = parseInt(str, 16);
+
+        r = str >> 16;
+        g = str >> 8 & 0xFF;
+        b = str & 0xFF;
+
+        if (toArray) {
+            return [r, g, b];
+        }
+
+        return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+    },
+
+    /**
+    Processes the rgb string into r, g, b values. Will return values as
+        an array, or as a hex string.
+    @protected
+    @method _rgbToHex
+    @param {String} str
+    @param {Boolean} [toArray]
+    @return {String|Array}
+    @since 3.8.0
+    **/
+    _rgbToHex: function (str) {
+        /*jshint bitwise:false*/
+        var rgb = Y.Color.toArray(str),
+            hex = rgb[2] | (rgb[1] << 8) | (rgb[0] << 16);
+
+        hex = (+hex).toString(16);
+
+        while (hex.length < 6) {
+            hex = '0' + hex;
+        }
+
+        return '#' + hex;
+    }
+
+};
+
+
+
+}, '@VERSION@', {"requires": ["yui-base"]});
 YUI.add('dom-style', function (Y, NAME) {
 
 (function(Y) {
@@ -8151,83 +8641,9 @@ Y_DOM.CUSTOM_STYLES.transformOrigin = {
 
 
 })(Y);
-(function(Y) {
-var PARSE_INT = parseInt,
-    RE = RegExp;
-
-Y.Color = {
-    KEYWORDS: {
-        black: '000',
-        silver: 'c0c0c0',
-        gray: '808080',
-        white: 'fff',
-        maroon: '800000',
-        red: 'f00',
-        purple: '800080',
-        fuchsia: 'f0f',
-        green: '008000',
-        lime: '0f0',
-        olive: '808000',
-        yellow: 'ff0',
-        navy: '000080',
-        blue: '00f',
-        teal: '008080',
-        aqua: '0ff'
-    },
-
-    re_RGB: /^rgb\(([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)\)$/i,
-    re_hex: /^#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})$/i,
-    re_hex3: /([0-9A-F])/gi,
-
-    toRGB: function(val) {
-        if (!Y.Color.re_RGB.test(val)) {
-            val = Y.Color.toHex(val);
-        }
-
-        if(Y.Color.re_hex.exec(val)) {
-            val = 'rgb(' + [
-                PARSE_INT(RE.$1, 16),
-                PARSE_INT(RE.$2, 16),
-                PARSE_INT(RE.$3, 16)
-            ].join(', ') + ')';
-        }
-        return val;
-    },
-
-    toHex: function(val) {
-        val = Y.Color.KEYWORDS[val] || val;
-        if (Y.Color.re_RGB.exec(val)) {
-            val = [
-                Number(RE.$1).toString(16),
-                Number(RE.$2).toString(16),
-                Number(RE.$3).toString(16)
-            ];
-
-            for (var i = 0; i < val.length; i++) {
-                if (val[i].length < 2) {
-                    val[i] = '0' + val[i];
-                }
-            }
-
-            val = val.join('');
-        }
-
-        if (val.length < 6) {
-            val = val.replace(Y.Color.re_hex3, '$1$1');
-        }
-
-        if (val !== 'transparent' && val.indexOf('#') < 0) {
-            val = '#' + val;
-        }
-
-        return val.toUpperCase();
-    }
-};
-})(Y);
 
 
-
-}, '@VERSION@', {"requires": ["dom-base"]});
+}, '@VERSION@', {"requires": ["dom-base", "color-base"]});
 YUI.add('dom-style-ie', function (Y, NAME) {
 
 (function(Y) {
@@ -10707,10 +11123,11 @@ Y.CustomEvent.prototype = {
 
         if (!subs) {
             subs = (when === AFTER) ? this._afters : this._subscribers;
-            i = YArray.indexOf(subs, s, 0);
         }
 
         if (subs) {
+            i = YArray.indexOf(subs, s, 0);
+
             if (s && subs[i] === s) {
                 subs.splice(i, 1);
 
@@ -11695,12 +12112,15 @@ Y.log('EventTarget unsubscribeAll() is deprecated, use detachAll()', 'warn', 'de
             ce2,
             args;
 
-        if (typeIncluded && argCount <= 2) {
+        if (typeIncluded && argCount <= 3) {
 
             // PERF: Try to avoid slice/iteration for the common signatures
 
+            // Most common
             if (argCount === 2) {
                 args = [arguments[1]]; // fire("foo", {})
+            } else if (argCount === 3) {
+                args = [arguments[1], arguments[2]]; // fire("foo", {}, opts)
             } else {
                 args = []; // fire("foo")
             }
@@ -12328,12 +12748,6 @@ CEProto.fireComplex = function(args) {
             self.prevented = 0;
         }
 
-        // Kill the cached facade to free up memory.
-        // Otherwise we have the facade from the last fire, sitting around forever.
-        self._facade = null;
-
-        return ret;
-
     } else {
         defaultFn = self.defaultFn;
 
@@ -12344,17 +12758,20 @@ CEProto.fireComplex = function(args) {
                 defaultFn.apply(host, args);
             }
         }
-
-        return ret;
     }
 
+    // Kill the cached facade to free up memory.
+    // Otherwise we have the facade from the last fire, sitting around forever.
+    self._facade = null;
+
+    return ret;
 };
 
 CEProto._getFacade = function(fireArgs) {
 
     var userArgs = this.details,
         firstArg = userArgs && userArgs[0],
-        firstArgIsObj = (typeof firstArg === "object"),
+        firstArgIsObj = (firstArg && (typeof firstArg === "object")),
         ef = this._facade;
 
     if (!ef) {
@@ -15013,18 +15430,23 @@ Y.mix(Y_Node.prototype, {
 
     /**
      * The implementation for showing nodes.
-     * Default is to toggle the style.display property.
+     * Default is to remove the hidden attribute and reset the CSS style.display property.
      * @method _show
      * @protected
      * @chainable
      */
     _show: function() {
+        this.removeAttribute('hidden');
+
+        // For back-compat we need to leave this in for browsers that
+        // do not visually hide a node via the hidden attribute
+        // and for users that check visibility based on style display.
         this.setStyle('display', '');
 
     },
 
     _isHidden: function() {
-        return Y.DOM.getStyle(this._node, 'display') === 'none';
+        return Y.DOM.getAttribute(this._node, 'hidden') === 'true';
     },
 
     /**
@@ -15083,12 +15505,17 @@ Y.mix(Y_Node.prototype, {
 
     /**
      * The implementation for hiding nodes.
-     * Default is to toggle the style.display property.
+     * Default is to set the hidden attribute to true and set the CSS style.display to 'none'.
      * @method _hide
      * @protected
      * @chainable
      */
     _hide: function() {
+        this.setAttribute('hidden', true);
+
+        // For back-compat we need to leave this in for browsers that
+        // do not visually hide a node via the hidden attribute
+        // and for users that check visibility based on style display.
         this.setStyle('display', 'none');
     }
 });
@@ -15529,7 +15956,7 @@ Y.extend(DOMEventFacade, Object, {
         // Webkit and IE9+? duplicate charCode in keyCode.
         // Opera never sets charCode, always keyCode (though with the charCode).
         // IE6-8 don't set charCode or which.
-        // All browsers other than IE6-8 set which=keyCode in keydown, keyup, and 
+        // All browsers other than IE6-8 set which=keyCode in keydown, keyup, and
         // which=charCode in keypress.
         //
         // Moral of the story: (e.which || e.keyCode) will always return the
@@ -15748,6 +16175,7 @@ Y.DOMEventFacade = DOMEventFacade;
      * on the current target will not be executed
      */
 (function() {
+
 /**
  * The event utility provides functions to add and remove event listeners,
  * event cleansing.  It also tries to automatically remove listeners it
@@ -15769,8 +16197,7 @@ Y.DOMEventFacade = DOMEventFacade;
 Y.Env.evt.dom_wrappers = {};
 Y.Env.evt.dom_map = {};
 
-var YDOM = Y.DOM,
-    _eventenv = Y.Env.evt,
+var _eventenv = Y.Env.evt,
     config = Y.config,
     win = config.win,
     add = YUI.Env.add,
@@ -15793,7 +16220,7 @@ var YDOM = Y.DOM,
     shouldIterate = function(o) {
         try {
             // TODO: See if there's a more performant way to return true early on this, for the common case
-            return (o && typeof o !== "string" && Y.Lang.isNumber(o.length) && !o.tagName && !YDOM.isWindow(o));
+            return (o && typeof o !== "string" && Y.Lang.isNumber(o.length) && !o.tagName && !Y.DOM.isWindow(o));
         } catch(ex) {
             Y.log("collection check failure", "warn", "event");
             return false;
@@ -16078,6 +16505,7 @@ Event._interval = setInterval(Event._poll, Event.POLL_INTERVAL);
                 cewrapper = Y.publish(key, {
                     silent: true,
                     bubbles: false,
+                    emitFacade:false,
                     contextFn: function() {
                         if (compat) {
                             return cewrapper.el;
@@ -16163,7 +16591,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
                 // oEl = (compat) ? Y.DOM.byId(el) : Y.Selector.query(el);
 
                 if (compat) {
-                    oEl = YDOM.byId(el);
+                    oEl = Y.DOM.byId(el);
                 } else {
 
                     oEl = Y.Selector.query(el);
@@ -16280,7 +16708,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
 
                 // el = (compat) ? Y.DOM.byId(el) : Y.all(el);
                 if (compat) {
-                    el = YDOM.byId(el);
+                    el = Y.DOM.byId(el);
                 } else {
                     el = Y.Selector.query(el);
                     l = el.length;
@@ -16354,7 +16782,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
          * @static
          */
         generateId: function(el) {
-            return YDOM.generateID(el);
+            return Y.DOM.generateID(el);
         },
 
         /**
@@ -16464,7 +16892,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
                 if (item && !item.checkReady) {
 
                     // el = (item.compat) ? Y.DOM.byId(item.id) : Y.one(item.id);
-                    el = (item.compat) ? YDOM.byId(item.id) : Y.Selector.query(item.id, null, true);
+                    el = (item.compat) ? Y.DOM.byId(item.id) : Y.Selector.query(item.id, null, true);
 
                     if (el) {
                         // Y.log('avail: ' + el);
@@ -16483,7 +16911,7 @@ Y.log(type + " attach call failed, invalid callback", "error", "event");
                 if (item && item.checkReady) {
 
                     // el = (item.compat) ? Y.DOM.byId(item.id) : Y.one(item.id);
-                    el = (item.compat) ? YDOM.byId(item.id) : Y.Selector.query(item.id, null, true);
+                    el = (item.compat) ? Y.DOM.byId(item.id) : Y.Selector.query(item.id, null, true);
 
                     if (el) {
                         // The element is available, but not necessarily ready
@@ -16683,6 +17111,7 @@ if (Y.UA.ie) {
 try {
     add(win, "unload", onUnload);
 } catch(e) {
+    /*jshint maxlen:300*/
     Y.log("Registering unload listener failed. This is known to happen in Chrome Packaged Apps and Extensions, which don't support unload, and don't provide a way to test for support", "warn", "event-base");
 }
 
@@ -16971,7 +17400,7 @@ IELazyFacade._lazyProperties = {
         var e = this._event,
             val = e.pageX,
             doc, bodyScroll, docScroll;
-                
+
         if (val === undefined) {
             doc = Y.config.doc;
             bodyScroll = doc.body && doc.body.scrollLeft;
@@ -16986,7 +17415,7 @@ IELazyFacade._lazyProperties = {
         var e = this._event,
             val = e.pageY,
             doc, bodyScroll, docScroll;
-                
+
         if (val === undefined) {
             doc = Y.config.doc;
             bodyScroll = doc.body && doc.body.scrollTop;
@@ -17047,7 +17476,7 @@ if (imp && (!imp.hasFeature('Events', '2.0'))) {
             useLazyFacade = false;
         }
     }
-        
+
     Y.DOMEventFacade = (useLazyFacade) ? IELazyFacade : IEEventFacade;
 }
 
