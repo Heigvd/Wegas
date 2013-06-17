@@ -68,14 +68,12 @@ public class JpaRealm extends AuthorizingRealm {
                 info.addRole(role.getName());
 
                 for (Permission p : role.getPermissions()) {
-                    info.addStringPermission(p.getValue());
-                    info.addStringPermission(p.getInducedPermission());
+                    addPermissions(info, p);
                 }
             }
 
             for (Permission p : account.getPermissions()) {
-                info.addStringPermission(p.getValue());
-                info.addStringPermission(p.getInducedPermission());
+                addPermissions(info, p);
             }
             return info;
         } catch (EJBException e) {
@@ -92,5 +90,12 @@ public class JpaRealm extends AuthorizingRealm {
      */
     public AccountFacade accountFacade() throws NamingException {
         return Helper.lookupBy(AccountFacade.class);
+    }
+
+    public static void addPermissions(SimpleAuthorizationInfo info, Permission p) {
+        info.addStringPermission(p.getValue());
+        if (p.getInducedPermission() != null && !p.getInducedPermission().isEmpty()) {
+            info.addStringPermission(p.getInducedPermission());
+        }
     }
 }

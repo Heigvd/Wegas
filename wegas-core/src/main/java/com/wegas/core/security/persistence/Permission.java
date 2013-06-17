@@ -7,11 +7,9 @@
  */
 package com.wegas.core.security.persistence;
 
-import java.io.Serializable;
+import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -19,10 +17,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  */
 //@Embeddable
 @Entity
-@XmlRootElement
-@XmlType(name = "")                                                             // This forces to use Class's short name as type
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class Permission implements Serializable {
+public class Permission extends AbstractEntity {
 
     @Basic
     @Column(name = "permissions")
@@ -32,6 +27,12 @@ public class Permission implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
+    @ManyToOne
+    @JsonIgnore
+    private AbstractAccount account;
+    @ManyToOne
+    @JsonIgnore
+    private Role role;
 
     public Permission() {
     }
@@ -46,10 +47,22 @@ public class Permission implements Serializable {
     }
 
     @Override
+    public void merge(AbstractEntity other) {
+        Permission o = (Permission) other;
+        this.setValue(o.getValue());
+        this.setInducedPermission(o.getInducedPermission());
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        return (obj != null
-                && obj instanceof Permission
-                && this.value.equals(((Permission) obj).getValue()));
+        if (super.equals(obj)) {
+            return true;
+        } else {
+            return (obj != null
+                    && obj instanceof Permission
+                    && this.value.equals(((Permission) obj).getValue()));
+        }
+
     }
 
     /**
@@ -91,5 +104,33 @@ public class Permission implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the account
+     */
+    public AbstractAccount getAccount() {
+        return account;
+    }
+
+    /**
+     * @param account the account to set
+     */
+    public void setAccount(AbstractAccount account) {
+        this.account = account;
+    }
+
+    /**
+     * @return the role
+     */
+    public Role getRole() {
+        return role;
+    }
+
+    /**
+     * @param role the role to set
+     */
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

@@ -28,7 +28,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NamedQuery;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.apache.shiro.SecurityUtils;
@@ -139,10 +138,10 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @return
      */
     public List<Map> findRolePermissionByInstance(String instance) {
-        Query findByToken = em.createQuery("SELECT DISTINCT roles FROM Role roles");//@fixme Unable to select role with a like w/ embeddebale
-//        Query findByToken = em.createQuery("SELECT DISTINCT roles FROM Role roles WHERE roles.permissions.value = 'mm'");
-        //SELECT DISTINCT roles FROM Role roles WHERE roles.permissions LIKE :gameId
-        //findByToken.setParameter("gameId", "%:" + id);
+        Query findByToken = em.createQuery("SELECT DISTINCT roles FROM Role roles JOIN roles.permissions p WHERE p.value LIKE :instance");//@fixme Unable to select role with a like w/ embeddebale
+        // Query findByToken = em.createQuery("SELECT DISTINCT roles FROM Role roles WHERE roles.permissions.value = 'mm'");
+        // SELECT DISTINCT roles FROM Role roles WHERE roles.permissions LIKE :gameId
+        findByToken.setParameter("instance", "%:" + instance);
 
         List<Role> res = (List<Role>) findByToken.getResultList();
         List<Map> allRoles = new ArrayList<>();
@@ -152,20 +151,16 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             role.put("name", unRole.getName());
             List<String> permissions = new ArrayList<>();
             role.put("permissions", permissions);
-            boolean found = false;// @fixme
 
             for (Permission permission : unRole.getPermissions()) {
                 String splitedPermission[] = permission.getValue().split(":");
                 if (splitedPermission.length >= 3) {
                     if (splitedPermission[2].equals(instance)) {
                         permissions.add(permission.getValue());
-                        found = true;// @fixme
                     }
                 }
             }
-            if (found) { //@fixme
-                allRoles.add(role);
-            }
+            allRoles.add(role);
         }
 
         return allRoles;
@@ -250,16 +245,17 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param gameOrGameModelId
      */
     public void deleteAccountPermissionByInstance(String instance) {
-        // @FIXME The queries below are all invalid, may be due to an old version of eclipselink
-        Query findByToken = em.createQuery("SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount");
+        Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance");//@fixme Unable to select role with a like w/ embeddebale
+        //  The queries below are all invalid, may be due to an old version of eclipselink
+        // Query findByToken = em.createQuery("SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount");
         // @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount, IN(abstractaccount.permissions) p WHERE p.inducedPermission LIKE :gameId")
         // @NamedQuery(name = "findUserPermissions", query = "SELECT abstractaccount FROM AbstractAccount abstractaccount WHERE (select count(p) from abstractaccount.permissions p where p.value LIKE :gameId) > 0 ")
         // @NamedQuery(name = "findUserPermissions", query = "SELECT abstractaccount FROM AbstractAccount abstractaccount left outer join fetch abstractaccount.permissions p WHERE p.value LIKE :gameId")
 
-//        findByToken.setParameter("gameId", "%:" + instance);
+        findByToken.setParameter("instance", "%:" + instance);
         List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
         for (AbstractAccount a : accounts) {
-            em.detach(a);// TODO??
+            // em.detach(a);// TODO??
             for (Iterator<Permission> sit = a.getPermissions().iterator(); sit.hasNext();) {
                 Permission p = sit.next();
                 String splitedPermission[] = p.getValue().split(":");
@@ -269,7 +265,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                     }
                 }
             }
-            em.merge(a);// TODO??
+            //em.merge(a);// TODO??
         }
     }
 

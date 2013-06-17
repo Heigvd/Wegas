@@ -61,8 +61,7 @@ public class GuestRealm extends AuthorizingRealm {
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
             info.addRole("Public");
             for (Permission p : role.getPermissions()) {
-                info.addStringPermission(p.getValue());
-                info.addStringPermission(p.getInducedPermission());
+                JpaRealm.addPermissions(info, p);
             }
             return info;
         } catch (EJBException e) {
