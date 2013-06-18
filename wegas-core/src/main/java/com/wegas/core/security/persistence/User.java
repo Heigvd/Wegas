@@ -21,7 +21,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @Table(name = "users")
-public class User extends AbstractEntity {
+public class User extends AbstractEntity implements Comparable<User> {
 
     /**
      *
@@ -64,6 +64,7 @@ public class User extends AbstractEntity {
     public Long getId() {
         return id;
     }
+
 
     /**
      *
@@ -137,5 +138,10 @@ public class User extends AbstractEntity {
         } else {
             return "unnamed";
         }
+    }
+
+    @Override
+    public int compareTo(User o) {
+        return this.getName().compareTo(o.getName());
     }
 }

@@ -475,7 +475,6 @@ YUI.add('wegas-entity', function(Y) {
             },
             accounts: {
                 type: ARRAY
-
             }
         }
     });
@@ -602,16 +601,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: ARRAY,
                 items: {
                     type: STRING,
-                    choices: [{
-                            value: 1,
-                            label: 'Administrator'
-                        }, {
-                            value: 4,
-                            label: 'Scenarist'
-                        }, {
-                            value: 5,
-                            label: 'Animator'
-                        }],
+                    choices: [],
                     _inputex: {
                         label: "",
                         _type: "roleselect"

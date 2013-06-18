@@ -62,7 +62,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         execute: function() {
             var entity = this.get(ENTITY);
-            if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {     // @fixme we may get extended mode for every entities,
+            if (entity instanceof Y.Wegas.persistence.VariableDescriptor
+                    || entity instanceof Y.Wegas.persistence.JpaAccount) {      // @fixme we may get extended mode for every entities,
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
                         success: function(e) {

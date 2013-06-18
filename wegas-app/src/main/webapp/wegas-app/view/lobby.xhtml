@@ -74,7 +74,7 @@
                                     }]
                             },
                             User: {
-                                source: "rest/User",
+                                source: "rest/Extended/User",
                                 initialRequest: "/#{requestController.getCurrentUser().id}",
                                 plugins: [{
                                         fn: "UserCache"
