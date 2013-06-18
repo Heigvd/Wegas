@@ -14,6 +14,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -56,8 +57,11 @@ public class UserController {
     public Collection<User> index() {
 
         SecurityUtils.getSubject().checkPermission("User:Edit");
+        List<User> findAll = userFacade.findAll();
 
-        return userFacade.findAll();
+        // @fixme Manually sort not to use a query
+        Collections.sort(findAll);
+        return findAll;
     }
 
     /**

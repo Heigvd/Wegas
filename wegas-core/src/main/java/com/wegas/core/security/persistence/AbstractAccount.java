@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.facebook.FacebookAccount;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,8 +19,10 @@ import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -56,6 +59,7 @@ public class AbstractAccount extends AbstractEntity {
     //@Pattern(regexp = "^\\w+$")
     @Basic(optional = false)
     @Column(length = 100)
+    @JsonIgnore
     private String username;
     /**
      *
@@ -74,11 +78,13 @@ public class AbstractAccount extends AbstractEntity {
      */
     //@ElementCollection(fetch = FetchType.EAGER)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
+    @JsonView(Views.ExtendedI.class)
     private List<Permission> permissions = new ArrayList<>();
     /**
      *
      */
     @ManyToMany
+    @JsonView(Views.ExtendedI.class)
     private Set<Role> roles = new HashSet<>();
 
     /**

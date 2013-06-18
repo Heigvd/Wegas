@@ -75,7 +75,7 @@
                                             "type": "EditorTreeView",
                                             "dataSource": "User",
                                             "request": {
-                                                "request": "/"
+                                                "request": "/?view=Public"
                                             },
                                             "plugins": [{
                                                     "fn": "WidgetToolbar",

@@ -414,7 +414,7 @@ YUI.add('wegas-datasource', function(Y) {
             this.sendRequest(this.generateRequest(data), cfg);
         },
         getWithView: function(entity, view, cfg) {
-            cfg.request = "/" + entity.get('id') + "?view=" + (view || "Editor");
+            cfg.request = this.generateRequest(entity.toObject()) + "?view=" + (view || "Editor");
             cfg.cfg = {
                 updateCache: false
             };
@@ -481,7 +481,8 @@ YUI.add('wegas-datasource', function(Y) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
                             needleValue = (needle.get) ? needle.get(key) : (typeof needle === 'object') ? needle[key] : needle;
 
-                    return value === needleValue;
+                    return value === needleValue &&
+                            (!needle._classes || entity instanceof needle._classes[0]);
                 }
             }
         }
@@ -893,19 +894,11 @@ YUI.add('wegas-datasource', function(Y) {
         },
         //updateCache: function ( method, entity ) {},
 
-        put: function(data, callback) {
-            if (data['@class'] === "JpaAccount") {
-                this.sendRequest({
-                    request: '/Account/' + data.id,
-                    cfg: {
-                        method: "PUT",
-                        data: Y.JSON.stringify(data)
-                    },
-                    on: callback
-                });
-                return;
+        generateRequest: function(data) {
+            if (data['@class'] === 'JpaAccount') {
+                return "/Account/" + data.id;
             } else {
-                VariableDescriptorCache.superclass.put.call(this, data, callback);
+                return "/" + data.id;
             }
         },
         post: function(data, parentData, callback) {

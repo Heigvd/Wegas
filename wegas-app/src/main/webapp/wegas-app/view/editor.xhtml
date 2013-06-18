@@ -19,7 +19,7 @@
                     line-height: 1.5em;
                     color: white;
                     background: -2px -2px url(../../wegas-app/images/wegas-logoicon-40.png) no-repeat;
-                    padding: 0px 25px 0 36px;
+                    padding: 0px 25px 0 45px;
                     margin: 8px 6px 4px 10px;
                     height: 32px;
                     text-shadow: 1px 0 1px black, 0 1px 1px black;
@@ -92,7 +92,7 @@
                                     }]
                             },
                             "User": {
-                                source: "rest/User",
+                                source: "rest/Extended/User",
                                 initialRequest: "/#{requestController.getCurrentUser().id}",
                                 plugins: [{
                                         fn: "UserCache"
