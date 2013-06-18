@@ -19,7 +19,7 @@
 }
 .yui3-skin-sam .wegas-layout-content {
     height:100%;
-    background:white;
+    background-color: #072644;
     overflow: hidden;
 }
 .yui3-skin-sam .wegas-layout-left,
@@ -36,9 +36,9 @@
 .yui3-skin-sam .wegas-layout-content .wegas-layout-bd {
     position: relative;
 }
-.yui3-skin-sam .wegas-layout-content .wegas-layout-bd > div {
-    background: white;
-}
+/*.yui3-skin-sam .wegas-layout-content .wegas-layout-bd > div {*/
+    /*background: white;*/
+/*}*/
 .yui3-skin-sam .wegas-layout-center {
     margin-right: 6px;
     margin-left: 6px;
@@ -53,7 +53,8 @@
     right: 0;
 }
 .yui3-skin-sam .wegas-layout .yui3-resize-handle {
-    background: #F2F2F2;
+    background: #072644;
+    /*margin-top: 20px;*/
 }
 
 
