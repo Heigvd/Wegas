@@ -39,7 +39,7 @@ public class GameScope extends AbstractScope {
     /**
      *
      */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "gameScope")
     @JoinColumn(name = "gamescope_id", referencedColumnName = "id")
     @XmlTransient
     @JsonIgnore
