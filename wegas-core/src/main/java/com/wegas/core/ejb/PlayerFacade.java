@@ -44,7 +44,7 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
     @EJB
     private StateMachineFacade stateMachineRunner;
     @EJB
-    private TeamFacade teamEntityFacade;
+    private TeamFacade teamFacade;
     @EJB
     private UserFacade userFacade;
     /**
@@ -68,13 +68,7 @@ public class PlayerFacade extends AbstractFacadeImpl<Player> {
      * @param player
      */
     public void create(final Long teamId, final Player player) {
-        final Team team = teamEntityFacade.find(teamId);
-        team.addPlayer(player);
-        em.flush();
-        em.refresh(player);
-        team.getGame().getGameModel().propagateDefaultInstance(false);
-        playerActionEvent.fire(new PlayerAction(player));
-        //this.create(player);
+        teamFacade.joinTeam(teamId, player);
     }
 
     /**
