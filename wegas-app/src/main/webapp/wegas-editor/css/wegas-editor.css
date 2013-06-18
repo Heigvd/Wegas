@@ -221,7 +221,7 @@ body {
     font-weight: bold;
     font-size: 11px;
     line-height: 1.9em;
-    color: #6E6E6E;
+    color: white;
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     box-shadow: none;
@@ -230,8 +230,12 @@ body {
     margin-top: 12px;
 }
 
-.yui3-skin-sam .wegas-layout-top .yui3-button .wegas-widgetmenu-submenuindicator {
+/*.yui3-skin-sam .wegas-layout-top .yui3-button .wegas-widgetmenu-submenuindicator {
     display:none;
+}*/
+
+.yui3-skin-sam .wegas-layout-top .yui3-button.wegas-widgetmenu-hassubmenu:after {
+    content: url("../../wegas-app/images/wegas-submenuindicator-white.png");
 }
 .yui3-skin-sam .wegas-layout-top .wegas-login {
     float:right  !important;

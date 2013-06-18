@@ -4,7 +4,6 @@
     "top": {
         "children": [{
                 "type": "Text",
-                "content": "Wegas",
                 "cssClass": "wegas-title"
             }, {
                 "type": "Button",
