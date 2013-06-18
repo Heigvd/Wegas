@@ -35,7 +35,7 @@ public class PlayerScope extends AbstractScope {
      * FIXME Here we should use UserEntity reference and add a key deserializer
      * module
      */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "playerScope")
     @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
     @XmlTransient
     private Map<Long, VariableInstance> variableInstances = new HashMap<Long, VariableInstance>();
@@ -82,7 +82,6 @@ public class PlayerScope extends AbstractScope {
      *
      * @param force
      */
-    @XmlTransient
     @Override
     public void propagateDefaultInstance(boolean force) {
         VariableDescriptor vd = this.getVariableDescriptor();

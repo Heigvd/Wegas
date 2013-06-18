@@ -14,6 +14,10 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.GameScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.leaderway.persistence.ResourceInstance;
@@ -75,6 +79,27 @@ abstract public class VariableInstance extends AbstractEntity {
     @XmlTransient
     @JsonIgnore
     private AbstractScope scope;
+    /**
+     *
+     */
+    @Column(name = "teamvariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
+    private Long teamScopeKey;
+    //@ManyToOne
+    //private GameModelScope gameModelScope;
+    @XmlTransient
+    @ManyToOne
+    private GameScope gameScope;
+    @XmlTransient
+    @ManyToOne
+    private TeamScope teamScope;
+    @XmlTransient
+    @ManyToOne
+    private PlayerScope playerScope;
+    /**
+     *
+     */
+    @Column(name = "variableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
+    private Long playerScopeKey;
 
     /**
      *
@@ -150,11 +175,6 @@ abstract public class VariableInstance extends AbstractEntity {
     public Long getId() {
         return id;
     }
-    /**
-     *
-     */
-    @Column(name = "teamvariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
-    private Long teamScopeKey;
 
     /**
      *
@@ -164,11 +184,6 @@ abstract public class VariableInstance extends AbstractEntity {
     public Long getTeamScopeKey() {
         return teamScopeKey;
     }
-    /**
-     *
-     */
-    @Column(name = "variableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
-    private Long playerScopeKey;
 
     /**
      *
