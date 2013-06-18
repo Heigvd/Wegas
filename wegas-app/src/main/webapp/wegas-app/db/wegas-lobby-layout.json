@@ -96,6 +96,9 @@
         "children": [{
                 "type": "TabView",
                 "id": "leftTabView",
+                "plugins": [{
+                        "fn": "PopupListener"
+                    }],
                 "cssClass": "editor-tab",
                 "children": [{
                         "type": "Tab",
@@ -148,6 +151,9 @@
         "children": [{
                 "id": "centerTabView",
                 "type": "TabView",
+                "plugins": [{
+                        "fn": "PopupListener"
+                    }],
                 "cssClass": "editor-tab",
                 "children": [{
                         "type": "Tab",
@@ -297,6 +303,8 @@
                 "cssClass": "editor-tab",
                 "children": [],
                 "plugins": [{
+                        "fn": "PopupListener"
+                    }, {
                         "fn": "LayoutToggleTab"
                     }]
             }]

@@ -186,7 +186,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         EditEntityAction.hideEditFormOverlay();
                     },
                     failure: function(e) {
-                        EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                        EditEntityAction.showFormMessage("error", e.response.message || e.response.results.message || "Error while update item");
                         EditEntityAction.hideEditFormOverlay();
                     }
                 });
@@ -273,7 +273,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             },
                             failure: function(e) {
                                 EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                                EditEntityAction.showFormMessage("error", e.response.message || e.response.results.message || "Error while update item");
                             }
                         });
                     });
@@ -293,7 +293,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             },
                             failure: function(e) {
                                 EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                                EditEntityAction.showFormMessage("error", e.response.message || e.response.results.message || "Error while update item");
                             }
                         });
                     }, this));
