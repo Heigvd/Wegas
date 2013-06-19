@@ -18,17 +18,21 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
-public class Assignment extends AbstractAssignement {
+public class Occupation extends AbstractAssignement {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    Double startTime;
     /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "taskdescriptor_id", nullable = false)
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "taskdescriptor_id", nullable = true)
     @XmlTransient
     private TaskDescriptor taskDescriptor;
     /**
@@ -43,15 +47,7 @@ public class Assignment extends AbstractAssignement {
     /**
      *
      */
-    public Assignment() {
-    }
-
-    /**
-     *
-     * @param taskDescriptor
-     */
-    public Assignment(TaskDescriptor taskDescriptor) {
-        this.taskDescriptor = taskDescriptor;
+    public Occupation() {
     }
 
     /**
@@ -60,7 +56,7 @@ public class Assignment extends AbstractAssignement {
      */
     @Override
     public void merge(AbstractEntity a) {
-        Assignment other = (Assignment) a;
+        Occupation other = (Occupation) a;
         this.setResourceInstance(other.getResourceInstance());
         this.setTaskDescriptor(other.getTaskDescriptor());
     }
@@ -75,6 +71,20 @@ public class Assignment extends AbstractAssignement {
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    /**
+     * @return the startTime
+     */
+    public Double getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * @param startTime the startTime to set
+     */
+    public void setStartTime(Double startTime) {
+        this.startTime = startTime;
     }
 
     /**

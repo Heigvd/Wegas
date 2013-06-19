@@ -9,15 +9,15 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
  *
@@ -38,22 +38,14 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      */
-    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @XmlTransient
-    private List<Assignment> assignments;
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "taskInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @XmlTransient
-    private List<Activity> activities;
-    /**
-     *
-     */
     @ElementCollection
     private Map<String, String> properties = new HashMap<>();
+    /**
+     *
+     */
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(referencedColumnName = "variableinstance_id")
+    private List<WRequirement> requirements = new ArrayList<>();
 
     /**
      *
@@ -66,6 +58,8 @@ public class TaskInstance extends VariableInstance {
         this.setDuration(other.getDuration());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
+        this.requirements.clear();
+        this.requirements.addAll(other.getRequirements());
     }
 
     /**
@@ -129,30 +123,34 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * @return the assignments
+     * @return the requirements
      */
-    public List<Assignment> getAssignments() {
-        return assignments;
+    public List<WRequirement> getRequirements() {
+        return this.requirements;
     }
 
     /**
-     * @param assignments the assignments to set
+     * @param requierement the requierement to set
      */
-    public void setAssignments(List<Assignment> assignments) {
-        this.assignments = assignments;
+    public void setRequirements(List<WRequirement> requirements) {
+        this.requirements = requirements;
     }
 
     /**
-     * @return the activity
+     *
+     * @param key
+     * @return WRequirement
      */
-    public List<Activity> getActivities() {
-        return activities;
+    public WRequirement getRequirement(Integer index) {
+        return this.requirements.get(index);
     }
 
     /**
-     * @param activity the activity to set
+     *
+     * @param key
+     * @param WRequirement
      */
-    public void setActivity(List<Activity> activities) {
-        this.activities = activities;
+    public void setRequirement(Integer index, WRequirement val) {
+        this.requirements.set(index, val);
     }
 }

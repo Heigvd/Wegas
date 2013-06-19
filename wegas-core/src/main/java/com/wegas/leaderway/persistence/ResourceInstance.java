@@ -38,6 +38,12 @@ public class ResourceInstance extends VariableInstance {
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
+    private List<Occupation> occupations;
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Activity.class)
+    @JsonManagedReference
     private List<Activity> activities;
     /**
      *
@@ -75,6 +81,7 @@ public class ResourceInstance extends VariableInstance {
     public ResourceInstance() {
         this.assignments = new ArrayList<>();
         this.activities = new ArrayList<>();
+        this.occupations = new ArrayList<>();
     }
 
     /**
@@ -90,6 +97,9 @@ public class ResourceInstance extends VariableInstance {
         }
         if (other.getActivities() != null) {
             this.setActivities(other.getActivities());
+        }
+        if (other.getOccupations() != null) {
+            this.setOccupations(other.getOccupations());
         }
         this.skillsets.clear();
         this.skillsets.putAll(other.getSkillsets());
@@ -139,10 +149,24 @@ public class ResourceInstance extends VariableInstance {
         assignment.setResourceInstance(this);
     }
 
-    public Assignment assign(TaskInstance task) {
+    public Assignment assign(TaskDescriptor task) {
         final Assignment assignment = new Assignment(task);
         this.addAssignement(assignment);
         return assignment;
+    }
+
+    /**
+     * @return the activities
+     */
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    /**
+     * @param activities
+     */
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 
     /**
@@ -159,24 +183,33 @@ public class ResourceInstance extends VariableInstance {
      * @param task
      * @return the activity
      */
-    public Activity assignActivity(TaskInstance task) {
+    public Activity assignActivity(TaskDescriptor task) {
         final Activity activity = new Activity(task);
         this.addActivity(activity);
         return activity;
     }
-
+    
     /**
      * @return the activities
      */
-    public List<Activity> getActivities() {
-        return activities;
+    public List<Occupation> getOccupations() {
+        return occupations;
     }
 
     /**
-     * @param activities
+     * @param occupations
      */
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
+    public void setOccupations(List<Occupation> occupations) {
+        this.occupations = occupations;
+    }
+
+    /**
+     *
+     * @param occupation
+     */
+    public void addOccupation(Occupation occupation) {
+        occupations.add(occupation);
+        occupation.setResourceInstance(this);
     }
 
     /**

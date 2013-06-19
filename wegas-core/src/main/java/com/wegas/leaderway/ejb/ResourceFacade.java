@@ -7,11 +7,12 @@
  */
 package com.wegas.leaderway.ejb;
 
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.leaderway.persistence.Activity;
 import com.wegas.leaderway.persistence.Assignment;
 import com.wegas.leaderway.persistence.ResourceInstance;
-import com.wegas.leaderway.persistence.TaskInstance;
+import com.wegas.leaderway.persistence.TaskDescriptor;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -42,15 +43,20 @@ public class ResourceFacade {
      */
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
+    /**
+     *
+     */
+    @EJB
+    private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
      *
      * @param resourceInstance
      * @param taskInstance
      */
-    public Assignment assign(ResourceInstance resourceInstance, TaskInstance taskInstance) {
+    public Assignment assign(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
         resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
-        return resourceInstance.assign(taskInstance);
+        return resourceInstance.assign(taskDescriptor);
     }
 
     /**
@@ -59,8 +65,8 @@ public class ResourceFacade {
      * @param resourceDescriptorId
      * @param taskDescriptorId
      */
-    public Assignment assign(Long resourceInstanceId, Long taskInstanceId) {
-        return this.assign((ResourceInstance) variableInstanceFacade.find(resourceInstanceId), (TaskInstance) variableInstanceFacade.find(taskInstanceId));
+    public Assignment assign(Long resourceInstanceId, Long taskDescriptorId) {
+        return this.assign((ResourceInstance) variableInstanceFacade.find(resourceInstanceId), (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
     }
 
     /**
@@ -68,9 +74,9 @@ public class ResourceFacade {
      * @param resourceInstance
      * @param taskInstance
      */
-    public Activity assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance) {
+    public Activity assignActivity(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
         resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
-        return resourceInstance.assignActivity(taskInstance);
+        return resourceInstance.assignActivity(taskDescriptor);
     }
 
     /**
@@ -78,9 +84,9 @@ public class ResourceFacade {
      * @param resourceInstance
      * @param taskInstance
      */
-    public Activity assignActivity(Long resourceInstanceId, Long taskInstanceId) {
+    public Activity assignActivity(Long resourceInstanceId, Long taskDescriptorId) {
         return this.assignActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
-                (TaskInstance) variableInstanceFacade.find(taskInstanceId));
+                (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
     }
 
     /**
