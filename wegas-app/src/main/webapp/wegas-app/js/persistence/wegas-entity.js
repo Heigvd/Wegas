@@ -227,13 +227,11 @@ YUI.add('wegas-entity', function(Y) {
                                     permsList: [{
                                             name: "GameModel:View"
                                         }, {
-                                            name: "GameModel:Edit"
+                                            name: "GameModel:View,Edit,Delete"
                                         }, {
-                                            name: "GameModel:Duplicate"
+                                            name: "GameModel:View,Duplicate"
                                         }, {
-                                            name: "GameModel:Instantiate"
-                                        }, {
-                                            name: "GameModel:Delete"
+                                            name: "GameModel:View,Instantiate"
                                         }]
                                 }],
                             tabSelector: '#rightTabView'
@@ -343,7 +341,7 @@ YUI.add('wegas-entity', function(Y) {
                                     permsList: [{
                                             name: "Game:View"
                                         }, {
-                                            name: "Game:Edit"
+                                            name: "Game:View,Edit"
                                         }, {
                                             name: "Game:Token"
                                         }]
