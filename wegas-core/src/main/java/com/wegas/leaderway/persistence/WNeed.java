@@ -1,12 +1,10 @@
 package com.wegas.leaderway.persistence;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -20,28 +18,28 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @XmlType(name = "")                                                             // This forces to use Class's short name as type
 //@XmlAccessorType(XmlAccessType.FIELD)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class WRequirement implements Serializable {
+public class WNeed implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Column(name = "wrequirement_id")
+    @Column(name = "wneed_id")
     @GeneratedValue
     private Long id;
     /**
      *
      */
-    @Column(name = "wwork")
-    private String work;
-    /**
-     *
-     */
     @Column(name = "wlimit")
     private Integer limit;
-
-    @OneToMany
-    private List<WNeed> needs;
     
-    public WRequirement() {
+    /**
+     * 
+     */
+    @Column(name = "wlevel")
+    private Integer level;
+    
+    private Long quantity;
+    
+    public WNeed() {
     }
 
     /**
@@ -73,49 +71,30 @@ public class WRequirement implements Serializable {
     }
 
     /**
-     * @return the work
+     * @return the level
      */
-    public String getWork() {
-        return work;
+    public Integer getLevel() {
+        return level;
     }
 
     /**
-     * @param work the work to set
+     * @param level the level to set
      */
-    public void setWork(String work) {
-        this.work = work;
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     /**
-     * 
-     * @return 
+     * @return the quantity
      */
-    public List<WNeed> getNeeds() {
-        return needs;
+    public Long getQuantity() {
+        return quantity;
     }
 
     /**
-     * 
-     * @param needs 
+     * @param quantity the quantity to set
      */
-    public void setNeeds(List<WNeed> needs) {
-        this.needs = needs;
-    }
-    /**
-     * 
-     * @param index
-     * @return 
-     */
-    public WNeed getNeed(Integer index) {
-        return this.needs.get(index);
-    }
-
-    /**
-     * 
-     * @param need
-     * @param index 
-     */
-    public void setNeed(WNeed need, Integer index) {
-        this.needs.set(index, need);
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
     }
 }

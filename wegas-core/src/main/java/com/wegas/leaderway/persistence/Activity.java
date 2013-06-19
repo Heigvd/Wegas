@@ -15,6 +15,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
+ * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
 public class Activity extends AbstractAssignement {
@@ -33,26 +34,15 @@ public class Activity extends AbstractAssignement {
     /**
      *
      */
-    private Double duration;
-    /**
-     *
-     */
-    @OneToOne(optional = true, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "wrequirement_id", nullable = true)
-    @XmlTransient
-    private WRequirement wrequirement;
-    /**
-     *
-     */
     @Column(name = "wcompletion")
     private Integer completion;
     /**
      *
      */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "taskinstance_id", nullable = false)
+    @JoinColumn(name = "taskdescriptor_id", nullable = false)
     @XmlTransient
-    private TaskInstance taskInstance;
+    private TaskDescriptor taskDescriptor;
     /**
      *
      */
@@ -70,12 +60,11 @@ public class Activity extends AbstractAssignement {
 
     /**
      *
-     * @param taskInstance
+     * @param taskDescriptor
      */
-    public Activity(TaskInstance taskInstance) {
-        this.taskInstance = taskInstance;
+    public Activity(TaskDescriptor taskDescriptor) {
+        this.taskDescriptor = taskDescriptor;
         this.startTime = 0D;
-        this.duration = 0D;
         this.completion = 0;
     }
 
@@ -88,9 +77,8 @@ public class Activity extends AbstractAssignement {
         Activity other = (Activity) a;
         this.setResourceInstance(other.getResourceInstance());
         this.setStartTime(other.getStartTime());
-        this.setDuration(other.getDuration());
         this.setCompletion(other.getCompletion());
-        //this.setTaskInstance(other.getTaskInstance());
+        //this.setTaskDescriptor(other.getTaskDescriptor());
     }
 
     @PostPersist
@@ -132,7 +120,7 @@ public class Activity extends AbstractAssignement {
     /**
      * @param startTime the startTime to set
      */
-    public void setStartTime(double startTime) {
+    public void setStartTime(Double startTime) {
         this.startTime = startTime;
     }
 
@@ -141,36 +129,22 @@ public class Activity extends AbstractAssignement {
      * @return
      */
     public Long getTaskDescriptorId() {
-        return this.getTaskInstance().getDescriptorId();
+        return this.getTaskDescriptor().getId();
     }
 
     /**
-     * @return the taskInstance
+     * @return the taskDescriptor
      */
     @XmlTransient
-    public TaskInstance getTaskInstance() {
-        return taskInstance;
+    public TaskDescriptor getTaskDescriptor() {
+        return taskDescriptor;
     }
 
     /**
-     * @param taskInstance the taskInstance to set
+     * @param taskDescriptor the taskDescriptor to set
      */
-    public void setTaskInstance(TaskInstance taskInstance) {
-        this.taskInstance = taskInstance;
-    }
-
-    /**
-     * @return the duration
-     */
-    public Double getDuration() {
-        return duration;
-    }
-
-    /**
-     * @param duration the duration to set
-     */
-    public void setDuration(Double duration) {
-        this.duration = duration;
+    public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
+        this.taskDescriptor = taskDescriptor;
     }
 
     /**
@@ -185,19 +159,5 @@ public class Activity extends AbstractAssignement {
      */
     public void setCompletion(Integer completion) {
         this.completion = completion;
-    }
-
-    /**
-     * @return the wrequirement
-     */
-    public WRequirement getWrequirement() {
-        return wrequirement;
-    }
-
-    /**
-     * @param wrequirement the wrequirement to set
-     */
-    public void setWrequirement(WRequirement wrequirement) {
-        this.wrequirement = wrequirement;
     }
 }

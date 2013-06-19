@@ -16,9 +16,10 @@ import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
  *
@@ -50,11 +51,26 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(referencedColumnName = "variabledescriptor_id")
-    private List<WRequirement> requirements = new ArrayList<>();
-
+    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @XmlTransient
+    private List<Assignment> assignments;
     /**
+     *
+     */
+    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @XmlTransient
+    private List<Occupation> occupation;
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonManagedReference
+    @XmlTransient
+    private List<Activity> activities;
+    /**
+     * /**
      *
      * @param a
      */
@@ -68,8 +84,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         this.predecessors.addAll(other.getPredecessors());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
-        this.requirements.clear();
-        this.requirements.addAll(other.getRequirements());
     }
 
     /**
@@ -129,38 +143,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     /**
-     * @return the requirements
-     */
-    public List<WRequirement> getRequirements() {
-        return this.requirements;
-    }
-
-    /**
-     * @param requierement the requierement to set
-     */
-    public void setRequirements(List<WRequirement> requirements) {
-        this.requirements = requirements;
-    }
-
-    /**
-     *
-     * @param key
-     * @return WRequirement
-     */
-    public WRequirement getRequirement(Integer index) {
-        return this.requirements.get(index);
-    }
-
-    /**
-     *
-     * @param key
-     * @param WRequirement
-     */
-    public void setRequirement(Integer index, WRequirement val) {
-        this.requirements.set(index, val);
-    }
-
-    /**
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -190,5 +172,33 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public String getProperty(String key) {
         return this.properties.get(key);
+    }
+
+    /**
+     * @return the assignments
+     */
+    public List<Assignment> getAssignments() {
+        return assignments;
+    }
+
+    /**
+     * @param assignments the assignments to set
+     */
+    public void setAssignments(List<Assignment> assignments) {
+        this.assignments = assignments;
+    }
+
+    /**
+     * @return the activity
+     */
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    /**
+     * @param activity the activity to set
+     */
+    public void setActivity(List<Activity> activities) {
+        this.activities = activities;
     }
 }
