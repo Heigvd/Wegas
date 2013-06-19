@@ -183,7 +183,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
                         case 'User':
                             ret.push({
-                                label: 'User:' + el.get(NAME),
+                                label: el.get(NAME),
                                 selected: selected,
                                 data: {
                                     entity: el.getMainAccount()
