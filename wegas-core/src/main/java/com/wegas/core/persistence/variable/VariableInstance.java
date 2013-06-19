@@ -80,14 +80,16 @@ abstract public class VariableInstance extends AbstractEntity {
 //    private AbstractScope scope;
     //@ManyToOne
     //private GameModelScope gameModelScope;
-    @XmlTransient
     @ManyToOne
+    @XmlTransient
+    @JsonIgnore
     private GameScope gameScope;
-    @XmlTransient
     @ManyToOne
+    @JsonIgnore
     private TeamScope teamScope;
-    @XmlTransient
     @ManyToOne
+    @XmlTransient
+    @JsonIgnore
     private PlayerScope playerScope;
     /**
      *
@@ -149,7 +151,6 @@ abstract public class VariableInstance extends AbstractEntity {
 //    public void setScope(AbstractScope scope) {
 //        this.scope = scope;
 //    }
-
     /**
      * @return the scope
      */
