@@ -53,10 +53,9 @@ public class GameModelController {
     @POST
     public GameModel create(GameModel gm) {
         // logger.info(Level.INFO, "POST GameModel");
-        Subject s = SecurityUtils.getSubject();
-        s.checkPermission("GameModel:Create");
-
+        SecurityUtils.getSubject().checkPermission("GameModel:Create");
         gameModelFacade.create(gm);
+        
         return gm;
     }
 
