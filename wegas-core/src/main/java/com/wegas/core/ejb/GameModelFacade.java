@@ -78,6 +78,8 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     public void create(final GameModel entity) {
         super.create(entity);
 
+        entity.propagateDefaultInstance(true);
+
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Duplicate:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Instantiate:gm" + entity.getId());

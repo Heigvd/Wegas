@@ -100,7 +100,7 @@ public class GameModelScope extends AbstractScope {
     @Override
     public void setVariableInstance(Long userId, VariableInstance v) {
         this.setVariableInstance(v);
-        v.setScope(this);
+//        v.setScope(this); @fixme @fixme
     }
 
     /**

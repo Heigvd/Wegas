@@ -71,7 +71,7 @@ public class TeamScope extends AbstractScope {
     @Override
     public void setVariableInstance(Long userId, VariableInstance v) {
         this.teamVariableInstances.put(userId, v);
-        v.setScope(this);
+        v.setTeamScope(this);
     }
 
     /**
