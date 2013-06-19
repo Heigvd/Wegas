@@ -111,12 +111,11 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                         Plugin.EditEntityAction.hideEditFormOverlay();
                         var targetWidget = this.get("widget"), widget = new Y.Wegas.Widget.create(val);
                         targetWidget.add(widget);
-                        this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), {success: Y.bind(function() {
-                                var tw = new Y.Wegas.Text();
-                                tw.plug(Plugin.EditWidgetAction, {"widget": this});
-                                tw.EditWidgetAction.execute();
-                            }, widget)
-                        });
+                        this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), Y.bind(function() {
+                            var tw = new Y.Wegas.Text();
+                            tw.plug(Plugin.EditWidgetAction, {"widget": this});
+                            tw.EditWidgetAction.execute();
+                        }, widget));
                     }, this));
 
                 }, this));
