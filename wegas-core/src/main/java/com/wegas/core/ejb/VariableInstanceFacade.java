@@ -61,6 +61,11 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
     /**
      *
      */
+    @EJB
+    private GameFacade gamFacade;
+    /**
+     *
+     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
@@ -73,7 +78,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
     public VariableInstance find(Long variableDescriptorId,
             Player player) {
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
-        return vd.getScope().getVariableInstance(player);
+        return vd.getInstance(player);
     }
 
     /**
@@ -176,7 +181,13 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
                 }
                 return p;
             } else if (instance.getScope() instanceof GameScope) {
-                throw new UnsupportedOperationException();                          // @fixme
+
+                try {
+                    p = gamFacade.find(instance.getGameScopeKey()).getPlayers().get(0);
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeamScopeKey()).getName() + "] has no player");
+                }
+                return p;                          // @fixme
             } else if (instance.getScope() instanceof GameModelScope) {
                 Game g;
                 Team t;
