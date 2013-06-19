@@ -81,14 +81,12 @@ abstract public class VariableInstance extends AbstractEntity {
     //@ManyToOne
     //private GameModelScope gameModelScope;
     @ManyToOne
-    @XmlTransient
     @JsonIgnore
     private GameScope gameScope;
     @ManyToOne
     @JsonIgnore
     private TeamScope teamScope;
     @ManyToOne
-    @XmlTransient
     @JsonIgnore
     private PlayerScope playerScope;
     /**
@@ -133,27 +131,19 @@ abstract public class VariableInstance extends AbstractEntity {
      * @return the scope
      */
     @XmlTransient
+    @JsonIgnore
     public AbstractScope getScope() {
         if (this.gameScope != null) {
             return this.gameScope;
         } else if (this.teamScope != null) {
             return this.teamScope;
-        } else if (this.gameScope != null) {
-            return this.gameScope;
+        } else if (this.playerScope != null) {
+            return this.playerScope;
         } else {
             return null;
         }
     }
 
-    /**
-     * @param scope the scope to set
-     */
-//    public void setScope(AbstractScope scope) {
-//        this.scope = scope;
-//    }
-    /**
-     * @return the scope
-     */
     @XmlTransient
     @JsonIgnore
     public VariableDescriptor getDescriptor() {
@@ -210,6 +200,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      * @return the gameScope
      */
+    @JsonIgnore
     public GameScope getGameScope() {
         return gameScope;
     }
@@ -217,6 +208,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      * @param gameScope the gameScope to set
      */
+    @JsonIgnore
     public void setGameScope(GameScope gameScope) {
         this.gameScope = gameScope;
     }
@@ -224,6 +216,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      * @return the teamScope
      */
+    @JsonIgnore
     public TeamScope getTeamScope() {
         return teamScope;
     }
@@ -231,6 +224,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      * @param teamScope the teamScope to set
      */
+    @JsonIgnore
     public void setTeamScope(TeamScope teamScope) {
         this.teamScope = teamScope;
     }
@@ -238,6 +232,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      * @return the playerScope
      */
+    @JsonIgnore
     public PlayerScope getPlayerScope() {
         return playerScope;
     }
@@ -245,6 +240,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      * @param playerScope the playerScope to set
      */
+    @JsonIgnore
     public void setPlayerScope(PlayerScope playerScope) {
         this.playerScope = playerScope;
     }
@@ -252,14 +248,9 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      * @return the gameScopeKey
      */
+    @JsonIgnore
     public Long getGameScopeKey() {
         return gameScopeKey;
     }
 
-    /**
-     * @param gameScopeKey the gameScopeKey to set
-     */
-    public void setGameScopeKey(Long gameScopeKey) {
-        this.gameScopeKey = gameScopeKey;
-    }
 }
