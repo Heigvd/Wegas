@@ -14,7 +14,6 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
-import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
@@ -75,31 +74,36 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      *
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @XmlTransient
-    @JsonIgnore
-    private AbstractScope scope;
-    /**
-     *
-     */
-    @Column(name = "teamvariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
-    private Long teamScopeKey;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @XmlTransient
+//    @JsonIgnore
+//    private AbstractScope scope;
     //@ManyToOne
     //private GameModelScope gameModelScope;
-    @XmlTransient
     @ManyToOne
+    @JsonIgnore
     private GameScope gameScope;
-    @XmlTransient
     @ManyToOne
+    @JsonIgnore
     private TeamScope teamScope;
-    @XmlTransient
     @ManyToOne
+    @JsonIgnore
     private PlayerScope playerScope;
     /**
      *
      */
     @Column(name = "variableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long playerScopeKey;
+    /**
+     *
+     */
+    @Column(name = "gamevariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
+    private Long gameScopeKey;
+    /**
+     *
+     */
+    @Column(name = "teamvariableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
+    private Long teamScopeKey;
 
     /**
      *
@@ -127,20 +131,19 @@ abstract public class VariableInstance extends AbstractEntity {
      * @return the scope
      */
     @XmlTransient
+    @JsonIgnore
     public AbstractScope getScope() {
-        return scope;
+        if (this.gameScope != null) {
+            return this.gameScope;
+        } else if (this.teamScope != null) {
+            return this.teamScope;
+        } else if (this.playerScope != null) {
+            return this.playerScope;
+        } else {
+            return null;
+        }
     }
 
-    /**
-     * @param scope the scope to set
-     */
-    public void setScope(AbstractScope scope) {
-        this.scope = scope;
-    }
-
-    /**
-     * @return the scope
-     */
     @XmlTransient
     @JsonIgnore
     public VariableDescriptor getDescriptor() {
@@ -193,4 +196,61 @@ abstract public class VariableInstance extends AbstractEntity {
     public Long getPlayerScopeKey() {
         return playerScopeKey;
     }
+
+    /**
+     * @return the gameScope
+     */
+    @JsonIgnore
+    public GameScope getGameScope() {
+        return gameScope;
+    }
+
+    /**
+     * @param gameScope the gameScope to set
+     */
+    @JsonIgnore
+    public void setGameScope(GameScope gameScope) {
+        this.gameScope = gameScope;
+    }
+
+    /**
+     * @return the teamScope
+     */
+    @JsonIgnore
+    public TeamScope getTeamScope() {
+        return teamScope;
+    }
+
+    /**
+     * @param teamScope the teamScope to set
+     */
+    @JsonIgnore
+    public void setTeamScope(TeamScope teamScope) {
+        this.teamScope = teamScope;
+    }
+
+    /**
+     * @return the playerScope
+     */
+    @JsonIgnore
+    public PlayerScope getPlayerScope() {
+        return playerScope;
+    }
+
+    /**
+     * @param playerScope the playerScope to set
+     */
+    @JsonIgnore
+    public void setPlayerScope(PlayerScope playerScope) {
+        this.playerScope = playerScope;
+    }
+
+    /**
+     * @return the gameScopeKey
+     */
+    @JsonIgnore
+    public Long getGameScopeKey() {
+        return gameScopeKey;
+    }
+
 }
