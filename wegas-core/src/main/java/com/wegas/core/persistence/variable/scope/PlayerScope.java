@@ -67,7 +67,7 @@ public class PlayerScope extends AbstractScope {
     @Override
     public void setVariableInstance(Long key, VariableInstance v) {
         this.variableInstances.put(key, v);
-        v.setScope(this);
+        v.setPlayerScope(this);
     }
 
     /**
