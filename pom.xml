@@ -4,7 +4,7 @@
 
     <name>wegas-project</name>
     <description>Wegas (Web Game Authoring System) is an engine for web-based multiplayer games.</description>
-    <url>http://www.albasim.ch/Wegas/</url>
+    <url>http://wegas.albasim.ch</url>
 
     <groupId>com.wegas</groupId>
     <artifactId>wegas-project</artifactId>
