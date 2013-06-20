@@ -225,6 +225,10 @@ YUI.add('wegas-tabview', function(Y) {
             });
 
             //this.plug(Closable);
+            this.plug(Y.Plugin.PopupListener, {
+                targetAttr: "panelNode",
+                alignAttr: "panelNode"
+            });
         },
         /**
          * @function
