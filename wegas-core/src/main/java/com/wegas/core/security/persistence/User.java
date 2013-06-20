@@ -11,6 +11,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -64,7 +65,6 @@ public class User extends AbstractEntity implements Comparable<User> {
     public Long getId() {
         return id;
     }
-
 
     /**
      *
@@ -142,6 +142,6 @@ public class User extends AbstractEntity implements Comparable<User> {
 
     @Override
     public int compareTo(User o) {
-        return this.getName().compareTo(o.getName());
+        return this.getName().toLowerCase(Locale.ENGLISH).compareTo(o.getName().toLowerCase(Locale.ENGLISH));
     }
 }

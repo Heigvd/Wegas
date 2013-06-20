@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-popuplistener', function(Y) {
@@ -23,7 +23,7 @@ YUI.add('wegas-popuplistener', function(Y) {
         DEFAULT_CONFIG: function() {
             return {
                 align: {
-                    node: this.get("host").get("contentBox"),
+                    node: this.get("host").get(this.get("alignAttr")),
                     points: [Y.WidgetPositionAlign.TC, Y.WidgetPositionAlign.TC]
                 },
                 buttons: {
@@ -44,20 +44,31 @@ YUI.add('wegas-popuplistener', function(Y) {
         },
         handlers: [],
         initializer: function() {
-            var bb = this.get("host").get("boundingBox");
-            this.handlers = [];
+            var bb = this.get("host").get(this.get("targetAttr"));
             //this.instance = new Y.Wegas.PopupContent({render: this.get("host").get("boundingBox")});
-            this.handlers.push(bb.on("dom-message:showPopup", this._show, this));
-            this.handlers.push(bb.on("dom-message:error", this._system, this, "error"));
-            this.handlers.push(bb.on("dom-message:success", this._system, this, "success"));
-            this.handlers.push(bb.on("dom-message:info", this._system, this, "info"));
-            this.handlers.push(bb.on("dom-message:warn", this._system, this, "warn"));
+            this.handlers = [
+                bb.on("dom-message:showPopup", this._show, this),
+                bb.on("dom-message:error", this._system, this, "error"),
+                bb.on("dom-message:success", this._system, this, "success"),
+                bb.on("dom-message:info", this._system, this, "info"),
+                bb.on("dom-message:warn", this._system, this, "warn")
+            ];
+
+            this.onHostEvent("*:showOverlay", this.showOverlay);
+            this.onHostEvent("*:hideOverlay", this.hideOverlay);
+            //this.onHostEvent("*:message", this._system);
+        },
+        destructor: function() {
+            for (var i in this.handlers) {
+                this.handlers[i].detach();
+            }
+            this.instance.destroy();
         },
         _show: function(event) {
             var instance;
             event = stringToObject(event);
             event = Y.mix(this.DEFAULT_CONFIG(), event, true, null, 0, false);
-            instance = new Y.Wegas.PopupContent(event).render(this.get("host").get("boundingBox")).show();
+            instance = new Y.Wegas.PopupContent(event).render(this.get("host").get(this.get("targetAttr"))).show();
             if (event.timeout) {
                 Y.later(event.timeout, instance, instance.hide);
             }
@@ -71,30 +82,31 @@ YUI.add('wegas-popuplistener', function(Y) {
                 timeout: event.timeout ? event.timeout : false
             });
         },
-        destructor: function() {
-            for (var i in this.handlers) {
-                this.handlers[i].detach();
-            }
-            this.instance.destroy();
+        showOverlay: function(e) {
+            this.get("host").get(this.get("targetAttr"))
+                    .addClass("wegas-loading")
+                    .prepend("<div class='wegas-loading-overlay'></div>");
+            e.halt(true);
+//            e.stopPropagation();
+//            e.stopImmediatePropagation();
+        },
+        hideOverlay: function(e) {
+            this.get("host").get(this.get("targetAttr"))
+                    .removeClass("wegas-loading")
+                    .all("> .wegas-loading-overlay").remove(true);
+            e.halt(true);
         }
     }, {
-        NS: "popuplistener"
+        NS: "popuplistener",
+        ATTRS: {
+            targetAttr: {
+                value: "boundingBox"
+            },
+            alignAttr: {
+                value: "contentBox"
+            }
+        }
     });
 
     Y.namespace("Plugin").PopupListener = PopupListener;
-    /**
-     * Simulate a DOM Event bubbling up to a listener and stops.
-     * @param {String} type
-     * @param {Object} data
-     */
-    Y.Node.prototype.emitDOMMessage = function(type, data) {
-        var ev = "dom-message:" + type;
-        try {
-            this.ancestor(function(node) {
-                return node.getEvent(ev) ? true : false;
-            }, true).fire(ev, data);
-        } catch (e) {
-            //no ancestor found
-        }
-    };
 });
