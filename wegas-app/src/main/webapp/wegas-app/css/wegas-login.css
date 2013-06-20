@@ -13,7 +13,7 @@
     font-family: "Arial"
 }
 
-.wegas-loginwidget .header { 
+.wegas-loginwidget .header {
     margin:0;
     width:100%;
     background-color:#072644;
@@ -92,7 +92,7 @@
 }
 
 .wegas-loginwidget input[type="text"] {
-    width: 155px;   
+    width: 155px;
 }
 
 .wegas-loginwidget .signupgroup div{
@@ -183,7 +183,7 @@
 
 .wegas-loginwidget .footer .followus{
     text-align: right;
-    margin-top:8px;
+    /*margin-top:8px;*/
     vertical-align: bottom;
-    padding-top:13px;
+    /*padding-top:13px;*/
 }

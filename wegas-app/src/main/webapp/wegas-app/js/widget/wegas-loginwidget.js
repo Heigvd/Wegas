@@ -106,7 +106,8 @@ YUI.add('wegas-loginwidget', function(Y) {
             }
 
             //Core of the page
-            cb.append("<div class='header'>\n\
+            cb.append("<a href=\"https://github.com/you\"><img style=\"position: absolute; top: 0; left: 0; border: 0;\" src=\"https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png\" alt=\"Fork me on GitHub\"></a>\n\
+                    <div class='header'>\n\
                     <div class='content'>\n\
                         <div class='left'>\n\
                             <div class='logo'>\n\
@@ -133,15 +134,15 @@ YUI.add('wegas-loginwidget', function(Y) {
                     <div class='footer'>\n\
                         <div class='partner'>\n\
                             <a href='http://www.heig-vd.ch/' target='_blank'><img src='../images/heigvd-logo.png' alt='Heig-vd' height='54px' width='146px'/></a>\n\
-                            <a href='http://www.albasim.com' target='_blank'><img src='../images/albasim-logo.png' alt='Albasim' height='54px' width='48px'/></a>\n\
-                        </div>\n\
+                          </div>\n\
                         <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
                         <div class='followus'>\n\
-                            <span>Follow us:</span>\n\
-                            <a href='https://github.com/Heigvd/Wegas' target='_blank'><img src='../images/github-icon.png' alt='Github' height='30px' width='30px'/></a>\n\
-                        </div>\n\
+                  <a href='http://www.albasim.com' target='_blank'><img src='../images/albasim-logo.png' alt='Albasim' height='54px' width='48px'/></a>\n\
+                            </div>\n\
                     </div>\n\
                 </div>");
+            //<span>Follow us:</span>\n\
+            //<a href='https://github.com/Heigvd/Wegas' target='_blank'><img src='../images/github-icon.png' alt='Github' height='30px' width='30px'/></a>\n\
 
             //create and append login form
             this.loginForm = new Y.inputEx.Group({
@@ -249,10 +250,10 @@ YUI.add('wegas-loginwidget', function(Y) {
          * @function
          * @private
          * @description bind function to events.
-         * Bind loginButton with login methode. 
-         * Bind signUpButton with createAccount methode. 
-         * Bind askPassButton with sendNewPasswordForm methode. 
-         * Bind loginButton with logn methode. 
+         * Bind loginButton with login methode.
+         * Bind signUpButton with createAccount methode.
+         * Bind askPassButton with sendNewPasswordForm methode.
+         * Bind loginButton with logn methode.
          * When return key is pressed, click on submitButton by a fire event.
          * When widget is render, set focus to 'input' node.
          */
