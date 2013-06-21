@@ -167,6 +167,11 @@
     font-size: 1em;
 }
 
+.wegas-loginwidget .ask-pass button{
+    color:white;
+    background-color: #072644;
+}
+
 .wegas-loginwidget .footer{
     width:100%;
     padding-top:15px;
