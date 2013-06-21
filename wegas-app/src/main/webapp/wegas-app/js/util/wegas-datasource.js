@@ -70,31 +70,32 @@ YUI.add('wegas-datasource', function(Y) {
         sendRequest: function(request) {
             request.cfg = request.cfg || {};
             request.cfg.headers = request.cfg.headers || {};
+            request.on = request.on || {};
+            request.on.failure = request.on.failure || Y.bind(this.fire, this, "failure");
             Y.mix(request.cfg.headers, DEFAULTHEADERS);
             if (Lang.isObject(request.cfg.data)) {                              // Stringify data if required
                 request.cfg.data = Y.JSON.stringify(request.cfg.data);
             }
             return Y.Wegas.DataSource.superclass.sendRequest.call(this, request);
         },
-
         _defDataFn: function(e) {
             var response, data = e.data && (e.data.responseText || e.data),
                     payload = e.details[0];
 
             response = Y.DataSchema.JSON.apply.call(this, {
-                    resultListLocator: "."
-                }, data);
-            response.data = this.data;                            // Provides with a pointer to the datasource current content
+                resultListLocator: "."
+            }, data);
+            response.data = this.data;                                          // Provides with a pointer to the datasource current content
             payload.response = response;
-            Y.log("Response received from " + this.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
+            Y.log("Response received: " + this.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
 
-            Wegas.Editable.use(payload.response.results, // Lookup dependencies
+            Wegas.Editable.use(payload.response.results,                        // Lookup dependencies
                     Y.bind(function(payload) {
                 payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
                 if (payload.serverResponse.get
                         && payload.serverResponse.get("entities")
                         && payload.serverResponse.get("entities").length > 0) {
-                    payload.response.entity = payload.serverResponse.get("entities")[0];                                 // Shortcut, useful if there is only one instance
+                    payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
                 }
                 if (payload.cfg.updateCache !== false) {
                     this.cache.onResponseRevived(payload);

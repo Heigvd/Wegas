@@ -108,7 +108,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-widget': {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
-                    requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable', 'wegas-popuplistener']
+                    requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable']
                 },
                 'wegas-pageloader': {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
@@ -186,7 +186,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-tabview': {
                     path: 'wegas-app/js/widget/wegas-tabview-min.js',
-                    requires: ['tabview', 'wegas-tabviewcss'],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-popuplistener'],
                     ws_provides: 'TabView'
                 },
                 'wegas-tabviewcss': {

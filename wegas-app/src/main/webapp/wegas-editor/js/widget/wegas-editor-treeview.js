@@ -51,9 +51,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     request = this.get("request");
             if (ds) {
                 ds.after("update", this.syncUI, this);                           // Listen updates on the target datasource
-//                ds.after("error", function(e) {                                 // GLOBAL error message
-//                    this.showMessage("error", e.response.results.message);
-//                }, this);
+                ds.after("failure",this.defaultFailureHandler, this);              // GLOBAL error message
 
                 if (request) {
                     ds.sendRequest(request);
@@ -65,7 +63,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
          * @private
          */
         syncUI: function() {
-
             Y.log("sync()", "info", "Wegas.EditorTreeView");
 
             if (!this.get(DATASOURCE)) {
@@ -88,6 +85,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
             }
             this.treeView.add(this.genTreeViewElements(entities));
             this.treeView.syncUI();
+
+            this.hideOverlay();
         },
         // *** Private Methods *** //
         /**
@@ -602,10 +601,13 @@ YUI.add('wegas-editor-treeview', function(Y) {
      */
     Y.Plugin.EditorTVAdminMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
         initializer: function() {
+
             this.menu = new Wegas.Menu();
 
             this.afterHostEvent(RENDER, function() {
-                this.get(HOST).treeView.on("*:click", this.onTreeViewClick, this);
+                var host = this.get(HOST);
+                this.menu.addTarget(host);
+                host.treeView.on("*:click", this.onTreeViewClick, this);
             });
         },
         onTreeViewClick: function(e) {
