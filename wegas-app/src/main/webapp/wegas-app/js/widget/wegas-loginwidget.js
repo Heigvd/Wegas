@@ -75,7 +75,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers = {};
             this.loginButton = new Y.Button({
-                label: "Login"
+                label: "Log in"
             });
             this.loginButton.get(CONTENTBOX).addClass("loginbutton");
 
@@ -120,8 +120,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                 <div class='content'>\n\
                     <div class='main left'>\n\
                         <h1>Welcome to Wegas</h1>\n\
-                        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games. No programming skills is required, you can create your own scenario or to adapt an existing by adding elements from other simulations. Advanced users can even create their own serious game from A to Z!</p>\n\
-                        <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='200px' width='397px'/></div>\n\
+                        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games. No programming skills is required, you can create your own scenario or adapt an existing one by adding elements from other simulations. Advanced users can even create their own serious game from A to Z!</p>\n\
+                        <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='254px' width='633px'/></div>\n\
                     </div>\n\
                     <div class='main right signup-zone'>\n\
                         <h1 class='title'>Create an account</h1>\n\
@@ -171,6 +171,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             });
             this.loginButton.render(cb.one(".login"));
             cb.one(".login").append('<p class="forgot">Forgot password?</p>');
+            cb.one(".logingroup .password").ancestor("div").setStyle("width", "90px");
 
             //Create and append "sign in" from
             this.createAccountForm = new Y.inputEx.Group({
@@ -471,6 +472,7 @@ YUI.add('wegas-loginwidget', function(Y) {
     /**
      * Hack because "typeInvite" and password work bad (typeInvite is hid)
      * Password field needs a "password" class.
+     * Change color property (in grey) when input is not focused (black else) 
      */
     Y.inputEx.StringField.prototype.updateTypeInvite = function() {
 
@@ -480,6 +482,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             // show type invite if field is empty
             if (this.isEmpty()) {
                 Y.one(this.divEl).addClass("inputEx-typeInvite");
+                Y.one(this.divEl).one("input").setStyle("color", "#888");
                 if (this.fieldContainer.className.indexOf("password") > -1) {
                     this.el.setAttribute("type", "");
                 }
@@ -490,6 +493,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 if (this.fieldContainer.className.indexOf("password") > -1) {
                     this.el.setAttribute("type", "password");
                 }
+                Y.one(this.divEl).one("input").setStyle("color", "#000");
                 Y.one(this.divEl).removeClass("inputEx-typeInvite");
             }
 
@@ -503,8 +507,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                 if (this.fieldContainer.className.indexOf("password") > -1) {
                     this.el.setAttribute("type", "password");
                 }
+                Y.one(this.divEl).one("input").setStyle("color", "#000");
                 Y.one(this.divEl).removeClass("inputEx-typeInvite");
-
             }
         }
     };

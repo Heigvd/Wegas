@@ -9,15 +9,15 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 
-.wegas-loginwidget{
-    font-family: "Arial"
+.wegas-loginwidget .main .signup input{
+    font-family: "Arial";
 }
 
 .wegas-loginwidget .header {
     margin:0;
     width:100%;
     background-color:#072644;
-    height:80px;
+    height:60px;
     padding-top: 7px;
     color:#FFF;
 }
@@ -38,7 +38,7 @@
 }
 
 .wegas-loginwidget .logo{
-    margin: 5px 0 0 -20px;
+    margin: -5px 0 0 -17px;
 }
 
 .wegas-loginwidget .logingroup div{
@@ -51,21 +51,29 @@
     padding-top:0;
 }
 
-.wegas-loginwidget .loginbutton{
+.wegas-loginwidget .logingroup .password,
+.wegas-loginwidget .logingroup .password div,
+.wegas-loginwidget .logingroup .password input{
+    width:90px;
+}
+
+.wegas-loginwidget .login .loginbutton{
     float:right;
-    margin: -25px 10px 0 0;
-    width:75px;
+    margin: -52px 10px 0 0;
+    width: 55px;
+    min-height: 20px;
+    background-color: #DDDDDD;
 }
 
 .wegas-loginwidget .forgot{
-    margin:5px 10px 0 0;
+    margin:-17px 10px 0 0;
     float:right;
     text-decoration: underline;
     cursor: pointer;
 }
 
 .wegas-loginwidget .main{
-    margin: 15px auto 60px;
+    margin: 15px auto 45px;
 }
 
 .wegas-loginwidget .main>*{
@@ -73,18 +81,20 @@
 }
 
 .wegas-loginwidget h1{
-    font-weight: normal;
-    color: #888;
-    font-size: 1.6em;
-    text-shadow:1px 1px #444;
+    font-weight: bold;
+    color: #777;
+    font-size: 1.8em;
 }
 
 .wegas-loginwidget .main p{
-    margin-bottom:30px;
+    margin-bottom:35px;
+    font-size:1.4em;
+    text-align:justify;
+    margin-right:20px;
 }
 
 .wegas-loginwidget .preview{
-    text-align: center;
+    text-align: left;
 }
 
 .wegas-loginwidget .preview img{
@@ -117,10 +127,12 @@
 }
 
 .wegas-loginwidget .signup .signupbutton{
-    float:right;
-    margin: -40px 10px 0 0;
+    float:left;
+    margin: 0px 10px 0 0;
     width:155px;
     min-height: 20px;
+    color:white;
+    background-color: #072644;
 }
 
 .wegas-loginwidget .content .inputEx-message, .wegas-loginwidget .capsLockWarning{
@@ -146,12 +158,13 @@
     min-height: 20px;
 }
 
-.wegas-loginwidget .return{
+.wegas-loginwidget .ask-pass .return{
     color:#072644;
     text-decoration: underline;
     text-align: right;
     margin: 10px 10px 0 0;
     cursor: pointer;
+    font-size: 1em;
 }
 
 .wegas-loginwidget .footer{
