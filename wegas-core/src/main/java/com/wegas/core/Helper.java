@@ -10,7 +10,6 @@ package com.wegas.core;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -118,25 +117,6 @@ public class Helper {
         return matcher.replaceAll("_$1");                                       //Replace special chars and initial digit with "_"
     }
 
-    /**
-     * Build an instance like Name, adding "_#" at the end if the name is
-     * unavailable
-     *
-     * @param name The initial String the output should look like
-     * @param unavailableNames The name should not be in this List
-     * @return a new name, unique.
-     */
-    public static String buildUniqueName(String name, List<String> unavailableNames) {
-        String newName = Helper.encodeVariableName(name);
-        String base = Helper.stripNameSuffix(newName);
-
-        Integer nb = 1;
-        while (unavailableNames.contains(newName)) {
-            newName = base + "_" + nb;
-            nb++;
-        }
-        return newName;
-    }
 
     /**
      *

@@ -100,9 +100,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @Override
     public void addItem(VariableDescriptor item) {
         this.items.add(item);
-        if ((item.getEditorLabel() == null || item.getEditorLabel().isEmpty()) && item.getLabel() != null) {
-            item.setEditorLabel(item.getLabel());
-        }
         item.setGameModel(this.getGameModel());
     }
 
