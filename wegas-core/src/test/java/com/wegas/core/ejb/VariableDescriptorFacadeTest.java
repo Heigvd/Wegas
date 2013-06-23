@@ -159,7 +159,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         gameModelFacade.reset(gameModel.getId());
 
         // Check edition
-        T findByName = (T) vdf.findByName(gameModel, VARIABLENAME2);
+        T findByName = (T) vdf.find(gameModel, VARIABLENAME2);
         Assert.assertEquals(descriptor1.getId(), findByName.getId());
         Assert.assertEquals(descriptor2.getName(), findByName.getName());
 
