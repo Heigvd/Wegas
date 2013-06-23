@@ -106,6 +106,7 @@ public class ScriptFacade implements Serializable {
         // Invocable invocableEngine = (Invocable) engine;
 
         engine.put("self", requestManager.getPlayer());                         // Inject current player
+        engine.put("gameModel", requestManager.getPlayer().getGameModel());     // Inject current gameModel
         Object result = null;
         try {
             engineInvocationEvent.fire(
