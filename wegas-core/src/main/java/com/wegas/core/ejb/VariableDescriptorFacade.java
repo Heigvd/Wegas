@@ -76,15 +76,15 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @return
      */
     public DescriptorListI createChild(final DescriptorListI list, final VariableDescriptor entity) {
-        if (entity.getLabel() == null && entity.getName() != null) {            // 1st case: only name is provided
+        if (isNullOrEmpty(entity.getLabel()) && !isNullOrEmpty(entity.getName())) {            // 1st case: only name is provided
             entity.setLabel(entity.getName());
-        } else if (entity.getLabel() != null && entity.getName() == null) {     // 2nd case: fill name with label if it is empty
+        } else if (!isNullOrEmpty(entity.getLabel()) && isNullOrEmpty(entity.getName())) {     // 2nd case: fill name with label if it is empty
             entity.setName(entity.getLabel());
         }
-        if (entity.getLabel() == null) {                                        // Still no label, place a default
+        if (isNullOrEmpty(entity.getLabel())) {                                        // Still no label, place a default
             entity.setLabel("Unnamed");
         }
-        if (entity.getLabel() == null) {                                        // Still no name, place a default
+        if (isNullOrEmpty(entity.getLabel())) {                                        // Still no name, place a default
             entity.setLabel("variable");
         }
         entity.setName(Helper.encodeVariableName(entity.getName()));            // Camel casify the name
@@ -154,12 +154,12 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
     }
 
     public void findUniqueName(final VariableDescriptor vd) {
-        if (vd.getName() == null) {
+        if (isNullOrEmpty(vd.getName())) {
             vd.setName(DEFAULTVARIABLENAME);
         }
 
         vd.setName(Helper.encodeVariableName(vd.getName()));
-        
+
         int suff = 1;
         final String baseName = vd.getName();
         String newName = vd.getName();
@@ -187,7 +187,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
     }
 
     public void findUniqueLabel(final VariableDescriptor vd) {
-        if (vd.getLabel() == null) {
+        if (isNullOrEmpty(vd.getLabel())) {
             vd.setLabel(DEFAULTVARIABLELABEL);
         }
 
@@ -343,5 +343,9 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+
+    private boolean isNullOrEmpty(final String t) {
+        return t == null || t.isEmpty();
     }
 }
