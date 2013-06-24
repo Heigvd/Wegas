@@ -480,7 +480,7 @@ YUI.add('wegas-datasource', function(Y) {
             testFn: {
                 value: function(entity, key, needle) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
-                            needleValue = (needle.get) ? needle.get(key) : (typeof needle === 'object') ? needle[key] : needle;
+                            needleValue = (needle && needle.get) ? needle.get(key) : (typeof needle === 'object') ? needle[key] : needle;
 
                     return value === needleValue &&
                             (!needle._classes || entity instanceof needle._classes[0]);

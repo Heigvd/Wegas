@@ -61,7 +61,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          * @function
          */
         getValue: function() {
-            return "VariableDescriptorFacade.find(gameModel, " + this.currentEntityField.getValue() + ")";
+            return "VariableDescriptorFacade.find(gameModel, \"" + this.currentEntityField.getValue() + "\")";
         },
         /**
          * @function
@@ -71,7 +71,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
             var i, ret = [],
                     rootEntities = Y.Wegas.Facade.VariableDescriptor.cache.findAll(),
-                    currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.options.value) || rootEntities[0];
+                    currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.find('name', this.options.value) || rootEntities[0];
 
             this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
 
@@ -96,15 +96,16 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             if (fieldValue === "----------") {
                 return; /* @fixme */
             }
-
-            if (Y.Lang.isNumber(fieldValue)) {                                  // value is an number, it is the new current entity's id'
+            var entity = Y.Wegas.Facade.VariableDescriptor.cache.find('name', fieldValue);
+            if (entity) {                                                       // An entity was found, it is the new current entity
+                // if (Y.Lang.isNumber(fieldValue)) {
                 this.options.value = fieldValue;
                 this.options.method = null;
                 this.options.methodCfg = null;
                 this.options.arguments = null;
                 this.syncUI();
-            } else if (Y.Lang.isString(fieldValue)) {                           // The id is a string, it's the new current mehtod
-                this.options.value = fieldInstance.options.parentEntity.get("id");
+            } else if (Y.Lang.isString(fieldValue)) {                           // The id is a method, it's the new current mehtod
+                this.options.value = fieldInstance.options.parentEntity.get("name");
                 this.options.method = fieldValue;
                 this.options.arguments = null;
                 this.syncUI();
@@ -140,7 +141,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 value = this.options.method;
             }
             if (selectedEntity) {
-                value = selectedEntity.get("id");
+                value = selectedEntity.get("name");
             }
             return {
                 type: 'select',
@@ -158,7 +159,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             if (items) {
                 for (i = 0; i < items.length; i += 1) {
                     choices.push({
-                        value: items[i].get("id"),
+                        value: items[i].get("name"),
                         label: items[i].get("editorLabel")
                     });
                 }
@@ -221,12 +222,12 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         syncUI: function() {
             var i, args, methods, cMethod,
                     rootEntities = Y.Wegas.Facade.VariableDescriptor.cache.findAll(),
-                    currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.options.value) || rootEntities[0];
+                    currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.find('name', this.options.value) || rootEntities[0];
 
             while (this.getMethods(currentEntity).length === 0                  // If the current entity has no methods,
                     && currentEntity.get("items") && currentEntity.get("items").length > 0) { // but it has a child
                 currentEntity = currentEntity.get("items")[0];                  // select its first child
-                this.options.value = currentEntity.get("id");
+                this.options.value = currentEntity.get("name");
             }
             cMethod = this.options.methodCfg;                                   //assign cMethod after set this.options.methodCfg by this.getMethods()
 
@@ -284,7 +285,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 return "true";
             }
 
-            return "VariableDescriptorFacade.find(gameModel, " + this.inputs[l - this.argsOffset - 2].getValue() + ")"
+            return "VariableDescriptorFacade.find(gameModel, \"" + this.inputs[l - this.argsOffset - 2].getValue() + "\")"
                     + "." + method + "(" + this.encodeArgs(args, this.currentMethod.arguments) + ")";
         },
         encodeArgs: function(args, argsCfg) {
@@ -425,7 +426,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 return "true";
             }
 
-            return "VariableDescriptorFacade.find(" + this.inputs[l - this.argsOffset - 2].getValue() + ")"
+            return "VariableDescriptorFacade.find(gameModel, \"" + this.inputs[l - this.argsOffset - 2].getValue() + "\")"
                     + "." + method + "(" + this.encodeArgs(args, this.currentMethod.arguments) + ")";
         },
         generateSelectConfig: function(entity, selectedEntity, items) {
@@ -463,7 +464,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
             var i, ret = [],
                     rootEntities = Y.Wegas.Facade.VariableDescriptor.cache.findAll(),
-                    currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.options.value) || rootEntities[0];
+                    currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.find('name', this.options.value) || rootEntities[0];
 
             this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
 
@@ -606,7 +607,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
             for (i = 0; i < results.length; i = i + 1) {
                 options.choices.push({
-                    value: results[i].get("id"),
+                    value: results[i].get("name"),
                     label: results[i].get("editorLabel")
                 });
             }

@@ -744,6 +744,7 @@ YUI.add('wegas-entity', function(Y) {
                                 label: 'the same for everybody'
                             }],
                         _inputex: {
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                             label: 'Variable is'
                         }
                     },
@@ -751,17 +752,17 @@ YUI.add('wegas-entity', function(Y) {
                         type: STRING,
                         choices: [{
                                 value: "TeamScope",
-                                label: 'team'
+                                label: 'anyone in the player\'s team'
                             }, {
                                 value: "PlayerScope",
-                                label: 'player'
+                                label: 'the current player only'
                             }, {
                                 value: "GameScope",
-                                label: 'game'
+                                label: 'anybody in the game'
                             }],
                         _inputex: {
-                            wrapperClassName: 'wegas-advanced-feature',
-                            label: 'Broadcast with'
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                            label: 'Variable is visible by'
                         }
                     }
                 }
