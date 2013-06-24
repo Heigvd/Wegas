@@ -16,13 +16,14 @@
                 .yui3-skin-sam .yui3-button.wegas-title:hover  {
                     font-weight: 900;
                     font-size: 22px;
-                    line-height: 1.3em;
-                    color: #6E6E6E;
-                    background: url(../../wegas-app/images/wegas-logoicon-30.png) no-repeat;
-                    padding: 0px 25px 0 36px;
-                    margin: 8px 6px 6px 10px;
-                    height: 30px;
-                    text-shadow: 1px 0 1px lightgray, 0 1px 1px lightgray;
+                    line-height: 1.5em;
+                    color: white;
+                    background: -2px -2px url(../../wegas-app/images/wegas-logoicon-40.png) no-repeat;
+                    padding: 0px 25px 0 45px;
+                    margin: 8px 6px 4px 10px;
+                    height: 32px;
+                    text-shadow: 1px 0 1px black, 0 1px 1px black;
+                    background-size: 35px;
                 }
             </style>
         </ui:define>
@@ -30,7 +31,7 @@
 
             <script type="text/javascript">
 
-                YUI().use("wegas-app",  /*'wegas-editorcss',*/ function (Y) {
+                YUI().use("wegas-app", /*'wegas-editorcss',*/ function(Y) {
                     var app = new Y.Wegas.App({
                         //layoutSrc: 'rest/Page/#{editorGameController.currentGameModel.id}/EditorLayout',
                         layoutSrc: 'wegas-app/db/wegas-editor-layout.json',
@@ -74,16 +75,16 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
                                  */
                                 source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
+                                        /* THIS IS NOT A COMMENT
+                                         * </ui:fragment>
+                                         */
 
-                                plugins: [{
+                                        plugins: [{
                                         fn: "DataSourceJSONSchema",
                                         cfg: {
                                             schema: {
                                                 resultListLocator: "."
-                                                //resultFields: ["name", "id", "@class"]
+                                                        //resultFields: ["name", "id", "@class"]
                                             }
                                         }
                                     }, {
@@ -91,7 +92,7 @@
                                     }]
                             },
                             "User": {
-                                source: "rest/User",
+                                source: "rest/Extended/User",
                                 initialRequest: "/#{requestController.getCurrentUser().id}",
                                 plugins: [{
                                         fn: "UserCache"
@@ -109,10 +110,10 @@
                              * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
                              */
                             ,
-                            "Pusher":{
+                            "Pusher": {
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
-                                applicationKey:"#{editorGameController.currentGameModel.getProperty('websocket')}"
+                                applicationKey: "#{editorGameController.currentGameModel.getProperty('websocket')}"
                             }
                             /* THIS IS NOT A COMMENT
                              * </ui:fragment>
@@ -130,11 +131,11 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
                                  */
                                 source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                initialRequest: "",
+                                        /* THIS IS NOT A COMMENT
+                                         * </ui:fragment>
+                                         */
+                                        //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                        initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache"
                                     }, {
@@ -145,7 +146,7 @@
                                      */
                                     , {
                                         fn: "WebSocketListener",
-                                        cfg:{
+                                        cfg: {
                                             dataSource: "Pusher"
                                         }
                                     }
@@ -162,7 +163,7 @@
                                         cfg: {
                                             schema: {
                                                 resultListLocator: "."
-                                                //resultFields: ["name", "id", "@class"]
+                                                        //resultFields: ["name", "id", "@class"]
                                             }
                                         }
                                     }
@@ -188,16 +189,16 @@
 
 
                         try {
-                                #{editorGameController.getClientScripts()}      // Display game model specific js footer
-                            } catch (e) {
-                                Y.log("Error running footer scripts.", "error");
-                            }
-                        });
+                #{editorGameController.getClientScripts()}      // Display game model specific js footer
+                        } catch (e) {
+                            Y.log("Error running footer scripts.", "error");
+                        }
+                    });
 
-                        app.after('currentPlayerChange', function(e) {             // Whenever the current player changes
-                            //"rest/Private/xx/GameModel/xx/VariableDescriptor",
-                            this.set('currentTeam',
-                            Y.Wegas.Facade.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
+                    app.after('currentPlayerChange', function(e) {             // Whenever the current player changes
+                        //"rest/Private/xx/GameModel/xx/VariableDescriptor",
+                        this.set('currentTeam',
+                                Y.Wegas.Facade.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
 
                         Y.Wegas.Facade.VariableDescriptor.set("source",
                                 this.get("base") + "rest/EditorPrivate/" + e.newVal + "/GameModel/"
@@ -207,9 +208,9 @@
                         Y.Wegas.Facade.User.fire("update");                      // Fire an update event on the variable datasource
                     });
 
-                        app.render();                                               // Render app
+                    app.render();                                               // Render app
 
-                    });
+                });
             </script>
         </ui:define>
     </ui:composition>

@@ -61,6 +61,13 @@ YUI.add("wegas-widget", function(Y) {
         this.publish("exception", {
             emitFacade: true
         });
+        this.publish("showOverlay", {
+            emitFacade: true
+        });
+        this.publish("hideOverlay", {
+            emitFacade: true
+        });
+
     }
 
     Y.mix(Widget.prototype, {
@@ -74,15 +81,18 @@ YUI.add("wegas-widget", function(Y) {
         defaultExceptionHandler: function(e) {
             this.fire("exception", e.response.results);
         },
+        emitDOMMessage: function() {
+            var bb = this.get("boundingBox");
+            bb.emitDOMMessage.apply(bb, arguments);
+        },
         /**
          * @function
          * @private
          * @description show an loading - overlay on all the screen.
          */
         showOverlay: function() {
-            this.get(BOUNDING_BOX)
-                    .addClass("wegas-loading")
-                    .prepend("<div class='wegas-loading-overlay'></div>");
+            this.fire("wegas:showOverlay")
+//            this.emitDOMMessage("showOverlay");
         },
         /**
          * @function
@@ -90,9 +100,11 @@ YUI.add("wegas-widget", function(Y) {
          * @description hide overlay (see function showOverlay).
          */
         hideOverlay: function() {
-            this.get(BOUNDING_BOX)
-                    .removeClass("wegas-loading")
-                    .all("> .wegas-loading-overlay").remove(true);
+            this.fire("wegas:hideOverlay");
+        },
+        defaultFailureHandler: function(e) {
+            this.showMessage("error", e.response.message || e.response.results.message || "Error during request." );
+            // e.halt(true);
         },
         /**
          * @function
@@ -130,7 +142,7 @@ YUI.add("wegas-widget", function(Y) {
                 }
             }
             else {
-                this.get("boundingBox").emitDOMMessage(LEVEL[level], {content: txt, timeout: timeout});
+                this.emitDOMMessage(LEVEL[level], {content: txt, timeout: timeout});
             }
 //            msgNode.append(message);
 //            message.closeHandler = message.one(".close").
@@ -661,5 +673,23 @@ YUI.add("wegas-widget", function(Y) {
             }
         }
         return this;
+    };
+
+    /**
+     * Simulate a DOM Event bubbling up to a listener and stops.
+     * @param {String} type
+     * @param {Object} data
+     */
+    Y.Node.prototype.emitDOMMessage = function(type, data) {
+        var ev = "dom-message:" + type;
+        data = data || {};
+        data.type = type;
+        try {
+            this.ancestor(function(node) {
+                return node.getEvent(ev) ? true : false;
+            }, true).fire(ev, data);
+        } catch (e) {
+            //no ancestor found
+        }
     };
 });

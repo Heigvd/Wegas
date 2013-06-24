@@ -1,6 +1,9 @@
 {
-    "type" : "List",
+    "type": "List",
     "children": [{
-        "type": "LoginWidget"
-    }]
+            "type": "LoginWidget"
+        }],
+    "plugins": [{
+            "fn": "PopupListener"
+        }]
 }

@@ -61,12 +61,12 @@ public class AccountController {
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
-    public User get(@PathParam("entityId") Long entityId) {
+    public AbstractAccount get(@PathParam("entityId") Long entityId) {
         AbstractAccount a = accountFacade.find(entityId);
         if (!userFacade.getCurrentUser().equals(a.getUser())) {
             SecurityUtils.getSubject().checkPermission("User:Edit");
         }
-        return a.getUser();
+        return a;
     }
 
     /**
@@ -77,13 +77,13 @@ public class AccountController {
      */
     @PUT
     @Path("{accountId: [1-9][0-9]*}")
-    public User update(@PathParam("accountId") Long accountId,
+    public AbstractAccount update(@PathParam("accountId") Long accountId,
             AbstractAccount entity) {
         AbstractAccount a = accountFacade.find(accountId);
         if (!userFacade.getCurrentUser().equals(a.getUser())) {
             SecurityUtils.getSubject().checkPermission("User:Edit");
         }
-        return accountFacade.update(accountId, entity).getUser();
+        return accountFacade.update(accountId, entity);
     }
 
     /**

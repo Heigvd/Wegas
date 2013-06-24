@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.event.PlayerAction;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -18,12 +19,13 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -50,6 +52,8 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+    @Inject
+    private Event<PlayerAction> playerActionEvent;
 
     /**
      *
@@ -82,7 +86,7 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     private void addRights(Game game) {
         if (!SecurityUtils.getSubject().isPermitted("Game:View:g" + game.getId())) {
             userFacade.getCurrentUser().getMainAccount().addPermission(
-                    "Game:View:g" + game.getId(),                               // Add game view right
+                    "Game:View:g" + game.getId(), // Add game view right
                     "GameModel:View:gm" + game.getGameModel().getId());         // and also its associated game model
         }
     }
@@ -129,18 +133,6 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
 
     /**
      *
-     * @param teamId
-     * @param p
-     * @return
-     */
-    public Player createPlayer(Long teamId, Player p) {
-        Team t = this.find(teamId);
-        this.joinTeam(t, p);
-        return p;
-    }
-
-    /**
-     *
      * @param team
      * @param user
      * @return
@@ -164,7 +156,15 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         em.persist(player);
         //em.flush();
         //em.refresh(player);
+
         team.getGame().getGameModel().propagateDefaultInstance(false);
+        playerActionEvent.fire(new PlayerAction(player));
+    }
+
+    public Player joinTeam(Long teamId, Player p) {
+        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
+        this.joinTeam(this.find(teamId), p);
+        return p;
     }
 
     /**

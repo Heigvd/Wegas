@@ -67,6 +67,9 @@
     /*cursor: url(../images/openhand.cur) 7 5, default;*/
     cursor: move;
 }
+.yui3-treenode-collapsed > ul > .wegas-editor-dummy {
+    display:none;
+}
 .wegas-editor-dummy {
     /*height: 10px;*/
     font-style: italic;

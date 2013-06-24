@@ -83,6 +83,7 @@ public class GameModelFacadeTest {
 
         GameFacade gf = lookupBy(GameFacade.class);
         TeamFacade tf = lookupBy(TeamFacade.class);
+        PlayerFacade pf = lookupBy(PlayerFacade.class);
 
         // Create a game model
         GameModel gameModel = new GameModel(GAMENAME);
@@ -106,7 +107,8 @@ public class GameModelFacadeTest {
         Assert.assertNotNull(t.getId());
 
         Player p = new Player();
-        tf.createPlayer(t.getId(), p);
+
+        pf.create(t.getId(), p);
         Assert.assertNotNull(p.getId());
 
         gameModelFacade.remove(gameModel.getId());

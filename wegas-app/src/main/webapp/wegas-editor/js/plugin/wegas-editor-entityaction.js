@@ -62,7 +62,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         execute: function() {
             var entity = this.get(ENTITY);
-            if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {     // @fixme we may get extended mode for every entities,
+            if (entity instanceof Y.Wegas.persistence.VariableDescriptor
+                    || entity instanceof Y.Wegas.persistence.JpaAccount) {      // @fixme we may get extended mode for every entities,
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
                         success: function(e) {
@@ -185,8 +186,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         EditEntityAction.hideEditFormOverlay();
                     },
                     failure: function(e) {
-                        EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
                         EditEntityAction.hideEditFormOverlay();
+                        EditEntityAction.form.defaultFailureHandler(e);
                     }
                 });
             });
@@ -214,7 +215,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     },
                     failure: function(e) {
                         EditEntityAction.hideEditFormOverlay();
-                        EditEntityAction.showFormMessage("error", e.response.results.message || "Error while adding item");
+                        EditEntityAction.form.defaultFailureHandler(e);
                     }
                 });
             }, null, this.get("formCfg"));
@@ -272,7 +273,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             },
                             failure: function(e) {
                                 EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                                EditEntityAction.form.defaultFailureHandler(e);
                             }
                         });
                     });
@@ -292,7 +293,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             },
                             failure: function(e) {
                                 EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.showFormMessage("error", e.response.message || "Error while update item");
+                                EditEntityAction.form.defaultFailureHandler(e);
                             }
                         });
                     }, this));
@@ -307,6 +308,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             }
                             return false;
                         });
+                        this.get("host").showOverlay();
                         dataSource.cache.put(parentEntity.toObject());
                     } else {
                         return;
@@ -366,6 +368,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     };
     Y.extend(DuplicateEntityAction, EntityAction, {
         execute: function() {
+            this.get("host").showOverlay();
             this.get("dataSource").cache.duplicateObject(this.get(ENTITY));
         }
     }, {
@@ -405,6 +408,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(DeleteEntityAction, EntityAction, {
         execute: function() {
             if (confirm("Are your sure your want to delete this item ?")) {
+                this.get("host").showOverlay();
                 this.get("dataSource").cache.deleteObject(this.get(ENTITY));
             }
         }
