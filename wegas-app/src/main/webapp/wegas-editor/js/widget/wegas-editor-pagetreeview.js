@@ -19,8 +19,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             this.treeView = new Y.TreeView({
                 render: this.get(CONTENT_BOX)
             });
-            this.toolbar.add(new Y.Button({
-                label: "New Page",
+            this.toolbar.add(new Y.Wegas.Button({
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                 on: {
                     click: function() {
                         this.fire("newPage");

@@ -168,7 +168,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(descriptor1.getId(), findByClass.getId());
 
         // Check the findByGameModel function
-        T findByRootGameModelId = (T) vdf.findAllByGameModelId(gameModel.getId()).get(0);
+        T findByRootGameModelId = (T) vdf.findAll(gameModel.getId()).get(0);
         Assert.assertEquals(descriptor1.getId(), findByRootGameModelId.getId());
 
         return descriptor1;

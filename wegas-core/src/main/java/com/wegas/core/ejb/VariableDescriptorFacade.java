@@ -39,6 +39,8 @@ import org.slf4j.LoggerFactory;
 public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescriptor> {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacade.class);
+    private static final String DEFAULTVARIABLENAME = "variable";
+    private static final String DEFAULTVARIABLELABEL = "Unnammed";
     /**
      *
      */
@@ -85,6 +87,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         if (entity.getLabel() == null) {                                        // Still no name, place a default
             entity.setLabel("variable");
         }
+        entity.setName(Helper.encodeVariableName(entity.getName()));            // Camel casify the name
 
         this.checkNameAndLabelAvailability(entity);                             // Check name and label availability
 
@@ -146,37 +149,66 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
     }
 
     public void checkNameAndLabelAvailability(final VariableDescriptor vd) {
-        int suff = 1;                                                           // First, find a unique label
+        this.findUniqueLabel(vd);                                               // First, find a unique label
+        this.findUniqueName(vd);                                                // Then do the same for name
+    }
+
+    public void findUniqueName(final VariableDescriptor vd) {
+        if (vd.getName() == null) {
+            vd.setName(DEFAULTVARIABLENAME);
+        }
+
+        vd.setName(Helper.encodeVariableName(vd.getName()));
+        
+        int suff = 1;
+        final String baseName = vd.getName();
+        String newName = vd.getName();
+        boolean found = false;
+        while (!found) {
+            try {
+                this.find(vd.getGameModel(), newName);
+                newName = baseName + "_" + suff;
+                suff++;
+            } catch (NoResultException e) {
+                found = true;
+            } catch (NonUniqueResultException e) {
+                // Should never happen
+                newName = baseName + "_" + suff;
+                suff++;
+            }
+        }
+        vd.setName(newName);
+        this.em.flush();                                                        // Flush so recursive call wont find similar objects
+        if (vd instanceof DescriptorListI) {
+            for (Object child : ((DescriptorListI) vd).getItems()) {            // Recursively find unique names for children
+                this.findUniqueName((VariableDescriptor) child);
+            }
+        }
+    }
+
+    public void findUniqueLabel(final VariableDescriptor vd) {
+        if (vd.getLabel() == null) {
+            vd.setLabel(DEFAULTVARIABLELABEL);
+        }
+
+        int suff = 1;
         final String baseLabel = Helper.stripLabelSuffix(vd.getLabel());
         String newLabel = vd.getLabel();
         boolean found = false;
         while (!found) {
             try {
                 this.findByLabel(vd.getGameModel(), newLabel);
+                newLabel = baseLabel + "(" + suff + ")";                        // Use with the same suffix for the editor label as the one used for the label
+                suff++;
             } catch (NoResultException e) {
                 found = true;
             } catch (NonUniqueResultException e) {
                 // Should never happen
+                newLabel = baseLabel + "(" + suff + ")";                        // Use with the same suffix for the editor label as the one used for the label
+                suff++;
             }
-            newLabel = baseLabel + "(" + suff + ")";            // Use with the same suffix for the editor label as the one used for the label
-            suff++;
         }
-
-        suff = 1;                                                               // Then do the same for name
-        final String baseName = vd.getName();
-        String newName = vd.getName();
-        found = false;
-        while (!found) {
-            try {
-                this.find(vd.getGameModel(), newName);
-            } catch (NoResultException e) {
-                found = true;
-            } catch (NonUniqueResultException e) {
-                // Should never happen
-            }
-            newName = baseName + "_" + suff;
-            suff++;
-        }
+        vd.setLabel(newLabel);
     }
 
     /**
@@ -245,7 +277,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param gameModelId
      * @return
      */
-    public List<VariableDescriptor> findAllByGameModelId(final Long gameModelId) {
+    public List<VariableDescriptor> findAll(final Long gameModelId) {
         final Query findByRootGameModelId = em.createNamedQuery("findVariableDescriptorsByRootGameModelId");
         findByRootGameModelId.setParameter("gameModelId", gameModelId);
         return findByRootGameModelId.getResultList();
