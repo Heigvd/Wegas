@@ -75,18 +75,6 @@ body h6{
     margin: -2px 2px 0 0;
 }
 
-/* YUI3 blue color redefinition */
-.yui3-skin-sam .yui3-tab-selected .yui3-tab-label{
-    border-color: #041526
-}
-
-.yui3-skin-sam .yui3-tab-selected .yui3-tab-label, .yui3-skin-sam .yui3-tab-selected .yui3-tab-label:focus, .yui3-skin-sam .yui3-tab-selected .yui3-tab-label:hover {
-    background:url("../images/yui_sprite.png") 0% -1400px repeat-x #072644;
-}
-
-.yui3-skin-sam .yui3-tabview-list{
-    border-color:#072644;
-}
 
 /*  App styles */
 .yui3-skin-sam .wegas-title  {
@@ -94,11 +82,11 @@ body h6{
     font-size: 22px;
     line-height: 1.3em;
     color: #6E6E6E;
-    background: url(../images/wegas-logoicon-30.png) no-repeat;
-    padding: 0px 0 0 36px;
-    margin: 8px 6px 6px 10px;
+    padding: 8px 6px 6px 93px;
     height: 30px;
-    text-shadow: 1px 0 1px lightgray, 0 1px 1px lightgray;
+    text-shadow: 1px 0 1px black, 0 1px 1px black;
+    background: url(../images/wegas-logo_white.png) no-repeat 8px 6px;
+    background-size: 80px;
 }
 
 /* Y.Wegas.Widget extension styles */

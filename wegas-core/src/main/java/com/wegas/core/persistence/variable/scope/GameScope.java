@@ -39,7 +39,7 @@ public class GameScope extends AbstractScope {
     /**
      *
      */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "gameScope")
     @JoinColumn(name = "gamescope_id", referencedColumnName = "id")
     @XmlTransient
     @JsonIgnore
@@ -48,7 +48,7 @@ public class GameScope extends AbstractScope {
     @Override
     public void setVariableInstance(Long key, VariableInstance v) {
         this.gameVariableInstances.put(key, v);
-        v.setScope(this);
+        v.setGameScope(this);
     }
 
     @Override

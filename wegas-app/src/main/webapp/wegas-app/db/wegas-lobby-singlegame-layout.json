@@ -1,6 +1,6 @@
 {
     "id": 2003,
-    "type" : "PanelWidget",
+    "type": "PanelWidget",
     "width": 410,
     "align": {
         "points": ["tc", "tc"]
@@ -8,10 +8,13 @@
     "modal": false,
     "buttons": [],
     "children": [{
-        "type": "Text",
-        "content": "Join Team",
-        "cssClass": "wegas-title"
-    }, {
-        "type": "JoinTeamWidget"
-    }]
+            "type": "Text",
+            "content": "Join Team",
+            "cssClass": "wegas-title"
+        }, {
+            "type": "JoinTeamWidget"
+        }],
+    "plugins": [{
+            "fn": "PopupListener"
+        }]
 }

@@ -38,7 +38,7 @@ public class TeamScope extends AbstractScope {
      * referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name =
      * "variableinstance_id", referencedColumnName = "variableinstance_id"))
      */
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "teamScope")
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
     @XmlTransient
     @JsonIgnore
@@ -71,7 +71,7 @@ public class TeamScope extends AbstractScope {
     @Override
     public void setVariableInstance(Long userId, VariableInstance v) {
         this.teamVariableInstances.put(userId, v);
-        v.setScope(this);
+        v.setTeamScope(this);
     }
 
     /**

@@ -15,6 +15,7 @@ YUI.add('wegas-datasource', function(Y) {
     var HOST = "host", ID = "id", POST = "POST", PUT = "PUT",
             Lang = Y.Lang, Wegas = Y.Wegas, WegasCache, VariableDescriptorCache,
             GameModelCache, GameCache, PageCache,
+            Lang = Y.Lang,
             DEFAULTHEADERS = {
         'Content-Type': 'application/json;charset=ISO-8859-1',
         'Managed-Mode': 'true'
@@ -69,13 +70,39 @@ YUI.add('wegas-datasource', function(Y) {
         sendRequest: function(request) {
             request.cfg = request.cfg || {};
             request.cfg.headers = request.cfg.headers || {};
+            request.on = request.on || {};
+            request.on.failure = request.on.failure || Y.bind(this.fire, this, "failure");
             Y.mix(request.cfg.headers, DEFAULTHEADERS);
             if (Lang.isObject(request.cfg.data)) {                              // Stringify data if required
                 request.cfg.data = Y.JSON.stringify(request.cfg.data);
             }
             return Y.Wegas.DataSource.superclass.sendRequest.call(this, request);
-        }
+        },
+        _defDataFn: function(e) {
+            var response, data = e.data && (e.data.responseText || e.data),
+                    payload = e.details[0];
 
+            response = Y.DataSchema.JSON.apply.call(this, {
+                resultListLocator: "."
+            }, data);
+            response.data = this.data;                                          // Provides with a pointer to the datasource current content
+            payload.response = response;
+            Y.log("Response received: " + this.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
+
+            Wegas.Editable.use(payload.response.results,                        // Lookup dependencies
+                    Y.bind(function(payload) {
+                payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
+                if (payload.serverResponse.get
+                        && payload.serverResponse.get("entities")
+                        && payload.serverResponse.get("entities").length > 0) {
+                    payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
+                }
+                if (payload.cfg.updateCache !== false) {
+                    this.cache.onResponseRevived(payload);
+                }
+                this.fire("response", payload);
+            }, this, payload));
+        }
     }, {
         /** @lends Y.Wegas.DataSource */
 
@@ -118,7 +145,7 @@ YUI.add('wegas-datasource', function(Y) {
                 bubbles: false
             });
 
-            this.doBefore("_defDataFn", this.onData, this);                     // When the host receives some data, we parse the result
+//            this.doBefore("data", this.onData, this);                           // When the host receives some data, we parse the result
             this.afterHostEvent("sourceChange", this.clear, this);              // When the source changes, clear the cache
         },
         /**
@@ -134,35 +161,35 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        onData: function(e) {
-            var data = e.data && (e.data.responseText || e.data),
-                    schema = this.get('schema'),
-                    payload = e.details[0];
-
-            payload.response = Y.DataSchema.JSON.apply.call(this, schema, data) || {
-                meta: {},
-                results: data
-            };
-            payload.response.data = this.getCache();                            // Provides with a pointer to the datasource current content
-
-            Y.log("Response received from " + this.get(HOST).get('source')/* + e.cfg.request*/, "log", "Wegas.WegasCache");
-
-            Wegas.Editable.use(payload.response.results, // Lookup dependencies
-                    Y.bind(function(payload) {
-                payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                if (payload.serverResponse.get
-                        && payload.serverResponse.get("entities")
-                        && payload.serverResponse.get("entities").length > 0) {
-                    payload.response.entity = payload.serverResponse.get("entities")[0];                                 // Shortcut, useful if there is only one instance
-                }
-                if (payload.cfg.updateCache !== false) {
-                    this.onResponseRevived(payload);
-                }
-                this.get(HOST).fire("response", payload);
-            }, this, payload));
-
-            return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
-        },
+//        onData: function(e) {
+//            var data = e.data && (e.data.responseText || e.data),
+//                    schema = this.get('schema'),
+//                    payload = e.details[0];
+//
+//            payload.response = Y.DataSchema.JSON.apply.call(this, schema, data) || {
+//                meta: {},
+//                results: data
+//            };
+//            payload.response.data = this.getCache();                            // Provides with a pointer to the datasource current content
+//
+//            Y.log("Response received from " + this.get(HOST).get('source')/* + e.cfg.request*/, "log", "Wegas.WegasCache");
+//
+//            Wegas.Editable.use(payload.response.results, // Lookup dependencies
+//                    Y.bind(function(payload) {
+//                payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
+//                if (payload.serverResponse.get
+//                        && payload.serverResponse.get("entities")
+//                        && payload.serverResponse.get("entities").length > 0) {
+//                    payload.response.entity = payload.serverResponse.get("entities")[0];                                 // Shortcut, useful if there is only one instance
+//                }
+//                if (payload.cfg.updateCache !== false) {
+//                    this.onResponseRevived(payload);
+//                }
+//                this.get(HOST).fire("response", payload);
+//            }, this, payload));
+//            e.halt(true);
+//            return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
+//        },
         /**
          * @function
          * @private
@@ -388,7 +415,7 @@ YUI.add('wegas-datasource', function(Y) {
             this.sendRequest(this.generateRequest(data), cfg);
         },
         getWithView: function(entity, view, cfg) {
-            cfg.request = "/" + entity.get('id') + "?view=" + (view || "Editor");
+            cfg.request = this.generateRequest(entity.toObject()) + "?view=" + (view || "Editor");
             cfg.cfg = {
                 updateCache: false
             };
@@ -455,7 +482,8 @@ YUI.add('wegas-datasource', function(Y) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
                             needleValue = (needle.get) ? needle.get(key) : (typeof needle === 'object') ? needle[key] : needle;
 
-                    return value === needleValue;
+                    return value === needleValue &&
+                            (!needle._classes || entity instanceof needle._classes[0]);
                 }
             }
         }
@@ -867,19 +895,11 @@ YUI.add('wegas-datasource', function(Y) {
         },
         //updateCache: function ( method, entity ) {},
 
-        put: function(data, callback) {
-            if (data['@class'] === "JpaAccount") {
-                this.sendRequest({
-                    request: '/Account/' + data.id,
-                    cfg: {
-                        method: "PUT",
-                        data: Y.JSON.stringify(data)
-                    },
-                    on: callback
-                });
-                return;
+        generateRequest: function(data) {
+            if (data['@class'] === 'JpaAccount') {
+                return "/Account/" + data.id;
             } else {
-                VariableDescriptorCache.superclass.put.call(this, data, callback);
+                return "/" + data.id;
             }
         },
         post: function(data, parentData, callback) {

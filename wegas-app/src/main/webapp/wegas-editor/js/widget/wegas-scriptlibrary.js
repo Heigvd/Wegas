@@ -61,7 +61,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
          * @private
          */
         bindUI: function() {
-            this.responseHandler = Y.Wegas.Facade.GameModel.after("update", this.syncUI, this);
+            //this.responseHandler = Y.Wegas.Facade.GameModel.after("update", this.syncUI, this); //don't work if two widgets in differents tabs are open (I comment this line and add "updateCache: false at each requests)
 
             this.selectField.on("updated", function(val) {
                 this.currentScriptName = val;
@@ -93,12 +93,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 },
                 on: Y.Wegas.superbind({
                     success: function(data) {
-                        if (data.response.entity) {
-                            this.scripts = data.response.entity;
-                            this.syncWithLibrary();
-                            this.syncEditor();
-                            this.hideOverlay();
-                        }
+                        this.scripts = data.response.entity;
+                        this.syncWithLibrary();
                     },
                     failure: function() {
                         this.hideOverlay();
@@ -114,9 +110,22 @@ YUI.add('wegas-scriptlibrary', function(Y) {
             this.responseHandler.detach();
             this.selectField.destroy();
             this.aceField.destroy();
+            this.newButton.destroy();
+            this.selectField.destroy();
+            this.saveButton.destroy();
+            this.deleteButton.destroy();
         },
         // *** Private Methods *** //
         syncWithLibrary: function() {
+            this.syncAceField();
+            this.syncEditor();
+            this.hideOverlay();
+        },
+        /**
+         * 
+         * @returns {undefined}
+         */
+        syncAceField: function() {
             var i, isEmpty = true, cb = this.get(CONTENTBOX),
                     libraries = this.scripts ? this.scripts.get("val") : {};
             delete libraries["@class"];
@@ -181,18 +190,20 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     + "/Library/" + this.get("library") + "/" + this.currentScriptName,
                             cfg: {
                                 method: "POST",
+                                updateCache: false,
                                 data: {
                                     "@class": "GameModelContent"
                                 }
                             },
-                            on: {
-                                success: Y.bind(function() {
+                            on: Y.Wegas.superbind({
+                                success: function() {
                                     this.showMessage("success", "Script created");
-                                }, this),
-                                failure: Y.bind(function() {
+                                    this.syncUI();
+                                },
+                                failure: function() {
                                     this.showMessage("error", "Error while saving script.");
-                                }, this)
-                            }
+                                }
+                            }, this)
                         });
                     }, this)
                 }
@@ -228,23 +239,25 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     + "/Library/" + this.get("library") + "/" + this.selectField.getValue(),
                             cfg: {
                                 method: "POST",
+                                updateCache: false,
                                 data: {
                                     "@class": "GameModelContent",
                                     content: this.aceField.getValue()
                                 }
                             },
-                            on: {
-                                success: Y.bind(function() {
+                            on: Y.Wegas.superbind({
+                                success: function() {
                                     this.showMessage("success", "Script saved");
 
                                     if (this.get("library") === "CSS") {
                                         this.updateLoadedSheet(this.currentScriptName, this.aceField.getValue());
-                                    }
-                                }, this),
-                                failure: Y.bind(function() {
+                                    };
+                                    this.syncUI();
+                                },
+                                failure: function() {
                                     this.showMessage("error", "Error while saving script");
-                                }, this)
-                            }
+                                }
+                            }, this)
                         });
                     }, this)
                 }
@@ -260,22 +273,22 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             request: "/" + Y.Wegas.app.get("currentGameModel")
                                     + "/Library/" + this.get("library") + "/" + this.currentScriptName,
                             cfg: {
-                                method: "DELETE"
+                                method: "DELETE",
+                                updateCache: false
                             },
-                            on: {
-                                success: Y.bind(function() {
+                            on: Y.Wegas.superbind({
+                                success: function() {
                                     this.showMessage("success", "Script deleted");
-
                                     if (this.get("library") === "CSS") {
                                         this.updateLoadedSheet(this.currentScriptName, "");
                                     }
-
                                     this.currentScriptName = null;
-                                }, this),
-                                failure: Y.bind(function() {
+                                    this.syncUI();
+                                },
+                                failure: function() {
                                     this.showMessage("error", "Error while deleting script.");
-                                }, this)
-                            }
+                                }
+                            }, this)
                         });
                     }, this)
                 }

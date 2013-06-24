@@ -4,7 +4,6 @@
     "top": {
         "children": [{
                 "type": "Text",
-                "content": "Wegas",
                 "cssClass": "wegas-title"
             }, {
                 "type": "Button",
@@ -20,7 +19,7 @@
                                             "type": "EditorTreeView",
                                             "dataSource": "User",
                                             "request": {
-                                                "request": "/"
+                                                "request": "/?view=Public"
                                             },
                                             "plugins": [{
                                                     "fn": "WidgetToolbar",
@@ -97,6 +96,9 @@
         "children": [{
                 "type": "TabView",
                 "id": "leftTabView",
+                "plugins": [{
+                        "fn": "PopupListener"
+                    }],
                 "cssClass": "editor-tab",
                 "children": [{
                         "type": "Tab",
@@ -149,6 +151,9 @@
         "children": [{
                 "id": "centerTabView",
                 "type": "TabView",
+                "plugins": [{
+                        "fn": "PopupListener"
+                    }],
                 "cssClass": "editor-tab",
                 "children": [{
                         "type": "Tab",
@@ -298,6 +303,8 @@
                 "cssClass": "editor-tab",
                 "children": [],
                 "plugins": [{
+                        "fn": "PopupListener"
+                    }, {
                         "fn": "LayoutToggleTab"
                     }]
             }]

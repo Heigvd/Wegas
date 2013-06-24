@@ -42,38 +42,31 @@ YUI.add('wegas-pageeditor', function(Y) {
             if (host.toolbar) {
                 el = host.toolbar.get('header');
                 this.designButton = new Y.ToggleButton({
-                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span><span class='experimental'>Edit page</span>",
-                    on: {
-                        click: Y.bind(function(e) {
-                            this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
-                                    e.target.get("pressed"));
-                            if (e.target.get("pressed")) {
-                                this.bind();
-                                this.layoutbutton.show();
-                                this.get("host").get(CONTENTBOX).prepend(this.overlayMask);
-                            } else {
-                                this.detach();
-                                this.overlayMask.remove(false);
-                                this.highlightOverlay.hide();
-                                if (this.layoutbutton.get("pressed")) {
-                                    this.layoutbutton.toggle();
-                                    this.get("host").get(BOUNDINGBOX).removeClass("wegas-pageeditor-layoutmode");
-                                }
-                                this.layoutbutton.hide();
-                            }
-                        }, this)
-                    }
+                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span><span class='experimental'>Edit page</span>"
                 }).render(el);
+                this.designButton.after("pressedChange", function(e) {
+                    this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
+                            e.newVal);
+                    if (e.newVal) {
+                        this.bind();
+                        this.layoutbutton.show();
+                        this.get("host").get(CONTENTBOX).prepend(this.overlayMask);
+                    } else {
+                        this.detach();
+                        this.overlayMask.remove(false);
+                        this.highlightOverlay.hide();
+                        this.layoutbutton.set("pressed", false);
+                        this.layoutbutton.hide();
+                    }
+                }, this);
                 this.layoutbutton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Show regions</span>",
-                    on: {
-                        click: Y.bind(function(e) {
-                            this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-layoutmode",
-                                    e.target.get("pressed"));
-                        }, this)
-                    },
                     visible: false
                 }).render(el);
+                this.layoutbutton.after("pressedChange", function(e) {
+                    this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-layoutmode",
+                            e.newVal);
+                }, this);
 
                 /** Source view**/
 
@@ -112,6 +105,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             });
             this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
             host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
+            this.doBefore("pageIdChange", function() {
+                this.designButton.set("pressed", false);
+            });
         },
         bind: function() {
             this.handlers.push(this.highlightOverlay.menu.on("menuOpen", function(e) {

@@ -11,6 +11,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonManagedReference;
@@ -21,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
  */
 @Entity
 @Table(name = "users")
-public class User extends AbstractEntity {
+public class User extends AbstractEntity implements Comparable<User> {
 
     /**
      *
@@ -137,5 +138,10 @@ public class User extends AbstractEntity {
         } else {
             return "unnamed";
         }
+    }
+
+    @Override
+    public int compareTo(User o) {
+        return this.getName().toLowerCase(Locale.ENGLISH).compareTo(o.getName().toLowerCase(Locale.ENGLISH));
     }
 }
