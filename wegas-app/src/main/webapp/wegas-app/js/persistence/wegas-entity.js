@@ -368,7 +368,7 @@ YUI.add('wegas-entity', function(Y) {
                                             value: "Game:View"
                                         }, {
                                             name: "Link",
-                                            value: "Game:Token"
+                                            value: "Game:View,Token"
                                         }]
                                 }, {
                                     type: "ShareUser",
