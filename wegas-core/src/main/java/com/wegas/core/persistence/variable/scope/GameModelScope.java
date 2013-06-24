@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 @XmlType(name = "GameModelScope", propOrder = {"@class", "id", "name"})
 public class GameModelScope extends AbstractScope {
 
-
     private static final Logger logger = LoggerFactory.getLogger(GameModelScope.class);
     /**
      *
