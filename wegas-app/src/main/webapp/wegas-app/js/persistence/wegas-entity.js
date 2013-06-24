@@ -334,8 +334,8 @@ YUI.add('wegas-entity', function(Y) {
                 targetClass: "Team"
             }, {
                 type: BUTTON,
-                label: "Share",
-                cssClass: "editor-shareGame-button",
+                label: "Permission",
+                cssClass: "editor-shareGame-button wegas-advanced-feature",
                 plugins: [{
                         fn: "OpenTabAction",
                         cfg: {
@@ -355,13 +355,23 @@ YUI.add('wegas-entity', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "ShareNew",
+                label: "Share",
                 cssClass: "editor-shareGame-button",
                 plugins: [{
                         fn: "OpenTabAction",
                         cfg: {
                             wchildren: [{
+                                    type: "ShareRole",
+                                    permsList: [{
+                                            name: "Public",
+                                            value: "Game:View"
+                                        }, {
+                                            name: "Link",
+                                            value: "Game:Token"
+                                        }]
+                                }, {
                                     type: "ShareUser",
+                                    cssClass: "editor-shareUser-list",
                                     permsList: [{
                                             label: "View",
                                             value: "Game:View"
@@ -372,15 +382,6 @@ YUI.add('wegas-entity', function(Y) {
                                             label: "Token",
                                             value: "Game:Token"
                                         }]
-//                                }, {
-//                                    type: "ShareRole",
-//                                    permsList: [{
-//                                            name: "Public",
-//                                            value: "Game:View"
-//                                        }, {
-//                                            name: "Link",
-//                                            value: "Game:Token"
-//                                        }]
                                 }],
                             tabSelector: '#rightTabView'
                         }

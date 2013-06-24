@@ -46,13 +46,8 @@ YUI.add('wegas-sharerole', function(Y) {
         },
                 
         bindUI: function() {
-            var firstTime = true;
             this.visibility.on("updated", function(value){
                 this.linkVisibility(value);
-                if (firstTime) {
-                    firstTime = false;
-                    return;
-                }
                 Y.Wegas.Facade.User.cache.deleteAllRolePermissions(this.get('role'), this.targetEntityId);
                 if (value === "Public"){
                     Y.Array.forEach(this.get('permsList'), function (permission) {
@@ -82,7 +77,8 @@ YUI.add('wegas-sharerole', function(Y) {
                                     var splitedPerm = resultPerm.split(":");
                                     Y.Array.forEach(this.get('permsList'), function (permFromList) {
                                         if (splitedPerm[0] + ":" + splitedPerm[1] === permFromList.value){
-                                            this.visibility.setValue(permFromList.name)
+                                            this.visibility.setValue(permFromList.name, false);
+                                            this.linkVisibility(permFromList.name);
                                         }
                                     }, this);
                                 }, this);

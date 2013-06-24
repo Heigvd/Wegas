@@ -31,8 +31,8 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @UniqueConstraint(columnNames = "email")
 })
 @NamedQueries({
-    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount WHERE abstractaccount.permissions LIKE :gameId"),
-    @NamedQuery(name = "findAccountByEmail", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount WHERE abstractaccount.email LIKE :email")})
+    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance"),
+    @NamedQuery(name = "findAccountByValue", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount WHERE lower(abstractaccount.email) LIKE :search OR lower(abstractaccount.firstname) LIKE :search OR lower(abstractaccount.lastname) LIKE :search")})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
     @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
