@@ -387,21 +387,6 @@ YUI().use(function(Y) {
                     requires: ['wegas-cssstyles'],
                     ws_provides: 'CSSSize'
                 },
-                "wegas-inputex-object": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
-                    requires: ['inputex-object'],
-                    ix_provides: 'wegasobject'
-                },
-                "wegas-inputex-colorpicker": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-colorpicker-min.js',
-                    requires: ['inputex-field', 'overlay'],
-                    ix_provides: 'colorpicker'
-                },
-                "wegas-inputex-keyvalue": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-keyvalue-min.js',
-                    requires: ['inputex-keyvalue'],
-                    ix_provides: 'wegaskeyvalue'
-                },
                 "wegas-blockrightclick": {
                     path: 'wegas-app/js/plugin/wegas-blockrightclick-min.js',
                     ws_provides: 'BlockRightclick'
@@ -410,89 +395,6 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-visibilitytimer-min.js',
                     requires: ["wegas-editable", "plugin", "wegas-action"],
                     ws_provides: ["ShowAfter", "HideAfter"]
-                },
-                /** Inputex Fields **/
-                'wegas-inputex': {
-                    path: 'wegas-editor/css/wegas-inputex.css',
-                    type: 'css',
-                    //path: 'wegas-editor/js/inputex/wegas-inputex-min.js',
-                    requires: ['inputex'/*, 'wegas-inputexcss'*/]
-                },
-                'wegas-inputexcss': {
-                    path: 'wegas-editor/css/wegas-inputex.css',
-                    type: 'css'
-                },
-                'wegas-inputex-rte': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-rte-min.js',
-                    requires: ['wegas-inputex', 'inputex-textarea', 'tinymce', 'panel',
-                        'wegas-fileexplorer'],
-                    ix_provides: 'html'
-                },
-                'wegas-inputex-list': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-list-min.js',
-                    requires: ['inputex-group', 'wegas-text'],
-                    ix_provides: ['listfield', "editablelist", "pluginlist"]
-                },
-                'wegas-inputex-hashlist': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-hashlist-min.js',
-                    requires: ['inputex-list'],
-                    ix_provides: 'hashlist'
-                },
-                'wegas-inputex-script': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-script-min.js',
-                    requires: ['inputex-textarea']
-                },
-                'wegas-inputex-variabledescriptorselect': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-variabledescriptorselect-min.js',
-                    requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
-                        'inputex-select'],
-                    ix_provides: ["entityarrayfieldselect", "variabledescriptorselect"]
-                },
-                'wegas-inputex-wysiwygscript': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',
-                    requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
-                        'wegas-inputex-variabledescriptorselect',
-                        'wegas-button', 'inputex-jsonschema', 'inputex-list',
-                        'wegas-inputex-url', "wegas-inputex-rte", // for mail attachements in script
-                        'esprima'],
-                    ix_provides: ['script']
-                },
-                'wegas-inputex-url': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-url-min.js',
-                    requires: ['inputex-url', 'panel', 'wegas-fileexplorer'],
-                    ix_provides: 'wegasurl'
-                },
-                'wegas-inputex-ace': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-ace-min.js',
-                    requires: ['inputex-field', 'ace'],
-                    ix_provides: "ace"
-                },
-                'wegas-inputex-permissionselect': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-permissionselect-min.js',
-                    requires: ['inputex-list', 'inputex-field', "inputex-checkbox", "wegas-inputex-roleselect"],
-                    ws_provides: 'RolePermissionList'
-                },
-                'wegas-inputex-gamemodelselect': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-gamemodelselect-min.js',
-                    requires: ['inputex-select'],
-                    ix_provides: 'gamemodelselect'
-                },
-                'wegas-inputex-roleselect': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-roleselect-min.js',
-                    requires: ['inputex-select'],
-                    ix_provides: 'roleselect'
-                },
-                'wegas-inputex-pageselect': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-pageselect-min.js',
-                    requires: ['inputex-select'],
-                    ix_provides: 'pageselect'
-                },
-                'wegas-inputex-variableselect': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-variableselect-min.js',
-                    requires: ['wegas-inputex', 'inputex-group', 'inputex-textarea',
-                        'wegas-inputex-variabledescriptorselect', 'wegas-button',
-                        'esprima'],
-                    ix_provides: 'variableselect'
                 },
                 /** Common Widgets **/
                 'treeview': {
@@ -799,6 +701,92 @@ YUI().use(function(Y) {
                 }
             }
         },
+        /** Inputex Fields **/
+        'wegas-inputex-group': {
+            base: './wegas-inputex/js/',
+            root: '/wegas-inputex/js/',
+            modules: {
+                'wegas-inputex': {
+                    type: 'css',
+                    requires: ['inputex'/*, 'wegas-inputexcss'*/]
+                },
+                //'wegas-inputexcss': {
+                //    path: 'wegas-editor/css/wegas-inputex.css',
+                //    type: 'css'
+                //},
+                "wegas-inputex-object": {
+                    requires: ['inputex-object'],
+                    ix_provides: 'wegasobject'
+                },
+                "wegas-inputex-colorpicker": {
+                    requires: ['inputex-field', 'overlay'],
+                    ix_provides: 'colorpicker'
+                },
+                "wegas-inputex-keyvalue": {
+                    requires: ['inputex-keyvalue'],
+                    ix_provides: 'wegaskeyvalue'
+                },
+                'wegas-inputex-rte': {
+                    requires: ['wegas-inputex', 'inputex-textarea', 'tinymce', 'panel',
+                        'wegas-fileexplorer'],
+                    ix_provides: 'html'
+                },
+                'wegas-inputex-list': {
+                    requires: ['inputex-group', 'wegas-text'],
+                    ix_provides: ['listfield', "editablelist", "pluginlist"]
+                },
+                'wegas-inputex-hashlist': {
+                    requires: ['inputex-list'],
+                    ix_provides: 'hashlist'
+                },
+                'wegas-inputex-script': {
+                    requires: ['inputex-textarea']
+                },
+                'wegas-inputex-variabledescriptorselect': {
+                    requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
+                        'inputex-select'],
+                    ix_provides: ["entityarrayfieldselect", "variabledescriptorselect"]
+                },
+                'wegas-inputex-wysiwygscript': {
+                    requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
+                        'wegas-inputex-variabledescriptorselect',
+                        'wegas-button', 'inputex-jsonschema', 'inputex-list',
+                        'wegas-inputex-url', "wegas-inputex-rte", // for mail attachements in script
+                        'esprima'],
+                    ix_provides: ['script']
+                },
+                'wegas-inputex-url': {
+                    requires: ['inputex-url', 'panel', 'wegas-fileexplorer'],
+                    ix_provides: 'wegasurl'
+                },
+                'wegas-inputex-ace': {
+                    requires: ['inputex-field', 'ace'],
+                    ix_provides: "ace"
+                },
+                'wegas-inputex-permissionselect': {
+                    requires: ['inputex-list', 'inputex-field', "inputex-checkbox", "wegas-inputex-roleselect"],
+                    ws_provides: 'RolePermissionList'
+                },
+                'wegas-inputex-gamemodelselect': {
+                    requires: ['inputex-select'],
+                    ix_provides: 'gamemodelselect'
+                },
+                'wegas-inputex-roleselect': {
+                    requires: ['inputex-select'],
+                    ix_provides: 'roleselect'
+                },
+                'wegas-inputex-pageselect': {
+                    requires: ['inputex-select'],
+                    ix_provides: 'pageselect'
+                },
+                'wegas-inputex-variableselect': {
+                    requires: ['wegas-inputex', 'inputex-group', 'inputex-textarea',
+                        'wegas-inputex-variabledescriptorselect', 'wegas-button',
+                        'esprima'],
+                    ix_provides: 'variableselect'
+                },
+            }
+        },
         /* Other libraries */
         libraries: {
             async: false,
@@ -913,5 +901,6 @@ YUI().use(function(Y) {
     }
 
     loadModules(YUI_config.groups.wegas);
+    loadModules(YUI_config.groups["wegas-inputex-group"]);
     loadModules(YUI_config.groups.libraries);
 });
