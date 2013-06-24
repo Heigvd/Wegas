@@ -62,7 +62,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             for (var i in this.handlers) {
                 this.handlers[i].detach();
             }
-            this.instance.destroy();
+            //this.instance.destroy();
         },
         _show: function(event) {
             var instance;
