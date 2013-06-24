@@ -123,6 +123,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         case 'NumberDescriptor':
                         case 'InboxDescriptor':
                         case 'TriggerDescriptor':
+                        case 'FSMDescriptor':
                         case 'TaskDescriptor':
                         case 'ObjectDescriptor':
                         case 'ResourceDescriptor':

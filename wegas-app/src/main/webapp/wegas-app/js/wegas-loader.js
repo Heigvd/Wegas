@@ -92,7 +92,7 @@ YUI().use(function(Y) {
                 'wegas-statemachine-entities': {
                     path: 'wegas-app/js/persistence/wegas-statemachine-entities-min.js',
                     requires: ['wegas-entity'],
-                    ws_provides: ["DialogueDescriptor", "TriggerDescriptor"]
+                    ws_provides: ["DialogueDescriptor", "TriggerDescriptor", "FSMDescriptor"]
                 },
                 'wegas-mcq-entities': {
                     path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
@@ -128,7 +128,7 @@ YUI().use(function(Y) {
                     type: 'css'
                 },
                 'wegas-popuplistener': {
-                    path: 'wegas-app/js/util/wegas-popuplistener-min.js',
+                    path: 'wegas-app/js/plugin/wegas-popuplistener-min.js',
                     ws_provides: 'PopupListener',
                     requires: ["wegas-popup-content"]
                 },

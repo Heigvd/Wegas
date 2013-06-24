@@ -285,12 +285,18 @@
                                                                         "targetClass": "TriggerDescriptor"
                                                                     }, {
                                                                         "type": "NewEntityButton",
+                                                                        "label": "State machine",
+                                                                        "targetClass": "FSMDescriptor"
+                                                                    }, {
+                                                                        "type": "NewEntityButton",
                                                                         "label": "Object",
-                                                                        "targetClass": "ObjectDescriptor"
+                                                                        "targetClass": "ObjectDescriptor",
+                                                                        "cssClass": "wegas-advanced-feature"
                                                                     }, {
                                                                         "type": "NewEntityButton",
                                                                         "label": "Inbox",
-                                                                        "targetClass": "InboxDescriptor"
+                                                                        "targetClass": "InboxDescriptor",
+                                                                        "cssClass": "wegas-advanced-feature"
                                                                     }]
                                                             }
                                                         }],
