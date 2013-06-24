@@ -215,7 +215,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                 case "VariableDescriptorFacade":
                                     return {
                                         type: "wysiwygline", // wysiwygline/variabledescriptorsetter
-                                        value: expression.arguments[0].value
+                                        value: expression.arguments[1].value
                                     };
                                 case "RequestManager":
                                     var args = [];
