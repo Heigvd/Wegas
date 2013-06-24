@@ -11,6 +11,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.leaderway.persistence.Activity;
 import com.wegas.leaderway.persistence.Assignment;
+import com.wegas.leaderway.persistence.Occupation;
 import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskDescriptor;
 import javax.ejb.EJB;
@@ -86,6 +87,25 @@ public class ResourceFacade {
      */
     public Activity assignActivity(Long resourceInstanceId, Long taskDescriptorId) {
         return this.assignActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
+                (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
+    }
+    /**
+     *
+     * @param resourceInstance
+     * @param taskInstance
+     */
+    public Occupation assignOccupation(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
+        resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
+        return resourceInstance.assignOccupation(taskDescriptor);
+    }
+
+    /**
+     *
+     * @param resourceInstance
+     * @param taskInstance
+     */
+    public Occupation assignOccupation(Long resourceInstanceId, Long taskDescriptorId) {
+        return this.assignOccupation((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
                 (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
     }
 

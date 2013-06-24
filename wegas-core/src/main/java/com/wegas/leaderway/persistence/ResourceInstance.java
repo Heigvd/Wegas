@@ -36,7 +36,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Occupation.class)
     @JsonManagedReference
     private List<Occupation> occupations;
     /**
@@ -188,7 +188,7 @@ public class ResourceInstance extends VariableInstance {
         this.addActivity(activity);
         return activity;
     }
-    
+
     /**
      * @return the activities
      */
@@ -210,6 +210,17 @@ public class ResourceInstance extends VariableInstance {
     public void addOccupation(Occupation occupation) {
         occupations.add(occupation);
         occupation.setResourceInstance(this);
+    }
+
+    /**
+     *
+     * @param occupation
+     */
+    public Occupation assignOccupation(TaskDescriptor task) {
+        Occupation occupation = new Occupation();
+        occupation.setTaskDescriptor(task);
+        occupations.add(occupation);
+        return occupation;
     }
 
     /**
