@@ -39,6 +39,11 @@ public class TaskInstance extends VariableInstance {
      *
      */
     @ElementCollection
+    private List<Integer> plannification = new ArrayList<>();
+    /**
+     *
+     */
+    @ElementCollection
     private Map<String, String> properties = new HashMap<>();
     /**
      *
@@ -60,6 +65,7 @@ public class TaskInstance extends VariableInstance {
         this.properties.putAll(other.getProperties());
         this.requirements.clear();
         this.requirements.addAll(other.getRequirements());
+        this.plannification.addAll(other.getPlannification());
     }
 
     /**
@@ -152,5 +158,19 @@ public class TaskInstance extends VariableInstance {
      */
     public void setRequirement(Integer index, WRequirement val) {
         this.requirements.set(index, val);
+    }
+
+    /**
+     * @return the plannification
+     */
+    public List<Integer> getPlannification() {
+        return plannification;
+    }
+
+    /**
+     * @param plannification the plannification to set
+     */
+    public void setPlannification(List<Integer> plannification) {
+        this.plannification = plannification;
     }
 }
