@@ -49,12 +49,10 @@ public class Transition extends AbstractEntity {
      */
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "content",
-        column =
-        @Column(name = "onTransition_content")),
-        @AttributeOverride(name = "lang",
-        column =
-        @Column(name = "onTransition_language"))
+        @AttributeOverride(name = "content", column =
+                @Column(name = "onTransition_content")),
+        @AttributeOverride(name = "lang", column =
+                @Column(name = "onTransition_language"))
     })
     private Script preStateImpact;
     private Long nextStateId;

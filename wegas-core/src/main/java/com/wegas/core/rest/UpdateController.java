@@ -11,8 +11,17 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.statemachine.State;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.Transition;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
+import com.wegas.mcq.persistence.Result;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -68,10 +77,42 @@ public class UpdateController {
     @Path("UpdateScript/{gameModelId : ([1-9][0-9]*)}")
     public String script(@PathParam("gameModelId") Long gameModelId) {
         List<VariableDescriptor> findAll = descriptorFacade.findAll(gameModelId);
+        List<String> keys = new ArrayList<>();
+        List<String> values = new ArrayList<>();
         for (VariableDescriptor vd : findAll) {
-            vd.setName(Helper.encodeVariableName(vd.getName()));
-            descriptorFacade.checkNameAndLabelAvailability(vd);
+            keys.add("VariableDescriptorFacade\\.find\\(" + vd.getId() + "\\)");
+            values.add("VariableDescriptorFacade.find(gameModel, \"" + vd.getName() + "\")");
+        }
+
+        for (VariableDescriptor vd : findAll) {
+            if (vd instanceof ChoiceDescriptor) {
+                ChoiceDescriptor choice = (ChoiceDescriptor) vd;
+                replaceAll(choice.getImpact(), keys, values);
+                for (Result r : choice.getResults()) {
+                    replaceAll(r.getImpact(), keys, values);
+                }
+            } else if (vd instanceof StateMachineDescriptor) {
+                StateMachineDescriptor fsm = (StateMachineDescriptor) vd;
+                for (Map.Entry<Long, State> s : fsm.getStates().entrySet()) {
+                    replaceAll(s.getValue().getOnEnterEvent(), keys, values);
+                    for (Transition t : s.getValue().getTransitions()) {
+                        replaceAll(t.getPreStateImpact(), keys, values);
+                        replaceAll(t.getTriggerCondition(), keys, values);
+                    }
+                }
+            }
         }
         return "Finished";
+    }
+
+    private static void replaceAll(Script script, List<String> a, List<String> b) {
+        if (script == null) {
+            return;
+        }
+        String s = script.getContent();
+        for (int i = 0; i < a.size(); i++) {
+            s = s.replaceAll(a.get(i), b.get(i));
+        }
+        script.setContent(s);
     }
 }
