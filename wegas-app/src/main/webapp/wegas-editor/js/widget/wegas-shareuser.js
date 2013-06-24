@@ -19,7 +19,8 @@ YUI.add('wegas-shareuser', function(Y) {
                 permissions = [{
                     name: "username", 
                     type: 'string', 
-                    readonly: true
+                    readonly: true,
+                    className: "username-field"
                 }, {
                     name: "userId",
                     type: "hidden"
@@ -37,7 +38,8 @@ YUI.add('wegas-shareuser', function(Y) {
                 label: 'User list',
                 elementType: {
                     type: 'permissiongroup',
-                    fields: permissions
+                    fields: permissions,
+                    className: "permission-group"
                 },
                 parentEl: el,
                 useButtons: true
@@ -49,24 +51,32 @@ YUI.add('wegas-shareuser', function(Y) {
                 this.userList.targetEntityId = "g" + e.get("id");
             }
             
-            var bThis = this;
+            this.autocompleteValue = [];
+            
             this.field = new Y.inputEx.AutoComplete({
                 parentEl: el,
-                typeInvite: "e-mail",
+                typeInvite: "e-mail / name / lastname",
                 // Format the hidden value (value returned by the form)
-                returnValue: function(oResultItem) {
-                    this.label = oResultItem.label;
+                returnValue: Y.bind(function(oResultItem) {
+                    console.log(this.field.options);
+                    if (!this.field.options.value){
+                        this.field.options.value = [];
+                        console.log("in instanciate");
+                    }
+                    this.field.options.value.push(oResultItem);
                     return oResultItem.value;
-                },
+                }, this),
                 autoComp: {
                     minQueryLength: 2,
                     maxResults: 30,
                     resultTextLocator: 'label',
                     resultHighlighter: 'phraseMatch',
+//                    queryDelimiter: ';',
                     source: "http://localhost:8080/Wegas/rest/User/AutoComplete/{query}",
-                    resultListLocator: function (responses) {
+                    enableCache: false,
+                    resultListLocator: Y.bind(function(responses) {
                         var i;
-                        Y.Array.forEach(bThis.userList.subFields, function (user) {
+                        Y.Array.forEach(this.userList.subFields, function (user) {
                             for (i=0; i<responses.length; i++){
                                 if (user.getValue().userId === responses[i].value){
                                     responses.splice(responses[i], 1);
@@ -75,7 +85,7 @@ YUI.add('wegas-shareuser', function(Y) {
                             }
                         });
                         return responses;
-                    }
+                    }, this)
                 }
             });
             
@@ -89,12 +99,16 @@ YUI.add('wegas-shareuser', function(Y) {
         },
                 
         bindUI: function() {
+            
             this.saveButton.on("click", function(){
                 if (this.field.getValue() === "") return;
-                this.userList.addElement({
-                    username: this.field.options.label,
-                    userId: parseInt(this.field.getValue()) 
-                });
+                Y.Array.forEach(this.field.options.value, function (account) {
+                    this.userList.addElement({
+                        username: account.label,
+                        userId: account.value 
+                    });
+                }, this);
+                this.field.options.value = [];
                 this.field.setValue("");
             }, this);
         },
@@ -108,17 +122,23 @@ YUI.add('wegas-shareuser', function(Y) {
                 on: {
                     success: Y.bind(function (e) {
                         var data = e.response.results.entities,
-                            i, permissions, splitedPerm, newField;
+                            i, permissions, splitedPerm, newField, username;
+                            
                         Y.Array.forEach(data, function (account) {
                             permissions = account.get('permissions');
+                            if (account.get('firstname') !== null && account.get('lastname') !== null) {
+                                username = account.get('firstname') + " " + account.get('lastname');
+                            } else {
+                                username = account.get('email');
+                            }
                             newField = this.userList.addElement({
-                                username: account.get('email'),
+                                username: username,
                                 userId: account.get('id')
                             });
                             
                             Y.Array.forEach(newField.inputs, function (field) {
                                 for (i=0; i<permissions.length; i++){
-                                    splitedPerm = permissions[i].split(":");
+                                    splitedPerm = permissions[i].get("val").value.split(":");
                                     if (splitedPerm[2] === this.userList.targetEntityId){
                                         if (field.options.name === splitedPerm[0] + ":" + splitedPerm[1]){
                                             field.setValue(true, false);
@@ -195,21 +215,40 @@ YUI.add('wegas-shareuser', function(Y) {
        
         /** @lends Y.inputEx.Wegas.PermissionGroup# */
         onChange: function(fieldValue, fieldInstance) {
-            console.log(this.getValue());
             if (fieldValue){
-                this.addPermission();
+                this.addPermission(fieldInstance.options.name + ":" + this.parentField.targetEntityId, this.getValue().userId);
             } else {
-                this.removePermission();
+                this.removePermission(fieldInstance.options.name + ":" + this.parentField.targetEntityId, this.getValue().userId);
             }
             PermissionGroup.superclass.onChange.apply(this, arguments);
         },
         
-        removePermission: function () {
-            console.log("removePerm");
+        removePermission: function (permission, userId) {
+            Y.Wegas.Facade.User.sendRequest({
+                request: "/DeleteAccountPermissionByPermissionAndAccount/" + permission + "/" + userId,
+                cfg: {
+                    method: "DELETE"
+                },
+                on: {
+                    failure: Y.bind(function(e) {
+                        this.showMessage("error", "Error by remove permission");
+                    }, this)
+                }
+            });
         },
                 
-        addPermission : function() {
-            console.log("addPerm");
+        addPermission : function(permission, userId) {
+            Y.Wegas.Facade.User.sendRequest({
+                request: "/addAccountPermission/" + permission + "/" + userId,
+                cfg: {
+                    method: "POST"
+                },
+                on: {
+                    failure: Y.bind(function(e) {
+                        this.showMessage("error", "Error by add permission");
+                    }, this)
+                }
+            });
         }
     });
     Y.inputEx.registerType("permissiongroup", PermissionGroup);

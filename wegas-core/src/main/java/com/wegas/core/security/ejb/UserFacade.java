@@ -111,9 +111,9 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
     
-    public List<Map> findAccountByEmail(String email){
-        Query findByToken = em.createNamedQuery("findAccountByEmail");
-        findByToken.setParameter("email", "%" + email + "%");
+    public List<Map> findAccountByValue(String search){
+        Query findByToken = em.createNamedQuery("findAccountByValue");
+        findByToken.setParameter("search", "%" + search.toLowerCase() + "%");
         findByToken.setMaxResults(MAXRESULT);
         List<AbstractAccount> res = (List<AbstractAccount>) findByToken.getResultList();
         List<Map> returnValue = new ArrayList<>();
@@ -263,7 +263,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     
     public List<AbstractAccount> findAccountPermissionByInstance(String instance) {
         Query findByToken = em.createNamedQuery("findUserPermissions");
-        findByToken.setParameter("gameId", "%:" + instance);
+        findByToken.setParameter("instance", "%:" + instance);
         List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
         return accounts;
     }
@@ -273,7 +273,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * @param gameOrGameModelId
      */
     public void deleteAccountPermissionByInstance(String instance) {
-        Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance");//@fixme Unable to select role with a like w/ embeddebale
+        Query findByToken = em.createNamedQuery("findUserPermissions");//@fixme Unable to select role with a like w/ embeddebale
         //  The queries below are all invalid, may be due to an old version of eclipselink
         // Query findByToken = em.createQuery("SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount");
         // @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount, IN(abstractaccount.permissions) p WHERE p.inducedPermission LIKE :gameId")
@@ -298,9 +298,8 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     }
     
     public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) throws NoResultException {
-        Query findByToken = em.createQuery("SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount "
-                + "WHERE abstractaccount.permissions LIKE '%:" + instance + "'" 
-                + "AND abstractaccount.id =" + accountId);
+        Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
+                + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
         AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
         //em.detach(account);
         for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
@@ -308,6 +307,23 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             String splitedPermission[] = p.split(":");
             if (splitedPermission.length >= 3) {
                 if (splitedPermission[2].equals(instance)) {
+                    sit.remove();
+                }
+            }
+        }
+        //em.merge(account);
+    }
+    
+    public void DeleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) throws NoResultException{
+        Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
+                + "WHERE p.value LIKE '" + permission + "' AND p.account.id =" + accountId);
+        AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
+        //em.detach(account);
+        for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
+            String p = sit.next().getValue();
+            String splitedPermission[] = p.split(":");
+            if (splitedPermission.length >= 3) {
+                if (p.equals(permission)) {
                     sit.remove();
                 }
             }

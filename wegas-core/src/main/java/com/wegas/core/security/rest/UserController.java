@@ -82,10 +82,10 @@ public class UserController {
     }
     
     @GET
-    @Path("AutoComplete/{email}")
-    public List<Map> getAutoComplete(@PathParam("email") String email) {
+    @Path("AutoComplete/{value}")
+    public List<Map> getAutoComplete(@PathParam("value") String value) {
         SecurityUtils.getSubject().isAuthenticated();
-        return userFacade.findAccountByEmail(email);
+        return userFacade.findAccountByValue(value);
     }
 
     /**
@@ -330,14 +330,38 @@ public class UserController {
         return userFacade.findAccountPermissionByInstance(entityId);
     }
     
+    @POST
+    @Path("addAccountPermission/{permission}/{accountId : [1-9][0-9]*}")
+    public void addAccountPermission(@PathParam("permission") String permission, 
+            @PathParam("accountId") Long accountId) {
+        
+        String splitedPermission[] = permission.split(":");
+        
+        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
+        
+        userFacade.addAccountPermission(accountId, permission);
+    }
+    
     @DELETE
     @Path("DeleteAccountPermissionByInstanceAndAccount/{entityId}/{accountId : [1-9][0-9]*}")
-    public void deleteAccountPermissionByInstance(@PathParam("entityId") String entityId, 
+    public void deleteAccountPermissionByInstanceAndAccount(@PathParam("entityId") String entityId, 
             @PathParam("accountId") Long accountId) {
         
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
         
         userFacade.deleteAccountPermissionByInstanceAndAccount(entityId, accountId);
+    }
+    
+    @DELETE
+    @Path("DeleteAccountPermissionByPermissionAndAccount/{permission}/{accountId : [1-9][0-9]*}")
+    public void DeleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission, 
+            @PathParam("accountId") Long accountId) {
+        
+        String splitedPermission[] = permission.split(":");
+        
+        checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
+        
+        userFacade.DeleteAccountPermissionByPermissionAndAccount(permission, accountId);
     }
     
     private void checkGmOrGPermission(String entityId, String gmPermission, String gPermission) {        
