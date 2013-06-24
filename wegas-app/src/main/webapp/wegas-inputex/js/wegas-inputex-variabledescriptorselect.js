@@ -61,7 +61,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          * @function
          */
         getValue: function() {
-            return "VariableDescriptorFacade.find(" + this.currentEntityField.getValue() + ")";
+            return "VariableDescriptorFacade.find(gameModel, " + this.currentEntityField.getValue() + ")";
         },
         /**
          * @function
@@ -284,7 +284,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 return "true";
             }
 
-            return "VariableDescriptorFacade.find(" + this.inputs[l - this.argsOffset - 2].getValue() + ")"
+            return "VariableDescriptorFacade.find(gameModel, " + this.inputs[l - this.argsOffset - 2].getValue() + ")"
                     + "." + method + "(" + this.encodeArgs(args, this.currentMethod.arguments) + ")";
         },
         encodeArgs: function(args, argsCfg) {
