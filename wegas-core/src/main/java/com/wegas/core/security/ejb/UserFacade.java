@@ -10,6 +10,7 @@ package com.wegas.core.security.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.exception.NoResultException;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 public class UserFacade extends AbstractFacadeImpl<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
+    private static final int MAXRESULT = 30;
     /**
      *
      */
@@ -107,6 +109,25 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             }
 
         }
+    }
+    
+    public List<Map> findAccountByValue(String search){
+        Query findByToken = em.createNamedQuery("findAccountByValue");
+        findByToken.setParameter("search", "%" + search.toLowerCase() + "%");
+        findByToken.setMaxResults(MAXRESULT);
+        List<AbstractAccount> res = (List<AbstractAccount>) findByToken.getResultList();
+        List<Map> returnValue = new ArrayList<>();
+        for (AbstractAccount a : res){
+            Map account = new HashMap<>();
+            returnValue.add(account);
+            if (a.getFirstname() != null && a.getLastname() != null){
+                account.put("label", a.getFirstname() + " " + a.getLastname());
+            } else {
+                account.put("label", a.getEmail());
+            }
+            account.put("value", a.getId());
+        }
+        return returnValue;
     }
 
     @Override
@@ -239,13 +260,20 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             }
         }
     }
+    
+    public List<AbstractAccount> findAccountPermissionByInstance(String instance) {
+        Query findByToken = em.createNamedQuery("findUserPermissions");
+        findByToken.setParameter("instance", "%:" + instance);
+        List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
+        return accounts;
+    }
 
     /**
      *
      * @param gameOrGameModelId
      */
     public void deleteAccountPermissionByInstance(String instance) {
-        Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance");//@fixme Unable to select role with a like w/ embeddebale
+        Query findByToken = em.createNamedQuery("findUserPermissions");//@fixme Unable to select role with a like w/ embeddebale
         //  The queries below are all invalid, may be due to an old version of eclipselink
         // Query findByToken = em.createQuery("SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount");
         // @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount, IN(abstractaccount.permissions) p WHERE p.inducedPermission LIKE :gameId")
@@ -267,6 +295,40 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             }
             //em.merge(a);// TODO??
         }
+    }
+    
+    public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) throws NoResultException {
+        Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
+                + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
+        AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
+        //em.detach(account);
+        for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
+            String p = sit.next().getValue();
+            String splitedPermission[] = p.split(":");
+            if (splitedPermission.length >= 3) {
+                if (splitedPermission[2].equals(instance)) {
+                    sit.remove();
+                }
+            }
+        }
+        //em.merge(account);
+    }
+    
+    public void DeleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) throws NoResultException{
+        Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
+                + "WHERE p.value LIKE '" + permission + "' AND p.account.id =" + accountId);
+        AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
+        //em.detach(account);
+        for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
+            String p = sit.next().getValue();
+            String splitedPermission[] = p.split(":");
+            if (splitedPermission.length >= 3) {
+                if (p.equals(permission)) {
+                    sit.remove();
+                }
+            }
+        }
+        //em.merge(account);
     }
 
     /**
