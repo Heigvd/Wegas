@@ -279,8 +279,58 @@
         "type": "List",
         "children": [
             {
-                "type": "Text",
-                "content": "To do..."
+                "type": "PmgSlidePanel",
+                "title": "EVM",
+                "cssClass": "evm",
+                "animation": false,
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "EVM chart"
+                    }
+                ]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "Finances",
+                "cssClass": "finances",
+                "animation": false,
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "Finances values"
+                    }
+                ]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "Indicators History: Management and Users",
+                "cssClass": "indicators-management",
+                "animation": false,
+                "children": [
+                    {
+                        "type": "Text",
+                        "content": "management indicators chart"
+                    }
+                ]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "Indicators History: Quality, Costs, and Shedule",
+                "cssClass": "indicators-quality",
+                "animation": false,
+                "children": [
+                    {
+                        "type": "Chart",
+                        "variables": [{
+                            "name": "fixedCosts",
+                            "label": "Costs"            
+                        },{
+                            "name": "delay",
+                            "label": "Shedule"
+                        },{
+                            "name": "quality",
+                            "label": "Quality"
+                        }]
+                    }
+                ]
             }
         ]
     },
