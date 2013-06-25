@@ -424,19 +424,6 @@
                         "randomDurationInf": 17,
                         "randomDurationSup": 26
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Web designer",
-                            "level": "40",
-                            "limit": "100",
-                            "number": "1"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Web designer",
-                            "level": "70",
-                            "limit": "100",
-                            "number": "1"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
                         "active": true,
@@ -444,7 +431,20 @@
                         "properties": {
                             "fixedCosts": 1200,
                             "predecessorsDependances": 1000
-                        }
+                        },
+                        "requirements": [{
+                            "@class": "WRequirement",
+                            "work": "Web designer",
+                            "level": "40",
+                            "limit": "100",
+                            "quantity": "1"
+                        }, {
+                            "@class": "WRequirement",
+                            "work": "Web designer",
+                            "level": "70",
+                            "limit": "100",
+                            "quantity": "1"
+                        }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -460,25 +460,6 @@
                         "fixedCosts": 700,
                         "predecessorsDependances": 1000
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Fitter",
-                            "level": "80",
-                            "limit": "100",
-                            "number": "1"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Business Specialist",
-                            "level": "40",
-                            "limit": "100",
-                            "number": "2"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Business Specialist",
-                            "level": "80",
-                            "limit": "100",
-                            "number": "1"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
                         "active": true,
@@ -493,7 +474,26 @@
                             "takeInHandDuration": 0,
                             "randomDurationInf": 15,
                             "randomDurationSup": 24
-                        }
+                        },
+                        "requirements": [{
+                            "@class": "WRequirement",
+                            "work": "Fitter",
+                            "level": "80",
+                            "limit": "100",
+                            "quantity": "1"
+                        }, {
+                            "@class": "WRequirement",
+                            "work": "Business Specialist",
+                            "level": "40",
+                            "limit": "100",
+                            "quantity": "2"
+                        }, {
+                            "@class": "WRequirement",
+                            "work": "Business Specialist",
+                            "level": "80",
+                            "limit": "100",
+                            "quantity": "1"
+                        }]
                     },
                     "scope": {
                         "@class": "TeamScope"

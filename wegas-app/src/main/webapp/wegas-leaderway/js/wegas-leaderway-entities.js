@@ -471,39 +471,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                     _type: HIDDEN
                 }
             },
-            requirements: {
-                type: ARRAY,
-                _inputex: {
-                    label: "requirements",
-                    _type: LIST,
-                    useButtons: true,
-                    keyField: NAME,
-                    valueField: VALUE,
-                    elementType: {
-                        type: GROUP,
-                        fields: [{
-                                name: "@class",
-                                type: HIDDEN
-                            }, {
-                                /*label: "Purview",*/
-                                name: "purview",
-                                typeInvite: NAME
-                            }, {
-                                label: "Limit",
-                                name: "limit",
-                                typeInvite: VALUE
-                            }, {
-                                label: "Level",
-                                name: "level",
-                                typeInvite: VALUE
-                            }, {
-                                label: "Number",
-                                name: "number",
-                                typeInvite: VALUE
-                            }]
-                    }
-                }
-            },
             properties: {
                 _inputex: {
                     label: "Properties",
@@ -539,6 +506,39 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             duration: {
                 type: NUMBER
             },
+            requirements: {
+                type: ARRAY,
+                _inputex: {
+                    label: "requirements",
+                    _type: LIST,
+                    useButtons: true,
+                    keyField: NAME,
+                    valueField: VALUE,
+                    elementType: {
+                        type: GROUP,
+                        fields: [{
+                                name: "@class",
+                                type: HIDDEN
+                            }, {
+                                label: "Work",
+                                name: "work",
+                                typeInvite: NAME
+                            }, {
+                                label: "Limit",
+                                name: "limit",
+                                typeInvite: VALUE
+                            }, {
+                                label: "Level",
+                                name: "level",
+                                typeInvite: VALUE
+                            }, {
+                                label: "Number",
+                                name: "quantity",
+                                typeInvite: VALUE
+                            }]
+                    }
+                }
+            },
             properties: {
                 _inputex: {
                     label: "Properties",
@@ -556,7 +556,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             "@class": {
                 value: "WRequirement"
             },
-            purview: {
+            work: {
                 type: STRING
             },
             limit: {
@@ -565,7 +565,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             level: {
                 type: NUMBER
             },
-            number: {
+            quantity: {
                 type: NUMBER
             }
 

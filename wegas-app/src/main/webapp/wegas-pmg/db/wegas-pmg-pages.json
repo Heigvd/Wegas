@@ -319,6 +319,7 @@
                 "children": [
                     {
                         "type": "Chart",
+                        "chartWidth": "90%",
                         "variables": [{
                             "name": "fixedCosts",
                             "label": "Costs"            
