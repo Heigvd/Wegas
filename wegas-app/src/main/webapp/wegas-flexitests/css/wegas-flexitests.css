@@ -31,7 +31,7 @@ body > .wegas-pageloader, html{
 .flexitests .wegas-button{
     background-color: rgb(176, 176, 176);
 }
-.wegas-flexitests-controller > .wegas-loading-overlay{
+.wegas-pageloader .wegas-loading-overlay{
     background-color: rgb(77, 77, 77);
     background-image: none;
     z-index: 20;
