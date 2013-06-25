@@ -160,6 +160,12 @@ YUI.add('wegas-chart', function(Y) {
                 }
                 fitSeries.push(serieFitData.slice());
             }
+            
+            if (fitSeries[0].length === 0){
+                for (i=1; i<10; i++){
+                   fitSeries[0].push(i); 
+                }
+            }
             return fitSeries;
         },
         chartTooltip: {
