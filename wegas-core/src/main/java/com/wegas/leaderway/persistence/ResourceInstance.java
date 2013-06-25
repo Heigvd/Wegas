@@ -183,7 +183,7 @@ public class ResourceInstance extends VariableInstance {
      * @param task
      * @return the activity
      */
-    public Activity assignActivity(TaskDescriptor task) {
+    public Activity createActivity(TaskDescriptor task) {
         final Activity activity = new Activity(task);
         this.addActivity(activity);
         return activity;
@@ -216,10 +216,9 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param occupation
      */
-    public Occupation assignOccupation(TaskDescriptor task) {
+    public Occupation addOccupation() {
         Occupation occupation = new Occupation();
-        occupation.setTaskDescriptor(task);
-        occupations.add(occupation);
+        this.addOccupation(occupation);
         return occupation;
     }
 

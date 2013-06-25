@@ -8,10 +8,12 @@
 package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -24,13 +26,28 @@ public class Occupation extends AbstractAssignement {
     /**
      * 
      */
-    Double startTime;
+    @Column(name = "wtime")
+    private Double time;
+    /**
+     * 
+     */
+    private Boolean editable = true;
+    /**
+     * 
+     */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
+    private String description;
     /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+    /**
+     *
+     */
     @ManyToOne(optional = true)
     @JoinColumn(name = "taskdescriptor_id", nullable = true)
     @XmlTransient
@@ -48,6 +65,9 @@ public class Occupation extends AbstractAssignement {
      *
      */
     public Occupation() {
+        this.editable = true;
+        this.description = "";
+        this.time = 0.0D;
     }
 
     /**
@@ -57,6 +77,9 @@ public class Occupation extends AbstractAssignement {
     @Override
     public void merge(AbstractEntity a) {
         Occupation other = (Occupation) a;
+        this.setDescription(other.getDescription());
+        this.setTime(other.getTime());
+        this.setEditable(other.getEditable());
         this.setResourceInstance(other.getResourceInstance());
         this.setTaskDescriptor(other.getTaskDescriptor());
     }
@@ -74,17 +97,17 @@ public class Occupation extends AbstractAssignement {
     }
 
     /**
-     * @return the startTime
+     * @return the time
      */
-    public Double getStartTime() {
-        return startTime;
+    public Double getTime() {
+        return time;
     }
 
     /**
-     * @param startTime the startTime to set
+     * @param time the time to set
      */
-    public void setStartTime(Double startTime) {
-        this.startTime = startTime;
+    public void setTime(Double time) {
+        this.time = time;
     }
 
     /**
@@ -125,5 +148,33 @@ public class Occupation extends AbstractAssignement {
      */
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
+    }
+
+    /**
+     * @return the editable
+     */
+    public Boolean getEditable() {
+        return editable;
+    }
+
+    /**
+     * @param editable the editable to set
+     */
+    public void setEditable(Boolean editable) {
+        this.editable = editable;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -30,18 +30,42 @@ public class WRequirement implements Serializable {
     /**
      *
      */
-    @Column(name = "wwork")
-    private String work;
+    @Column(name = "wlimit")
+    private Integer limit;
     /**
      *
      */
-    @Column(name = "wlimit")
-    private Integer limit;
-
-    @OneToMany
-    private List<WNeed> needs;
+    @Column(name = "wwork")
+    private String work;
+    /*
+     * 
+     */
+    @Column(name = "wlevel")
+    private Integer level;
+    /*
+     * 
+     */
+    private Long quantity;
     
     public WRequirement() {
+        this.limit = 0;
+        this.work = "";
+        this.level = 0;
+        this.quantity = 0L;
+    }
+    
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
@@ -59,20 +83,6 @@ public class WRequirement implements Serializable {
     }
 
     /**
-     * @return the id
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
      * @return the work
      */
     public String getWork() {
@@ -87,35 +97,30 @@ public class WRequirement implements Serializable {
     }
 
     /**
-     * 
-     * @return 
+     * @return the level
      */
-    public List<WNeed> getNeeds() {
-        return needs;
+    public Integer getLevel() {
+        return level;
     }
 
     /**
-     * 
-     * @param needs 
+     * @param level the level to set
      */
-    public void setNeeds(List<WNeed> needs) {
-        this.needs = needs;
-    }
-    /**
-     * 
-     * @param index
-     * @return 
-     */
-    public WNeed getNeed(Integer index) {
-        return this.needs.get(index);
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     /**
-     * 
-     * @param need
-     * @param index 
+     * @return the quantity
      */
-    public void setNeed(WNeed need, Integer index) {
-        this.needs.set(index, need);
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    /**
+     * @param quantity the quantity to set
+     */
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
     }
 }
