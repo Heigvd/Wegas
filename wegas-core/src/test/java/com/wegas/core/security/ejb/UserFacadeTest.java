@@ -198,7 +198,9 @@ public class UserFacadeTest {
         userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:View:gm100");
         userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:Edit:gm200");
         userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:Edit:gm200");
-
+        
+        userFacade.findAccountPermissionByInstance("gm200");
+        
         userFacade.deleteAccountPermissionByInstance("gm100");
 
 //        Assert.assertTrue(accountFacade.find(abstractAccount.getId()).getPermissions().contains(new Permission("GameModel:Edit:gm200")));

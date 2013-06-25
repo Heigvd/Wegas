@@ -227,11 +227,14 @@ YUI.add('wegas-entity', function(Y) {
                                     permsList: [{
                                             name: "GameModel:View"
                                         }, {
-                                            name: "GameModel:View,Edit,Delete"
+                                            name: "GameModel:Edit",
+                                            value: "GameModel:View,Edit,Delete"
                                         }, {
-                                            name: "GameModel:View,Duplicate"
+                                            name: "GameModel:Duplicate",
+                                            value: "GameModel:View,Duplicate"
                                         }, {
-                                            name: "GameModel:View,Instantiate"
+                                            name: "GameModel:Instantiate",
+                                            value: "GameModel:View,Instantiate"
                                         }]
                                 }],
                             tabSelector: '#rightTabView'
@@ -331,8 +334,8 @@ YUI.add('wegas-entity', function(Y) {
                 targetClass: "Team"
             }, {
                 type: BUTTON,
-                label: "Share",
-                cssClass: "editor-shareGame-button",
+                label: "Permission",
+                cssClass: "editor-shareGame-button wegas-advanced-feature",
                 plugins: [{
                         fn: "OpenTabAction",
                         cfg: {
@@ -341,9 +344,44 @@ YUI.add('wegas-entity', function(Y) {
                                     permsList: [{
                                             name: "Game:View"
                                         }, {
-                                            name: "Game:View,Edit"
+                                            name: "Game:Edit",
+                                            value: "Game:Edit,View"
                                         }, {
-                                            name: "Game:Token"
+                                            name: "Game:Token",
+                                            value: "Game:View,Token"
+                                        }]
+                                }],
+                            tabSelector: '#rightTabView'
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "Share",
+                cssClass: "editor-shareGame-button",
+                plugins: [{
+                        fn: "OpenTabAction",
+                        cfg: {
+                            wchildren: [{
+                                    type: "ShareRole",
+                                    permsList: [{
+                                            name: "Public",
+                                            value: "Game:View"
+                                        }, {
+                                            name: "Link",
+                                            value: "Game:View,Token"
+                                        }]
+                                }, {
+                                    type: "ShareUser",
+                                    cssClass: "editor-shareUser-list",
+                                    permsList: [{
+                                            label: "View",
+                                            value: "Game:View"
+                                        }, {
+                                            label: "Edit",
+                                            value: "Game:View,Edit"
+                                        }, {
+                                            label: "Token",
+                                            value: "Game:Token"
                                         }]
                                 }],
                             tabSelector: '#rightTabView'
