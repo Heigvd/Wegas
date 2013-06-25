@@ -88,7 +88,7 @@ YUI.add('wegas-shareuser', function(Y) {
                     }, this)
                 }
             });
-            
+                       
             this.saveButton = new Y.Wegas.Button({
                 label: "save",
                 cssClass: "wegas-shareUser-save",
@@ -99,7 +99,10 @@ YUI.add('wegas-shareuser', function(Y) {
         },
                 
         bindUI: function() {
-            
+           
+             Y.once('domready',function() {
+                 console.log(this);
+             },this);
             this.saveButton.on("click", function(){
                 if (this.field.getValue() === "") return;
                 Y.Array.forEach(this.field.options.value, function (account) {
