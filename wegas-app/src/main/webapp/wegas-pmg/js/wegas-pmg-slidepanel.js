@@ -33,43 +33,48 @@ YUI.add("wegas-pmg-slidepanel", function (Y) {
             node.append("<div class='slidepanel-cleaner' style='position:relative; z-index:-1;'></div>");
             this.list.render(node.one('.slidepanel-content'));
 
-            this.animation = node.one('.slidepanel-content').plug(Y.Plugin.NodeFX, {//slide animation
-                from: {
-                    height: 0
-                },
-                to: {
-                    height: function (node) { // dynamic in case of change
-                        return node.get('scrollHeight'); // get expanded height (offsetHeight may be zero)
-                    }
-                },
-                easing: Y.Easing.easeOut,
-                duration: 0.5
-            }, this);
+            if (this.get("animation")) {
+                this.animation = node.one('.slidepanel-content').plug(Y.Plugin.NodeFX, {//slide animation
+                    from: {
+                        height: 0
+                    },
+                    to: {
+                        height: function (node) { // dynamic in case of change
+                            return node.get('scrollHeight'); // get expanded height (offsetHeight may be zero)
+                        }
+                    },
+                    easing: Y.Easing.easeOut,
+                    duration: 0.5
+                }, this);
+            
 
-            this.cleaner = node.one('.slidepanel-cleaner').plug(Y.Plugin.NodeFX, {//compensates the non-height of the content's absolute position.
-                from: {
-                    height: 0
-                },
-                to: {
-                    height: function (node) {
-                        return node.ancestor().one('.slidepanel-content').get('scrollHeight');
-                    }
-                },
-                easing: Y.Easing.easeOut,
-                duration: 0.5
-            }, this);
+                this.cleaner = node.one('.slidepanel-cleaner').plug(Y.Plugin.NodeFX, {//compensates the non-height of the content's absolute position.
+                    from: {
+                        height: 0
+                    },
+                    to: {
+                        height: function (node) {
+                            return node.ancestor().one('.slidepanel-content').get('scrollHeight');
+                        }
+                    },
+                    easing: Y.Easing.easeOut,
+                    duration: 0.5
+                }, this);
+            }
             cb.append(node);
         },
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
             
-            this.handlers.anim = cb.one(".slidepanel-title").on('click', function (e) {
-                this.animation.fx.set('reverse', !this.animation.fx.get('reverse')); // toggle reverse 
-                this.animation.fx.run();
-                this.cleaner.fx.set('reverse', !this.cleaner.fx.get('reverse')); // toggle reverse 
-                this.cleaner.fx.run();
-            }, this);
+            if (this.get('animation')){
+                this.handlers.anim = cb.one(".slidepanel-title").on('click', function (e) {
+                    this.animation.fx.set('reverse', !this.animation.fx.get('reverse')); // toggle reverse 
+                    this.animation.fx.run();
+                    this.cleaner.fx.set('reverse', !this.cleaner.fx.get('reverse')); // toggle reverse 
+                    this.cleaner.fx.run();
+                }, this);
+            }
         },
         syncUI: function () {
             var cb = this.get(CONTENTBOX), height;
@@ -82,8 +87,10 @@ YUI.add("wegas-pmg-slidepanel", function (Y) {
                 this.handlers[k].detach();
             }
             this.list.destroy();
-            this.animation.destroy();
-            this.cleaner.destroy();
+            if (this.get('animation')){
+                this.animation.destroy();
+                this.cleaner.destroy();
+            }
         }
 
     }, {
@@ -96,6 +103,9 @@ YUI.add("wegas-pmg-slidepanel", function (Y) {
             },
             children: {
                 validator: Y.Lang.isArray
+            },
+            animation: {
+                value: true
             }
         }
     });
