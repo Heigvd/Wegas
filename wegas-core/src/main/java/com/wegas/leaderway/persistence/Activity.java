@@ -8,10 +8,12 @@
 package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -30,12 +32,20 @@ public class Activity extends AbstractAssignement {
     /**
      *
      */
-    private Double startTime;
+    @Column(name = "wtime")
+    private Double time;
     /**
      *
      */
     @Column(name = "wcompletion")
     private Integer completion;
+    /**
+     * 
+     */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
+    private String description;
     /**
      *
      */
@@ -56,6 +66,9 @@ public class Activity extends AbstractAssignement {
      *
      */
     public Activity() {
+        this.time = 0.0D;
+        this.completion = 0;
+        this.description = "";
     }
 
     /**
@@ -64,8 +77,9 @@ public class Activity extends AbstractAssignement {
      */
     public Activity(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
-        this.startTime = 0D;
+        this.time = 0D;
         this.completion = 0;
+        this.description = "";
     }
 
     /**
@@ -76,9 +90,10 @@ public class Activity extends AbstractAssignement {
     public void merge(AbstractEntity a) {
         Activity other = (Activity) a;
         this.setResourceInstance(other.getResourceInstance());
-        this.setStartTime(other.getStartTime());
+        this.setTime(other.getTime());
         this.setCompletion(other.getCompletion());
-        //this.setTaskDescriptor(other.getTaskDescriptor());
+        this.setTaskDescriptor(other.getTaskDescriptor());
+        this.setDescription(other.getDescription());
     }
 
     @PostPersist
@@ -111,17 +126,17 @@ public class Activity extends AbstractAssignement {
     }
 
     /**
-     * @return the startTime
+     * @return the time
      */
-    public Double getStartTime() {
-        return startTime;
+    public Double getTime() {
+        return time;
     }
 
     /**
-     * @param startTime the startTime to set
+     * @param time the time to set
      */
-    public void setStartTime(Double startTime) {
-        this.startTime = startTime;
+    public void setTime(Double time) {
+        this.time = time;
     }
 
     /**
@@ -159,5 +174,19 @@ public class Activity extends AbstractAssignement {
      */
     public void setCompletion(Integer completion) {
         this.completion = completion;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

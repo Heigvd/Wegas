@@ -10,11 +10,15 @@ package com.wegas.leaderway.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.Views;
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -28,6 +32,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      *
      */
     @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
     private String description;
     /**
      *

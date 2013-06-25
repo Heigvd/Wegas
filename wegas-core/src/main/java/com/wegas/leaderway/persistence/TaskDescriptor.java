@@ -9,17 +9,18 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.CascadeType;
+import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -33,6 +34,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
     private String description;
     /**
      *
@@ -48,27 +52,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     @ManyToMany
     private List<TaskDescriptor> predecessors = new ArrayList<>();
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @XmlTransient
-    private List<Assignment> assignments;
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @XmlTransient
-    private List<Occupation> occupation;
-    /**
-     *
-     */
-    @OneToMany(mappedBy = "taskDescriptor", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
-    @XmlTransient
-    private List<Activity> activities;
+
     /**
      * /**
      *
@@ -172,33 +156,5 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public String getProperty(String key) {
         return this.properties.get(key);
-    }
-
-    /**
-     * @return the assignments
-     */
-    public List<Assignment> getAssignments() {
-        return assignments;
-    }
-
-    /**
-     * @param assignments the assignments to set
-     */
-    public void setAssignments(List<Assignment> assignments) {
-        this.assignments = assignments;
-    }
-
-    /**
-     * @return the activity
-     */
-    public List<Activity> getActivities() {
-        return activities;
-    }
-
-    /**
-     * @param activity the activity to set
-     */
-    public void setActivity(List<Activity> activities) {
-        this.activities = activities;
     }
 }

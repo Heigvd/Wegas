@@ -14,6 +14,8 @@ import com.wegas.leaderway.persistence.Assignment;
 import com.wegas.leaderway.persistence.Occupation;
 import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskDescriptor;
+import com.wegas.leaderway.persistence.TaskInstance;
+import com.wegas.leaderway.persistence.WRequirement;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -75,9 +77,9 @@ public class ResourceFacade {
      * @param resourceInstance
      * @param taskInstance
      */
-    public Activity assignActivity(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
+    public Activity createActivity(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
         resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
-        return resourceInstance.assignActivity(taskDescriptor);
+        return resourceInstance.createActivity(taskDescriptor);
     }
 
     /**
@@ -85,28 +87,38 @@ public class ResourceFacade {
      * @param resourceInstance
      * @param taskInstance
      */
-    public Activity assignActivity(Long resourceInstanceId, Long taskDescriptorId) {
-        return this.assignActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
+    public Activity createActivity(Long resourceInstanceId, Long taskDescriptorId) {
+        return this.createActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
                 (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
+    }
+    /**
+     * 
+     * @param resourceInstance
+     * @param editable
+     * @return 
+     */
+    public Occupation addOccupation(ResourceInstance resourceInstance, Boolean editable) {
+        Occupation occupation = this.addOccupation(resourceInstance);
+        occupation.setEditable(editable);
+        return occupation;
     }
     /**
      *
      * @param resourceInstance
-     * @param taskInstance
      */
-    public Occupation assignOccupation(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
+    public Occupation addOccupation(ResourceInstance resourceInstance) {
         resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
-        return resourceInstance.assignOccupation(taskDescriptor);
+        Occupation occupation = resourceInstance.addOccupation();
+        return occupation;
     }
-
-    /**
+     /**
      *
      * @param resourceInstance
      * @param taskInstance
      */
-    public Occupation assignOccupation(Long resourceInstanceId, Long taskDescriptorId) {
-        return this.assignOccupation((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
-                (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
+    public Occupation addOccupation(Long resourceInstanceId) {
+        ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
+        return resourceInstance.addOccupation();
     }
 
     /**
@@ -114,19 +126,22 @@ public class ResourceFacade {
      * @param assignementId
      * @param index
      */
-    public void moveAssignment(final Long assignementId, final int index) {
+    public ResourceInstance moveAssignment(final Long assignementId, final int index) {
         final Assignment assignement = this.em.find(Assignment.class, assignementId);
         assignement.getResourceInstance().getAssignments().remove(assignement);
         assignement.getResourceInstance().getAssignments().add(index, assignement);
+        return assignement.getResourceInstance();
     }
 
-//    public void test(WRequirement requirement, Long taskId, Long resId, Player player) {
-//        TaskDescriptor td = this.em.find(TaskDescriptor.class, taskId);
-//        ResourceDescriptor rd = this.em.find(ResourceDescriptor.class, resId);
-//        td.getRequirements().add(requirement);
-//
-//        //assigne activity between resource to task and assigne Activity between requirement and resource
-//        Activity activity = this.assignActivity(rd.getInstance(player).getId(), td.getInstance(player).getId());
-//        activity.setWrequirement(requirement);
-//    }
+    /**
+     * 
+     * @param requirement
+     * @param taskInstanceId
+     * @return 
+     */
+    public TaskInstance addRequierement(WRequirement requirement, Long taskInstanceId) {
+        TaskInstance ti = (TaskInstance) variableInstanceFacade.find(taskInstanceId);
+        ti.getRequirements().add(requirement);
+        return ti;
+    }
 }
