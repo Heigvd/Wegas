@@ -196,6 +196,7 @@
                 "name": "Description : ",
                 "className": "titre"
             }, {
+                "type": "longText",
                 "name": "description"
             }, {
                 "name": "Niveau de Leadership : ",

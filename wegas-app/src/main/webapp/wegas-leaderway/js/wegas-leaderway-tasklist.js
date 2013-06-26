@@ -196,7 +196,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                     this.data.push({
                         id: taskDescriptor.get('id'),
                         task: taskDescriptor.get('name'),
-                        skill: this.getRequirements(taskDescriptor),
+                        skill: this.getRequirements(taskInstance),
                         duration: taskInstance.get('duration'),
                         term: termData,
                         salary: taskDescriptor.get('properties').salary,
@@ -211,12 +211,12 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          * @return String, a texte including all the Requirements
          *  of the given task (example : engineer - 48).
          */
-        getRequirements: function(td) {
+        getRequirements: function(ti) {
             var i, j, temp = [], req = [];
-            for (i = 0; i < td.get('requirements').length; i++) {
-                if (td.get('requirements')[i].getAttrs) {
-                    req = td.get('requirements')[i].getAttrs();
-                    temp.push(req.purview + " - " + req.level);
+            for (i = 0; i < ti.get('requirements').length; i++) {
+                if (ti.get('requirements')[i].getAttrs) {
+                    req = ti.get('requirements')[i].getAttrs();
+                    temp.push(req.work + " - " + req.level);
                 }
             }
             return temp.join("<br />");

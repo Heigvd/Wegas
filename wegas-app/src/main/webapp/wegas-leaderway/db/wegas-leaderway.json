@@ -428,14 +428,14 @@
                         "disappearAtWeek": 2,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Design graphique",
-                            "level": "50"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Design graphique",
+                                "level": "50"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -454,14 +454,14 @@
                         "disappearAtWeek": 2,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Design graphique",
-                            "level": "23"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Design graphique",
+                                "level": "23"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -480,14 +480,14 @@
                         "disappearAtWeek": 3,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Développement de base de données",
-                            "level": "43"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Développement de base de données",
+                                "level": "43"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -506,14 +506,14 @@
                         "disappearAtWeek": 3,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Développement logiciel",
-                            "level": "39"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Développement logiciel",
+                                "level": "39"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -532,18 +532,18 @@
                         "disappearAtWeek": 3,
                         "workWithLeader": true
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Négociation",
-                            "level": "60"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Développement logiciel",
-                            "level": "25"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Négociation",
+                                "level": "60"
+                            }, {
+                                "@class": "WRequirement",
+                                "work": "Développement logiciel",
+                                "level": "25"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -562,18 +562,18 @@
                         "disappearAtWeek": 4,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Langages Web",
-                            "level": "54"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Modélisation des traitements",
-                            "level": "45"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 3
+                        "duration": 3,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Langages Web",
+                                "level": "54"
+                            }, {
+                                "@class": "WRequirement",
+                                "work": "Modélisation des traitements",
+                                "level": "45"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -593,14 +593,14 @@
                         "disappearAtWeek": 4,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Modélisation des traitements",
-                            "level": "67"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Modélisation des traitements",
+                                "level": "67"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -620,14 +620,14 @@
                         "disappearAtWeek": 3,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Développement de base de données",
-                            "level": "43"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Développement de base de données",
+                                "level": "43"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -646,14 +646,14 @@
                         "disappearAtWeek": 3,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Modélisation des traitements",
-                            "level": "72"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 3
+                        "duration": 3,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Modélisation des traitements",
+                                "level": "72"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -674,14 +674,14 @@
                         "disappearAtWeek": 4,
                         "workWithLeader": true
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Négociation",
-                            "level": "65"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Négociation",
+                                "level": "65"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -700,14 +700,14 @@
                         "disappearAtWeek": 4,
                         "workWithLeader": true
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Négociation",
-                            "level": "65"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Négociation",
+                                "level": "65"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -726,14 +726,14 @@
                         "disappearAtWeek": 4,
                         "workWithLeader": true
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Négociation",
-                            "level": "65"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Négociation",
+                                "level": "65"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -753,22 +753,22 @@
                         "disappearAtWeek": 5,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Modélisation des traitements",
-                            "level": "67"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Négociation",
-                            "level": "20"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Développement logiciel",
-                            "level": "60"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 3
+                        "duration": 3,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Modélisation des traitements",
+                                "level": "67"
+                            }, {
+                                "@class": "WRequirement",
+                                "work": "Négociation",
+                                "level": "20"
+                            }, {
+                                "@class": "WRequirement",
+                                "work": "Développement logiciel",
+                                "level": "60"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -787,14 +787,14 @@
                         "disappearAtWeek": 5,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Design graphique",
-                            "level": "40"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Design graphique",
+                                "level": "40"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -813,14 +813,14 @@
                         "disappearAtWeek": 4,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Développement de base de données",
-                            "level": "60"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Développement de base de données",
+                                "level": "60"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -839,14 +839,14 @@
                         "disappearAtWeek": 5,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Langages Web",
-                            "level": "57"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Langages Web",
+                                "level": "57"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -865,14 +865,14 @@
                         "disappearAtWeek": 5,
                         "workWithLeader": true
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Design graphique",
-                            "level": "82"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Design graphique",
+                                "level": "82"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -891,14 +891,14 @@
                         "disappearAtWeek": 5,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Développement de base de données",
-                            "level": "75"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Développement de base de données",
+                                "level": "75"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -917,14 +917,14 @@
                         "disappearAtWeek": 5,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Design graphique",
-                            "level": "65"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Design graphique",
+                                "level": "65"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -943,14 +943,14 @@
                         "disappearAtWeek": 5,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Design graphique",
-                            "level": "75"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Design graphique",
+                                "level": "75"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -971,14 +971,14 @@
                         "disappearAtWeek": 5,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Design graphique",
-                            "level": "85"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Design graphique",
+                                "level": "85"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -997,14 +997,14 @@
                         "disappearAtWeek": 6,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Développement logiciel",
-                            "level": "54"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Développement logiciel",
+                                "level": "54"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1024,18 +1024,18 @@
                         "disappearAtWeek": 6,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Modélisation de base de données",
-                            "level": "94"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Modélisation des traitements",
-                            "level": "60"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 3
+                        "duration": 3,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Modélisation de base de données",
+                                "level": "94"
+                            }, {
+                                "@class": "WRequirement",
+                                "work": "Modélisation des traitements",
+                                "level": "60"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1054,14 +1054,14 @@
                         "disappearAtWeek": 6,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Modélisation des traitements",
-                            "level": "62"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 4
+                        "duration": 4,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Modélisation des traitements",
+                                "level": "62"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1080,14 +1080,14 @@
                         "disappearAtWeek": 5,
                         "workWithLeader": true
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Modélisation de base de données",
-                            "level": "56"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Modélisation de base de données",
+                                "level": "56"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1106,14 +1106,14 @@
                         "disappearAtWeek": 6,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Langages Web",
-                            "level": "54"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Langages Web",
+                                "level": "54"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1132,18 +1132,18 @@
                         "disappearAtWeek": 6,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Négociation",
-                            "level": "40"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Langages Web",
-                            "level": "30"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Négociation",
+                                "level": "40"
+                            }, {
+                                "@class": "WRequirement",
+                                "work": "Langages Web",
+                                "level": "30"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1163,18 +1163,18 @@
                         "disappearAtWeek": 6,
                         "workWithLeader": true
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Négociation",
-                            "level": "40"
-                        }, {
-                            "@class": "WRequirement",
-                            "purview": "Langages Web",
-                            "level": "30"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 2
+                        "duration": 2,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Négociation",
+                                "level": "40"
+                            }, {
+                                "@class": "WRequirement",
+                                "work": "Langages Web",
+                                "level": "30"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1193,14 +1193,14 @@
                         "disappearAtWeek": 6,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Développement logiciel",
-                            "level": "60"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Développement logiciel",
+                                "level": "60"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1219,14 +1219,14 @@
                         "disappearAtWeek": 6,
                         "workWithLeader": false
                     },
-                    "requirements": [{
-                            "@class": "WRequirement",
-                            "purview": "Développement logiciel",
-                            "level": "80"
-                        }],
                     "defaultInstance": {
                         "@class": "TaskInstance",
-                        "duration": 1
+                        "duration": 1,
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Développement logiciel",
+                                "level": "80"
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -1403,7 +1403,7 @@
                             "nextStateId": 8,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskDesc != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskDesc != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -1412,7 +1412,7 @@
                             "nextStateId": 15,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -1421,7 +1421,7 @@
                             "nextStateId": 16,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -1430,7 +1430,7 @@
                             "nextStateId": 17,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -1439,7 +1439,7 @@
                             "nextStateId": 18,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(0).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                                 "language": "JavaScript"
                             }
                         }],
@@ -2224,7 +2224,7 @@
                             "nextStateId": 8,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -2233,7 +2233,7 @@
                             "nextStateId": 15,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -2242,7 +2242,7 @@
                             "nextStateId": 16,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -2251,7 +2251,7 @@
                             "nextStateId": 17,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -2260,7 +2260,7 @@
                             "nextStateId": 18,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(1).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                                 "language": "JavaScript"
                             }
                         }],
@@ -3045,7 +3045,7 @@
                             "nextStateId": 8,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -3054,7 +3054,7 @@
                             "nextStateId": 15,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -3063,7 +3063,7 @@
                             "nextStateId": 16,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -3072,7 +3072,7 @@
                             "nextStateId": 17,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -3081,7 +3081,7 @@
                             "nextStateId": 18,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(2).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                                 "language": "JavaScript"
                             }
                         }],
@@ -3866,7 +3866,7 @@
                             "nextStateId": 8,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -3875,7 +3875,7 @@
                             "nextStateId": 15,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -3884,7 +3884,7 @@
                             "nextStateId": 16,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -3893,7 +3893,7 @@
                             "nextStateId": 17,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -3902,7 +3902,7 @@
                             "nextStateId": 18,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(3).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                                 "language": "JavaScript"
                             }
                         }],
@@ -4687,7 +4687,7 @@
                             "nextStateId": 8,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()>=75||resInst.getProperty('leadershipLevel')>1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -4696,7 +4696,7 @@
                             "nextStateId": 15,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&isWish&&!isHate;",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -4705,7 +4705,7 @@
                             "nextStateId": 16,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&((isWish&&isHate)||(!isWish&&!isHate));",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -4714,7 +4714,7 @@
                             "nextStateId": 17,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst!=null&&!isWish&&isHate&&(resInst.getConfidence()<75&&resInst.getProperty('leadershipLevel')<=1);",
                                 "language": "JavaScript"
                             }
                         }, {
@@ -4723,7 +4723,7 @@
                             "nextStateId": 18,
                             "triggerCondition": {
                                 "@class": "Script",
-                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getPurview();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
+                                "content": "var i, j, gm = self.getGameModel(), isWish = false, isHate = false, tasks, taskDesc, taskInst, skills, assignmentTaskId, resInst = VariableDescriptorFacade.findByName(self.getGameModel(), 'resources').items.get(4).getInstance(self);\ntasks = VariableDescriptorFacade.findByName(gm, 'tasks');\nfor(i=0;i<resInst.getAssignments().size();i++){\nassignmentTaskId = resInst.getAssignments().get(i).getTaskDescriptorId();\nfor(j=0;j<tasks.items.size();j++){\ntaskDesc = tasks.items.get(j);\nif(taskDesc.getInstance(self).getActive()==true  && taskDesc.getId() == assignmentTaskId){\ntaskInst = taskDesc.getInstance(self);\nbreak;\n}\n}\n}\nif(taskInst != null){\nfor(i=0; i<taskDesc.getRequirements().size(); i++){\nskills=taskDesc.getRequirements().get(i).getwork();\nif(skills == resInst.getProperty('wish')) isWish = true;\nif(skills == resInst.getProperty('hate')) isHate = true;\n}\n}\ntaskInst==null;",
                                 "language": "JavaScript"
                             }
                         }],
@@ -5762,7 +5762,7 @@
     "scriptLibrary": {
         "default": {
             "@class": "GameModelContent",
-            "content": "importPackage(javax.naming);\r\n\r\n/**\r\n * terminate the current week.\r\n * if value of week <= max value of week :\r\n * - Increment the value of week\r\n * - Check the end of all task (checkTasksEnd)\r\n * - Check the end of all absent (checkAbsencesEnd)\r\n * - Remove all deactivated assignments (removeDeactivatedAssignements)\r\n * - Active or Deactive some tasks (checkTasksState)\r\n * - Pay all active resources (payResources)\r\n * - Check the moral of all active resources (checkMoral)\r\n * - Check the 'LeadershipLevel' of all active resources (checkLeadershipLevel)\r\n */\r\nfunction finishCurrentWeek () {\r\n    var gm = self.getGameModel(),\r\n            weekDescriptor = VariableDescriptorFacade.findByName(gm, 'week'),\r\n            actionsDescriptor = VariableDescriptorFacade.findByName(gm, 'actions'),\r\n            weekInstance = weekDescriptor.getInstance(self);\r\n    if (weekInstance.getValue() <= weekDescriptor.getMaxValue()) {\r\n        weekInstance.setValue(weekInstance.getValue() + 1);\r\n        actionsDescriptor.getInstance(self).setValue(actionsDescriptor.getMaxValue());\r\n        this.checkTasksEnd();\r\n        this.checkAbsencesEnd();\r\n        this.removeDeactivatedAssignements();\r\n        this.checkTasksState();\r\n        this.payResources();\r\n        this.checkMoral();\r\n        this.checkLeadershipLevel();\r\n        this.sendScore();\r\n        this.resetDialogueValues(); //specific to this scenario.\r\n    }\r\n}\r\n\r\n/**\r\n * @return an Array of all active and not absent resourceDescriptor.\r\n */\r\nfunction getValideResources () {\r\n    var i, j, k, gm = self.getGameModel(), valideResources = new Array(), isValid = false,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceDescriptor, resourceInstance,\r\n            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absencesInstance, assignment;\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceDescriptor = listResources.items.get(i);\r\n        resourceInstance = resourceDescriptor.getInstance(self);\r\n        isValid = false;\r\n        if (resourceInstance.getActive() == true) {\r\n            isValid = true;\r\n            for (j = 0; j < resourceInstance.getAssignments().size(); j++) {\r\n                assignment = resourceInstance.getAssignments().get(j);\r\n                for (k = 0; k < listAbsences.items.size(); k++) {\r\n                    absencesInstance = listAbsences.items.get(k).getInstance(self);\r\n                    if (assignment.getTaskDescriptorId() == absencesInstance.getDescriptorId() && absencesInstance.getActive() == true) {\r\n                        isValid = false;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if (isValid)\r\n            valideResources.push(resourceDescriptor);\r\n    }\r\n    return valideResources;\r\n}\r\n\r\n/**\r\n * @param ListDescriptor of ResourceDescriptor listResources, the list of all resources\r\n * @return An Array of all task assigned at one or many active and not absent resource.\r\n */\r\nfunction getWorkedTasks (listResources) {\r\n    var i, j, k, gm = self.getGameModel(), workedTasks = new Array(), isWorked = false, assignment,\r\n            resourceInstance, listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance;\r\n    for (i = 0; i < listTasks.items.size(); i++) {\r\n        taskDescriptor = listTasks.items.get(i);\r\n        taskInstance = taskDescriptor.getInstance(self);\r\n        isWorked = false;\r\n        if (taskInstance.getActive() == true) {\r\n            for (j = 0; j < listResources.length; j++) {\r\n                resourceInstance = listResources[j].getInstance(self);\r\n                for (k = 0; k < resourceInstance.getAssignments().size(); k++) {\r\n                    assignment = resourceInstance.getAssignments().get(k);\r\n                    if (assignment.getTaskDescriptorId() == taskInstance.getDescriptorId()) {\r\n                        isWorked = true;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if (isWorked)\r\n            workedTasks.push(taskDescriptor);\r\n    }\r\n    return workedTasks;\r\n}\r\n\r\n/**\r\n * Decreases the duration of all worked task by the number of workers on this task.\r\n * for each worked task that have a duration <=0, call the fonction 'doTaskEnd'\r\n * with the task and the corresponding workers for args.\r\n */\r\nfunction checkTasksEnd () {\r\n    var i, j, k, assignment, taskWorkers = new Array(),\r\n            listValidResource = this.getValideResources(), resourceInstance,\r\n            listWorkedTasks = this.getWorkedTasks(listValidResource), taskInstance;\r\n    for (i = 0; i < listWorkedTasks.length; i++) {\r\n        taskWorkers.length = 0;\r\n        taskInstance = listWorkedTasks[i].getInstance(self);\r\n        for (j = 0; j < listValidResource.length; j++) {\r\n            resourceInstance = listValidResource[j].getInstance(self);\r\n            for (k = 0; k < resourceInstance.getAssignments().size(); k++) {\r\n                assignment = resourceInstance.getAssignments().get(k);\r\n                if (assignment.getTaskDescriptorId() == taskInstance.getDescriptorId()) {\r\n                    taskWorkers.push(listValidResource[j]);\r\n                }\r\n            }\r\n        }\r\n        taskInstance.setDuration(taskInstance.getDuration() - taskWorkers.length);\r\n        if (taskInstance.getDuration() <= 0) {\r\n            this.doTaskEnd(taskWorkers, listWorkedTasks[i]);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Calculate experience (general gained and experience in skillsets needed by\r\n * the finished task) for all workers on a finished tasks.\r\n * can remove the 'wish' or the 'hate' values of these workers.\r\n * add the remuneration of the task at the general budget.\r\n * send a rapport-email to the player\r\n * Deactivate the task\r\n * @param Array of resourceDescriptor workersDescriptor, all the resources that worked on the task.\r\n * @param TaskDescriptor taskDescriptor, the task ended.\r\n */\r\nfunction doTaskEnd (workersDescriptor, taskDescriptor) {\r\n    if (workersDescriptor.length <= 0 || !taskDescriptor) {\r\n        return;\r\n    }\r\n    var i, j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),\r\n            budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),\r\n            clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskRequirementKey, wish, hate,\r\n            taskRequirementValue, listTaskRequirement = taskDescriptor.getRequirements(), taskDuration = taskInstance.getDescriptor().defaultInstance.getDuration(), workerInstance,\r\n            workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,\r\n            sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber, existingSkills = new Array(),\r\n            punderationMoral = 0.1,\r\n            punderationConfidence = 0.2,\r\n            punderationSkillsets = 0.7,\r\n            punderationQualityWeight = 0.5;\r\n\r\n    //get existing skills\r\n    for (i = 0; i < workersDescriptor[0].getInstance(self).getSkillsets().size(); i++) {\r\n        existingSkills.push(workersDescriptor[0].getInstance(self).getSkillsets().keySet().toArray()[i]);\r\n    }\r\n\r\n    for (i = 0; i < workersDescriptor.length; i++) {\r\n        workPartSkillsQuality.length = 0;\r\n        sumWorkPartSkills = 0;\r\n        workerInstance = workersDescriptor[i].getInstance(self);\r\n        moral = parseInt(workerInstance.getMoral());\r\n        confidence = parseInt(workerInstance.getConfidence());\r\n        learningCoefficient = parseInt(workersDescriptor[i].getProperty('learningCoefficient'));\r\n        totalExperience = 0;\r\n        from.push(workersDescriptor[i].getProperty('surname'));//for e-mail\r\n        for (j = 0; j < listTaskRequirement.size(); j++) {\r\n            taskRequirementKey = listTaskRequirement.get(j).getPurview();\r\n            taskRequirementValue = parseInt(listTaskRequirement.get(j).getLevel());\r\n            workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));\r\n            //calculate experience général (totalExperienceGained) part 1/2\r\n            if (workerSkillsetValue < taskRequirementValue) {\r\n                totalExperience += (taskRequirementValue - workerSkillsetValue) * taskDuration / workersDescriptor.length;\r\n            }\r\n            //calculate experience in current skill\r\n            if (workerSkillsetValue < taskRequirementValue) {\r\n                skillExperience = Math.ceil((1 - workerSkillsetValue / 100) * 10 * learningCoefficient * taskDuration / workersDescriptor.length);\r\n                workerInstance.setSkillset(taskRequirementKey, parseInt(workerInstance.getSkillset(taskRequirementKey)) + skillExperience);\r\n            }\r\n            //calculate work Quality part 1/4\r\n            workPartSkillsQuality.push((workerSkillsetValue - taskRequirementValue + 100) / 2);\r\n        }\r\n        //calculate experience général (totalExperienceGained) part 2/2\r\n        workerInstance.setProperty('totalExperienceGained', parseInt(workerInstance.getProperty('totalExperienceGained')) + totalExperience);\r\n        //calculate work Quality part 2/4\r\n        for (j = 0; j < workPartSkillsQuality.length; j++) {\r\n            sumWorkPartSkills += workPartSkillsQuality[j];\r\n        }\r\n        averageWorkPartSkills = (sumWorkPartSkills / workPartSkillsQuality.length) * punderationSkillsets + moral * punderationMoral + confidence * punderationConfidence;\r\n        // check wish and hate\r\n        for (j = 0; j < listTaskRequirement.size(); j++) {\r\n            taskRequirementKey = listTaskRequirement.get(j).getPurview();\r\n            taskRequirementValue = parseInt(listTaskRequirement.get(j).getLevel());\r\n            workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));\r\n            //calculate work Quality part 3/4\r\n            if (taskRequirementKey == workerInstance.getProperty('wish')) {\r\n                randomNumber = Math.floor(Math.random() * 6) + 5;\r\n                averageWorkPartSkills += randomNumber;\r\n                if (averageWorkPartSkills > 100)\r\n                    averageWorkPartSkills = 100;\r\n            }\r\n            if (taskRequirementKey == workerInstance.getProperty('hate')) {\r\n                randomNumber = Math.floor(Math.random() * 6) + 5;\r\n                averageWorkPartSkills -= randomNumber;\r\n                if (averageWorkPartSkills < 0)\r\n                    averageWorkPartSkills = 0;\r\n            }\r\n            //check wish\r\n            randomNumber = Math.random();\r\n            wish = workerInstance.getProperty('wish');\r\n            if ((averageWorkPartSkills <= 50 || randomNumber < 0.33) && taskRequirementKey == wish) {\r\n                wish = '';\r\n            }\r\n            while (!wish) {\r\n                wish = existingSkills[Math.floor(Math.random() * existingSkills.length)];\r\n                if (wish == workerInstance.getProperty('wish')) {\r\n                    wish = '';\r\n                }\r\n            }\r\n            workerInstance.setProperty('wishIsKnow', false);\r\n            workerInstance.setProperty('wish', wish);\r\n            //check hate\r\n            randomNumber = Math.random();\r\n            hate = workerInstance.getProperty('hate');\r\n            if ((averageWorkPartSkills > 50 && randomNumber < 0.33) && taskRequirementKey == hate) {\r\n                hate = '';\r\n            }\r\n            while (!hate) {\r\n                hate = existingSkills[Math.floor(Math.random() * existingSkills.length)];\r\n                if (hate == workerInstance.getProperty('hate')) {\r\n                    hate = '';\r\n                }\r\n            }\r\n            workerInstance.setProperty('hateIsKnow', false);\r\n            workerInstance.setProperty('hate', hate);\r\n        }\r\n        averageWorkPartSkills = Math.round(averageWorkPartSkills);\r\n        workPartsQuality.push(averageWorkPartSkills);\r\n        workerInstance.setProperty('lastWorkQuality', averageWorkPartSkills);\r\n        //set moral and confidence depending of averageWorkPartSkills.\r\n        if (averageWorkPartSkills < 50) {\r\n            workerInstance.setMoral(workerInstance.getMoral() - 25);\r\n            workerInstance.setConfidence(workerInstance.getConfidence() - 15);\r\n        }\r\n        else {\r\n            workerInstance.setMoral(workerInstance.getMoral() + 15);\r\n            workerInstance.setConfidence(workerInstance.getConfidence() + 10);\r\n        }\r\n        //check 'workWithLeader'\r\n        if (taskDescriptor.getProperty('workWithLeader') == 'true') {\r\n            workerInstance.setProperty('numberOfWorkWithLeader', parseInt(workerInstance.getProperty('numberOfWorkWithLeader')) + 1);\r\n        }\r\n    }\r\n    //calculate work Quality part 4/4\r\n    for (i = 0; i < workPartsQuality.length; i++) {\r\n        sumWorkParts += (workPartsQuality[i]);\r\n    }\r\n    workQuality = (sumWorkParts / workPartSkillsQuality.length);\r\n    clientsSatisfaction.setValue(Math.round(clientsSatisfaction.getValue() + (workQuality - 50) * punderationQualityWeight));\r\n    if (clientsSatisfaction.getValue() > 100)\r\n        clientsSatisfaction.setValue(100);\r\n    if (clientsSatisfaction.getValue() < 0)\r\n        clientsSatisfaction.getValue(0);\r\n    //calculate remuneration\r\n    remuneration = parseInt(taskDescriptor.getProperty('salary'));\r\n    if (workQuality >= parseInt(taskDescriptor.getProperty('workQualityMinForBonus'))) {\r\n        remuneration += parseInt(taskDescriptor.getProperty('bonus'));\r\n    }\r\n    budgetInstance.setValue(budgetInstance.getValue() + remuneration);\r\n    //e-mail\r\n    content.push('Boujour, <br />Le mandat -');\r\n    content.push(taskDescriptor.getName());\r\n    content.push('- vient de se terminer. Le client ');\r\n    switch (true) {\r\n        case workQuality < 20 :\r\n            content.push('est totalement instatisfait par notre travail. Aucune chance de décrocher un autre mandate auprès de ce client. ');\r\n            break;\r\n        case workQuality < 40 :\r\n            content.push('a déclaré être instatisfait de notre travail. Il est vrai que certaine erreurs ont été commises. ');\r\n            break;\r\n        case workQuality < 60 :\r\n            content.push('est moyennement satisfait. La qualité est faible mais le projet est satisfaisant. ');\r\n            break;\r\n        case workQuality < 80 :\r\n            content.push('est content du travail réalisé. Il pense nous recontacter pour de futurs mandats. ');\r\n            break;\r\n        default :\r\n            content.push('est ravi par le travail réalisé. La qualité est au-delà de ses espérences et sera fidèle à notre entreprise. ');\r\n            break;\r\n    }\r\n    content.push('<br />');\r\n    if (parseInt(taskDescriptor.getProperty('workQualityMinForBonus')) > 0 && workQuality >= parseInt(taskDescriptor.getProperty('workQualityMinForBonus') && parseInt(taskDescriptor.getProperty('bonus')) > 0)) {\r\n        content.push('Il nous remercier par un bonus de ');\r\n        content.push(taskDescriptor.getProperty('bonus'));\r\n        content.push('.-');\r\n    }\r\n    content.push('<br /> Bonne journée. <br />');\r\n    content.push(from.join(', '));\r\n    this.sendMessage('Fin de mandat', content.join(''), workersDescriptor[0].getProperty('surname'));\r\n    //desactivate Task\r\n    taskInstance.setActive(false);\r\n}\r\n\r\n/**\r\n * Decrease absence duration by switch the current absenceTask with a other absenceTask wich have a duration 1 time smaller.\r\n * If the duration must reach 0, remove this assignation, set the resource 'moral' to 40 and recalculate the teamMotivation's value.\r\n * If duration is smaller than 0, deactivate the task.\r\n */\r\nfunction checkAbsencesEnd () {\r\n    var i, j, k, l, gm = self.getGameModel(), assignment, duration,\r\n            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absenceInstance,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance,\r\n            assignmentToRemove = new Array(), assignmentToAdd = new Array();\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        assignmentToRemove.length = 0;\r\n        assignmentToAdd.length = 0;\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        for (j = 0; j < resourceInstance.getAssignments().size(); j++) {\r\n            assignment = resourceInstance.getAssignments().get(j);\r\n            for (k = 0; k < listAbsences.items.size(); k++) {\r\n                absenceInstance = listAbsences.items.get(k).getInstance(self);\r\n                if (assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive() == true) {\r\n                    duration = absenceInstance.getDuration();\r\n                    if (duration <= 0) {\r\n                        absenceInstance.setActive(false);\r\n                    } else {\r\n                        assignmentToRemove.push(assignment);\r\n                        resourceInstance.setMoral(40);\r\n                        if (duration > 1) {\r\n                            for (l = 0; l < listAbsences.items.size(); l++) {\r\n                                if (listAbsences.items.get(l).getInstance(self).getDuration() == duration - 1) {\r\n                                    assignmentToAdd.push(listAbsences.items.get(l));\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        for (j = assignmentToRemove.length - 1; j >= 0; j--) {\r\n            resourceInstance.getAssignments().remove(assignmentToRemove[j]);\r\n        }\r\n        for (j = 0; j < assignmentToAdd.length; j++) {\r\n            resourceInstance.assign(assignmentToAdd[j].getInstance(self));\r\n        }\r\n        this.calculateTeamMotivation();\r\n    }\r\n}\r\n\r\n/**\r\n * Check 'active' value in each tasks (from list 'tasks')\r\n * Activate and deactivate tasks according with its variables and if a resource work on.\r\n */\r\nfunction checkTasksState () {\r\n    var i, j, k, gm = self.getGameModel(), listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance,\r\n            newWeek = VariableDescriptorFacade.findByName(gm, 'week').getInstance(self), inProgress = false,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance, assignment,\r\n            newclientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self);\r\n    for (i = 0; i < listTasks.items.size(); i++) {\r\n        inProgress = false;\r\n        taskDescriptor = listTasks.items.get(i);\r\n        taskInstance = taskDescriptor.getInstance(self);\r\n        for (j = 0; j < listResources.items.size(); j++) {\r\n            resourceInstance = listResources.items.get(j).getInstance(self);\r\n            if (resourceInstance.getActive() == true) {\r\n                for (k = 0; k < resourceInstance.getAssignments().size(); k++) {\r\n                    assignment = resourceInstance.getAssignments().get(k);\r\n                    if (assignment.getTaskDescriptorId() == taskInstance.getDescriptorId() && taskInstance.getActive() == true) {\r\n                        inProgress = true;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if (inProgress ||\r\n                (newWeek.getValue() >= taskDescriptor.getProperty('appearAtWeek') &&\r\n                        newWeek.getValue() < taskDescriptor.getProperty('disappearAtWeek') &&\r\n                        newclientsSatisfaction.getValue() >= taskDescriptor.getProperty('clientSatisfactionMinToAppear') &&\r\n                        newclientsSatisfaction.getValue() <= taskDescriptor.getProperty('clientSatisfactionMaxToAppear') &&\r\n                        taskInstance.getDuration() > 0\r\n                        )\r\n                ) {\r\n            taskInstance.setActive(true);\r\n        }\r\n        else {\r\n            taskInstance.setActive(false);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Decreases current budget value by the sum of all salary of actives resources\r\n */\r\nfunction payResources () {\r\n    var i, gm = self.getGameModel(),\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n            budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),\r\n            budgetInstance = budgetDescriptor.getInstance(self),\r\n            resourceDescriptor, resourceInstance,\r\n            sumSalary = 0;\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceDescriptor = listResources.items.get(i);\r\n        resourceInstance = resourceDescriptor.getInstance(self);\r\n        if (resourceInstance.getActive() == true) {\r\n            sumSalary += parseInt(resourceDescriptor.getProperty('salary'));\r\n        }\r\n    }\r\n    budgetInstance.setValue(budgetInstance.getValue() - sumSalary);\r\n}\r\n\r\n/**\r\n * Remove all assignements of resources (from list of tasks and list of absence) which are not 'active'.\r\n */\r\nfunction removeDeactivatedAssignements () {\r\n    var i, j, k, assignments = new Array(), assignment, gm = self.getGameModel(), resourceInstance,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n            listTasksObjects = this.getTasksAndAbsences(), taskObjectInstance;\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        assignments.length = 0;\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        for (j = 0; j < resourceInstance.getAssignments().size(); j++) {\r\n            assignment = resourceInstance.getAssignments().get(j);\r\n            for (k = 0; k < listTasksObjects.length; k++) {\r\n                taskObjectInstance = listTasksObjects[k].getInstance(self);\r\n                if (assignment.getTaskDescriptorId() == taskObjectInstance.getDescriptorId() && taskObjectInstance.getActive() == false) {\r\n                    assignments.push(assignment);\r\n                }\r\n            }\r\n        }\r\n        for (j = 0; j < assignments.length; j++) {\r\n            resourceInstance.getAssignments().remove(assignments[j]);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * @return a Array of all tasks comming from list of task and list of absences)\r\n */\r\nfunction getTasksAndAbsences () {\r\n    var i, taskObjects = new Array(), gm = self.getGameModel(),\r\n            listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'),\r\n            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');\r\n    for (i = 0; i < listTasks.items.size(); i++) {\r\n        taskObjects.push(listTasks.items.get(i));\r\n    }\r\n    for (i = 0; i < listAbsences.items.size(); i++) {\r\n        taskObjects.push(listAbsences.items.get(i));\r\n    }\r\n    return taskObjects;\r\n}\r\n\r\n/**\r\n * for each active and not absent resource, check its moral.\r\n * If the moral value is low enough, give it a absence.\r\n * Recalculate the teamMotivation.\r\n */\r\nfunction checkMoral () {\r\n    var i, j, k, moral, randomNumber, absent = false, resourceDescriptor, resourceInstance,\r\n            gm = self.getGameModel(), listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'),\r\n            absenceInstance, listResources = VariableDescriptorFacade.findByName(gm, 'resources');\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceDescriptor = listResources.items.get(i);\r\n        resourceInstance = resourceDescriptor.getInstance(self);\r\n        for (j = 0; j < listAbsences.items.size(); j++) {\r\n            absenceInstance = listAbsences.items.get(j).getInstance(self);\r\n            if (absenceInstance.getActive() == true) {\r\n                for (k = 0; k < resourceInstance.getAssignments().size(); k++) {\r\n                    if (resourceInstance.getAssignments().get(k).getTaskDescriptorId() == absenceInstance.getDescriptorId() || !resourceInstance.getActive()) {\r\n                        absent = true;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if (!absent) {\r\n            moral = resourceInstance.getMoral();\r\n            randomNumber = Math.random();\r\n            switch (true) {\r\n                case moral < 10 :\r\n                    if (randomNumber < 0.33) {\r\n                        this.sendMessage('Changement de département', 'Bonjour,<br /> Je vous informe que ma lettre de démission est sur votre bureau. Le travail me plaisait mais vos méthodes ne me conviennent pas du tout et je préfère changer de team avant que la situation ne dégénère.<br /> Avec mes sincères salutations.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));\r\n                        resourceInstance.setActive(false);\r\n                    }\r\n                    else {\r\n                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));\r\n                        sickenResource(resourceDescriptor, 2);\r\n                    }\r\n                    break;\r\n                case moral < 20 :\r\n                    if (randomNumber < 0.66) {\r\n                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));\r\n                        sickenResource(resourceDescriptor, 2);\r\n                    }\r\n                    break;\r\n                case moral < 30 :\r\n                    if (randomNumber < 0.33) {\r\n                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien très bien, je crois que je tombe malade. Je préfère rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));\r\n                        sickenResource(resourceDescriptor, 1);\r\n                    }\r\n                    break;\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Calculate the current team motivation\r\n * firste, do the average of all moral value of resources.\r\n * then make an average between this value and the worst moral value.\r\n * set the 'teamMotivation' value with this new value.\r\n */\r\nfunction calculateTeamMotivation () {\r\n    var i, sumMotivation = 0, gm = self.getGameModel(), activeResources = 0, moral,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), worstMoralValue = 100,\r\n            teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self);\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        if (listResources.items.get(i).getInstance(self).getActive() == true) {\r\n            moral = parseInt(listResources.items.get(i).getInstance(self).getMoral());\r\n            sumMotivation += moral;\r\n            activeResources++;\r\n            if (moral < worstMoralValue)\r\n                worstMoralValue = moral;\r\n        }\r\n    }\r\n    teamMotivation.value = Math.round(((Math.round(sumMotivation / activeResources) + worstMoralValue) / 2));\r\n}\r\n\r\n\r\n/**\r\n * Set the 'LeadershipLevel' value for each active resource.\r\n */\r\nfunction checkLeadershipLevel () {\r\n    var i, gm = self.getGameModel(), resourceInstance, newLeadershipLevel, leadershipPoints,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n            weekMaxValue = parseInt(VariableDescriptorFacade.findByName(gm, 'week').getMaxValue()),\r\n            pointsMinToLlvl2 = 10 * (weekMaxValue - 1) + 75,\r\n            pointsMinToLlvl3 = 15 * (weekMaxValue - 1) + 85;\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        if (resourceInstance.getActive() == true) {\r\n            leadershipPoints = parseInt(resourceInstance.getConfidence()) + parseInt(resourceInstance.getProperty('totalExperienceGained'));\r\n            switch (true) {\r\n                case leadershipPoints >= pointsMinToLlvl2 && leadershipPoints < pointsMinToLlvl3 :\r\n                    newLeadershipLevel = 2;\r\n                    break;\r\n                case leadershipPoints >= pointsMinToLlvl3 :\r\n                    newLeadershipLevel = 3;\r\n                    break;\r\n                default :\r\n                    newLeadershipLevel = 1;\r\n            }\r\n            resourceInstance.setProperty('leadershipLevel', newLeadershipLevel);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * send an in-game message with the current score to the player.\r\n */\r\nfunction sendScore () {\r\n    var content = new Array(), oldScore, newScore;\r\n    oldScore = VariableDescriptorFacade.findByName(self.getGameModel(), 'score').getInstance(self).getValue(),\r\n            newScore = this.calculateScore();\r\n    content.push('Bonjour, <br />');\r\n    content.push('Comme chaque semaine, voici le score de votre entreprise.');\r\n    content.push('<br />');\r\n    content.push('Votre score la semaine est de  : ');\r\n    content.push(newScore);\r\n    content.push('<br />');\r\n    if (oldScore <= newScore) {\r\n        content.push('Vous avez donc gagné ');\r\n        content.push(newScore - oldScore);\r\n    }\r\n    else {\r\n        content.push('Vous avez donc perdu ');\r\n        content.push(oldScore - newScore);\r\n    }\r\n    content.push(' points depuis la dernière semaine.');\r\n    content.push('<br /><br />');\r\n    content.push('Nous vous rappelons que votre score est calculé à partir de votre budget actuel, de votre taux de satisfaction clientèle ainsi sur le moral de votre personnel.');\r\n    content.push('<br /><br />');\r\n    content.push('A la semaine prochaine.');\r\n    content.push('<br />');\r\n    content.push('Team classement des entreprises');\r\n    this.sendMessage('Classement des entreprises', content.join(''), 'Top entreprises');\r\n}\r\n\r\n/**\r\n * @return Integer score, the current player's score\r\n */\r\nfunction calculateScore () {\r\n    var gm = self.getGameModel(), teamMotivation, budget, clientSatisfaction, score,\r\n            punderationBudget = 0.2,\r\n            punderationMotivation = 0.45,\r\n            punderationSatisfaction = 0.35;\r\n    teamMotivation = parseInt(VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self).getValue());\r\n    budget = parseInt(VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self).getValue());\r\n    clientSatisfaction = parseInt(VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self).getValue());\r\n    score = Math.round(budget / 50 * punderationBudget + teamMotivation * 20 * punderationMotivation + clientSatisfaction * 20 * punderationSatisfaction);\r\n    VariableDescriptorFacade.findByName(gm, 'score').getInstance(self).setValue(score);\r\n    return score;\r\n}\r\n\r\n/**\r\n * Assign a task 'sick' to resource wich have a duration egal to the given duration\r\n * @param Integer resourceDescriptorId, the resourceDescriptor to sicken\r\n * @param Integer duration the duration of the sickness.\r\n */\r\nfunction sickenResource (resourceDescriptor, duration) {\r\n    var i, resInstance, taskDescriptor, gm = self.getGameModel(),\r\n            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');\r\n    resInstance = resourceDescriptor.getInstance(self);\r\n    for (i = 0; i < listAbsences.items.size(); i++) {\r\n        if (listAbsences.items.get(i).getInstance(self).getDuration() == duration) {\r\n            taskDescriptor = listAbsences.items.get(i);\r\n            break;\r\n        }\r\n    }\r\n    if (resInstance) {\r\n        resInstance.assign(taskDescriptor.getInstance(self));\r\n    }\r\n    else {\r\n        println('unknow id of resourceDescriptor in function sickenResource');\r\n    }\r\n}\r\n\r\n/**\r\n * assign the given task at the given resource\r\n * if the given resource have already a assigned task, this new assignement will replace the old one.\r\n * @param Integer resourceDescriptorId, the id of resourceDescriptors to assign\r\n * @param Integer taskDescriptorId, the id of task to assign\r\n */\r\nfunction assignTask (resourceDescriptorId, taskDescriptorId) {\r\n    var i, j, resInstance, taskDescriptor, gm = self.getGameModel(),\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n            listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');\r\n    //Search resource\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        if (resourceDescriptorId == listResources.items.get(i).getId()) {\r\n            resInstance = listResources.items.get(i).getInstance(self);\r\n        }\r\n    }\r\n    if (!resInstance) {\r\n        return;\r\n    }\r\n    //Search task\r\n    for (i = 0; i < listTasks.items.size(); i++) {\r\n        if (taskDescriptorId == listTasks.items.get(i).getId()) {\r\n            taskDescriptor = listTasks.items.get(i);\r\n        }\r\n        //remove old previous assigned task\r\n        for (j = 0; j < resInstance.getAssignments().size(); j++) {\r\n            if (resInstance.getAssignments().get(j).getTaskDescriptorId() == listTasks.items.get(i).getId() && listTasks.items.get(i).getInstance(self).getActive() == true) {\r\n                resInstance.getAssignments().remove(j);\r\n            }\r\n        }\r\n    }\r\n    if (!taskDescriptor) {\r\n        return;\r\n    }\r\n    // assign task to resource\r\n    resInstance.assign(taskDescriptor.getInstance(self));\r\n}\r\n\r\n/**\r\n * get the specified wegas bean.\r\n * @param String name, the name of the bean\r\n * @return the wanted bean or null\r\n */\r\nfunction lookupBean (name) {\r\n    var ctx = new InitialContext();\r\n    return ctx.lookup('java:module/' + name);\r\n}\r\n\r\n/**\r\n * Send a message to the current player.\r\n * @param String subject, the subject of the message.\r\n * @param String message, the content of the message.\r\n * @param String from, the sender of the message.\r\n */\r\nfunction sendMessage (subject, content, from) {\r\n    var EF = lookupBean('MessageFacade');\r\n    if (EF) {\r\n        EF.send(self, subject, content, from);\r\n    }\r\n    else {\r\n        println('Bean InGameMailFacade does not exist, unable to send in-game message: ' + subject);\r\n    }\r\n}\r\n\r\n/**\r\n * Reset the values specific to the current scenario's dialogues.\r\n * Must be called weekly.\r\n */\r\nfunction resetDialogueValues () {\r\n    var i, gm = self.getGameModel(), resourceInstance,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources');\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        resourceInstance.setProperty('isAdvised', false);\r\n        resourceInstance.setProperty('isConsidered', false);\r\n        resourceInstance.setProperty('bonusInducement', 0);\r\n    }\r\n}\r\n\r\n/**\r\n * initiate the game'scenario\r\n */\r\nfunction doIntroduction () {\r\n    var gm = self.getGameModel(),\r\n            budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),\r\n            budgetvalue = budgetDescriptor.getInstance(self).getValue(), mail = new Array();\r\n    mail.push('Bonjour');\r\n    mail.push('<br /><br />');\r\n    mail.push('Je vous félicite pour votre promotion. Sauf erreur de ma part, vous ne connissez pas encore avec vos équipiers. Aussi vous ais-je remis les dossiers de chaque personne dont vous avez la charge. Je sais que vous en ferai bon usage.');\r\n    mail.push('<br /><br />');\r\n    mail.push('La concurrence est rude, je vous demanderais donc de ne pas trop tarder avant de prendre en main votre service. Si vos résultats sont bons, les mandats deviendront de plus en plus intéressants. Vous avez également la possibilité de décrocher une promotion. Si cela devait arriver, je pense donner la responsabilité de votre équipe à un de ses membres actuels.');\r\n    mail.push('<br /><br />');\r\n    mail.push('Je vous souhaite le meilleur départ possible.');\r\n    mail.push('<br />');\r\n    mail.push('Daniel.');\r\n    this.sendMessage('Promotion au niveau de cadre.', mail.join(''), 'Daniel Müster.');\r\n    this.finishCurrentWeek();\r\n    budgetDescriptor.getInstance(self).setValue(budgetvalue);\r\n}\r\n\r\n\r\n/**\r\n * set limits (max and min) for several values.\r\n * General values to limit :\r\n * - actions\r\n * - teamMotivation\r\n * - clientsSatisfaction\r\n *\r\n * Ressource's value to limit :\r\n * - moral\r\n * - confidence\r\n * - frankness\r\n * - lastWorkQuality\r\n * - each skillset's value\r\n */\r\nfunction limitValues () {\r\n    var i, j, value, valueInst, valueDescr, gm = self.getGameModel(), skillsets,\r\n            skillKey, skillValue, listResources = VariableDescriptorFacade.findByName(gm, 'resources');\r\n    //actions\r\n    valueDescr = VariableDescriptorFacade.findByName(gm, 'actions')\r\n    valueInst = valueDescr.getInstance(self);\r\n    if (valueInst.getValue() > valueDescr.getMaxValue())\r\n        valueInst.setValue(valueDescr.getMaxValue());\r\n    if (valueInst.getValue() < valueDescr.getMinValue())\r\n        valueInst.setValue(valueDescr.getMinValue());\r\n    //teamMotivation\r\n    valueDescr = VariableDescriptorFacade.findByName(gm, 'teamMotivation')\r\n    valueInst = valueDescr.getInstance(self);\r\n    if (valueInst.getValue() > valueDescr.getMaxValue())\r\n        valueInst.setValue(valueDescr.getMaxValue());\r\n    if (valueInst.getValue() < valueDescr.getMinValue())\r\n        valueInst.setValue(valueDescr.getMinValue());\r\n    //clientsSatisfaction\r\n    valueDescr = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction')\r\n    valueInst = valueDescr.getInstance(self);\r\n    if (valueInst.getValue() > valueDescr.getMaxValue())\r\n        valueInst.setValue(valueDescr.getMaxValue());\r\n    if (valueInst.getValue() < valueDescr.getMinValue())\r\n        valueInst.setValue(valueDescr.getMinValue());\r\n    //ressources\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        valueDescr = listResources.items.get(i);\r\n        valueInst = valueDescr.getInstance(self);\r\n        //moral\r\n        value = parseInt(valueInst.getMoral());\r\n        if (value > 100)\r\n            valueInst.setMoral(100);\r\n        if (value < 0)\r\n            valueInst.setMoral(0);\r\n        //moral\r\n        value = parseInt(valueInst.getConfidence());\r\n        if (value > 100)\r\n            valueInst.setConfidence(100);\r\n        if (value < 0)\r\n            valueInst.setConfidence(0);\r\n        //frankness\r\n        value = parseInt(valueInst.getProperty('frankness'));\r\n        if (value > 100)\r\n            valueInst.setProperty('frankness', 100);\r\n        if (value < 0)\r\n            valueInst.setProperty('frankness', 0);\r\n        //lastWorkQuality\r\n        value = parseInt(valueInst.getProperty('lastWorkQuality'));\r\n        if (value > 100)\r\n            valueInst.setProperty('lastWorkQuality', 100);\r\n        if (value < 0)\r\n            valueInst.setProperty('lastWorkQuality', 0);\r\n        //skillset\r\n        skillsets = valueInst.getSkillsets();\r\n        for (j = 0; j < skillsets.size(); j++) {\r\n            skillKey = skillsets.keySet().toArray()[j];\r\n            skillValue = parseInt(skillsets.get(skillKey));\r\n            if (skillValue > 100)\r\n                valueInst.setSkillset(skillKey, 100);\r\n            if (skillValue < 0)\r\n                valueInst.setSkillset(skillKey, 0);\r\n        }\r\n    }\r\n}"
+            "content": "importPackage(javax.naming);\r\n\r\n/**\r\n * terminate the current week.\r\n * if value of week <= max value of week :\r\n * - Increment the value of week\r\n * - Check the end of all task (checkTasksEnd)\r\n * - Check the end of all absent (checkAbsencesEnd)\r\n * - Remove all deactivated assignments (removeDeactivatedAssignements)\r\n * - Active or Deactive some tasks (checkTasksState)\r\n * - Pay all active resources (payResources)\r\n * - Check the moral of all active resources (checkMoral)\r\n * - Check the 'LeadershipLevel' of all active resources (checkLeadershipLevel)\r\n */\r\nfunction finishCurrentWeek () {\r\n    var gm = self.getGameModel(),\r\n            weekDescriptor = VariableDescriptorFacade.findByName(gm, 'week'),\r\n            actionsDescriptor = VariableDescriptorFacade.findByName(gm, 'actions'),\r\n            weekInstance = weekDescriptor.getInstance(self);\r\n    if (weekInstance.getValue() <= weekDescriptor.getMaxValue()) {\r\n        weekInstance.setValue(weekInstance.getValue() + 1);\r\n        actionsDescriptor.getInstance(self).setValue(actionsDescriptor.getMaxValue());\r\n        this.checkTasksEnd();\r\n        this.checkAbsencesEnd();\r\n        this.removeDeactivatedAssignements();\r\n        this.checkTasksState();\r\n        this.payResources();\r\n        this.checkMoral();\r\n        this.checkLeadershipLevel();\r\n        this.sendScore();\r\n        this.resetDialogueValues(); //specific to this scenario.\r\n    }\r\n}\r\n\r\n/**\r\n * @return an Array of all active and not absent resourceDescriptor.\r\n */\r\nfunction getValideResources () {\r\n    var i, j, k, gm = self.getGameModel(), valideResources = new Array(), isValid = false,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceDescriptor, resourceInstance,\r\n            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absencesInstance, assignment;\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceDescriptor = listResources.items.get(i);\r\n        resourceInstance = resourceDescriptor.getInstance(self);\r\n        isValid = false;\r\n        if (resourceInstance.getActive() == true) {\r\n            isValid = true;\r\n            for (j = 0; j < resourceInstance.getAssignments().size(); j++) {\r\n                assignment = resourceInstance.getAssignments().get(j);\r\n                for (k = 0; k < listAbsences.items.size(); k++) {\r\n                    absencesInstance = listAbsences.items.get(k).getInstance(self);\r\n                    if (assignment.getTaskDescriptorId() == absencesInstance.getDescriptorId() && absencesInstance.getActive() == true) {\r\n                        isValid = false;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if (isValid)\r\n            valideResources.push(resourceDescriptor);\r\n    }\r\n    return valideResources;\r\n}\r\n\r\n/**\r\n * @param ListDescriptor of ResourceDescriptor listResources, the list of all resources\r\n * @return An Array of all task assigned at one or many active and not absent resource.\r\n */\r\nfunction getWorkedTasks (listResources) {\r\n    var i, j, k, gm = self.getGameModel(), workedTasks = new Array(), isWorked = false, assignment,\r\n            resourceInstance, listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance;\r\n    for (i = 0; i < listTasks.items.size(); i++) {\r\n        taskDescriptor = listTasks.items.get(i);\r\n        taskInstance = taskDescriptor.getInstance(self);\r\n        isWorked = false;\r\n        if (taskInstance.getActive() == true) {\r\n            for (j = 0; j < listResources.length; j++) {\r\n                resourceInstance = listResources[j].getInstance(self);\r\n                for (k = 0; k < resourceInstance.getAssignments().size(); k++) {\r\n                    assignment = resourceInstance.getAssignments().get(k);\r\n                    if (assignment.getTaskDescriptorId() == taskInstance.getDescriptorId()) {\r\n                        isWorked = true;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if (isWorked)\r\n            workedTasks.push(taskDescriptor);\r\n    }\r\n    return workedTasks;\r\n}\r\n\r\n/**\r\n * Decreases the duration of all worked task by the number of workers on this task.\r\n * for each worked task that have a duration <=0, call the fonction 'doTaskEnd'\r\n * with the task and the corresponding workers for args.\r\n */\r\nfunction checkTasksEnd () {\r\n    var i, j, k, assignment, taskWorkers = new Array(),\r\n            listValidResource = this.getValideResources(), resourceInstance,\r\n            listWorkedTasks = this.getWorkedTasks(listValidResource), taskInstance;\r\n    for (i = 0; i < listWorkedTasks.length; i++) {\r\n        taskWorkers.length = 0;\r\n        taskInstance = listWorkedTasks[i].getInstance(self);\r\n        for (j = 0; j < listValidResource.length; j++) {\r\n            resourceInstance = listValidResource[j].getInstance(self);\r\n            for (k = 0; k < resourceInstance.getAssignments().size(); k++) {\r\n                assignment = resourceInstance.getAssignments().get(k);\r\n                if (assignment.getTaskDescriptorId() == taskInstance.getDescriptorId()) {\r\n                    taskWorkers.push(listValidResource[j]);\r\n                }\r\n            }\r\n        }\r\n        taskInstance.setDuration(taskInstance.getDuration() - taskWorkers.length);\r\n        if (taskInstance.getDuration() <= 0) {\r\n            this.doTaskEnd(taskWorkers, listWorkedTasks[i]);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Calculate experience (general gained and experience in skillsets needed by\r\n * the finished task) for all workers on a finished tasks.\r\n * can remove the 'wish' or the 'hate' values of these workers.\r\n * add the remuneration of the task at the general budget.\r\n * send a rapport-email to the player\r\n * Deactivate the task\r\n * @param Array of resourceDescriptor workersDescriptor, all the resources that worked on the task.\r\n * @param TaskDescriptor taskDescriptor, the task ended.\r\n */\r\nfunction doTaskEnd (workersDescriptor, taskDescriptor) {\r\n    if (workersDescriptor.length <= 0 || !taskDescriptor) {\r\n        return;\r\n    }\r\n    var i, j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),\r\n            budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),\r\n            clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskRequirementKey, wish, hate,\r\n            taskRequirementValue, listTaskRequirement = taskDescriptor.getRequirements(), taskDuration = taskInstance.getDescriptor().defaultInstance.getDuration(), workerInstance,\r\n            workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,\r\n            sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber, existingSkills = new Array(),\r\n            punderationMoral = 0.1,\r\n            punderationConfidence = 0.2,\r\n            punderationSkillsets = 0.7,\r\n            punderationQualityWeight = 0.5;\r\n\r\n    //get existing skills\r\n    for (i = 0; i < workersDescriptor[0].getInstance(self).getSkillsets().size(); i++) {\r\n        existingSkills.push(workersDescriptor[0].getInstance(self).getSkillsets().keySet().toArray()[i]);\r\n    }\r\n\r\n    for (i = 0; i < workersDescriptor.length; i++) {\r\n        workPartSkillsQuality.length = 0;\r\n        sumWorkPartSkills = 0;\r\n        workerInstance = workersDescriptor[i].getInstance(self);\r\n        moral = parseInt(workerInstance.getMoral());\r\n        confidence = parseInt(workerInstance.getConfidence());\r\n        learningCoefficient = parseInt(workersDescriptor[i].getProperty('learningCoefficient'));\r\n        totalExperience = 0;\r\n        from.push(workersDescriptor[i].getProperty('surname'));//for e-mail\r\n        for (j = 0; j < listTaskRequirement.size(); j++) {\r\n            taskRequirementKey = listTaskRequirement.get(j).getwork();\r\n            taskRequirementValue = parseInt(listTaskRequirement.get(j).getLevel());\r\n            workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));\r\n            //calculate experience général (totalExperienceGained) part 1/2\r\n            if (workerSkillsetValue < taskRequirementValue) {\r\n                totalExperience += (taskRequirementValue - workerSkillsetValue) * taskDuration / workersDescriptor.length;\r\n            }\r\n            //calculate experience in current skill\r\n            if (workerSkillsetValue < taskRequirementValue) {\r\n                skillExperience = Math.ceil((1 - workerSkillsetValue / 100) * 10 * learningCoefficient * taskDuration / workersDescriptor.length);\r\n                workerInstance.setSkillset(taskRequirementKey, parseInt(workerInstance.getSkillset(taskRequirementKey)) + skillExperience);\r\n            }\r\n            //calculate work Quality part 1/4\r\n            workPartSkillsQuality.push((workerSkillsetValue - taskRequirementValue + 100) / 2);\r\n        }\r\n        //calculate experience général (totalExperienceGained) part 2/2\r\n        workerInstance.setProperty('totalExperienceGained', parseInt(workerInstance.getProperty('totalExperienceGained')) + totalExperience);\r\n        //calculate work Quality part 2/4\r\n        for (j = 0; j < workPartSkillsQuality.length; j++) {\r\n            sumWorkPartSkills += workPartSkillsQuality[j];\r\n        }\r\n        averageWorkPartSkills = (sumWorkPartSkills / workPartSkillsQuality.length) * punderationSkillsets + moral * punderationMoral + confidence * punderationConfidence;\r\n        // check wish and hate\r\n        for (j = 0; j < listTaskRequirement.size(); j++) {\r\n            taskRequirementKey = listTaskRequirement.get(j).getwork();\r\n            taskRequirementValue = parseInt(listTaskRequirement.get(j).getLevel());\r\n            workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));\r\n            //calculate work Quality part 3/4\r\n            if (taskRequirementKey == workerInstance.getProperty('wish')) {\r\n                randomNumber = Math.floor(Math.random() * 6) + 5;\r\n                averageWorkPartSkills += randomNumber;\r\n                if (averageWorkPartSkills > 100)\r\n                    averageWorkPartSkills = 100;\r\n            }\r\n            if (taskRequirementKey == workerInstance.getProperty('hate')) {\r\n                randomNumber = Math.floor(Math.random() * 6) + 5;\r\n                averageWorkPartSkills -= randomNumber;\r\n                if (averageWorkPartSkills < 0)\r\n                    averageWorkPartSkills = 0;\r\n            }\r\n            //check wish\r\n            randomNumber = Math.random();\r\n            wish = workerInstance.getProperty('wish');\r\n            if ((averageWorkPartSkills <= 50 || randomNumber < 0.33) && taskRequirementKey == wish) {\r\n                wish = '';\r\n            }\r\n            while (!wish) {\r\n                wish = existingSkills[Math.floor(Math.random() * existingSkills.length)];\r\n                if (wish == workerInstance.getProperty('wish')) {\r\n                    wish = '';\r\n                }\r\n            }\r\n            workerInstance.setProperty('wishIsKnow', false);\r\n            workerInstance.setProperty('wish', wish);\r\n            //check hate\r\n            randomNumber = Math.random();\r\n            hate = workerInstance.getProperty('hate');\r\n            if ((averageWorkPartSkills > 50 && randomNumber < 0.33) && taskRequirementKey == hate) {\r\n                hate = '';\r\n            }\r\n            while (!hate) {\r\n                hate = existingSkills[Math.floor(Math.random() * existingSkills.length)];\r\n                if (hate == workerInstance.getProperty('hate')) {\r\n                    hate = '';\r\n                }\r\n            }\r\n            workerInstance.setProperty('hateIsKnow', false);\r\n            workerInstance.setProperty('hate', hate);\r\n        }\r\n        averageWorkPartSkills = Math.round(averageWorkPartSkills);\r\n        workPartsQuality.push(averageWorkPartSkills);\r\n        workerInstance.setProperty('lastWorkQuality', averageWorkPartSkills);\r\n        //set moral and confidence depending of averageWorkPartSkills.\r\n        if (averageWorkPartSkills < 50) {\r\n            workerInstance.setMoral(workerInstance.getMoral() - 25);\r\n            workerInstance.setConfidence(workerInstance.getConfidence() - 15);\r\n        }\r\n        else {\r\n            workerInstance.setMoral(workerInstance.getMoral() + 15);\r\n            workerInstance.setConfidence(workerInstance.getConfidence() + 10);\r\n        }\r\n        //check 'workWithLeader'\r\n        if (taskDescriptor.getProperty('workWithLeader') == 'true') {\r\n            workerInstance.setProperty('numberOfWorkWithLeader', parseInt(workerInstance.getProperty('numberOfWorkWithLeader')) + 1);\r\n        }\r\n    }\r\n    //calculate work Quality part 4/4\r\n    for (i = 0; i < workPartsQuality.length; i++) {\r\n        sumWorkParts += (workPartsQuality[i]);\r\n    }\r\n    workQuality = (sumWorkParts / workPartSkillsQuality.length);\r\n    clientsSatisfaction.setValue(Math.round(clientsSatisfaction.getValue() + (workQuality - 50) * punderationQualityWeight));\r\n    if (clientsSatisfaction.getValue() > 100)\r\n        clientsSatisfaction.setValue(100);\r\n    if (clientsSatisfaction.getValue() < 0)\r\n        clientsSatisfaction.getValue(0);\r\n    //calculate remuneration\r\n    remuneration = parseInt(taskDescriptor.getProperty('salary'));\r\n    if (workQuality >= parseInt(taskDescriptor.getProperty('workQualityMinForBonus'))) {\r\n        remuneration += parseInt(taskDescriptor.getProperty('bonus'));\r\n    }\r\n    budgetInstance.setValue(budgetInstance.getValue() + remuneration);\r\n    //e-mail\r\n    content.push('Boujour, <br />Le mandat -');\r\n    content.push(taskDescriptor.getName());\r\n    content.push('- vient de se terminer. Le client ');\r\n    switch (true) {\r\n        case workQuality < 20 :\r\n            content.push('est totalement instatisfait par notre travail. Aucune chance de décrocher un autre mandate auprès de ce client. ');\r\n            break;\r\n        case workQuality < 40 :\r\n            content.push('a déclaré être instatisfait de notre travail. Il est vrai que certaine erreurs ont été commises. ');\r\n            break;\r\n        case workQuality < 60 :\r\n            content.push('est moyennement satisfait. La qualité est faible mais le projet est satisfaisant. ');\r\n            break;\r\n        case workQuality < 80 :\r\n            content.push('est content du travail réalisé. Il pense nous recontacter pour de futurs mandats. ');\r\n            break;\r\n        default :\r\n            content.push('est ravi par le travail réalisé. La qualité est au-delà de ses espérences et sera fidèle à notre entreprise. ');\r\n            break;\r\n    }\r\n    content.push('<br />');\r\n    if (parseInt(taskDescriptor.getProperty('workQualityMinForBonus')) > 0 && workQuality >= parseInt(taskDescriptor.getProperty('workQualityMinForBonus') && parseInt(taskDescriptor.getProperty('bonus')) > 0)) {\r\n        content.push('Il nous remercier par un bonus de ');\r\n        content.push(taskDescriptor.getProperty('bonus'));\r\n        content.push('.-');\r\n    }\r\n    content.push('<br /> Bonne journée. <br />');\r\n    content.push(from.join(', '));\r\n    this.sendMessage('Fin de mandat', content.join(''), workersDescriptor[0].getProperty('surname'));\r\n    //desactivate Task\r\n    taskInstance.setActive(false);\r\n}\r\n\r\n/**\r\n * Decrease absence duration by switch the current absenceTask with a other absenceTask wich have a duration 1 time smaller.\r\n * If the duration must reach 0, remove this assignation, set the resource 'moral' to 40 and recalculate the teamMotivation's value.\r\n * If duration is smaller than 0, deactivate the task.\r\n */\r\nfunction checkAbsencesEnd () {\r\n    var i, j, k, l, gm = self.getGameModel(), assignment, duration,\r\n            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absenceInstance,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance,\r\n            assignmentToRemove = new Array(), assignmentToAdd = new Array();\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        assignmentToRemove.length = 0;\r\n        assignmentToAdd.length = 0;\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        for (j = 0; j < resourceInstance.getAssignments().size(); j++) {\r\n            assignment = resourceInstance.getAssignments().get(j);\r\n            for (k = 0; k < listAbsences.items.size(); k++) {\r\n                absenceInstance = listAbsences.items.get(k).getInstance(self);\r\n                if (assignment.getTaskDescriptorId() == absenceInstance.getDescriptorId() && absenceInstance.getActive() == true) {\r\n                    duration = absenceInstance.getDuration();\r\n                    if (duration <= 0) {\r\n                        absenceInstance.setActive(false);\r\n                    } else {\r\n                        assignmentToRemove.push(assignment);\r\n                        resourceInstance.setMoral(40);\r\n                        if (duration > 1) {\r\n                            for (l = 0; l < listAbsences.items.size(); l++) {\r\n                                if (listAbsences.items.get(l).getInstance(self).getDuration() == duration - 1) {\r\n                                    assignmentToAdd.push(listAbsences.items.get(l));\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        for (j = assignmentToRemove.length - 1; j >= 0; j--) {\r\n            resourceInstance.getAssignments().remove(assignmentToRemove[j]);\r\n        }\r\n        for (j = 0; j < assignmentToAdd.length; j++) {\r\n            resourceInstance.assign(assignmentToAdd[j].getInstance(self));\r\n        }\r\n        this.calculateTeamMotivation();\r\n    }\r\n}\r\n\r\n/**\r\n * Check 'active' value in each tasks (from list 'tasks')\r\n * Activate and deactivate tasks according with its variables and if a resource work on.\r\n */\r\nfunction checkTasksState () {\r\n    var i, j, k, gm = self.getGameModel(), listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance,\r\n            newWeek = VariableDescriptorFacade.findByName(gm, 'week').getInstance(self), inProgress = false,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance, assignment,\r\n            newclientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self);\r\n    for (i = 0; i < listTasks.items.size(); i++) {\r\n        inProgress = false;\r\n        taskDescriptor = listTasks.items.get(i);\r\n        taskInstance = taskDescriptor.getInstance(self);\r\n        for (j = 0; j < listResources.items.size(); j++) {\r\n            resourceInstance = listResources.items.get(j).getInstance(self);\r\n            if (resourceInstance.getActive() == true) {\r\n                for (k = 0; k < resourceInstance.getAssignments().size(); k++) {\r\n                    assignment = resourceInstance.getAssignments().get(k);\r\n                    if (assignment.getTaskDescriptorId() == taskInstance.getDescriptorId() && taskInstance.getActive() == true) {\r\n                        inProgress = true;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if (inProgress ||\r\n                (newWeek.getValue() >= taskDescriptor.getProperty('appearAtWeek') &&\r\n                        newWeek.getValue() < taskDescriptor.getProperty('disappearAtWeek') &&\r\n                        newclientsSatisfaction.getValue() >= taskDescriptor.getProperty('clientSatisfactionMinToAppear') &&\r\n                        newclientsSatisfaction.getValue() <= taskDescriptor.getProperty('clientSatisfactionMaxToAppear') &&\r\n                        taskInstance.getDuration() > 0\r\n                        )\r\n                ) {\r\n            taskInstance.setActive(true);\r\n        }\r\n        else {\r\n            taskInstance.setActive(false);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Decreases current budget value by the sum of all salary of actives resources\r\n */\r\nfunction payResources () {\r\n    var i, gm = self.getGameModel(),\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n            budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),\r\n            budgetInstance = budgetDescriptor.getInstance(self),\r\n            resourceDescriptor, resourceInstance,\r\n            sumSalary = 0;\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceDescriptor = listResources.items.get(i);\r\n        resourceInstance = resourceDescriptor.getInstance(self);\r\n        if (resourceInstance.getActive() == true) {\r\n            sumSalary += parseInt(resourceDescriptor.getProperty('salary'));\r\n        }\r\n    }\r\n    budgetInstance.setValue(budgetInstance.getValue() - sumSalary);\r\n}\r\n\r\n/**\r\n * Remove all assignements of resources (from list of tasks and list of absence) which are not 'active'.\r\n */\r\nfunction removeDeactivatedAssignements () {\r\n    var i, j, k, assignments = new Array(), assignment, gm = self.getGameModel(), resourceInstance,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n            listTasksObjects = this.getTasksAndAbsences(), taskObjectInstance;\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        assignments.length = 0;\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        for (j = 0; j < resourceInstance.getAssignments().size(); j++) {\r\n            assignment = resourceInstance.getAssignments().get(j);\r\n            for (k = 0; k < listTasksObjects.length; k++) {\r\n                taskObjectInstance = listTasksObjects[k].getInstance(self);\r\n                if (assignment.getTaskDescriptorId() == taskObjectInstance.getDescriptorId() && taskObjectInstance.getActive() == false) {\r\n                    assignments.push(assignment);\r\n                }\r\n            }\r\n        }\r\n        for (j = 0; j < assignments.length; j++) {\r\n            resourceInstance.getAssignments().remove(assignments[j]);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * @return a Array of all tasks comming from list of task and list of absences)\r\n */\r\nfunction getTasksAndAbsences () {\r\n    var i, taskObjects = new Array(), gm = self.getGameModel(),\r\n            listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'),\r\n            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');\r\n    for (i = 0; i < listTasks.items.size(); i++) {\r\n        taskObjects.push(listTasks.items.get(i));\r\n    }\r\n    for (i = 0; i < listAbsences.items.size(); i++) {\r\n        taskObjects.push(listAbsences.items.get(i));\r\n    }\r\n    return taskObjects;\r\n}\r\n\r\n/**\r\n * for each active and not absent resource, check its moral.\r\n * If the moral value is low enough, give it a absence.\r\n * Recalculate the teamMotivation.\r\n */\r\nfunction checkMoral () {\r\n    var i, j, k, moral, randomNumber, absent = false, resourceDescriptor, resourceInstance,\r\n            gm = self.getGameModel(), listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'),\r\n            absenceInstance, listResources = VariableDescriptorFacade.findByName(gm, 'resources');\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceDescriptor = listResources.items.get(i);\r\n        resourceInstance = resourceDescriptor.getInstance(self);\r\n        for (j = 0; j < listAbsences.items.size(); j++) {\r\n            absenceInstance = listAbsences.items.get(j).getInstance(self);\r\n            if (absenceInstance.getActive() == true) {\r\n                for (k = 0; k < resourceInstance.getAssignments().size(); k++) {\r\n                    if (resourceInstance.getAssignments().get(k).getTaskDescriptorId() == absenceInstance.getDescriptorId() || !resourceInstance.getActive()) {\r\n                        absent = true;\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        if (!absent) {\r\n            moral = resourceInstance.getMoral();\r\n            randomNumber = Math.random();\r\n            switch (true) {\r\n                case moral < 10 :\r\n                    if (randomNumber < 0.33) {\r\n                        this.sendMessage('Changement de département', 'Bonjour,<br /> Je vous informe que ma lettre de démission est sur votre bureau. Le travail me plaisait mais vos méthodes ne me conviennent pas du tout et je préfère changer de team avant que la situation ne dégénère.<br /> Avec mes sincères salutations.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));\r\n                        resourceInstance.setActive(false);\r\n                    }\r\n                    else {\r\n                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));\r\n                        sickenResource(resourceDescriptor, 2);\r\n                    }\r\n                    break;\r\n                case moral < 20 :\r\n                    if (randomNumber < 0.66) {\r\n                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon médecin me conseille de rester chez moi au moins pour les deux semaines à venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));\r\n                        sickenResource(resourceDescriptor, 2);\r\n                    }\r\n                    break;\r\n                case moral < 30 :\r\n                    if (randomNumber < 0.33) {\r\n                        this.sendMessage('Congé maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien très bien, je crois que je tombe malade. Je préfère rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));\r\n                        sickenResource(resourceDescriptor, 1);\r\n                    }\r\n                    break;\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Calculate the current team motivation\r\n * firste, do the average of all moral value of resources.\r\n * then make an average between this value and the worst moral value.\r\n * set the 'teamMotivation' value with this new value.\r\n */\r\nfunction calculateTeamMotivation () {\r\n    var i, sumMotivation = 0, gm = self.getGameModel(), activeResources = 0, moral,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), worstMoralValue = 100,\r\n            teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self);\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        if (listResources.items.get(i).getInstance(self).getActive() == true) {\r\n            moral = parseInt(listResources.items.get(i).getInstance(self).getMoral());\r\n            sumMotivation += moral;\r\n            activeResources++;\r\n            if (moral < worstMoralValue)\r\n                worstMoralValue = moral;\r\n        }\r\n    }\r\n    teamMotivation.value = Math.round(((Math.round(sumMotivation / activeResources) + worstMoralValue) / 2));\r\n}\r\n\r\n\r\n/**\r\n * Set the 'LeadershipLevel' value for each active resource.\r\n */\r\nfunction checkLeadershipLevel () {\r\n    var i, gm = self.getGameModel(), resourceInstance, newLeadershipLevel, leadershipPoints,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n            weekMaxValue = parseInt(VariableDescriptorFacade.findByName(gm, 'week').getMaxValue()),\r\n            pointsMinToLlvl2 = 10 * (weekMaxValue - 1) + 75,\r\n            pointsMinToLlvl3 = 15 * (weekMaxValue - 1) + 85;\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        if (resourceInstance.getActive() == true) {\r\n            leadershipPoints = parseInt(resourceInstance.getConfidence()) + parseInt(resourceInstance.getProperty('totalExperienceGained'));\r\n            switch (true) {\r\n                case leadershipPoints >= pointsMinToLlvl2 && leadershipPoints < pointsMinToLlvl3 :\r\n                    newLeadershipLevel = 2;\r\n                    break;\r\n                case leadershipPoints >= pointsMinToLlvl3 :\r\n                    newLeadershipLevel = 3;\r\n                    break;\r\n                default :\r\n                    newLeadershipLevel = 1;\r\n            }\r\n            resourceInstance.setProperty('leadershipLevel', newLeadershipLevel);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * send an in-game message with the current score to the player.\r\n */\r\nfunction sendScore () {\r\n    var content = new Array(), oldScore, newScore;\r\n    oldScore = VariableDescriptorFacade.findByName(self.getGameModel(), 'score').getInstance(self).getValue(),\r\n            newScore = this.calculateScore();\r\n    content.push('Bonjour, <br />');\r\n    content.push('Comme chaque semaine, voici le score de votre entreprise.');\r\n    content.push('<br />');\r\n    content.push('Votre score la semaine est de  : ');\r\n    content.push(newScore);\r\n    content.push('<br />');\r\n    if (oldScore <= newScore) {\r\n        content.push('Vous avez donc gagné ');\r\n        content.push(newScore - oldScore);\r\n    }\r\n    else {\r\n        content.push('Vous avez donc perdu ');\r\n        content.push(oldScore - newScore);\r\n    }\r\n    content.push(' points depuis la dernière semaine.');\r\n    content.push('<br /><br />');\r\n    content.push('Nous vous rappelons que votre score est calculé à partir de votre budget actuel, de votre taux de satisfaction clientèle ainsi sur le moral de votre personnel.');\r\n    content.push('<br /><br />');\r\n    content.push('A la semaine prochaine.');\r\n    content.push('<br />');\r\n    content.push('Team classement des entreprises');\r\n    this.sendMessage('Classement des entreprises', content.join(''), 'Top entreprises');\r\n}\r\n\r\n/**\r\n * @return Integer score, the current player's score\r\n */\r\nfunction calculateScore () {\r\n    var gm = self.getGameModel(), teamMotivation, budget, clientSatisfaction, score,\r\n            punderationBudget = 0.2,\r\n            punderationMotivation = 0.45,\r\n            punderationSatisfaction = 0.35;\r\n    teamMotivation = parseInt(VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self).getValue());\r\n    budget = parseInt(VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self).getValue());\r\n    clientSatisfaction = parseInt(VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self).getValue());\r\n    score = Math.round(budget / 50 * punderationBudget + teamMotivation * 20 * punderationMotivation + clientSatisfaction * 20 * punderationSatisfaction);\r\n    VariableDescriptorFacade.findByName(gm, 'score').getInstance(self).setValue(score);\r\n    return score;\r\n}\r\n\r\n/**\r\n * Assign a task 'sick' to resource wich have a duration egal to the given duration\r\n * @param Integer resourceDescriptorId, the resourceDescriptor to sicken\r\n * @param Integer duration the duration of the sickness.\r\n */\r\nfunction sickenResource (resourceDescriptor, duration) {\r\n    var i, resInstance, taskDescriptor, gm = self.getGameModel(),\r\n            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');\r\n    resInstance = resourceDescriptor.getInstance(self);\r\n    for (i = 0; i < listAbsences.items.size(); i++) {\r\n        if (listAbsences.items.get(i).getInstance(self).getDuration() == duration) {\r\n            taskDescriptor = listAbsences.items.get(i);\r\n            break;\r\n        }\r\n    }\r\n    if (resInstance) {\r\n        resInstance.assign(taskDescriptor.getInstance(self));\r\n    }\r\n    else {\r\n        println('unknow id of resourceDescriptor in function sickenResource');\r\n    }\r\n}\r\n\r\n/**\r\n * assign the given task at the given resource\r\n * if the given resource have already a assigned task, this new assignement will replace the old one.\r\n * @param Integer resourceDescriptorId, the id of resourceDescriptors to assign\r\n * @param Integer taskDescriptorId, the id of task to assign\r\n */\r\nfunction assignTask (resourceDescriptorId, taskDescriptorId) {\r\n    var i, j, resInstance, taskDescriptor, gm = self.getGameModel(),\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),\r\n            listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');\r\n    //Search resource\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        if (resourceDescriptorId == listResources.items.get(i).getId()) {\r\n            resInstance = listResources.items.get(i).getInstance(self);\r\n        }\r\n    }\r\n    if (!resInstance) {\r\n        return;\r\n    }\r\n    //Search task\r\n    for (i = 0; i < listTasks.items.size(); i++) {\r\n        if (taskDescriptorId == listTasks.items.get(i).getId()) {\r\n            taskDescriptor = listTasks.items.get(i);\r\n        }\r\n        //remove old previous assigned task\r\n        for (j = 0; j < resInstance.getAssignments().size(); j++) {\r\n            if (resInstance.getAssignments().get(j).getTaskDescriptorId() == listTasks.items.get(i).getId() && listTasks.items.get(i).getInstance(self).getActive() == true) {\r\n                resInstance.getAssignments().remove(j);\r\n            }\r\n        }\r\n    }\r\n    if (!taskDescriptor) {\r\n        return;\r\n    }\r\n    // assign task to resource\r\n    resInstance.assign(taskDescriptor.getInstance(self));\r\n}\r\n\r\n/**\r\n * get the specified wegas bean.\r\n * @param String name, the name of the bean\r\n * @return the wanted bean or null\r\n */\r\nfunction lookupBean (name) {\r\n    var ctx = new InitialContext();\r\n    return ctx.lookup('java:module/' + name);\r\n}\r\n\r\n/**\r\n * Send a message to the current player.\r\n * @param String subject, the subject of the message.\r\n * @param String message, the content of the message.\r\n * @param String from, the sender of the message.\r\n */\r\nfunction sendMessage (subject, content, from) {\r\n    var EF = lookupBean('MessageFacade');\r\n    if (EF) {\r\n        EF.send(self, subject, content, from);\r\n    }\r\n    else {\r\n        println('Bean InGameMailFacade does not exist, unable to send in-game message: ' + subject);\r\n    }\r\n}\r\n\r\n/**\r\n * Reset the values specific to the current scenario's dialogues.\r\n * Must be called weekly.\r\n */\r\nfunction resetDialogueValues () {\r\n    var i, gm = self.getGameModel(), resourceInstance,\r\n            listResources = VariableDescriptorFacade.findByName(gm, 'resources');\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        resourceInstance = listResources.items.get(i).getInstance(self);\r\n        resourceInstance.setProperty('isAdvised', false);\r\n        resourceInstance.setProperty('isConsidered', false);\r\n        resourceInstance.setProperty('bonusInducement', 0);\r\n    }\r\n}\r\n\r\n/**\r\n * initiate the game'scenario\r\n */\r\nfunction doIntroduction () {\r\n    var gm = self.getGameModel(),\r\n            budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),\r\n            budgetvalue = budgetDescriptor.getInstance(self).getValue(), mail = new Array();\r\n    mail.push('Bonjour');\r\n    mail.push('<br /><br />');\r\n    mail.push('Je vous félicite pour votre promotion. Sauf erreur de ma part, vous ne connissez pas encore avec vos équipiers. Aussi vous ais-je remis les dossiers de chaque personne dont vous avez la charge. Je sais que vous en ferai bon usage.');\r\n    mail.push('<br /><br />');\r\n    mail.push('La concurrence est rude, je vous demanderais donc de ne pas trop tarder avant de prendre en main votre service. Si vos résultats sont bons, les mandats deviendront de plus en plus intéressants. Vous avez également la possibilité de décrocher une promotion. Si cela devait arriver, je pense donner la responsabilité de votre équipe à un de ses membres actuels.');\r\n    mail.push('<br /><br />');\r\n    mail.push('Je vous souhaite le meilleur départ possible.');\r\n    mail.push('<br />');\r\n    mail.push('Daniel.');\r\n    this.sendMessage('Promotion au niveau de cadre.', mail.join(''), 'Daniel Müster.');\r\n    this.finishCurrentWeek();\r\n    budgetDescriptor.getInstance(self).setValue(budgetvalue);\r\n}\r\n\r\n\r\n/**\r\n * set limits (max and min) for several values.\r\n * General values to limit :\r\n * - actions\r\n * - teamMotivation\r\n * - clientsSatisfaction\r\n *\r\n * Ressource's value to limit :\r\n * - moral\r\n * - confidence\r\n * - frankness\r\n * - lastWorkQuality\r\n * - each skillset's value\r\n */\r\nfunction limitValues () {\r\n    var i, j, value, valueInst, valueDescr, gm = self.getGameModel(), skillsets,\r\n            skillKey, skillValue, listResources = VariableDescriptorFacade.findByName(gm, 'resources');\r\n    //actions\r\n    valueDescr = VariableDescriptorFacade.findByName(gm, 'actions')\r\n    valueInst = valueDescr.getInstance(self);\r\n    if (valueInst.getValue() > valueDescr.getMaxValue())\r\n        valueInst.setValue(valueDescr.getMaxValue());\r\n    if (valueInst.getValue() < valueDescr.getMinValue())\r\n        valueInst.setValue(valueDescr.getMinValue());\r\n    //teamMotivation\r\n    valueDescr = VariableDescriptorFacade.findByName(gm, 'teamMotivation')\r\n    valueInst = valueDescr.getInstance(self);\r\n    if (valueInst.getValue() > valueDescr.getMaxValue())\r\n        valueInst.setValue(valueDescr.getMaxValue());\r\n    if (valueInst.getValue() < valueDescr.getMinValue())\r\n        valueInst.setValue(valueDescr.getMinValue());\r\n    //clientsSatisfaction\r\n    valueDescr = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction')\r\n    valueInst = valueDescr.getInstance(self);\r\n    if (valueInst.getValue() > valueDescr.getMaxValue())\r\n        valueInst.setValue(valueDescr.getMaxValue());\r\n    if (valueInst.getValue() < valueDescr.getMinValue())\r\n        valueInst.setValue(valueDescr.getMinValue());\r\n    //ressources\r\n    for (i = 0; i < listResources.items.size(); i++) {\r\n        valueDescr = listResources.items.get(i);\r\n        valueInst = valueDescr.getInstance(self);\r\n        //moral\r\n        value = parseInt(valueInst.getMoral());\r\n        if (value > 100)\r\n            valueInst.setMoral(100);\r\n        if (value < 0)\r\n            valueInst.setMoral(0);\r\n        //moral\r\n        value = parseInt(valueInst.getConfidence());\r\n        if (value > 100)\r\n            valueInst.setConfidence(100);\r\n        if (value < 0)\r\n            valueInst.setConfidence(0);\r\n        //frankness\r\n        value = parseInt(valueInst.getProperty('frankness'));\r\n        if (value > 100)\r\n            valueInst.setProperty('frankness', 100);\r\n        if (value < 0)\r\n            valueInst.setProperty('frankness', 0);\r\n        //lastWorkQuality\r\n        value = parseInt(valueInst.getProperty('lastWorkQuality'));\r\n        if (value > 100)\r\n            valueInst.setProperty('lastWorkQuality', 100);\r\n        if (value < 0)\r\n            valueInst.setProperty('lastWorkQuality', 0);\r\n        //skillset\r\n        skillsets = valueInst.getSkillsets();\r\n        for (j = 0; j < skillsets.size(); j++) {\r\n            skillKey = skillsets.keySet().toArray()[j];\r\n            skillValue = parseInt(skillsets.get(skillKey));\r\n            if (skillValue > 100)\r\n                valueInst.setSkillset(skillKey, 100);\r\n            if (skillValue < 0)\r\n                valueInst.setSkillset(skillKey, 0);\r\n        }\r\n    }\r\n}"
         }
     }
 }

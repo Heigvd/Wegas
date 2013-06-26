@@ -651,7 +651,7 @@ function assignTask (resourceDescriptorId, taskDescriptorId) {
         return;
     }
     // assign task to resource
-    resInstance.assign(taskDescriptor.getInstance(self));
+    resInstance.assign(taskDescriptor);
 }
 
 /**

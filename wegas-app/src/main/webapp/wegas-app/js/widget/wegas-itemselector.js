@@ -220,6 +220,10 @@ YUI.add('wegas-itemselector', function (Y) {
                         case 'valueBox' :
                             child = this.makeNodeValueBox('' + value, obj['maxValue'], label, className);
                             break;
+                        case 'longText':
+                            child = this.makeNodeText("<i>Loading</i>", label, className || value);
+                            this.makeNodeLongText(this.get(CONTENTBOX), variable, value,  className || value);
+                            break;
                         default :
                             child = this.makeNodeText(value, label, className);
                             break;
