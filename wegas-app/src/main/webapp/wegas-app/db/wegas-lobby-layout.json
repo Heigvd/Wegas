@@ -185,7 +185,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "Button",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Enter token",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Join with token",
                                                     "plugins": [{
                                                             "fn": "OpenTabAction",
                                                             "cfg": {
@@ -202,7 +202,7 @@
                     }, {
                         "type": "Tab",
                         "id": "joinedGamesTab",
-                        "label": "Ongoing games",
+                        "label": "Joined games",
                         "children": [{
                                 "type": "JoinedGameTreeView",
                                 "dataSource": "RegisteredGames",
@@ -225,7 +225,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "Button",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Enter token",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Join with token",
                                                     "plugins": [{
                                                             "fn": "OpenTabAction",
                                                             "cfg": {
@@ -242,7 +242,7 @@
                     }, {
                         "id": "gamesTreeViewTab",
                         "type": "Tab",
-                        "label": "Created games",
+                        "label": "Hosted games",
                         "children": [{
                                 "type": "CreatedGameTreeView",
                                 "dataSource": "Game",
@@ -257,7 +257,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Host a new game",
                                                     "targetClass": "Game",
                                                     "dataSource": "Game",
                                                     "formCfg": {
