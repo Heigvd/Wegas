@@ -13,6 +13,7 @@ import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -40,6 +41,7 @@ public class ChoiceInstance extends VariableInstance {
     @JoinColumn(name = "result_id", insertable = false, updatable = false)
     //@JsonBackReference
     @XmlTransient
+//    @JsonDeserialize(using = JsonDeserializer.None.class)
     private Result currentResult;
     /**
      *
@@ -47,6 +49,8 @@ public class ChoiceInstance extends VariableInstance {
     @Column(name = "result_id")
     @JsonView(Views.Public.class)
     private Long currentResultId;
+    @Transient
+    private String currentResultName;
 
     /**
      *
@@ -54,7 +58,7 @@ public class ChoiceInstance extends VariableInstance {
      */
     public Long getCurrentResultId() {
         return this.currentResultId;
-//        return this.getCurrentResult().getId();
+        // return this.getCurrentResult().getId();
     }
 
     /**
@@ -63,6 +67,20 @@ public class ChoiceInstance extends VariableInstance {
      */
     public void setCurrentResultId(Long currentResultId) {
         this.currentResultId = currentResultId;
+    }
+
+    @JsonView(Views.Export.class)
+    public void getCurrentResultName() {
+        this.currentResult.getName();
+    }
+
+    @JsonIgnore
+    public String getSerializedResultName() {
+        return this.currentResultName;
+    }
+
+    public void setCurrentResultName(String currentResultName) {
+        this.currentResultName = currentResultName;
     }
 
     /**
