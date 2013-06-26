@@ -602,3 +602,24 @@ h2{
 .resources-page .yui3-datatable-col-assignements .taskToRemove{
     color:red;
 }
+/*---------------------------- project-page ---------------------------------*/
+.project-page .slidepanel{
+    position:relative;
+    float: left;
+    width: 50%;
+    /*height: 50%;*/
+    /*border-right: solid black 1px;*/
+}
+
+.project-page .slidepanel-content{
+    overflow:hidden;
+    width:100%;
+}
+
+.project-page .slidepanel-title{
+    background-image: url(../../wegas-pmg/images/h2.png);
+    background-repeat: repeat-x;
+    background-color: white;
+    height:26px;
+    width:100%;
+}

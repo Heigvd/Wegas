@@ -208,6 +208,43 @@ img.inputEx-ListField-delButton {
     margin-left: 115px;
 }
 
+/* Share user */
+.editor-shareUser-list {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.editor-shareUser-list .inputEx-ListField-addButton {
+    display: none
+}
+
+.editor-shareUser-list .username-field input {
+    width: 242px;
+}
+
+.editor-shareUser-list .wegas-shareuser-content .inputEx-ListField {
+    margin-top: 10px;
+    margin-left: 25px;
+}
+
+.editor-shareUser-list .inputEx-AutoComplete input {
+    margin-left: 39px;
+    width: 242px;
+}
+
+.editor-shareUser-list .wegas-shareUser-save {
+    margin-left: 39px;
+}
+
+.editor-shareUser-list .permission-group fieldset div {
+    float: left;
+    margin-left: 5px;
+}
+
+.editor-shareUser-list .permission-group fieldset div:first-child {
+    margin-left: 3px;
+}
+
 /** Styles for form edition */
 .wegas-form div.inputEx-TypeField-PropertiesPanel {
     padding-left: 140px;

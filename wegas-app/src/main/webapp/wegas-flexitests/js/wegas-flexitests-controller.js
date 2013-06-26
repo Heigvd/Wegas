@@ -222,8 +222,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 this.set("currentLoading.right", false);
             }, this);
         },
-        generateNextId
-                : function() {
+        generateNextId: function() {
             return this.get("random") ?
                     this.questionToDo.splice(Math.round(Math.random() * (this.questionToDo.length - 1)), 1)[0] :
                     this.questionToDo.shift();
@@ -235,11 +234,13 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.ongoing = true;
         },
         mask: function() {
-            this.showOverlay();
+            this.fire("showOverlay");
+//            this.showOverlay();
         },
         unmask: function() {
             this.fixPoint.hide();
-            this.hideOverlay();
+            this.fire("hideOverlay");
+//            this.hideOverlay();
             this.startTime = Y.Lang.now();
         },
         getChildById: function(id) {
