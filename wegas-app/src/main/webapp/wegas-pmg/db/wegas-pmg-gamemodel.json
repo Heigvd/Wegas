@@ -33,20 +33,6 @@
             }
         }, {
             "@class": "NumberDescriptor",
-            "name": "teamMotivation",
-            "editorLabel": "teamMotivation",
-            "label": "teamMotivation",
-            "minValue": 0,
-            "maxValue": 100,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 0
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
             "name": "managementApproval",
             "editorLabel": "managementApproval",
             "label": "managementApproval",
@@ -125,6 +111,71 @@
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "value": 15
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "wages",
+            "editorLabel": "wages",
+            "label": "wages",
+            "minValue": 0,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "unworkedHours",
+            "editorLabel": "unworkedHours",
+            "label": "unworkedHours",
+            "minValue": 0,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "actualCost",
+            "editorLabel": "actualCost",
+            "label": "actualCost",
+            "minValue": 0,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "planedValue",
+            "editorLabel": "planedValue",
+            "label": "planedValue",
+            "minValue": 0,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "earnedValue",
+            "editorLabel": "earnedValue",
+            "label": "earnedValue",
+            "minValue": 0,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
             },
             "scope": {
                 "@class": "TeamScope"
@@ -494,47 +545,6 @@
                             "limit": "100",
                             "quantity": "1"
                         }]
-                    },
-                    "scope": {
-                        "@class": "TeamScope"
-                    }
-                }
-            ]
-        }, {
-            "@class": "ListDescriptor",
-            "name": "dontErase",
-            "editorLabel": "dontErase",
-            "label": "dontErase",
-            "defaultInstance": {
-                "@class": "ListInstance"
-            },
-            "scope": {
-                "@class": "TeamScope"
-            },
-            "items": [{
-                    "@class": "TaskDescriptor",
-                    "name": "defaultTask",
-                    "editorLabel": "defaultTask",
-                    "label": "defaultTask",
-                    "index": "0",
-                    "description": "Assign this task as sickness, holidays, etc.",
-                    "defaultInstance": {
-                        "@class": "TaskInstance",
-                        "active": true,
-                        "duration": 0
-                    },
-                    "scope": {
-                        "@class": "TeamScope"
-                    }
-                }, {
-                    "@class": "ResourceDescriptor",
-                    "name": "defaultResource",
-                    "editorLabel": "defaultResource",
-                    "label": "defaultResource",
-                    "description": "Used to make task-Gantt in planification",
-                    "defaultInstance": {
-                        "@class": "ResourceInstance",
-                        "active": true
                     },
                     "scope": {
                         "@class": "TeamScope"
