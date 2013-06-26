@@ -76,6 +76,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @return
      */
     public DescriptorListI createChild(final DescriptorListI list, final VariableDescriptor entity) {
+        list.addItem(entity);
+
         if (isNullOrEmpty(entity.getLabel()) && !isNullOrEmpty(entity.getName())) {            // 1st case: only name is provided
             entity.setLabel(entity.getName());
         } else if (!isNullOrEmpty(entity.getLabel()) && isNullOrEmpty(entity.getName())) {     // 2nd case: fill name with label if it is empty
@@ -84,14 +86,13 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         if (isNullOrEmpty(entity.getLabel())) {                                        // Still no label, place a default
             entity.setLabel("Unnamed");
         }
-        if (isNullOrEmpty(entity.getLabel())) {                                        // Still no name, place a default
-            entity.setLabel("variable");
+        if (isNullOrEmpty(entity.getName())) {                                        // Still no name, place a default
+            entity.setName("variable");
         }
         entity.setName(Helper.encodeVariableName(entity.getName()));            // Camel casify the name
 
         this.checkNameAndLabelAvailability(entity);                             // Check name and label availability
 
-        list.addItem(entity);
         return list;
     }
 

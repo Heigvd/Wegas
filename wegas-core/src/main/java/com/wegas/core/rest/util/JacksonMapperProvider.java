@@ -51,6 +51,7 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
         mapper.getSerializationConfig().setSerializationView(view);             // Set up which view to use
         //mapper.getSerializationConfig().withView(Views.Editor.class);         // This kind of declaration does not work with glassfish jersey 1.11
         //mapper.writerWithView(Views.Editor.class);
+//        mapper.
 
         return mapper;
     }
@@ -63,7 +64,7 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        AnnotationIntrospector primary = new JacksonAnnotationIntrospector();   // Create a new annotation inspector that comines jaxb and jack
+        AnnotationIntrospector primary = new JacksonAnnotationIntrospector();   // Create a new annotation inspector that comines jaxb and jackson
         AnnotationIntrospector secondary = new JaxbAnnotationIntrospector();
         AnnotationIntrospector pair = new AnnotationIntrospector.Pair(secondary, primary);
 
