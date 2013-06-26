@@ -607,8 +607,7 @@ h2{
     position:relative;
     float: left;
     width: 50%;
-    /*height: 50%;*/
-    /*border-right: solid black 1px;*/
+    height: 260px;
 }
 
 .project-page .slidepanel-content{
@@ -622,4 +621,36 @@ h2{
     background-color: white;
     height:26px;
     width:100%;
+}
+
+.project-page .chart {
+   margin-left: 24px; 
+   margin-top: 15px;
+}
+
+.project-page .finances .slidepanel-content {
+    margin-top: 20px;
+    margin-left: 30px;
+}
+
+.project-page .fixedCosts, .project-page .tasks {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.project-page .total {
+    font-weight: bold;
+    font-size: 11pt;
+    margin-top: 7px;
+}
+
+.project-page .wages, .project-page .taskFixedCosts, .project-page .unworkedHours {
+    margin-left: 17px;
+    margin-top: 3px;
+}
+
+.project-page .wages .variableValue, .project-page .taskFixedCosts .variableValue, .project-page .unworkedHours .variableValue,
+.project-page .fixedCosts .variableValue, .project-page .total .variableValue, .project-page .tasks .variableValue{
+    float: right;
+    margin-right: 360px;
 }

@@ -40,6 +40,7 @@ YUI.add('wegas-chart', function(Y) {
             }
         },
         destructor: function() {
+            this.chart.destroy();
             for (var i = 0; i < this.handlers.length; i = i + 1) {
                 this.handlers[i].detach();
             }
@@ -72,8 +73,8 @@ YUI.add('wegas-chart', function(Y) {
             if (this.chart)
                 this.chart.destroy();
             if (this.vdList.length < 1)
-                return;
-            var i,
+                return; 
+            var i, cb = this.get(CONTENTBOX),
                     seriesCollection = [],
                     rawSeries = [],
                     obj;
@@ -88,6 +89,7 @@ YUI.add('wegas-chart', function(Y) {
             this.chart = new Y.Chart({
                 type: this.get("chartType"),
                 seriesCollection: seriesCollection,
+//                categoryType:"time",                                          Start sur l'axe mais l'axe devient time
                 axes: {
                     values: {
                         minimum: this.findMinValue(),
@@ -105,7 +107,7 @@ YUI.add('wegas-chart', function(Y) {
                 horizontalGridlines: this.get("horizontalGridlines"),
                 verticalGridlines: this.get("verticalGridlines")
             });
-            this.chart.render(".chart");
+            this.chart.render(cb._node.childNodes[0]);
         },
         findMinValue: function(){
             var i, h, minVal = null;
