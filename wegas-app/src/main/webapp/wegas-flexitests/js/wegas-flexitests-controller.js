@@ -46,11 +46,13 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.constructor.superclass.bindUI.apply(this);
             this.set("tabIndex", -1);
             this.after("*:currentLoadingChange", function(e) {
-                var noready = false;
-                for (var i in e.newVal) {
-                    noready = (noready || e.newVal[i]);
-                    if (noready) {
-                        break;
+                var i, noready = false;
+                for (i in e.newVal) {
+                    if (e.newVal.hasOwnProperty(i)) {
+                        noready = (noready || e.newVal[i]);
+                        if (noready) {
+                            break;
+                        }
                     }
                 }
                 if (!noready) {
@@ -71,7 +73,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          * @returns {undefined}
          */
         syncUI: function() {
-            var props, exist = false, i, j, done = 0, config = {};
+            var props, exist = false, i, j, done = 0;
             this.mask();
             this.leftElement = this.getChildById("leftElement");
             this.rightElement = this.getChildById("rightElement");
@@ -79,18 +81,17 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.fixPoint = this.get("contentBox").all(".fix-point");
             this.fixPoint.hide();
             this.mcq = this.getChildById("flexi-mcq");
-            config = this.collectConfig();
-            config.index = "config";
-            this.mcq.save(config);
             props = this.mcq.get("variable.evaluated").getInstance().get("properties");
             this.maxSize = Math.max(this.leftElement.size(), this.rightElement.size(), this.centerElement.size());
             for (i = 0; i < this.maxSize; i += 1) {
                 exist = false;
                 for (j in props) {
-                    if (+(Y.JSON.parse(props[j]).id) === +i) {
-                        exist = true;
-                        done += 1;
-                        break;
+                    if (props.hasOwnProperty(j)) {
+                        if (+(Y.JSON.parse(props[j]).id) === +i) {
+                            exist = true;
+                            done += 1;
+                            break;
+                        }
                     }
                 }
                 if (!exist) {
@@ -109,7 +110,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             elements.id = this.currentQuestionId;
             elements.response = response;
             elements.delay = responseTime;
-            if ((reponseElement = this.centerElement.getActiveElement().flexiresponse) instanceof Y.Plugin.FlexiResponse &&
+            reponseElement = this.centerElement.getActiveElement().flexiresponse;
+            if (reponseElement instanceof Y.Plugin.FlexiResponse &&
                     reponseElement.get("value") === response) {
                 elements.valid = true;
                 this.mcq.success(responseTime);
@@ -166,49 +168,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             }
             elements.center = center.get("content") || center.get("url");
             return elements;
-        },
-        collectConfig: function() {
-            var cfg = {},
-                    left = this.leftElement,
-                    center = this.centerElement,
-                    right = this.rightElement,
-                    getPos = function(element, config) {
-                var style = element.CSSPosition ? element.CSSPosition.get("styles") : null;
-                if (style === null) {
-                    return;
-                } else {
-                    if (Y.Lang.isNumber(parseInt(style.top))) {
-                        config.top = parseInt(style.top);
-                    }
-                    if (Y.Lang.isNumber(parseInt(style.bottom))) {
-                        config.bottom = parseInt(style.bottom);
-                    }
-                    if (Y.Lang.isNumber(parseInt(style.left))) {
-                        config.left = parseInt(style.left);
-                    }
-                    if (Y.Lang.isNumber(parseInt(style.right))) {
-                        config.right = parseInt(style.right);
-                    }
-                }
-            },
-                    getTimers = function(element, config) {
-                if (element.hideafter) {
-                    config.hide = element.hideafter.get("time");
-                }
-                if (element.showafter) {
-                    config.show = element.showafter.get("time");
-                }
-            };
-            cfg.right = {};
-            cfg.left = {};
-            cfg.center = {};
-            getPos(right, cfg.right);
-            getPos(left, cfg.left);
-            getPos(center, cfg.center);
-            getTimers(right, cfg.right);
-            getTimers(left, cfg.left);
-            getTimers(center, cfg.center);
-            return cfg;
         },
         createLoadingEvent
                 : function() {
