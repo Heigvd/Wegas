@@ -194,32 +194,6 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     /**
-     * Returns all public games
-     *
-     * @param userId
-     * @return Collection<Game>
-     */
-    public Collection<Game> findPublicGames(final Long userId) {
-        final String PREFIX = "Game:View:g";
-        final Role pRolle = roleFacade.findByName("Public");
-        final Collection<Game> registerdGame = this.findRegisteredGames(userId);
-        final Collection<Game> games = new ArrayList<>();
-
-        for (Permission p : pRolle.getPermissions()) {
-            String permission = p.getValue();
-            if (permission.startsWith(PREFIX)) {
-                Game g = this.find(Long.parseLong(permission.replace(PREFIX, "")));
-                if (!registerdGame.contains(g)) {                               // Only add games a player is not already registered in
-                    this.em.detach(g);
-                    g.setName(g.getGameModel().getName() + " : " + g.getName());
-                    games.add(g);
-                }
-            }
-        }
-        return games;
-    }
-
-    /**
      *
      * @return
      */

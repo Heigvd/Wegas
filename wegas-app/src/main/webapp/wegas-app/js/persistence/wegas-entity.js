@@ -210,14 +210,9 @@ YUI.add('wegas-entity', function(Y) {
                             wchildren: [{
                                     type: "ShareUser",
                                     cssClass: "editor-shareUser-list",
-                                    permsList: [
-                                        //{
-                                        //    rightLabel: "GameModel:View",
-                                        //    value: "Game:View"
-                                        //},
-                                        {
+                                    permsList: [{
                                             rightLabel: "Edit",
-                                            value: "GameModel:View,Edit,Delete"
+                                            value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
                                         }, {
                                             rightLabel: "Duplicate",
                                             value: "GameModel:View,Duplicate"
@@ -356,7 +351,7 @@ YUI.add('wegas-entity', function(Y) {
                                             value: "Game:Edit,View"
                                         }, {
                                             name: "Game:Token",
-                                            value: "Game:View,Token"
+                                            value: "Game:Token"
                                         }]
                                 }],
                             tabSelector: '#rightTabView'
@@ -377,16 +372,16 @@ YUI.add('wegas-entity', function(Y) {
                                             value: "Game:View"
                                         }, {
                                             name: "Link",
-                                            value: "Game:View,Token"
+                                            value: "Game:Token"
                                         }]
                                 }, {
                                     type: "ShareUser",
                                     cssClass: "editor-shareUser-list",
                                     permsList: [{
-                                            rightLabel: "View",
+                                            rightLabel: "Join",
                                             value: "Game:View"
                                         }, {
-                                            rightLabel: "Edit",
+                                            rightLabel: "Admin",
                                             value: "Game:View,Edit"
                                         }
                                         //, {
@@ -654,6 +649,7 @@ YUI.add('wegas-entity', function(Y) {
                     }
                 },
                 _inputex: {
+                    label: "Groups",
                     useButtons: true
                 }
             },

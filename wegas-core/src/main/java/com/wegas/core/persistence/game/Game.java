@@ -192,7 +192,6 @@ public class Game extends NamedEntity {
     public void setGameModel(GameModel gameModel) {
         this.gameModel = gameModel;
     }
-
     /**
      *
      */

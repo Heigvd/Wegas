@@ -51,7 +51,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     request = this.get("request");
             if (ds) {
                 ds.after("update", this.syncUI, this);                           // Listen updates on the target datasource
-                ds.after("failure",this.defaultFailureHandler, this);              // GLOBAL error message
+                ds.after("failure", this.defaultFailureHandler, this);              // GLOBAL error message
 
                 if (request) {
                     ds.sendRequest(request);
@@ -112,7 +112,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                             var createdBy = el.get("createdBy"),
                                     gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
                             if (!gameModel) {
-                                Y.log("Unable to find GameModel for game" + el.get("name"), "erroe");
+                                Y.log("Unable to find game model for game: " + el.get("name"), "error");
                             } else {
                                 ret.push({
                                     type: 'TreeNode',
@@ -346,11 +346,11 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
             this.treeView.on("*:click", function(e) {
                 var entity = e.node.get("data.entity"),
-                        sourceUri = "rest/GameModel//Game", // If click on "All game models" node
+                        //sourceUri = "rest/GameModel//Game", // If click on "All game models" node
                         registeredGamesUri = "rest/RegisteredGames/" + Wegas.app.get("currentUser.id");
 
                 if (entity) {                                                   // If click on a particular game model
-                    sourceUri = "rest/GameModel/" + entity.get(ID) + "/Game";
+                    //sourceUri = "rest/GameModel/" + entity.get(ID) + "/Game";
                     registeredGamesUri += "/" + entity.get(ID);
                 }
                 GameModelTreeView.currentGameModel = entity;
@@ -444,26 +444,28 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                     gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId")),
                                     button = new Y.Button({label: "Resume"});
                             button.get(CONTENTBOX).addClass("wegas-lobby-joinbutton");
-
-                            ret.push({
-                                //label: el.get(NAME),
-                                label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                        + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                        + '<div class="yui3-u-1-3">'
-                                        + Wegas.Helper.smartDate(el.get("createdTime"))
-                                        + '</div>'
-                                        + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
-                                        + '<div class="yui3-u-1-3">' + gameModel.get(NAME) + '</div></div>'
-                                        + '</div>',
-                                data: {
-                                    entity: el
-                                },
-                                iconCSS: 'wegas-icon-game',
-                                rightWidget: button
-                            });
+                            if (gameModel) {
+                                ret.push({
+                                    //label: el.get(NAME),
+                                    label: '<div class="yui3-g wegas-editor-treeview-table">'
+                                            + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                            + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                            + '<div class="yui3-u-1-3">'
+                                            + Wegas.Helper.smartDate(el.get("createdTime"))
+                                            + '</div>'
+                                            + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
+                                            + '<div class="yui3-u-1-3">' + gameModel.get(NAME) + '</div></div>'
+                                            + '</div>',
+                                    data: {
+                                        entity: el
+                                    },
+                                    iconCSS: 'wegas-icon-game',
+                                    rightWidget: button
+                                });
+                            } else {
+                                Y.log("Unable to find game model associated with game:" + el.get(NAME), "error", "Wegas.EditorTreeView");
+                            }
                             break;
-
                     }
                 }
             }
@@ -490,26 +492,28 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                     gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId")),
                                     button = new Y.Button({label: "Join"});
                             button.get(CONTENTBOX).addClass("wegas-lobby-joinbutton");
-
-                            ret.push({
-                                //label: el.get(NAME),
-                                label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                        + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                        + '<div class="yui3-u-1-3">'
-                                        + Wegas.Helper.smartDate(el.get("createdTime"))
-                                        + '</div>'
-                                        + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
-                                        + '<div class="yui3-u-1-3">' + gameModel.get(NAME) + '</div></div>'
-                                        + '</div>',
-                                data: {
-                                    entity: el
-                                },
-                                iconCSS: 'wegas-icon-game',
-                                rightWidget: button
-                            });
+                            if (gameModel) {
+                                ret.push({
+                                    //label: el.get(NAME),
+                                    label: '<div class="yui3-g wegas-editor-treeview-table">'
+                                            + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                            + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                            + '<div class="yui3-u-1-3">'
+                                            + Wegas.Helper.smartDate(el.get("createdTime"))
+                                            + '</div>'
+                                            + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
+                                            + '<div class="yui3-u-1-3">' + gameModel.get(NAME) + '</div></div>'
+                                            + '</div>',
+                                    data: {
+                                        entity: el
+                                    },
+                                    iconCSS: 'wegas-icon-game',
+                                    rightWidget: button
+                                });
+                            } else {
+                                Y.log("Unable to find game model associated with game:" + el.get(NAME), "error", "Wegas.EditorTreeView");
+                            }
                             break;
-
                     }
                 }
             }
