@@ -104,9 +104,13 @@ body > .wegas-pageloader, html{
     transform: rotate(-60deg) translate(20px,-100%);
     font-size: 75%;
 }
-.wegas-flexitests-results-content table{
-    width: 100%;
+.wegas-flexitests-results-content .config,
+.wegas-flexitests-results-content .results{
+    padding:10px;
 }
-.wegas-flexitests-results-content table .row-odd{
-    background-color: #404040;
+.yui3-skin-sam .wegas-flexitests-results-content .yui3-datatable-even .yui3-datatable-cell{
+    background: none;
+}
+.yui3-skin-sam .wegas-flexitests-results-content .yui3-datatable-odd .yui3-datatable-cell{
+    background:none
 }

@@ -16,6 +16,7 @@ import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,12 @@ public class AbstractEJBTest {
         gameModelFacade = lookupBy(GameModelFacade.class);
         descriptorFacade = lookupBy(VariableDescriptorFacade.class);
 
+
+
+    }
+
+    @Before
+    public void createGameModel() {
         gameModel = new GameModel();                                            // Create a game model
         gameModel.setName("test-gamemodel");
 
@@ -59,28 +66,28 @@ public class AbstractEJBTest {
         team = new Team();                                                      // a team and a player
         team.setName("test-team");
         game.addTeam(team);
-        player = new Player();
+        player = new Player("Player");
         team.addPlayer(player);
 
         team2 = new Team();                                                     // a team and a player
         team2.setName("test-team2");                                            // a second team and a player
         game.addTeam(team2);
-        player2 = new Player();
+        player2 = new Player("Player2");
         team2.addPlayer(player2);
 
         gameModelFacade.create(gameModel);                                      // Commit the game model
-
     }
 
     @AfterClass
     public static void tearDown() {
-        gameModelFacade.remove(gameModel.getId());
+
         ejbContainer.close();
         //logger.info("Closing the container");
     }
 
     @After
     public void clear() throws NamingException {
+        gameModelFacade.remove(gameModel.getId());
         RequestFacade rm = AbstractEJBTest.lookupBy(RequestFacade.class);
         rm.getRequestManager().setPlayer(null);
         rm.getRequestManager().clearUpdatedInstances();
