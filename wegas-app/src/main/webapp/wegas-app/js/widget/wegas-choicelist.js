@@ -71,7 +71,8 @@ YUI.add('wegas-choicelist', function(Y) {
             element: {
                 value: 0,
                 "transient": true,
-                type:"number",
+                type: "number",
+                validator: Y.Lang.isNumber,
                 setter: function(val) {
                     if (this.size() > 0) {
                         val = val % this.size();
