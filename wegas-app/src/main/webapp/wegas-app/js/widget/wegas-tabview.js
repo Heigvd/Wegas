@@ -129,7 +129,7 @@ YUI.add('wegas-tabview', function(Y) {
             nTab.removeAll().each(function(i) {
                 i.destroy();                                                    // Empty it
             });
-            nTab.get("panelNode").empty();                                      // @fixme since the above method is not enough
+            nTab.get("panelNode").one("div").empty();                                      // @fixme since the above method is not enough
             nTab.load(widgetCfg, fn);                                           // Load target widget
             nTab.set("selected", 2);
             nTab.plug(Removeable);
@@ -202,6 +202,7 @@ YUI.add('wegas-tabview', function(Y) {
      */
     Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget, Parent, Y.WidgetChild], {
         /** @lends Y.Wegas.Tab# */
+        PANEL_TEMPLATE: '<div><div class=\"panel-inner\"></div></div>',
 
         // *** Private Fields *** //
         /**
@@ -285,7 +286,7 @@ YUI.add('wegas-tabview', function(Y) {
          * to the tab
          */
         _renderChildren: function() {
-            var renderTo = this._childrenContainer || this.get("panelNode");    // @modified
+            var renderTo = this._childrenContainer || this.get("panelNode").one("div");    // @modified
 
             this._childrenContainer = renderTo;
 

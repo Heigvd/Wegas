@@ -266,7 +266,7 @@ YUI.add('wegas-editable', function(Y) {
                 }
             };
             if (Y.Lang.isArray(cfg)) {
-                return Y.Array.map(cfg, Editable.getModulesFromDefinition);
+                return Y.Array.flatten(Y.Array.map(cfg, Editable.getModulesFromDefinition));
             }
 
             if (module) {
