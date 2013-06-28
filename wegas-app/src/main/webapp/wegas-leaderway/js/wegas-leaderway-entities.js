@@ -22,49 +22,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
         _inputex: {
             _type: HIDDEN
         }
-    }, SKILLSDEF = {
-        type: COMBINE,
-        required: true,
-        fields: [{
-                type: SELECT,
-                name: NAME,
-                choices: [{
-                        value: 'softwareEngineer',
-                        label: "Software engineering"
-                    }, {
-                        value: 'webDesgign',
-                        label: "Web design"
-                    }, {
-                        value: 'negotiation',
-                        label: "Negotiation"
-                    }, {
-                        value: 'dbEngineer',
-                        label: "Database engineer"
-                    }, {
-                        value: 'processModeling',
-                        label: "Process modeling"
-                    }, {
-                        value: 'graphicDesign',
-                        label: "Graphic design"
-                    }]
-            }, {
-                type: SELECT,
-                name: VALUE,
-                choices: [{
-                        value: 0,
-                        label: "Junior"
-                    }, {
-                        value: 20,
-                        label: "Intermediate"
-                    }, {
-                        value: 20,
-                        label: "Senior"
-                    }, {
-                        value: 99,
-                        label: "Expert"
-                    }]
-            }]
-    };
+    }
 
     /**
      * ResourceDescriptor mapper
@@ -415,46 +373,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             "@class": {
                 value: "TaskDescriptor"
             },
-            defaultInstance: {
-                properties: {
-                    '@class': {
-                        type: STRING,
-                        _inputex: {
-                            _type: HIDDEN,
-                            value: 'TaskInstance'
-                        }
-                    },
-                    id: IDATTRDEF,
-                    active: {
-                        type: BOOLEAN,
-                        _inputex: {
-                            label: 'Active by default',
-                            value: true
-                        }
-                    },
-                    duration: {
-                        type: NUMBER
-                    },
-                    properties: {
-                        _inputex: {
-                            label: "Default properties",
-                            _type: HASHLIST,
-                            keyField: NAME,
-                            valueField: VALUE,
-                            elementType: {
-                                type: COMBINE,
-                                fields: [{
-                                        name: NAME,
-                                        typeInvite: NAME
-                                    }, {
-                                        name: VALUE,
-                                        typeInvite: VALUE
-                                    }]
-                            }
-                        }
-                    }
-                }
-            },
             description: {
                 type: STRING,
                 format: HTML,
@@ -486,6 +404,80 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                                 name: VALUE,
                                 typeInvite: VALUE
                             }]
+                    }
+                }
+            },
+            defaultInstance: {
+                properties: {
+                    '@class': {
+                        type: STRING,
+                        _inputex: {
+                            _type: HIDDEN,
+                            value: 'TaskInstance'
+                        }
+                    },
+                    id: IDATTRDEF,
+                    active: {
+                        type: BOOLEAN,
+                        _inputex: {
+                            label: 'Active by default',
+                            value: true
+                        }
+                    },
+                    duration: {
+                        type: NUMBER
+                    },
+                    requirements: {
+                        type: ARRAY,
+                        _inputex: {
+                            label: "Default requirements",
+                            _type: LIST,
+                            useButtons: true,
+                            keyField: NAME,
+                            valueField: VALUE,
+                            elementType: {
+                                type: GROUP,
+                                fields: [{
+                                        name: "@class",
+                                        type: HIDDEN,
+                                        value:"WRequirement"
+                                    }, {
+                                        label: "Work",
+                                        name: "work",
+                                        typeInvite: NAME
+                                    }, {
+                                        label: "Limit",
+                                        name: "limit",
+                                        typeInvite: VALUE
+                                    }, {
+                                        label: "Level",
+                                        name: "level",
+                                        typeInvite: VALUE
+                                    }, {
+                                        label: "Number",
+                                        name: "quantity",
+                                        typeInvite: VALUE
+                                    }]
+                            }
+                        }
+                    },
+                    properties: {
+                        _inputex: {
+                            label: "Default properties",
+                            _type: HASHLIST,
+                            keyField: NAME,
+                            valueField: VALUE,
+                            elementType: {
+                                type: COMBINE,
+                                fields: [{
+                                        name: NAME,
+                                        typeInvite: NAME
+                                    }, {
+                                        name: VALUE,
+                                        typeInvite: VALUE
+                                    }]
+                            }
+                        }
                     }
                 }
             }

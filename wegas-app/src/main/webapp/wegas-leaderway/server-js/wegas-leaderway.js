@@ -134,8 +134,8 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
     var i, j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),
             budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
             clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskRequirementKey, wish, hate,
-            taskRequirementValue, listTaskRequirement = taskDescriptor.getRequirements(),
-            taskDuration = taskInstance.getDescriptor().defaultInstance.getDuration(), //don't work
+            taskRequirementValue, listTaskRequirement = taskInstance.getRequirements(),
+            taskDuration = parseInt(taskInstance.getDescriptor().getInstance(self).getDuration()), //don't work
             workerInstance,
             workQuality = 0, workPartsQuality = new Array(), workPartSkillsQuality = new Array(), sumWorkPartSkills = 0, averageWorkPartSkills = 0,
             sumWorkParts = 0, workerSkillsetValue, totalExperience = 0, skillExperience, moral, confidence, learningCoefficient, randomNumber, existingSkills = new Array(),
@@ -159,7 +159,7 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
         totalExperience = 0;
         from.push(workersDescriptor[i].getProperty('surname'));//for e-mail
         for (j = 0; j < listTaskRequirement.size(); j++) {
-            taskRequirementKey = listTaskRequirement.get(j).getPurview();
+            taskRequirementKey = listTaskRequirement.get(j).getWork();
             taskRequirementValue = parseInt(listTaskRequirement.get(j).getLevel());
             workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));
             //calculate experience général (totalExperienceGained) part 1/2
@@ -183,7 +183,7 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
         averageWorkPartSkills = (sumWorkPartSkills / workPartSkillsQuality.length) * punderationSkillsets + moral * punderationMoral + confidence * punderationConfidence;
         // check wish and hate
         for (j = 0; j < listTaskRequirement.size(); j++) {
-            taskRequirementKey = listTaskRequirement.get(j).getPurview();
+            taskRequirementKey = listTaskRequirement.get(j).getWork();
             taskRequirementValue = parseInt(listTaskRequirement.get(j).getLevel());
             workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));
             //calculate work Quality part 3/4
@@ -233,12 +233,12 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
         workerInstance.setProperty('lastWorkQuality', averageWorkPartSkills);
         //set moral and confidence depending of averageWorkPartSkills.
         if (averageWorkPartSkills < 50) {
-            workerInstance.setMoral(workerInstance.getMoral() - 25);
-            workerInstance.setConfidence(workerInstance.getConfidence() - 15);
+            workerInstance.setMoral(parseInt(workerInstance.getMoral()) - 25);
+            workerInstance.setConfidence(parseInt(workerInstance.getConfidence()) - 15);
         }
         else {
-            workerInstance.setMoral(workerInstance.getMoral() + 15);
-            workerInstance.setConfidence(workerInstance.getConfidence() + 10);
+            workerInstance.setMoral(parseInt(workerInstance.getMoral()) + 15);
+            workerInstance.setConfidence(parseInt(workerInstance.getConfidence()) + 10);
         }
         //check 'workWithLeader'
         if (taskDescriptor.getProperty('workWithLeader') == 'true') {
@@ -465,7 +465,7 @@ function checkMoral () {
             }
         }
         if (!absent) {
-            moral = resourceInstance.getMoral();
+            moral = parseInt(resourceInstance.getMoral());
             randomNumber = Math.random();
             switch (true) {
                 case moral < 10 :

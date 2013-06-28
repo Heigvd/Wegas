@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
@@ -48,8 +49,8 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(referencedColumnName = "variableinstance_id")
+    @OneToMany(cascade = {CascadeType.ALL, CascadeType.REMOVE}, orphanRemoval = true)
+    @JoinColumn(referencedColumnName = "variableinstance_id", updatable = true, insertable = true)
     private List<WRequirement> requirements = new ArrayList<>();
 
     /**
@@ -64,7 +65,14 @@ public class TaskInstance extends VariableInstance {
         this.properties.clear();
         this.properties.putAll(other.getProperties());
         this.requirements.clear();
-        this.requirements.addAll(other.getRequirements());
+        for (WRequirement req : other.getRequirements()) {
+            //if (req.getId() != null) { //don't like modification
+                WRequirement r = new WRequirement();
+                r.merge(req);
+                this.requirements.add(r);
+            }
+        //}
+        this.plannification.clear();
         this.plannification.addAll(other.getPlannification());
     }
 
