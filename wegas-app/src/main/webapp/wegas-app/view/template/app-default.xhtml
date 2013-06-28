@@ -12,46 +12,8 @@
             <h:body class="yui3-skin-sam wegas-stdmode wegas-loading-overlay #{requestController.currentRoles}">
 
                 <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
-
                     <!-- Muscula error tracking -->
-                    <script type='text/javascript'>
-                        window.Muscula = {settings: {
-                                logId: "1f9e3058-27dc-4fec-b633-1070e60f2fca", suppressErrors: false, branding: 'none'
-                            }};
-                        (function() {
-                            var m = document.createElement('script');
-                            m.type = 'text/javascript';
-                            m.async = true;
-                            m.src = (window.location.protocol === 'https:' ? 'https:' : 'http:') +
-                                    '//musculahq.appspot.com/Muscula.js';
-                            var s = document.getElementsByTagName('script')[0];
-                            s.parentNode.insertBefore(m, s);
-                            window.Muscula.run = function(c) {
-                                eval(c);
-                                window.Muscula.run = function() {
-                                };
-                            };
-                            window.Muscula.errors = [];
-                            window.onerror = function() {
-                                window.Muscula.errors.push(arguments);
-                                return window.Muscula.settings.suppressErrors === undefined;
-                            };
-                        })();
-                    </script>
-
-                    <!-- Google Analytics -->
-                    <!--<script type="text/javascript">
-                            var _gaq = _gaq || [];
-                            _gaq.push(['_setAccount', 'UA-36197008-1']);
-                            _gaq.push(['_setLocalRemoteServerMode']);
-                            _gaq.push(['_trackPageview']);
-
-                            (function() {
-                                    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                            })();
-                    </script>-->
+                    <ui:include src="muscula-tracker.xhtml" />
                 </ui:fragment>
 
                 <!-- YUI Base -->
@@ -88,7 +50,6 @@
                         YUI_config.errorFn = function(msg, e, src) {
                             // console.log("ERRORFN", msg, e, src);
                             // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", 'Wegas.App');
-                            // jslogger.log({error: {msg: msg, e: e, src: src}});    // Js logger msg
                             // _gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
                             // throw msg;
                             return false;                      // Returning true from this function will stop the Error from being thrown.
@@ -210,7 +171,7 @@
                                                 /* THIS IS NOT A COMMENT
                                                  * </ui:fragment>
                                                  */
-                                        initialRequest: "",
+                                                initialRequest: "",
                                         plugins: [{
                                                 fn: "VariableDescriptorCache"
                                             }, {
@@ -254,7 +215,7 @@
 
                             app.after("render", function() {
                                 try {
-                                    #{gameController.clientScripts}  // Add game model specific js footer
+                        #{gameController.clientScripts}  // Add game model specific js footer
                                 } catch (e) {
                                     Y.log("Error running footer scripts.", "error");
                                 }
@@ -264,6 +225,11 @@
                         });
                     </script>
                 </ui:insert>
+
+                <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
+                    <!-- Google Analytics -->
+                    <ui:include src="ga-tracker.xhtml" />
+                </ui:fragment>
             </h:body>
         </ui:define>
     </ui:composition>

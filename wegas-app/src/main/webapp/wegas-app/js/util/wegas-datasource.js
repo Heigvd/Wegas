@@ -89,7 +89,7 @@ YUI.add('wegas-datasource', function(Y) {
             payload.response = response;
             Y.log("Response received: " + this.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
 
-            Wegas.Editable.use(payload.response.results,                        // Lookup dependencies
+            Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
                 payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
                 if (payload.serverResponse.get
@@ -263,6 +263,9 @@ YUI.add('wegas-datasource', function(Y) {
          */
         addToCache: function(entity) {
             this.getCache().push(entity);
+            this.fire("added", {
+                entity: entity
+            });
         },
         /// *** Cache methods *** //
         /**
@@ -783,8 +786,12 @@ YUI.add('wegas-datasource', function(Y) {
                 this.findById(entity.get("teamId")).get("players").push(entity);
 
             } else {
-                this.getCache().push(entity);
+                //this.getCache().push(entity);
+                this.getCache().splice(0, 0, entity);                           // Add in first position
             }
+            this.fire("added", {
+                entity: entity
+            });
         },
         /**
          * @deprecated

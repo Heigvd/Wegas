@@ -286,7 +286,8 @@
                                                                     }, {
                                                                         "type": "NewEntityButton",
                                                                         "label": "State machine",
-                                                                        "targetClass": "FSMDescriptor"
+                                                                        "targetClass": "FSMDescriptor",
+                                                                        "cssClass": "experimental"
                                                                     }, {
                                                                         "type": "NewEntityButton",
                                                                         "label": "Object",

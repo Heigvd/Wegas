@@ -17,7 +17,6 @@
         <meta name="audience" content="General" />
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="30 days" />
-        <meta name="google-site-verification" content="-b8dPe-4MM3sRxjMr2TnS0_flJnYWfXk-socROUpUnc" />
         <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
 
         <!-- YUI -->
@@ -41,6 +40,11 @@
     <ui:insert name="page">
         <h:body>
             <ui:insert name="body">Default Body</ui:insert>
+
+            <ui:fragment rendered="#{wegasConfig.clientErrorLogging}" >
+                <!-- Google Analytics -->
+                <ui:include src="ga-tracker.xhtml" />
+           </ui:fragment>
         </h:body>
     </ui:insert>
 

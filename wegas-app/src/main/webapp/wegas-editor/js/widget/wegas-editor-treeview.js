@@ -368,7 +368,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 //
                 ////tab.set("visible", true);
                 ////tab.set("selected", 2);
-                ////tab.witem(0).set("emptyMessage", "This game model has no games.");
+                ////tab.witem(0).set("emptyMessage", "This model has no games.");
                 //tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
 
                 //Wegas.Facade.Game.set("source",
@@ -381,7 +381,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
         syncUI: function() {
             GameModelTreeView.superclass.syncUI.apply(this);
             this.treeView.add({
-                label: "All game models",
+                label: "All models",
                 iconCSS: 'wegas-icon-gamemodel',
                 selected: (!this.currentSelection) ? 2 : 0
             }, 0);
@@ -399,7 +399,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + '<div class="yui3-u-1-4 yui3-u-selected">Created</div>'
                 + '<div class="yui3-u-1-4">Created by</div>'
                 + '<div class="yui3-u-1-4">Token</div>'
-                + '<div class="yui3-u-1-4">Game model</div></div>'
+                + '<div class="yui3-u-1-4">Model</div></div>'
                 + '</div></div>',
         renderUI: function() {
             CreatedGameTreeView.superclass.renderUI.apply(this);
@@ -428,7 +428,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
                 + '<div class="yui3-u-1-3 yui3-u-selected">Joined</div>'
                 + '<div class="yui3-u-1-3">Created by</div>'
-                + '<div class="yui3-u-1-3">Game model</div></div>'
+                + '<div class="yui3-u-1-3">Model</div></div>'
                 + '</div></div>',
         // ** Lifecycle methods ** //
         genTreeViewElements: function(elements) {
