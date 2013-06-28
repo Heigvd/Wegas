@@ -95,7 +95,7 @@ YUI.add('wegas-shareuser', function(Y) {
             });
 
             this.saveButton = new Y.Wegas.Button({
-                label: "Save",
+                label: "Add",
                 render: el.one(".wegas-adduser")
             });
 
