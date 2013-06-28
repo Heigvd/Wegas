@@ -263,6 +263,13 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             }
         }
     });
+    /*Inject specific plugins*/
+    Y.Wegas.FlexitestsController.ATTRS.plugins = Y.clone(Y.Wegas.FlexitestsController.ATTRS.plugins);
+    Y.Wegas.FlexitestsController.ATTRS.plugins._inputex.items.push({
+        type: "Button",
+        label: "Swap top zones",
+        data: "SwapZone"
+    });
     Y.Plugin.FlexiResponse = Y.Base.create("wegas-flexi-response", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
     }, {
         NS: "flexiresponse",

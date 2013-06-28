@@ -22,8 +22,8 @@ YUI.add("wegas-flexitests-results", function(Y) {
 
         },
         renderUI: function() {
-            this.get("contentBox").append("<div class='config'>Extracting test page " + this.get("testPage") + " configuration</div>");
-            this.get("contentBox").append("<div class='results'></div>");
+            this.get("contentBox").append("<div class='config'></div>");
+            this.get("contentBox").append("<div class='results'>Collecting results</div>");
         },
         bindUI: function() {
         },
@@ -36,30 +36,52 @@ YUI.add("wegas-flexitests-results", function(Y) {
             } finally {
                 script += "]);";
             }
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                cfg: {
-                    method: "POST",
-                    data: Y.JSON.stringify({
-                        "@class": "Script",
-                        "language": "JavaScript",
-                        "content": script
-                    })
-                },
-                on: {
-                    success: Y.bind(function(e) {
-                        this.renderTable(Y.JSON.parse(e.data.response).entities);
-                    }, this),
-                    failure: Y.bind(function(e) {
-                        Y.log("error", "Failed to store data", "Y.Wegas.FlexitestsMCQ");
-                    }, this)
-                }
-            });
-            Y.Wegas.Facade.Page.cache.getPage(this.get("testPage"), Y.bind(function(page) {
-                Y.Wegas.Widget.use(page, Y.bind(function(e) {
-                    this._createConfig(Y.Wegas.Widget.create(page));
+
+            if (!this.get("simpleMode")) {
+                this.get("contentBox").one(".config").setContent("Extracting test page " + this.get("testPage") + " configuration");
+                Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                    cfg: {
+                        method: "POST",
+                        data: Y.JSON.stringify({
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": script
+                        })
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            this.renderTable(Y.JSON.parse(e.data.response).entities);
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            Y.log("error", "Failed to retrieve data", "Y.Wegas.FlexitestsMCQ");
+                        }, this)
+                    }
+                });
+                Y.Wegas.Facade.Page.cache.getPage(this.get("testPage"), Y.bind(function(page) {
+                    Y.Wegas.Widget.use(page, Y.bind(function(e) {
+                        this._createConfig(Y.Wegas.Widget.create(page));
+                    }, this));
                 }, this));
-            }, this));
+            } else {
+                this.renderResult(this.get("variable.evaluated"));
+            }
+        },
+        renderResult: function(results) {
+            var props = results.getInstance().get("properties"), i, sum = 0, correct = 0;
+            for (i in props) {
+                if (props.hasOwnProperty(i)) {
+                    sum += 1;
+                    if (Y.JSON.parse(props[i]).valid) {
+                        correct += 1;
+                    }
+                }
+            }
+            this.get("contentBox").one(".config").empty();
+            try {
+                this.get("contentBox").one(".results").setContent("Final result : " + correct + " on " + sum + " correct response" + (correct > 1 ? "s" : "") + " (" + (correct * 100 / sum).toFixed(1) + "%)");
+            } catch (e) {
+            }
         },
         renderTable: function(results) {
             var demographics = results[0],
@@ -205,15 +227,22 @@ YUI.add("wegas-flexitests-results", function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Test variable (Object)",
+                    label: "Test results storage (Object)",
                     description: "Test result storage"
                 }
             }, demographics: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Form variable",
+                    label: "Demographic form storage(Object)",
                     description: "Form variable storage"
+                }
+            },
+            simpleMode: {
+                value: false,
+                type: "boolean",
+                _inputex: {
+                    label: "Player mode"
                 }
             },
             testPage: {

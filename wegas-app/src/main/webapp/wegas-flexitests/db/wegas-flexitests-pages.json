@@ -234,7 +234,7 @@
             {
                 "type": "Text",
                 "cssClass": "flexitests-title",
-                "content": "FlexiTests"
+                "content": "<p>FlexiTests</p>"
             }, 
             {
                 "type": "Text",
@@ -290,10 +290,9 @@
                             "value": "m"
                         }, 
                         {
-                            "fields": [
-                            ],
-                            "type": "variabledescriptorselect",
-                            "value": "VariableDescriptorFacade.find(851)"
+                            "name": "date",
+                            "type": "now",
+                            "value": 1372340370376
                         }
                     ]
                 }
@@ -302,11 +301,28 @@
     },
     "1": {
         "type": "PageLoader",
-        "pageLoaderId": "mainarea",
         "cssClass": "flexitests",
+        "pageLoaderId": "mainarea",
         "variable": {
             "name": "currentPage"
         }
+    },
+    "5": {
+        "type": "List",
+        "direction": "vertical",
+        "children": [
+            {
+                "type": "FlexitestsResults",
+                "variable": {
+                    "name": "results"
+                },
+                "demographics": {
+                    "name": "demographics"
+                },
+                "simpleMode": false,
+                "testPage": "3"
+            }
+        ]
     },
     "4": {
         "type": "List",
@@ -319,7 +335,13 @@
                 },
                 "demographics": {
                     "name": "demographics"
-                }
+                },
+                "simpleMode": true,
+                "testPage": "3"
+            }, 
+            {
+                "type": "Text",
+                "content": "<p>Score table</p>\n<p>80-100 % Excellent</p>\n<p>60-80 % Good</p>\n<p>40-60 % Satisfying</p>\n<p>0-40 % Bad</p>"
             }
         ]
     }
