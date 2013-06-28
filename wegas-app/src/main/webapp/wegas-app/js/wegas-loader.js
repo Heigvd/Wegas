@@ -494,6 +494,11 @@ YUI().use(function(Y) {
                         'esprima'],
                     ix_provides: 'variableselect'
                 },
+                'wegas-inputex-now': {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-now-min.js',
+                    requires: ['wegas-inputex', 'inputex-hidden'],
+                    ix_provides: 'now'
+                },
                 /** Common Widgets **/
                 'treeview': {
                     path: 'wegas-editor/js/util/treeview-min.js',
@@ -638,7 +643,7 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/js/widget/wegas-sharerole-min.js',
                     requires: ['inputex-select', 'inputex-list', "inputex-checkbox"],
                     ws_provides: "ShareRole"
-                }, 
+                },
                 'wegas-shareuser': {
                     path: 'wegas-editor/js/widget/wegas-shareuser-min.js',
                     requires: ['inputex-list', "inputex-checkbox", "inputex-autocomplete", 'autocomplete-highlighters', 'inputex-hidden'],
@@ -804,7 +809,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-flexitests-results': {
                     path: "wegas-flexitests/js/wegas-flexitests-results-min.js",
-                    requires: ["wegas-widget"],
+                    requires: ["wegas-widget", "datatable"],
                     ws_provides: "FlexitestsResults"
                 }
             }
@@ -888,7 +893,6 @@ YUI().use(function(Y) {
             }
         }
     });
-
     function loadModules(group) {
         var i, modules = group.modules,
                 moduleName,
