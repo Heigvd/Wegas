@@ -1,6 +1,6 @@
 {
     "@class":"GameModel",
-    "name":"Default game model",
+    "name":"Default model",
     "scriptLibrary": {
         "default": {
             "@class": "GameModelContent",
