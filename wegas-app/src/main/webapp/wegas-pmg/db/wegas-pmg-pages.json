@@ -27,10 +27,10 @@
                                 ],
                                 "variable": "currentPhase"
                             }, {
-                                "type": "VariableDisplay",
+                                "type": "Template",
                                 "cssClass": "pmg-period",
                                 "label": "Periods",
-                                "view": "valuebox",
+                                "template": "valuebox",
                                 "variable": {
                                     "expr": "currentPeriod.items[currentPhase.value].descriptorId"
                                 }
@@ -98,12 +98,12 @@
                         ]
                     }, {
                         "cssClass": "pmg-timevariable",
-                        "type": "VariableDisplay",
+                        "type": "Template",
                         "label": "Available time: ",
                         "variable": {
                             "name": "timeCards"
                         },
-                        "view": "box"
+                        "template": "box"
                     }
                 ]
             }, {

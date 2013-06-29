@@ -40,11 +40,11 @@
     clear:both;
 }
 
-.header .wegas-variabledisplay-valuebox-label{
+.header .wegas-template-valuebox label{
     display:none;
 }
 
-.header .pmg-period .wegas-valuebox-unit{
+.header .pmg-period .wegas-template-valuebox-unit{
     width:18px;
     height:17px;
     float:left;
@@ -56,11 +56,11 @@
     text-align: center;
 }
 
-.header .pmg-period .wegas-valuebox-previous{
+.header .pmg-period .wegas-template-valuebox-previous{
     background-color:#BBBBBB;
 }
 
-.header .pmg-period .wegas-valuebox-selected{
+.header .pmg-period .wegas-template-valuebox-selected{
     background-image: url(../../wegas-pmg/images/next.png);
     background-repeat: no-repeat;
     background-position: center;
@@ -97,7 +97,7 @@
     margin-right: 10px;
 }
 
-.header .pmg-timevariable .wegas-variabledisplay-box-unit{
+.header .pmg-timevariable .wegas-template-box-unit{
     width:5px;
     height:10px;
     margin: 2px 1px 0 0;
@@ -106,12 +106,8 @@
     float:left;
 }
 
-.header .pmg-timevariable .wegas-variabledisplay-box-value{
+.header .pmg-timevariable .wegas-template-box-value{
     float:left;
-}
-
-.header .pmg-timevariable .wegas-variabledisplay-box-valueMax{
-    display:none;
 }
 
 /*-----------------------------horizontal-menu--------------------------------*/
