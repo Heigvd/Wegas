@@ -49,8 +49,11 @@ public class ChoiceInstance extends VariableInstance {
     @Column(name = "result_id")
     @JsonView(Views.Public.class)
     private Long currentResultId;
-    @Transient
-    private String currentResultName;
+    /**
+     *
+     */
+//    @Transient
+//    private String currentResultName;
 
     /**
      *
@@ -69,19 +72,19 @@ public class ChoiceInstance extends VariableInstance {
         this.currentResultId = currentResultId;
     }
 
-    @JsonView(Views.Export.class)
-    public void getCurrentResultName() {
-        this.currentResult.getName();
-    }
-
-    @JsonIgnore
-    public String getSerializedResultName() {
-        return this.currentResultName;
-    }
-
-    public void setCurrentResultName(String currentResultName) {
-        this.currentResultName = currentResultName;
-    }
+//    @JsonView(Views.Export.class)
+//    public void getCurrentResultName() {
+//        this.currentResult.getName();
+//    }
+//
+//    @JsonIgnore
+//    public String getSerializedResultName() {
+//        return this.currentResultName;
+//    }
+//
+//    public void setCurrentResultName(String currentResultName) {
+//        this.currentResultName = currentResultName;
+//    }
 
     /**
      *
