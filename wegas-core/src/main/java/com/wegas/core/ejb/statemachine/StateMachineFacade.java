@@ -75,17 +75,34 @@ public class StateMachineFacade implements Serializable {
      */
     public void PlayerActionListener(@Observes PlayerAction playerAction) {
         logger.debug("Received PlayerAction event");
-        this.playerUpdated(playerAction.getPlayer());
-        this.playerTransitions.clear();
+        Player player = playerAction.getPlayer();
+        if (player == null) {
+            player = variableInstanceFacade.findAPlayer(requestManager.getUpdatedInstances().get(0));
+        }
+        this.runForPlayer(player);
+//         this.playerUpdated(playerAction.getPlayer());
+//        this.playerTransitions.clear();
     }
 
     public void resetEventListener(@Observes ResetEvent resetEvent) {
         logger.debug("Received Reset event");
         System.out.println("ResetEvent");
-        for (Player p : resetEvent.getConcernedPlayers()) {
-            this.playerUpdated(p);
+        for (Player player : resetEvent.getConcernedPlayers()) {
+//            this.playerUpdated(player);
+            this.runForPlayer(player);
         }
-        this.playerTransitions.clear();
+//        this.playerTransitions.clear();
+    }
+
+    private void runForPlayer(Player player) {
+        List<VariableDescriptor> descriptors = variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
+        List<StateMachineDescriptor> statemachines = new ArrayList<>();
+        for (VariableDescriptor desc : descriptors) {
+            statemachines.add((StateMachineDescriptor) desc);
+        }
+        List<Transition> passed = new ArrayList<>();
+        Integer steps = this.doSteps(player, passed, statemachines, 0);
+        logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
     }
 
     /**
@@ -148,6 +165,72 @@ public class StateMachineFacade implements Serializable {
                 logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", p.getName(), playerTransitions.get(p));
             }
         }
+    }
+
+    private Integer doSteps(Player player, List<Transition> passedTransitions, List<StateMachineDescriptor> stateMachineDescriptors, Integer steps) {
+
+        List<Script> impacts = new ArrayList<>();
+        List<Script> preImpacts = new ArrayList<>();
+        List<Transition> transitions;
+        StateMachineInstance smi;
+        Boolean validTransition;
+        Boolean transitionPassed = false;
+
+        for (VariableDescriptor sm : stateMachineDescriptors) {
+            validTransition = false;
+            smi = (StateMachineInstance) sm.getInstance(player);
+            if (!smi.getEnabled()) {
+                continue;
+            }
+            transitions = smi.getCurrentState().getTransitions();
+            for (Transition transition : transitions) {
+                if (transition instanceof DialogueTransition) {                   //Dialogue, don't eval
+                    continue;
+                } else if (transition.getTriggerCondition() == null
+                        || transition.getTriggerCondition().getContent() == null
+                        || transition.getTriggerCondition().getContent().equals("")) {
+                    validTransition = true;
+                } else {
+                    requestManager.setPlayer(player);
+                    try {
+                        validTransition = (Boolean) scriptManager.eval(transition.getTriggerCondition());
+                    } catch (ScriptException ex) {
+                    }
+                }
+                if (validTransition == null) {
+                    throw new WegasException("Please review condition [" + sm.getEditorLabel() + "]:\n"
+                            + transition.getTriggerCondition().getContent());
+                } else if (validTransition) {
+                    if (passedTransitions.contains(transition)) {
+                        /*
+                         * Loop prevention : that player already passed through
+                         * this transiton
+                         */
+                        logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                    } else {
+                        passedTransitions.add(transition);
+                        smi.setCurrentStateId(transition.getNextStateId());
+                        preImpacts.add(transition.getPreStateImpact());
+                        impacts.add(smi.getCurrentState().getOnEnterEvent());
+                        smi.transitionHistoryAdd(transition.getId());
+                        transitionPassed = true;
+                    }
+                }
+            }
+        }
+        if (transitionPassed) {
+            preImpacts.addAll(impacts);
+            try {
+                requestManager.setPlayer(player);
+                scriptManager.eval(preImpacts);
+            } catch (ScriptException | WegasException ex) {
+                logger.warn("Script failed ", ex);
+            }
+            steps++;
+            steps = this.doSteps(player, passedTransitions, stateMachineDescriptors, steps);
+        }
+        return steps;
+
     }
 
     private Boolean run(Map<StateMachineInstance, Player> statemachinesPlayerMap,

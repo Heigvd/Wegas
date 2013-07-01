@@ -107,7 +107,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
          * @private
          */
         destructor: function() {
-            this.responseHandler.detach();
+           // this.responseHandler.detach();
             this.selectField.destroy();
             this.aceField.destroy();
             this.newButton.destroy();
