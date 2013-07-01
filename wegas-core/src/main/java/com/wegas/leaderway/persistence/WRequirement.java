@@ -1,12 +1,11 @@
 package com.wegas.leaderway.persistence;
 
+import com.wegas.core.persistence.AbstractEntity;
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -20,7 +19,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @XmlType(name = "")                                                             // This forces to use Class's short name as type
 //@XmlAccessorType(XmlAccessType.FIELD)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class WRequirement implements Serializable {
+public class WRequirement extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -46,17 +45,27 @@ public class WRequirement implements Serializable {
      * 
      */
     private Long quantity;
-    
+
     public WRequirement() {
         this.limit = 0;
         this.work = "";
         this.level = 0;
         this.quantity = 0L;
     }
-    
+
+    @Override
+    public void merge(AbstractEntity a) {
+        WRequirement other = (WRequirement) a;
+        this.setLevel(other.getLevel());
+        this.setLimit(other.getLimit());
+        this.setQuantity(other.getQuantity());
+        this.setWork(other.getWork());
+    }
+
     /**
      * @return the id
      */
+    @Override
     public Long getId() {
         return id;
     }
