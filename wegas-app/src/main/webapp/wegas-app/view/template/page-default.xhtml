@@ -40,6 +40,11 @@
     <ui:insert name="page">
         <h:body>
             <ui:insert name="body">Default Body</ui:insert>
+
+            <ui:fragment rendered="#{wegasConfig.clientErrorLogging}" >
+                <!-- Google Analytics -->
+                <ui:include src="ga-tracker.xhtml" />
+           </ui:fragment>
         </h:body>
     </ui:insert>
 

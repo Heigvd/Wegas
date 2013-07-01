@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -106,6 +106,7 @@ public class ScriptFacade implements Serializable {
         // Invocable invocableEngine = (Invocable) engine;
 
         engine.put("self", requestManager.getPlayer());                         // Inject current player
+        engine.put("gameModel", requestManager.getPlayer().getGameModel());     // Inject current gameModel
         Object result = null;
         try {
             engineInvocationEvent.fire(

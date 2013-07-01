@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -48,7 +48,6 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     @OneToOne
     //@JsonBackReference
     private VariableDescriptor variableDescriptor;
-
     //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     private String broadcastScope = TeamScope.class.getSimpleName();
 
