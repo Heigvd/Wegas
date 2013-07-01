@@ -181,6 +181,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public void setItems(List<ChoiceDescriptor> items) {
         for (ChoiceDescriptor cd : items) {     //@todo: due to duplication, fix this
             cd.setQuestion(this);
+            cd.setGameModel(this.getGameModel());
         }
         this.items = items;
     }

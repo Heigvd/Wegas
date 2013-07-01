@@ -8,13 +8,22 @@
 package com.wegas.core.rest.util;
 
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.mcq.persistence.ChoiceInstanceDeserializer;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.AnnotationIntrospector;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.codehaus.jackson.map.Module.SetupContext;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.deser.BeanDeserializer;
+import org.codehaus.jackson.map.deser.BeanDeserializerModifier;
+import org.codehaus.jackson.map.introspect.BasicBeanDescription;
 import org.codehaus.jackson.map.introspect.JacksonAnnotationIntrospector;
+import org.codehaus.jackson.map.module.SimpleModule;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 import org.slf4j.LoggerFactory;
 
@@ -69,9 +78,24 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
         AnnotationIntrospector pair = new AnnotationIntrospector.Pair(secondary, primary);
 
         mapper.setAnnotationIntrospector(pair);
+
+//        mapper.registerModule(new SimpleModule("wegasdeserialize", new Version(1, 1, 1, null)) {
+//            @Override
+//            public void setupModule(SetupContext context) {
+//                super.setupModule(context);
+//
+//                context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
+//                    @Override
+//                    public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BasicBeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+//
+//                        return new ChoiceInstanceDeserializer((BeanDeserializer) deserializer);
+//                    }
+//                });
+//            }
+//        });
+
         //mapper.getDeserializationConfig().withAnnotationIntrospector(pair);
         //mapper.getSerializationConfig().withAnnotationIntrospector(pair);
-
 
         //mapper.configure(Feature.INDENT_OUTPUT, true);
         //mapper.getSerializationConfig().setDateFormat(myDateFormat);

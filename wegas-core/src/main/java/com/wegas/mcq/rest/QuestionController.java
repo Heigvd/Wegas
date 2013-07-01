@@ -14,7 +14,6 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
-import com.wegas.mcq.ejb.ReplyFacade;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
@@ -46,8 +45,6 @@ public class QuestionController {
     private UserFacade userFacade;
     @EJB
     private PlayerFacade playerFacade;
-    @EJB
-    private ReplyFacade replyFacade;
 
     /**
      *
@@ -117,11 +114,11 @@ public class QuestionController {
 
     @PUT
     @Path("Reply/{entityId: [1-9][0-9]*}")
-    public Reply update(@PathParam("entityId") Long entityId, Reply entity) {
+    public Reply update(@PathParam("entityId") Long replyId, Reply reply) {
 
         //SecurityUtils.getSubject().checkPermission("Game:Edit:g" + VariableInstanceFacade.findGame(entityId).getId());
 
-        return replyFacade.update(entityId, entity);
+        return questionDescriptorFacade.updateReply(replyId, reply);
     }
 
     private void checkPermissions(Game game, Long playerId) throws UnauthorizedException {
