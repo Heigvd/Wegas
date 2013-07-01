@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -215,7 +215,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                 case "VariableDescriptorFacade":
                                     return {
                                         type: "wysiwygline", // wysiwygline/variabledescriptorsetter
-                                        value: expression.arguments[0].value
+                                        value: expression.arguments[1].value
                                     };
                                 case "RequestManager":
                                     var args = [];

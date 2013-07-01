@@ -6,19 +6,29 @@
  * Licensed under the MIT License
  */
 /**
+ *
+ * @TODO les showmessage en cas de failure des requêtes ne marchent pas
+ *
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 
 YUI.add('wegas-shareuser', function(Y) {
     var CONTENTBOX = 'contentBox',
             ShareUser = Y.Base.create("wegas-shareuser", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
-        
+        /**
+         *
+         */
+        CONTENT_TEMPLATE: "<div><div class=\"title\">Permissions</div><div class=\"wegas-userlist\"></div>"
+                + "<div class=\"wegas-adduser\"><div class=\"title\">Add user</div></div></div>",
+        /**
+         *
+         */
         renderUI: function() {
             var el = this.get(CONTENTBOX),
-                i, e = this.get("entity"),
-                permissions = [{
-                    name: "username", 
-                    type: 'string', 
+                    e = this.get("entity"),
+                    permissions = [{
+                    name: "username",
+                    type: 'markup',
                     readonly: true,
                     className: "username-field"
                 }, {
@@ -26,59 +36,54 @@ YUI.add('wegas-shareuser', function(Y) {
                     type: "hidden"
                 }];
 
-            for (i=0; i<this.get("permsList").length; i++){
-                permissions.push({
-                    type: 'boolean',
-                    label: this.get("permsList")[i].label,
-                    name: this.get("permsList")[i].value
-                });
-            }
-            
+            permissions = permissions.concat(Y.Array.map(this.get("permsList"), function(item) {
+                item.type = "boolean";
+                return item;
+            }));
+
             this.userList = new UserPermissionList({
-                label: 'User list',
                 elementType: {
                     type: 'permissiongroup',
                     fields: permissions,
                     className: "permission-group"
                 },
-                parentEl: el,
+                parentEl: el.one(".wegas-userlist"),
                 useButtons: true
             });
-            
+
             if (e instanceof Y.Wegas.persistence.GameModel) {
                 this.userList.targetEntityId = "gm" + e.get("id");
             } else {
                 this.userList.targetEntityId = "g" + e.get("id");
             }
-            
+
+
             this.autocompleteValue = [];
-            
             this.field = new Y.inputEx.AutoComplete({
-                parentEl: el,
-                typeInvite: "e-mail / name / lastname",
+                parentEl: el.one(".wegas-adduser"),
+                typeInvite: "e-mail, name or lastname",
                 // Format the hidden value (value returned by the form)
                 returnValue: Y.bind(function(oResultItem) {
-                    console.log(this.field.options);
-                    if (!this.field.options.value){
+                    if (!this.field.options.value) {
                         this.field.options.value = [];
-                        console.log("in instanciate");
+                        // console.log("in instanciate");
                     }
                     this.field.options.value.push(oResultItem);
                     return oResultItem.value;
                 }, this),
                 autoComp: {
-                    minQueryLength: 2,
+                    minQueryLength: 1,
                     maxResults: 30,
                     resultTextLocator: 'label',
                     resultHighlighter: 'phraseMatch',
-//                    queryDelimiter: ';',
-                    source: "http://localhost:8080/Wegas/rest/User/AutoComplete/{query}",
+                    // queryDelimiter: ';',
+                    source: Y.Wegas.app.get("base") + "rest/User/AutoComplete/{query}",
                     enableCache: false,
                     resultListLocator: Y.bind(function(responses) {
                         var i;
-                        Y.Array.forEach(this.userList.subFields, function (user) {
-                            for (i=0; i<responses.length; i++){
-                                if (user.getValue().userId === responses[i].value){
+                        Y.Array.forEach(this.userList.subFields, function(user) {
+                            for (i = 0; i < responses.length; i++) {
+                                if (user.getValue().userId === responses[i].value) {
                                     responses.splice(responses[i], 1);
                                     break;
                                 }
@@ -88,46 +93,46 @@ YUI.add('wegas-shareuser', function(Y) {
                     }, this)
                 }
             });
-                       
+
             this.saveButton = new Y.Wegas.Button({
-                label: "save",
-                cssClass: "wegas-shareUser-save",
-                render: el
+                label: "Add",
+                render: el.one(".wegas-adduser")
             });
-            
-            this.loadingPermissions();
+
+            this.loadPermissions();
         },
-                
         bindUI: function() {
-           
-             Y.once('domready',function() {
-                 console.log(this);
-             },this);
-            this.saveButton.on("click", function(){
-                if (this.field.getValue() === "") return;
-                Y.Array.forEach(this.field.options.value, function (account) {
+            this.saveButton.on("click", function() {
+                if (this.field.getValue() === "")
+                    return;
+
+                Y.Array.forEach(this.field.options.value, function(account) {
                     this.userList.addElement({
                         username: account.label,
-                        userId: account.value 
+                        userId: account.value
                     });
                 }, this);
                 this.field.options.value = [];
                 this.field.setValue("");
             }, this);
         },
-        
-        loadingPermissions: function() {
+        destructor: function() {
+            this.field.destroy();
+            this.saveButton.destroy();
+            this.userList.destroy();
+        },
+        loadPermissions: function() {
             Y.Wegas.Facade.User.sendRequest({
                 request: "/FindAccountPermissionByInstance/" + this.userList.targetEntityId,
                 cfg: {
                     method: "GET"
                 },
                 on: {
-                    success: Y.bind(function (e) {
+                    success: Y.bind(function(e) {
                         var data = e.response.results.entities,
-                            i, permissions, splitedPerm, newField, username;
-                            
-                        Y.Array.forEach(data, function (account) {
+                                i, permissions, splitedPerm, newField, username;
+
+                        Y.Array.forEach(data, function(account) {
                             permissions = account.get('permissions');
                             if (account.get('firstname') !== null && account.get('lastname') !== null) {
                                 username = account.get('firstname') + " " + account.get('lastname');
@@ -138,18 +143,18 @@ YUI.add('wegas-shareuser', function(Y) {
                                 username: username,
                                 userId: account.get('id')
                             });
-                            
-                            Y.Array.forEach(newField.inputs, function (field) {
-                                for (i=0; i<permissions.length; i++){
+
+                            Y.Array.forEach(newField.inputs, function(field) {
+                                for (i = 0; i < permissions.length; i++) {
                                     splitedPerm = permissions[i].get("val").value.split(":");
-                                    if (splitedPerm[2] === this.userList.targetEntityId){
-                                        if (field.options.name === splitedPerm[0] + ":" + splitedPerm[1]){
+                                    if (splitedPerm[2] === this.userList.targetEntityId) {
+                                        if (field.options.value === splitedPerm[0] + ":" + splitedPerm[1]) {
                                             field.setValue(true, false);
                                         }
                                     }
                                 }
-                            }, this);                            
-                            
+                            }, this);
+
                         }, this);
                     }, this),
                     failure: Y.bind(function(e) {
@@ -178,22 +183,21 @@ YUI.add('wegas-shareuser', function(Y) {
     var UserPermissionList = function(options) {
         UserPermissionList.superclass.constructor.call(this, options);
     };
-    Y.extend(UserPermissionList, Y.inputEx.ListField,  {
+    Y.extend(UserPermissionList, Y.inputEx.ListField, {
         /** @lends Y.inputEx.Wegas.UserPermissionList# */
-        
+
         onDelete: function(e) {
             var elementDiv = e.target._node.parentNode,
-                subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
-            for(var i = 0 ; i < this.subFields.length ; i++) {
-               if(this.subFields[i].getEl() === subFieldEl) {  
-                  this.deletePermission(this.targetEntityId, this.subFields[i].getValue().userId); //param : entity Id, have userId
-                  break;
-               }
+                    subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
+            for (var i = 0; i < this.subFields.length; i++) {
+                if (this.subFields[i].getEl() === subFieldEl) {
+                    this.deletePermission(this.targetEntityId, this.subFields[i].getValue().userId); //param : entity Id, have userId
+                    break;
+                }
             }
 
             UserPermissionList.superclass.onDelete.apply(this, arguments);
         },
-        
         deletePermission: function(entityId, userId) {
             Y.Wegas.Facade.User.sendRequest({
                 request: "/DeleteAccountPermissionByInstanceAndAccount/" + entityId + "/" + userId,
@@ -203,7 +207,7 @@ YUI.add('wegas-shareuser', function(Y) {
             });
         }
     });
-    
+
     /**
      * @name Y.inputEx.Wegas.PermissionGroup
      * @class
@@ -214,19 +218,17 @@ YUI.add('wegas-shareuser', function(Y) {
     var PermissionGroup = function(options) {
         PermissionGroup.superclass.constructor.call(this, options);
     };
-    Y.extend(PermissionGroup, Y.inputEx.Group,  {
-       
+    Y.extend(PermissionGroup, Y.inputEx.Group, {
         /** @lends Y.inputEx.Wegas.PermissionGroup# */
         onChange: function(fieldValue, fieldInstance) {
-            if (fieldValue){
-                this.addPermission(fieldInstance.options.name + ":" + this.parentField.targetEntityId, this.getValue().userId);
+            if (fieldValue) {
+                this.addPermission(fieldInstance.options.value + ":" + this.parentField.targetEntityId, this.getValue().userId);
             } else {
-                this.removePermission(fieldInstance.options.name + ":" + this.parentField.targetEntityId, this.getValue().userId);
+                this.removePermission(fieldInstance.options.value + ":" + this.parentField.targetEntityId, this.getValue().userId);
             }
             PermissionGroup.superclass.onChange.apply(this, arguments);
         },
-        
-        removePermission: function (permission, userId) {
+        removePermission: function(permission, userId) {
             Y.Wegas.Facade.User.sendRequest({
                 request: "/DeleteAccountPermissionByPermissionAndAccount/" + permission + "/" + userId,
                 cfg: {
@@ -239,8 +241,7 @@ YUI.add('wegas-shareuser', function(Y) {
                 }
             });
         },
-                
-        addPermission : function(permission, userId) {
+        addPermission: function(permission, userId) {
             Y.Wegas.Facade.User.sendRequest({
                 request: "/addAccountPermission/" + permission + "/" + userId,
                 cfg: {

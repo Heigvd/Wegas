@@ -53,7 +53,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         mf.listener(me);
 
         //get inbox
-        VariableDescriptor vd = vdf.findByName(player.getGameModel(), "inbox");
+        VariableDescriptor vd = vdf.find(player.getGameModel(), "inbox");
         InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
         assertEquals(msg, gettedInbox.getMessages().get(0));
 
@@ -83,7 +83,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         mf.send(player, msg);
 
         //get inbox
-        VariableDescriptor vd = vdf.findByName(player.getGameModel(), "inbox");
+        VariableDescriptor vd = vdf.find(player.getGameModel(), "inbox");
         InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
         assertEquals(msg, gettedInbox.getMessages().get(0));
 
@@ -112,7 +112,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         Message msg = mf.send(player, "from", "subject", "body");
 
         //get inbox
-        VariableDescriptor vd = vdf.findByName(player.getGameModel(), "inbox");
+        VariableDescriptor vd = vdf.find(player.getGameModel(), "inbox");
         InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
         assertEquals(msg, gettedInbox.getMessages().get(0));
 
@@ -144,7 +144,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         Message msg = mf.send(player, "subject", "body", "from", attachements);
 
         //get inbox
-        VariableDescriptor vd = vdf.findByName(player.getGameModel(), "inbox");
+        VariableDescriptor vd = vdf.find(player.getGameModel(), "inbox");
         InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
         assertEquals(msg, gettedInbox.getMessages().get(0));
         assertEquals("subject", gettedInbox.getMessages().get(0).getSubject());
