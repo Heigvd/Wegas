@@ -12,7 +12,6 @@ import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
@@ -65,7 +64,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         vdf.remove(question.getId());                                           // Clean up
     }
 
-//    @Test
+    @Test
     public void testCurrentResult() throws Exception {
 
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);// Lookup Ejb's
@@ -84,7 +83,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice.addResult(r);
         Result r2 = new Result(REPLYNAME2);
         choice.addResult(r2);
-        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2);  // And the default reply is the second
+        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2); // And the default reply is the second
         vdf.createChild(question.getId(), choice);
 
         ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResultId(r2.getId());// Sset the default reply to the second one
@@ -93,10 +92,14 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         gameModelFacade.reset(gameModel.getId());                               // Restart to propagate default instance value change
 
         choice = (ChoiceDescriptor) vdf.find(choice.getId());                   // Retrieve entity
-        assertEquals(REPLYNAME2, choice.getInstance(player).getCurrentResult().getName());// And check the current result is stored
+        assertEquals(REPLYNAME2, choice.getInstance(player).getResult().getName());// And check the current result is stored
 
         ChoiceDescriptor duplicate = (ChoiceDescriptor) vdf.duplicate(choice.getId());
-        assertEquals(REPLYNAME2, duplicate.getInstance(player).getCurrentResult().getName());// And check the current result is stored
+
+        gameModelFacade.reset(gameModel.getId());                               // Restart to propagate default instance value change
+
+        choice = (ChoiceDescriptor) vdf.find(duplicate.getId());                   // Retrieve entity
+        assertEquals(REPLYNAME2, choice.getInstance(player).getResult().getName());// And check the current result is stored
 
         vdf.remove(question.getId());                                           // Clean up
     }
