@@ -48,7 +48,7 @@ public class StateMachineITest extends AbstractEJBTest {
             playerFacade = lookupBy(PlayerFacade.class);
             instanceFacade = lookupBy(VariableInstanceFacade.class);
         } catch (NamingException ex) {
-            Logger.getLogger(StateMachineIT.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StateMachineITest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
