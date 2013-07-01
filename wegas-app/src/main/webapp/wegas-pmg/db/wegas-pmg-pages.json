@@ -78,9 +78,9 @@
                         "children": [
                             {
                                 "type": "GaugeDisplay",
-                                "label": "Fixed costs",
+                                "label": "Costs",
                                 "variable": {
-                                    "name": "fixedCosts"
+                                    "name": "costs"
                                 }
                             }, {
                                 "type": "GaugeDisplay",
@@ -280,6 +280,20 @@
         "children": [
             {
                 "type": "PmgSlidePanel",
+                "title": "Finances",
+                "cssClass": "finances",
+                "animation": false,
+                "children": [
+                    {
+                        "type": "Template",
+                        "custom": "<%  var fixedCosts=0, wages=0, unworked=0, total=0; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); unworked = unworked + parseFloat(properties.unworkedHoursCosts); } total = wages + fixedCosts + unworked; %><div class='wages'><span class='label'>Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>Unworked Hours</span><span class='variableValue'><%= unworked %></span></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
+                        "variable": {
+                            "name": "tasks"
+                        }
+                    }
+                ]
+            }, {
+                "type": "PmgSlidePanel",
                 "title": "EVM",
                 "cssClass": "evm",
                 "animation": false,
@@ -297,20 +311,6 @@
                             "name": "earnedValue",
                             "label": "EV (Earned Value)"
                         }]
-                    }
-                ]
-            }, {
-                "type": "PmgSlidePanel",
-                "title": "Finances",
-                "cssClass": "finances",
-                "animation": false,
-                "children": [
-                    {
-                        "type": "Template",
-                        "custom": "<div class='fixedCosts'><span class='label'>Fixed Costs</span><span class='variableValue'>10</span></div><div class='tasks'><span class='label'>Tasks</span><span class='variableValue'>100</span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'>10</span></div><div class='taskFixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'>10</span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'>10</span></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'>10</span></div>",
-                        "data": {
-                            "name": "tasks"
-                        }
                     }
                 ]
             }, {
