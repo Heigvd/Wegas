@@ -11,6 +11,7 @@ import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.event.DescriptorRevivedEvent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.script.ScriptException;
@@ -53,11 +55,32 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
 
+    public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
+        logger.debug("Received Reset event");
+
+        if (event.getEntity() instanceof ChoiceDescriptor) {
+            ChoiceDescriptor choice = (ChoiceDescriptor) event.getEntity();
+            ChoiceInstance defaultInstance = ((ChoiceInstance) choice.getDefaultInstance());
+            if (defaultInstance.getSerializedResultIndex() != -1) {
+                Result cr = choice.getResults().get(defaultInstance.getSerializedResultIndex());
+                defaultInstance.setCurrentResultId(cr.getId());
+                defaultInstance.setCurrentResult(cr);
+            }
+        }
+
+    }
+
     /**
      *
      */
     public QuestionDescriptorFacade() {
         super(ChoiceDescriptor.class);
+    }
+
+    public Reply updateReply(Long replyId, Reply r) {
+        final Reply oldEntity = this.em.find(Reply.class, replyId);
+        oldEntity.merge(r);
+        return oldEntity;
     }
 
     /**
@@ -80,7 +103,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         Reply reply = new Reply();
 
         reply.setStartTime(startTime);
-        reply.setResult(this.getCurrentResult(player, choice));
+        reply.setResult(choice.getInstance(player).getResult());
         questionInstance.addReply(reply);
 
 
@@ -122,18 +145,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         return reply;
     }
 
-    private Result getCurrentResult(Player p, ChoiceDescriptor choice) {
-        Result r = choice.getInstance(p).getCurrentResult();
-        if (r == null) {
-            try {
-                r = choice.getResults().get(0);
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                throw new WegasException("No result found for choice \"" + choice.getEditorLabel() + "\"", ex);
-            }
-        }
-        return r;
-    }
-
     /**
      *
      * @param playerId
@@ -167,7 +178,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     public void validateReply(Player player, Reply reply) throws ScriptException, WegasException {
         ChoiceDescriptor choiceDescriptor = reply.getResult().getChoiceDescriptor();
-        reply.setResult(this.getCurrentResult(player, choiceDescriptor));       // Refresh the current result
+        reply.setResult(choiceDescriptor.getInstance(player).getResult());       // Refresh the current result
 
         HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Eval impacts
         arguments.put("selectedReply", reply);

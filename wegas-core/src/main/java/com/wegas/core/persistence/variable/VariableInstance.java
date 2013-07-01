@@ -92,6 +92,12 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      *
      */
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "defaultInstance")
+    @JsonIgnore
+    private VariableDescriptor defaultDescriptor;
+    /**
+     *
+     */
     @Column(name = "variableinstances_key", insertable = false, updatable = false, columnDefinition = "bigint")
     private Long playerScopeKey;
     /**
@@ -253,4 +259,17 @@ abstract public class VariableInstance extends AbstractEntity {
         return gameScopeKey;
     }
 
+    /**
+     * @return the defaultDescriptor
+     */
+    public VariableDescriptor getDefaultDescriptor() {
+        return defaultDescriptor;
+    }
+
+    /**
+     * @param defaultDescriptor the defaultDescriptor to set
+     */
+    public void setDefaultDescriptor(VariableDescriptor defaultDescriptor) {
+        this.defaultDescriptor = defaultDescriptor;
+    }
 }

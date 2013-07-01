@@ -8,9 +8,10 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.event.DescriptorRevivedEvent;
+import com.wegas.core.event.ResetEvent;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -18,12 +19,15 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
+import com.wegas.mcq.persistence.ChoiceInstance;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -79,7 +83,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      */
     public DescriptorListI createChild(final GameModel gameModel, final DescriptorListI list, final VariableDescriptor entity) {
         List<String> findDistinctNames = this.findDistinctNames(gameModel);
-        
+
         list.addItem(entity);
 
         if (isNullOrEmpty(entity.getLabel()) && !isNullOrEmpty(entity.getName())) { // 1st case: only name is provided
@@ -97,7 +101,26 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
         this.findUniqueName(entity, findDistinctNames);                         // Check name and label availability
         this.findUniqueLabel(entity);
+
+        this.revive(entity);
         return list;
+    }
+    @Inject
+    private Event<DescriptorRevivedEvent> descriptorRevivedEvent;
+
+    /**
+     *
+     * @param entity
+     */
+    public void revive(VariableDescriptor entity) {
+
+        descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
+
+        if (entity instanceof DescriptorListI) {
+            for (Object vd : ((DescriptorListI) entity).getItems()) {
+                this.revive((VariableDescriptor) vd);
+            }
+        }
     }
 
     /**
@@ -350,5 +373,18 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
     private boolean isNullOrEmpty(final String t) {
         return t == null || t.isEmpty();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static VariableDescriptorFacade lookup() {
+        try {
+            return Helper.lookupBy(VariableDescriptorFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving requestmanager", ex);
+            return null;
+        }
     }
 }

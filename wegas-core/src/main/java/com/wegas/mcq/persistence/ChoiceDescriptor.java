@@ -90,16 +90,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         ListUtils.mergeLists(this.getResults(), other.getResults());
     }
 
-    @Override
-    public GameModel getGameModel() { //@todo correct this, due to missing elements while duplication. Fix it
-        GameModel gm = super.getGameModel();
-        if (gm == null) {
-            gm = this.getQuestion().getGameModel();
-            this.setGameModel(gm);
-        }
-        return gm;
-    }
-
     /**
      * When a choice is created, we automatically add a result by default
      */

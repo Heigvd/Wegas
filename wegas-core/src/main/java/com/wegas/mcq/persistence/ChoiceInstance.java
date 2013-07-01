@@ -7,7 +7,10 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
@@ -52,8 +55,8 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
-//    @Transient
-//    private String currentResultName;
+    @Transient
+    private int currentResultIndex;
 
     /**
      *
@@ -72,15 +75,29 @@ public class ChoiceInstance extends VariableInstance {
         this.currentResultId = currentResultId;
     }
 
-//    @JsonView(Views.Export.class)
-//    public void getCurrentResultName() {
-//        this.currentResult.getName();
-//    }
-//
-//    @JsonIgnore
-//    public String getSerializedResultName() {
-//        return this.currentResultName;
-//    }
+    /**
+     * @return the currentResultName
+     */
+    @JsonView(Views.Export.class)
+    public int getCurrentResultIndex() {
+        if (this.getDefaultDescriptor() != null) {
+            return ((ChoiceDescriptor) this.getDefaultDescriptor()).getResults().indexOf(this.currentResult);
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * @param currentResultName the currentResultName to set
+     */
+    public void setCurrentResultIndex(int currentResultIndex) {
+        this.currentResultIndex = currentResultIndex;
+    }
+
+    @JsonIgnore
+    public int getSerializedResultIndex() {
+        return this.currentResultIndex;
+    }
 //
 //    public void setCurrentResultName(String currentResultName) {
 //        this.currentResultName = currentResultName;
@@ -154,9 +171,23 @@ public class ChoiceInstance extends VariableInstance {
     /**
      * @return the currentResult
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public Result getCurrentResult() {
-        return currentResult;
+        return this.currentResult;
+    }
+
+    @JsonIgnore
+    public Result getResult() {
+        if (this.currentResult != null) {
+            return this.currentResult;
+        } else {
+            try {
+                return ((ChoiceDescriptor) this.getDescriptor()).getResults().get(0);
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                throw new WegasException("No result found for choice \"" + this.getDescriptor().getEditorLabel() + "\"", ex);
+            }
+        }
     }
 
     /**
