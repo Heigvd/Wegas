@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -12,7 +12,6 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -90,7 +88,7 @@ public class EditorGameController extends AbstractGameController {
                 currentPlayer = playerFacade.findByGameModelId(this.gameModelId);// Select any player in this game model
 
             } catch (NoResultException e) {
-                errorController.dispatch("Game model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
+                errorController.dispatch("Model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
 
             }
 

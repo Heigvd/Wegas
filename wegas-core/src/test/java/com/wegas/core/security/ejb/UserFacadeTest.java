@@ -1,9 +1,6 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.TestHelper;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -27,9 +24,6 @@ public class UserFacadeTest {
     private static UserFacade userFacade;
     private static RoleFacade roleFacade;
     private static AccountFacade accountFacade;
-    private static GameFacade gameFacade;
-    private static PlayerFacade playerFacade;
-    private static TeamFacade teamFacade;
     private static JpaAccount abstractAccount;
     private static User u;
     private static Role roleP;
@@ -42,9 +36,6 @@ public class UserFacadeTest {
         userFacade = Helper.lookupBy(container.getContext(), UserFacade.class);
         roleFacade = Helper.lookupBy(container.getContext(), RoleFacade.class);
         accountFacade = Helper.lookupBy(container.getContext(), AccountFacade.class);
-        gameFacade = Helper.lookupBy(container.getContext(), GameFacade.class);
-        playerFacade = Helper.lookupBy(container.getContext(), PlayerFacade.class);
-        teamFacade = Helper.lookupBy(container.getContext(), TeamFacade.class);
         abstractAccount = new JpaAccount();
         abstractAccount.setEmail("a@a.com");
         roleP = new Role("Public");
@@ -158,14 +149,14 @@ public class UserFacadeTest {
      */
     @Test
     public void testDeleteRolePermissionsByIdAndInstance() throws Exception {
-        userFacade.addRolePermission(roleR.getId(), "Game:Edit:g20");
-        userFacade.addRolePermission(roleR.getId(), "Game:View:g20");
-        userFacade.addRolePermission(roleR.getId(), "Game:Token:g20");
+        userFacade.addRolePermission(roleR.getId(), "GameModel:Edit:gm20");
+        userFacade.addRolePermission(roleR.getId(), "GameModel:View:gm20");
+        userFacade.addRolePermission(roleR.getId(), "GameModel:Token:gm20");
 
         // Delete all permission from a role in a Game or GameModel
-        List<Map> rolePermissions = userFacade.findRolePermissionByInstance("g20");
-        Assert.assertEquals("[Game:Edit:g20, Game:View:g20, Game:Token:g20]", rolePermissions.get(0).get("permissions").toString());
-        userFacade.deleteRolePermissionsByIdAndInstance(roleR.getId(), "g20");
+        List<Map> rolePermissions = userFacade.findRolePermissionByInstance("gm20");
+        Assert.assertEquals("[GameModel:Edit:gm20, GameModel:View:gm20, GameModel:Token:gm20]", rolePermissions.get(0).get("permissions").toString());
+        userFacade.deleteRolePermissionsByIdAndInstance(roleR.getId(), "gm20");
         Role r = roleFacade.findByName("Registered");
         Assert.assertEquals(0, r.getPermissions().size());
     }
@@ -175,17 +166,17 @@ public class UserFacadeTest {
      */
     @Test
     public void testDeleteRolePermissionsByInstance() throws Exception {
-        userFacade.addRolePermission(roleR.getId(), "Game:Edit:g20");
-        userFacade.addRolePermission(roleR.getId(), "Game:View:g20");
-        userFacade.addRolePermission(roleR.getId(), "Game:Token:g20");
+        userFacade.addRolePermission(roleR.getId(), "GameModel:Edit:gm20");
+        userFacade.addRolePermission(roleR.getId(), "GameModel:View:gm20");
+        userFacade.addRolePermission(roleR.getId(), "GameModel:Token:gm20");
 
-        userFacade.addRolePermission(roleP.getId(), "Game:Edit:g20");
-        userFacade.addRolePermission(roleP.getId(), "Game:View:g20");
-        userFacade.addRolePermission(roleP.getId(), "Game:Token:g20");
+        userFacade.addRolePermission(roleP.getId(), "GameModel:Edit:gm20");
+        userFacade.addRolePermission(roleP.getId(), "GameModel:View:gm20");
+        userFacade.addRolePermission(roleP.getId(), "GameModel:Token:gm20");
 
-        userFacade.deleteRolePermissionsByInstance("g20");
+        userFacade.deleteRolePermissionsByInstance("gm20");
 
-        List<Map> rolePermission = userFacade.findRolePermissionByInstance("g20");
+        List<Map> rolePermission = userFacade.findRolePermissionByInstance("gm20");
         Assert.assertEquals("[]", rolePermission.toString());
     }
 
@@ -198,9 +189,9 @@ public class UserFacadeTest {
         userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:View:gm100");
         userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:Edit:gm200");
         userFacade.addAccountPermission(abstractAccount.getId(), "GameModel:Edit:gm200");
-        
+
         userFacade.findAccountPermissionByInstance("gm200");
-        
+
         userFacade.deleteAccountPermissionByInstance("gm100");
 
 //        Assert.assertTrue(accountFacade.find(abstractAccount.getId()).getPermissions().contains(new Permission("GameModel:Edit:gm200")));

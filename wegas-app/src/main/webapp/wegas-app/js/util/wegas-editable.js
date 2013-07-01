@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -266,7 +266,7 @@ YUI.add('wegas-editable', function(Y) {
                 }
             };
             if (Y.Lang.isArray(cfg)) {
-                return Y.Array.map(cfg, Editable.getModulesFromDefinition);
+                return Y.Array.flatten(Y.Array.map(cfg, Editable.getModulesFromDefinition));
             }
 
             if (module) {

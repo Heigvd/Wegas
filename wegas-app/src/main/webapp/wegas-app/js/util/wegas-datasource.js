@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -89,7 +89,7 @@ YUI.add('wegas-datasource', function(Y) {
             payload.response = response;
             Y.log("Response received: " + this.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
 
-            Wegas.Editable.use(payload.response.results,                        // Lookup dependencies
+            Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
                 payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
                 if (payload.serverResponse.get
@@ -263,6 +263,9 @@ YUI.add('wegas-datasource', function(Y) {
          */
         addToCache: function(entity) {
             this.getCache().push(entity);
+            this.fire("added", {
+                entity: entity
+            });
         },
         /// *** Cache methods *** //
         /**
@@ -480,7 +483,7 @@ YUI.add('wegas-datasource', function(Y) {
             testFn: {
                 value: function(entity, key, needle) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
-                            needleValue = (needle.get) ? needle.get(key) : (typeof needle === 'object') ? needle[key] : needle;
+                            needleValue = (needle && needle.get) ? needle.get(key) : (typeof needle === 'object') ? needle[key] : needle;
 
                     return value === needleValue &&
                             (!needle._classes || entity instanceof needle._classes[0]);
@@ -783,8 +786,12 @@ YUI.add('wegas-datasource', function(Y) {
                 this.findById(entity.get("teamId")).get("players").push(entity);
 
             } else {
-                this.getCache().push(entity);
+                //this.getCache().push(entity);
+                this.getCache().splice(0, 0, entity);                           // Add in first position
             }
+            this.fire("added", {
+                entity: entity
+            });
         },
         /**
          * @deprecated

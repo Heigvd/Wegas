@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -159,7 +159,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         gameModelFacade.reset(gameModel.getId());
 
         // Check edition
-        T findByName = (T) vdf.findByName(gameModel, VARIABLENAME2);
+        T findByName = (T) vdf.find(gameModel, VARIABLENAME2);
         Assert.assertEquals(descriptor1.getId(), findByName.getId());
         Assert.assertEquals(descriptor2.getName(), findByName.getName());
 
@@ -168,7 +168,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(descriptor1.getId(), findByClass.getId());
 
         // Check the findByGameModel function
-        T findByRootGameModelId = (T) vdf.findAllByGameModelId(gameModel.getId()).get(0);
+        T findByRootGameModelId = (T) vdf.findAll(gameModel.getId()).get(0);
         Assert.assertEquals(descriptor1.getId(), findByRootGameModelId.getId());
 
         return descriptor1;
@@ -215,14 +215,13 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testMove2() throws NamingException {
-        final String VARIABLENAME = "test-variable";
-        final String VARIABLENAME2 = "test-variable2";
-        final String VARIABLENAME3 = "test-variable3";
-        final String SUBNAME1 = "test-variable4";
-        final String VALUE1 = "test-value";
+        final String VARIABLENAME = "test_variable";
+        final String VARIABLENAME2 = "test_variable2";
+        final String VARIABLENAME3 = "test_variable3";
+        final String SUBNAME1 = "test_variable4";
+        final String VALUE1 = "test_value";
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
         // 1st case: move from root to root
         StringDescriptor vd1 = new StringDescriptor(VARIABLENAME);
@@ -266,12 +265,12 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testMove3P() throws NamingException {
-        final String VARIABLENAME1 = "test-variable";
-        final String VARIABLENAME2 = "test-variable2";
-        final String VARIABLENAME3 = "test-variable4";
-        final String LISTNAME1 = "test-variable3";
-        final String LISTNAME2 = "test-variable3dasdas";
-        final String VALUE1 = "test-value";
+        final String VARIABLENAME1 = "test_variable";
+        final String VARIABLENAME2 = "test_variable2";
+        final String VARIABLENAME3 = "test_variable4";
+        final String LISTNAME1 = "test_variable3";
+        final String LISTNAME2 = "test_variable3dasdas";
+        final String VALUE1 = "test_value";
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 
