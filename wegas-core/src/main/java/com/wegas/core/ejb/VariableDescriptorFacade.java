@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -18,6 +19,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -75,24 +77,26 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param entity
      * @return
      */
-    public DescriptorListI createChild(final DescriptorListI list, final VariableDescriptor entity) {
+    public DescriptorListI createChild(final GameModel gameModel, final DescriptorListI list, final VariableDescriptor entity) {
+        List<String> findDistinctNames = this.findDistinctNames(gameModel);
+        
         list.addItem(entity);
 
-        if (isNullOrEmpty(entity.getLabel()) && !isNullOrEmpty(entity.getName())) {            // 1st case: only name is provided
+        if (isNullOrEmpty(entity.getLabel()) && !isNullOrEmpty(entity.getName())) { // 1st case: only name is provided
             entity.setLabel(entity.getName());
-        } else if (!isNullOrEmpty(entity.getLabel()) && isNullOrEmpty(entity.getName())) {     // 2nd case: fill name with label if it is empty
+        } else if (!isNullOrEmpty(entity.getLabel()) && isNullOrEmpty(entity.getName())) { // 2nd case: fill name with label if it is empty
             entity.setName(entity.getLabel());
         }
-        if (isNullOrEmpty(entity.getLabel())) {                                        // Still no label, place a default
+        if (isNullOrEmpty(entity.getLabel())) {                                 // Still no label, place a default
             entity.setLabel("Unnamed");
         }
-        if (isNullOrEmpty(entity.getName())) {                                        // Still no name, place a default
+        if (isNullOrEmpty(entity.getName())) {                                  // Still no name, place a default
             entity.setName("variable");
         }
         entity.setName(Helper.encodeVariableName(entity.getName()));            // Camel casify the name
 
-        this.checkNameAndLabelAvailability(entity);                             // Check name and label availability
-
+        this.findUniqueName(entity, findDistinctNames);                         // Check name and label availability
+        this.findUniqueLabel(entity);
         return list;
     }
 
@@ -103,7 +107,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @return
      */
     public DescriptorListI createChild(final Long variableDescriptorId, final VariableDescriptor entity) {
-        return this.createChild((DescriptorListI) this.find(variableDescriptorId), entity);
+        VariableDescriptor find = this.find(variableDescriptorId);
+        return this.createChild(find.getGameModel(), (DescriptorListI) find, entity);
     }
 
     /**
@@ -112,7 +117,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param variableDescriptor
      */
     public void create(final Long gameModelId, final VariableDescriptor variableDescriptor) {
-        this.createChild(this.gameModelFacade.find(gameModelId), variableDescriptor);
+        GameModel find = this.gameModelFacade.find(gameModelId);
+        this.createChild(find, find, variableDescriptor);
     }
 
     /**
@@ -133,7 +139,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
                 mapper.readValue(serialized, VariableDescriptor.class);         // and deserialize it
 
         final DescriptorListI list = this.findParentList(oldEntity);
-        this.createChild(list, newEntity);
+        this.createChild(oldEntity.getGameModel(), list, newEntity);
         return newEntity;
     }
 
@@ -149,12 +155,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         }
     }
 
-    public void checkNameAndLabelAvailability(final VariableDescriptor vd) {
-        this.findUniqueLabel(vd);                                               // First, find a unique label
-        this.findUniqueName(vd);                                                // Then do the same for name
-    }
-
-    public void findUniqueName(final VariableDescriptor vd) {
+    public void findUniqueName(final VariableDescriptor vd, List<String> usedNames) {
         if (isNullOrEmpty(vd.getName())) {
             vd.setName(DEFAULTVARIABLENAME);
         }
@@ -164,25 +165,16 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         int suff = 1;
         final String baseName = vd.getName();
         String newName = vd.getName();
-        boolean found = false;
-        while (!found) {
-            try {
-                this.find(vd.getGameModel(), newName);
-                newName = baseName + "_" + suff;
-                suff++;
-            } catch (NoResultException e) {
-                found = true;
-            } catch (NonUniqueResultException e) {
-                // Should never happen
-                newName = baseName + "_" + suff;
-                suff++;
-            }
+        while (usedNames.contains(newName)) {
+            newName = baseName + "_" + suff;
+            suff++;
         }
+
         vd.setName(newName);
-        this.em.flush();                                                        // Flush so recursive call wont find similar objects
+        usedNames.add(newName);
         if (vd instanceof DescriptorListI) {
             for (Object child : ((DescriptorListI) vd).getItems()) {            // Recursively find unique names for children
-                this.findUniqueName((VariableDescriptor) child);
+                this.findUniqueName((VariableDescriptor) child, usedNames);
             }
         }
     }
@@ -198,9 +190,13 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         boolean found = false;
         while (!found) {
             try {
-                this.findByLabel(vd.getGameModel(), newLabel);
-                newLabel = baseLabel + "(" + suff + ")";                        // Use with the same suffix for the editor label as the one used for the label
-                suff++;
+                VariableDescriptor findByLabel = this.findByLabel(vd.getGameModel(), newLabel);
+                if (findByLabel != vd) {
+                    newLabel = baseLabel + "(" + suff + ")";                        // Use with the same suffix for the editor label as the one used for the label
+                    suff++;
+                } else {
+                    found = true;
+                }
             } catch (NoResultException e) {
                 found = true;
             } catch (NonUniqueResultException e) {
@@ -241,6 +237,12 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
                 cb.equal(variableDescriptor.get("name"), name)));
         final Query q = em.createQuery(cq);
         return (VariableDescriptor) q.getSingleResult();
+    }
+
+    public List<String> findDistinctNames(final GameModel gameModel) {
+        Query distinctNames = em.createQuery("SELECT DISTINCT(var.name) FROM VariableDescriptor var WHERE var.gameModel = :gameModel");
+        distinctNames.setParameter("gameModel", gameModel);
+        return distinctNames.getResultList();
     }
 
     /**

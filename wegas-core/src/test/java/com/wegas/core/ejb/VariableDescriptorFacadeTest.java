@@ -215,14 +215,13 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testMove2() throws NamingException {
-        final String VARIABLENAME = "test-variable";
-        final String VARIABLENAME2 = "test-variable2";
-        final String VARIABLENAME3 = "test-variable3";
-        final String SUBNAME1 = "test-variable4";
-        final String VALUE1 = "test-value";
+        final String VARIABLENAME = "test_variable";
+        final String VARIABLENAME2 = "test_variable2";
+        final String VARIABLENAME3 = "test_variable3";
+        final String SUBNAME1 = "test_variable4";
+        final String VALUE1 = "test_value";
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
-        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
 
         // 1st case: move from root to root
         StringDescriptor vd1 = new StringDescriptor(VARIABLENAME);
@@ -266,12 +265,12 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testMove3P() throws NamingException {
-        final String VARIABLENAME1 = "test-variable";
-        final String VARIABLENAME2 = "test-variable2";
-        final String VARIABLENAME3 = "test-variable4";
-        final String LISTNAME1 = "test-variable3";
-        final String LISTNAME2 = "test-variable3dasdas";
-        final String VALUE1 = "test-value";
+        final String VARIABLENAME1 = "test_variable";
+        final String VARIABLENAME2 = "test_variable2";
+        final String VARIABLENAME3 = "test_variable4";
+        final String LISTNAME1 = "test_variable3";
+        final String LISTNAME2 = "test_variable3dasdas";
+        final String VALUE1 = "test_value";
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 
