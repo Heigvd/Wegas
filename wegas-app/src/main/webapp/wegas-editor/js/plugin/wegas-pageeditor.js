@@ -76,6 +76,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                         click: Y.bind(this.processSource, this)
                     }
                 }).render(el);
+                //this.sourceButton.get("boundingBox").addClass("wegas-advanced-feature");
                 this.afterHostEvent("widgetChange", this.processSource);
 
                 this.saveButton = new Y.Button({
