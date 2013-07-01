@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -230,7 +230,7 @@ YUI.add('wegas-editor-action', function(Y) {
             tab = Wegas.TabView.createTab(tabId, this.get("tabSelector"), tabCfg);
             tab.set("visible", true);
             tab.set("selected", 2);
-            tab.witem(0).set("emptyMessage", "This game model has no games.");
+            tab.witem(0).set("emptyMessage", "This model has no games.");
             tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
 
             Wegas.Facade.Game.set("source", // Change the source attribute on the datasource

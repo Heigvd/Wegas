@@ -92,7 +92,7 @@ YUI().use(function(Y) {
                 'wegas-statemachine-entities': {
                     path: 'wegas-app/js/persistence/wegas-statemachine-entities-min.js',
                     requires: ['wegas-entity'],
-                    ws_provides: ["DialogueDescriptor", "TriggerDescriptor"]
+                    ws_provides: ["DialogueDescriptor", "TriggerDescriptor", "FSMDescriptor"]
                 },
                 'wegas-mcq-entities': {
                     path: 'wegas-app/js/persistence/wegas-mcq-entities-min.js',
@@ -128,7 +128,7 @@ YUI().use(function(Y) {
                     type: 'css'
                 },
                 'wegas-popuplistener': {
-                    path: 'wegas-app/js/util/wegas-popuplistener-min.js',
+                    path: 'wegas-app/js/plugin/wegas-popuplistener-min.js',
                     ws_provides: 'PopupListener',
                     requires: ["wegas-popup-content"]
                 },
@@ -387,21 +387,6 @@ YUI().use(function(Y) {
                     requires: ['wegas-cssstyles'],
                     ws_provides: 'CSSSize'
                 },
-                "wegas-inputex-object": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
-                    requires: ['inputex-object'],
-                    ix_provides: 'wegasobject'
-                },
-                "wegas-inputex-colorpicker": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-colorpicker-min.js',
-                    requires: ['inputex-field', 'overlay'],
-                    ix_provides: 'colorpicker'
-                },
-                "wegas-inputex-keyvalue": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-keyvalue-min.js',
-                    requires: ['inputex-keyvalue'],
-                    ix_provides: 'wegaskeyvalue'
-                },
                 "wegas-blockrightclick": {
                     path: 'wegas-app/js/plugin/wegas-blockrightclick-min.js',
                     ws_provides: 'BlockRightclick'
@@ -421,6 +406,21 @@ YUI().use(function(Y) {
                 'wegas-inputexcss': {
                     path: 'wegas-editor/css/wegas-inputex.css',
                     type: 'css'
+                },
+                "wegas-inputex-object": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
+                    requires: ['inputex-object'],
+                    ix_provides: 'wegasobject'
+                },
+                "wegas-inputex-colorpicker": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-colorpicker-min.js',
+                    requires: ['inputex-field', 'overlay'],
+                    ix_provides: 'colorpicker'
+                },
+                "wegas-inputex-keyvalue": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-keyvalue-min.js',
+                    requires: ['inputex-keyvalue'],
+                    ix_provides: 'wegaskeyvalue'
                 },
                 'wegas-inputex-rte': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-rte-min.js',
@@ -466,6 +466,10 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/js/inputex/wegas-inputex-ace-min.js',
                     requires: ['inputex-field', 'ace'],
                     ix_provides: "ace"
+                },
+                'wegas-inputex-markup': {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-markup-min.js',
+                    ix_provides: 'markup'
                 },
                 'wegas-inputex-permissionselect': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-permissionselect-min.js',
@@ -646,7 +650,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-shareuser': {
                     path: 'wegas-editor/js/widget/wegas-shareuser-min.js',
-                    requires: ['inputex-list', "inputex-checkbox", "inputex-autocomplete", 'autocomplete-highlighters', 'inputex-hidden'],
+                    requires: ['inputex-list', "inputex-checkbox", "inputex-autocomplete", 'autocomplete-highlighters',
+                        'inputex-hidden', 'wegas-inputex-markup'],
                     ws_provides: "ShareUser"
                 },
                 /**

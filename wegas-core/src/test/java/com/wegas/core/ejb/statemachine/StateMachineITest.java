@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -8,7 +8,6 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.AbstractEJBTest;
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
@@ -35,7 +34,7 @@ import org.junit.Test;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class StateMachineIT extends AbstractEJBTest {
+public class StateMachineITest extends AbstractEJBTest {
 
     private static TeamFacade teamFacade;
     private static PlayerFacade playerFacade;
@@ -170,7 +169,6 @@ public class StateMachineIT extends AbstractEJBTest {
         Player testPlayer = new Player("TestPlayer20");
         playerFacade.create(team.getId(), testPlayer);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
-
         NumberInstance p0Instance = (NumberInstance) instanceFacade.find(testNumber.getId(), testPlayer);
         p0Instance.setValue(50);
         RequestFacade rf = lookupBy(RequestFacade.class);

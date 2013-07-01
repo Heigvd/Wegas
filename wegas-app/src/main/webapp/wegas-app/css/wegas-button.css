@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -27,6 +27,9 @@
 .yui3-skin-sam .wegas-icon-newfile {
     background: url(../images/wegas-app-sprite.png) no-repeat 1px -1210px,
         url(../../wegas-editor/images/wegas-icon-files.png) no-repeat 1px -228px;
+}
+.yui3-skin-sam .wegas-icon-joingame {
+    background: url(../images/wegas-app-sprite.png) no-repeat 1px -482px;
 }
 .yui3-skin-sam .wegas-icon-newdir {
     background: url(../images/wegas-app-sprite.png) no-repeat 1px -1167px,

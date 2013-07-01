@@ -87,6 +87,10 @@
                         if (Y.Wegas.Facade.RegisteredGames.data.length > 0) {
                             Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
                         }
+
+                        Y.Wegas.Facade.Game.cache.on("added", function() {      // After a game is created
+                            Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2);// select the hosted games tab
+                        });
                     });
                     app.render();                                               // Launch the editor as soon as Dom is ready
 

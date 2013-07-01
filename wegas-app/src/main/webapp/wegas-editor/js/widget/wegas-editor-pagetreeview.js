@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -19,8 +19,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             this.treeView = new Y.TreeView({
                 render: this.get(CONTENT_BOX)
             });
-            this.toolbar.add(new Y.Button({
-                label: "New Page",
+            this.toolbar.add(new Y.Wegas.Button({
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                 on: {
                     click: function() {
                         this.fire("newPage");

@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -66,7 +66,7 @@ public class MessageFacade extends AbstractFacadeImpl<Message> {
      * @param msg
      */
     public void send(Player p, Message msg) {
-        VariableDescriptor vd = variableDescriptorFacade.findByName(p.getGameModel(), "inbox");
+        VariableDescriptor vd = variableDescriptorFacade.find(p.getGameModel(), "inbox");
         InboxInstance inbox = (InboxInstance) vd.getInstance(p);
         inbox.sendMessage(msg);
     }
