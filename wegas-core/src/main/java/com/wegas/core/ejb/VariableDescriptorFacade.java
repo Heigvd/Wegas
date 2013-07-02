@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.event.DescriptorRevivedEvent;
-import com.wegas.core.event.ResetEvent;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ListDescriptor;
@@ -19,7 +18,6 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
-import com.wegas.mcq.persistence.ChoiceInstance;
 import java.io.IOException;
 import java.util.List;
 import javax.ejb.EJB;
@@ -264,6 +262,12 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
 
     public List<String> findDistinctNames(final GameModel gameModel) {
         Query distinctNames = em.createQuery("SELECT DISTINCT(var.name) FROM VariableDescriptor var WHERE var.gameModel = :gameModel");
+        distinctNames.setParameter("gameModel", gameModel);
+        return distinctNames.getResultList();
+    }
+
+    public List<String> findDistinctLabels(final GameModel gameModel) {
+        Query distinctNames = em.createQuery("SELECT DISTINCT(var.label) FROM VariableDescriptor var WHERE var.gameModel = :gameModel");
         distinctNames.setParameter("gameModel", gameModel);
         return distinctNames.getResultList();
     }

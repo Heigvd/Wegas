@@ -11,11 +11,14 @@ import static com.wegas.core.ejb.AbstractEJBTest.gameModel;
 import static com.wegas.core.ejb.AbstractEJBTest.gameModelFacade;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import static com.wegas.core.ejb.AbstractEJBTest.player;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import java.io.IOException;
 import java.util.List;
 import javax.naming.NamingException;
 import junit.framework.Assert;
@@ -323,5 +326,45 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         vdf.remove(vd3.getId());
         vdf.remove(list1.getId());
         vdf.remove(list2.getId());
+    }
+
+    @Test
+    public void testListDuplicate() throws NamingException, IOException {
+        final String VARIABLENAME1 = "test_variable";
+        final String VARIABLENAME2 = "test_variable2";
+        final String VARIABLENAME3 = "test_variable4";
+        final String LISTNAME1 = "list1";
+        final String LISTNAME2 = "list2";
+        final String LISTNAME3 = "list3";
+        final String LISTNAME4 = "list4";
+        final String VALUE1 = "test_value";
+
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+
+        ListDescriptor list1 = new ListDescriptor(LISTNAME1, new ListInstance());// Create a hierarchy of lists
+        vdf.create(gameModel.getId(), list1);
+
+        ListDescriptor list2 = new ListDescriptor(LISTNAME2, new ListInstance());
+        vdf.createChild(list1.getId(), list2);
+
+        ListDescriptor list3 = new ListDescriptor(LISTNAME3, new ListInstance());
+        vdf.createChild(list1.getId(), list3);
+
+        ListDescriptor list4 = new ListDescriptor(LISTNAME4, new ListInstance());
+        vdf.createChild(list3.getId(), list4);
+
+        NumberDescriptor nb = new NumberDescriptor(VARIABLENAME1, new NumberInstance(10));
+        vdf.createChild(list4.getId(), nb);
+
+        DescriptorListI duplicate =
+                (DescriptorListI) vdf.duplicate(list1.getId());                 // Duplicate a root variable
+        Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) duplicate.item(1)).item(0)).item(0)).getInstance(player).getValue());
+
+        duplicate = (DescriptorListI) vdf.duplicate(list3.getId());             // Duplicate a sub child variable
+        Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) duplicate.item(0)).item(0)).getInstance(player).getValue());
+
+        GameModel duplicateGm = gameModelFacade.duplicate(gameModel.getId());
+        DescriptorListI find = (DescriptorListI) vdf.find(duplicateGm, LISTNAME1);
+        Assert.assertEquals(10.0, ((NumberInstance) ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0)).getScope().getVariableInstances().values().iterator().next()).getValue());
     }
 }
