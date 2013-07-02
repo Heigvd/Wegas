@@ -78,22 +78,46 @@
                         "children": [
                             {
                                 "type": "GaugeDisplay",
-                                "label": "Costs",
-                                "variable": {
-                                    "name": "costs"
-                                }
-                            }, {
-                                "type": "GaugeDisplay",
                                 "label": "Quality",
                                 "variable": {
                                     "name": "quality"
-                                }
+                                }     
+                            }, {
+                                "type": "GaugeDisplay",
+                                "label": "Costs",
+                                "variable": {
+                                    "name": "costs"
+                                },
+                                "plugins": [
+                                    {
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    }
+                                ]
                             }, {
                                 "type": "GaugeDisplay",
                                 "label": "Delay",
                                 "variable": {
                                     "name": "delay"
-                                }
+                                },
+                                "plugins": [
+                                    {
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     }, {
