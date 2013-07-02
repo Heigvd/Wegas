@@ -102,16 +102,21 @@
                 "cssClass": "editor-tab",
                 "children": [{
                         "type": "Tab",
-                        "label": "Game models",
+                        "label": "Models",
                         "children": [{
                                 "type": "GameModelTreeView",
                                 "dataSource": "GameModel",
                                 "plugins": [{
+                                        "fn": "EditorTVAdminMenu",
+                                        "cfg": {
+                                            "autoClick": false
+                                        }
+                                    }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game model",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New model",
                                                     "targetClass": "GameModel",
                                                     "dataSource": "GameModel",
                                                     "formCfg": {
@@ -185,7 +190,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "Button",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Enter token",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join with token",
                                                     "plugins": [{
                                                             "fn": "OpenTabAction",
                                                             "cfg": {
@@ -195,6 +200,35 @@
                                                                     }]
                                                             }
                                                         }]
+                                                }, {
+                                                    "type": "NewEntityButton",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Host a game",
+                                                    "targetClass": "Game",
+                                                    "dataSource": "Game",
+                                                    "formCfg": {
+                                                        "required": true,
+                                                        "type": "group",
+                                                        "fields": [{
+                                                                "name": "@class",
+                                                                "type": "hidden",
+                                                                "value": "null"
+                                                            }, {
+                                                                "label": "Model",
+                                                                "name": "gameModelId",
+                                                                "required": true,
+                                                                "filters": {"canInstantiate": true},
+                                                                "type": "gamemodelselect"
+                                                            }, {
+                                                                "label": "name",
+                                                                "name": "name",
+                                                                "required": true,
+                                                                "showMsg": true
+                                                            }, {
+                                                                "label": "token",
+                                                                "name": "token",
+                                                                "description": "Leave blank for automatic generation"
+                                                            }]
+                                                    }
                                                 }]
                                         }
                                     }]
@@ -202,7 +236,7 @@
                     }, {
                         "type": "Tab",
                         "id": "joinedGamesTab",
-                        "label": "Ongoing games",
+                        "label": "Joined games",
                         "children": [{
                                 "type": "JoinedGameTreeView",
                                 "dataSource": "RegisteredGames",
@@ -225,7 +259,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "Button",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Enter token",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join with token",
                                                     "plugins": [{
                                                             "fn": "OpenTabAction",
                                                             "cfg": {
@@ -235,6 +269,35 @@
                                                                     }]
                                                             }
                                                         }]
+                                                }, {
+                                                    "type": "NewEntityButton",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Host a game",
+                                                    "targetClass": "Game",
+                                                    "dataSource": "Game",
+                                                    "formCfg": {
+                                                        "required": true,
+                                                        "type": "group",
+                                                        "fields": [{
+                                                                "name": "@class",
+                                                                "type": "hidden",
+                                                                "value": "null"
+                                                            }, {
+                                                                "label": "Model",
+                                                                "name": "gameModelId",
+                                                                "required": true,
+                                                                "filters": {"canInstantiate": true},
+                                                                "type": "gamemodelselect"
+                                                            }, {
+                                                                "label": "name",
+                                                                "name": "name",
+                                                                "required": true,
+                                                                "showMsg": true
+                                                            }, {
+                                                                "label": "token",
+                                                                "name": "token",
+                                                                "description": "Leave blank for automatic generation"
+                                                            }]
+                                                    }
                                                 }]
                                         }
                                     }]
@@ -242,7 +305,7 @@
                     }, {
                         "id": "gamesTreeViewTab",
                         "type": "Tab",
-                        "label": "Created games",
+                        "label": "Hosted games",
                         "children": [{
                                 "type": "CreatedGameTreeView",
                                 "dataSource": "Game",
@@ -256,8 +319,20 @@
                                         "fn": "WidgetToolbar",
                                         "cfg": {
                                             "children": [{
+                                                    "type": "Button",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join with token",
+                                                    "plugins": [{
+                                                            "fn": "OpenTabAction",
+                                                            "cfg": {
+                                                                "tabSelector": "#rightTabView",
+                                                                "wchildren": [{
+                                                                        "type": "JoinGame"
+                                                                    }]
+                                                            }
+                                                        }]
+                                                }, {
                                                     "type": "NewEntityButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Host a game",
                                                     "targetClass": "Game",
                                                     "dataSource": "Game",
                                                     "formCfg": {
@@ -268,7 +343,7 @@
                                                                 "type": "hidden",
                                                                 "value": "null"
                                                             }, {
-                                                                "label": "Game model",
+                                                                "label": "Models",
                                                                 "name": "gameModelId",
                                                                 "required": true,
                                                                 "filters": {"canInstantiate": true},

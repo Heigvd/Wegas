@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -127,7 +127,9 @@ YUI.add('wegas-pageeditor', function(Y) {
                 e.halt(true);
                 this.overlayMask.hide();
                 this.highlightOverlay.hide();
-                widget = Y.Widget.getByNode(window.document.elementFromPoint(e.clientX, e.clientY));
+                widget = Y.Widget.getByNode(                                    //Find a parent Wegas widget or self
+                        Y.Node(window.document.elementFromPoint(e.clientX, e.clientY)).ancestor(".wegas-widget", true)
+                        );                           
                 this.overlayMask.show();
                 if (this.get("host") === widget) {
                     return;

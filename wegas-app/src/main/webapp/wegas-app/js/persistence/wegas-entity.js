@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -188,10 +188,8 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "Text" // Fake, to prevent edition on click on the game model
-            }, {
                 type: BUTTON,
-                label: "Edit",
+                label: "Open",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -202,12 +200,29 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "EditEntityAction"
                     }]
-                        //    {
-                        //    fn: "LoadTreeviewNodeAction",
-                        //    cfg: {
-                        //        tabId: "gamesTreeViewTab"
-                        //    }
-                        //},
+            }, {
+                type: BUTTON,
+                label: "Share",
+                plugins: [{
+                        fn: "OpenTabAction",
+                        cfg: {
+                            tabSelector: '#rightTabView',
+                            wchildren: [{
+                                    type: "ShareUser",
+                                    cssClass: "editor-shareUser-list",
+                                    permsList: [{
+                                            rightLabel: "Edit",
+                                            value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
+                                        }, {
+                                            rightLabel: "Duplicate",
+                                            value: "GameModel:View,Duplicate"
+                                        }, {
+                                            rightLabel: "Host",
+                                            value: "GameModel:View,Instantiate"
+                                        }]
+                                }]
+                        }
+                    }]
             }, {
                 type: BUTTON,
                 label: "Duplicate",
@@ -217,8 +232,8 @@ YUI.add('wegas-entity', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Share",
-                cssClass: "editor-shareGameModel-button",
+                label: "Permissions",
+                cssClass: "wegas-advanced-feature",
                 plugins: [{
                         fn: "OpenTabAction",
                         cfg: {
@@ -240,34 +255,22 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView'
                         }
                     }]
-            },
-            //{
-            //    type: "Button",
-            //    label: "Publish",
-            //    cssClass: "editor-publishGameModel-button",
-            //    plugins: [{
-            //        fn: "PublishGameModelAction"
-            //    }]
-            //},
-            {
+            }, {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deleteGameModel-button"
             }]
                 //{
-                //    type: BUTTON,
-                //    label: "Open in editor",
+                //    type: "Button",
+                //    label: "Publish",
+                //    cssClass: "editor-publishGameModel-button",
                 //    plugins: [{
-                //        fn: "OpenGameAction"
+                //        fn: "PublishGameModelAction"
                 //    }]
                 //},
-                //    {
+                //{
                 //    type: "AddEntityChildButton",
                 //    label: "Add game",
                 //    childClass: "Game"
-                //},
-                //{
-                //    type: "EditEntityButton",
-                //    label: "Properties"
                 //},
     });
 
@@ -318,15 +321,15 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Properties",
-                cssClass: "editor-gameProperties-button"
-            }, {
                 type: BUTTON,
-                label: "View",
+                label: "Open",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
+            }, {
+                type: "EditEntityButton",
+                label: "Properties",
+                cssClass: "editor-gameProperties-button"
             }, {
                 type: "AddEntityChildButton",
                 label: "Add team",
@@ -334,7 +337,7 @@ YUI.add('wegas-entity', function(Y) {
                 targetClass: "Team"
             }, {
                 type: BUTTON,
-                label: "Permission",
+                label: "Permissions",
                 cssClass: "editor-shareGame-button wegas-advanced-feature",
                 plugins: [{
                         fn: "OpenTabAction",
@@ -348,7 +351,7 @@ YUI.add('wegas-entity', function(Y) {
                                             value: "Game:Edit,View"
                                         }, {
                                             name: "Game:Token",
-                                            value: "Game:View,Token"
+                                            value: "Game:Token"
                                         }]
                                 }],
                             tabSelector: '#rightTabView'
@@ -361,6 +364,7 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "OpenTabAction",
                         cfg: {
+                            tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareRole",
                                     permsList: [{
@@ -368,23 +372,24 @@ YUI.add('wegas-entity', function(Y) {
                                             value: "Game:View"
                                         }, {
                                             name: "Link",
-                                            value: "Game:View,Token"
+                                            value: "Game:Token"
                                         }]
                                 }, {
                                     type: "ShareUser",
                                     cssClass: "editor-shareUser-list",
                                     permsList: [{
-                                            label: "View",
+                                            rightLabel: "Join",
                                             value: "Game:View"
                                         }, {
-                                            label: "Edit",
+                                            rightLabel: "Admin",
                                             value: "Game:View,Edit"
-                                        }, {
-                                            label: "Token",
-                                            value: "Game:Token"
-                                        }]
-                                }],
-                            tabSelector: '#rightTabView'
+                                        }
+                                        //, {
+                                        //    label: "Token",
+                                        //    value: "Game:Token"
+                                        //}
+                                    ]
+                                }]
                         }
                     }]
             }, {
@@ -644,6 +649,7 @@ YUI.add('wegas-entity', function(Y) {
                     }
                 },
                 _inputex: {
+                    label: "Groups",
                     useButtons: true
                 }
             },
@@ -665,7 +671,7 @@ YUI.add('wegas-entity', function(Y) {
                                 name: "value"
                             }, {
                                 name: "inducedPermission",
-                                value:""
+                                value: ""
                             }]
                     }
                 },
@@ -703,7 +709,7 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     _type: HIDDEN
                 }
-            },
+            }
         },
         EDITMENU: [{
                 type: "DeleteEntityButton"
@@ -782,6 +788,7 @@ YUI.add('wegas-entity', function(Y) {
                                 label: 'the same for everybody'
                             }],
                         _inputex: {
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                             label: 'Variable is'
                         }
                     },
@@ -789,17 +796,17 @@ YUI.add('wegas-entity', function(Y) {
                         type: STRING,
                         choices: [{
                                 value: "TeamScope",
-                                label: 'team'
+                                label: 'anyone in the player\'s team'
                             }, {
                                 value: "PlayerScope",
-                                label: 'player'
+                                label: 'the current player only'
                             }, {
                                 value: "GameScope",
-                                label: 'game'
+                                label: 'anybody in the game'
                             }],
                         _inputex: {
-                            wrapperClassName: 'wegas-advanced-feature',
-                            label: 'Broadcast with'
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                            label: 'Variable is visible by'
                         }
                     }
                 }

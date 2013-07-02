@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 @Entity
 @XmlType(name = "GameModelScope", propOrder = {"@class", "id", "name"})
 public class GameModelScope extends AbstractScope {
-
 
     private static final Logger logger = LoggerFactory.getLogger(GameModelScope.class);
     /**

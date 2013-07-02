@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -40,10 +40,9 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@EntityListeners({GmVariableDescriptorListener.class})
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"}) // Names have to be unique at the base of a
-// game model (root elements)
-// @UniqueConstraint(columnNames = {"gamemodel_id", "name"})                    // Name has to be unique for the whole game model
-// @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Names have to be unique within a list
+    @UniqueConstraint(columnNames = {"gamemodel_gamemodelid", "name"}) // Name has to be unique for the whole game model
+// @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
+// @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
 })
 @NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptor variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
 @JsonSubTypes(value = {

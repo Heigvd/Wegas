@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -8,9 +8,11 @@
 package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractEJBTest;
+import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
@@ -59,6 +61,42 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
         vdf.duplicate(question.getId());                                        // Test duplication on question
         vdf.duplicate(choice.getId());
+
+        vdf.remove(question.getId());                                           // Clean up
+    }
+
+//    @Test
+    public void testCurrentResult() throws Exception {
+
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);// Lookup Ejb's
+        final String REPLYNAME1 = "1st reply";
+        final String REPLYNAME2 = "2nd reply";
+
+        QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
+        question.setDefaultInstance(new QuestionInstance());
+        question.setScope(new TeamScope());
+        vdf.create(gameModel.getId(), question);
+
+        ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
+        choice.setDefaultInstance(new ChoiceInstance());
+        choice.setScope(new TeamScope());
+        Result r = new Result(REPLYNAME1);                                      // w/ 2 replies
+        choice.addResult(r);
+        Result r2 = new Result(REPLYNAME2);
+        choice.addResult(r2);
+        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2);  // And the default reply is the second
+        vdf.createChild(question.getId(), choice);
+
+        ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResultId(r2.getId());// Sset the default reply to the second one
+        choice = (ChoiceDescriptor) vdf.update(choice.getId(), choice);
+
+        gameModelFacade.reset(gameModel.getId());                               // Restart to propagate default instance value change
+
+        choice = (ChoiceDescriptor) vdf.find(choice.getId());                   // Retrieve entity
+        assertEquals(REPLYNAME2, choice.getInstance(player).getCurrentResult().getName());// And check the current result is stored
+
+        ChoiceDescriptor duplicate = (ChoiceDescriptor) vdf.duplicate(choice.getId());
+        assertEquals(REPLYNAME2, duplicate.getInstance(player).getCurrentResult().getName());// And check the current result is stored
 
         vdf.remove(question.getId());                                           // Clean up
     }
