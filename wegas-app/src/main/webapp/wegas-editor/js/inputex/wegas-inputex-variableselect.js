@@ -52,8 +52,8 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
             if (this.options.mode === "text") {
                 return {expr: this.inputs[1].getValue()};
             } else {
-                return { //save name for portability instead of id
-                    name: Y.Wegas.Facade.VariableDescriptor.cache.findById(this.inputs[0].currentEntityField.getValue()).get("name")
+                return {//save name for portability instead of id
+                    name: this.inputs[0].currentEntityField.getValue()
                 };
             }
         },
@@ -69,7 +69,7 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
             } else if (val.id) {
                 findVal = Y.Wegas.Facade.VariableDescriptor.cache.findById(val.id);
             }
-            this.inputs[0].setValue(findVal.get("id")); // @fixme
+            this.inputs[0].setValue(findVal.get("name")); // @fixme
         },
         renderFields: function() {
             inputEx.Wegas.Variableselect.superclass.renderFields.apply(this, arguments);
@@ -77,7 +77,7 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
             this.viewSrc = new Y.Wegas.Button({// Add the "view src" button
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>"
             });
-            var divLabel = Y.Node.create('<div class="inputEx-label"><label>Variable</label></div>'); //Add label
+            var divLabel = Y.Node.create('<div class="inputEx-label"><label>' + (this.options.label || 'Variable') + '</label></div>'); //Add label
             this.options.mode = "text";
             this.setMode((this.options.mode === "wysiwyg") ? "text" : "wysiwyg");
             this.viewSrc.after("click", function() {

@@ -8,6 +8,7 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -156,6 +157,14 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         this.pictures = pictures;
     }
 
+    @Override
+    public void setGameModel(GameModel gm) {
+        super.setGameModel(gm);
+        for (ChoiceDescriptor cd : this.items) {
+            cd.setGameModel(gm);
+        }
+    }
+
     /**
      *
      * @param p
@@ -179,10 +188,21 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     public void setItems(List<ChoiceDescriptor> items) {
-        for (ChoiceDescriptor cd : items) {     //@todo: due to duplication, fix this
+        for (ChoiceDescriptor cd : items) {                                     //@todo: due to duplication, fix this
             cd.setQuestion(this);
+            cd.setGameModel(this.getGameModel());
         }
         this.items = items;
+    }
+
+    /**
+     *
+     * @param index
+     * @return
+     */
+    @Override
+    public ChoiceDescriptor item(int index) {
+        return this.items.get(index);
     }
 
     /**
@@ -194,16 +214,6 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
         this.items.add(item);
         item.setQuestion(this);
         item.setGameModel(this.getGameModel());
-    }
-
-    /**
-     *
-     * @param index
-     * @return
-     */
-    @Override
-    public ChoiceDescriptor item(int index) {
-        return this.items.get(index);
     }
 
     @Override
