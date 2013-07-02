@@ -60,7 +60,7 @@ public class ListUtils {
     /**
      * This function takes two lists and merge them.<br/> Assumptions:<br/>
      * - An element from the new list is new if it has no
-     * <code>ID</code><br/>
+     * <code>ID</code> or if it's <code>ID</code> is missing in the old list<br/>
      * - 2 Abstract entities with the same
      * <code>ID</code> have to be merged<br/>
      * - An element from the old list has
@@ -82,7 +82,6 @@ public class ListUtils {
             }
         }
         ListUtils.ListKeyToMap<Long, E> converter = new ListUtils.ListKeyToMap<Long, E>() {
-
             @Override
             public Long getKey(E item) {
                 return item.getId();
@@ -93,8 +92,18 @@ public class ListUtils {
             E element = it.next();
             if (elementMap.containsKey(element.getId())) {                      //old element still exists
                 element.merge(elementMap.get(element.getId()));                 //Then merge them
+                elementMap.remove(element.getId());                             //remove element from map
             } else {
                 it.remove();                                                    //else remove that old element
+            }
+        }
+        for (Iterator<E> it = elementMap.values().iterator(); it.hasNext();) {  //Process remaining elements
+            try {
+                E element = it.next();
+                E newElement = (E) element.getClass().newInstance();
+                newElement.merge(element);
+                newElements.add(newElement);
+            } catch (InstantiationException | IllegalAccessException ex) {
             }
         }
         oldList.addAll(newElements);                                            //Add all new elements
