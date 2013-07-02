@@ -292,7 +292,7 @@
                         {
                             "name": "date",
                             "type": "now",
-                            "value": 1372340370376
+                            "value": ""
                         }
                     ]
                 }

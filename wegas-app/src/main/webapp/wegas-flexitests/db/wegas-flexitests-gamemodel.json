@@ -1,7 +1,6 @@
 {
     "@class": "GameModel",
-    "name": "FlexiTests(1)",
-    "createdTime": null,
+    "name": "FlexiTests",
     "childVariableDescriptors": [{
             "@class": "NumberDescriptor",
             "name": "currentPage",
@@ -9,12 +8,6 @@
             "label": "Page",
             "defaultInstance": {
                 "@class": "NumberInstance",
-                "history": [
-                    2.0, 
-                    2.0, 
-                    2.0, 
-                    2.0
-                ],
                 "value": 2.0
             },
             "scope": {
@@ -408,7 +401,7 @@
                             {
                                 "name": "date",
                                 "type": "now",
-                                "value": null
+                                "value": ""
                             }
                         ]
                     }

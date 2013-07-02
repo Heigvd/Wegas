@@ -48,7 +48,7 @@ public class Pages implements Serializable {
      */
     public Map<String, String> getIndex() throws RepositoryException {
         if (!this.connector.exist(this.gameModelId)) {
-            return null;
+            return new HashMap<>();
         }
         NodeIterator it = this.connector.listChildren(this.gameModelId);
         Map<String, String> ret = new HashMap<>();
@@ -72,7 +72,7 @@ public class Pages implements Serializable {
      */
     public Map<String, JsonNode> getPages() throws RepositoryException {
         if (!this.connector.exist(this.gameModelId)) {
-            return null;
+            return new HashMap<>();
         }
         NodeIterator it = this.connector.listChildren(this.gameModelId);
         Map<String, JsonNode> ret = new HashMap<>();

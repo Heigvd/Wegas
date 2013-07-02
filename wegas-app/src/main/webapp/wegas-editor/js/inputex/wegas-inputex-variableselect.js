@@ -53,7 +53,7 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
                 return {expr: this.inputs[1].getValue()};
             } else {
                 return {//save name for portability instead of id
-                    name: Y.Wegas.Facade.VariableDescriptor.cache.findById(this.inputs[0].currentEntityField.getValue()).get("name")
+                    name: this.inputs[0].currentEntityField.getValue()
                 };
             }
         },
@@ -69,7 +69,7 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
             } else if (val.id) {
                 findVal = Y.Wegas.Facade.VariableDescriptor.cache.findById(val.id);
             }
-            this.inputs[0].setValue(findVal.get("id")); // @fixme
+            this.inputs[0].setValue(findVal.get("name")); // @fixme
         },
         renderFields: function() {
             inputEx.Wegas.Variableselect.superclass.renderFields.apply(this, arguments);
