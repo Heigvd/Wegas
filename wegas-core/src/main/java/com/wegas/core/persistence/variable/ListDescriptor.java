@@ -52,6 +52,10 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         super(name);
     }
 
+    public ListDescriptor(String name, VariableInstance defaultInstance) {
+        super(name, defaultInstance);
+    }
+
     /**
      *
      * @param force
@@ -104,9 +108,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     }
 
     @Override
-    public void addItem(int index, VariableDescriptor vd) {
-        this.items.add(index, vd);
-        vd.setGameModel(this.getGameModel());
+    public void addItem(int index, VariableDescriptor item) {
+        this.items.add(index, item);
+        item.setGameModel(this.getGameModel());
     }
 
     /**
@@ -122,7 +126,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @Override
     public int size() {
         return this.items.size();
-   }
+    }
 
     @Override
     public boolean remove(VariableDescriptor item) {

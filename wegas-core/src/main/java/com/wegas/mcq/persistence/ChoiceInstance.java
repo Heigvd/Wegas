@@ -7,10 +7,9 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
@@ -102,7 +101,6 @@ public class ChoiceInstance extends VariableInstance {
 //    public void setCurrentResultName(String currentResultName) {
 //        this.currentResultName = currentResultName;
 //    }
-
     /**
      *
      * @param a
