@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -192,7 +192,6 @@ public class Game extends NamedEntity {
     public void setGameModel(GameModel gameModel) {
         this.gameModel = gameModel;
     }
-
     /**
      *
      */

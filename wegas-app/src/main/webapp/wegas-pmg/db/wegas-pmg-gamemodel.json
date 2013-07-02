@@ -61,9 +61,9 @@
             }
         }, {
             "@class": "NumberDescriptor",
-            "name": "fixedCosts",
-            "editorLabel": "fixedCosts",
-            "label": "fixedCosts",
+            "name": "costs",
+            "editorLabel": "costs",
+            "label": "costs",
             "minValue": 0,
             "maxValue": 200,
             "defaultInstance": {
@@ -111,32 +111,6 @@
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "value": 15
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
-            "name": "wages",
-            "editorLabel": "wages",
-            "label": "wages",
-            "minValue": 0,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 0
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
-            "name": "unworkedHours",
-            "editorLabel": "unworkedHours",
-            "label": "unworkedHours",
-            "minValue": 0,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 0
             },
             "scope": {
                 "@class": "TeamScope"
@@ -481,7 +455,10 @@
                         "duration": 2,
                         "properties": {
                             "fixedCosts": 1200,
-                            "predecessorsDependances": 1000
+                            "predecessorsDependances": 1000,
+                            "completeness": 0,
+                            "unworkedHoursCosts": 0,
+                            "wages": 0
                         },
                         "requirements": [{
                             "@class": "WRequirement",
@@ -524,7 +501,11 @@
                             "progressionOfNeeds": 0,
                             "takeInHandDuration": 0,
                             "randomDurationInf": 15,
-                            "randomDurationSup": 24
+                            "randomDurationSup": 24,
+                            "completeness": 0,
+                            "unworkedHoursCosts": 0,
+                            "wages": 0,
+                            "fixedCosts": 1000
                         },
                         "requirements": [{
                             "@class": "WRequirement",

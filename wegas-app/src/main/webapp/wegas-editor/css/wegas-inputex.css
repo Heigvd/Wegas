@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -208,44 +208,92 @@ img.inputEx-ListField-delButton {
     margin-left: 115px;
 }
 
+/* Share role */
+.wegas-sharerole {
+    margin: 10px;
+    margin-bottom: 30px;
+}
+.wegas-sharerole .title {
+    font-weight: bolder;
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 5px;
+}
+.wegas-link div,
+.wegas-link input {
+    width: 100%;
+}
 /* Share user */
-.editor-shareUser-list {
-    margin-top: 5px;
-    margin-left: 5px;
+.wegas-shareuser {
+    margin: 10px;
 }
-
-.editor-shareUser-list .inputEx-ListField-addButton {
-    display: none
+.wegas-shareuser .wegas-shareuser-content > .title {
+    font-weight: bolder;
+    border-bottom: 1px solid lightgray;
 }
-
-.editor-shareUser-list .username-field input {
-    width: 242px;
+.wegas-shareuser .username-field .MarkupField-wrapper {
+    width: 175px;
+    margin-bottom: 5px;
 }
-
-.editor-shareUser-list .wegas-shareuser-content .inputEx-ListField {
-    margin-top: 10px;
-    margin-left: 25px;
+.wegas-shareuser .inputEx-CheckBox {
+    padding:0;
 }
-
-.editor-shareUser-list .inputEx-AutoComplete input {
-    margin-left: 39px;
-    width: 242px;
+.wegas-shareuser .wegas-shareuser-content .inputEx-ListField {
+    margin:0;
 }
-
-.editor-shareUser-list .wegas-shareUser-save {
-    margin-left: 39px;
+.wegas-shareuser .inputEx-ListField-addButton ,
+.wegas-shareuser .wegas-shareuser-content .inputEx-ListField > span {
+    display: none;
 }
-
-.editor-shareUser-list .permission-group fieldset div {
+.wegas-shareuser img.inputEx-ListField-delButton {
+    margin: 0;
+}
+.wegas-shareuser .inputEx-ListField-subFieldEl {
+    margin-left: 11px;
+}
+.wegas-shareuser .inputEx-ListField,
+.wegas-shareuser .inputEx-ListField-childContainer {
+    width: 100%;
+}
+.wegas-shareuser .inputEx-ListField-childContainer:empty:after {
+    content: "No permissions added yet";
+    text-align: center;
+    font-style: italic;
+    display: block;
+    margin: 10px;
+}
+.wegas-shareuser .inputEx-ListField-childContainer > div {
+    border-bottom: 1px solid lightgray;
+    padding-top: 10px;
+}
+.wegas-shareuser .permission-group fieldset div {
     float: left;
     margin-left: 5px;
 }
-
-.editor-shareUser-list .permission-group fieldset div:first-child {
+.wegas-shareuser .permission-group fieldset div:first-child {
     margin-left: 3px;
 }
+.wegas-shareuser .wegas-userlist > div {
+    margin: 0;
+}
+.wegas-shareuser .wegas-adduser {
+    padding: 10px;
+    background: lightgray;
+}
+.wegas-shareuser .wegas-adduser .title {
+    padding-bottom: 5px;
+}
+.wegas-shareuser .wegas-adduser .inputEx-AutoComplete {
+    width: 100%;
+}
+.wegas-shareuser .wegas-adduser input {
+    width: 98%;
+    padding: 2px;
+}
+.wegas-shareuser .wegas-button {
+    margin: 0;
+}
 
-/** Styles for form edition */
+/** Styles for form edition
 .wegas-form div.inputEx-TypeField-PropertiesPanel {
     padding-left: 140px;
 }
@@ -274,17 +322,17 @@ img.inputEx-ListField-delButton {
 
 div.inputEx-ColorField button {
     background-image: url(../images/palette.png);
-    
-   /*background-position: 3px 0;*/
-   background-repeat: no-repeat;
-   margin-left: 2px;
+
+    /*background-position: 3px 0;*/
+background-repeat: no-repeat;
+margin-left: 2px;
 }
 
 div.inputEx-ColorField-button {
-	height: 19px;
-	width: 100px;
-	border: 1px solid #B5B8C8;
-	margin-left: 0px;
-	cursor: pointer;
-	float:left; /* to display color picker icon on the right */
+    height: 19px;
+    width: 100px;
+    border: 1px solid #B5B8C8;
+    margin-left: 0px;
+    cursor: pointer;
+    float:left; /* to display color picker icon on the right */
 }

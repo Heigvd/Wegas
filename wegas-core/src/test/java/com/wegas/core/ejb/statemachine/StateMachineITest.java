@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -8,8 +8,6 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.AbstractEJBTest;
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
-import com.wegas.core.ejb.GameFacade;
 import static com.wegas.core.ejb.GameModelFacadeTest.lookupBy;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
@@ -29,7 +27,7 @@ import org.junit.Test;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class StateMachineIT extends AbstractEJBTest {
+public class StateMachineITest extends AbstractEJBTest {
 
     private static TeamFacade teamFacade;
     private static PlayerFacade playerFacade;
@@ -49,7 +47,7 @@ public class StateMachineIT extends AbstractEJBTest {
     public void PlayerJoinTest() {
 
         final double FINAL_VALUE = 1;
-        
+
         TriggerDescriptor trigger = new TriggerDescriptor();
 
         trigger.setScope(new TeamScope());
@@ -81,6 +79,6 @@ public class StateMachineIT extends AbstractEJBTest {
 
     @Test
     public void PlayerTeamTokenJoinTest() {
-        
+
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -19,7 +19,7 @@ YUI.add("wegas-template", function(Y) {
                 "<div class='wegas-template-box-unit'></div><% } %></span><br/>" +
                 "<span class='wegas-template-box-value'>(<%= this.value || '{value}' %><% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>)</span></div>",
         VALUEBOX: "<div class='wegas-template-valuebox'><label><%= this.label || '{label}'%></label</div><br/></label><div class='wegas-template-valuebox-units'><% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
-                "<div class='wegas-template-valuebox-unit <%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div><% } %></span>" +
+                "<div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div><% } %></span>" +
                 "</div></div>",
         TITLE: "<div class='wegas-template-title'><%= this.label || '{label}'%></div>",
         FRACTION: "<div class='wegas-template-fraction'><%= (this.minValue || '{minValue}') + '/' + (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>"
@@ -77,7 +77,7 @@ YUI.add("wegas-template", function(Y) {
 
             if (desc) {
 
-                if (desc instanceof Y.Wegas.persistence.ListDescriptor) {       // If the widget is a list,
+                if (desc instanceof Y.Wegas.persistence.ListDescriptor && desc.get("currentItem")) {       // If the widget is a list,
                     desc = desc.get("currentItem");                             // display it with the current list and the current element
                 }
 
