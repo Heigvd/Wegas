@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-controller", function(Y) {
@@ -139,7 +139,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     (this.maxSize - this.questionToDo.length) !== 1 &&
                     ((this.maxSize - this.questionToDo.length - 1) % this.get("popupAfter")) === 0) {
                 this.get("boundingBox").emitDOMMessage("showPopup", {
-                    content: this.get("popupContent"),
+                    bodyContent: this.get("popupContent"),
                     buttons: [{
                             label: "Ok",
                             action: function() {
