@@ -440,11 +440,13 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                                 fields: [{
                                         name: "@class",
                                         type: HIDDEN,
-                                        value:"WRequirement"
+                                        value: "WRequirement"
                                     }, {
                                         label: "Work",
                                         name: "work",
                                         typeInvite: NAME
+//                                        type: "wegasvarautocomplete",
+//                                        variableClass: "WRequirement"
                                     }, {
                                         label: "Limit",
                                         name: "limit",

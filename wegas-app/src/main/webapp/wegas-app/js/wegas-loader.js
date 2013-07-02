@@ -402,6 +402,11 @@ YUI().use(function(Y) {
                     requires: ['inputex-keyvalue'],
                     ix_provides: 'wegaskeyvalue'
                 },
+                "wegas-inputex-var-autocomplete":{
+                    path: 'wegas-editor/js/inputex/wegas-inputex-var-autocomplete-min.js',
+                    requires: ['inputex-string'],
+                    ix_provides: 'wegasvarautocomplete'
+                },
                 "wegas-blockrightclick": {
                     path: 'wegas-app/js/plugin/wegas-blockrightclick-min.js',
                     ws_provides: 'BlockRightclick'
