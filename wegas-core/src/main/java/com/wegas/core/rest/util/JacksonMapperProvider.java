@@ -69,9 +69,24 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
         AnnotationIntrospector pair = new AnnotationIntrospector.Pair(secondary, primary);
 
         mapper.setAnnotationIntrospector(pair);
+
+//        mapper.registerModule(new SimpleModule("wegasdeserialize", new Version(1, 1, 1, null)) {
+//            @Override
+//            public void setupModule(SetupContext context) {
+//                super.setupModule(context);
+//
+//                context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
+//                    @Override
+//                    public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BasicBeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+//
+//                        return new ChoiceInstanceDeserializer((BeanDeserializer) deserializer);
+//                    }
+//                });
+//            }
+//        });
+
         //mapper.getDeserializationConfig().withAnnotationIntrospector(pair);
         //mapper.getSerializationConfig().withAnnotationIntrospector(pair);
-
 
         //mapper.configure(Feature.INDENT_OUTPUT, true);
         //mapper.getSerializationConfig().setDateFormat(myDateFormat);

@@ -59,10 +59,6 @@ YUI.add('wegas-loginwidget', function(Y) {
          * Button to submit form
          */
         askPassButton: null,
-        /**
-         * Reference to each used functions
-         */
-        handlers: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -72,8 +68,7 @@ YUI.add('wegas-loginwidget', function(Y) {
          * init all the three forms groups
          */
         initializer: function() {
-            var cb = this.get(CONTENTBOX);
-            this.handlers = {};
+
             this.loginButton = new Y.Button({
                 label: "Log in"
             });
@@ -106,7 +101,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             }
 
             //Core of the page
-            cb.append("<a href=\"https://github.com/you\"><img style=\"position: absolute; top: 0; left: 0; border: 0;\" src=\"https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png\" alt=\"Fork me on GitHub\"></a>\n\
+            cb.append("<a href=\"https://github.com/Heigvd/Wegas\"><img style=\"position: absolute; top: 0; left: 0; border: 0;\" src=\"https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png\" alt=\"Fork me on GitHub\"></a>\n\
                     <div class='header'>\n\
                     <div class='content'>\n\
                         <div class='left'>\n\
@@ -262,29 +257,31 @@ YUI.add('wegas-loginwidget', function(Y) {
             var cb = this.get(CONTENTBOX),
                     inputNode = cb.one("input");
 
-            this.handlers.onAskingPass = cb.delegate("click", function() {
+            cb.delegate("click", function() {
                 this.changeRightForms(true);
             }, ".forgot", this);
 
-            this.handlers.onAskingCreate = cb.delegate("click", function() {
+            cb.delegate("click", function() {
                 this.changeRightForms(false);
             }, ".return", this);
 
-            this.handlers.onLogin = this.loginButton.on("click", function() {
+            this.loginButton.on("click", function() {
                 var data;
                 if (this.loginForm.validate()) {
                     data = this.loginForm.getValue();
                     this.login(data.email, data.password, data.remember);
+                } else {
+                    this.showMessage("error", "Invalid Email/password combination.");
                 }
             }, this);
 
-            this.handlers.onSignUp = this.signUpButton.on("click", function() {
+            this.signUpButton.on("click", function() {
                 if (this.createAccountForm.validate()) {
                     this.createAccount(this.createAccountForm.getValue());
                 }
             }, this);
 
-            this.handlers.onAskPass = this.askPassButton.on("click", function() {
+            this.askPassButton.on("click", function() {
                 var data;
                 if (this.sendNewPasswordForm.validate()) {
                     data = this.sendNewPasswordForm.getValue();
@@ -292,12 +289,14 @@ YUI.add('wegas-loginwidget', function(Y) {
                     this.sendNewPassword(data.email);
                 }
             }, this);
-            this.handlers.keypress = this.on("keypress", function(e) {
+
+            this.on("keypress", function(e) {
                 if (e.domEvent.keyCode === 13) {
                     this.loginButton.fire("click");
                 }
             });
-            this.handlers.render = this.after("render", inputNode.focus, inputNode);
+
+            this.after("render", inputNode.focus, inputNode);
         },
         /**
          * @function
@@ -306,12 +305,13 @@ YUI.add('wegas-loginwidget', function(Y) {
          * Destroy buttons.
          */
         destructor: function() {
-            for (var i = 0; i < this.handlers.length; i += 1) {
-                this.handlers[i].detach();
-            }
+            this.loginButton.destroy();
             this.submitButton.destroy();
             this.askPassButton.destroy();
             this.signUpButton.destroy();
+            this.sendNewPasswordForm.destroy();
+            this.createAccountForm.destroy();
+
         },
         // *** Private methods *** //
         /**
@@ -472,7 +472,7 @@ YUI.add('wegas-loginwidget', function(Y) {
     /**
      * Hack because "typeInvite" and password work bad (typeInvite is hid)
      * Password field needs a "password" class.
-     * Change color property (in grey) when input is not focused (black else) 
+     * Change color property (in grey) when input is not focused (black else)
      */
     Y.inputEx.StringField.prototype.updateTypeInvite = function() {
 
