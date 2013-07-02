@@ -240,9 +240,6 @@
         "animate": true,
         "children": [{
                 "type": "TabView",
-                "plugins": [{
-                        "fn": "PopupListener"
-                    }],
                 "id": "leftTabView",
                 "cssClass": "editor-tab",
                 "children": [{
@@ -325,9 +322,6 @@
     "center": {
         "children": [{
                 "id": "centerTabView",
-                "plugins": [{
-                        "fn": "PopupListener"
-                    }],
                 "type": "TabView",
                 "cssClass": "editor-tab",
                 "children": [{
@@ -349,8 +343,6 @@
                                         "fn": "CSSLoader"
                                     }, {
                                         "fn": "Injector"
-                                    }, {
-                                        "fn": "PopupListener"
                                     }
                                 ]
                             }]
@@ -370,8 +362,6 @@
                 "children": [],
                 "plugins": [{
                         "fn": "LayoutToggleTab"
-                    }, {
-                        "fn": "PopupListener"
                     }]
             }]
     }

@@ -271,7 +271,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                     data = this.loginForm.getValue();
                     this.login(data.email, data.password, data.remember);
                 } else {
-                    this.showMessage("error", "Invalid Email/password combination.");
+                    this.showMessageBis("error", "Invalid Email/password combination.", 4000);
                 }
             }, this);
 

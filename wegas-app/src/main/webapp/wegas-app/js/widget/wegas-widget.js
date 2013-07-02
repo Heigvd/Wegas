@@ -12,37 +12,8 @@
 YUI.add("wegas-widget", function(Y) {
     "use strict";
     var Lang = Y.Lang,
-            BOUNDING_BOX = "boundingBox",
-            LEVEL = {
-        "warn": "warn",
-        "error": "error",
-        "info": "info",
-        "success": "success"
-    },
-    /**
-     * @function
-     * @private
-     * @description Destroy itself and detach all function closed.
-     */
-    destroySelf = function() {
-        if (!this._node) {
-            return; // The node has already been destroyed
-        }
+            BOUNDING_BOX = "boundingBox";
 
-        if (this.timeout) {
-            this.timeout.cancel();
-        }
-        this.closeHandler.detach();
-        var anim = new Y.Anim({
-            node: this,
-            to: {
-                opacity: 0
-            },
-            duration: 0.2
-        });
-        anim.on("end", this.remove, this, true);
-        anim.run();
-    };
     /**
      * @name Y.Wegas.Widget
      * @class Extension common to all wegas widgets
@@ -56,15 +27,19 @@ YUI.add("wegas-widget", function(Y) {
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
-                || this.constructor.NAME.toLowerCase(); // the usual "yui3-" prefix)
+                || this.constructor.NAME.toLowerCase();                         // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
-        this.publish("exception", {
+
+        this.publish("exception", {                                             // Add custom event
             emitFacade: true
         });
         this.publish("showOverlay", {
             emitFacade: true
         });
         this.publish("hideOverlay", {
+            emitFacade: true
+        });
+        this.publish("message", {
             emitFacade: true
         });
 
@@ -81,9 +56,9 @@ YUI.add("wegas-widget", function(Y) {
         defaultExceptionHandler: function(e) {
             this.fire("exception", e.response.results);
         },
-        emitDOMMessage: function() {
-            var bb = this.get("boundingBox");
-            bb.emitDOMMessage.apply(bb, arguments);
+        defaultFailureHandler: function(e) {
+            this.showMessage("error", e.response.message || e.response.results.message || "Error during request.");
+            // e.halt(true);
         },
         /**
          * @function
@@ -92,7 +67,7 @@ YUI.add("wegas-widget", function(Y) {
          */
         showOverlay: function() {
             this.fire("wegas:showOverlay")
-//            this.emitDOMMessage("showOverlay");
+            // this.emitDOMMessage("showOverlay");
         },
         /**
          * @function
@@ -102,22 +77,7 @@ YUI.add("wegas-widget", function(Y) {
         hideOverlay: function() {
             this.fire("wegas:hideOverlay");
         },
-        defaultFailureHandler: function(e) {
-            this.showMessage("error", e.response.message || e.response.results.message || "Error during request." );
-            // e.halt(true);
-        },
-        /**
-         * @function
-         * @private
-         * @description clear message (see function 'showMessage')
-         */
-        emptyMessage: function() {						// Form msgs logic
-            var statusNode = this._getStatusNode();
-            if (statusNode === null) {
-                return false;
-            }
-            statusNode.empty();
-        },
+        
         /**
          * Display a closable message with a status-image.
          * Status-image of message depends of level parameters
@@ -129,81 +89,28 @@ YUI.add("wegas-widget", function(Y) {
          * @param txt
          * @param timeout
          * @description
+         *
+         * @deprecated Will be replace by showMessageBis
          */
         showMessage: function(level, txt, timeout) {
-            var msgNode = this.getMessageNode(),
-                    message = Y.Node.create("<div class='" + (LEVEL[level] || "") + "'><span class='icon'></span><span class='content'>" + txt + "</span><span class='close'></span></div>");
-            if (level === "success" && !timeout) {                          // @hack successful messages disapear automatically
-                if (this.toolbar instanceof Y.Plugin.WidgetToolbar) {
-                    this.setStatusMessage(txt);
-                    return;
-                } else {
-                    timeout = 800;
-                }
-            }
-            else {
-                this.emitDOMMessage(LEVEL[level], {content: txt, timeout: timeout});
-            }
-//            msgNode.append(message);
-//            message.closeHandler = message.one(".close").
-//                    once("click", destroySelf, message);
-//            if (timeout) {
-//                message.timeout = Y.later(timeout, message, destroySelf);
-//            }
+            this.emitDOMMessage(level, {content: txt, timeout: timeout});
+        },
+        emitDOMMessage: function() {
+            var bb = this.get("boundingBox");
+            bb.emitDOMMessage.apply(bb, arguments);
         },
         /**
-         * @function
-         * @private
-         * @description get the message node of the current page.
-         * If '.wegas-systemmessage' doesn't exist, create it.
+         * Will replace the original showMessage
          */
-        getMessageNode: function() {
-            var msgNode = this.get(BOUNDING_BOX).one(".wegas-systemmessage");
-            if (!msgNode) {
-                this.get(BOUNDING_BOX).
-                        append("<div class='wegas-systemmessage'></div>");
-                return this.get(BOUNDING_BOX).one(".wegas-systemmessage");
-            }
-            return msgNode;
-        },
-        /**
-         * @function
-         * @private
-         * @param txt
-         * @return boolean true is status is set.
-         * @description set content of the message.
-         */
-        setStatusMessage: function(txt) {
-            var statusNode = this._getStatusNode();
-            if (statusNode === null) {
-                return false;
-            }
-            statusNode.setContent(txt);
-            return true;
+        showMessageBis: function(level, msg, timeout) {
+            this.fire("wegas:message", {
+                level: level,
+                content: msg,
+                timeout: timeout
+            });
         },
         highlight: function(bool) {
             bool ? this.get(BOUNDING_BOX).addClass("highlighted") : this.get(BOUNDING_BOX).removeClass("highlighted");
-        },
-        /**
-         * @function
-         * @private
-         * @param txt
-         * @return Status node
-         * @description get the status node of the message.
-         * if 'wegas-status-message' doesn't exist, create and return it
-         */
-        _getStatusNode: function() {
-            var statusNode;
-            if (!(this.toolbar instanceof Y.Plugin.WidgetToolbar)) {
-                return null;
-            }
-            statusNode = this.toolbar.get("header").
-                    one(".wegas-status-message");
-            if (!statusNode) {
-                statusNode = new Y.Node.create("<span class='wegas-status-message'></span>");
-                this.toolbar.get("header").append(statusNode);
-            }
-            return statusNode;
         }
     });
     Y.mix(Widget, {
