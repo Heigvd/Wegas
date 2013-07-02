@@ -171,7 +171,7 @@ YUI.add('wegas-form', function(Y) {
                         cfg.type = cfg.type || "group";
                         Y.inputEx.use(val, Y.bind(function(cfg) {               // Load form dependencies
                             var form = Y.inputEx(cfg);                          // Initialize and render form
-                            form.setValue(this.get("values"));                  // Sync form with "values" ATTR
+                            form.setValue(this.get("values"), false);           // Sync form with "values" ATTR
                             this.set("form", form);
                             form.on("updated", function(e) {
                                 this.fire("updated", e);

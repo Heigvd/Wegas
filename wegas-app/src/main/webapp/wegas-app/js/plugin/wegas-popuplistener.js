@@ -64,7 +64,7 @@ YUI.add('wegas-popuplistener', function(Y) {
                 },
                 modal: false,
                 centered: false,
-                content: ""
+                width: "80%"
             };
         },
         handlers: [],
@@ -92,6 +92,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             var instance;
             event = stringToObject(event);
             event = Y.mix(this.DEFAULT_CONFIG(), event, true, null, 0, false);
+            event.bodyContent = event.content;
             instance = new Y.Wegas.PopupContent(event).render(this.get("host").get(this.get("targetAttr"))).show();
 
             if (event.timeout) {

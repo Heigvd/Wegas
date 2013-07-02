@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-popup-content', function(Y) {
@@ -20,11 +20,8 @@ YUI.add('wegas-popup-content', function(Y) {
                 Y.WidgetModality,
                 Y.WidgetPositionAlign,
                 Y.WidgetStack], {
-        syncUI: function() {
-            this.set("content", this.get("content"));
-        },
         hide: function() {
-            this.constructor.superclass.hide.apply(this);
+            Y.Wegas.PopupContent.superclass.hide.apply(this);
             this.destroy();
         }
     }, {
@@ -32,17 +29,10 @@ YUI.add('wegas-popup-content', function(Y) {
         ATTRS: {
             align: {"transient": true},
             alignOn: {"transient": true},
-            content: {
+            bodyContent: {
                 value: "",
                 type: "string",
                 format: "html",
-                setter: function(val) {
-                    this.set("bodyContent", val);
-                    return val;
-                }
-            },
-            bodyContent: {
-                "transient": true
             },
             buttons: {
                 value: {
@@ -58,7 +48,8 @@ YUI.add('wegas-popup-content', function(Y) {
                 },
                 "transient": true
             },
-            centered: {value: true,
+            centered: {
+                value: true,
                 "transient": true
             },
             defaultButton: {"transient": true},

@@ -23,7 +23,6 @@ YUI.add('wegas-popup', function(Y) {
             if (this.get("content")) {
                 this.afterHostEvent("render", function() {
                     if (this.get("host").showMessage) {
-
                         this.get("host").showMessage("info", this.get("content"));
                     }
                 });
