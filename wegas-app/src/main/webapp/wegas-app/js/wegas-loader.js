@@ -396,6 +396,10 @@ YUI().use(function(Y) {
                     requires: ["wegas-editable", "plugin", "wegas-action"],
                     ws_provides: ["ShowAfter", "HideAfter"]
                 },
+                "wegas-conditionaldisable": {
+                    path: 'wegas-app/js/plugin/wegas-conditionaldisable-min.js',
+                    ws_provides: 'ConditionalDisable'
+                },
                 /** Inputex Fields **/
                 'wegas-inputex': {
                     path: 'wegas-editor/css/wegas-inputex.css',
