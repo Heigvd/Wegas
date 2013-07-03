@@ -709,7 +709,7 @@ YUI().use(function(Y) {
                 'wegas-pmg-datatable': {
                     path: 'wegas-pmg/js/wegas-pmg-datatable-min.js',
                     /*requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],*/ //Using Treeble
-                    requires: ['wegas-pmg-datatable', 'datatable', 'datatable-mutable'], //Using simple datatable
+                    requires: ['wegas-datatable', 'datatable', 'datatable-mutable'], //Using simple datatable
                     ws_provides: "PmgDatatable"
                 },
                 'wegas-pmg-slidepanel': {
