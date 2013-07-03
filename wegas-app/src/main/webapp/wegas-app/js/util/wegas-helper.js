@@ -164,11 +164,14 @@ YUI.add('wegas-helper', function(Y) {
          */
         superbind: function(o, c) {
             var i, args = arguments.length > 0 ? Y.Array(arguments, 0, true) : null;
-                for (i in o) {
-                    args[0] = o[i];
-                    o[i] = Y.bind.apply(c, args);
-                }
+            for (i in o) {
+                args[0] = o[i];
+                o[i] = Y.bind.apply(c, args);
+            }
             return o;
+        },
+        getURLParameter: function(name) {
+            return decodeURI((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1]);
         }
     };
     Y.namespace("Wegas").Helper = Helper;
