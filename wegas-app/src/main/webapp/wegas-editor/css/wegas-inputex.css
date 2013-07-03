@@ -16,6 +16,10 @@ div.inputEx-hidden {
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;
 }
+
+.wegas-form div.inputEx-label   {
+    white-space: normal;
+}
 div.inputEx-fieldWrapper > div.inputEx-label:first-letter {
     text-transform: uppercase;
 }
