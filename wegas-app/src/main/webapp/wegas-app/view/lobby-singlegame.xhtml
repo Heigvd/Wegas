@@ -9,7 +9,7 @@
 
         <ui:define name="head">
             <style type="text/css">
-                .yui3-skin-sam .wegas-title {
+/*                .yui3-skin-sam .wegas-title {
                     border: solid #2647A0;
                     border-width: 0 0 5px;
                     padding-bottom: 5px;
@@ -19,30 +19,37 @@
 
                 .wegas-jointeamwidget-content {
                     margin-left: 60px;
-                }
+                }*/
             </style>
         </ui:define>
 
         <ui:define name="body">
             <script type="text/javascript">
-                YUI().use("wegas-app", function (Y) {
+                YUI().use("wegas-app", function(Y) {
                     var app = new Y.Wegas.App({
                         currentUser: #{requestController.getCurrentUser().toJson()},
                         layoutSrc: 'wegas-app/db/wegas-lobby-singlegame-layout.json',
                         dataSources: {
-                            "User": {
+                            GameModel: {
+                                source: "rest/Public/GameModel",
+                                initialRequest: "/" +#{singleLobbyController.currentGame.gameModelId},
+                                plugins: [{
+                                        fn: "GameModelCache"
+                                    }]
+                            },
+                            User: {
                                 source: "rest/Extended/User",
                                 plugins: [{
                                         fn: "WegasCache"
                                     }]
                             },
-                            "PublicGames": {
+                            PublicGames: {
                                 source: "rest/PublicGames",
                                 plugins: [{
                                         fn: "GameCache"
                                     }]
                             },
-                            "Game": {
+                            Game: {
                                 source: "rest/GameModel/1/Game",
                                 plugins: [{
                                         fn: "GameCache"
@@ -50,7 +57,11 @@
                             }
                         }
                     });
-                    app.render();                                           // Launch app
+                    app.render();                                               // Launch app
+
+                    Y.on("gameJoined", function(e) {                            // As soon as a game is joined
+                        window.location = app.get("base") + "wegas-app/view/play.html?gameId=" + e.gameId;// open the game in a new tab
+                    });
                 });
             </script>
         </ui:define>

@@ -51,8 +51,7 @@ YUI.add('wegas-jointeam', function(Y) {
                 return;
             }
 
-            // Render team selection
-            for (i = 0; i < teams.length; i = i + 1) {
+            for (i = 0; i < teams.length; i = i + 1) {                          // Render team selection
                 choices.push({
                     label: teams[i].get("name"),
                     value: teams[i].get("id")
@@ -111,8 +110,16 @@ YUI.add('wegas-jointeam', function(Y) {
                             }, this)
                         }
                     });
+                } else {
+                    this.showMessage("Enter a valid team team");
                 }
             }, this);
+        },
+        destructor: function() {
+            this.teamsField.destroy();
+            this.createTeamField.destroy();
+            this.joinTeamButton.destroy();
+            this.createButton.destroy();
         },
         /**
          * @function
@@ -124,7 +131,7 @@ YUI.add('wegas-jointeam', function(Y) {
                 request: "/JoinTeam/" + teamId,
                 on: {
                     success: Y.bind(function() {
-                        this.showMessage("success", "Game joined, it has been added to your games", 1000000000);
+                        this.showMessage("success", "Game joined", 4000);
                         this.get("contentBox").empty();
                         Y.fire("gameJoined", {gameId: this.get("entity").get("id")});
                     }, this),
