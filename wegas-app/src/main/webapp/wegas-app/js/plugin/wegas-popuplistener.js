@@ -20,30 +20,6 @@ YUI.add('wegas-popuplistener', function(Y) {
         }
         return o;
     },
-            /**
-             * @function
-             * @private
-             * @description Destroy itself and detach all function closed.
-             */
-            //destroySelf = function() {
-            //    if (!this._node) {
-            //        return; // The node has already been destroyed
-            //    }
-            //
-            //    if (this.timeout) {
-            //        this.timeout.cancel();
-            //    }
-            //    this.closeHandler.detach();
-            //    var anim = new Y.Anim({
-            //        node: this,
-            //        to: {
-            //            opacity: 0
-            //        },
-            //        duration: 0.2
-            //    });
-            //    anim.on("end", this.remove, this, true);
-            //    anim.run();
-            //},
             PopupListener = Y.Base.create("wegas-popuplistener", Y.Plugin.Base, [], {
         DEFAULT_CONFIG: function() {
             return {
@@ -70,7 +46,7 @@ YUI.add('wegas-popuplistener', function(Y) {
         handlers: [],
         initializer: function() {
             var bb = this.get("host").get(this.get("targetAttr"));
-            //this.instance = new Y.Wegas.PopupContent({render: this.get("host").get("boundingBox")});
+
             this.handlers = [
                 bb.on("dom-message:showPopup", this._show, this),
                 bb.on("dom-message:error", this._system, this, "error"),
@@ -82,9 +58,16 @@ YUI.add('wegas-popuplistener', function(Y) {
             this.onHostEvent("*:showOverlay", this.onShowOverlay);
             this.onHostEvent("*:hideOverlay", this.onHideOverlay);
             this.onHostEvent("*:message", this.onShowMessage);
+
+            if (this.get("showServerMessages")) {
+                this.handlers.push(Y.Wegas.Facade.VariableDescriptor.on(this.get("event"), function(e) {
+                    this.get("host").showMessage("info", e.content);
+                }, this));
+            }
         },
         destructor: function() {
-            for (var i in this.handlers) {
+            var i;
+            for (i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         },
@@ -92,7 +75,6 @@ YUI.add('wegas-popuplistener', function(Y) {
             var instance;
             event = stringToObject(event);
             event = Y.mix(this.DEFAULT_CONFIG(), event, true, null, 0, false);
-            event.bodyContent = event.content;
             instance = new Y.Wegas.PopupContent(event).render(this.get("host").get(this.get("targetAttr"))).show();
 
             if (event.timeout) {
@@ -138,6 +120,9 @@ YUI.add('wegas-popuplistener', function(Y) {
             },
             alignAttr: {
                 value: "contentBox"
+            },
+            showServerMessages: {
+                value: false
             }
         }
     });
