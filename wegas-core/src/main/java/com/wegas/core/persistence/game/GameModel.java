@@ -419,9 +419,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the pages
      */
-    public Map<String, JsonNode> getPages() throws RepositoryException {
-        final Pages pagesDAO = new Pages(this.id.toString());
-        return pagesDAO.getPages();
+    public Map<String, JsonNode> getPages() {
+        try {
+            final Pages pagesDAO = new Pages(this.id.toString());
+            return pagesDAO.getPages();
+        } catch (RepositoryException ex) {
+            return new HashMap<>();
+        }
     }
 
     /**

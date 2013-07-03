@@ -44,6 +44,10 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          * reference to the gauge object
          */
         gauge: null,
+        /**
+         * reference to the gauge status
+         */
+        disable: null,
         // ** Lifecycle Methods ** //
         /**
          * @function
@@ -52,6 +56,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
+            this.disable = false;
         },
         /**
          * @function
@@ -92,6 +97,10 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
+            this.after('disabledChange', function(e){
+                this.disable = e.newVal;
+                this.syncUI();
+            }, this);
         },
         /**
          * @function
@@ -112,7 +121,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             maxVal = variableDescriptor.get("maxValue") - minVal;
             value = (variableDescriptor.getInstance().
                     get("value") - minVal) / maxVal * this.MAXVAL;
-            if (!value) {
+            if (!value || this.disable) {
                 value = 0.1;                                                    // @hack @fixme unkown bug, value seams to be treated by gauge as false...
             }
 

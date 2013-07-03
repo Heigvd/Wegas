@@ -10,7 +10,7 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add("wegas-inputex-pageselect", function (Y) {
+YUI.add("wegas-inputex-pageselect", function(Y) {
     "use strict";
 
     var inputEx = Y.inputEx;
@@ -25,32 +25,29 @@ YUI.add("wegas-inputex-pageselect", function (Y) {
      *   <li>favicon: boolean whether the domain favicon.ico should be displayed or not (default is true, except for https)</li>
      * </ul>
      */
-    Y.namespace("inputEx.Wegas").PageSelect = function (options) {
+    Y.namespace("inputEx.Wegas").PageSelect = function(options) {
         inputEx.Wegas.PageSelect.superclass.constructor.call(this, options);
     };
 
     Y.extend(inputEx.Wegas.PageSelect, inputEx.SelectField, {
-
-        setOptions: function (options) {
+        setOptions: function(options) {
             inputEx.Wegas.PageSelect.superclass.setOptions.call(this, options);
             Y.Wegas.Facade.Page.cache.getIndex(Y.bind(this.buildList, this));
 
         },
-
-        setValue: function (val) {
+        setValue: function(val) {
             inputEx.Wegas.PageSelect.superclass.setValue.apply(this, arguments);
             this.options.value = val;
         },
-
-        buildList: function(value){
+        buildList: function(value) {
             var i;
-            for(i in value){
+            for (i in value) {
                 this.addChoice({
                     value: i,
-                    label: "Page : " + i
+                    label: "Page : " + i + " (" + (value[i] || '-unamed-') + ")"
                 });
-                if (i == this.options.value){
-                    this.choicesList[i-1].node.selected = "selected";
+                if (i == this.options.value) {
+                    this.choicesList[i - 1].node.selected = "selected";
                 }
             }
         }

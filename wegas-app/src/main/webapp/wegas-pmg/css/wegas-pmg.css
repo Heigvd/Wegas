@@ -171,6 +171,16 @@
     background:none;
 }
 
+.layout .horizontal-menu .yui3-button-disabled {
+    background-repeat: repeat-x;
+    background-color: #ADAD96;
+}
+
+.layout .horizontal-menu .yui3-button-disabled:hover {
+    border-width:0 1px 1px 0;
+    padding-bottom:0px;
+}
+
 /*-----------------------------------body-------------------------------------*/
 .body{
     bottom: 0;
