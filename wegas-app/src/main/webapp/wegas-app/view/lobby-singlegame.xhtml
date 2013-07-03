@@ -57,6 +57,9 @@
                             }
                         }
                     });
+                    app.after("render", function() {                            // If there player is registered to a game
+                        Y.one(".wegas-title").setContent("Joining game: #{singleLobbyController.currentGame.name}");
+                    });
                     app.render();                                               // Launch app
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
