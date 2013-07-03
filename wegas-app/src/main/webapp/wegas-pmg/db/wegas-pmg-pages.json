@@ -94,7 +94,7 @@
                                         "cfg": {
                                             "condition": {
                                                 "@class": "Script",
-                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
                                                 "language": "JavaScript"
                                             }
                                         }
@@ -112,7 +112,7 @@
                                         "cfg": {
                                             "condition": {
                                                 "@class": "Script",
-                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
                                                 "language": "JavaScript"
                                             }
                                         }
@@ -169,6 +169,16 @@
                                     "subpageId": 4,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
+                                }
                             }
                         ]
                     }, {
@@ -180,6 +190,16 @@
                                 "cfg": {
                                     "subpageId": 5,
                                     "targetPageLoaderId": "maindisplayarea"
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
                                 }
                             }
                         ]
