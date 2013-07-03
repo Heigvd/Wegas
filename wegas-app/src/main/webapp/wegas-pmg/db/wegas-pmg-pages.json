@@ -361,7 +361,9 @@
         "children": [
             {
                 "type": "PmgTasklist",
-                "variables": "tasks",
+                "variables": {
+                    "name": "tasks"
+                },
                 "columnTitles": [
                     "No",
                     "Name",

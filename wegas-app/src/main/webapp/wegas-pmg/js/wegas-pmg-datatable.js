@@ -9,17 +9,17 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-YUI.add("wegas-pmg-datatable", function (Y) {
+YUI.add("wegas-pmg-datatable", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Datatable;
 
-    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
+    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Wegas.DataTable, [Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
         datatable: null,
         data: null,
         // *** Lifecycle Methods *** //
-        initializer: function () {
+        initializer: function() {
             var i, ct = this.get("columnTitles"), columnTitles = new Array();
             this.handlers = {};
             this.data = [];
@@ -49,16 +49,16 @@ YUI.add("wegas-pmg-datatable", function (Y) {
                 this.datatable.sort(this.get("columnTitles")[0]);
             }
         },
-        renderUI: function () {
+        renderUI: function() {
             var cb = this.get(CONTENTBOX);
             if (!this.datatable)
                 return;
             this.datatable.render(cb);
         },
-        bindUI: function () {
+        bindUI: function() {
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("response", this.syncUI, this);
         },
-        syncUI: function () {
+        syncUI: function() {
             if (this.datatable == null || this.get("variables") == null)
                 return;
             this.datatable.set("data", []);
@@ -66,7 +66,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
             this.getData();
             this.datatable.addRows(this.data);
         },
-        destructor: function () {
+        destructor: function() {
             var i;
             for (i = 0; i < this.handlers.length; i++) {
                 this.handlers[i].detach();
@@ -74,7 +74,7 @@ YUI.add("wegas-pmg-datatable", function (Y) {
             this.datatable.destroy();
         },
         //*** Private Methods ***/
-        getData: function () {
+        getData: function() {
             var i, j, variables, variableDesc, variableInst, oneRowDatas, data,
                     ct = this.get("columnTitles"), cv = this.get("columnValues");
             if (cv == null)
@@ -104,21 +104,28 @@ YUI.add("wegas-pmg-datatable", function (Y) {
         }
     }, {
         ATTRS: {
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
             variables: {
-                value: null,
-                validator: function (s) {
-                    return s === null || Y.Lang.isString(s);
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "list",
+                    useButtons: true,
+                    elementType: {
+                        type: "variableselect",
+                        label: "variable"
+                    },
+                    index: 1
                 }
             },
-            columnTitles: {
-                validator: Y.Lang.isArray
-            },
-            columnValues: {
+            columnsCfg: {
                 validator: Y.Lang.isArray
             },
             defaultSort: {
                 value: null,
-                validator: function (s) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             }
