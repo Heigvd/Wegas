@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-popup-content', function(Y) {
@@ -24,7 +24,7 @@ YUI.add('wegas-popup-content', function(Y) {
             this.set("content", this.get("content"));
         },
         hide: function() {
-            this.constructor.superclass.hide.apply(this);
+            Y.Wegas.PopupContent.superclass.hide.apply(this);
             this.destroy();
         }
     }, {
@@ -45,6 +45,7 @@ YUI.add('wegas-popup-content', function(Y) {
                 "transient": true
             },
             buttons: {
+                "transient": true,
                 value: {
                     footer: [
                         {
@@ -55,10 +56,10 @@ YUI.add('wegas-popup-content', function(Y) {
                             }
                         }
                     ]
-                },
-                "transient": true
+                }
             },
-            centered: {value: true,
+            centered: {
+                value: true,
                 "transient": true
             },
             defaultButton: {"transient": true},

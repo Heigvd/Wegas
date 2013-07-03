@@ -1,18 +1,20 @@
 {
-    "id": 2003,
-    "type": "PanelWidget",
-    "width": 410,
-    "align": {
-        "points": ["tc", "tc"]
-    },
-    "modal": false,
-    "buttons": [],
+    "type": "List",
     "children": [{
+        "type": "Text",
+        "content": "<div class='content'><div class='left'><div class='logo'></div></div></div>",
+        "cssClass": "header"
+        }, {
             "type": "Text",
             "content": "Join Team",
-            "cssClass": "wegas-title"
+            "cssClass": "content title"
         }, {
-            "type": "JoinTeamWidget"
+            "type": "JoinGame",
+            "cssClass": "content"
+        }, {
+            "type": "Text",
+            "content": "<div class='footer'><div class='partner'><a href='http://www.heig-vd.ch/' target='_blank'><div class='heigvd'></div></a></div><div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div><div class='followus'><a href='http://www.albasim.com' target='_blank'><div class='albasim'></div></a></div></div></div>",
+            "cssClass": "content"
         }],
     "plugins": [{
             "fn": "PopupListener"
