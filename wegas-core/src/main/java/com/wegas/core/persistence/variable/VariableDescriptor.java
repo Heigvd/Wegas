@@ -16,6 +16,7 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.leaderway.persistence.ResourceDescriptor;
@@ -137,6 +138,19 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      *
+     * @param name
+     */
+    public VariableDescriptor(String name, T defaultInstance) {
+        this.name = name;
+        this.defaultInstance = defaultInstance;
+    }
+
+    public VariableDescriptor(T defaultInstance) {
+        this.defaultInstance = defaultInstance;
+    }
+
+    /**
+     *
      * @param a
      */
     @Override
@@ -253,6 +267,13 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public AbstractScope getScope() {
         return scope;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.getScope() == null) {
+            this.setScope(new TeamScope());
+        }
     }
 
     /**

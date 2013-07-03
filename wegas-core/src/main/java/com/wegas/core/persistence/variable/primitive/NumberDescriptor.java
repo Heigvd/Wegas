@@ -50,6 +50,10 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
         super(name);
     }
 
+    public NumberDescriptor(String name, NumberInstance defaultInstance) {
+        super(name, defaultInstance);
+    }
+
     /**
      *
      * @param a
@@ -113,7 +117,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     public double getDefaultValue() {
         return ((NumberInstance) this.getDefaultInstance()).getValue();
     }
-    
+
     public void setDefaultValue() {
         // only used to explicitely ignore while serializing
     }
