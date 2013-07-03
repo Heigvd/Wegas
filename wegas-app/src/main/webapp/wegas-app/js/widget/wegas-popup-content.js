@@ -20,6 +20,9 @@ YUI.add('wegas-popup-content', function(Y) {
                 Y.WidgetModality,
                 Y.WidgetPositionAlign,
                 Y.WidgetStack], {
+        syncUI: function() {
+            this.set("content", this.get("content"));
+        },
         hide: function() {
             Y.Wegas.PopupContent.superclass.hide.apply(this);
             this.destroy();
@@ -29,12 +32,20 @@ YUI.add('wegas-popup-content', function(Y) {
         ATTRS: {
             align: {"transient": true},
             alignOn: {"transient": true},
-            bodyContent: {
+            content: {
                 value: "",
                 type: "string",
                 format: "html",
+                setter: function(val) {
+                    this.set("bodyContent", val);
+                    return val;
+                }
+            },
+            bodyContent: {
+                "transient": true
             },
             buttons: {
+                "transient": true,
                 value: {
                     footer: [
                         {
@@ -45,8 +56,7 @@ YUI.add('wegas-popup-content', function(Y) {
                             }
                         }
                     ]
-                },
-                "transient": true
+                }
             },
             centered: {
                 value: true,
