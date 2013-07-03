@@ -139,7 +139,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     (this.maxSize - this.questionToDo.length) !== 1 &&
                     ((this.maxSize - this.questionToDo.length - 1) % this.get("popupAfter")) === 0) {
                 this.get("boundingBox").emitDOMMessage("showPopup", {
-                    bodyContent: this.get("popupContent"),
+                    content: this.get("popupContent"),
                     buttons: [{
                             label: "Ok",
                             action: function() {
