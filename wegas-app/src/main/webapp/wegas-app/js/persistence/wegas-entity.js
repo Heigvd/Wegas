@@ -189,7 +189,7 @@ YUI.add('wegas-entity', function(Y) {
         },
         EDITMENU: [{
                 type: BUTTON,
-                label: "Open",
+                label: "Open in editor",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -322,7 +322,7 @@ YUI.add('wegas-entity', function(Y) {
         },
         EDITMENU: [{
                 type: BUTTON,
-                label: "Open",
+                label: "View",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -430,7 +430,7 @@ YUI.add('wegas-entity', function(Y) {
         },
         EDITMENU: [{
                 type: BUTTON,
-                label: "View as",
+                label: "View",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -478,7 +478,7 @@ YUI.add('wegas-entity', function(Y) {
         },
         EDITMENU: [{
                 type: BUTTON,
-                label: "View as",
+                label: "View",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]

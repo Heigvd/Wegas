@@ -30,7 +30,7 @@ YUI.add("wegas-widget", function(Y) {
                 || this.constructor.NAME.toLowerCase();                         // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
 
-        this.publish("exception", {                                             // Add custom event
+        this.publish("exception", {// Add custom event
             emitFacade: true
         });
         this.publish("showOverlay", {
@@ -77,7 +77,6 @@ YUI.add("wegas-widget", function(Y) {
         hideOverlay: function() {
             this.fire("wegas:hideOverlay");
         },
-        
         /**
          * Display a closable message with a status-image.
          * Status-image of message depends of level parameters
@@ -204,7 +203,8 @@ YUI.add("wegas-widget", function(Y) {
                 optional: true,
                 _inputex: {
                     label: "CSS class",
-                    index: 4
+                    index: 4,
+                    wrapperClassName: "wegas-advanced-feature"
                 },
                 getter: Y.Wegas.Editable.removeNullValue
             },
