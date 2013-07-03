@@ -40,7 +40,7 @@ YUI.add('wegas-chart', function(Y) {
             }
         },
         destructor: function() {
-            this.chart.destroy();
+            if (this.chart) this.chart.destroy();
             for (var i = 0; i < this.handlers.length; i = i + 1) {
                 this.handlers[i].detach();
             }
@@ -78,6 +78,8 @@ YUI.add('wegas-chart', function(Y) {
                     seriesCollection = [],
                     rawSeries = [],
                     obj;
+            if (!cb._node) return;
+            
             for (i = 0; i < this.vdList.length; i++) {
                 obj = {
                     yDisplayName: this.vdList[i].label
@@ -181,7 +183,7 @@ YUI.add('wegas-chart', function(Y) {
         },
         clear: function(cb) {
             this.chart = null;
-            cb.one('.chart').setHTML();
+            if (cb.one('.chart')) cb.one('.chart').setHTML();
         },
         checkType: function(value){
             value = value.trim();

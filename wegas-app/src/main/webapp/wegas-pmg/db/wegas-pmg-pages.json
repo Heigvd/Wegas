@@ -404,24 +404,35 @@
         "type": "List",
         "children": [
             {
-                "type": "PmgTasklist",
-                "variables": {
+                "type": "PmgDatatable",
+                "variable": {
                     "name": "tasks"
                 },
-                "columnTitles": [
-                    "No",
-                    "Name",
-                    "Estimated duration",
-                    "Realized (%)"
-                ],
-                "columnValues": [
-                    "no",
-                    "label",
-                    "duration",
-                    "realized"
-                ],
-                "viewDescription": "true",
-                "assignements": "false"
+                "columnsCfg": [{
+                    "name" : "index",
+                    "title" : "No",
+                    "variableType" : "descriptor"
+                }, {
+                    "name" : "label",
+                    "title" : "Name",
+                    "variableType" : "descriptor"
+                }, {
+                    "name" : "duration",
+                    "title" : "Estimated duration",
+                    "variableType" : "instance"
+                }, {
+                    "name" : "properties.fixedCosts",
+                    "title" : "Fixed costs",
+                    "variableType" : "instance"
+                }, {
+                    "name" : "properties.completeness",
+                    "title" : "Realised %",
+                    "variableType" : "instance"
+                }, {
+                    "name" : "requirements.work",
+                    "title" : "Ressources",
+                    "variableType" : "instance"
+                }]
             }
         ]
     },
@@ -430,20 +441,19 @@
         "type": "List",
         "children": [
             {
-                "type": "PmgGantt",
-                "variables": "tasks",
-                "columnTitles": [
-                    "No",
-                    "Name",
-                    "Realized (%)"
-                ],
-                "columnValues": [
-                    "no",
-                    "label",
-                    "realized"
-                ],
-                "viewDescription": "true",
-                "periods": "currentPeriod.items[currentPhase.value].descriptorId"
+                "type": "PmgDatatable",
+                "variable": {
+                    "name": "tasks"
+                },
+                "columnsCfg": [{
+                    "name" : "index",
+                    "title" : "No",
+                    "variableType" : "descriptor"
+                }, {
+                    "name" : "label",
+                    "title" : "Name",
+                    "variableType" : "descriptor"
+                }]
             }
         ]
     },
@@ -456,53 +466,63 @@
                 "title": "Web designer",
                 "children": [
                     {
-                        "type": "PmgResourcelist",
-                        "variables": "webDesigner",
-                        "columnTitles": [
-                            "Name",
-                            "Grade",
-                            "Wage",
-                            "%",
-                            "Motivation"
-                        ],
-                        "columnValues": [
-                            "label",
-                            "grade",
-                            "wage",
-                            "ratio",
-                            "motivation"
-                        ],
-                        "viewDescription": "true",
-                        "periods": "currentPeriod.items[currentPhase.value].descriptorId",
-                        "taskList": "tasks",
-                        "taskSortBy": "no"
+                        "type": "PmgDatatable",
+                        "variable": {
+                            "name": "webDesigner"
+                        },
+                        "columnsCfg": [{
+                            "name" : "label",
+                            "title" : "Name",
+                            "variableType" : "descriptor"
+                        }, {
+                            "name" : "skillsets",
+                            "title" : "Grade",
+                            "variableType" : "instance"
+                        }, {
+                            "name" : "properties.wage",
+                            "title" : "Wage",
+                            "variableType" : "instance"
+                        }, {
+                            "name" : "properties.ratio",
+                            "title" : "Ratio",
+                            "variableType" : "instance"
+                        }, {
+                            "name" : "moral",
+                            "title" : "Motiv.",
+                            "variableType" : "instance"
+                        }]
                     }
                 ]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Business specialist",
                 "children": [
-                    {
-                        "type": "PmgResourcelist",
-                        "variables": "businessSpecialist",
-                        "columnTitles": [
-                            "Name",
-                            "Grade",
-                            "Wage",
-                            "%",
-                            "Motivation"
-                        ],
-                        "columnValues": [
-                            "name",
-                            "label",
-                            "wage",
-                            "ratio",
-                            "motivation"
-                        ],
-                        "viewDescription": "true",
-                        "periods": "currentPeriod.items[currentPhase.value].descriptorId",
-                        "taskList": "tasks",
-                        "taskSortBy": "no"
+                    { 
+                        "type": "PmgDatatable",
+                        "variable": {
+                            "name": "businessSpecialist"
+                        },
+                        "columnsCfg": [{
+                            "name" : "label",
+                            "title" : "Name",
+                            "variableType" : "descriptor"
+                        }, {
+                            "name" : "skillsets",
+                            "title" : "Grade",
+                            "variableType" : "instance"
+                        }, {
+                            "name" : "properties.wage",
+                            "title" : "Wages",
+                            "variableType" : "instance"
+                        }, {
+                            "name" : "properties.ratio",
+                            "title" : "Ratio",
+                            "variableType" : "instance"
+                        }, {
+                            "name" : "moral",
+                            "title" : "Motiv.",
+                            "variableType" : "instance"
+                        }]
                     }
                 ]
             }
