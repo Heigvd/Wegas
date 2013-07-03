@@ -1,10 +1,10 @@
 .wegas-popup{
     position:absolute;
-    max-width: 100%;
+    /*max-width: 100%;*/
+    max-width: 500px;
     max-height: 100%;
 }
 .wegas-popup-content {
-    max-width: 500px;
     text-align: center;
     margin: 10px;
     background: rgba(110, 110, 110, 0.8);

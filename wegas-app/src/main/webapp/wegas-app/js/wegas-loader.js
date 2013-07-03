@@ -236,17 +236,6 @@ YUI().use(function(Y) {
                     path: 'wegas-app/css/wegas-login.css',
                     type: 'css'
                 },
-                'wegas-joingamewidget': {
-                    path: 'wegas-app/js/widget/wegas-joingamewidget-min.js',
-                    requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
-                        'wegas-editor-action', 'inputex-select', 'inputex-string'],
-                    ws_provides: "JoinGameWidget"
-                },
-                'wegas-jointeamwidget': {
-                    path: 'wegas-app/js/widget/wegas-jointeamwidget-min.js',
-                    requires: ['wegas-joingamewidget'],
-                    ws_provides: "JoinTeamWidget"
-                },
                 'wegas-jointeam': {
                     path: 'wegas-app/js/widget/wegas-jointeam-min.js',
                     requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
