@@ -343,6 +343,9 @@
                                         "fn": "CSSLoader"
                                     }, {
                                         "fn": "Injector"
+                                    }, {
+                                        "fn": "PopupListener",
+                                        "showServerMessages": true
                                     }
                                 ]
                             }]
