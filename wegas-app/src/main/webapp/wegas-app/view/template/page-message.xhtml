@@ -9,32 +9,45 @@
         <ui:define name="title">Error</ui:define>
 
         <ui:define name="head">
-            <style type="text/css">
-                .bd {
-                    margin: 100px auto !important;
-                    position: initial;
-                    width: 600px;
-                }
-                button {
-                    margin-left: 136px;
-                    margin-top: 10px;
-                }
-                .wegas-title {
-                    border: solid #072644;
-                    border-width: 0 0 5px;
-                    margin: 0 0 19px 0;
-                    padding-bottom: 5px;
-                }
-            </style>
+            <link rel="stylesheet" type="text/css" href="../css/wegas-login.css" />
         </ui:define>
 
         <ui:define name="page">
 
             <h:body class="yui3-skin-sam">
-                <div class="bd">
-                    <div class="wegas-title">
-                        <ui:insert name="title">Message</ui:insert></div>
-                    <ui:insert name="body">Message</ui:insert>
+                <div class="header">
+                    <div class='content'>
+                        <div class='left'>
+                            <div class='logo'>
+                            </div>
+                        </div>    
+                    </div>
+                </div>
+
+                <div class="content">
+
+                    <div class="bd content">
+                        <div class="title">
+                            <ui:insert name="title">Message</ui:insert></div>
+                        <ui:insert name="body">Message</ui:insert>
+                    </div>
+
+                    <div class='footer'>
+                        <div class='partner'>
+                            <a href='http://www.heig-vd.ch/' target='_blank'>
+                                <div class='heigvd'></div>
+                            </a>                        
+                        </div>
+                        <div class='licence'>
+                            <p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p>
+                        </div>
+                        <div class='followus'>
+                            <a href='http://www.albasim.com' target='_blank'>
+                                <div class='albasim'>             
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </h:body>
         </ui:define>

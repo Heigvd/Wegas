@@ -9,11 +9,11 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 
-.wegas-loginwidget .main .signup input{
+.main .signup input{
     font-family: "Arial";
 }
 
-.wegas-loginwidget .header {
+.header {
     margin:0;
     width:100%;
     background-color:#072644;
@@ -22,143 +22,158 @@
     color:#FFF;
 }
 
-.wegas-loginwidget .content{
+.content{
     margin: 0 auto 0 auto;
     width:1000px;
 }
 
-.wegas-loginwidget .right{
+.right{
     width:330px;
     float:right;
 }
 
-.wegas-loginwidget .left{
+.left{
     width:665px;
     float:left;
 }
 
-.wegas-loginwidget .logo{
+.logo{
     margin: -5px 0 0 -17px;
+    background-image: url('../images/wegas-logo_white.png');
+    height:60px;
+    width:140px;
 }
 
-.wegas-loginwidget .logingroup div{
+.logingroup div{
     float:left;
     width:165px;
     margin:0;
 }
 
-.wegas-loginwidget div.inputEx-label{
+div.inputEx-label{
     padding-top:0;
 }
 
-.wegas-loginwidget .logingroup .password,
-.wegas-loginwidget .logingroup .password div,
-.wegas-loginwidget .logingroup .password input{
+.logingroup .password,
+.logingroup .password div,
+.logingroup .password input{
     width:90px;
 }
 
-.wegas-loginwidget .login .loginbutton{
+.header  .login .loginbutton{
     float:right;
     margin: -52px 10px 0 0;
     width: 55px;
     min-height: 20px;
     background-color: #DDDDDD;
+    color:black;
 }
 
-.wegas-loginwidget .forgot{
+.forgot{
     margin:-17px 10px 0 0;
     float:right;
     text-decoration: underline;
     cursor: pointer;
 }
 
-.wegas-loginwidget .main{
+.main{
     margin: 15px auto 45px;
 }
 
-.wegas-loginwidget .main>*{
+.main>*{
     margin-bottom:15px;
 }
 
-.wegas-loginwidget h1{
+h1, .title{
     font-weight: bold;
     color: #777;
     font-size: 1.8em;
 }
 
-.wegas-loginwidget .main p{
+.main p{
     margin-bottom:35px;
     font-size:1.1em;
     text-align:justify;
     margin-right:20px;
 }
 
-.wegas-loginwidget .preview{
+.wegas-text, .bd{
+    padding:15px 0 15px 0;
+}
+
+.wegas-text.header{
+    padding: 7px 0 0;
+}
+
+.preview{
     text-align: left;
 }
 
-.wegas-loginwidget .preview img{
+.preview img{
     box-shadow: 2px 2px 4px 4px #888;
 }
 
-.wegas-loginwidget input[type="text"] {
+input[type="text"] {
     width: 155px;
 }
 
-.wegas-loginwidget .signupgroup div{
+.signupgroup div{
     float:left;
     width:165px;
     margin-bottom: 5px
 }
 
-.wegas-loginwidget .signupgroup .email input{
+.signupgroup .email input{
     width:318px;
 }
 
-.wegas-loginwidget .signupgroup .inputEx-Password-StrengthIndicator{
+.signupgroup .inputEx-Password-StrengthIndicator{
     position:absolute;
     margin:-15px 0 0 165px;
     width:157px;
 }
 
-.wegas-loginwidget .signupgroup .inputEx-Password-StrengthIndicatorBlock{
+.signupgroup .inputEx-Password-StrengthIndicatorBlock{
     width:8px;
     margin: 0 2px 0 0;
 }
 
-.wegas-loginwidget .signup .signupbutton{
+.main .signup .signupbutton{
     float:left;
     margin: 0px 10px 0 0;
     width:155px;
     min-height: 20px;
-    color:white;
-    background-color: #072644;
 }
 
-.wegas-loginwidget .content .inputEx-message, .wegas-loginwidget .capsLockWarning{
+.yui3-skin-sam  button.yui3-button{
+    background-color: #072644;
+    color:white;
+}
+
+.content .inputEx-message, .capsLockWarning{
     font-size: 0.7em;
     position:absolute;
     margin-top:20px;
     width:300px;
 }
 
-.wegas-loginwidget .capsLockWarning{
+.capsLockWarning{
     margin-top:0;
 }
 
-/*.wegas-loginwidget .signup{
+/*.signup{
     border: solid #888;
     border-width: 0 0 1px;
 }*/
 
-.wegas-loginwidget .ask-pass-zone .askPass{
+.ask-pass-zone .askPass{
     float:right;
     margin: -22px 10px 0 0;
     width:155px;
     min-height: 20px;
 }
 
-.wegas-loginwidget .ask-pass .return{
+.ask-pass .return{
     color:#072644;
     text-decoration: underline;
     text-align: right;
@@ -167,12 +182,12 @@
     font-size: 1em;
 }
 
-.wegas-loginwidget .ask-pass button{
+.main .ask-pass button{
     color:white;
     background-color: #072644;
 }
 
-.wegas-loginwidget .footer{
+.footer{
     width:100%;
     padding-top:15px;
     border: solid #888;
@@ -182,24 +197,37 @@
     font-size: 0.8em;
 }
 
-.wegas-loginwidget .footer div{
+.footer div{
     float:left;
     width:333px;
 }
 
-.wegas-loginwidget .footer .partner a{
+.footer .partner a{
     display: block;
     float:left;
     margin-right:15px;
     border:none;
 }
 
-.wegas-loginwidget .footer .licence{
+.footer .heigvd{
+    background-image: url('../images/heigvd-logo.png');
+    height:54px;
+    width:146px;
+}
+
+.footer .albasim{
+    background-image: url('../images/albasim-logo.png');
+    height:54px;
+    width:48px;
+    float:right;
+}
+
+.footer .licence{
     text-align: center;
     margin-top:8px;
 }
 
-.wegas-loginwidget .footer .followus{
+.footer .followus{
     text-align: right;
     /*margin-top:8px;*/
     vertical-align: bottom;
