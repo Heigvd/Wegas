@@ -10,15 +10,6 @@
                 "type": "List",
                 "cssClass": "menu",
                 "children": [{
-                        "type": "Template",
-                        "template": "text",
-                        "variable": {
-                            "name": "money"
-                        },
-                        "data": {
-                            "label": "Money"
-                        }
-                    }, {
                         "type": "Text",
                         "content": "<div class=\"inventory\"><h1>Inventory</h1><i><center style=\"padding:10px 0;\">empty</center></i></div><div class=\"api\"><h1>Api</h1></div>"
                     }]
@@ -682,7 +673,7 @@
         "id": 1000,
         "type": "Form",
         "plugins": [{
-            "fn": "UserPreferences"
-        }]
+                "fn": "UserPreferences"
+            }]
     }
 }

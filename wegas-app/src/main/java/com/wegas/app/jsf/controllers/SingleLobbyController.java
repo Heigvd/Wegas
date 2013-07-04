@@ -76,7 +76,7 @@ public class SingleLobbyController implements Serializable {
 
         if (token != null) {
             currentGame = gameFacade.findByToken(token);
-            if (currentGame != null) {
+            if (currentGame != null) {                                          // 1st case: token is associated with a game
                 try {
                     playerFacade.findCurrentPlayer(currentGame);
                     externalContext.dispatch(
@@ -85,7 +85,7 @@ public class SingleLobbyController implements Serializable {
                     // Nothing to do. stay on current page so player will choose his team
                 }
 
-            } else {
+            } else {                                                            // 2nd case: token is associated with a team
                 final Team currentTeam = teamFacade.findByToken(token);
                 if (currentTeam != null) {
                     try {

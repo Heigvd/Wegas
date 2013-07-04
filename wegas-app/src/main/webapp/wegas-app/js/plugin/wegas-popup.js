@@ -17,21 +17,18 @@ YUI.add('wegas-popup', function(Y) {
      *  @name Y.Plugin.Popup
      *  @extends Y.Plugin.Base
      *  @constructor
+     *
+     *  @deprecated Use Y.Wegas.Panel instead
      */
     var Popup = Y.Base.create("wegas-popup", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
             if (this.get("content")) {
                 this.afterHostEvent("render", function() {
                     if (this.get("host").showMessage) {
-
                         this.get("host").showMessage("info", this.get("content"));
                     }
                 });
             }
-
-            Y.Wegas.Facade.VariableDescriptor.on(this.get("event"), function(e) {
-                this.get("host").showMessage("info", e.content);
-            }, this);
         }
     }, {
         NS: "Popup",
@@ -48,5 +45,4 @@ YUI.add('wegas-popup', function(Y) {
         }
     });
     Y.Plugin.Popup = Popup;
-
 });

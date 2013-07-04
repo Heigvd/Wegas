@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-popup-content', function(Y) {
@@ -23,9 +23,9 @@ YUI.add('wegas-popup-content', function(Y) {
         syncUI: function() {
             this.set("content", this.get("content"));
         },
-        hide: function() {
-            this.constructor.superclass.hide.apply(this);
-            this.destroy();
+        exit: function() {
+            this.get("boundingBox").hide(true);
+            Y.later(1000, this, this.destroy);
         }
     }, {
         CSS_PREFIX: "wegas-popup",
@@ -45,20 +45,21 @@ YUI.add('wegas-popup-content', function(Y) {
                 "transient": true
             },
             buttons: {
+                "transient": true,
                 value: {
                     footer: [
                         {
                             name: 'proceed',
                             label: 'OK',
                             action: function() {
-                                this.hide();
+                                this.exit();
                             }
                         }
                     ]
-                },
-                "transient": true
+                }
             },
-            centered: {value: true,
+            centered: {
+                value: true,
                 "transient": true
             },
             defaultButton: {"transient": true},
