@@ -52,6 +52,10 @@ body {
     position: absolute;
     top: 0;
 }
+.editor-preview{
+    width:100%;
+    height:100%;
+}
 /* Console Widget Styles */
 .wegas-console div.inputEx-Field {
     float:none;
@@ -248,9 +252,22 @@ body {
 }
 
 /* Pageeditor Plugin styles */
+.wegas-pageeditor-designmode{
+    position:relative;
+    overflow: hidden;
+}
 .wegas-pageeditor-designmode .wegas-widget{
     position: relative;
     -webkit-transition: padding-top 1s;
+}
+.wegas-pageeditor-designmode .pageeditor-overlay-mask{
+    z-index: 49;
+    width: 100%;
+    height: 100%;
+    position: absolute; 
+    top: 0px; 
+    left: 0px;
+    cursor:pointer;
 }
 .wegas-pageeditor-layoutmode .wegas-widget {
     box-shadow: 0px 0px 1px black;
@@ -264,6 +281,14 @@ body {
 .wegas-pageeditor-layoutmode .wegas-pageloader{
     padding-top: 15px !important;
 }
+.wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader{
+    background:  url(../../wegas-editor/images/webpage.png) no-repeat center darkgray !important;
+    width: 100%;
+    height: 100%;
+}
+.wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader-content{
+    display: none !important;
+} 
 /*.wegas-pageeditor-layoutmode .wegas-widget::before{
     font-style: normal;
     position: absolute !important;
@@ -287,7 +312,7 @@ body {
     height: 100%;
 }
 .wegas-pageeditor-overlay-hidden {
-    display: none;
+    height: 0 !important;
 }
 .yui3-skin-sam .wegas-pageeditor-overlay {
     font-style:normal;
@@ -295,8 +320,6 @@ body {
     font-weight: bold;
     letter-spacing: normal;
     position: absolute;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
     line-height: normal;
     color: white;
@@ -304,24 +327,24 @@ body {
     white-space: nowrap;
     font-variant: normal;
     padding: 0;
-    cursor: pointer;
 }
 .wegas-pageeditor-overlay-content {
     padding:0;
     margin: 0;
-    width:100%;
-    height:100%;
     text-align: center;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
-    background: rgba(38, 71, 160, 0.4);
-    box-shadow: 0px 0px 6px black inset;
+    background: rgba(38, 71, 160, 0.05);
+    box-shadow: 0px -1px 7px rgba(38, 71, 160, 0.6) inset;
     /* opacity: 0.5; */
 }
 .wegas-pageeditor-overlay-content div{
     overflow: hidden;
     text-overflow: ellipsis;
-    position: relative;
-    top:40%;
+    padding: 3px 0px;
+    background: rgba(38, 71, 160, 0.6)
+        /*top:40%;*/
 }
 .wegas-pageeditor-overlay .wegas-icon {
     cursor: pointer;
