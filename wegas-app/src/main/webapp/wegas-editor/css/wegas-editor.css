@@ -257,8 +257,8 @@ body {
     overflow: hidden;
 }
 .wegas-pageeditor-designmode .wegas-widget{
-    position: relative;
-    -webkit-transition: padding-top 1s;
+    box-shadow: 0px 0px 2px green, 0px 0px 2px violet inset !important;
+    -webkit-transition: padding-top 0.7s;
 }
 .wegas-pageeditor-designmode .pageeditor-overlay-mask{
     z-index: 49;
@@ -270,8 +270,6 @@ body {
     cursor:pointer;
 }
 .wegas-pageeditor-layoutmode .wegas-widget {
-    box-shadow: 0px 0px 1px black;
-    display: inherit !important;
     background: rgba(0,0,0,0.05) !important;
     color: #990808 !important;
     min-width: 20px;
@@ -289,25 +287,6 @@ body {
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader-content{
     display: none !important;
 } 
-/*.wegas-pageeditor-layoutmode .wegas-widget::before{
-    font-style: normal;
-    position: absolute !important;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    z-index:20;
-    font-size: 8pt;
-    text-align: center;
-    letter-spacing: normal;
-    font-weight: normal;
-    text-shadow: none;
-    font-variant: normal;
-    font-family: sans-serif;
-    position: absolute;
-    box-shadow: 0px 0px 5px black;
-    content: "";
-}*/
 .wegas-pageeditor-ace {
     height: 100%;
 }
@@ -342,27 +321,42 @@ body {
 .wegas-pageeditor-overlay-content div{
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 3px 0px;
+    padding: 4px 0px;
     background: rgba(38, 71, 160, 0.6)
         /*top:40%;*/
 }
-.wegas-pageeditor-overlay .wegas-icon {
-    cursor: pointer;
-    float: right;
-    padding: 3px;
-}
-.wegas-focused-widget{
-    box-shadow: 0 0 5px darkgreen inset;
-}
+
 .wegas-page-editor .content-header{
     cursor: pointer;
 }
-.highlighted{
+.editor-preview .wegas-pageloader-content .highlighted{
+    position: relative;
     -moz-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
     -webkit-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
-    display: inherit !important;
     box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
     z-index:5;
+}
+.editor-preview .wegas-pageloader-content .highlighted:after{
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    font-style:normal;
+    font-size: 8pt;
+    font-weight: bold;
+    letter-spacing: normal;
+    background: rgba(38, 71, 160, 0.6);
+    color: red;
+    content: "Editing";
+    font-family: sans-serif;
+    border-radius: 2px;
+    line-height: normal;
+    text-shadow: none;
+    text-overflow: ellipsis;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+    padding: 4px 0px;
 }
 
 /* Pageloader view src plugin styles */
