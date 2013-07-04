@@ -49,7 +49,7 @@ public class Player extends AbstractEntity {
     /**
      * The game model this belongs to
      */
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @NotNull
     @JsonBackReference(value = "player-team")
     @JoinColumn(name = "parentteam_id")

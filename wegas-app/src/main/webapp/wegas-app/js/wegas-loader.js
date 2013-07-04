@@ -65,12 +65,13 @@ YUI().use(function(Y) {
                 },
                 'wegas-websocketlistener': {
                     path: 'wegas-app/js/plugin/wegas-websocketlistener-min.js',
-                    requires: ['plugin', 'wegas-pusher-connector']
+                    requires: ['plugin', 'wegas-pusher-connector'],
+                    ws_provides: "WebSocketListener"
                 },
                 "wegas-pusher-connector": {
                     path: 'wegas-app/js/util/wegas-pusher-connector-min.js',
                     requires: ['pusher', 'wegas-datasource'],
-                    ws_provides: ["PusherDataSource", "WebSocketListener"]
+                    ws_provides: "PusherDataSource"
                 },
                 "wegas-pdf": {
                     path: 'wegas-app/js/plugin/wegas-pdf-min.js',
@@ -805,6 +806,12 @@ YUI().use(function(Y) {
                     path: "wegas-flexitests/js/wegas-flexitests-results-min.js",
                     requires: ["wegas-widget", "datatable"],
                     ws_provides: "FlexitestsResults"
+                },
+                /* Chess */
+                'wegas-chess': {
+                    path: "wegas-chess/js/wegas-chess-min.js",
+                    ws_provides: "ChessBoard",
+                    requires: ["transition"]
                 }
             }
         },

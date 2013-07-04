@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -61,6 +62,21 @@ public class TeamScope extends AbstractScope {
     @Override
     public VariableInstance getVariableInstance(Player player) {
         return this.teamVariableInstances.get(player.getTeam().getId());
+    }
+
+    @Override
+    public Map<Long, VariableInstance> getPrivateInstances() {
+        Map<Long, VariableInstance> ret = new HashMap<>();
+        Player cPlayer = RequestFacade.lookup().getPlayer();
+
+        if (this.getBroadcastScope().equals(GameScope.class.getSimpleName())) {
+            for (Team t : cPlayer.getGame().getTeams()) {
+                ret.put(t.getId(), this.teamVariableInstances.get(t.getId()));
+            }
+        } else {
+            ret.put(cPlayer.getId(), this.getVariableInstance(cPlayer));
+        }
+        return ret;
     }
 
     /**
