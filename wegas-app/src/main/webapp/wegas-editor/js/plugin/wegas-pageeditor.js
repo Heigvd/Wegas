@@ -53,8 +53,8 @@ YUI.add('wegas-pageeditor', function(Y) {
                         Y.Wegas.Facade.Page.cache.getIndex(function(index) {
                             var pageName = Y.Lang.isString(index[host.get("pageId")])
                                     ? index[host.get("pageId")]
-                                    : "unamed(" + host.get("pageId") + ")";
-                            host.toolbar.setStatusMessage("Editing page " + pageName);
+                                    : "<i>unamed(" + host.get("pageId") + ")</i>";
+                            host.toolbar.setStatusMessage("Editing page: " + pageName);
                         });
                         this.bind();
                         this.layoutbutton.show();
