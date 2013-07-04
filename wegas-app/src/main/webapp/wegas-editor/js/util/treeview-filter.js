@@ -24,7 +24,7 @@ YUI.add("treeview-filter", function(Y) {
                 }
             });
 
-            this.afterHostEvent("*:addChild", function(e) {
+            this.afterHostEvent(["*:addChild", "render"], function(e) {
                 this.doFilter(this.get("host"), this.get("searchVal"));
             });
         },
