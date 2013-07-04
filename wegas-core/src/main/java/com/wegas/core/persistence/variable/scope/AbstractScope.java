@@ -79,21 +79,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      */
     @JsonView(Views.SinglePlayerI.class)
     //@XmlAttribute(name = "variableInstances")
-    public Map<Long, VariableInstance> getPrivateInstances() {
-        Map<Long, VariableInstance> ret = new HashMap<>();
-        RequestFacade rmf = RequestFacade.lookup();
-
-        Long id = Long.valueOf(0);
-        if (this instanceof TeamScope) {
-            id = rmf.getPlayer().getTeam().getId();
-        } else if (this instanceof PlayerScope) {
-            id = rmf.getPlayer().getId();
-        }
-
-        ret.put(id, this.getVariableInstance(rmf.getPlayer()));
-
-        return ret;
-    }
+    abstract public Map<Long, VariableInstance> getPrivateInstances();
 
     /**
      *

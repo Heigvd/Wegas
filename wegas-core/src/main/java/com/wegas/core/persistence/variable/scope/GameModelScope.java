@@ -117,4 +117,9 @@ public class GameModelScope extends AbstractScope {
     public void setVariableInstance(VariableInstance variableInstance) {
         this.variableInstance = variableInstance;
     }
+
+    @Override
+    public Map<Long, VariableInstance> getPrivateInstances() {
+        return this.getVariableInstances();
+    }
 }

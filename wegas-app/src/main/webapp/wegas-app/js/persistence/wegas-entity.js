@@ -784,6 +784,9 @@ YUI.add('wegas-entity', function(Y) {
                                 value: "PlayerScope",
                                 label: 'different for each user'
                             }, {
+                                value: "GameScope",
+                                label: 'different for each game'
+                            }, {
                                 value: "GameModelScope",
                                 label: 'the same for everybody'
                             }],
@@ -876,7 +879,7 @@ YUI.add('wegas-entity', function(Y) {
      */
     Wegas.persistence.GameScope = Y.Base.create("GameScope", Wegas.persistence.Scope, [], {
         getInstance: function() {
-            return this.get("variableInstances")[0];
+            return this.get("variableInstances")[""+Wegas.app.get('currentGame')];
         }
     }, {
         ATTRS: {
