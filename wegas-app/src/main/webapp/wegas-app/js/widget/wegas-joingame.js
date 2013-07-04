@@ -47,8 +47,7 @@ YUI.add('wegas-joingame', function(Y) {
             });
 
             if (this.get("displayPublicGames")) {
-                this.p = Y.Node.create('<div class="lobbyOr"><p>Or</p><div>');
-                cb.append(this.p);
+                cb.append('<div class="lobbyOr"><p>Or</p><div>');
 
                 this.selectPublicGame = new Y.inputEx.SelectField({// Render public games
                     required: false,
@@ -63,6 +62,9 @@ YUI.add('wegas-joingame', function(Y) {
             });
             this.joinGameButton.render(cb);
 
+            if (Y.Wegas.Helper.getURLParameter("token")) {
+                this.sendTokenJoinGame(Y.Wegas.Helper.getURLParameter("token"));
+            }
         },
         /**
          * @function
@@ -88,7 +90,7 @@ YUI.add('wegas-joingame', function(Y) {
 
             this.joinGameButton.on("click", function(e) {                      // join a game based on a token
                 if (this.tokenField.getValue() !== "") {
-                    this.sendJoinGame();
+                    this.sendTokenJoinGame(this.tokenField.getValue());
                     //} else if (this.selectPublicGame.getValue() !== "") {
                     // @Todo
                     // this.joinTeam = new Y.Wegas.SelectTeam({
@@ -106,9 +108,9 @@ YUI.add('wegas-joingame', function(Y) {
          * @description Method for join a game by token
          * Call rest request for join the game : rest/GameModel/1/Game/{gameModelID}/JoinGame/{token}
          */
-        sendJoinGame: function() {
+        sendTokenJoinGame: function(token) {
             Y.Wegas.Facade.Game.sendRequest({
-                request: "/JoinGame/" + this.tokenField.getValue(),
+                request: "/JoinGame/" + token,
                 on: {
                     success: Y.bind(function(e) {
                         var cb = this.get(CONTENTBOX);

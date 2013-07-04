@@ -102,12 +102,10 @@ YUI.add('wegas-loginwidget', function(Y) {
 
             //Core of the page
             cb.append("<a href=\"https://github.com/Heigvd/Wegas\"><img style=\"position: absolute; top: 0; left: 0; border: 0;\" src=\"https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png\" alt=\"Fork me on GitHub\"></a>\n\
-                    <div class='header'>\n\
+               <div class='header'>\n\
                     <div class='content'>\n\
                         <div class='left'>\n\
-                            <div class='logo'>\n\
-                                <img src='../images/wegas-logo_white.png' alt='logo' height='60px' width='140px'/>\n\
-                            </div>\n\
+                            <div class='logo'>\n\</div>\n\
                         </div>\n\
                         <div class='right login'></div>\n\
                     </div>\n\
@@ -128,11 +126,11 @@ YUI.add('wegas-loginwidget', function(Y) {
                     </div>\n\
                     <div class='footer'>\n\
                         <div class='partner'>\n\
-                            <a href='http://www.heig-vd.ch/' target='_blank'><img src='../images/heigvd-logo.png' alt='Heig-vd' height='54px' width='146px'/></a>\n\
+                            <a href='http://www.heig-vd.ch/' target='_blank'><div class='heigvd'></div></a>\n\
                           </div>\n\
                         <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
                         <div class='followus'>\n\
-                  <a href='http://www.albasim.com' target='_blank'><img src='../images/albasim-logo.png' alt='Albasim' height='54px' width='48px'/></a>\n\
+                  <a href='http://www.albasim.com' target='_blank'><div class='albasim'></div></a>\n\
                             </div>\n\
                     </div>\n\
                 </div>");
@@ -271,7 +269,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                     data = this.loginForm.getValue();
                     this.login(data.email, data.password, data.remember);
                 } else {
-                    this.showMessage("error", "Invalid Email/password combination.");
+                    this.showMessageBis("error", "Invalid Email/password combination.", 4000);
                 }
             }, this);
 

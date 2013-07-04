@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-widgettoolbar', function (Y) {
+YUI.add('wegas-widgettoolbar', function(Y) {
     "use strict";
 
     /**
@@ -18,8 +18,8 @@ YUI.add('wegas-widgettoolbar', function (Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var  BOUNDINGBOX = "boundingBox", HOST ="host",
-    WidgetToolbar = function () {
+    var BOUNDINGBOX = "boundingBox", HOST = "host",
+            WidgetToolbar = function() {
         WidgetToolbar.superclass.constructor.apply(this, arguments);
     };
 
@@ -31,40 +31,44 @@ YUI.add('wegas-widgettoolbar', function (Y) {
          * @function
          * @private
          */
-        initializer: function () {
+        initializer: function() {
             this.children = [];
             this.render();
-        //this.afterHostEvent("render", this.render, this);
-        },
+            //this.afterHostEvent("render", this.render, this);
 
+            this.onHostEvent("*:message", function(e) {                         // Observe success messages,
+                if (e.level === "success" && !e.timeout) {
+                    this.setStatusMessage(e.content);                           // to display in the toolbar
+                    e.halt(true);
+                }
+            });
+        },
         /**
          * @function
          * @private
          */
-        destructor: function () {
+        destructor: function() {
             var i;
             for (i = 0; i < this.children.length; i = i + 1) {
                 this.children[i].destroy();
             }
         },
-
         // *** Private methods *** //
         /**
          * @function
          * @private
          */
-        render: function () {
+        render: function() {
             var i, host = this.get(HOST),
-            children = this.get("children");
+                    children = this.get("children");
             host.get(BOUNDINGBOX).addClass("wegas-hastoolbar")
-            .prepend('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
+                    .prepend('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
             host.get('contentBox').addClass("wegas-toolbar-sibling");
 
             for (i = 0; i < children.length; i = i + 1) {
                 this.add(children[i]);
             }
         },
-
         /**
          *
          * Adds a widget to the toolbar
@@ -73,7 +77,7 @@ YUI.add('wegas-widgettoolbar', function (Y) {
          * @param {Y.Widget|Object} widget A widget instance or an widget cfg object to be instantiated
          * @return {Y.Widget} the newly created widget
          */
-        add: function (widget) {
+        add: function(widget) {
             if (!(widget instanceof Y.Widget)) {
                 widget = Y.Wegas.Widget.create(widget);
             }
@@ -82,26 +86,56 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             this.children.push(widget);
             return widget;
         },
-
         /**
          * Returns a toolbar widget based on its index
          * @function
          * @param {Number} index
          * @returns {Y.Widget}
          */
-        item: function (index) {
+        item: function(index) {
             return this.children[index];
         },
-
-        size: function () {
+        size: function() {
             return this.children.length;
-        }
-
+        },
+        /**
+         * @function
+         * @private
+         * @param txt
+         * @return boolean true is status is set.
+         * @description set content of the message.
+         */
+        setStatusMessage: function(txt) {
+            this.getStatusNode().setContent(txt);
+        },
+        /**
+         * @function
+         * @private
+         * @description clear message (see function 'showMessage')
+         */
+        emptyMessage: function() {
+            this.getStatusNode().empty();
+        },
+        /**
+         * @function
+         * @private
+         * @param txt
+         * @return Status node
+         * @description get the status node of the message.
+         * if 'wegas-status-message' doesn't exist, create and return it
+         */
+        getStatusNode: function() {
+            var statusNode = this.get("header").one(".wegas-status-message");
+            if (!statusNode) {
+                statusNode = new Y.Node.create("<span class='wegas-status-message'></span>");
+                this.get("header").append(statusNode);
+            }
+            return statusNode;
+        },
     }, {
         /** @lends Y.Plugin.WidgetToolbar */
         NS: "toolbar",
         NAME: "toolbar",
-
         /**
          * <p><strong>Config attributes</strong></p>
          * <ul>
@@ -120,14 +154,14 @@ YUI.add('wegas-widgettoolbar', function (Y) {
             header: {
                 lazyAdd: false,
                 value: false,
-                getter : function () {
+                getter: function() {
                     return this.get(HOST).get(BOUNDINGBOX).one(".wegas-toolbar-header");
                 }
             },
             panel: {
                 lazyAdd: false,
                 value: false,
-                getter : function () {
+                getter: function() {
                     return this.get(HOST).get(BOUNDINGBOX).one(".wegas-toolbar-panel");
                 }
             }

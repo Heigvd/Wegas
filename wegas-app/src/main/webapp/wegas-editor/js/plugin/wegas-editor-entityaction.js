@@ -131,14 +131,14 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 EditEntityAction.form.before("updated", function(e) {
                     switch (this.status) {
                         case EditEntityAction.STATUS.NEW:
-                            this.form.emptyMessage();
+                            EditEntityAction.form.toolbar.emptyMessage();
                             this.status = EditEntityAction.STATUS.EDITING;
                             break;
                         case EditEntityAction.STATUS.EDITING:
-                            this.form.setStatusMessage("*");
+                            EditEntityAction.form.toolbar.setStatusMessage("*");
                             break;
                         default:
-                            this.form.emptyMessage();
+                            EditEntityAction.form.toolbar.emptyMessage();
                     }
                 }, this);
                 EditEntityAction.tab.add(EditEntityAction.form);
@@ -171,7 +171,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          *
          */
         showFormMessage: function(level, msg, timeout) {
-            EditEntityAction.form.showMessage(level, msg);
+            EditEntityAction.form.showMessageBis(level, msg);
         },
         /**
          *
