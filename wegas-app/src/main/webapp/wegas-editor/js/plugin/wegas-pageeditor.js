@@ -45,15 +45,23 @@ YUI.add('wegas-pageeditor', function(Y) {
                     label: "<span class=\"wegas-icon wegas-icon-designmode\"></span><span class='experimental'>Edit page</span>"
                 }).render(el);
                 this.designButton.after("pressedChange", function(e) {
-                    this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
+                    var host = this.get("host");
+                    host.get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
                             e.newVal);
                     if (e.newVal) {
-                        el.showMessage("haaaaaaaaaaaa")
+
+                        Y.Wegas.Facade.Page.cache.getIndex(function(index) {
+                            var pageName = Y.Lang.isString(index[host.get("pageId")])
+                                    ? index[host.get("pageId")]
+                                    : "unamed(" + host.get("pageId") + ")";
+                            host.toolbar.setStatusMessage("Editing page " + pageName);
+                        });
                         this.bind();
                         this.layoutbutton.show();
-                        this.get("host").get(CONTENTBOX).prepend(this.overlayMask);
+                        host.get(CONTENTBOX).prepend(this.overlayMask);
                     } else {
                         this.detach();
+                        host.toolbar.setStatusMessage("");
                         this.overlayMask.remove(false);
                         this.highlightOverlay.hide();
                         this.layoutbutton.set("pressed", false);
