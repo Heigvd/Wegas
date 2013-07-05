@@ -118,11 +118,11 @@ YUI().use(function(Y) {
                 },
                 'wegas-popup-content': {
                     path: 'wegas-app/js/widget/wegas-popup-content-min.js',
-                    ws_provides: 'PopupContent',
+                    ws_provides: 'Panel',
                     requires: ["wegas-popup-contentcss", "widget-buttons",
                         "widget-modality", "widget-position",
                         "widget-position-align",
-                        "widget-stack", "widget-stdmod"]
+                        "widget-stack", "widget-stdmod", "transition"]
                 },
                 'wegas-popup-contentcss': {
                     path: 'wegas-app/css/wegas-popup-content.css',
@@ -551,7 +551,7 @@ YUI().use(function(Y) {
                 'wegas-pageeditor': {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
                     ws_provides: 'PageEditor',
-                    requires: ['diff_match_patch', "wegas-editor-widgetaction", "event-mouse-startstop", "node-scroll-info"]
+                    requires: ['diff_match_patch', "wegas-editor-widgetaction", "event-mouse-startstop", "node-scroll-info", "anim"]
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',

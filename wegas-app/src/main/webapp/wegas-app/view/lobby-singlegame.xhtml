@@ -8,24 +8,12 @@
         <ui:define name="title">Team login for #{singleLobbyController.currentGame.name}</ui:define>
 
         <ui:define name="head">
-            <style type="text/css">
-/*                .yui3-skin-sam .wegas-title {
-                    border: solid #2647A0;
-                    border-width: 0 0 5px;
-                    padding-bottom: 5px;
-                    margin-bottom: 19px;
-                    margin-top: 80px;
-                }
 
-                .wegas-jointeamwidget-content {
-                    margin-left: 60px;
-                }*/
-            </style>
         </ui:define>
 
         <ui:define name="body">
             <script type="text/javascript">
-                YUI().use("wegas-app", function(Y) {
+                YUI().use("wegas-app", "wegas-logincss", function(Y) {
                     var app = new Y.Wegas.App({
                         currentUser: #{requestController.getCurrentUser().toJson()},
                         layoutSrc: 'wegas-app/db/wegas-lobby-singlegame-layout.json',
@@ -58,8 +46,8 @@
                         }
                     });
                     app.after("render", function() {                            // If there player is registered to a game
-                        Y.one(".wegas-title").setContent("Joining game: #{singleLobbyController.currentGame.name}");
-                    });
+                        Y.one(".title").setContent("Joining game: #{singleLobbyController.currentGame.name}");
+                    }, this);
                     app.render();                                               // Launch app
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
