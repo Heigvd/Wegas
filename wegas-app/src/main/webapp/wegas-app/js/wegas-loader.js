@@ -526,7 +526,7 @@ YUI().use(function(Y) {
                 'wegas-editor-action': {
                     path: 'wegas-editor/js/plugin/wegas-editor-action-min.js',
                     requires: ['wegas-action', 'wegas-editor-entityaction'],
-                    ws_provides: ["OpenTabAction"]
+                    ws_provides: ["OpenTabAction", "Linkwidget"]
                 },
                 'wegas-editor-entityaction': {
                     path: 'wegas-editor/js/plugin/wegas-editor-entityaction-min.js',
@@ -546,7 +546,7 @@ YUI().use(function(Y) {
                 'wegas-editor-buttons': {
                     path: 'wegas-editor/js/widget/wegas-editor-buttons-min.js',
                     requires: ['wegas-button', 'wegas-widgetmenu'],
-                    ws_provides: ['SelectPlayerButton', 'SelectGameButton', 'Linkwidget']
+                    ws_provides: ['SelectPlayerButton', 'SelectGameButton']
                 },
                 'wegas-pageeditor': {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
