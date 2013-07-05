@@ -21,8 +21,13 @@ public class DebugGame extends Game {
     public DebugGame() {
         super();
         this.name = DEBUGGAMENAME;                                              // Name is fixed
-        Team t = new Team("Default");                                           // Add a default team
-        t.addPlayer(new Player("Test player"));
+        Team t = new Team("Team 1");                                            // Add a default team
+        t.addPlayer(new Player("Peter"));
+        t.addPlayer(new Player("Roger"));
+        this.addTeam(t);
+        Team t2 = new Team("Team 2");                                           // Add a default team
+        t.addPlayer(new Player("Marc"));
+        t.addPlayer(new Player("Peter"));
         this.addTeam(t);
     }
 }
