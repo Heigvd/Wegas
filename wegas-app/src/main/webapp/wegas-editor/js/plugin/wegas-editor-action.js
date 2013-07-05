@@ -326,7 +326,11 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         syncUI: function() {
-            var url = Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token");
+            var gm = this.get("entity");
+            if (!gm) {
+                gm = Y.Wegas.Facade.Game.cache.getCurrentGame();
+            }
+            var url = Wegas.app.get("base") + "game.html?token=" + gm.get("token");
             this.textField.setValue(url);
         }
     }, {
