@@ -23,9 +23,9 @@ YUI.add('wegas-popup-content', function(Y) {
         syncUI: function() {
             this.set("content", this.get("content"));
         },
-        hide: function() {
-            Y.Wegas.PopupContent.superclass.hide.apply(this);
-            this.destroy();
+        exit: function() {
+            this.get("boundingBox").hide(true);
+            Y.later(1000, this, this.destroy);
         }
     }, {
         CSS_PREFIX: "wegas-popup",
@@ -52,7 +52,7 @@ YUI.add('wegas-popup-content', function(Y) {
                             name: 'proceed',
                             label: 'OK',
                             action: function() {
-                                this.hide();
+                                this.exit();
                             }
                         }
                     ]
