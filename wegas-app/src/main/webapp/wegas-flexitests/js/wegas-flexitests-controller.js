@@ -13,6 +13,7 @@
 YUI.add("wegas-flexitests-controller", function(Y) {
     "use strict";
     Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [Y.Wegas.Widget, Y.Wegas.Editable], {
+        BOUNDING_TEMPLATE: "<div><div class='flexi-mask'></div></div>",
         /**
          * Lifecycle method
          * @function
@@ -143,7 +144,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     buttons: [{
                             label: "Ok",
                             action: function() {
-                                this.hide();
+                                this.exit();
                                 onSuccess();
                             }
                         }]
@@ -193,13 +194,11 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.ongoing = true;
         },
         mask: function() {
-            this.fire("showOverlay");
-//            this.showOverlay();
+            this.get("boundingBox").one(".flexi-mask").show();
         },
         unmask: function() {
             this.fixPoint.hide();
-            this.fire("hideOverlay");
-//            this.hideOverlay();
+            this.get("boundingBox").one(".flexi-mask").hide();
             this.startTime = Y.Lang.now();
         },
         getChildById: function(id) {

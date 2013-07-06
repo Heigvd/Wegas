@@ -13,9 +13,9 @@ YUI.add('wegas-websocketlistener', function(Y) {
 
     var WebSocketListener = Y.Base.create("WebSocketListener", Y.Plugin.Base, [], {
         initializer: function() {
-            Y.Wegas.Facade[this.get("dataSource")].on("*:EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
+            Y.Wegas.Facade[this.get("dataSource")].on("EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
         },
-       
+
         onVariableInstanceUpdate: function(data) {
             this.get("host").cache.onResponseRevived({
                 serverResponse: Y.Wegas.Editable.revive({
@@ -30,7 +30,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
         ATTRS: {
             dataSource: {
                 initOnly:true
-            }  
+            }
         },
         NS: "ws",
         NAME: "WebSocketListener"

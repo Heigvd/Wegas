@@ -33,7 +33,7 @@ YUI.add('wegas-popuplistener', function(Y) {
                             name: 'proceed',
                             label: 'OK',
                             action: function() {
-                                this.hide();
+                                this.exit();
                             }
                         }
                     ]
@@ -75,11 +75,11 @@ YUI.add('wegas-popuplistener', function(Y) {
             var instance;
             event = stringToObject(event);
             event = Y.mix(this.DEFAULT_CONFIG(), event, true, null, 0, false);
-            instance = new Y.Wegas.PopupContent(event).render(this.get("host").get(this.get("targetAttr"))).show();
-
+            instance = new Y.Wegas.PopupContent(event).render(this.get("host").get(this.get("targetAttr")));
+            instance.show();
             if (event.timeout) {
                 setTimeout(function() {
-                    instance && instance.hide();
+                    instance && instance.exit();
                 }, event.timeout);
                 // Y.later(event.timeout, instance, instance.hide);
             }

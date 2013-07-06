@@ -68,7 +68,9 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             fn: Y.Plugin.TreeViewFilter,
                             cfg: {
                                 testFn: function(searchVal) {
-                                    var ret = (searchVal === "");
+                                    var ret;
+                                    searchVal = searchVal.trim();
+                                    ret = (searchVal === "");
                                     if (!ret) {
                                         ret = this.get("label").toLowerCase().indexOf(searchVal.toLowerCase()) > -1;
                                     }
@@ -76,8 +78,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                         ret = this.get("data.mimeType").toLowerCase().indexOf(searchVal.toLowerCase()) === 0;
                                     }
                                     return ret;
-                                },
-                                regExp: false
+                                }
                             }
                         }]
                 });
