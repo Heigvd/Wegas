@@ -15,14 +15,11 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.websocket.pusher.Pusher;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import org.apache.http.client.ClientProtocolException;
 
 /**
  *
@@ -58,21 +55,26 @@ public class WebsocketFacade {
         Long teamId = null;
         Long gameId = null;
 
+        boolean webSocketAllowed = events.getUpdatedEntities().get(0).getScope().getVariableDescriptor().getGameModel().hasProperty("websocket");
+        if (webSocketAllowed) {
+            return;
+        }
+
         for (int i = 0; i < events.getUpdatedEntities().size(); i++) {
             v = events.getUpdatedEntities().get(i);
             if (v.getScope() instanceof GameModelScope /*||
                      v.getScope().getBroadcastScope().equals(GameModelScope.class.getSimpleName())*/) {
                 //Not supported yet
-            } else if (v.getScope() instanceof GameScope /*||
-                     v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())*/) {
+            } else if (v.getScope() instanceof GameScope
+                    || v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())) {
                 game.addEntity(v);
                 gameId = variableInstanceFacade.findGame(v).getId();
-            } else if (v.getScope() instanceof TeamScope /*||
-                     v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())*/) {
+            } else if (v.getScope() instanceof TeamScope
+                    || v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
                 team.addEntity(v);
                 teamId = variableInstanceFacade.findTeam(v).getId();
-            } else if (events.getUpdatedEntities().get(i).getScope() instanceof PlayerScope /*||
-                     v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())*/) {
+            } else if (events.getUpdatedEntities().get(i).getScope() instanceof PlayerScope
+                    || v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())) {
                 player.addEntity(v);
                 playerId = variableInstanceFacade.findAPlayer(v).getId();
             }
@@ -92,11 +94,11 @@ public class WebsocketFacade {
             }
         }
         if (player.getUpdatedEntities().size() > 0) {
-            try {
-                Pusher.triggerPush("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
-            } catch (IOException ex) {
-                //
-            }
+            //try {
+            //Pusher.triggerPush("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
+            //} catch (IOException ex) {
+            //
+            //}
         }
     }
 }

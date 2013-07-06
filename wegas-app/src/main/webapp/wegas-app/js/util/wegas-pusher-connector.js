@@ -19,7 +19,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
      * @returns {Instance}
      */
     var EVENT_PREFIX = "pusherConnector",
-            PusherDataSource = function() {                
+            PusherDataSource = function() {
         PusherDataSource.superclass.constructor.apply(this, arguments);
     };
 
@@ -39,11 +39,11 @@ YUI.add('wegas-pusher-connector', function(Y) {
 
         },
         pusherInit: function(cfg) {
-            if (!Pusher) {
-                Y.later(100, this.pusherInit, this, cfg);
+            if (!window.Pusher) {
+//                Y.later(100, this.pusherInit, this, cfg);
                 return;
             }
-            //Pusher.log = Y.log;    // Enable pusher logging - don't include this in production
+            Pusher.log = Y.log;    // Enable pusher logging - don't include this in production
             document.WEB_SOCKET_DEBUG = true;// Flash fallback logging - don't include this in production
             this.pusher = new Pusher(cfg["applicationKey"]);
             this.pusher.connection.bind('error', function(err) {
