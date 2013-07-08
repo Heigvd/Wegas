@@ -80,4 +80,8 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
     public Integer size(Player p) {
         return this.getInstance(p).getProperties().size();
     }
+
+    public void setProperty(Player p, String key, String value) {
+        this.getInstance(p).getProperties().put(key, value);
+    }
 }

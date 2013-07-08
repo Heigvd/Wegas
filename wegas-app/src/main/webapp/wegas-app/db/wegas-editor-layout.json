@@ -139,7 +139,7 @@
                                         }]
                                 }, {
                                     "type": "OpenTabButton",
-                                    "label": "Scripts",
+                                    "label": "Server scripts",
                                     "wchildren": [{
                                             "type": "ScriptLibrary"
                                         }]

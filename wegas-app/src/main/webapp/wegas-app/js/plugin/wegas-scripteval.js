@@ -9,11 +9,8 @@ YUI.add('wegas-scripteval', function(Y) {
     "use strict";
 
     var ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
-
         context: null,
-
         upToDate: false,
-
         initializer: function() {
             this.context = {};
             this.upToDate = false;
@@ -23,7 +20,6 @@ YUI.add('wegas-scripteval', function(Y) {
             this.publish("evaluated");
             this.publish("failure");
         },
-
         /**
          *  the id should be generated and returned  by the function, not passed as a
          *  a parameter
@@ -33,7 +29,7 @@ YUI.add('wegas-scripteval', function(Y) {
          *  @param cb A callback object, containing success, failure and scope objects
          */
         scopedEval: function(script, id, cb) {
-            var result, response, url;
+            var result, url;
 
             try {
                 result = this.localEval(script);
@@ -71,7 +67,6 @@ YUI.add('wegas-scripteval', function(Y) {
                 });
             }
         },
-
         /**
          * Tries to evaluate the script locally, using variables cache
          * @param {String} script The script to eval localy
@@ -82,14 +77,13 @@ YUI.add('wegas-scripteval', function(Y) {
             }
             return (new Function("with(this) { return " + script + ";}")).call(this.context);
         },
-
         buildContext: function() {
             var i, j, data = this.get("host").data;
             this.upToDate = true;
             this.context = {};
 
             function buildItems(entity, acc) {                                  // Recursively build items lists
-                 if (entity instanceof Y.Wegas.persistence.ListDescriptor) {
+                if (entity instanceof Y.Wegas.persistence.ListDescriptor) {
                     var items = entity.get("items");
                     acc.items = [];
                     for (j in items) {

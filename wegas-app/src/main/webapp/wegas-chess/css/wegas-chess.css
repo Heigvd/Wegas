@@ -1,0 +1,110 @@
+.wegas-chat {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+.wegas-chessboard {
+    background: url(../../wegas-chess/images/EmptyBoard.gif) no-repeat;
+    background-size: 600px auto;
+    width: 557px;
+    height: 600px;
+    padding: 11px 37px;
+}
+.chess-label-p1,
+.chess-label-p2 {
+    position: absolute;
+    font-size: 2em;
+    top: 8px;
+    left: 607px;
+    font-weight: bolder;
+    border: 1px solid lightgray;
+    padding: 5px;
+    width: 250px;
+}
+.chess-label-p1 {
+    top: 522px;
+}
+.wegas-chessboard .chess-status {
+    position: absolute;
+    font-size: 1.5em;
+    top: 259px;
+    left: 607px;
+    font-style: italic;
+}
+.wegas-chessboard-content {
+    position: relative;
+}
+.wegas-devmode .wegas-chessboard-content,
+.wegas-devmode .chess-piece {
+    box-shadow: 0 0 2px black;
+}
+.chess-piece, .chess-move {
+    position: absolute;
+}
+.chess-piece {
+    background: transparent url(../../wegas-chess/images/pieces.png) no-repeat;
+    background-size: 386px;
+    background-position:2px -88px;
+}
+.chess-move {
+    background-color: rgba(7, 250, 20, 0.2);
+    cursor:pointer;
+}
+.chess-move:hover {
+    background-color: rgba(7, 250, 20, 0.4);
+    box-shadow: 1px 1px 2px black;
+}
+.chess-playing .chess-piece-playable:hover {
+    background-color: rgba(7, 38, 68, 0.2);
+    box-shadow: 1px 1px 2px black;
+    cursor:pointer;
+}
+.chess-piece-selected,
+.chess-piece-selected:hover {
+    background-color: rgba(7, 38, 68, 0.4);
+    box-shadow: 1px 1px 2px black;
+}
+/* White pieces */
+.chess-tower {
+    background-position:2px -88px;
+}
+.chess-bishop {
+    background-position: -62px -88px;
+}
+.chess-queen {
+    background-position: -127px -88px;
+}
+.chess-king {
+    background-position: -191px -88px;
+}
+.chess-horse {
+    background-position: -257px -88px;
+}
+.chess-horse {
+    background-position: -257px -88px;
+}
+.chess-pawn {
+    background-position: -319px -88px;
+}
+/* Black pieces */
+.chess-tower.chess-side-1 {
+    background-position:2px -9px;
+}
+.chess-bishop.chess-side-1 {
+    background-position: -62px -9px;
+}
+.chess-queen.chess-side-1 {
+    background-position: -127px -9px;
+}
+.chess-king.chess-side-1 {
+    background-position: -191px -9px;
+}
+.chess-horse.chess-side-1 {
+    background-position: -257px -9px;
+}
+.chess-horse.chess-side-1 {
+    background-position: -257px -9px;
+}
+.chess-pawn.chess-side-1 {
+    background-position: -319px -9px;
+}

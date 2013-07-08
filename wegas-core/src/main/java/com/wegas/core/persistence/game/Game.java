@@ -122,11 +122,6 @@ public class Game extends NamedEntity {
             this.setToken(Helper.genToken(10));
         }
         //this.token = this.token.replace(" ", "-");
-        if (this.teams.isEmpty()) {
-            Team t = new Team("Default");
-            t.addPlayer(new Player("Test player"));
-            this.addTeam(t);
-        }
         this.setUpdatedTime(new Date());
     }
 
@@ -192,14 +187,6 @@ public class Game extends NamedEntity {
     public void setGameModel(GameModel gameModel) {
         this.gameModel = gameModel;
     }
-    /**
-     *
-     */
-    /*
-     * public void reset(AnonymousEntityManager aem) { for
-     * (VariableDescriptorEntity vd : this.getVariableDescriptors()) {
-     * vd.getScope().reset(aem); } }
-     */
     /**
      *
      * @return
