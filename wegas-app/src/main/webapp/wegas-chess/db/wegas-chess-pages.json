@@ -1,0 +1,17 @@
+{
+    "1": {
+        "id": 1,
+        "direction": "vertical",
+        "type": "List",
+        "cssClass": "layout",
+        "children": [{
+                "type": "Linkwidget"
+            }, {
+                "type": "ChessBoard"
+
+            }, {
+                "type": "Chat",
+                "cssClass": "wegas-chat"
+            }]
+    }
+}

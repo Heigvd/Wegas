@@ -62,7 +62,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
      *
      */
     @EJB
-    private GameFacade gamFacade;
+    private GameFacade gameFacade;
     /**
      *
      */
@@ -105,11 +105,16 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
         } else if (instance.getScope() instanceof TeamScope) {
             return teamFacade.find(instance.getTeamScopeKey()).getPlayers();
         } else if (instance.getScope() instanceof GameScope) {
-            throw new UnsupportedOperationException();                          // @fixme
+            List<Player> players = new ArrayList<>();
+
+            for (Team t : gameFacade.find(instance.getGameScopeKey()).getTeams()) {
+                players.addAll(t.getPlayers());
+            }
+            return players;
         } else if (instance.getScope() instanceof GameModelScope) {
             return instance.getDescriptor().getGameModel().getPlayers();
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException(); // Should never occur
         }
     }
 
@@ -124,11 +129,11 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
         } else if (instance.getScope() instanceof TeamScope) {
             return teamFacade.find(instance.getTeamScopeKey()).getGame();
         } else if (instance.getScope() instanceof GameScope) {
-            throw new UnsupportedOperationException();                      // @fixme
+            return gameFacade.find(instance.getGameScopeKey());
         } else if (instance.getScope() instanceof GameModelScope) {
             return instance.getDescriptor().getGameModel().getGames().get(0);
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException(); // Should never occur
         }
     }
 
@@ -138,13 +143,12 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
         } else if (instance.getScope() instanceof TeamScope) {
             return teamFacade.find(instance.getTeamScopeKey());
         } else if (instance.getScope() instanceof GameScope) {
-            throw new UnsupportedOperationException();
-            //throw new UnsupportedOperationException();                      // @fixme
+            throw new UnsupportedOperationException();  // Should never be called
         } else if (instance.getScope() instanceof GameModelScope) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException();// Should never be called
             //return instance.getDescriptor().getGameModel().getGames().get(0);
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException(); // Should never occur
         }
     }
 
@@ -183,7 +187,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
             } else if (instance.getScope() instanceof GameScope) {
 
                 try {
-                    p = gamFacade.find(instance.getGameScopeKey()).getPlayers().get(0);
+                    p = gameFacade.find(instance.getGameScopeKey()).getPlayers().get(0);
                 } catch (ArrayIndexOutOfBoundsException ex) {
                     throw new NoPlayerException("Team [" + teamFacade.find(instance.getTeamScopeKey()).getName() + "] has no player");
                 }
@@ -210,7 +214,7 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
                 return p;
 
             } else {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException();  // Should never occur
             }
         } catch (NoTeamException | NoGameException ex) {
             throw new NoPlayerException(ex.getMessage(), ex);

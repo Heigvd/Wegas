@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -20,6 +21,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -44,6 +46,11 @@ public class GameScope extends AbstractScope {
     @XmlTransient
     @JsonIgnore
     private Map<Long, VariableInstance> gameVariableInstances = new HashMap<>();
+
+    @PrePersist
+    public void prePersist() {
+        this.propagateDefaultInstance(false);
+    }
 
     @Override
     public void setVariableInstance(Long key, VariableInstance v) {
@@ -78,5 +85,14 @@ public class GameScope extends AbstractScope {
     @Override
     public void merge(AbstractEntity a) {
         //
+    }
+
+    @Override
+    public Map<Long, VariableInstance> getPrivateInstances() {
+        Map<Long, VariableInstance> ret = new HashMap<>();
+        Player cPlayer = RequestFacade.lookup().getPlayer();
+
+        ret.put(cPlayer.getGame().getId(), this.getVariableInstance(cPlayer));
+        return ret;
     }
 }

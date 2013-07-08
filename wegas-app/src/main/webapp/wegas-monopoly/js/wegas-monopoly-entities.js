@@ -12,10 +12,9 @@
 YUI.add('wegas-monopoly-entities', function(Y) {
     "use strict";
 
-    var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
-    SELF = "self", BOOLEAN = "boolean", NUMBER = "number", SELECT = "select",
-    OBJECT = "object", HTML = "html", VALUE = "value", HASHLIST = "hashlist",
-    COMBINE = "combine";
+    var STRING = "string", HIDDEN = "hidden", NAME = "name",
+            HTML = "html", VALUE = "value", HASHLIST = "hashlist",
+            COMBINE = "combine";
 
     /**
      * ObjectDescriptor mapper
@@ -30,17 +29,18 @@ YUI.add('wegas-monopoly-entities', function(Y) {
                 _inputex: {
                     label: "Descriptor properties",
                     _type: HASHLIST,
+                    useButtons: true,
                     keyField: NAME,
                     valueField: VALUE,
                     elementType: {
                         type: COMBINE,
                         fields: [{
-                            name: NAME,
-                            typeInvite: NAME
-                        }, {
-                            name: VALUE,
-                            typeInvite: VALUE
-                        }]
+                                name: NAME,
+                                typeInvite: NAME
+                            }, {
+                                name: VALUE,
+                                typeInvite: VALUE
+                            }]
                     }
                 }
             },
@@ -57,19 +57,20 @@ YUI.add('wegas-monopoly-entities', function(Y) {
                     properties: {
                         optional: false,
                         _inputex: {
-                            label: "Instance properties",
+                            label: "Default properties",
                             _type: HASHLIST,
                             keyField: NAME,
+                    useButtons: true,
                             valueField: VALUE,
                             elementType: {
                                 type: COMBINE,
                                 fields: [{
-                                    name: NAME,
-                                    typeInvite: NAME
-                                }, {
-                                    name: VALUE,
-                                    typeInvite: VALUE
-                                }]
+                                        name: NAME,
+                                        typeInvite: NAME
+                                    }, {
+                                        name: VALUE,
+                                        typeInvite: VALUE
+                                    }]
                             }
                         }
                     }
@@ -81,8 +82,8 @@ YUI.add('wegas-monopoly-entities', function(Y) {
                 optional: true
             }
         },
-        METHODS:{
-           size:{
+        METHODS: {
+            size: {
                 label: "size",
                 returns: "number",
                 arguments: [{
@@ -104,19 +105,20 @@ YUI.add('wegas-monopoly-entities', function(Y) {
             properties: {
                 optional: false,
                 _inputex: {
-                    label: "Instance properties",
+                    label: "Properties",
                     _type: HASHLIST,
                     keyField: NAME,
+                    useButtons: true,
                     valueField: VALUE,
                     elementType: {
                         type: COMBINE,
                         fields: [{
-                            name: NAME,
-                            typeInvite: NAME
-                        }, {
-                            name: VALUE,
-                            typeInvite: VALUE
-                        }]
+                                name: NAME,
+                                typeInvite: NAME
+                            }, {
+                                name: VALUE,
+                                typeInvite: VALUE
+                            }]
                     }
                 }
             }

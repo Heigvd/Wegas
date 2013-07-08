@@ -9,19 +9,16 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-console', function (Y) {
+YUI.add('wegas-console', function(Y) {
     var CONTENTBOX = 'contentBox',
-    Console;
+            Console;
 
-    Console = Y.Base.create("wegas-console", Y.Widget, [Y.WidgetChild,  Y.Wegas.Widget], {
-
+    Console = Y.Base.create("wegas-console", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         form: null,
-
-        destructor: function () {
+        destructor: function() {
         },
-
-        renderUI: function () {
-            this.plug( Y.Plugin.WidgetToolbar );
+        renderUI: function() {
+            this.plug(Y.Plugin.WidgetToolbar);
 
             var cb = this.get(CONTENTBOX);
 
@@ -34,8 +31,7 @@ YUI.add('wegas-console', function (Y) {
 
             this.runButton();
         },
-
-        executeScript: function (scriptEntity) {
+        executeScript: function(scriptEntity) {
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
@@ -45,24 +41,23 @@ YUI.add('wegas-console', function (Y) {
                 on: {
                     success: Y.bind(function(e) {
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: '
-                            + e.response.results.entities[0] + "</div>");
+                                + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
                     }, this),
                     failure: Y.bind(function(e) {
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: '
-                            + e.response.results.message + "</div>");
+                                + e.response.results.message + "</div>");
                     }, this)
                 }
             });
 
         },
-
-        runButton: function (){
+        runButton: function() {
             var el = this.toolbar.get('header');
 
             this.runButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run script",
                 on: {
-                    click: Y.bind(function () {
+                    click: Y.bind(function() {
                         this.executeScript({
                             "@class": "Script",
                             language: "JavaScript",
