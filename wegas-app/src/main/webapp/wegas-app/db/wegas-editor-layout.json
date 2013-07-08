@@ -131,15 +131,6 @@
                                         }]
                                 }, {
                                     "type": "OpenTabButton",
-                                    "label": "Pages",
-                                    "cssClass": "experimental",
-                                    "tabSelector": "#leftTabView",
-                                    "wchildren": [{
-                                            "type": "PageTreeview",
-                                            "pageLoader": "previewPageLoader"
-                                        }]
-                                }, {
-                                    "type": "OpenTabButton",
                                     "label": "Styles",
                                     "wchildren": [{
                                             "type": "ScriptLibrary",
