@@ -85,7 +85,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                         click: Y.bind(this.processSource, this)
                     }
                 }).render(el);
-                this.sourceButton.get("boundingBox").addClass("wegas-advanced-feature");
+                this.sourceButton.get(BOUNDINGBOX).addClass("wegas-advanced-feature");
                 this.afterHostEvent("widgetChange", this.processSource);
 
                 this.saveButton = new Y.Button({
@@ -156,7 +156,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             var host = this.get("host"),
                     page = Y.JSON.parse(this.jsonView.getValue());
             this.sourceButton.set("pressed", false);
-            host.get("contentBox").show();
+            host.get(CONTENTBOX).show();
             this.jsonView.hide();
             this.designButton.enable();
             this.saveButton.hide();
@@ -173,14 +173,14 @@ YUI.add('wegas-pageeditor', function(Y) {
                     return;
                 }
                 this.jsonView.setValue(Y.JSON.stringify(host.get("widget").toObject("@pageId"), null, "\t"));
-                host.get("contentBox").hide();
+                host.get(CONTENTBOX).hide();
                 this.jsonView.show();
                 this.jsonView.editor.resize();
                 this.jsonView.focus();
                 this.designButton.disable();
                 this.saveButton.show();
             } else {
-                host.get("contentBox").show();
+                host.get(CONTENTBOX).show();
                 if (this.jsonView) {
                     this.jsonView.hide();
                 }
@@ -192,7 +192,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             if (!this.jsonView) {
                 Y.use("wegas-inputex-ace", Y.bind(function(Y) {
                     this.jsonView = new Y.inputEx.AceField({
-                        parentEl: this.get("host").get("boundingBox"),
+                        parentEl: this.get("host").get(BOUNDINGBOX),
                         name: 'text',
                         type: 'ace',
                         height: "100%",
@@ -212,20 +212,19 @@ YUI.add('wegas-pageeditor', function(Y) {
             }
         },
         showOverlay: function(widget) {
-            var targetNode = widget.get(BOUNDINGBOX), bb = this.highlightOverlay.get("boundingBox");
+            var targetNode = widget.get(BOUNDINGBOX), bb = this.highlightOverlay.get(BOUNDINGBOX);
             if (!widget.toObject || this.overlayWidget === widget) {
                 return;
             }
 
             this.overlayWidget = widget;
-            //targetNode.prepend(this.highlightOverlay.get(BOUNDINGBOX));
 
             this.highlightOverlay.show();
             this.anim = this.anim || new Y.Anim({
                 node: bb,
                 duration: 0.15
             });
-            //this.highlightOverlay.align(targetNode, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.TL]);
+            
             try {
                 this.anim.stop();
                 if (this.runTimeout) {
@@ -234,18 +233,21 @@ YUI.add('wegas-pageeditor', function(Y) {
                 if (this.overlayWidget) {
 
                     this.runTimeout = Y.later(100, this, function() {
-                        this.highlightOverlay.get(CONTENTBOX).setContent("<div>" + widget.getName() + "</div>");
-                        this.anim.set("from", {
-                            xy: bb.getXY(),
-                            width: bb.getDOMNode().offsetWidth,
-                            height: bb.getDOMNode().offsetHeight
-                        });
-                        this.anim.set("to", {
-                            xy: targetNode.getXY(),
-                            width: targetNode.getDOMNode().offsetWidth,
-                            height: targetNode.getDOMNode().offsetHeight
-                        });
-                        this.anim.run();
+                        try {
+                            this.highlightOverlay.get(CONTENTBOX).setContent("<div>" + widget.getName() + "</div>");
+                            this.anim.set("from", {
+                                xy: bb.getXY(),
+                                width: bb.getDOMNode().offsetWidth,
+                                height: bb.getDOMNode().offsetHeight
+                            });
+                            this.anim.set("to", {
+                                xy: targetNode.getXY(),
+                                width: targetNode.getDOMNode().offsetWidth,
+                                height: targetNode.getDOMNode().offsetHeight
+                            });
+                            this.anim.run();
+                        } catch (e) {
+                        }
                     });
                 } else {
 
