@@ -101,6 +101,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 render: true,
                 visible: false
             });
+            this.highlightOverlay.get(CONTENTBOX).append("<div class='overlay-label'></div>");
             this.overlayMask = new Y.Node.create("<div class='pageeditor-overlay-mask'></div>");
             this.overlayMask.plug(Y.Plugin.WidgetMenu, {
                 event: "click"
@@ -109,6 +110,10 @@ YUI.add('wegas-pageeditor', function(Y) {
             host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
             this.doBefore("pageIdChange", function() {
                 this.designButton.set("pressed", false);
+            });
+            this.anim = new Y.Anim({
+                node: this.highlightOverlay.get(BOUNDINGBOX),
+                duration: 0.15
             });
         },
         bind: function() {
@@ -220,11 +225,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.overlayWidget = widget;
 
             this.highlightOverlay.show();
-            this.anim = this.anim || new Y.Anim({
-                node: bb,
-                duration: 0.15
-            });
-            
+
             try {
                 this.anim.stop();
                 if (this.runTimeout) {
@@ -234,7 +235,7 @@ YUI.add('wegas-pageeditor', function(Y) {
 
                     this.runTimeout = Y.later(100, this, function() {
                         try {
-                            this.highlightOverlay.get(CONTENTBOX).setContent("<div>" + widget.getName() + "</div>");
+                            this.highlightOverlay.get(CONTENTBOX).one(".overlay-label").setContent(widget.getName());
                             this.anim.set("from", {
                                 xy: bb.getXY(),
                                 width: bb.getDOMNode().offsetWidth,
@@ -265,6 +266,9 @@ YUI.add('wegas-pageeditor', function(Y) {
         hideOverlay: function() {
             this.overlayWidget = null;
             this.highlightOverlay.hide();
+        },
+        destructor: function() {
+            Y.log("warn", "consider implementing that destructor", "Y.Plugin.PageEditor");
         }
 
     }, {
@@ -272,6 +276,7 @@ YUI.add('wegas-pageeditor', function(Y) {
         NAME: "pageeditor",
         ATTRS: {}
     });
+    Y.Base.mix(PageEditor, [Y.Wegas.PageEditorDD]);                             //Enable dragdrop
     Y.namespace('Plugin').PageEditor = PageEditor;
 
 });
