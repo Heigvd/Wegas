@@ -48,9 +48,6 @@ YUI.add('wegas-pageloader', function(Y) {
         initializer: function() {
             this.handlers = [];
             PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this;    // We keep a references of all loaded PageLoaders
-            if (this.get("defaultPageId")) {
-                this.set("pageId", this.get("defaultPageId"));
-            }
             this.publish("contentUpdated", {emitFacade: false});
         },
         /**
@@ -100,9 +97,12 @@ YUI.add('wegas-pageloader', function(Y) {
             var val = this.get("variable.evaluated");
             if (val && val.getInstance().get('value')) {                        // If there is a variable to refresh
                 this.set("pageId", val.getInstance().get('value'));
-            } else {                                                            // Otherwise use pageId (in case the setter has not been called yet)
-                this.set("pageId", this.get("pageId"));
+            } else if (this.get("defaultPageId") && !this.get("pageId")) {      //in case a defaultPageId is defined and no pageId is 
+                this.set("pageId", this.get("defaultPageId"));
+            } else {
+                this.set("pageId", this.get("pageId"));                         // Otherwise use pageId (in case the setter has not been called yet)
             }
+
         },
         /**
          * @function
@@ -132,9 +132,9 @@ YUI.add('wegas-pageloader', function(Y) {
             var same = false;
             this.get("boundingBox").ancestors("." + this.getClassName(), false).some(function(node) {
                 var widget = Y.Widget.getByNode(node);
-                if (pageId === widget.get('pageId') || pageId === widget.get('variable.evaluated')) {
+                if (+pageId === +widget.currentPageId || +pageId === +widget.get('variable.evaluated')) {
                     same = true;
-                    Y.log("Pageloader [" + this.get("pageLoaderId") + "] tries to load page (" + pageId + ") already loaded by one of its ancestor.", 'warn', 'Y.Wegas.PageLoader');
+                    this.showMessage("warn", "Pageloader [" + this.get("pageLoaderId") + "] tries to load page (" + pageId + ") already loaded by one of its ancestor[" + widget.get("pageLoaderId") + "].");
                     return true;
                 }
             }, this);
