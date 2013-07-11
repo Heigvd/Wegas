@@ -560,7 +560,7 @@ YUI().use(function(Y) {
                 'wegas-pageeditor-dragdrop': {
                     path: 'wegas-editor/js/util/wegas-pageeditor-dragdrop-min.js',
                     ws_provides: "PageEditorDD",
-                    requires: ["dd", 'wegas-pageeditorcss', 'wegas-cssposition']
+                    requires: ['dd-constrain', 'dd-scroll', 'wegas-pageeditorcss', 'wegas-cssposition']
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',
