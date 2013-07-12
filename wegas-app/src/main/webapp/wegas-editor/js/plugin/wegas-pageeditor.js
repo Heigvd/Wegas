@@ -283,7 +283,7 @@ YUI.add('wegas-pageeditor', function(Y) {
         NAME: "pageeditor",
         ATTRS: {}
     });
-    Y.Base.mix(PageEditor, [Y.Wegas.PageEditorDD]);                             //Enable dragdrop
+    Y.Base.mix(PageEditor, [Y.Wegas.PageEditorDD, Y.Wegas.PageEditorResize]);                             //Enable dragdrop
     Y.namespace('Plugin').PageEditor = PageEditor;
 
 });
