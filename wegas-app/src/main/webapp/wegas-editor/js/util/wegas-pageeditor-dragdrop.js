@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview PageEditor Extension
+ * @fileOverview PageEditor drag and drop Extension
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-pageeditor-dragdrop", function(Y) {
