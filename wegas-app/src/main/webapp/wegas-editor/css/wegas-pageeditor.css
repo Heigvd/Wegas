@@ -118,7 +118,7 @@
 /*RESIZE*/
 .pageeditor-resizenode{
     position:absolute;
-    background: url(../../wegas-editor/images/resize_icon.png) no-repeat;
+    background: url(../../wegas-editor/images/resize_icon.png) no-repeat right bottom;
     width:24px;
     height:24px;
     cursor: nwse-resize;
