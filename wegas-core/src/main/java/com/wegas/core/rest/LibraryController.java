@@ -37,14 +37,23 @@ public class LibraryController {
     @Path("{library:.*}")
     public Map get(@PathParam("gameModelId") Long gameModelId,
             @PathParam("library") String library) {
-        
+
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
-        
+
         return this.findLibrary(gameModelId, library);
     }
 
-//    @GET
-//    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    @GET
+    @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
+    public String edit(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("library") String library,
+            @PathParam("key") String key) {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
+
+        return this.findLibrary(gameModelId, library).get(key).getContent();
+    }
+
     /**
      *
      * @param gameModelId
@@ -90,7 +99,7 @@ public class LibraryController {
      * @param name
      * @return
      */
-    private Map findLibrary(Long gameModelId, String name) {
+    private Map<String, GameModelContent> findLibrary(Long gameModelId, String name) {
         GameModel gameModel = gameModelFacade.find(gameModelId);
         switch (name) {
             case "Script":
