@@ -12,6 +12,10 @@
  */
 YUI.add("wegas-pageeditor-resize", function(Y) {
     "use strict";
+    var CONTENTBOX = "contentBox",
+            BOUNDINGBOX = "boundingBox",
+            WIDTH = "width",
+            HEIGHT = "height";
     /**
      * PageEditor Plugin Extension enabling widget resize.
      * @constructor
@@ -19,7 +23,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
     function PageEditorResize() {
         Y.onceAfter(this._initResize, this, "render");
         Y.after(this._alignResize, this, "showOverlay");
-        Y.onceAfter(this._resizeDestruct, this, "destructor");
+        Y.once(this._resizeDestruct, this, "destructor");
     }
     PageEditorResize.NAME = "wegas-pageeditor-resize";
     PageEditorResize.prototype = {
@@ -31,7 +35,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
         _initResize: function() {
 
             if (!this.highlightOverlay) {
-                Y.error("PageEditorDD is an extension for PageEditor.");
+                Y.error("PageEditorResize is an extension for PageEditor.");
             }
             this._resizeNode = Y.Node.create("<div class='pageeditor-resizenode'></div>");
             this._resizeNode.setStyles({
@@ -52,15 +56,15 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 node: this._resizeNode
             });
             this._resize.plug(Y.Plugin.DDConstrained, {
-                constrain: this.get("host").get("contentBox")
+                constrain: this.get("host").get(CONTENTBOX)
             }).plug(Y.Plugin.DDNodeScroll, {
-                node: this.get("host").get("contentBox")
+                node: this.get("host").get(CONTENTBOX)
             });
             this._resizeNode.before("mousedown", function(e) {
                 this.detach();
                 this._resizeNode.show();
                 try {
-                    this._resize._widget = this.overlayWidget.get("boundingBox");
+                    this._resize._widget = this.overlayWidget.get(BOUNDINGBOX);
                 } catch (ex) {
                 }
             }, this);
@@ -70,15 +74,15 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             this._resize.on("drag:drag", function(e) {
                 var bb = this._widget;
                 bb.setStyles({
-                    width: parseInt(bb.getComputedStyle("width")) + e.info.delta[0],
-                    height: parseInt(bb.getComputedStyle("height")) + e.info.delta[1]
+                    width: parseInt(bb.getComputedStyle(WIDTH), 10) + e.info.delta[0],
+                    height: parseInt(bb.getComputedStyle(HEIGHT), 10) + e.info.delta[1]
                 });
             });
             this._resize.before("drag:start", function(e) {
                 var bb = this._widget;
                 bb.setStyles({
-                    width: bb.getComputedStyle("width"),
-                    height: bb.getComputedStyle("height")
+                    width: bb.getComputedStyle(WIDTH),
+                    height: bb.getComputedStyle(HEIGHT)
                 });
             });
             this._resize.on("drag:end", function(e) {
@@ -86,12 +90,13 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 widget.plug(Y.Plugin.CSSSize);                                  //no effect if present
                 widget.CSSSize.setAttrs({
                     "styles": {
-                        "width": bb.getComputedStyle("width"),
-                        "height": bb.getComputedStyle("height")
+                        width: bb.getComputedStyle(WIDTH),
+                        height: bb.getComputedStyle(HEIGHT)
                     }
                 });
                 this._resize._widget = null;
-                //console.log(this.get("host").get("widget").toObject()); //save
+                this.showOverlay(widget, true);
+                this.saveCurrentPage();
                 this.bind();
             }, this);
         },
@@ -101,10 +106,13 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
          * @returns {undefined}
          */
         _alignResize: function() {
-            var bb = this.overlayWidget.get("boundingBox"), pos = bb.getXY();
-            pos[0] = pos[0] + bb.getDOMNode().offsetWidth - 23;
-            pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 23;
-            this._resizeNode.setXY(pos);
+            try {
+                var bb = this.overlayWidget.get(BOUNDINGBOX), pos = bb.getXY();
+                pos[0] = pos[0] + bb.getDOMNode().offsetWidth - 23;
+                pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 23;
+                this._resizeNode.setXY(pos);
+            } catch (e) {
+            }
         },
         /**
          * self destructor called after PageEditor's destructor

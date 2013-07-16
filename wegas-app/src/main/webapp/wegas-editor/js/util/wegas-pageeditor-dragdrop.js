@@ -12,6 +12,8 @@
  */
 YUI.add("wegas-pageeditor-dragdrop", function(Y) {
     "use strict";
+    var CONTENTBOX = "contentBox",
+            BOUNDINGBOX = "boundingBox";
     /**
      * PageEditor Plugin Extension enabling position drag and drop.
      * @constructor
@@ -52,25 +54,29 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 node: this._ddNode
             });
             this._dd.plug(Y.Plugin.DDConstrained, {
-                constrain: this.get("host").get("contentBox")
+                constrain: this.get("host").get(CONTENTBOX)
             }).plug(Y.Plugin.DDNodeScroll, {
-                node: this.get("host").get("contentBox")
+                node: this.get("host").get(CONTENTBOX)
             });
             this._ddNode.before("mousedown", function(e) {
                 this.detach();
                 this._ddNode.show();
                 try {
-                    this._dd.set("dragNode", this.overlayWidget.get("boundingBox"));
-                    this._dd.get("dragNode").setStyles({
-                        bottom: null,
-                        right: null
-                    });
+                    this._dd.set("dragNode", this.overlayWidget.get(BOUNDINGBOX));
                 } catch (ex) {
                 }
             }, this);
             this._ddNode.after("mouseup", function(e) {
                 this.bind();
             }, this);
+            this._dd.before("drag:start", function(e) {
+                this._dd.get("dragNode").setStyles({
+                    position: "absolute",
+                    bottom: null,
+                    right: null
+                });
+            }, this);
+
             this._dd.on("drag:end", function(e) {
                 var bb = this._dd.get("dragNode"), widget = Y.Widget.getByNode(bb);
                 widget.plug(Y.Plugin.CSSPosition);                              //no effect if present
@@ -81,7 +87,8 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                         "left": bb.getStyle("left")
                     }
                 });
-
+                this.showOverlay(widget, true);
+                this.saveCurrentPage();
                 this.bind();
             }, this);
         },
@@ -91,8 +98,13 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
          * @returns {undefined}
          */
         _alignDD: function() {
-            var bb = this.overlayWidget.get("boundingBox");
-            this._ddNode.setXY(bb.getXY());
+            try {
+                var bb = this.overlayWidget.get(BOUNDINGBOX);
+                this._ddNode.setXY(bb.getXY());
+                this._ddNode.setStyle("width", bb.getDOMNode().offsetWidth);
+                this._ddNode.setStyle("height", bb.getDOMNode().offsetHeight);
+            } catch (e) {
+            }
         },
         /**
          * self destructor called after PageEditor's destructor
