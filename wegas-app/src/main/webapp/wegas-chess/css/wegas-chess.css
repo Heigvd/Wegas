@@ -1,14 +1,47 @@
+/** Chat styles **/
 .wegas-chat {
+    /*height: 100%;*/
     position: absolute;
-    right: 0px;
     top: 0px;
+    right: 0;
+    width: 300px;
+    bottom:0px;
+    background: darkgray;
 }
+
+/* Share link styles */
+.wegas-playerlink-buttons {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+.wegas-playerlink-buttons-content > div{
+    float: left;
+}
+.wegas-playerlink-buttons .playerlink-label {
+    font-weight: bold;
+    font-size: 15px;
+    padding: 10px;
+}
+
+.wegas-playerlink-buttons input {
+    padding: 3px;
+    margin-top:6px;
+    width: 500px !important;
+}
+/* Chess board styles */
 .wegas-chessboard {
     background: url(../../wegas-chess/images/EmptyBoard.gif) no-repeat;
     background-size: 600px auto;
     width: 557px;
     height: 600px;
     padding: 11px 37px;
+    position: relative;
+    position: absolute;
+    top: 40px;
+}
+.wegas-chessboard-content {
+    position:relative;
 }
 .chess-label-p1,
 .chess-label-p2 {
@@ -17,7 +50,6 @@
     top: 8px;
     left: 607px;
     font-weight: bolder;
-    border: 1px solid lightgray;
     padding: 5px;
     width: 250px;
 }
@@ -30,6 +62,7 @@
     top: 259px;
     left: 607px;
     font-style: italic;
+    width: 264px;
 }
 .wegas-chessboard-content {
     position: relative;
@@ -80,9 +113,6 @@
 .chess-horse {
     background-position: -257px -88px;
 }
-.chess-horse {
-    background-position: -257px -88px;
-}
 .chess-pawn {
     background-position: -319px -88px;
 }
@@ -98,9 +128,6 @@
 }
 .chess-king.chess-side-1 {
     background-position: -191px -9px;
-}
-.chess-horse.chess-side-1 {
-    background-position: -257px -9px;
 }
 .chess-horse.chess-side-1 {
     background-position: -257px -9px;
