@@ -122,6 +122,13 @@ public class Game extends NamedEntity {
             this.setToken(Helper.genToken(10));
         }
         //this.token = this.token.replace(" ", "-");
+
+        // Done on join game
+        //if (this.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll) && this.teams.isEmpty()) {
+            //Team t = new Team("Default");
+            //t.addPlayer(new Player("Test player"));
+            //this.addTeam(t);
+        //}
         this.setUpdatedTime(new Date());
     }
 
@@ -187,6 +194,7 @@ public class Game extends NamedEntity {
     public void setGameModel(GameModel gameModel) {
         this.gameModel = gameModel;
     }
+
     /**
      *
      * @return
