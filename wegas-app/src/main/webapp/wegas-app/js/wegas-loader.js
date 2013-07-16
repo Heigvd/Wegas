@@ -64,7 +64,7 @@ YUI().use(function(Y) {
                     ws_provides: ['ScriptEval']
                 },
                 'wegas-websocketlistener': {
-                    path: 'wegas-app/js/plugin/wegas-websocketlistener-min.js',
+                    path: 'wegas-app/js/util/wegas-websocketlistener-min.js',
                     requires: ['plugin', 'wegas-pusher-connector'],
                     ws_provides: "WebSocketListener"
                 },
