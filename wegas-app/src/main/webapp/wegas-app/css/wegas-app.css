@@ -271,6 +271,7 @@ font{
     background: transparent !important;
     color: inherit !important;
 }
+
 /*
 * Visibility plugin
 */
@@ -280,9 +281,48 @@ font{
 .yui3-skin-sam .userPreferences .wegas-toolbar{
     background: rgba(255, 255, 255, 0.6);
 }
+
 /*
-* IMAGE
-*/
+ * Image widget
+ */
 .wegas-image-hidden{
     display: none;
+}
+
+
+/* Chat widget */
+.wegas-chat-content {
+    height: 100%;
+    position:relative;
+}
+.wegas-chat .wegas-chat-msgs {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    bottom: 35px;
+    right: 5px;
+    border: 1px solid lightgray;
+    padding: 5px;
+    overflow-y: auto;
+    background: white;
+}
+.wegas-chat .wegas-chat-msgs:empty:before {
+    content:"No messages received yet";
+    font-style: italic;
+    text-align: center;
+    padding-top: 30px;
+}
+.wegas-chat .inputEx-fieldWrapper {
+    position: absolute;
+    bottom: 0px;
+    left: 5px;
+}
+.wegas-chat div.inputEx-Field input {
+    padding: 3px !important;
+}
+.wegas-chat button {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    margin: 0;
 }
