@@ -808,11 +808,11 @@ YUI().use(function(Y) {
                     ws_provides: "FlexitestsResults"
                 },
                 /* Chess */
-                'wegas-chess': {
-                    path: "wegas-chess/js/wegas-chess-min.js",
-                    ws_provides: "ChessBoard",
-                    requires: ["transition"]
-                }
+                //'wegas-chess': {
+                //    path: "wegas-chess/js/wegas-chess-min.js",
+                //    ws_provides: "ChessBoard",
+                //    requires: ["transition"]
+                //}
             }
         },
         /* Other libraries */
