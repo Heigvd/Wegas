@@ -74,7 +74,7 @@ public class TeamScope extends AbstractScope {
                 ret.put(t.getId(), this.teamVariableInstances.get(t.getId()));
             }
         } else {
-            ret.put(cPlayer.getId(), this.getVariableInstance(cPlayer));
+            ret.put(cPlayer.getTeam().getId(), this.getVariableInstance(cPlayer));
         }
         return ret;
     }
