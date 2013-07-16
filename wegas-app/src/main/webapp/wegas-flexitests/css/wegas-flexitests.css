@@ -50,8 +50,8 @@ body > .wegas-pageloader, html{
     letter-spacing: -2px;
 }
 .wegas-flexitests-controller > .flexi-mask{
-/*    width:100%;
-    height:100%;*/
+    /*    width:100%;
+        height:100%;*/
     z-index: 19;
     background-color: rgb(77, 77, 77);
     position: absolute;
@@ -120,4 +120,7 @@ body > .wegas-pageloader, html{
 }
 .yui3-skin-sam .wegas-flexitests-results-content .yui3-datatable-odd .yui3-datatable-cell{
     background:none
+}
+.flexitests .wegas-form-content div.inputEx-label label{
+    color: whitesmoke;
 }
