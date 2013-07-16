@@ -14,7 +14,7 @@ YUI.add('wegas-pageeditor', function(Y) {
     var PageEditor, BOUNDINGBOX = "boundingBox",
             CONTENTBOX = "contentBox",
             Alignable = Y.Base.create("wegas-pageeditor-overlay", Y.Widget,
-            [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack], {
+            [Y.WidgetPosition, Y.WidgetStack], {
         //CONTENT_TEMPLATE: '<div><span class="wegas-icon wegas-icon-edit"></span><div>'
     }, {
         CSS_PREFIX: "wegas-pageeditor-overlay"
@@ -174,6 +174,11 @@ YUI.add('wegas-pageeditor', function(Y) {
             page["@pageId"] = host.get("widget")["@pageId"];
             Y.Wegas.Facade.Page.cache.patch(page);
         },
+        saveCurrentPage: function() {
+            var page = this.get("host").get("widget").toObject();
+            page["@pageId"] = this.get("host").get("pageId");
+            Y.Wegas.Facade.Page.cache.patch(page);
+        },
         processSource: function() {
             var host = this.get("host");
 
@@ -223,59 +228,58 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.handlers = [];
             this.binded = false;
         },
-        showOverlay: function(widget) {
+        showOverlay: function(widget, immediate) {
             var targetNode = widget.get(BOUNDINGBOX), bb = this.highlightOverlay.get(BOUNDINGBOX);
+
             if (!widget.toObject || this.overlayWidget === widget) {
                 return;
             }
-
-            this.overlayWidget = widget;
-
             this.highlightOverlay.show();
-
-            try {
-                this.anim.stop();
-                if (this.runTimeout) {
-                    this.runTimeout.cancel();
-                }
-                if (this.overlayWidget) {
-
-                    this.runTimeout = Y.later(100, this, function() {
-                        try {
-                            this.highlightOverlay.get(CONTENTBOX).one(".overlay-label").setContent(widget.getName());
-                            this.anim.set("from", {
-                                xy: bb.getXY(),
-                                width: bb.getDOMNode().offsetWidth,
-                                height: bb.getDOMNode().offsetHeight
-                            });
-                            this.anim.set("to", {
-                                xy: targetNode.getXY(),
-                                width: targetNode.getDOMNode().offsetWidth,
-                                height: targetNode.getDOMNode().offsetHeight
-                            });
-                            this.anim.run();
-                        } catch (e) {
-                        }
-                    });
-                } else {
-
-                    this.highlightOverlay.align(targetNode, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.TL]);
-                    this.highlightOverlay.get(BOUNDINGBOX).setStyles({
-                        width: widget.get(BOUNDINGBOX).getDOMNode().offsetWidth,
-                        height: widget.get(BOUNDINGBOX).getDOMNode().offsetHeight
-                    });
-                }
-            } catch (e) {
-            } finally {
-                this.overlayWidget = widget;
+            this.overlayWidget = widget;
+            this.anim.stop();
+            if (this.runTimeout) {
+                this.runTimeout.cancel();
             }
+            if (!immediate) {
+
+                this.runTimeout = Y.later(100, this, function() {
+                    try {
+                        this.highlightOverlay.get(CONTENTBOX).one(".overlay-label").setContent(widget.getName());
+                        this.anim.set("from", {
+                            xy: bb.getXY(),
+                            width: bb.getDOMNode().offsetWidth,
+                            height: bb.getDOMNode().offsetHeight
+                        });
+                        this.anim.set("to", {
+                            xy: targetNode.getXY(),
+                            width: targetNode.getDOMNode().offsetWidth,
+                            height: targetNode.getDOMNode().offsetHeight
+                        });
+                        this.anim.run();
+                    } catch (e) {
+                    }
+                });
+            } else {
+                this.highlightOverlay.get(BOUNDINGBOX).setXY(targetNode.getXY());
+                this.highlightOverlay.get(BOUNDINGBOX).setStyles({
+                    width: widget.get(BOUNDINGBOX).getDOMNode().offsetWidth,
+                    height: widget.get(BOUNDINGBOX).getDOMNode().offsetHeight
+                });
+            }
+        },
+        alignOverlay: function(widget, immediate) {
+
+
         },
         hideOverlay: function() {
             this.overlayWidget = null;
             this.highlightOverlay.hide();
         },
         destructor: function() {
-            Y.log("warn", "consider implementing that destructor", "Y.Plugin.PageEditor");
+            this.hideOverlay();
+            this.detach();
+            this.overlayMask.destroy();
+            this.highlightOverlay.destroy();
         }
 
     }, {
