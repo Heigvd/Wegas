@@ -79,7 +79,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
             }
             this.get("contentBox").one(".config").empty();
             try {
-                this.get("contentBox").one(".results").setContent("Final result : " + correct + " on " + sum + " correct response" + (correct > 1 ? "s" : "") + " (" + (correct * 100 / sum).toFixed(1) + "%)");
+                this.get("contentBox").one(".results").setContent("Final result : " + correct + " on " + sum + " correct response" + (correct > 1 ? "s" : "") + " (" + (correct * 100 / (sum||1)).toFixed(1) + "%)");
             } catch (e) {
             }
         },
@@ -222,6 +222,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
             }
         }
     }, {
+        EDITORNAME: "Flexitests results",
         ATTRS: {
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
