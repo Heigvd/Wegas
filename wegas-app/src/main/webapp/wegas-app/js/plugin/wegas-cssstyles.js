@@ -12,16 +12,36 @@
 YUI.add('wegas-cssstyles', function(Y) {
     "use strict";
 
-    /**
-     *  @class Add styles CSS styles
-     *  @name Y.Plugin.CSSStyles
-     *  @extends Y.Plugin.Base
-     *  @constructor
-     */
+
     var Wegas = Y.Wegas,
-        styleList = [],
-        node,
-    CSSStyles = Y.Base.create("wegas-cssstyles", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+            MESURE_STYLE = [
+        "fontSize",
+        "top",
+        "left",
+        "right",
+        "bottom",
+        "width",
+        "height",
+        "minWidth",
+        "minHeight",
+        "maxWidth",
+        "maxHeight",
+        "marginLeft",
+        "marginTop",
+        "marginRight",
+        "marginBottom",
+        "paddingLeft",
+        "paddingTop",
+        "paddingBottom",
+        "paddingRight"
+    ],
+            /**
+             *  @class Add styles CSS styles
+             *  @name Y.Plugin.CSSStyles
+             *  @extends Y.Plugin.Base
+             *  @constructor
+             */
+            CSSStyles = Y.Base.create("wegas-cssstyles", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.CSSStyles */
 
         /**
@@ -30,13 +50,22 @@ YUI.add('wegas-cssstyles', function(Y) {
          * @private
          */
         initializer: function() {
-            this.setValue(this.get("styles"));
-            this.after("stylesChange", function(e){
+            if (this.get("host") instanceof Y.Widget) {
+                this.get("host").onceAfter("render", function() {
+                    this.setValue(this.get("styles"));
+                }, this);
+            } else if (this.get("host") instanceof Y.Node) {
+                this.setValue(this.get("styles"));
+            } else {
+                Y.log("Host's type mistmach", "warn", "Y.Plugin.CSSStyles");
+                return;
+            }
+            this.after("stylesChange", function(e) {
                 this.removeStyle(e);
                 this.setValue(e.newVal);
             });
+            this.styleList = [];
         },
-
         /**
          * @function
          * @private
@@ -44,102 +73,116 @@ YUI.add('wegas-cssstyles', function(Y) {
          */
         removeStyle: function(e) {
             var styleToRemove;
-            for (styleToRemove in e.prevVal){
-                if (!e.newVal.hasOwnProperty(styleToRemove)){
-                    node.setStyle(styleToRemove, "");
-                    styleList.splice(styleList.indexOf(styleToRemove));
+            for (styleToRemove in e.prevVal) {
+                if (e.prevVal.hasOwnProperty(styleToRemove) && !e.newVal.hasOwnProperty(styleToRemove)) {
+                    this.nodeStyle(styleToRemove, "");
+                    this.styleList.splice(this.styleList.indexOf(styleToRemove));
                 }
             }
         },
         /**
          * @function
          * @private
-         */        
-        setStyle: function(newStylesList, style){
-            if (styleList.indexOf(style) === -1){
-                styleList.push(style);
+         */
+        setStyle: function(newStylesList, style) {
+            if (this.styleList.indexOf(style) === -1) {
+                this.styleList.push(style);
             }
-            node.setStyle(style, newStylesList[style]);
+            this.nodeStyle(style, newStylesList[style]);
         },
-        
         /**
          * Destructor methods.
          * @function
          * @private
          */
-        destructor: function(){
+        destructor: function() {
             var styleToRemove;
-            for (styleToRemove in this.get("styles")){
-                node.setStyle(styleToRemove, "");
-                styleList.splice(styleList.indexOf(styleToRemove));
+            for (styleToRemove in this.get("styles")) {
+                if (this.get("styles").hasOwnProperty(styleToRemove)) {
+                    this.nodeStyle(styleToRemove, "");
+                    this.styleList.splice(this.styleList.indexOf(styleToRemove));
+                }
             }
         },
-        
+        /**
+         * 
+         * @private
+         * @param {type} key Style to edit
+         * @param {type} value Style's value
+         * @returns {undefined}
+         */
+        nodeStyle: function(key, value) {
+            if (this.get("host") instanceof Y.Widget) {
+                this.get("host").get(this.get("targetNode")).setStyle(key, value);
+            } else if (this.get("host") instanceof Y.Node) {
+                return this.get("host").setStyle(key, value);
+            }
+        },
         /**
          * @function
          * @private
          * @description setValue from style
          */
         setValue: function(styles) {
-            if (this.get("host") instanceof Y.Widget) {
-                node = this.get("host").get(this.get("targetNode"));
-            } else if (this.get("host") instanceof Y.Node){
-                node = this.get("host");
-            } else {
-                Y.log("Host's type mistmach", "warn", "Y.Plugin.CSSStyles");
-                return;
-            }
-
-            if (styles){
-                for (var style in styles){
-                    var value = styles[style].trim();
-                    if (value){
-                        if (style === "fontSize" || style === "top" || style === "right" || style === "bottom" || style === "left" || style === "minWidth" || style === "width" || style === "height"){
-                            if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-1) !== "%" && value.substr(-2) !== "ex"){
-                                  styles[style] = value + "pt";
+            var style, value;
+            if (styles) {
+                for (style in styles) {
+                    if (styles.hasOwnProperty(style)) {
+                        value = styles[style];
+                        if (value) {
+                            value = value.trim();
+                            if (Y.Array.indexOf(MESURE_STYLE, style) > -1) {
+                                if (parseInt(value, 10).toString() === value) {
+                                    styles[style] = value + this.get("mesureSuffix");
+                                }
                             }
                         }
+                        this.setStyle(styles, style);
                     }
-                    this.setStyle(styles, style);
                 }
             }
         }
     }, {
         ATTRS: {
-            styles: {         
+            styles: {
                 value: {},
                 _inputex: {
                     _type: "wegasobject",
                     elementType: {
-                        type:"wegaskeyvalue",
+                        type: "wegaskeyvalue",
                         availableFields: [{
-                            name: "backgroundColor",
-                            type: "colorpicker",
-                            palette:3
-                        }, {
-                            name: "color",
-                            type: "colorpicker",
-                            palette:3
-                        }, {
-                            type: "string",
-                            name: "fontSize"
-                        }, {
-                            type: "select",
-                            name: "fontStyle",
-                            choices: ["", "normal", "italic", "oblique", "inherit"]
-                        }, {
-                            type: "select",
-                            name: "textAlign",
-                            choices: ["", "left", "right", "center", "justify", "inherit"]
-                        }, {
-                            type: "string",
-                            name: "minWidth"
-                        }]
+                                name: "backgroundColor",
+                                type: "colorpicker",
+                                palette: 3
+                            }, {
+                                name: "color",
+                                type: "colorpicker",
+                                palette: 3
+                            }, {
+                                type: "string",
+                                name: "fontSize"
+                            }, {
+                                type: "select",
+                                name: "fontStyle",
+                                choices: ["", "normal", "italic", "oblique", "inherit"]
+                            }, {
+                                type: "select",
+                                name: "textAlign",
+                                choices: ["", "left", "right", "center", "justify", "inherit"]
+                            }, {
+                                type: "string",
+                                name: "minWidth"
+                            }]
                     }
                 }
             },
             targetNode: {
                 value: "boundingBox",
+                type: "string",
+                "transient": true
+            },
+            mesureSuffix: {
+                value: "pt",
                 type: "string",
                 "transient": true
             }
