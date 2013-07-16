@@ -38,6 +38,11 @@ import org.codehaus.jackson.map.annotate.JsonView;
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> {
     //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
 
+    public enum PROPERTY {
+
+        websocket,
+        freeForAll
+    }
     /**
      *
      */
@@ -380,8 +385,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.properties.put(key, value);
     }
 
-    public Boolean hasProperty(String key) {
-        return this.properties.containsKey(key);
+    public Boolean hasProperty(PROPERTY p) {
+        return this.properties.containsKey(p.toString());
     }
 
     /**

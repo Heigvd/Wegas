@@ -10,10 +10,7 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.ejb.RequestFacade;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import org.slf4j.LoggerFactory;
 

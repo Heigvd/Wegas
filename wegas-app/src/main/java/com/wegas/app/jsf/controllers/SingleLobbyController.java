@@ -79,8 +79,7 @@ public class SingleLobbyController implements Serializable {
             if (currentGame != null) {                                          // 1st case: token is associated with a game
                 try {
                     playerFacade.findCurrentPlayer(currentGame);
-                    externalContext.dispatch(
-                            "/wegas-app/view/play.xhtml?gameId=" + currentGame.getId());// display game page
+                    externalContext.dispatch("/wegas-app/view/play.xhtml?gameId=" + currentGame.getId());// display game page
                 } catch (PersistenceException e) {
                     // Nothing to do. stay on current page so player will choose his team
                 }
