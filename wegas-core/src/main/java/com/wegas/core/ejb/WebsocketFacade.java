@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.EntityUpdatedEvent;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
@@ -54,9 +55,9 @@ public class WebsocketFacade {
         Long playerId = null;
         Long teamId = null;
         Long gameId = null;
+        final GameModel gameModel = events.getUpdatedEntities().get(0).getScope().getVariableDescriptor().getGameModel();
 
-        boolean webSocketAllowed = events.getUpdatedEntities().get(0).getScope().getVariableDescriptor().getGameModel().hasProperty("websocket");
-        if (webSocketAllowed) {
+        if (!gameModel.hasProperty(GameModel.PROPERTY.websocket)) {
             return;
         }
 
@@ -94,11 +95,10 @@ public class WebsocketFacade {
             }
         }
         if (player.getUpdatedEntities().size() > 0) {
-            //try {
-            //Pusher.triggerPush("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
-            //} catch (IOException ex) {
-            //
-            //}
+            try {
+                Pusher.triggerPush("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
+            } catch (IOException ex) {
+            }
         }
     }
 }

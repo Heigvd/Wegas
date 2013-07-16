@@ -15,8 +15,8 @@ YUI.add('wegas-websocketlistener', function(Y) {
         initializer: function() {
             Y.Wegas.Facade[this.get("dataSource")].on("EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
         },
-
         onVariableInstanceUpdate: function(data) {
+            Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");
             this.get("host").cache.onResponseRevived({
                 serverResponse: Y.Wegas.Editable.revive({
                     "@class": "ManagedModeResponseFilter$ServerResponse",
@@ -29,7 +29,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
     }, {
         ATTRS: {
             dataSource: {
-                initOnly:true
+                initOnly: true
             }
         },
         NS: "ws",
