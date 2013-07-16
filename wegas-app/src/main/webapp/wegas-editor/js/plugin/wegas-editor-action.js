@@ -296,7 +296,7 @@ YUI.add('wegas-editor-action', function(Y) {
      * @constructor
      * @param Object Will be used to fill attributes field
      */
-    Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Y.WidgetChild, Wegas.Widget], {
+    Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         /** @lends Y.Wegas.Linkwidget# */
 
         /**

@@ -15,21 +15,35 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-//@Embeddable
 @Entity
 public class Permission extends AbstractEntity {
 
+    /**
+     *
+     */
     @Basic
     @Column(name = "permissions")
     private String value;
+    /**
+     *
+     */
     @Basic
     private String inducedPermission;
+    /**
+     *
+     */
     @Id
     @GeneratedValue
     private Long id;
+    /**
+     *
+     */
     @ManyToOne
     @JsonIgnore
     private AbstractAccount account;
+    /**
+     *
+     */
     @ManyToOne
     @JsonIgnore
     private Role role;

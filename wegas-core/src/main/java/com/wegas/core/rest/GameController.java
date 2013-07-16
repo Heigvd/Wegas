@@ -13,6 +13,7 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
@@ -171,6 +172,14 @@ public class GameController {
                 throw new WegasException("Could not find any game associated with this token.");
             }
             game = team.getGame();
+        }
+        if (game.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll)) {   // If game is "freeForAll" (single team)
+            if (game.getTeams().isEmpty()) {
+                team = new Team("Default");
+                game.addTeam(team);
+            } else {
+                team = game.getTeams().get(0);                                  // Join the first team available
+            }
         }
 
         try {                                       // We check if logged user is already registered in the target game
