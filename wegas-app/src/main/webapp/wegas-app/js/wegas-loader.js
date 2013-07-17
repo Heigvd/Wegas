@@ -525,7 +525,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-editor-action': {
                     path: 'wegas-editor/js/plugin/wegas-editor-action-min.js',
-                    requires: ['wegas-action', 'wegas-editor-entityaction'],
+                    requires: ['wegas-action'],
                     ws_provides: ["OpenTabAction", "Linkwidget"]
                 },
                 'wegas-editor-entityaction': {
