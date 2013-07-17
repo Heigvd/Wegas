@@ -92,7 +92,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         gameModel.addGame(game);
         em.flush();                                                             // To retrieve game id
 
-        userFacade.addAccountPermission(currentUser.getMainAccount().getId(),
+        userFacade.addAccountPermission(currentUser.getMainAccount(),
                 "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
 
         try {                                                                   // By default games can be join w/ token
