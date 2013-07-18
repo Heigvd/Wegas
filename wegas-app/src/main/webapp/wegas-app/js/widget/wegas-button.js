@@ -94,7 +94,10 @@ YUI.add("wegas-button", function(Y) {
             },
             disabled: {
                 "transient": false,
-                type: "boolean"
+                type: "boolean",
+                _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
             },
             cssClass: {
                 value: null
