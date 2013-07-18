@@ -55,7 +55,7 @@ YUI().use(function(Y) {
                 'wegas-datasource': {
                     path: 'wegas-app/js/util/wegas-datasource-min.js',
                     requires: ['plugin', 'json', 'array-extras', 'io-base',
-                        "datasource-io", "datasource-jsonschema", "datasource-cache",
+                        "datasource-io", "datasource-jsonschema", /*"datasource-cache",*/
                         "wegas-widget"]
                 },
                 'wegas-scripteval': {
@@ -109,7 +109,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-widget': {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
-                    requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable']
+                    requires: ['widget', 'widget-parent', 'widget-child', 'wegas-editable']
                 },
                 'wegas-pageloader': {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
@@ -354,7 +354,6 @@ YUI().use(function(Y) {
                 },
                 "wegas-cssstyles": {
                     path: 'wegas-app/js/plugin/wegas-cssstyles-min.js',
-                    requires: ['stylesheet'],
                     ws_provides: 'CSSStyles'
                 },
                 "wegas-cssbackground": {
@@ -705,7 +704,7 @@ YUI().use(function(Y) {
                     ws_provides: "Monopolydisplay"
                 },
                 'wegas-monopoly-entities': {
-                    path: 'wegas-monopoly/js/wegas-monopoly-entities.js',
+                    path: 'wegas-monopoly/js/wegas-monopoly-entities-min.js',
                     requires: ['wegas-entity'],
                     ws_provides: ['ObjectDescriptor']
                 },
@@ -788,6 +787,11 @@ YUI().use(function(Y) {
                     path: 'wegas-proggame/js/wegas-proggame-display-min.js',
                     requires: ['wegas-widget', 'crafty'],
                     ws_provides: 'ProgGameDisplay'
+                },
+                'wegas-proggame-inputex': {
+                    path: 'wegas-proggame/js/wegas-proggame-inputex-min.js',
+                    requires: ['wegas-inputex'],
+                    ix_provides: 'proggametile'
                 },
                 /**
                  * Flexitests
@@ -882,6 +886,7 @@ YUI().use(function(Y) {
                     charset: 'utf-8',
                     //path: "ace/src-min-noconflict/ace.js"
                     fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
+//                    fullpath: "http://ajaxorg.github.io/ace/build/src-min-noconflict/ace.js"
 
                 },
                 googletranslate: {
