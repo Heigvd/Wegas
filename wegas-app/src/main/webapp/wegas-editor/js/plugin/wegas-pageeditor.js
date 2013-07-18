@@ -51,7 +51,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     if (e.newVal) {
 
                         Y.Wegas.Facade.Page.cache.getIndex(function(index) {
-                            var pageName = Y.Lang.isString(index[host.get("pageId")])
+                            var pageName = index[host.get("pageId")] !== ""
                                     ? index[host.get("pageId")]
                                     : "<i>unamed(" + host.get("pageId") + ")</i>";
                             host.toolbar.setStatusMessage("Editing page: " + pageName);
@@ -230,13 +230,9 @@ YUI.add('wegas-pageeditor', function(Y) {
         },
         showOverlay: function(widget, immediate) {
             var targetNode = widget.get(BOUNDINGBOX), bb = this.highlightOverlay.get(BOUNDINGBOX);
-
-            if (!widget.toObject || this.overlayWidget === widget) {
-                return;
-            }
-            this.highlightOverlay.show();
             this.overlayWidget = widget;
             this.anim.stop();
+            this.highlightOverlay.show();
             if (this.runTimeout) {
                 this.runTimeout.cancel();
             }
@@ -266,10 +262,6 @@ YUI.add('wegas-pageeditor', function(Y) {
                     height: widget.get(BOUNDINGBOX).getDOMNode().offsetHeight
                 });
             }
-        },
-        alignOverlay: function(widget, immediate) {
-
-
         },
         hideOverlay: function() {
             this.overlayWidget = null;

@@ -45,7 +45,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             this.overlayMask.append(this._resizeNode);
             this._resizeNode.hide();
             this.highlightOverlay.after("visibleChange", function(e) {
-                if (e.newVal) {
+                if (e.newVal && this.overlayWidget && this.overlayWidget.CSSSize) {
                     this._resizeNode.show();
                 } else {
                     this._resizeNode.hide();
@@ -56,17 +56,16 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 node: this._resizeNode
             });
             this._resize.plug(Y.Plugin.DDConstrained, {
-                constrain: this.get("host").get(CONTENTBOX)
+                constrain: this.get("host").get(CONTENTBOX),
+                cacheRegion: false                                              //scroll changes region
             }).plug(Y.Plugin.DDNodeScroll, {
                 node: this.get("host").get(CONTENTBOX)
             });
             this._resizeNode.before("mousedown", function(e) {
                 this.detach();
                 this._resizeNode.show();
-                try {
-                    this._resize._widget = this.overlayWidget.get(BOUNDINGBOX);
-                } catch (ex) {
-                }
+                this._dd.con.set("constrain", this.get("host").get("widget").get(CONTENTBOX));
+                this._resize._widget = this.overlayWidget.get(BOUNDINGBOX);
             }, this);
             this._resizeNode.after("mouseup", function(e) {
                 this.bind();
@@ -87,7 +86,6 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             });
             this._resize.on("drag:end", function(e) {
                 var bb = this._resize._widget, widget = Y.Widget.getByNode(bb);
-                widget.plug(Y.Plugin.CSSSize);                                  //no effect if present
                 widget.CSSSize.setAttrs({
                     "styles": {
                         width: bb.getComputedStyle(WIDTH),
@@ -106,13 +104,13 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
          * @returns {undefined}
          */
         _alignResize: function() {
-            try {
-                var bb = this.overlayWidget.get(BOUNDINGBOX), pos = bb.getXY();
+            var bb = this.overlayWidget.get(BOUNDINGBOX), pos = bb.getXY();
+            if (pos) {  //widget not destroyed
                 pos[0] = pos[0] + bb.getDOMNode().offsetWidth - 23;
                 pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 23;
                 this._resizeNode.setXY(pos);
-            } catch (e) {
             }
+
         },
         /**
          * self destructor called after PageEditor's destructor

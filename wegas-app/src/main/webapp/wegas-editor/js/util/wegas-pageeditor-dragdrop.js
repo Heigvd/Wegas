@@ -43,7 +43,7 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
             this.overlayMask.append(this._ddNode);
             this._ddNode.hide();
             this.highlightOverlay.after("visibleChange", function(e) {
-                if (e.newVal) {
+                if (e.newVal && this.overlayWidget && this.overlayWidget.CSSPosition) {
                     this._ddNode.show();
                 } else {
                     this._ddNode.hide();
@@ -54,39 +54,59 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 node: this._ddNode
             });
             this._dd.plug(Y.Plugin.DDConstrained, {
-                constrain: this.get("host").get(CONTENTBOX)
+                constrain: this.get("host").get(CONTENTBOX),
+                cacheRegion: false                                              //scroll changes region
             }).plug(Y.Plugin.DDNodeScroll, {
                 node: this.get("host").get(CONTENTBOX)
             });
             this._ddNode.before("mousedown", function(e) {
                 this.detach();
+                this._dd.set("dragNode", this.overlayWidget.get(BOUNDINGBOX));
+                this._dd.con.set("constrain", this.get("host").get("widget").get(CONTENTBOX));
                 this._ddNode.show();
-                try {
-                    this._dd.set("dragNode", this.overlayWidget.get(BOUNDINGBOX));
-                } catch (ex) {
-                }
             }, this);
             this._ddNode.after("mouseup", function(e) {
                 this.bind();
             }, this);
             this._dd.before("drag:start", function(e) {
+                var node = this._dd.get("dragNode");
+                node.setXY(node.getXY());                                       //Init left, top in case they are missing
+                this._dd._initPos = {
+                    left: parseInt(node.getComputedStyle("left")),
+                    right: parseInt(node.getComputedStyle("right")),
+                    top: parseInt(node.getComputedStyle("top")),
+                    bottom: parseInt(node.getComputedStyle("bottom"))
+                };
                 this._dd.get("dragNode").setStyles({
-                    position: "absolute",
                     bottom: null,
-                    right: null
+                    right: null,
+                    width: node.getComputedStyle("width"),                      //@todo: those needs to be removed
+                    height: node.getComputedStyle("height")
                 });
             }, this);
-
             this._dd.on("drag:end", function(e) {
-                var bb = this._dd.get("dragNode"), widget = Y.Widget.getByNode(bb);
-                widget.plug(Y.Plugin.CSSPosition);                              //no effect if present
-                widget.CSSPosition.setAttrs({
-                    "styles": {
-                        "position": bb.getStyle("position"),
-                        "top": bb.getStyle("top"),
-                        "left": bb.getStyle("left")
+                //@todo : if no props are defined ? left and right missing ?
+                var bb = this._dd.get("dragNode"),
+                        widget = Y.Widget.getByNode(bb),
+                        oldStyles = widget.CSSPosition.get("styles"),
+                        newStyles = {};
+                for (var s in oldStyles) {
+                    if (oldStyles[s] !== "") {
+                        switch (s) {
+                            case "right":
+                                newStyles[s] = this._dd._initPos[s] + this._dd._initPos["left"] - parseInt(bb.getStyle("left")) + "px";
+                                break;
+                            case "bottom":
+                                newStyles[s] = this._dd._initPos[s] + this._dd._initPos["top"] - parseInt(bb.getStyle("top")) + "px";
+                                break;
+                            default:
+                                newStyles[s] = bb.getComputedStyle(s);
+                        }
+                    } else {
+                        newStyles[s] = "";
                     }
-                });
+                }
+                widget.CSSPosition.set("styles", newStyles);
                 this.showOverlay(widget, true);
                 this.saveCurrentPage();
                 this.bind();
@@ -98,13 +118,13 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
          * @returns {undefined}
          */
         _alignDD: function() {
-            try {
-                var bb = this.overlayWidget.get(BOUNDINGBOX);
+            var bb = this.overlayWidget.get(BOUNDINGBOX);
+            if (bb.getDOMNode()) {
                 this._ddNode.setXY(bb.getXY());
                 this._ddNode.setStyle("width", bb.getDOMNode().offsetWidth);
                 this._ddNode.setStyle("height", bb.getDOMNode().offsetHeight);
-            } catch (e) {
             }
+
         },
         /**
          * self destructor called after PageEditor's destructor
