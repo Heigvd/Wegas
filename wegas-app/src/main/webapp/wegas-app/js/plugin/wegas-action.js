@@ -163,8 +163,11 @@ YUI.add('wegas-action', function(Y) {
             },
             targetPageLoaderId: {
                 type: "string",
+                value: "maindisplayarea",
                 _inputex: {
-                    label: "Target zone"
+                    label: "Target zone",
+                    value: "maindisplayarea",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
         }

@@ -85,7 +85,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                         click: Y.bind(this.processSource, this)
                     }
                 }).render(el);
-                this.sourceButton.get(BOUNDINGBOX).addClass("wegas-advanced-feature");
+                //this.sourceButton.get(BOUNDINGBOX).addClass("wegas-advanced-feature");
                 this.afterHostEvent("widgetChange", this.processSource);
 
                 this.saveButton = new Y.Button({
@@ -224,7 +224,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 node: bb,
                 duration: 0.15
             });
-            
+
             try {
                 this.anim.stop();
                 if (this.runTimeout) {
