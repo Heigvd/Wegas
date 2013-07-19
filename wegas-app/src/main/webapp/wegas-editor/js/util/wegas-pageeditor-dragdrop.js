@@ -49,7 +49,6 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                     this._ddNode.hide();
                 }
             }, this);
-
             this._dd = new Y.DD.Drag({
                 node: this._ddNode
             });
@@ -70,17 +69,17 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
             }, this);
             this._dd.before("drag:start", function(e) {
                 var node = this._dd.get("dragNode");
-                node.setXY(node.getXY());                                       //Init left, top in case they are missing
+                node.setXY(node.getXY()); //Init left, top in case they are missing
                 this._dd._initPos = {
-                    left: parseInt(node.getComputedStyle("left")),
-                    right: parseInt(node.getComputedStyle("right")),
-                    top: parseInt(node.getComputedStyle("top")),
-                    bottom: parseInt(node.getComputedStyle("bottom"))
+                    left: parseInt(node.getComputedStyle("left"), 10),
+                    right: parseInt(node.getComputedStyle("right"), 10),
+                    top: parseInt(node.getComputedStyle("top"), 10),
+                    bottom: parseInt(node.getComputedStyle("bottom"), 10)
                 };
                 this._dd.get("dragNode").setStyles({
                     bottom: null,
                     right: null,
-                    width: node.getComputedStyle("width"),                      //@todo: those needs to be removed
+                    width: node.getComputedStyle("width"),
                     height: node.getComputedStyle("height")
                 });
             }, this);
@@ -89,24 +88,55 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 var bb = this._dd.get("dragNode"),
                         widget = Y.Widget.getByNode(bb),
                         oldStyles = widget.CSSPosition.get("styles"),
-                        newStyles = {};
-                for (var s in oldStyles) {
-                    if (oldStyles[s] !== "") {
-                        switch (s) {
-                            case "right":
-                                newStyles[s] = this._dd._initPos[s] + this._dd._initPos["left"] - parseInt(bb.getStyle("left")) + "px";
-                                break;
-                            case "bottom":
-                                newStyles[s] = this._dd._initPos[s] + this._dd._initPos["top"] - parseInt(bb.getStyle("top")) + "px";
-                                break;
-                            default:
-                                newStyles[s] = bb.getComputedStyle(s);
+                        newStyles = {},
+                        style;
+                for (style in oldStyles) {
+                    if (oldStyles.hasOwnProperty(style)) {
+                        if (oldStyles[style] !== "") {
+                            switch (style) {
+                                case "right":
+                                    newStyles[style] = this._dd._initPos[style] + this._dd._initPos.left - parseInt(bb.getStyle("left"), 10) + "px";
+                                    break;
+                                case "bottom":
+                                    newStyles[style] = this._dd._initPos[style] + this._dd._initPos.top - parseInt(bb.getStyle("top"), 10) + "px";
+                                    break;
+                                default:
+                                    newStyles[style] = bb.getComputedStyle(style);
+                            }
+                        } else {
+                            /* 
+                             * if no properties are defined horizontally or vertically 
+                             * specify respectively "left" or "top 
+                             */
+                            switch (style) {
+                                case "left":
+                                    if (oldStyles.right === "") {
+                                        newStyles[style] = bb.getComputedStyle(style);
+                                    }
+                                    break;
+                                case "top":
+                                    if (oldStyles.bottom === "") {
+                                        newStyles[style] = bb.getComputedStyle(style);
+                                    }
+                                    break;
+                                default:
+                                    newStyles[style] = "";
+                            }
+
                         }
-                    } else {
-                        newStyles[s] = "";
                     }
                 }
                 widget.CSSPosition.set("styles", newStyles);
+                /* 
+                 * Remove Size and set them through CSSSize if it exists
+                 */
+                bb.setStyles({
+                    width: null,
+                    height: null
+                });
+                if (widget.CSSSize) {
+                    widget.CSSSize.set("styles", widget.CSSSize.get("styles"));
+                }
                 this.showOverlay(widget, true);
                 this.saveCurrentPage();
                 this.bind();
@@ -140,6 +170,5 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
         }
 
     };
-
     Y.namespace("Wegas").PageEditorDD = PageEditorDD;
 });
