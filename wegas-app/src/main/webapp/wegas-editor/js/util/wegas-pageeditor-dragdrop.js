@@ -84,7 +84,6 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 });
             }, this);
             this._dd.on("drag:end", function(e) {
-                //@todo : if no props are defined ? left and right missing ?
                 var bb = this._dd.get("dragNode"),
                         widget = Y.Widget.getByNode(bb),
                         oldStyles = widget.CSSPosition.get("styles"),

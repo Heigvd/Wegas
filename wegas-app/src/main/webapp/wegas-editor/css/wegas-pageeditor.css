@@ -105,6 +105,18 @@
     overflow: hidden;
     padding: 4px 0px;
 }
+.wegas-pageeditor-overlay-content > .wegas-editmenubutton{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    background: transparent url("../../wegas-app/images/wegas-app-sprite.png") 2px -334px no-repeat;
+    margin: 2px 5px;
+    display: inline-block;
+    z-index:1000;
+    position:absolute;
+    top:0;
+    right:0;
+}
 /*DRAG*/
 .pageeditor-dragnode{
     position:absolute;
