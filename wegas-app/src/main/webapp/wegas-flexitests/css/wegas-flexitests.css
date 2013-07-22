@@ -124,3 +124,7 @@ body > .wegas-pageloader, html{
 .flexitests .wegas-form-content div.inputEx-label label{
     color: whitesmoke;
 }
+/*EDITION*/
+.wegas-pageeditor-layoutmode .fix-point{
+    display:inline !important;
+}
