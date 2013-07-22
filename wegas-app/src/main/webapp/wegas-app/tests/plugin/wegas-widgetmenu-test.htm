@@ -16,7 +16,8 @@
 
     <body class="yui3-skin-sam">
 
-        <script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>
+        <!--<script type="text/javascript" src="http://yui.yahooapis.com/3.7.2/build/yui/yui-min.js"></script>-->
+        <script type="text/javascript" src="../../../lib/yui3/build/yui/yui.js"></script>
 
         <script type="text/javascript" src="../../js/wegas-loader.js"></script>
 
@@ -25,11 +26,10 @@
         <script type="text/javascript">
             YUI_config.groups.wegas.base = "../../../";
             YUI_config.groups.wegas.filter = "raw";
-            YUI_config.groups.libraries.base = "../../../lib/";                 // Set up libraries path
 
             YUI({
                 coverage: ['widgettoolbar']
-            }).use('test-console', 'wegas-widgettoolbar-test', "console-filters", function (Y) {
+            }).use('test-console', 'wegas-widgetmenu-test', "console-filters", function (Y) {
                 new Y.Test.Console({
                     useBrowserConsole: true
                 }).render();

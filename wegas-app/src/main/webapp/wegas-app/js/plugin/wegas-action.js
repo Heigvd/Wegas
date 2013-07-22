@@ -68,7 +68,7 @@ YUI.add('wegas-action', function(Y) {
          * @private
          */
         initializer: function() {
-            this.onHostEvent(this.get("targetEvent"), this.execute, this);
+            this.onHostEvent(this.get("targetEvent"), this.execute);
         },
         /**
          * @function
@@ -113,8 +113,7 @@ YUI.add('wegas-action', function(Y) {
         NS: "openurlaction",
         NAME: "OpenUrlAction",
         ATTRS: {
-            url: {
-            },
+            url: {},
             /**
              * Can be "self" or "blank"
              */

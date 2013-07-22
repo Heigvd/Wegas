@@ -41,6 +41,12 @@ YUI.add("wegas-button", function(Y) {
         initializer: function() {
             Button.superclass.initializer.apply(this, arguments);
 
+            this.publish("click", {
+                emitFacade: true,
+                bubbles: true,
+                defaultFn: function() {                                         // Force event activation by default
+                }
+            });
             //this.constructor.CSS_PREFIX = "yui3-button";                      // Revert changes done by Y.Wegas.Widget so styling will work
             this._cssPrefix = "yui3-button";
 
