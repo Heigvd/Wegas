@@ -42,7 +42,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }
                 if (node.get("data")["page"]) {
                     this.get("pageLoader").set("pageId", node.get("data")["page"]);
-                    node.get("rightWidget").menu.getMenu().item(0).fire("click");
+                    // node.get("rightWidget").menu.getMenu().item(0).fire("click");// Fire 1st menu item action on page click
                 } else if (node.get("data.widget")) {
                     node.get("data.widget").get(BOUNDING_BOX).scrollIntoView();
                     node.get("rightWidget").simulate("click");
@@ -160,7 +160,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             for (i in index) {
 
                 node = new Y.TreeNode({
-                    label: "Page: " + (index[i] !== "" ? index[i] : "<i>unamed</i>") + " (" + i + ")",
+                    label: index[i] !== "" ? index[i] : "<i>Unnamed (" + i + ")</i>",
                     data: {
                         page: i,
                         name: index[i]

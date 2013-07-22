@@ -90,7 +90,8 @@ YUI.add('wegas-pageeditor', function(Y) {
                         click: Y.bind(this.processSource, this)
                     }
                 }).render(el);
-                this.sourceButton.get(BOUNDINGBOX).addClass("wegas-advanced-feature");
+                //this.sourceButton.get(BOUNDINGBOX).addClass("wegas-advanced-feature");
+
                 this.saveButton = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
                     on: {
@@ -310,7 +311,7 @@ YUI.add('wegas-pageeditor', function(Y) {
         NAME: "pageeditor",
         ATTRS: {}
     });
-    Y.Base.mix(PageEditor, [Y.Wegas.PageEditorDD, Y.Wegas.PageEditorResize]);                             //Enable dragdrop
+    Y.Base.mix(PageEditor, [Y.Wegas.PageEditorDD, Y.Wegas.PageEditorResize]);   //Enable dragdrop
     Y.namespace('Plugin').PageEditor = PageEditor;
 
 });

@@ -55,7 +55,7 @@ YUI().use(function(Y) {
                 'wegas-datasource': {
                     path: 'wegas-app/js/util/wegas-datasource-min.js',
                     requires: ['plugin', 'json', 'array-extras', 'io-base',
-                        "datasource-io", "datasource-jsonschema", "datasource-cache",
+                        "datasource-io", "datasource-jsonschema", /*"datasource-cache",*/
                         "wegas-widget"]
                 },
                 'wegas-scripteval': {
@@ -109,7 +109,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-widget': {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
-                    requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable']
+                    requires: ['widget', 'widget-parent', 'widget-child', 'wegas-editable']
                 },
                 'wegas-pageloader': {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
@@ -227,6 +227,14 @@ YUI().use(function(Y) {
                         'wegas-widgettoolbar', "wegas-button"],
                     ws_provides: "Form"
                 },
+                form: {
+                    path: 'wegas-app/js/util/form-min.js',
+                    requires: ['widget', 'widget-parent', 'widget-child', 'formcss', 'wegas-widget']
+                },
+                formcss: {
+                    path: 'wegas-app/css/form.css',
+                    type: "css"
+                },
                 'wegas-loginwidget': {
                     path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
                     requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
@@ -313,7 +321,7 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-tooltip-min.js',
                     requires: ["wegas-action", "event-mouseenter", "widget", "widget-stack",
                         "widget-position", 'widget-position-constrain'],
-                    ws_provides: 'Button'
+                    ws_provides: 'Tooltip'
                 },
                 'wegas-templatecss': {
                     path: "wegas-app/css/wegas-template.css"
@@ -354,7 +362,6 @@ YUI().use(function(Y) {
                 },
                 "wegas-cssstyles": {
                     path: 'wegas-app/js/plugin/wegas-cssstyles-min.js',
-                    requires: ['stylesheet'],
                     ws_provides: 'CSSStyles'
                 },
                 "wegas-cssbackground": {
@@ -454,7 +461,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-ace': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-ace-min.js',
-                    requires: ['inputex-field', 'ace'],
+                    requires: ['inputex-field', 'ace', 'inputex-textarea'],
                     ix_provides: "ace"
                 },
                 'wegas-inputex-markup': {
@@ -722,7 +729,7 @@ YUI().use(function(Y) {
                     ws_provides: "Monopolydisplay"
                 },
                 'wegas-monopoly-entities': {
-                    path: 'wegas-monopoly/js/wegas-monopoly-entities.js',
+                    path: 'wegas-monopoly/js/wegas-monopoly-entities-min.js',
                     requires: ['wegas-entity'],
                     ws_provides: ['ObjectDescriptor']
                 },
@@ -805,6 +812,11 @@ YUI().use(function(Y) {
                     path: 'wegas-proggame/js/wegas-proggame-display-min.js',
                     requires: ['wegas-widget', 'crafty'],
                     ws_provides: 'ProgGameDisplay'
+                },
+                'wegas-proggame-inputex': {
+                    path: 'wegas-proggame/js/wegas-proggame-inputex-min.js',
+                    requires: ['wegas-inputex'],
+                    ix_provides: ['proggametile', "proggamemap"]
                 },
                 /**
                  * Flexitests
@@ -899,6 +911,7 @@ YUI().use(function(Y) {
                     charset: 'utf-8',
                     //path: "ace/src-min-noconflict/ace.js"
                     fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
+//                    fullpath: "http://ajaxorg.github.io/ace/build/src-min-noconflict/ace.js"
 
                 },
                 googletranslate: {
