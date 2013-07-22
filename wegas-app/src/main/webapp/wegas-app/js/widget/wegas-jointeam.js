@@ -46,7 +46,7 @@ YUI.add('wegas-jointeam', function(Y) {
                 label: "Create team"
             });
 
-            if (gameModel.get("properties")["freeForAll"] === "true") {         // For free for all games
+            if (gameModel && gameModel.get("properties")["freeForAll"]) {       // For free for all games
                 this.sendJoinTeamRequest(game.get("teams")[0].get("id"));       // directly join
                 return;
             }

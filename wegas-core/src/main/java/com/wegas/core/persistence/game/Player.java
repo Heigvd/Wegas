@@ -210,4 +210,9 @@ public class Player extends AbstractEntity {
     public void setJoinTime(Date joinTime) {
         this.joinTime = joinTime;
     }
+
+    @Override
+    public String toString() {
+        return "Player{" + this.getName() + ", " + this.getId() + ")";
+    }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets" >
 
     <ui:composition template="template/app-default.xhtml">
 
@@ -26,6 +26,13 @@
                     background-size: 35px;
                 }
             </style>
+
+            <!-- Dev tool: style sheet reference injected directly in the game model -->
+            <ui:repeat rendered="#{editorGameController.currentGameModel.getProperty('cssUri') != null}"
+                       var="o" value="#{editorGameController.currentGameModel.getProperty('cssUri').split(',')}" varStatus="status">
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o}?#{wegasConfig.timestamp}" />
+           </ui:repeat>
+
         </ui:define>
         <ui:define name="body">
 

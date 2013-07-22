@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;
@@ -25,6 +26,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,6 +36,7 @@ import javax.persistence.criteria.Root;
 @LocalBean
 public class GameFacade extends AbstractFacadeImpl<Game> {
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GameFacade.class);
     /**
      *
      */
@@ -89,7 +92,14 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         gameModel.addGame(game);
         em.flush();                                                             // To retrieve game id
 
-        currentUser.getMainAccount().addPermission("Game:View,Edit:g" + game.getId());
+        userFacade.addAccountPermission(currentUser.getMainAccount(),
+                "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
+
+        try {                                                                   // By default games can be join w/ token
+            roleFacade.findByName("Public").addPermission("Game:Token:g" + game.getId());
+        } catch (PersistenceException ex) {
+            logger.error("Unable to find Role: Public", ex);
+        }
     }
 
     @Override

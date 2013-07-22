@@ -18,6 +18,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.exception.WegasException;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.messaging.ejb.EMailFacade;
@@ -215,14 +216,19 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return a.addPermission(p);
     }
 
-    public Permission generatePermisssion(String permissionStr) {
-        Permission p = new Permission(permissionStr);
-        String splitedPermission[] = permissionStr.split(":");
-        if (splitedPermission[2].startsWith("g")
-                && !splitedPermission[2].startsWith("gm")
-                && !splitedPermission[1].equals("Token")) {
-            Long gameId = Long.parseLong(splitedPermission[2].substring(1));
-            p.setInducedPermission("GameModel:View:gm" + gameFacade.find(gameId).getGameModelId());
+    public boolean addAccountPermission(final AbstractAccount a, final String permission) {
+        return a.addPermission(this.generatePermisssion(permission));
+    }
+
+    public Permission generatePermisssion(final String permissionStr) {
+        final Permission p = new Permission(permissionStr);
+        final String splitedPermission[] = permissionStr.split(":");
+        if (splitedPermission[0].equals(Game.class.getSimpleName()) // If current permission is on game
+                && !splitedPermission[1].equals("Token")) {                     // and is not a Token access
+            final Long gameId = Long.parseLong(splitedPermission[2].substring(1));
+            final Game g = gameFacade.find(gameId);
+            p.setInducedPermission("GameModel:View:gm" + g.getGameModelId());   // grant view access on its parent game model
+
         }
         return p;
     }

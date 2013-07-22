@@ -12,10 +12,6 @@
 YUI.add('wegas-choicelist', function(Y) {
     "use strict";
 
-    var BOUNDINGBOX = 'boundingBox',
-            CONTENTBOX = 'contentBox',
-            List;
-
     /**
      * @name Y.Wegas.ChoiceList
      * @extends Y.Wegas.List
@@ -23,7 +19,7 @@ YUI.add('wegas-choicelist', function(Y) {
      * @constructor
      * @description class to serialize widgets
      */
-    List = Y.Base.create("wegas-choicelist", Y.Wegas.List, [], {
+    var List = Y.Base.create("wegas-choicelist", Y.Wegas.List, [], {
         /** @lends Y.Wegas.ChoiceList# */
         bindUI: function() {
             this.after("addChild", function() {

@@ -64,7 +64,7 @@ YUI().use(function(Y) {
                     ws_provides: ['ScriptEval']
                 },
                 'wegas-websocketlistener': {
-                    path: 'wegas-app/js/plugin/wegas-websocketlistener-min.js',
+                    path: 'wegas-app/js/util/wegas-websocketlistener-min.js',
                     requires: ['plugin', 'wegas-pusher-connector'],
                     ws_provides: "WebSocketListener"
                 },
@@ -549,7 +549,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-editor-action': {
                     path: 'wegas-editor/js/plugin/wegas-editor-action-min.js',
-                    requires: ['wegas-action', 'wegas-editor-entityaction'],
+                    requires: ['wegas-action'],
                     ws_provides: ["OpenTabAction", "Linkwidget"]
                 },
                 'wegas-editor-entityaction': {
@@ -832,11 +832,11 @@ YUI().use(function(Y) {
                     ws_provides: "FlexitestsResults"
                 },
                 /* Chess */
-                'wegas-chess': {
-                    path: "wegas-chess/js/wegas-chess-min.js",
-                    ws_provides: "ChessBoard",
-                    requires: ["transition"]
-                }
+                //'wegas-chess': {
+                //    path: "wegas-chess/js/wegas-chess-min.js",
+                //    ws_provides: "ChessBoard",
+                //    requires: ["transition"]
+                //}
             }
         },
         /* Other libraries */

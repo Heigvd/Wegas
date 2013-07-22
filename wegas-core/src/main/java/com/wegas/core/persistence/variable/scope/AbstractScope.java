@@ -48,8 +48,11 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
     @OneToOne
     //@JsonBackReference
     private VariableDescriptor variableDescriptor;
+    /**
+     *
+     */
     //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    private String broadcastScope = TeamScope.class.getSimpleName();
+    private String broadcastScope = PlayerScope.class.getSimpleName();
 
     /**
      *
