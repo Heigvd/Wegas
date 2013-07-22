@@ -140,6 +140,7 @@ YUI.add("wegas-template", function(Y) {
             data: {
                 value: {},
                 _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     _type: "object",
                     useButtons: true,
                     required: false

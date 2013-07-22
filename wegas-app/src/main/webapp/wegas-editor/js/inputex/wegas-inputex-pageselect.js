@@ -44,7 +44,7 @@ YUI.add("wegas-inputex-pageselect", function(Y) {
             for (i in value) {
                 this.addChoice({
                     value: i,
-                    label: "Page : " + i + " (" + (value[i] || '-unamed-') + ")"
+                    label: value[i] !== "" ? value[i] : "<i>Unnamed (" + i + ")</i>"
                 });
                 if (i == this.options.value) {
                     this.choicesList[i - 1].node.selected = "selected";

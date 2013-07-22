@@ -195,6 +195,26 @@ YUI.add('wegas-list', function(Y) {
                                                                 }
                                                             }
                                                         ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Inbox",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "InboxDisplay"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Chart",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Chart"
+                                                                }
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             }
@@ -203,6 +223,7 @@ YUI.add('wegas-list', function(Y) {
                                 }, {
                                     type: "Button",
                                     label: "Containers",
+                                    cssClass: "wegas-advanced-feature",
                                     plugins: [{
                                             "fn": "WidgetMenu",
                                             "cfg": {
@@ -248,31 +269,11 @@ YUI.add('wegas-list', function(Y) {
                                     ]
                                 }, {
                                     type: "Button",
-                                    label: "Sub page",
+                                    label: "Sub page zone",
                                     plugins: [{
                                             fn: "AddChildWidgetAction",
                                             cfg: {
                                                 "childType": "PageLoader"
-                                            }
-                                        }
-                                    ]
-                                }, {
-                                    type: "Button",
-                                    label: "Inbox",
-                                    plugins: [{
-                                            fn: "AddChildWidgetAction",
-                                            cfg: {
-                                                "childType": "InboxDisplay"
-                                            }
-                                        }
-                                    ]
-                                }, {
-                                    type: "Button",
-                                    label: "Chart",
-                                    plugins: [{
-                                            fn: "AddChildWidgetAction",
-                                            cfg: {
-                                                "childType": "Chart"
                                             }
                                         }
                                     ]

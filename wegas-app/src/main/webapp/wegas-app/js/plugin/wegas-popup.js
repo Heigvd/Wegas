@@ -12,7 +12,7 @@
 YUI.add('wegas-popup', function(Y) {
 
     /**
-     *  @class Show a message when the host widget is rendered, useful for welcome
+     *  @class Show a message when the host widget is rendered, useful for welcome messages
      *  messages
      *  @name Y.Plugin.Popup
      *  @extends Y.Plugin.Base
@@ -22,13 +22,9 @@ YUI.add('wegas-popup', function(Y) {
      */
     var Popup = Y.Base.create("wegas-popup", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
-            if (this.get("content")) {
-                this.afterHostEvent("render", function() {
-                    if (this.get("host").showMessage) {
-                        this.get("host").showMessage("info", this.get("content"));
-                    }
-                });
-            }
+            this.afterHostEvent("render", function() {
+                this.get("host").showMessage("info", this.get("content"));
+            });
         }
     }, {
         NS: "Popup",
@@ -36,11 +32,10 @@ YUI.add('wegas-popup', function(Y) {
         ATTRS: {
             content: {
                 type: "string",
-                format: "text"
-            },
-            event: {
-                value: "popupEvent",
-                type: "string"
+                format: "html",
+                _inputex: {
+                    label: "Welcome message"
+                }
             }
         }
     });

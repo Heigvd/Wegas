@@ -100,24 +100,20 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     };
     Y.extend(AddChildWidgetAction, WidgetAction, {
         execute: function() {
-            Y.use(Y.Wegas.Editable.getRawModulesFromDefinition({type: this.get("childType")}), Y.bind(function() {
+            Wegas.Editable.use({type: this.get("childType")}, Y.bind(function() { // Load target widget dependencies
                 var newWidget = new Y.Wegas.Widget.create({
                     "type": this.get("childType")
                 });
 
-                Wegas.Editable.use(newWidget, Y.bind(function() {                  // Load target widget dependencies
-
-                    Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
-                        Plugin.EditEntityAction.hideEditFormOverlay();
-                        var targetWidget = this.get("widget"), widget = new Y.Wegas.Widget.create(val);
-                        targetWidget.add(widget);
-                        this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), Y.bind(function() {
-                            var tw = new Y.Wegas.Text();
-                            tw.plug(Plugin.EditWidgetAction, {"widget": this});
-                            tw.EditWidgetAction.execute();
-                        }, widget));
-                    }, this));
-
+                Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
+                    Plugin.EditEntityAction.hideEditFormOverlay();
+                    var targetWidget = this.get("widget"), widget = new Y.Wegas.Widget.create(val);
+                    targetWidget.add(widget);
+                    this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), Y.bind(function() {
+                        var tw = new Y.Wegas.Text();
+                        tw.plug(Plugin.EditWidgetAction, {"widget": this});
+                        tw.EditWidgetAction.execute();
+                    }, widget));
                 }, this));
             }, this));
 

@@ -12,7 +12,7 @@
 YUI.add('wegas-mcq-entities', function(Y) {
     "use strict";
 
-    var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
+    var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
             SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
             HTML = "html", SCRIPT = "script",
             IDATTRDEF = {
