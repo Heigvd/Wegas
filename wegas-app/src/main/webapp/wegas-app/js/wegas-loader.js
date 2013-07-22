@@ -227,6 +227,14 @@ YUI().use(function(Y) {
                         'wegas-widgettoolbar', "wegas-button"],
                     ws_provides: "Form"
                 },
+                form: {
+                    path: 'wegas-app/js/util/form-min.js',
+                    requires: ['widget', 'widget-parent', 'widget-child', 'formcss', 'wegas-widget']
+                },
+                formcss: {
+                    path: 'wegas-app/css/form.css',
+                    type: "css"
+                },
                 'wegas-loginwidget': {
                     path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
                     requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
@@ -453,7 +461,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-ace': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-ace-min.js',
-                    requires: ['inputex-field', 'ace'],
+                    requires: ['inputex-field', 'ace', 'inputex-textarea'],
                     ix_provides: "ace"
                 },
                 'wegas-inputex-markup': {
@@ -791,7 +799,7 @@ YUI().use(function(Y) {
                 'wegas-proggame-inputex': {
                     path: 'wegas-proggame/js/wegas-proggame-inputex-min.js',
                     requires: ['wegas-inputex'],
-                    ix_provides: 'proggametile'
+                    ix_provides: ['proggametile', "proggamemap"]
                 },
                 /**
                  * Flexitests

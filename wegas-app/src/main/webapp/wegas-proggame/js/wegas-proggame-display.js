@@ -137,25 +137,25 @@ YUI.add('wegas-proggame-display', function(Y) {
             Crafty.c("lightningShot", {//temporary hard-coded
                 init: function() {
                     var animations = [{
-                            "name": "moveUp",
-                            "x": 0,
-                            "y": 6,
-                            "toX": 3
+                            name: "moveUp",
+                            x: 0,
+                            y: 6,
+                            toX: 3
                         }, {
-                            "name": "moveRight",
-                            "x": 0,
-                            "y": 0,
-                            "toX": 3
+                            name: "moveRight",
+                            x: 0,
+                            y: 0,
+                            toX: 3
                         }, {
-                            "name": "moveDown",
-                            "x": 0,
-                            "y": 2,
-                            "toX": 3
+                            name: "moveDown",
+                            x: 0,
+                            y: 2,
+                            toX: 3
                         }, {
-                            "name": "moveLeft",
-                            "x": 0,
-                            "y": 4,
-                            "toX": 3
+                            name: "moveLeft",
+                            x: 0,
+                            y: 4,
+                            toX: 3
                         }];
                     this.cfg = {'sprites': animations};
                     this.requires("lightning, Tween, SpriteAnimation, move4Direction");
@@ -182,30 +182,43 @@ YUI.add('wegas-proggame-display', function(Y) {
 
             /*---Crafty "render"---*/
             //map
-            var mapObject, mapObjects = this.get('mapObjects'), map = this.get('map');
+            var mapObject, alea, sprite,
+                    //mapObjects = this.get('mapObjects'),
+                    map = this.get('map');
             for (i = 0; i < this.gridH; i += 1) {
                 for (j = 0; j < this.gridW; j += 1) {
-                    mapObject = null;
-                    for (var k = 0; k < mapObjects.length; k += 1) {
-                        if (map[i][j] === mapObjects[k].name) {
-                            mapObject = mapObjects[k];
-                            break;
-                        }
-                    }
+
+                    mapObject = map[i][j];
+                    sprite = (mapObject.sprite) ? ProgGameDisplay.SPRITESHEETS[mapObject.sprite].name : "terrain";
                     if (mapObject) {
-                        var alea;
-                        //console.log(mapObject.x[0]);
                         if (mapObject.x.length && mapObject.y.length && mapObject.x.length === mapObject.y.length) {
                             alea = Math.floor(Math.random() * mapObject.x.length);
-                            Crafty.e('2D, ' + this.renderMethod + ', Color, ' + mapObject.spriteSheet)
+                            Crafty.e('2D, ' + this.renderMethod + ', Color, ' + sprite)
                                     .sprite(mapObject.x[alea], mapObject.y[alea])
                                     .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
                         } else {
-                            Crafty.e('2D, ' + this.renderMethod + ', Color, ' + mapObject.spriteSheet)
+                            Crafty.e('2D, ' + this.renderMethod + ', Color, ' + sprite)
                                     .sprite(mapObject.x, mapObject.y)
                                     .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
                         }
                     }
+                    //mapObject = Y.Array.find(mapObjects, function(item) {
+                    //    return  map[i][j] === item.name;
+                    //});
+                    //if (mapObject) {
+                    //    var alea;
+                    //    //console.log(mapObject.x[0]);
+                    //    if (mapObject.x.length && mapObject.y.length && mapObject.x.length === mapObject.y.length) {
+                    //        alea = Math.floor(Math.random() * mapObject.x.length);
+                    //        Crafty.e('2D, ' + this.renderMethod + ', Color, ' + mapObject.spriteSheet)
+                    //                .sprite(mapObject.x[alea], mapObject.y[alea])
+                    //                .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
+                    //    } else {
+                    //        Crafty.e('2D, ' + this.renderMethod + ', Color, ' + mapObject.spriteSheet)
+                    //                .sprite(mapObject.x, mapObject.y)
+                    //                .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
+                    //    }
+                    //}
                 }
             }
 
@@ -227,8 +240,12 @@ YUI.add('wegas-proggame-display', function(Y) {
                     }
                 });
             };
-            for (i = 0; i < this.get('objects').length; i++) {
-                object = this.get('objects')[i];
+            var objects = this.get('objects'), template;
+            for (i = 0; i < objects.length; i++) {
+                template = Y.Array.find(ProgGameDisplay.OBJECTTEMPLATES, function(item) {
+                    return item.id === objects[i].id;
+                });
+                object = Y.mix(objects[i], template || {});
                 makeEntity(object);
                 pos = this.getRealXYPos([object.x, object.y]);
                 Crafty.e('2D, ' + this.renderMethod + ', ' + object.id);
@@ -275,7 +292,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                     if (entity && Crafty(entity) && Crafty(entity).execMove) {
                         Crafty(entity).execMove(dir, pos[0], pos[1], 2);
                     } else {
-                        this.fire('commandExecuted')
+                        this.fire('commandExecuted');
                     }
                     break;
                 case "fire":
@@ -300,7 +317,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                     if (entity && Crafty(entity) && Crafty(entity).execFire) {
                         Crafty(entity).execFire(dir, pos[0], pos[1], 7);
                     } else {
-                        this.fire('commandExecuted')
+                        this.fire('commandExecuted');
                     }
                     break;
                 case "die":
@@ -335,7 +352,124 @@ YUI.add('wegas-proggame-display', function(Y) {
             },
             objects: {
             }
-        }
+        },
+        SPRITESHEETS: {
+            t: {
+                name: "terrain",
+                width: 32,
+                height: 32,
+                tilewidth: 32,
+                tileHeight: 32
+            }
+        },
+        OBJECTTEMPLATES: [{
+                id: "Player",
+                type: "pc",
+                direction: 2,
+                x: 0,
+                y: 0,
+                life: 100,
+                actions: 20,
+                range: 3,
+                spriteSheet: "characters",
+                aptitudes: "move4Direction, shoot, die",
+                sprites: [{
+                        name: "moveUp",
+                        x: 0,
+                        y: 0,
+                        toX: 2
+                    }, {
+                        name: "moveRight",
+                        x: 0,
+                        y: 1,
+                        toX: 2
+                    }, {
+                        name: "moveDown",
+                        x: 0,
+                        y: 2,
+                        toX: 2
+                    }, {
+                        name: "moveLeft",
+                        x: 0,
+                        y: 3,
+                        toX: 2
+                    }]
+            }, {
+                direction: 4,
+                id: "Enemy",
+                type: "npc",
+                x: 0,
+                y: 0,
+                life: 100,
+                actions: 0,
+                range: 2,
+                collides: false,
+                spriteSheet: "characters",
+                aptitudes: "move4Direction, shoot, die",
+                sprites: [{
+                        name: "moveUp",
+                        x: 9,
+                        y: 0,
+                        toX: 11
+                    }, {
+                        name: "moveRight",
+                        x: 9,
+                        y: 1,
+                        toX: 11
+                    }, {
+                        name: "moveDown",
+                        x: 9,
+                        y: 2,
+                        toX: 11
+                    }, {
+                        name: "moveLeft",
+                        x: 9,
+                        y: 3,
+                        toX: 11
+                    }]
+            }, {
+                id: "Bloc1",
+                type: "other",
+                spriteSheet: "terrain",
+                sprites: [{
+                        x: 23,
+                        y: 18
+                    }]
+            }, {
+                id: "Bloc2",
+                type: "other",
+                spriteSheet: "terrain",
+                sprites: [{
+                        x: 24,
+                        y: 21
+                    }]
+            }, {
+                id: "Bloc3",
+                type: "other",
+                spriteSheet: "terrain",
+                sprites: [{
+                        x: 21,
+                        y: 21
+                    }]
+            }],
+        mapObjects: [{
+                "name": "g",
+                "spriteSheet": "terrain",
+                "x": [21, 22, 21],
+                "y": [5, 5, 11]
+            }, {
+                "name": "e",
+                "spriteSheet": "terrain",
+                "x": 17,
+                "y": 5
+            }, {
+                "name": "w",
+                "spriteSheet": "terrain",
+                "x": 21,
+                "y": 17
+            },
+        ]
     });
+
     Y.namespace('Wegas').ProgGameDisplay = ProgGameDisplay;
 });
