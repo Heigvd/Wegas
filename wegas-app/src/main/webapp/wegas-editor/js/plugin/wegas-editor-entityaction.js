@@ -13,7 +13,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     "use strict";
     var ENTITY = "entity", LABEL = "label",
             Plugin = Y.Plugin, Action = Y.Plugin.Action, Wegas = Y.Wegas, Lang = Y.Lang,
-            EntityAction;
+            EntityAction, EditFSMAction;
     /**
      * @class
      * @name Y.Plugin.EntityAction
@@ -480,4 +480,39 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             }
         }
     });
+
+    /**
+     *  @name Y.Plugin.EditFSMAction
+     *  @extends Y.Plugin.EntityAction
+     *  @class Open a state machine viewer in the edition tab
+     *  @constructor
+     */
+    EditFSMAction = function() {
+        EditFSMAction.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(EditFSMAction, Plugin.EntityAction, {
+        /** @lends Y.Plugin.EditFSMAction# */
+
+        /**
+         * @private
+         * @function
+         */
+        execute: function() {
+            Wegas.TabView.findTabAndLoadWidget("State machine editor", // Load and display the editor in a new tab
+                    "#centerTabView", null, {
+                type: "StateMachineViewer",
+                plugins: [{
+                        fn: "WidgetToolbar"
+                    }]
+            }, Y.bind(function(entity, widget) {
+                widget.set("entity", entity);
+            }, this, this.get("entity")));
+        }
+
+    }, {
+        NS: "wegas",
+        NAME: "EditFSMAction"
+    });
+    Plugin.EditFSMAction = EditFSMAction;
+
 });

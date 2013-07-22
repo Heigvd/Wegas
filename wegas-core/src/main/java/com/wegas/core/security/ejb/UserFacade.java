@@ -216,6 +216,10 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return a.addPermission(p);
     }
 
+    public boolean addAccountPermission(final AbstractAccount a, final String permission) {
+        return a.addPermission(this.generatePermisssion(permission));
+    }
+
     public Permission generatePermisssion(final String permissionStr) {
         final Permission p = new Permission(permissionStr);
         final String splitedPermission[] = permissionStr.split(":");
