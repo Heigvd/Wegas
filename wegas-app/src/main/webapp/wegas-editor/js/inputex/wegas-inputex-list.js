@@ -188,7 +188,9 @@ YUI.add("wegas-inputex-list", function(Y) {
             PluginList.superclass.initEvents.call(this);
 
             this.addButton.menu.on("button:click", function(e) {
-                this.addPluginField(e.target.get("data"));
+                if (e.target.get("data")) {
+                    this.addPluginField(e.target.get("data"));
+                }
             }, this);
         },
         /**
@@ -228,9 +230,9 @@ YUI.add("wegas-inputex-list", function(Y) {
          * @param {Object} value
          */
         addPluginField: function(fn, value) {
-            Y.use(Y.Wegas.Editable.getRawModulesFromDefinition({type: fn}), Y.bind(function() { //load required modules
+            Y.Wegas.use({type: fn}, Y.bind(function() { //load required modules
                 var cfg, targetPlg = Y.Plugin[fn],
-                        w = new Y.Wegas.Text();                                     // Use this hack to retrieve a plugin config
+                        w = new Y.Wegas.Text();                                 // Use this hack to retrieve a plugin config
                 w.plug(targetPlg);
                 cfg = w[targetPlg.NS].getFormCfg();
                 cfg.name = targetPlg.NAME;

@@ -13,37 +13,60 @@ YUI.add('wegas-widgetmenu-test', function(Y) {
 
     Y.Test.Runner.add(new Y.Test.Case({
         name: 'Y.Wegas.WidgetMenu',
-
         'should plug a WidgetMenu': function() {
 
             this.widget = new Y.Wegas.Button({
                 render: true,
                 label: "Widget menu test"
             });
+
             this.widget.plug(Y.Plugin.WidgetMenu, {
                 children: [{
-                    type: Y.Button,
-                    label: "test"
-                }]
+                        type: Y.Wegas.Button,
+                        label: "test"
+                    }]
             });
 
             Y.Assert.isTrue(this.widget.get("boundingBox").hasClass('wegas-widgetmenu-hassubmenu'));
-        },
 
-        "should replace all children a button": function () {
+            this.widget.menu.on("button:click", function(e) {
+                console.log("MENUUUUU", e, arguments, e.target.get("label"));
+            });
+        },
+        "should replace all children a button": function() {
             this.widget.menu.set("children", [{
-                type: Y.Button,
-                label: "Second button"
-            }]);
+                    type: Y.Wegas.Button,
+                    label: "Second button"
+                }]);
             Y.Assert.areEqual(1, this.widget.menu.size());
         },
-
-        "should add a button": function () {
+        "should add a button": function() {
             this.widget.menu.add([{
-                type: Y.Button,
-                label: "Third button"
-            }]);
+                    type: Y.Wegas.Button,
+                    label: "Third button"
+                }]);
             Y.Assert.areEqual(2, this.widget.menu.size());
+
+        },
+        "should add a nested menu": function() {
+
+            this.widget.menu.add({
+                type: Y.Wegas.Button,
+                label: "test",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            menuCfg: {
+                                points: ["tl", "tr"]
+                            },
+                            event: "mouseenter",
+                            children: [{
+                                    type: Y.Wegas.Button,
+                                    label: "Text"
+                                }]
+                        }
+                    }]
+            });
         }
 
         //"shoud destroy": function () {
@@ -54,7 +77,7 @@ YUI.add('wegas-widgetmenu-test', function(Y) {
         //}
 
     }));
-}, '@VERSION@' ,{
-    requires:['wegas-widgetmenu', 'wegas-button', 'test']
+}, '@VERSION@', {
+    requires: ['wegas-widgetmenu', 'wegas-button', 'test']
 });
 

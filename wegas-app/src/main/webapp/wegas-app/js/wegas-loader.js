@@ -321,7 +321,7 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-tooltip-min.js',
                     requires: ["wegas-action", "event-mouseenter", "widget", "widget-stack",
                         "widget-position", 'widget-position-constrain'],
-                    ws_provides: 'Button'
+                    ws_provides: 'Tooltip'
                 },
                 'wegas-templatecss': {
                     path: "wegas-app/css/wegas-template.css"
