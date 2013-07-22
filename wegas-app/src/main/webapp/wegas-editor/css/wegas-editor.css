@@ -287,9 +287,6 @@ body {
     background-image: url(../../wegas-app/images/loading-small.gif);
     background-repeat: no-repeat;
 }
-.wegas-pageeditor-layoutmode .timed-hidden-node{
-    visibility: visible;
-}
 
 .experimental::after{
     color:rgb(168, 168, 168);
