@@ -7,7 +7,16 @@
 
         <ui:define name="title">#{gameController.currentGameModel.name} - #{gameController.currentGame.name}</ui:define>
         <ui:define name="head">
+
+            <!-- Include custom style sheets directly in the page body -->
             <style type="text/css">#{gameController.styleSheets}</style>
+
+            <!-- Dev tool: style sheet reference injected directly in the game model -->
+            <ui:repeat rendered="#{editorGameController.currentGameModel.getProperty('cssUri') != null}"
+                       var="o" value="#{editorGameController.currentGameModel.getProperty('cssUri').split(',')}" varStatus="status">
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o}?#{wegasConfig.timestamp}" />
+           </ui:repeat>
+
         </ui:define>
 
         <ui:define name="head">
