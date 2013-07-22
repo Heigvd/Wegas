@@ -79,6 +79,11 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             
             for (i = 0; i < variables.get('items').length; i++) {
                 variableDesc = variables.get('items')[i];
+                if (variableDesc instanceof Y.Wegas.persistence.ListDescriptor){
+                    // TODO create parser for this case
+                    alert("this listDescriptor contain another listDescriptor.");
+                    return;
+                }
                 variableInst = variableDesc.getInstance();
                 oneRowDatas = {};
                 oneRowDatas["_id"] = variableDesc.get("id");
