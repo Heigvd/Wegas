@@ -12,43 +12,9 @@
 YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
-    var Linkwidget, EditFSMAction,
+    var Linkwidget,
             Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
             CONTENTBOX = 'contentBox';
-
-    /**
-     *  @name Y.Plugin.EditFSMAction
-     *  @extends Y.Plugin.EntityAction
-     *  @class Open a state machine viewer in the edition tab
-     *  @constructor
-     */
-    EditFSMAction = function() {
-        EditFSMAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(EditFSMAction, Plugin.EntityAction, {
-        /** @lends Y.Plugin.EditFSMAction# */
-
-        /**
-         * @private
-         * @function
-         */
-        execute: function() {
-            Wegas.TabView.findTabAndLoadWidget("State machine editor", // Load and display the editor in a new tab
-                    "#centerTabView", null, {
-                type: "StateMachineViewer",
-                plugins: [{
-                        fn: "WidgetToolbar"
-                    }]
-            }, Y.bind(function(entity, widget) {
-                widget.set("entity", entity);
-            }, this, this.get("entity")));
-        }
-
-    }, {
-        NS: "wegas",
-        NAME: "EditFSMAction"
-    });
-    Plugin.EditFSMAction = EditFSMAction;
 
     /**
      *  @name Y.Plugin.ResetAction
@@ -296,7 +262,7 @@ YUI.add('wegas-editor-action', function(Y) {
      * @constructor
      * @param Object Will be used to fill attributes field
      */
-    Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Y.WidgetChild, Wegas.Widget], {
+    Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         /** @lends Y.Wegas.Linkwidget# */
 
         /**

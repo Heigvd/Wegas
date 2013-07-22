@@ -91,14 +91,14 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                 default:
                     return;
             }
-            for(i in this.get("variable.evaluated").get("properties")){
-                if(counter === choice){
+            for (i in this.get("variable.evaluated").get("properties")) {
+                if (counter === choice) {
                     this.fire("clientResponse", {value: i});
                     break;
                 }
-                counter ++;
+                counter++;
             }
-            
+
         },
         success: function() {
             if (+this.get("feedback") > 0) {
@@ -196,12 +196,16 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                 value: 1000,
                 type: "number",
                 _inputex: {
-                    label: "Feedback time (ms).<br/> 0 or less to disable"
+                    label: "Feedback time (ms)",
+                    description: "0 or less to disable."
                 }
             },
             responseType: {
                 value: "link",
                 type: "string",
+                _inputex: {
+                    label: "Response layout"
+                },
                 choices: [
                     {
                         value: "link",
@@ -228,7 +232,8 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                  */
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
-                    _type: "variableselect"
+                    _type: "variableselect",
+                    label: "Store results"
                 }
             }
         }

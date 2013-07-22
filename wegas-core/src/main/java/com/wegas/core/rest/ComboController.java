@@ -99,7 +99,7 @@ public class ComboController {
 
                 if (mediaType.equals(MediaTypeCss)) {                       // @hack for css files, we correct the path
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
-                    content = content.replaceAll("url\\(\"?([^:\\)\"]+)\"?\\)",
+                    content = content.replaceAll("url\\(\"?\'?([^:\\)\"]+)\"?\'?\\)",
                             "url(" + servletContext.getContextPath()
                             + dir + "$1)");              //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
                 }

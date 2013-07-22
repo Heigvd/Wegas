@@ -38,40 +38,40 @@
                 </ui:fragment>
 
                 <script type="text/javascript">
-                        // Set up some YUI3 default parameters. Will be use for every call to
-                        // the YUI(cfg) function. Can be overridden by the cfg parameter.
-                        YUI_config.useBrowserConsole = true;
-                        YUI_config.insertBefore = 'customstyles';
-                        YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
-                        YUI_config.charset = "#{wegasConfig.encoding}";
-                        YUI_config.debug = #{requestController.debugMode()};
-                        YUI_config.throwFail = true;                        // If throwFail is set, Y.error will generate or re-throw
-                        // a JS Error. Otherwise the failure is logged.
-                        YUI_config.errorFn = function(msg, e, src) {
-                            // console.log("ERRORFN", msg, e, src);
-                            // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", 'Wegas.App');
-                            // _gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
-                            // throw msg;
-                            return false;                      // Returning true from this function will stop the Error from being thrown.
-                        };
-                        //YUI_config.gallery = 'gallery-2011.02.18-23-10';
-                        //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
-                        //YUI_config.loadOptional = true;
+                    // Set up some YUI3 default parameters. Will be use for every call to
+                    // the YUI(cfg) function. Can be overridden by the cfg parameter.
+                    YUI_config.useBrowserConsole = true;
+                    YUI_config.insertBefore = 'customstyles';
+                    YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
+                    YUI_config.charset = "#{wegasConfig.encoding}";
+                    YUI_config.debug = #{requestController.debugMode()};
+                    YUI_config.throwFail = true;                        // If throwFail is set, Y.error will generate or re-throw
+                    // a JS Error. Otherwise the failure is logged.
+                    YUI_config.errorFn = function(msg, e, src) {
+                        // console.log("ERRORFN", msg, e, src);
+                        // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", 'Wegas.App');
+                        // _gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
+                        // throw msg;
+                        return false;                      // Returning true from this function will stop the Error from being thrown.
+                    };
+                    //YUI_config.gallery = 'gallery-2011.02.18-23-10';
+                    //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
+                    //YUI_config.loadOptional = true;
 
-                        var base = "#{request.requestURL
+                    var base = "#{request.requestURL
                                   .substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                                comboBase = base + '/rest/combo/?v=#{wegasConfig.timestamp}&amp;';
-                        function setupLocalPath(groupName) {
-                            YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
-                            YUI_config.groups[groupName].comboBase = comboBase;
-                        }
-                        YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
-                        YUI_config.groups.inputex.combine = #{!requestController.debugMode()};
-                        YUI_config.groups.wegas.combine = #{!requestController.debugMode()};
-                        YUI_config.groups.wegas.filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
-                        setupLocalPath("wegas");
-                        setupLocalPath("inputex");
-                        setupLocalPath("libraries");                                // Set up libraries path
+                            comboBase = base + '/rest/combo/?v=#{wegasConfig.timestamp}&amp;';
+                    function setupLocalPath(groupName) {
+                        YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
+                        YUI_config.groups[groupName].comboBase = comboBase;
+                    }
+                    YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
+                    YUI_config.groups.inputex.combine = #{!requestController.debugMode()};
+                    YUI_config.groups.wegas.combine = #{!requestController.debugMode()};
+                    YUI_config.groups.wegas.filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
+                    setupLocalPath("wegas");
+                    setupLocalPath("inputex");
+                    setupLocalPath("libraries");                                // Set up libraries path
                 </script>
 
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
@@ -230,6 +230,30 @@
                     <!-- Google Analytics -->
                     <ui:include src="ga-tracker.xhtml" />
                 </ui:fragment>
+
+                <!-- UserVoice JavaScript SDK (only needed once on a page) -->
+                <script>(function() {
+                        var uv = document.createElement('script');
+                        uv.type = 'text/javascript';
+                        uv.async = true;
+                        uv.src = '//widget.uservoice.com/3sN3R6bpdxVxNcGgsuAhQ.js';
+                        var s = document.getElementsByTagName('script')[0];
+                        s.parentNode.insertBefore(uv, s)
+                    })()</script>
+
+                <!-- A tab to launch the Classic Widget -->
+                <script>
+                    UserVoice = window.UserVoice || [];
+                    UserVoice.push(['showTab', 'classic_widget', {
+                            mode: 'support',
+                            primary_color: '#072544',
+                            link_color: '#007dbf',
+                            tab_label: 'Feedback &amp; Support',
+                            tab_color: '#cc6d00',
+                            tab_position: 'bottom-left',
+                            tab_inverted: false
+                        }]);
+                </script>
             </h:body>
         </ui:define>
     </ui:composition>

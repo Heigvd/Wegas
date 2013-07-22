@@ -18,7 +18,7 @@ YUI.add('wegas-chat', function(Y) {
             this.field = null;
             this.send = null;
         },
-        
+
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
 
@@ -29,7 +29,7 @@ YUI.add('wegas-chat', function(Y) {
             });
             cb.append(this.field);
             this.send = new Y.Wegas.Button({
-                label: "send",
+                label: "Send",
                 cssClass: "wegas-chat-send",
                 render: cb
             });
@@ -53,7 +53,7 @@ YUI.add('wegas-chat', function(Y) {
     }, {
         ATTRS: {
             size: {
-                value: 23
+                value: 34
             },
             channel: {
                 value: "Game"

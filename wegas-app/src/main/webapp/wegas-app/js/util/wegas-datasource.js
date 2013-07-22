@@ -97,7 +97,7 @@ YUI.add('wegas-datasource', function(Y) {
                         && payload.serverResponse.get("entities").length > 0) {
                     payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
                 }
-                if (payload.cfg.updateCache !== false) {
+                if (this.cache && payload.cfg.updateCache !== false) {
                     this.cache.onResponseRevived(payload);
                 }
                 this.fire("response", payload);

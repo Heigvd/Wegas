@@ -234,7 +234,11 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             },
             fixPoint: {
                 value: 2000,
-                type: "number"
+                type: "number",
+                _inputex: {
+                    label: "Show fix-point (ms)",
+                    description: "Time to wait before next question"
+                }
             },
             random: {
                 value: true,
@@ -247,8 +251,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 value: 0,
                 type: "number",
                 _inputex: {
-                    label: "Show popup message afer (ms)",
-                    description: "0 or less to disable"
+                    label: "Show popup message",
+                    description: "After # question(s).0 or less to disable"
                 }
             },
             popupContent: {
@@ -279,7 +283,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 value: "",
                 type: "string",
                 _inputex: {
-                    label: "Response value"
+                    label: "Response value",
+                    description: "Needed to match with user input"
                 }
             }
         }
@@ -313,7 +318,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 value: 1,
                 type: "number",
                 _inputex: {
-                    label: "Swap after (ms)"
+                    label: "Swap after",
+                    description: "Top zone swap after # question(s)"
                 },
                 setter: function(v) {
                     return +v > 0 ? +v : 1;
