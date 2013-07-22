@@ -563,12 +563,12 @@ YUI().use(function(Y) {
                 'wegas-pageeditor-dragdrop': {
                     path: 'wegas-editor/js/util/wegas-pageeditor-dragdrop-min.js',
                     ws_provides: "PageEditorDD",
-                    requires: ['dd-constrain', 'dd-scroll', 'wegas-pageeditorcss', 'wegas-cssposition']
+                    requires: ['dd-constrain', 'dd-scroll', 'wegas-pageeditorcss']
                 },
                 'wegas-pageeditor-resize': {
                     path: 'wegas-editor/js/util/wegas-pageeditor-resize-min.js',
                     ws_provides: "PageEditorResize",
-                    requires: ['dd-constrain', 'dd-scroll', 'wegas-pageeditorcss', 'wegas-csssize']
+                    requires: ['dd-constrain', 'dd-scroll', 'wegas-pageeditorcss']
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',
