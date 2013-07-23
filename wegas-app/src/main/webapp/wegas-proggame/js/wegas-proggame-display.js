@@ -33,7 +33,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
         },
         renderUI: function() {
-            var i, j, k,
+            var i, j,
                     craftyNode = Y.Node.create("<div id='cr-stage'></div>");
             this.get(CONTENTBOX).append(craftyNode);
 
