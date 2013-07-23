@@ -49,7 +49,9 @@ YUI.add('wegas-widgetmenu', function(Y) {
             });
         },
         destructor: function() {
-            this.menu.destroy();
+            if (this.menu) {
+                this.menu.destroy();
+            }
         },
         bind: function() {
             var node = this.get("targetNode");

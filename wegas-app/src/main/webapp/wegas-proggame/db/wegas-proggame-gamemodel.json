@@ -1,46 +1,53 @@
 {
-    "@class":"GameModel",
-    "name":"Programming Game",
+    "@class": "GameModel",
+    "name": "Programming Game",
     "childVariableDescriptors": [{
-        "@class":"NumberDescriptor",
-        "name":"money",
-        "defaultInstance": {
-            "@class":"NumberInstance",
-            "value":0
-        },
-        "scope":{
-            "@class":"PlayerScope"
-        },
-        "minValue":null,
-        "maxValue":null
-    },{
-        "@class":"NumberDescriptor",
-        "name":"currentLevel",
-        "defaultInstance":{
-            "@class":"NumberInstance",
-            "value":3
-        },
-        "scope":{
-            "@class":"PlayerScope"
-        },
-        "minValue":null,
-        "maxValue":null
-    },{
-        "@class":"InboxDescriptor",
-        "name":"inbox",
-        "defaultInstance":{
-            "@class":"InboxInstance",
-            "messages":[]
-        },
-        "scope":{
-            "@class":"PlayerScope"
-        },
-        "label":null,
-        "description":null
-    }],
+            "@class": "NumberDescriptor",
+            "name": "money",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "PlayerScope"
+            },
+            "minValue": null,
+            "maxValue": null
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "currentLevel",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 3
+            },
+            "scope": {
+                "@class": "PlayerScope"
+            },
+            "minValue": null,
+            "maxValue": null
+        }, {
+            "@class": "InboxDescriptor",
+            "name": "inbox",
+            "defaultInstance": {
+                "@class": "InboxInstance",
+                "messages": []
+            },
+            "scope": {
+                "@class": "PlayerScope"
+            },
+            "label": null,
+            "description": null
+        }],
     "properties": {
-        "cssUri":"wegas-proggame/css/wegas-proggame.css",
-        "pagesUri":"wegas-proggame/db/wegas-proggame-pages.json?"
+        "cssUri": "wegas-proggame/css/wegas-proggame.css",
+        "pagesUri": "wegas-proggame/db/wegas-proggame-pages.json?"
+    },
+    "clientScriptLibrary": {
+        "load": {
+            "@class": "GameModelContent",
+            "contentType": null,
+            "content": "Y.Wegas.List.EDITMENU[1].plugins[0].cfg.children.push( { type: \"Button\", label: \"ProgGame Level\", plugins: [{fn: \"AddChildWidgetAction\", cfg: {\"childType\": \"ProgGameLevel\"}}]});"
+        }
     },
     "scriptLibrary": {
         "default": {
