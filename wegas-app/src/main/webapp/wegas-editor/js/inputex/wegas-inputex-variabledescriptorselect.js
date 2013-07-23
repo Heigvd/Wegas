@@ -38,14 +38,24 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         setOptions: function(options) {
             options.fields = options.fields || [];
             VariableDescriptorSelect.superclass.setOptions.call(this, options);
+            this.options.className = options.className || 'wegas-inputex-variabledescriptorselect-group inputEx-Group';
+            this.options.label = options.label;
+            if (options.classFilter) {
+                this.options.classFilter = options.classFilter;
+                this.options.classFilter.push("ListDescriptor");
+            }
         },
         /**
          * @function
          */
         render: function() {
             VariableDescriptorSelect.superclass.render.call(this);
-            this.divEl.classList.add("wegas-inputex-variabledescriptorselect");
+            this.fieldset.classList.add("wegas-inputex-variabledescriptorselect");
             this.syncUI();
+            if (this.options.label) {
+                var node = new Y.Node(this.fieldset);
+                node.get("parentNode").prepend("<label>" + this.options.label + "</label>");
+            }
         },
         /**
          * @function
@@ -158,10 +168,12 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
             if (items) {
                 for (i = 0; i < items.length; i += 1) {
-                    choices.push({
-                        value: items[i].get("name"),
-                        label: items[i].get("editorLabel")
-                    });
+                    if (!this.options.classFilter || this.options.classFilter.indexOf(items[i].get("@class")) > -1) {
+                        choices.push({
+                            value: items[i].get("name"),
+                            label: items[i].get("editorLabel")
+                        });
+                    }
                 }
             }
             return choices;
