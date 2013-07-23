@@ -68,7 +68,9 @@ YUI.add('wegas-proggame-level', function(Y) {
                 value: "//Put your code here..."
             });
 
-            cb.one(".ai").append(Y.Wegas.Helper.nl2br(this.findObject("Enemy").ai || "<center><i>empty</i></center>"));
+
+            var enemy = this.findObject("Enemy");
+            cb.one(".ai").append(Y.Wegas.Helper.nl2br((enemy && enemy.ai) || "<center><i>empty</i></center>"));
             cb.one(".topcenter h1").setHTML(this.get("label"));
             cb.one(".arguments").setHTML(this.get("arguments").join(", "));
 
@@ -243,8 +245,12 @@ YUI.add('wegas-proggame-level', function(Y) {
                     el.show();
                 }
             }
-            updateUI.call(this, this.findObject("Player"), cb.one(".player-ui"));
-            updateUI.call(this, this.findObject("Enemy"), cb.one(".enemy-ui"));
+            if (this.findObject("Player")) {
+                updateUI.call(this, this.findObject("Player"), cb.one(".player-ui"));
+            }
+            if (this.findObject("Enemy")) {
+                updateUI.call(this, this.findObject("Enemy"), cb.one(".enemy-ui"));
+            }
         }
 
     }, {
@@ -260,8 +266,10 @@ YUI.add('wegas-proggame-level', function(Y) {
                         type: "group",
                         fields: [{
                                 name: "id",
-                                label: "Template"
-                            },{
+                                label: "Template",
+                                type: "select",
+                                choices: ["Player", "Enemy", "Bloc1", "Bloc2", "Bloc3"]
+                            }, {
                                 name: "x",
                                 type: "number",
                                 label: "x"
@@ -277,12 +285,12 @@ YUI.add('wegas-proggame-level', function(Y) {
                                     {value: 2, label: "right"},
                                     {value: 3, label: "bottom"},
                                     {value: 4, label: "left"}]
+                            }, {
+                                name: "collides",
+                                label: "collides",
+                                type: "boolean"
                             }
-//                            , {
-//                                name: "collides",
-//                                label: "collides",
-//                                type: "boolean"
-//                            }, {
+//                            ,{
 //                                name: "type",
 //                                label: "type"
 //                            }, {
@@ -352,12 +360,14 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             onWin: {
                 type: "string",
+                optional: true,
                 _inputex: {
                     _type: "ace"
                 }
             },
             map: {
                 type: "array",
+                value: [[{x: 0, y: 0}]],
                 validator: Y.Lang.isArray,
                 _inputex: {
                     _type: "proggamemap",
