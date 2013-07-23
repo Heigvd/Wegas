@@ -431,6 +431,10 @@ YUI.add("wegas-widget", function(Y) {
                                                 data: "CSSPosition"
                                             }, {
                                                 type: "Button",
+                                                label: "Size",
+                                                data: "CSSSize"
+                                            }, {
+                                                type: "Button",
                                                 label: "Text",
                                                 data: "CSSText"
                                             }, {
