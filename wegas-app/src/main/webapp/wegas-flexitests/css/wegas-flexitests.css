@@ -128,3 +128,8 @@ body > .wegas-pageloader, html{
 .wegas-pageeditor-layoutmode .fix-point{
     display:inline !important;
 }
+
+/*userVoice*/
+#uvTab{
+    display:none;
+}

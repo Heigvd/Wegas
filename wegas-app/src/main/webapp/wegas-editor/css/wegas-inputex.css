@@ -297,7 +297,7 @@ img.inputEx-ListField-delButton {
     margin: 0;
 }
 
-/** Styles for form edition
+/** Styles for form edition **/
 .wegas-form div.inputEx-TypeField-PropertiesPanel {
     padding-left: 140px;
 }
@@ -318,7 +318,9 @@ img.inputEx-ListField-delButton {
 .wegas-form  .inputEx-ListField-childContainer > div {
     position: relative;
 }
-
+.wegas-form .inputEx-label + .inputEx-ListField{
+    padding-top:20px;
+}
 .wegas-form .inputEx-ListField-childContainer > div > img.inputEx-ListField-delButton {
     position: absolute;
     left: -111px;
@@ -328,8 +330,8 @@ div.inputEx-ColorField button {
     background-image: url(../images/palette.png);
 
     /*background-position: 3px 0;*/
-background-repeat: no-repeat;
-margin-left: 2px;
+    background-repeat: no-repeat;
+    margin-left: 2px;
 }
 
 div.inputEx-ColorField-button {
