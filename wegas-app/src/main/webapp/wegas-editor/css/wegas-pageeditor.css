@@ -32,23 +32,23 @@
     min-height: 20px;
     visibility: visible !important;
 }
-.wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader{
-    background-color: darkgray;
-    width: 100%;
-    height: 100%;
+.wegas-pageeditor-layoutmode .wegas-widget > *{
+    background: none !important;
 }
-.wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader:before{
+.wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader{
+    position: relative;
+    background-color: darkgray;
+}
+.wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader:after{
     content:"" url(../../wegas-editor/images/webpage.png) "Page sub zone, edit page by choosing it in the left tab"  no-repeat center darkgray !important ;
     color: white;
-    width: 100%;
-    height: 30px;
     position: absolute;
-    margin-top: -15px;
-    top:50%;
+    width:100%;
+    top:40%;
     text-align: center;
 }
-.wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader-content{
-    display: none !important;
+.wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader-content *{
+    visibility: hidden !important;
 } 
 .wegas-pageeditor-ace {
     height: 100%;
