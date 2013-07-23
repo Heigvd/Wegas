@@ -555,10 +555,27 @@ YUI().use(function(Y) {
                     requires: ['wegas-button', 'wegas-widgetmenu'],
                     ws_provides: ['SelectPlayerButton', 'SelectGameButton']
                 },
+                'wegas-pageeditorcss': {
+                    path: "wegas-editor/css/wegas-pageeditor.css",
+                    type: "css"
+                },
                 'wegas-pageeditor': {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
                     ws_provides: 'PageEditor',
-                    requires: ['diff_match_patch', "wegas-editor-widgetaction", "event-mouse-startstop", "node-scroll-info", "anim"]
+                    requires: ['diff_match_patch', "wegas-editor-widgetaction",
+                        "event-mouse-startstop", "node-scroll-info", "anim",
+                        "wegas-pageeditor-dragdrop", 'wegas-pageeditorcss', 
+                    'wegas-pageeditor-resize']
+                },
+                'wegas-pageeditor-dragdrop': {
+                    path: 'wegas-editor/js/util/wegas-pageeditor-dragdrop-min.js',
+                    ws_provides: "PageEditorDD",
+                    requires: ['dd-constrain', 'dd-scroll', 'wegas-pageeditorcss']
+                },
+                'wegas-pageeditor-resize': {
+                    path: 'wegas-editor/js/util/wegas-pageeditor-resize-min.js',
+                    ws_provides: "PageEditorResize",
+                    requires: ['dd-constrain', 'dd-scroll', 'wegas-pageeditorcss']
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',
