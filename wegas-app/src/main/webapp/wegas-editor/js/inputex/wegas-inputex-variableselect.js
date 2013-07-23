@@ -29,11 +29,10 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
     Y.extend(inputEx.Wegas.Variableselect, inputEx.Group, {
         setOptions: function(options) {
             inputEx.Wegas.Variableselect.superclass.setOptions.call(this, options);
-//            this.options.mode = options.mode || "wysiwyg";
-            this.options.legend = options.legend || "Variable";
             this.options.fields = [{
-                    label: "Variable",
+                    label: "Variable to display",
                     type: 'variabledescriptorgetter',
+                    classFilter: options.classFilter,
                     name: 'name'
                 }, {
                     label: 'Or expression',
@@ -45,7 +44,7 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
             return this.inputs[1].validate() || this.inputs[0].validate();
         },
         getValue: function() {
-            if (this.inputs[1].getValue() && !this.inputs[1].getValue().isEmpty()) {
+            if (this.inputs[1].getValue() && !this.inputs[1].getValue().length > 0) {
                 return {
                     expr: this.inputs[1].getValue()
                 };

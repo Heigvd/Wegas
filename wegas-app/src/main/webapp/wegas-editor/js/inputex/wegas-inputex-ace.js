@@ -63,7 +63,6 @@ YUI.add('wegas-inputex-ace', function(Y) {
             } else {                                                            // Fallback
                 Y.log("Unable to find Ace libraries, falling back to text field", "error", "Wegas.Inputex.Ace");
                 inputEx.AceField.superclass.renderComponent.call(this);
-
             }
             //this.session.addEventListener("tokenizerUpdate", Y.bind(function(e) {
             //    var i, token,

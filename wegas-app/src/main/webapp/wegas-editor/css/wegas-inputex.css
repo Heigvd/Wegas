@@ -86,6 +86,15 @@ inputEx-ListField
 }
 
 /* Variable descriptor select */
+.wegas-inputex-variabledescriptorselect-group > label {
+    float: left;
+    padding: 0.2em 0.5em 0 0;
+    text-align: right;
+    margin-left:-135px;
+    width: 129px;
+}
+.wegas-inputex-variabledescriptorselect-group > fieldset {
+}
 .wegas-inputex-variabledescriptorselect .inputEx-fieldWrapper,
 .wegas-inputex-variabledescriptorselect .inputEx-CombineField,
 .wegas-inputex-variabledescriptorselect .inputEx-Group .inputEx-Group,
@@ -93,7 +102,6 @@ inputEx-ListField
     float: left;
     padding-left:0;
 }
-
 .wegas-inputex-variabledescriptorselect fieldset {
     display: inline-block;
 }
@@ -297,20 +305,20 @@ img.inputEx-ListField-delButton {
     margin: 0;
 }
 
-/** Styles for form edition **/
+/* Styles for form edition */
 .wegas-form div.inputEx-TypeField-PropertiesPanel {
     padding-left: 140px;
 }
-
 .wegas-form legend.inputEx-Group-legend {
-    margin-left: -134px;
+    margin-left: -116px;
     color: #2647a0;
     width: 130px;
-    white-space: nowrap;
     padding: 0.2em 0.5em 0 0;
 }
-
-.wegas-form legend.inputEx-Group-legend span {
+.wegas-form .inputEx-label + .inputEx-ListField{
+    padding-top:1.5em;
+}
+/*.wegas-form legend.inputEx-Group-legend span {
     text-align: right;
     display: block;
 }
@@ -318,27 +326,13 @@ img.inputEx-ListField-delButton {
 .wegas-form  .inputEx-ListField-childContainer > div {
     position: relative;
 }
-.wegas-form .inputEx-label + .inputEx-ListField{
-    padding-top:20px;
-}
 .wegas-form .inputEx-ListField-childContainer > div > img.inputEx-ListField-delButton {
     position: absolute;
     left: -111px;
-}
+}*/
 
+/* Color field styles */
 div.inputEx-ColorField button {
     background-image: url(../images/palette.png);
-
-    /*background-position: 3px 0;*/
-    background-repeat: no-repeat;
-    margin-left: 2px;
-}
-
-div.inputEx-ColorField-button {
-    height: 19px;
-    width: 100px;
-    border: 1px solid #B5B8C8;
-    margin-left: 0px;
     cursor: pointer;
-    float:left; /* to display color picker icon on the right */
 }
