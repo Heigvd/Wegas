@@ -48,6 +48,11 @@ YUI.add('wegas-widgetmenu', function(Y) {
                 }
             });
         },
+        destructor: function() {
+            if (this.menu) {
+                this.menu.destroy();
+            }
+        },
         bind: function() {
             var node = this.get("targetNode");
             node.delegate(this.get("event"), function(e) {                      // Target event listener
@@ -65,7 +70,6 @@ YUI.add('wegas-widgetmenu', function(Y) {
             var children = this.get("children");
             children.push(widget);
             this.set("children", children);
-
         },
         size: function() {
             return this.get("children").length;
@@ -104,7 +108,9 @@ YUI.add('wegas-widgetmenu', function(Y) {
                 this.menu = menu;                                               // Set up reference
 
                 if (this.get("isSubmenu")) {                                    // Handle nested menus, events are forwarded to the parent widget
-                    menu.addTarget(parent._menuPlugin);                         // Forward events to parent
+                    if (parent._menuPlugin) {
+                        menu.addTarget(parent._menuPlugin);                     // Forward events to parent plugin
+                    }
                     menu.on("timerCanceled", parent.cancelMenuTimer, parent);
                     menu.on("timerStarted", parent.startMenuHideTimer, parent);
                 }
@@ -198,15 +204,12 @@ YUI.add('wegas-widgetmenu', function(Y) {
                 node: node,
                 points: this.get("points")
             });
-
             this.cancelMenuTimer();
             this.show();
-            // console.log("attachTo", this.get("contentBox").one("button").getHTML());
         },
         // *** Private methods *** //
         menuClick: function() {
             this.hide();
-            this.fire("menuClick");
         },
         clickOutside: function(e) {
             if (this.currentNode !== e.target) {

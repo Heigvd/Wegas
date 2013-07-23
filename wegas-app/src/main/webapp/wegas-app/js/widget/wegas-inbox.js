@@ -277,7 +277,8 @@ YUI.add('wegas-inbox', function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "variable"
+                    label: "variable",
+                    classFilter: ["InboxDescriptor"]
                 }
             }
         }

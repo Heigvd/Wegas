@@ -8,7 +8,7 @@
 /**
  * Wegas loader, contains module definitions.
  *
- * @fileoverview
+ * @fileoverviewa
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI().use(function(Y) {
@@ -461,7 +461,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-ace': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-ace-min.js',
-                    requires: ['inputex-field', 'ace', 'inputex-textarea'],
+                    requires: ['inputex-field', 'ace', 'inputex-textarea', 'wegas-inputex'],
                     ix_provides: "ace"
                 },
                 'wegas-inputex-markup': {
@@ -564,7 +564,7 @@ YUI().use(function(Y) {
                     ws_provides: 'PageEditor',
                     requires: ['diff_match_patch', "wegas-editor-widgetaction",
                         "event-mouse-startstop", "node-scroll-info", "anim",
-                        "wegas-pageeditor-dragdrop", 'wegas-pageeditorcss', 
+                        "wegas-pageeditor-dragdrop", 'wegas-pageeditorcss',
                     'wegas-pageeditor-resize']
                 },
                 'wegas-pageeditor-dragdrop': {
@@ -908,10 +908,10 @@ YUI().use(function(Y) {
                     path: 'crafty/crafty-min.js'
                 },
                 ace: {
-                    charset: 'utf-8',
+                    //charset: 'utf-8',
                     //path: "ace/src-min-noconflict/ace.js"
-                    fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
-//                    fullpath: "http://ajaxorg.github.io/ace/build/src-min-noconflict/ace.js"
+                    fullpath: "http://ajaxorg.github.io/ace-builds/src/ace.js"
+                    //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
 
                 },
                 googletranslate: {

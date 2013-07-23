@@ -30,7 +30,8 @@ YUI.add('wegas-proggame-inputex', function(Y) {
             options.elementType = {
                 type: "list",
                 elementType: {
-                    type: "proggametile"
+                    type: "proggametile",
+                    value: {x: 0, y: 0}
                 }
             };
             options.wrapperClassName = "inputEx-fieldWrapper wegas-inputex-proggamemap";
@@ -50,8 +51,9 @@ YUI.add('wegas-proggame-inputex', function(Y) {
                 }
             }, this);
             addButtonNode.wrap("<div class=\"add-row\"></div>");
-            addButtonNode.get("parentNode").on("click", this.onAddButton, this);
-            addButtonNode.get("parentNode").append("Add row");
+            addButtonNode.get("parentNode")
+                    .append("Add row")
+                    .on("click", this.onAddButton, this);
         },
         onAddButton: function(e) {
             e.halt();
@@ -62,10 +64,10 @@ YUI.add('wegas-proggame-inputex', function(Y) {
             }
 
             var j, defaultValue = [],
-                    mapWidth = this.subFields[0].getValue().length;
+                    mapWidth = (this.subFields.length > 0) ? this.subFields[0].getValue().length : 0;
 
             for (j = 0; j < mapWidth; j += 1) {
-                defaultValue.push({});
+                defaultValue.push({x: 0, y: 0});
             }
 
             // Add a field with no value:
@@ -90,7 +92,7 @@ YUI.add('wegas-proggame-inputex', function(Y) {
     Y.extend(inputEx.ProgGameTile, inputEx.Field, {
         setValue: function(value, sendUpdatedEvent) {
             inputEx.ProgGameTile.superclass.setValue.call(this, value, sendUpdatedEvent);
-            this.options.value = value;
+            this.options.value = value || {x: 0, y: 0};
             if (!value.x)
                 return;
 
@@ -138,8 +140,8 @@ YUI.add('wegas-proggame-inputex', function(Y) {
 
                     cb.delegate("click", function(e) {
                         this.setValue({
-                            x: e.currentTarget.getAttribute("data-position-x"),
-                            y: e.currentTarget.getAttribute("data-position-y")
+                            x: +e.target.getAttribute("data-position-x"),
+                            y: +e.target.getAttribute("data-position-y")
                         });
                         this.alignable.hide();
                         this.outHandler.detach();
