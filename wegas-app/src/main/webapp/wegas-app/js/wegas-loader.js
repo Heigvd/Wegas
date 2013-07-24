@@ -514,6 +514,11 @@ YUI().use(function(Y) {
                     requires: ['plugin'],
                     ws_provides: 'TreeViewFilter'
                 },
+                'treeview-sortable': {
+                    path: 'wegas-editor/js/util/treeview-sortable.js',
+                    requires: ['plugin', 'sortable', 'sortable-scroll'],
+                    ws_provides: 'TreeViewSortable'
+                },
                 /** Editor **/
                 'wegas-editorcss': {
                     path: 'wegas-editor/css/wegas-editor.css',
@@ -565,7 +570,7 @@ YUI().use(function(Y) {
                     requires: ['diff_match_patch', "wegas-editor-widgetaction",
                         "event-mouse-startstop", "node-scroll-info", "anim",
                         "wegas-pageeditor-dragdrop", 'wegas-pageeditorcss',
-                    'wegas-pageeditor-resize']
+                        'wegas-pageeditor-resize']
                 },
                 'wegas-pageeditor-dragdrop': {
                     path: 'wegas-editor/js/util/wegas-pageeditor-dragdrop-min.js',
@@ -599,7 +604,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-variabletreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-variabletreeview-min.js',
-                    requires: ['wegas-editor-treeview', 'sortable', 'sortable-scroll'],
+                    requires: ['wegas-editor-treeview', 'treeview-sortable'],
                     ws_provides: 'VariableTreeView'
                 },
                 'wegas-datatable': {
@@ -911,7 +916,7 @@ YUI().use(function(Y) {
                     //charset: 'utf-8',
                     //path: "ace/src-min-noconflict/ace.js"
                     fullpath: "http://ajaxorg.github.io/ace-builds/src/ace.js"
-                    //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
+                            //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
 
                 },
                 googletranslate: {
