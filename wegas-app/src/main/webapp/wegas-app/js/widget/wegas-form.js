@@ -197,6 +197,13 @@ YUI.add('wegas-form', function(Y) {
     });
 
     Y.namespace("Wegas").Form = Form;
+    /* Add relevant plugin*/
+    Y.Wegas.Form.ATTRS.plugins = Y.clone(Y.Wegas.Widget.ATTRS.plugins);
+    Y.Wegas.Form.ATTRS.plugins._inputex.items.push({
+        type: "Button",
+        label: "Save to",
+        data: "SaveObjectAction"
+    });
 
     /**
      *  @hack So we can easily change classs on inputex fields

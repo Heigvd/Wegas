@@ -62,9 +62,6 @@ div.inputEx-fieldWrapper {
     margin-left:-135px;
     width: 129px;
 }
-.wegas-form legend.inputEx-Group-legend {
-    margin-left: -116px;
-}
 .wegas-form .inputEx-ListField > span {
     display: none;
 }
@@ -318,7 +315,9 @@ img.inputEx-ListField-delButton {
     width: 130px;
     padding: 0.2em 0.5em 0 0;
 }
-
+.wegas-form .inputEx-label + .inputEx-ListField{
+    padding-top:1.5em;
+}
 /*.wegas-form legend.inputEx-Group-legend span {
     text-align: right;
     display: block;
@@ -327,7 +326,6 @@ img.inputEx-ListField-delButton {
 .wegas-form  .inputEx-ListField-childContainer > div {
     position: relative;
 }
-
 .wegas-form .inputEx-ListField-childContainer > div > img.inputEx-ListField-delButton {
     position: absolute;
     left: -111px;
@@ -336,7 +334,5 @@ img.inputEx-ListField-delButton {
 /* Color field styles */
 div.inputEx-ColorField button {
     background-image: url(../images/palette.png);
-    background-repeat: no-repeat;
-    margin-left: 2px;
     cursor: pointer;
 }
