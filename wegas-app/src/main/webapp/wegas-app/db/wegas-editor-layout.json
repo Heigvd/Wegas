@@ -26,10 +26,10 @@
                     }]
             }, {
                 "type": "SelectGameButton",
-                "cssClass": "editor-game-button"
+                "cssClass": "editor-game-button wegas-advanced-feature"
             }, {
                 "type": "SelectPlayerButton",
-                "cssClass": "editor-player-button"
+                "cssClass": "editor-player-button wegas-advanced-feature"
             }, {
                 "type": "Button",
                 "label": "Developer",
