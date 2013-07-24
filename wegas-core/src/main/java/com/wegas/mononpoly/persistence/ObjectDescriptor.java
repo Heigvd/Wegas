@@ -77,7 +77,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
         this.properties = properties;
     }
 
-    public Integer size(Player p) {
+    public int size(Player p) {
         return this.getInstance(p).getProperties().size();
     }
 
