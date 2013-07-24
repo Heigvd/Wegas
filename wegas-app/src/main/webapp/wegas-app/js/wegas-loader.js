@@ -500,7 +500,7 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', 'inputex-hidden'],
                     ix_provides: 'now'
                 },
-                /** Common Widgets **/
+                /** Treeview **/
                 'treeview': {
                     path: 'wegas-editor/js/util/treeview-min.js',
                     requires: ['widget', 'widget-parent', 'widget-child', 'treeviewcss']
