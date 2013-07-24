@@ -16,6 +16,15 @@ YUI.add("wegas-flexitests-results", function(Y) {
         return (new Date(+o.value)).toLocaleString();
     }, UNWANTED_PROPS = function(item) {
         return item !== "date";
+    }, getChildById = function(widget, id) {
+        var returnItem = null;
+        widget.some(function(item) {
+            if (item.get("id") === id) {
+                returnItem = item;
+                return true;
+            }
+        });
+        return returnItem;
     };
     Y.namespace("Wegas").FlexitestsResults = Y.Base.create("wegas-flexitests-results", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         initializer: function() {
@@ -51,7 +60,13 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     },
                     on: {
                         success: Y.bind(function(e) {
-                            this.renderTable(Y.JSON.parse(e.data.response).entities);
+                            Y.Wegas.Facade.Page.cache.getPage(this.get("testPage"), Y.bind(function(page) {
+                                Y.Wegas.Widget.use(page, Y.bind(function() {
+                                    this.renderTable(Y.JSON.parse(e.data.response).entities, Y.Wegas.Widget.create(page));
+                                    //this._createConfig(Y.Wegas.Widget.create(page));
+                                }, this));
+                            }, this));
+
                         }, this),
                         failure: Y.bind(function(e) {
                             Y.log("error", "Failed to retrieve data", "Y.Wegas.FlexitestsMCQ");
@@ -59,7 +74,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     }
                 });
                 Y.Wegas.Facade.Page.cache.getPage(this.get("testPage"), Y.bind(function(page) {
-                    Y.Wegas.Widget.use(page, Y.bind(function(e) {
+                    Y.Wegas.Widget.use(page, Y.bind(function() {
                         this._createConfig(Y.Wegas.Widget.create(page));
                     }, this));
                 }, this));
@@ -79,15 +94,24 @@ YUI.add("wegas-flexitests-results", function(Y) {
             }
             this.get("contentBox").one(".config").empty();
             try {
-                this.get("contentBox").one(".results").setContent("Final result : " + correct + " on " + sum + " correct response" + (correct > 1 ? "s" : "") + " (" + (correct * 100 / (sum||1)).toFixed(1) + "%)");
+                this.get("contentBox").one(".results").setContent("Final result : " + correct + " on " + sum + " correct response" + (correct > 1 ? "s" : "") + " (" + (correct * 100 / (sum || 1)).toFixed(1) + "%)");
             } catch (e) {
             }
         },
-        renderTable: function(results) {
+        renderTable: function(results, page) {
             var demographics = results[0],
                     tests = results[1],
                     table = this.get("contentBox").one(".results"),
-                    o, i, j;
+                    o, i, j, elements = {
+                left: getChildById(page, "leftElement"),
+                right: getChildById(page, "rightElement"),
+                center: getChildById(page, "centerElement")
+            }, extractValue = function(element, qId) {
+                var el = elements[element],
+                        selectElement = el.item(qId % el.size());
+                return selectElement.get("content")
+                        || selectElement.get("url");
+            };
             delete demographics["@class"];
             delete tests["@class"];
             table.empty();
@@ -132,6 +156,9 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     for (j in tests[i].properties) {
                         if (tests[i].properties.hasOwnProperty(j)) {
                             o = Y.JSON.parse(tests[i].properties[j]);
+                            o.left = extractValue(o.left, o.id);
+                            o.right = extractValue(o.right, o.id);
+                            o.center = extractValue("center", o.id);
                             o.order = j;
                             this.resultTable.addRow(Y.merge(demographics[i].properties, o));
                         }
@@ -169,19 +196,9 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     config.show = element.showafter.get("time");
                 }
             },
-                    getChildById = function(id) {
-                var returnItem = null;
-                widget.some(function(item) {
-                    if (item.get("id") === id) {
-                        returnItem = item;
-                        return true;
-                    }
-                });
-                return returnItem;
-            },
-                    left = getChildById("leftElement"),
-                    center = getChildById("centerElement"),
-                    right = getChildById("rightElement");
+                    left = getChildById(widget, "leftElement"),
+                    center = getChildById(widget, "centerElement"),
+                    right = getChildById(widget, "rightElement");
             cfg.right = {};
             cfg.left = {};
             cfg.center = {};
