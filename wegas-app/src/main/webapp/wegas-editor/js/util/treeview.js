@@ -225,7 +225,7 @@ YUI.add('treeview', function(Y) {
             this.after("selectedChange", function(e) {
                 if (e.newVal && !e.target.get("selection")) {
                     e.target.get(BOUNDING_BOX).addClass("selected");
-                } else {
+                } else if(e.target.get(BOUNDING_BOX)._node) {
                     e.target.get(BOUNDING_BOX).removeClass("selected");
                 }
             });
@@ -285,6 +285,7 @@ YUI.add('treeview', function(Y) {
         destructor: function() {
             var event;
             this.blur();                                                        //remove a focused node generates some errors
+            this.set("selected", 0);
             for (event in this.eventInstances) {
                 this.eventInstances[event].detach();
             }
@@ -601,6 +602,7 @@ YUI.add('treeview', function(Y) {
          */
         destructor: function() {
             this.blur();                                                        //remove a focused node generates some errors
+            this.set("selected", 0);
             if (this.get("rightWidget") && this.get("rightWidget").destroy) {
                 try {
                     this.get("rightWidget").destroy();

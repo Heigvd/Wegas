@@ -33,13 +33,23 @@ YUI.add('wegas-absolutelayout', function(Y) {
         bindUI: function() {
             this.after("addChild", function(e) {
                 if (!e.child.CSSPosition) {
-                    e.child.plug(Y.Plugin.CSSPosition);
+                    e.child.plug(Y.Plugin.CSSPosition, {styles: {
+                            position: "absolute",
+                            top: "0px",
+                            left: "0px"
+                        }
+                    });
                 }
             });
             this.onceAfter("render", function(e) {
                 this.each(function(item) {
                     if (!item.CSSPosition) {
-                        item.plug(Y.Plugin.CSSPosition);
+                        item.plug(Y.Plugin.CSSPosition, {styles: {
+                                position: "absolute",
+                                top: "0px",
+                                left: "0px"
+                            }
+                        });
                     }
                 });
             });

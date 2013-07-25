@@ -146,7 +146,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
 
                 if (root !== targetWidget) {
                     targetWidget.destroy();
-                } else if (targetWidget.item(0)) { // @TODO: Panic mode, to change
+                } else if (tragetWidget.item && targetWidget.item(0)) { // @TODO: Panic mode, to change
                     targetWidget.removeAll();
                 }
 
