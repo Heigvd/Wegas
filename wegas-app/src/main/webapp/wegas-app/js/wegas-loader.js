@@ -659,7 +659,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
-                    requires: ['wegas-datasource', 'wegas-list'],
+                    requires: ['wegas-datasource'],
                     ws_provides: "PageTreeview"
                 },
                 'wegas-sharerole': {
