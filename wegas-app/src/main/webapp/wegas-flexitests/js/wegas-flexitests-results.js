@@ -63,7 +63,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
                             Y.Wegas.Facade.Page.cache.getPage(this.get("testPage"), Y.bind(function(page) {
                                 Y.Wegas.Widget.use(page, Y.bind(function() {
                                     this.renderTable(Y.JSON.parse(e.data.response).entities, Y.Wegas.Widget.create(page));
-                                    //this._createConfig(Y.Wegas.Widget.create(page));
+                                    this._createConfig(Y.Wegas.Widget.create(page));
                                 }, this));
                             }, this));
 
@@ -73,11 +73,11 @@ YUI.add("wegas-flexitests-results", function(Y) {
                         }, this)
                     }
                 });
-                Y.Wegas.Facade.Page.cache.getPage(this.get("testPage"), Y.bind(function(page) {
-                    Y.Wegas.Widget.use(page, Y.bind(function() {
-                        this._createConfig(Y.Wegas.Widget.create(page));
-                    }, this));
-                }, this));
+//                Y.Wegas.Facade.Page.cache.getPage(this.get("testPage"), Y.bind(function(page) {
+//                    Y.Wegas.Widget.use(page, Y.bind(function() {
+//                        this._createConfig(Y.Wegas.Widget.create(page));
+//                    }, this));
+//                }, this));
             } else {
                 this.renderResult(this.get("variable.evaluated"));
             }
