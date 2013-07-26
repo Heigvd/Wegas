@@ -409,29 +409,43 @@
                     "name": "tasks"
                 },
                 "columnsCfg": [{
-                    "name" : "index",
-                    "title" : "No",
-                    "variableType" : "descriptor"
+                    "key" : "index",
+                    "label" : "No"
                 }, {
-                    "name" : "label",
-                    "title" : "Name",
-                    "variableType" : "descriptor"
+                    "key" : "label",
+                    "label" : "Name"
                 }, {
-                    "name" : "duration",
-                    "title" : "Estimated duration",
-                    "variableType" : "instance"
+                    "label" : "Estimated duration",
+                    "formatter" : "template",
+                    "field": "instance.duration"
                 }, {
-                    "name" : "properties.fixedCosts",
-                    "title" : "Fixed costs",
-                    "variableType" : "instance"
+                    "label" : "Fixed costs",
+                    "formatter" : "template",
+                    "field": "instance.properties.fixedCosts"
                 }, {
-                    "name" : "properties.completeness",
-                    "title" : "Realised %",
-                    "variableType" : "instance"
+                    "label" : "Wages",
+                    "formatter": "template",
+                    "field" : "instance.properties.wages"
                 }, {
-                    "name" : "requirements.work",
-                    "title" : "Ressources",
-                    "variableType" : "instance"
+                    "label" : "Quality",
+                    "formatter": "template",
+                    "field" : "instance.properties.quality"
+                }, {
+                    "label" : "BAC",
+                    "formatter": "template",
+                    "field" : "instance.properties.bac"
+                }, {
+                    "label" : "Realised %",
+                    "formatter": "template",
+                    "field" : "instance.properties.completeness"
+                }, {
+                    "key" : "requirements",
+                    "label" : "Ressources",
+                    "formatter": "requieredRessources"
+                }, {
+                    
+                    "label" : "Assigned resources",
+                    "formatter": "assignedRessources"
                 }]
             }
         ]
@@ -446,13 +460,17 @@
                     "name": "tasks"
                 },
                 "columnsCfg": [{
-                    "name" : "index",
-                    "title" : "No",
-                    "variableType" : "descriptor"
+                    "key" : "index",
+                    "label" : "No"
                 }, {
-                    "name" : "label",
-                    "title" : "Name",
-                    "variableType" : "descriptor"
+                    "key" : "label",
+                    "label" : "Name"
+                }],
+                "plugins": [{
+                    "fn": "ScheduleDT",
+                    "cfg": {
+                        "columnToAdd": 10
+                    }
                 }]
             }
         ]
@@ -471,25 +489,30 @@
                             "name": "webDesigner"
                         },
                         "columnsCfg": [{
-                            "name" : "label",
-                            "title" : "Name",
-                            "variableType" : "descriptor"
+                            "key" : "label",
+                            "label" : "Name"
                         }, {
-                            "name" : "skillsets",
-                            "title" : "Grade",
-                            "variableType" : "instance"
+                            "label" : "Grade",
+                            "formatter": "object",
+                            "field" : "instance.skillsets"
                         }, {
-                            "name" : "properties.wage",
-                            "title" : "Wage",
-                            "variableType" : "instance"
+                            "label" : "Wage",
+                            "formatter": "template",
+                            "field" : "instance.properties.wage"
                         }, {
-                            "name" : "properties.ratio",
-                            "title" : "Ratio",
-                            "variableType" : "instance"
+                            "label" : "Ratio",
+                            "formatter": "template",
+                            "field" : "instance.properties.ratio"
                         }, {
-                            "name" : "moral",
-                            "title" : "Motiv.",
-                            "variableType" : "instance"
+                            "label" : "Motiv.",
+                            "formatter": "template",
+                            "field" : "instance.moral"
+                        }],
+                        "plugins": [{
+                            "fn": "ScheduleDT",
+                            "cfg": {
+                                "columnToAdd": 10
+                            }
                         }]
                     }
                 ]
@@ -503,25 +526,30 @@
                             "name": "businessSpecialist"
                         },
                         "columnsCfg": [{
-                            "name" : "label",
-                            "title" : "Name",
-                            "variableType" : "descriptor"
+                            "key" : "label",
+                            "label" : "Name"
                         }, {
-                            "name" : "skillsets",
-                            "title" : "Grade",
-                            "variableType" : "instance"
+                            "label" : "Grade",
+                            "formatter": "object",
+                            "field" : "instance.skillsets"
                         }, {
-                            "name" : "properties.wage",
-                            "title" : "Wages",
-                            "variableType" : "instance"
+                            "label" : "Wage",
+                            "formatter": "template",
+                            "field" : "instance.properties.wage"
                         }, {
-                            "name" : "properties.ratio",
-                            "title" : "Ratio",
-                            "variableType" : "instance"
+                            "label" : "Ratio",
+                            "formatter": "template",
+                            "field" : "instance.properties.ratio"
                         }, {
-                            "name" : "moral",
-                            "title" : "Motiv.",
-                            "variableType" : "instance"
+                            "label" : "Motiv.",
+                            "formatter": "template",
+                            "field" : "instance.moral"
+                        }],
+                        "plugins": [{
+                            "fn": "ScheduleDT",
+                            "cfg": {
+                                "columnToAdd": 10
+                            }
                         }]
                     }
                 ]

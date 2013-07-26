@@ -368,7 +368,25 @@ YUI.add('wegas-leaderway-entities', function(Y) {
     /**
      * TaskDescriptor mapper
      */
-    Y.Wegas.persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+    Y.Wegas.persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+        findAssociatedRessources: function(abstractAssignments) {
+            var ressources, i, data = [], assignments, dict;
+            ressources = Y.Wegas.Facade.VariableDescriptor.cache.findAll("@class", "ResourceDescriptor");
+            Y.Array.forEach(ressources, function(employee) {
+                assignments = employee.getInstance().get(abstractAssignments);
+                for (i = 0; i < assignments.length; i++) {
+                    dict = {};
+                    if (assignments[i].get('taskDescriptorId') === this.get("id")) {
+                        dict["taskDescriptor"] = this;
+                        dict["ressourceInstance"] = employee.getInstance();
+                        data.push(dict);
+                    }
+                }
+            }, this);
+
+            return data;
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "TaskDescriptor"
