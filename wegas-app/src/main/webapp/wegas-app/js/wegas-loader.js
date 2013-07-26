@@ -377,6 +377,11 @@ YUI().use(function(Y) {
                     requires: ['wegas-cssstyles'],
                     ws_provides: 'CSSSize'
                 },
+                "wegas-scheduledatatable": {
+                    path: 'wegas-app/js/plugin/wegas-scheduledatatable-min.js',
+                    requires: [],
+                    ws_provides: 'ScheduleDT'
+                },
                 "wegas-inputex-object": {
                     path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
                     requires: ['inputex-object'],
@@ -392,7 +397,7 @@ YUI().use(function(Y) {
                     requires: ['inputex-keyvalue'],
                     ix_provides: 'wegaskeyvalue'
                 },
-                "wegas-inputex-var-autocomplete":{
+                "wegas-inputex-var-autocomplete": {
                     path: 'wegas-editor/js/inputex/wegas-inputex-var-autocomplete-min.js',
                     requires: ['inputex-string'],
                     ix_provides: 'wegasvarautocomplete'
