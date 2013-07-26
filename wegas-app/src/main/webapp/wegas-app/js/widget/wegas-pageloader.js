@@ -209,11 +209,11 @@ YUI.add('wegas-pageloader', function(Y) {
                         this.set("widgetCfg", widgetCfg);
                         this.get(CONTENTBOX).empty();
                         this.showOverlay();
-                        Y.Wegas.Widget.use(widgetCfg, Y.bind(function(cfg) {    // Load the subwidget dependencies
+                        Y.Wegas.Widget.use(widgetCfg, Y.bind(function() {    // Load the subwidget dependencies
                             try {
-                                var widget = Y.Wegas.Widget.create(cfg); // Render the subwidget
+                                var widget = Y.Wegas.Widget.create(widgetCfg); // Render the subwidget
                                 widget.render(this.get(CONTENTBOX));
-                                widget['@pageId'] = cfg['@pageId'];
+                                widget['@pageId'] = widgetCfg['@pageId'];
                                 this.set("widget", widget);
                                 widget.addTarget(this); // Event on the loaded widget will be forwarded
                             } catch (e) {
@@ -223,7 +223,7 @@ YUI.add('wegas-pageloader', function(Y) {
                                 this.hideOverlay();
                                 this.fire("contentUpdated");
                             }
-                        }, this, widgetCfg));
+                        }, this));
                     }, this));
                     return val;
                 }
@@ -244,14 +244,13 @@ YUI.add('wegas-pageloader', function(Y) {
             },
             widgetCfg: {
                 "transient": true,
-                setter: function(val) {
-                    delete val["@pageId"];
-                    return val;
-                },
                 getter: function(val) {
+                    var p;
                     if (this.get("widget")) {
                         return Y.JSON.stringify(this.get("widget").toObject("@pageId"), null, "\t");
                     } else {
+                        p = Y.clone(val);
+                        delete p['@pageId'];
                         return Y.JSON.stringify(val, null, "\t");
                     }
                 }
