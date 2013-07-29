@@ -8,7 +8,7 @@
 /**
  * Wegas loader, contains module definitions.
  *
- * @fileoverview
+ * @fileoverviewa
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI().use(function(Y) {
@@ -55,7 +55,7 @@ YUI().use(function(Y) {
                 'wegas-datasource': {
                     path: 'wegas-app/js/util/wegas-datasource-min.js',
                     requires: ['plugin', 'json', 'array-extras', 'io-base',
-                        "datasource-io", "datasource-jsonschema", "datasource-cache",
+                        "datasource-io", "datasource-jsonschema", /*"datasource-cache",*/
                         "wegas-widget"]
                 },
                 'wegas-scripteval': {
@@ -109,7 +109,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-widget': {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
-                    requires: ['widget', 'widget-parent', 'widget-child', 'anim-easing', 'wegas-editable']
+                    requires: ['widget', 'widget-parent', 'widget-child', 'wegas-editable']
                 },
                 'wegas-pageloader': {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
@@ -227,6 +227,14 @@ YUI().use(function(Y) {
                         'wegas-widgettoolbar', "wegas-button"],
                     ws_provides: "Form"
                 },
+                form: {
+                    path: 'wegas-app/js/util/form-min.js',
+                    requires: ['widget', 'widget-parent', 'widget-child', 'formcss', 'wegas-widget']
+                },
+                formcss: {
+                    path: 'wegas-app/css/form.css',
+                    type: "css"
+                },
                 'wegas-loginwidget': {
                     path: 'wegas-app/js/widget/wegas-loginwidget-min.js',
                     requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
@@ -313,7 +321,7 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-tooltip-min.js',
                     requires: ["wegas-action", "event-mouseenter", "widget", "widget-stack",
                         "widget-position", 'widget-position-constrain'],
-                    ws_provides: 'Button'
+                    ws_provides: 'Tooltip'
                 },
                 'wegas-templatecss': {
                     path: "wegas-app/css/wegas-template.css"
@@ -354,7 +362,6 @@ YUI().use(function(Y) {
                 },
                 "wegas-cssstyles": {
                     path: 'wegas-app/js/plugin/wegas-cssstyles-min.js',
-                    requires: ['stylesheet'],
                     ws_provides: 'CSSStyles'
                 },
                 "wegas-cssbackground": {
@@ -483,7 +490,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-ace': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-ace-min.js',
-                    requires: ['inputex-field', 'ace'],
+                    requires: ['inputex-field', 'ace', 'inputex-textarea', 'wegas-inputex'],
                     ix_provides: "ace"
                 },
                 'wegas-inputex-markup': {
@@ -536,6 +543,11 @@ YUI().use(function(Y) {
                     requires: ['plugin'],
                     ws_provides: 'TreeViewFilter'
                 },
+                'treeview-sortable': {
+                    path: 'wegas-editor/js/util/treeview-sortable.js',
+                    requires: ['plugin', 'sortable', 'sortable-scroll'],
+                    ws_provides: 'TreeViewSortable'
+                },
                 /** Editor **/
                 'wegas-editorcss': {
                     path: 'wegas-editor/css/wegas-editor.css',
@@ -577,10 +589,27 @@ YUI().use(function(Y) {
                     requires: ['wegas-button', 'wegas-widgetmenu'],
                     ws_provides: ['SelectPlayerButton', 'SelectGameButton']
                 },
+                'wegas-pageeditorcss': {
+                    path: "wegas-editor/css/wegas-pageeditor.css",
+                    type: "css"
+                },
                 'wegas-pageeditor': {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
                     ws_provides: 'PageEditor',
-                    requires: ['diff_match_patch', "wegas-editor-widgetaction", "event-mouse-startstop", "node-scroll-info", "anim"]
+                    requires: ['diff_match_patch', "wegas-editor-widgetaction",
+                        "event-mouse-startstop", "node-scroll-info", "anim",
+                        "wegas-pageeditor-dragdrop", 'wegas-pageeditorcss',
+                        'wegas-pageeditor-resize']
+                },
+                'wegas-pageeditor-dragdrop': {
+                    path: 'wegas-editor/js/util/wegas-pageeditor-dragdrop-min.js',
+                    ws_provides: "PageEditorDD",
+                    requires: ['dd-constrain', 'dd-scroll', 'wegas-pageeditorcss']
+                },
+                'wegas-pageeditor-resize': {
+                    path: 'wegas-editor/js/util/wegas-pageeditor-resize-min.js',
+                    ws_provides: "PageEditorResize",
+                    requires: ['dd-constrain', 'dd-scroll', 'wegas-pageeditorcss']
                 },
                 'wegas-console': {
                     path: 'wegas-editor/js/widget/wegas-console-min.js',
@@ -604,7 +633,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-variabletreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-variabletreeview-min.js',
-                    requires: ['wegas-editor-treeview', 'sortable', 'sortable-scroll'],
+                    requires: ['wegas-editor-treeview', 'treeview-sortable'],
                     ws_provides: 'VariableTreeView'
                 },
                 'wegas-datatable': {
@@ -659,7 +688,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
-                    requires: ['wegas-datasource', 'wegas-list'],
+                    requires: ['wegas-datasource'],
                     ws_provides: "PageTreeview"
                 },
                 'wegas-sharerole': {
@@ -734,7 +763,7 @@ YUI().use(function(Y) {
                     ws_provides: "Monopolydisplay"
                 },
                 'wegas-monopoly-entities': {
-                    path: 'wegas-monopoly/js/wegas-monopoly-entities.js',
+                    path: 'wegas-monopoly/js/wegas-monopoly-entities-min.js',
                     requires: ['wegas-entity'],
                     ws_provides: ['ObjectDescriptor']
                 },
@@ -817,6 +846,11 @@ YUI().use(function(Y) {
                     path: 'wegas-proggame/js/wegas-proggame-display-min.js',
                     requires: ['wegas-widget', 'crafty'],
                     ws_provides: 'ProgGameDisplay'
+                },
+                'wegas-proggame-inputex': {
+                    path: 'wegas-proggame/js/wegas-proggame-inputex-min.js',
+                    requires: ['wegas-inputex'],
+                    ix_provides: ['proggametile', "proggamemap"]
                 },
                 /**
                  * Flexitests
@@ -908,9 +942,10 @@ YUI().use(function(Y) {
                     path: 'crafty/crafty-min.js'
                 },
                 ace: {
-                    charset: 'utf-8',
+                    //charset: 'utf-8',
                     //path: "ace/src-min-noconflict/ace.js"
-                    fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
+                    fullpath: "http://ajaxorg.github.io/ace-builds/src/ace.js"
+                            //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
 
                 },
                 googletranslate: {

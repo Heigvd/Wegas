@@ -196,7 +196,7 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                 value: 1000,
                 type: "number",
                 _inputex: {
-                    label: "Feedback time (ms)",
+                    label: "Feedback duration (ms)",
                     description: "0 or less to disable."
                 }
             },

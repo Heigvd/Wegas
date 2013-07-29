@@ -42,7 +42,6 @@ YUI.add("wegas-widget", function(Y) {
         this.publish("message", {
             emitFacade: true
         });
-
     }
 
     Y.mix(Widget.prototype, {
@@ -389,32 +388,7 @@ YUI.add("wegas-widget", function(Y) {
                     legend: "Plugins",
                     items: [{
                             type: "Button",
-                            label: "Tooltip",
-                            data: "Tooltip"
-                        }, {
-                            type: "Button",
                             label: "On click",
-                            data: "ExecuteScriptAction"
-                        }, {
-                            type: "Button",
-                            label: "Open page",
-                            data: "OpenPageAction"
-                        }, {
-                            type: "Button",
-                            label: "Background",
-                            data: "CSSBackground"
-                        }, {
-                            type: "Button",
-                            label: "Text",
-                            data: "CSSText"
-                        }, {
-                            type: "Button",
-                            label: "Position",
-                            data: "CSSPosition"
-                        }, {
-                            type: "Button",
-                            label: "Styles",
-                            data: "CSSStyles",
                             plugins: [{
                                     fn: "WidgetMenu",
                                     cfg: {
@@ -424,23 +398,73 @@ YUI.add("wegas-widget", function(Y) {
                                         event: "mouseenter",
                                         children: [{
                                                 type: "Button",
-                                                label: "Styles",
+                                                label: "Open page",
+                                                data: "OpenPageAction"
+                                            }, {
+                                                type: "Button",
+                                                label: "Impact variables",
+                                                data: "ExecuteScriptAction"
+                                            }]
+                                    }
+                                }]
+                        }, {
+                            type: "Button",
+                            label: "Styles",
+                            plugins: [{
+                                    fn: "WidgetMenu",
+                                    cfg: {
+                                        menuCfg: {
+                                            points: ["tl", "tr"]
+                                        },
+                                        event: "mouseenter",
+                                        children: [{
+                                                type: "Button",
+                                                label: "Tooltip",
+                                                data: "Tooltip"
+                                            }, {
+                                                type: "Button",
+                                                label: "Background",
+                                                data: "CSSBackground"
+                                            }, {
+                                                type: "Button",
+                                                label: "Position",
+                                                data: "CSSPosition"
+                                            }, {
+                                                type: "Button",
+                                                label: "Size",
+                                                data: "CSSSize"
+                                            }, {
+                                                type: "Button",
+                                                label: "Text",
+                                                data: "CSSText"
+                                            }, {
+                                                type: "Button",
+                                                label: "Other styles",
                                                 data: "CSSStyles"
                                             }]
                                     }
                                 }]
                         }, {
                             type: "Button",
-                            label: "Show after",
-                            data: "ShowAfter"
-                        }, {
-                            type: "Button",
-                            label: "Hide after",
-                            data: "HideAfter"
-                        }, {
-                            type: "Button",
-                            label: "Position",
-                            data: "Position"
+                            label: "Animations",
+                            plugins: [{
+                                    fn: "WidgetMenu",
+                                    cfg: {
+                                        menuCfg: {
+                                            points: ["tl", "tr"]
+                                        },
+                                        event: "mouseenter",
+                                        children: [{
+                                                type: "Button",
+                                                label: "Show after",
+                                                data: "ShowAfter"
+                                            }, {
+                                                type: "Button",
+                                                label: "Hide after",
+                                                data: "HideAfter"
+                                            }]
+                                    }
+                                }]
                         }]
                 }
             }
@@ -470,7 +494,8 @@ YUI.add("wegas-widget", function(Y) {
         /**
          * @function
          * @private
-         * @param cfg, cb
+         * @param cfg
+         * @param {function} cb
          * @description Load the modules from an Wegas widget definition
          */
         use: function(cfg, cb) {

@@ -13,9 +13,7 @@
 
 YUI.add('wegas-pageloader', function(Y) {
     "use strict";
-
     var CONTENTBOX = 'contentBox', PageLoader;
-
     /**
      * @name Y.Wegas.PageLoader
      * @extends Y.Widget
@@ -28,7 +26,7 @@ YUI.add('wegas-pageloader', function(Y) {
             [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.PageLoader# */
 
-        // *** Private fields *** //
+// *** Private fields *** //
         /**
          * Current page id
          */
@@ -47,10 +45,7 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
-            PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this;    // We keep a references of all loaded PageLoaders
-            if (this.get("defaultPageId")) {
-                this.set("pageId", this.get("defaultPageId"));
-            }
+            PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this; // We keep a references of all loaded PageLoaders
             this.publish("contentUpdated", {emitFacade: false});
         },
         /**
@@ -77,12 +72,9 @@ YUI.add('wegas-pageloader', function(Y) {
 //            }, this));
 
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", onUpdate, this));
-
             this.on("*:exception", function(e) {
                 var test;
-
                 e.halt(true);
-
                 if (test = e.message.match(/ConstraintViolationException: (.*) is out of bound/)) {
                     this.showMessage("error", "Insufficient " + test[1] + ".");
                 } else {
@@ -100,9 +92,12 @@ YUI.add('wegas-pageloader', function(Y) {
             var val = this.get("variable.evaluated");
             if (val && val.getInstance().get('value')) {                        // If there is a variable to refresh
                 this.set("pageId", val.getInstance().get('value'));
-            } else {                                                            // Otherwise use pageId (in case the setter has not been called yet)
-                this.set("pageId", this.get("pageId"));
+            } else if (this.get("defaultPageId") && !this.get("pageId")) {      //in case a defaultPageId is defined and no pageId is 
+                this.set("pageId", this.get("defaultPageId"));
+            } else {
+                this.set("pageId", this.get("pageId")); // Otherwise use pageId (in case the setter has not been called yet)
             }
+
         },
         /**
          * @function
@@ -120,7 +115,17 @@ YUI.add('wegas-pageloader', function(Y) {
             }
             delete PageLoader.pageLoaderInstances[this.get("pageLoaderId")];
         },
-        // *** Private Methods ***/
+        /**
+         * reload current page from cache
+         * @function
+         * @public
+         */
+        reload: function() {
+            this.showOverlay();
+            this.currentPageId = null;
+            this.syncUI();
+        },
+// *** Private Methods ***/
         /**
          * @function
          * @private
@@ -132,9 +137,9 @@ YUI.add('wegas-pageloader', function(Y) {
             var same = false;
             this.get("boundingBox").ancestors("." + this.getClassName(), false).some(function(node) {
                 var widget = Y.Widget.getByNode(node);
-                if (pageId === widget.get('pageId') || pageId === widget.get('variable.evaluated')) {
+                if (+pageId === +widget.currentPageId || +pageId === +widget.get('variable.evaluated')) {
                     same = true;
-                    Y.log("Pageloader [" + this.get("pageLoaderId") + "] tries to load page (" + pageId + ") already loaded by one of its ancestor.", 'warn', 'Y.Wegas.PageLoader');
+                    this.showMessage("warn", "Pageloader [" + this.get("pageLoaderId") + "] tries to load page (" + pageId + ") already loaded by one of its ancestor[" + widget.get("pageLoaderId") + "].");
                     return true;
                 }
             }, this);
@@ -198,26 +203,28 @@ YUI.add('wegas-pageloader', function(Y) {
                             return val;
                         }
                         if (this.get("widget")) {
-                            this.get("widget").destroy();                           // @fixme we should remove the widget instead of destroying it
+                            this.get("widget").destroy(); // @fixme we should remove the widget instead of destroying it
+                            this.set("widget", null);
                         }
+                        this.set("widgetCfg", widgetCfg);
                         this.get(CONTENTBOX).empty();
                         this.showOverlay();
-                        try {
-                            Y.Wegas.Widget.use(widgetCfg, Y.bind(function(cfg) {    // Load the subwidget dependencies
-                                var widget = Y.Wegas.Widget.create(cfg);            // Render the subwidget
+                        Y.Wegas.Widget.use(widgetCfg, Y.bind(function() {    // Load the subwidget dependencies
+                            try {
+                                var widget = Y.Wegas.Widget.create(widgetCfg); // Render the subwidget
                                 widget.render(this.get(CONTENTBOX));
-                                widget['@pageId'] = cfg['@pageId'];
+                                widget['@pageId'] = widgetCfg['@pageId'];
                                 this.set("widget", widget);
-                                widget.addTarget(this);                             // Event on the loaded widget will be forwarded
+                                widget.addTarget(this); // Event on the loaded widget will be forwarded
+                            } catch (e) {
+                                this.get(CONTENTBOX).setContent("Unable to create page's structure ...");
+                                Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
+                            } finally {
                                 this.hideOverlay();
                                 this.fire("contentUpdated");
-                            }, this, widgetCfg));
-                        } catch (e) {
-                            Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
-                        }
+                            }
+                        }, this));
                     }, this));
-
-
                     return val;
                 }
             },
@@ -234,6 +241,19 @@ YUI.add('wegas-pageloader', function(Y) {
              */
             widget: {
                 "transient": true
+            },
+            widgetCfg: {
+                "transient": true,
+                getter: function(val) {
+                    var p;
+                    if (this.get("widget")) {
+                        return Y.JSON.stringify(this.get("widget").toObject("@pageId"), null, "\t");
+                    } else {
+                        p = Y.clone(val);
+                        delete p['@pageId'];
+                        return Y.JSON.stringify(val, null, "\t");
+                    }
+                }
             }
         },
         pageLoaderInstances: {},
@@ -242,5 +262,4 @@ YUI.add('wegas-pageloader', function(Y) {
         }
     });
     Y.namespace('Wegas').PageLoader = PageLoader;
-
 });

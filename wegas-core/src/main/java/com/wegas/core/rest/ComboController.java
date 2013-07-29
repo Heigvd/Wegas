@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.Helper;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
@@ -72,7 +73,7 @@ public class ComboController {
         // Variant var = req.selectVariant(vars);
 
         final CacheControl cc = new CacheControl();
-        cc.setMaxAge(60000);
+        //cc.setMaxAge(60000);
         //cc.setPrivate(true);
         //cc.setNoTransform(true);
         //cc.setMustRevalidate(false);
@@ -84,7 +85,7 @@ public class ComboController {
         return Response.ok(this.getCombinedFile(files, mediaType)).
                 type(mediaType).
                 cacheControl(cc).
-                //expires().
+                expires(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 3))).
                 build();
     }
 

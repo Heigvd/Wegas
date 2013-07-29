@@ -12,16 +12,12 @@
 YUI.add('wegas-editor-variabletreeview', function(Y) {
     "use strict";
 
-    var NODE = 'node',
-            PARENT_NODE = 'parentNode',
-            CONTENTBOX = 'contentBox',
+    var CONTENTBOX = 'contentBox',
             ID = "id",
             CLASS = "@class",
             NAME = "name",
-            NODES = 'nodes',
             EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>",
             Wegas = Y.Wegas,
-            GROUPS = ["question", "list"],
             VariableTreeView;
 
     /**
@@ -37,68 +33,24 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         // ** Lifecycle methods ** //
         renderUI: function() {
             VariableTreeView.superclass.renderUI.apply(this);
-            var cb = this.get(CONTENTBOX);
 
-            cb.setStyles({
-                overflowY: "auto",
-                overflowX: "hidden"
-            });
+            this.treeView.plug(Y.Plugin.TreeViewSortable, {
+                nodeClass: "wegas-editor-questionitem",
+                parentNode: ".wegas-editor-question"
+            }, {
+                nodeClass: "wegas-editor-listitem",
+                parentNode: ".wegas-editor-list"
+            });                                                                 // Add sortable plugin to the treeview
+            this.treeView.sortable.on("sort", function(e) {                     // On sort event,
+                var entity = e.dragWidget.get("data.entity"),
+                        dropEntity = e.dropWidget.get("data.entity");
 
-            this.sortable = new VariableSortable({
-                container: cb,
-                nodes: 'li',
-                opacity: '.2',
-//                invalid: ".wegas-editor-dummy"
-                // handles: ['.yui3-treenode-content-icon', '.yui3-treeleaf-content-icon']
+                Wegas.Facade.VariableDescriptor.cache.move(entity, dropEntity, e.index);// call facade method
             });
-            this.sortable.delegate.dd.plug(Y.Plugin.DDNodeScroll, {
-                node: cb,
-                horizontal: false
-            });
-//this.sortable.delegate.dd.after('drag:over', this.syncDummies, this);
-            this.sortable.delegate.dd.after('drag:end', this.onDragEnd, this);
-
-            // .plug(Y.Plugin.DDConstrained, {
-            //    constrain2node: cb
-            // });
-            // this.sortable.plug(Y.Plugin.SortScroll);
-            // list1.delegate.dd.plug(Y.Plugin.DDConstrained, {
-            //      constrain2node: '#demo'
-            // });
-        },
-        syncDummies: function() {
-            var cb = this.get(CONTENTBOX), i;
-            cb.all(".wegas-editor-dummy").remove(true);
-            for (i = 0; i < GROUPS.length; i += 1) {                       // Add dummies to allow drag on empty nodes
-                cb.all(".wegas-editor-" + GROUPS[i] + " ul")
-                        .each(function(item) {
-                    if (item.get("children").isEmpty()) {
-                        item.append("<li class=\"wegas-editor-dummy wegas-editor-" + GROUPS[i] + "item \">empty</li>")
-                    }
-                }, this);
-            }
-            this.sortable.sync();
         },
         syncUI: function() {
             VariableTreeView.superclass.syncUI.call(this);
-            this.syncDummies();
-        },
-        onDragEnd: function(e) {
-            var node = this.sortable.delegate.get('currentNode'),
-                    //  prev = node.previous(), next = node.next(),
-                    dragWidget = Y.Widget.getByNode(node),
-                    entity = dragWidget.get("data.entity"),
-                    dropNode = node.get("parentNode"),
-                    dropWidget = Y.Widget.getByNode(dropNode),
-                    dropEntity = dropWidget.get("data.entity"),
-                    index = dropNode.get("children").indexOf(node);
-
-            Y.log("onDragEnd()", "info", "Wegas.VariableTreeView");
-
-            dropWidget.add(dragWidget, index);                                  // Update treeview positions
-            this.syncDummies();
-            Wegas.Facade.VariableDescriptor.cache.move(entity, dropEntity, index);// Sync cache
-
+            this.treeView.syncUI();                                             // Needed by treeview sort plugin
         },
         //
         // *** Private Methods *** //
@@ -346,146 +298,5 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
     });
     Y.namespace('Wegas').VariableTreeView = VariableTreeView;
 
-    /**
-     * Not yet in usese
-     */
-    //var SortableTreeview = Y.Base.create("wegas-sortabletreeview", Y.Plugin.Base, [], {
-    //    initializer: function() {
-    //        this.afterHostEvent(RENDER, function() {
-    //            this.sortable = new Y.Sortable({
-    //                container: this.get("contentBox"),
-    //                nodes: 'li',
-    //                opacity: '.2'
-    //            });
-    //        });
-    //    }
-    //}, {
-    //    NS: "treeviewmenu",
-    //    NAME: "treeviewmenu"
-    //});
-    //Y.namespace("Plugin").SortableTreeview = SortableTreeview;
 
-    /**
-     * Extend so in works with nested lists
-     *
-     * @returns {undefined}
-     */
-    function VariableSortable() {
-        VariableSortable.superclass.constructor.apply(this, arguments);
-    }
-    Y.extend(VariableSortable, Y.Sortable, {
-        _onDragStart: function() {
-//            var i = 0;
-//            this.dummies = [];
-//            for (i = 0; i < GROUPS.length; i += 1) {                       // Add dummies to allow drag on empty nodes
-//                this.get("container").all(".wegas-editor-" + GROUPS[i] + " ul")
-//                        .each(function(item) {
-//                    if (item.get("children").isEmpty()) {
-////                            var w = Y.Widget.getByNode(item);
-////                            w.add({
-////                                type: 'TreeLeaf',
-////                                label: "empty",
-////                                iconCSS: "",
-////                                cssClass: "wegas-editor-" + this.GROUPS[i] + "item",
-////                                data: {
-////                                    entity: null
-////                                }
-////                            })
-////                            w.add({
-////                                type: 'TreeLeaf',
-////                                label: "",
-////                                iconCSS: "",
-////                                cssClass: "wegas-editor-" + this.GROUPS[i] + "item",
-////                                data: {
-////                                    entity: null
-////                                }
-////                            });
-//                        item.append("<li class=\"wegas-editor-dummy wegas-editor-" + GROUPS[i] + "item \">empty</li>")
-//                        item.append("<li class=\"wegas-editor-dummy wegas-editor-" + GROUPS[i] + "item \"></li>")
-//                    }
-////                          item.append("<li class=\"wegas-editor-dummy wegas-editor-" + this.GROUPS[i] + "item \"></li>")
-//                }, this);//.append("<li class=\"wegas-editor-dummy wegas-editor-" + this.GROUPS[i] + "item \"></li>");
-//                // .append("<li class=\"wegas-editor-dummy wegas-editor-" + this.GROUPS[i] + "item \"></li>")
-//            }
-
-            VariableSortable.superclass._onDragStart.apply(this, arguments);
-        },
-        _onDropEnter: function(e) {
-            var dropNode = e.drop.get(NODE),
-                    dragNode = e.drag.get(NODE);
-
-            if (!dropNode.test(this.get(NODES)) &&
-                    !dragNode.get(PARENT_NODE).compareTo(dropNode)) {
-//                dropNode.append(dragNode);
-            }
-        },
-        _onDragOver: function(e) {
-
-            var i, CLASSES = [".wegas-editor-questionitem", ".wegas-editor-listitem"],
-                    found = false,
-                    dragNode = e.drag.get(NODE),
-                    dropNode = e.drop.get(NODE);
-
-
-            for (i = 0; i < CLASSES.length; i += 1) {                           // Added custom class mathing for variable groups
-                found = found || (dragNode.test(CLASSES[i]) && dropNode.test(CLASSES[i]));
-            }
-            if (!found) {
-                return;
-            }
-
-            if (!e.drop.get(NODE).test(this.get(NODES))) {
-                return;
-            }
-            if (dragNode == e.drop.get(NODE)) {
-                return;
-            }
-            // is drop a child of drag?  - this is the bit that's added:
-            if (dragNode.contains(e.drop.get(NODE))) {
-                return;
-            }
-
-            switch (this.get('moveType').toLowerCase()) {
-                case 'insert':
-                    var dir = ((this._up) ? 'before' : 'after');
-                    e.drop.get(NODE).insert(e.drag.get(NODE), dir);
-                    break;
-                case 'swap':
-                    Y.DD.DDM.swapNode(e.drag, e.drop);
-                    break;
-                case 'move':
-                case 'copy':
-                    var dropsort = Y.Sortable.getSortable(e.drop.get(NODE).get(PARENT_NODE)),
-                            oldNode, newNode;
-
-                    if (!dropsort) {
-                        Y.log('No delegate parent found', 'error');
-                        return;
-                    }
-
-                    Y.DD.DDM.getDrop(e.drag.get(NODE)).addToGroup(dropsort.get(ID));
-
-                    //Same List
-                    if (e.drag.get(NODE).get(PARENT_NODE).contains(e.drop.get(NODE))) {
-                        Y.DD.DDM.swapNode(e.drag, e.drop);
-                    } else {
-                        if (this.get('moveType') == 'copy') {
-                            //New List
-                            oldNode = e.drag.get(NODE);
-                            newNode = oldNode.cloneNode(true);
-
-                            newNode.set(ID, '');
-                            e.drag.set(NODE, newNode);
-                            dropsort.delegate.createDrop(newNode, [dropsort.get(ID)]);
-                            oldNode.setStyles({
-                                top: '',
-                                left: ''
-                            });
-                        }
-                        e.drop.get(NODE).insert(e.drag.get(NODE), 'before');
-                    }
-                    break;
-            }
-        }
-    });
 });

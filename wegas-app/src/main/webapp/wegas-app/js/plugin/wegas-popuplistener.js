@@ -60,7 +60,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             this.onHostEvent("*:message", this.onShowMessage);
 
             if (this.get("showServerMessages")) {
-                this.handlers.push(Y.Wegas.Facade.VariableDescriptor.on(this.get("event"), function(e) {
+                this.handlers.push(Y.Wegas.Facade.VariableDescriptor.on("popupEvent", function(e) {
                     this.get("host").showMessage("info", e.content);
                 }, this));
             }

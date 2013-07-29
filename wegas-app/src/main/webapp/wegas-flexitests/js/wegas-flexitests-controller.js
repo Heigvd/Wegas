@@ -112,6 +112,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             elements.response = response;
             elements.delay = responseTime;
             reponseElement = this.centerElement.getActiveElement().flexiresponse;
+
             if (reponseElement instanceof Y.Plugin.FlexiResponse &&
                     reponseElement.get("value") === response) {
                 elements.valid = true;
@@ -121,13 +122,14 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 this.mcq.error(responseTime);
             }
             this.mcq.save(elements);
+            this.mask();
             if (this.questionToDo.length !== 0) {
-                this.next();
+                Y.later(+this.mcq.get("feedback"), this, this.next);
             }
         },
         next: function() {
             var onSuccess = Y.bind(function() {
-                Y.later(this.get("fixPoint"), this, this.createLoadingEvent);
+                Y.later(+this.get("fixPoint"), this, this.createLoadingEvent);
                 this.fixPoint.show();
             }, this);
             this.mask();
@@ -160,14 +162,23 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     left = this.leftElement.getActiveElement(),
                     center = this.centerElement.getActiveElement(),
                     right = this.rightElement.getActiveElement();
+            //if (swaped) {
+            //    elements.left = right.get("content") || right.get("url");
+            //    elements.right = left.get("content") || left.get("url");
+            //} else {
+            //    elements.left = left.get("content") || left.get("url");
+            //    elements.right = right.get("content") || right.get("url");
+            //}
+            //elements.center = center.get("content") || center.get("url");
+            /*Extract elements in results*/
             if (swaped) {
-                elements.left = right.get("content") || right.get("url");
-                elements.right = left.get("content") || left.get("url");
+                elements.left = "right";
+                elements.right = "left";
             } else {
-                elements.left = left.get("content") || left.get("url");
-                elements.right = right.get("content") || right.get("url");
+                elements.left = "left";
+                elements.right = "right";
             }
-            elements.center = center.get("content") || center.get("url");
+
             return elements;
         },
         createLoadingEvent
@@ -308,6 +319,11 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         swap: function() {
             this.get("host").leftElement.get("contentBox").swap(this.get("host").rightElement.get("contentBox"));
             this.swaped = !this.swaped;
+        },
+        destructor: function() {
+            if (this.swaped) {
+                this.swap();
+            }
         }
     }, {
         NS: "swapzone",

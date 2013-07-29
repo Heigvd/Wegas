@@ -68,7 +68,7 @@ YUI.add('wegas-action', function(Y) {
          * @private
          */
         initializer: function() {
-            this.onHostEvent(this.get("targetEvent"), this.execute, this);
+            this.onHostEvent(this.get("targetEvent"), this.execute);
         },
         /**
          * @function
@@ -113,8 +113,7 @@ YUI.add('wegas-action', function(Y) {
         NS: "openurlaction",
         NAME: "OpenUrlAction",
         ATTRS: {
-            url: {
-            },
+            url: {},
             /**
              * Can be "self" or "blank"
              */
@@ -163,8 +162,11 @@ YUI.add('wegas-action', function(Y) {
             },
             targetPageLoaderId: {
                 type: "string",
+                value: "maindisplayarea",
                 _inputex: {
-                    label: "Target zone"
+                    label: "Target zone",
+                    value: "maindisplayarea",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
         }
@@ -283,7 +285,7 @@ YUI.add('wegas-action', function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Save to"
+                    legend: "Save to"
                 }
             },
             targetEvent: {
