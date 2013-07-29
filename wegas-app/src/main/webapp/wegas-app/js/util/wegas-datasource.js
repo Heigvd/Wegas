@@ -1093,7 +1093,7 @@ YUI.add('wegas-datasource', function(Y) {
                 },
                 on: {success: Y.bind(function(e) {
                         if (callback instanceof Function) {
-                            callback(e.response.results);
+                            callback(e.response.results, e.data.getResponseHeader("Page"));
                         }
                     }, this)}
             });
@@ -1153,7 +1153,7 @@ YUI.add('wegas-datasource', function(Y) {
                 },
                 on: {success: Y.bind(function(e) {
                         if (callback instanceof Function) {
-                            callback(e.response.results);
+                            callback(e.response.results, e.data.getResponseHeader("Page"));
                         }
                     }, this)}
             });

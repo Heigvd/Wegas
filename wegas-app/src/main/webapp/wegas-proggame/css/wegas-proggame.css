@@ -267,3 +267,71 @@
 .wegas-proggame-code {
     font-family: monospace;
 }
+
+/* Inputex map field */
+.wegas-inputex-proggamemap .inputEx-List-link {
+    display:none;
+}
+.wegas-inputex-proggamemap .inputEx-ListField-childContainer .inputEx-ListField-childContainer {
+    height: 32px;
+}
+.wegas-inputex-proggamemap .inputEx-ListField-childContainer .inputEx-ListField-childContainer >div {
+    display: inline-block;
+}
+.wegas-inputex-proggamemap .inputEx-ListField-subFieldEl {
+    margin: 0;
+}
+.add-col ,.add-row{
+    cursor:pointer;
+}
+.add-col img {
+    background: transparent url(../../lib/inputex/src/inputex-list/assets/skins/sam/add.png) no-repeat scroll 0%;
+    width: 16px;
+    height: 16px;
+}
+/* Inputex tile field */
+.inputex-proggametile {
+    width:32px;
+    height:32px;
+    cursor: pointer;
+    background: url(/Wegas/wegas-proggame/images/terrain.png) no-repeat;
+}
+.inputex-proggametile:hover {
+
+    box-shadow: 1px 1px 1px black,-1px -1px 1px black;
+}
+.inputex-proggametile:hover > div {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 1px 1px 1px black,-1px -1px 1px black;
+}
+.yui3-proggame-alignable {
+    position:absolute;
+    border: 1px solid lightgray;
+    box-shadow: 2px 2px 2px darkgray;
+    background: white;
+}
+.yui3-proggame-alignable-hidden {
+    visibility:hidden;
+}
+.yui3-proggame-alignable-content {
+    margin: 2px;
+    max-height:512px;
+    overflow:auto;
+}
+.yui3-proggame-alignable .table {
+    background: url(/Wegas/wegas-proggame/images/terrain.png) no-repeat;
+}
+
+.yui3-proggame-alignable .table > div {
+    height:32px;
+    white-space: nowrap;
+}
+.yui3-proggame-alignable .table > div > div {
+    width: 32px;
+    height:32px;
+    display:   inline-block;
+    cursor:pointer;
+}
+.yui3-proggame-alignable .table > div > div:hover {
+    box-shadow: 1px 1px 1px black,-1px -1px 1px black;
+}

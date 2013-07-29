@@ -8,7 +8,7 @@
 YUI.add('wegas-editor-pagetreeview', function(Y) {
     var PageEditor, PageMeta, CONTENT_BOX = "contentBox",
             BOUNDING_BOX = "boundingBox",
-            NEWPAGE = (new Y.Wegas.List({type: "List"})).toObject();
+            NEWPAGE = {type: "AbsoluteLayout"};
     PageEditor = Y.Base.create("wegas-editor-page", Y.Widget, [Y.WidgetChild], {
         initializer: function() {
             this.dataSource = Y.Wegas.Facade.Page.cache;
@@ -33,7 +33,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         },
         bindUI: function() {
             this.on("*:newPage", function(e) {
-                this.dataSource.createPage(NEWPAGE);
+                this.dataSource.createPage(NEWPAGE, Y.bind(function(page, id) {
+                    this.get("pageLoader").set("pageId", id);
+                }, this));
             });
             this.handlers.push(this.treeView.on("treenode:click", function(e) {
                 var node = e.node;
@@ -42,7 +44,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }
                 if (node.get("data")["page"]) {
                     this.get("pageLoader").set("pageId", node.get("data")["page"]);
-                    node.get("rightWidget").menu.getMenu().item(0).fire("click");
+                    // node.get("rightWidget").menu.getMenu().item(0).fire("click");// Fire 1st menu item action on page click
                 } else if (node.get("data.widget")) {
                     node.get("data.widget").get(BOUNDING_BOX).scrollIntoView();
                     node.get("rightWidget").simulate("click");
@@ -160,7 +162,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             for (i in index) {
 
                 node = new Y.TreeNode({
-                    label: "Page: " + (index[i] !== "" ? index[i] : "<i>unamed</i>") + " (" + i + ")",
+                    label: index[i] !== "" ? index[i] : "<i>Unnamed (" + i + ")</i>",
                     data: {
                         page: i,
                         name: index[i]
@@ -180,9 +182,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                             label: "Duplicate",
                             on: {
                                 click: Y.bind(function(pageId) {
-                                    Y.Wegas.Facade.Page.cache.duplicate(pageId, {
-                                        success: Y.bind(this.buildIndex, this)
-                                    });
+                                    Y.Wegas.Facade.Page.cache.duplicate(pageId, Y.bind(function(page, id) {
+                                        this.get("pageLoader").set("pageId", id);
+                                    }, this));
                                 }, this, i)
                             }
                         }, {
@@ -201,6 +203,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 if (+i === +page) {
                     this.buildSubTree(node, widget);
                     node.expand(false);
+                    node.set("selected", 2);
                 }
             }
         },

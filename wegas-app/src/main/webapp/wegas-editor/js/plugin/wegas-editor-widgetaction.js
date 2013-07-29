@@ -57,7 +57,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
          */
         execute: function() {
             Plugin.EditEntityAction.showEditForm(this.get("widget"), Y.bind(function(val, e, f) {
-                Plugin.EditEntityAction.hideEditFormOverlay();
+                Plugin.EditEntityAction.showEditFormOverlay();
                 var i, targetWidget = this.get("widget"), plugins = {}, plugin;
                 targetWidget.setAttrs(val);
                 for (i = 0; i < val.plugins.length; i += 1) {
@@ -76,9 +76,14 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                     }
                 }
                 targetWidget.syncUI();
-                this.get("dataSource").cache.patch(targetWidget.get("root").toObject());
+                this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), Y.bind(function() {
+                    Plugin.EditEntityAction.hideEditFormOverlay();
+                    Plugin.EditEntityAction.showFormMessage("success", "Item has been saved.")
+                }, this));
             }, this), Y.bind(function() {
-                this.get("widget").highlight(false);
+                if (this.get("widget") && !this.get("widget").get("destroyed")) {
+                    this.get("widget").highlight(false);
+                }
             }, this));
 
             this.get("widget").highlight(true);
@@ -100,24 +105,23 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     };
     Y.extend(AddChildWidgetAction, WidgetAction, {
         execute: function() {
-            Y.use(Y.Wegas.Editable.getRawModulesFromDefinition({type: this.get("childType")}), Y.bind(function() {
+            Wegas.Editable.use({type: this.get("childType")}, Y.bind(function() { // Load target widget dependencies
                 var newWidget = new Y.Wegas.Widget.create({
                     "type": this.get("childType")
                 });
 
-                Wegas.Editable.use(newWidget, Y.bind(function() {                  // Load target widget dependencies
+                Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
+                    Plugin.EditEntityAction.showEditFormOverlay();
+                    var targetWidget = this.get("widget"), widget = new Y.Wegas.Widget.create(val);
+                    targetWidget.add(widget);
 
-                    Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
+                    this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), Y.bind(function() {
+                        var tw = new Y.Wegas.Text();
+                        Plugin.EditEntityAction.showFormMessage("success", "Element has been saved");
                         Plugin.EditEntityAction.hideEditFormOverlay();
-                        var targetWidget = this.get("widget"), widget = new Y.Wegas.Widget.create(val);
-                        targetWidget.add(widget);
-                        this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), Y.bind(function() {
-                            var tw = new Y.Wegas.Text();
-                            tw.plug(Plugin.EditWidgetAction, {"widget": this});
-                            tw.EditWidgetAction.execute();
-                        }, widget));
-                    }, this));
-
+                        tw.plug(Plugin.EditWidgetAction, {"widget": this});
+                        tw.EditWidgetAction.execute();
+                    }, widget));
                 }, this));
             }, this));
 
@@ -148,7 +152,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
 
                 if (root !== targetWidget) {
                     targetWidget.destroy();
-                } else if (targetWidget.item(0)) { // @TODO: Panic mode, to change
+                } else if (targetWidget.item && targetWidget.item(0)) { // @TODO: Panic mode, to change
                     targetWidget.removeAll();
                 }
 

@@ -13,7 +13,7 @@
 
     <!-- Apache Shiro Listener -->
     <!-- shiro filter must be declared before any other filter, to ensure
-        security checks. -->
+    security checks. -->
     <listener>
         <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
     </listener>
@@ -59,13 +59,21 @@
             <param-value>true</param-value>
         </init-param>
         <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter</param-value>
-        </init-param>
-        <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
             <param-value>com.wegas.core.rest.util.ViewRequestFilter</param-value>
         </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter</param-value>
+        </init-param>
+        <!--        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>com.wegas.core.rest.util.ViewRequestFilter;com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter;com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+        </init-param>-->
         <!--<init-param>
             <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
             <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
@@ -74,14 +82,6 @@
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
             <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
         </init-param>-->
-        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-            <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
-        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>

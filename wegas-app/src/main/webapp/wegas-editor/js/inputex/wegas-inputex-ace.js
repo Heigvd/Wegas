@@ -22,7 +22,7 @@ YUI.add('wegas-inputex-ace', function(Y) {
         inputEx.AceField.superclass.constructor.call(this, options);
     };
 
-    Y.extend(inputEx.AceField, inputEx.Field, {
+    Y.extend(inputEx.AceField, inputEx.Textarea, {
         /**
          * Set the default values of the options
          * @param {Object} options Options object as passed to the constructor
@@ -43,25 +43,27 @@ YUI.add('wegas-inputex-ace', function(Y) {
          * Render the field using the YUI Editor widget
          */
         renderComponent: function() {
-            this.el = Y.Node.create('<div style="">'
-                    + (this.options.value || "") + '</div>');
-            this.fieldContainer.appendChild(this.el.getDOMNode());
+            if (window.ace) {                                                   // Ace is present, run
+                this.el = Y.Node.create('<div style="">'
+                        + (this.options.value || "") + '</div>');
+                this.fieldContainer.appendChild(this.el.getDOMNode());
 
-            this.editor = ace.edit(this.el.getDOMNode());
+                this.editor = ace.edit(this.el.getDOMNode());
 
-            //this.editor.setTheme("ace/theme/monokai");
-            this.session = this.editor.getSession();
-            this.session.setMode("ace/mode/" + this.options.language);
-            this.editor.setHighlightActiveLine(false);
-            this.editor.renderer.setHScrollBarAlwaysVisible(false);
+                this.session = this.editor.getSession();
+                this.session.setMode("ace/mode/" + this.options.language);
+                this.editor.setHighlightActiveLine(false);
+                this.editor.renderer.setHScrollBarAlwaysVisible(false);
 
+                Y.Wegas.app.after("layout:resize", function() {
+                    Y.once('domready', this.resize, this);
+                }, this.editor);
 
-            Y.Wegas.app.after("layout:resize", function() {
-                Y.once('domready', this.resize, this);
-            }, this.editor);
-
-            Y.after('windowresize', Y.bind(this.editor.resize, this.editor));
-
+                Y.after('windowresize', Y.bind(this.editor.resize, this.editor));
+            } else {                                                            // Fallback
+                Y.log("Unable to find Ace libraries, falling back to text field", "error", "Wegas.Inputex.Ace");
+                inputEx.AceField.superclass.renderComponent.call(this);
+            }
             //this.session.addEventListener("tokenizerUpdate", Y.bind(function(e) {
             //    var i, token,
             //    tokens = this.session.getTokens(e.data.first, e.data.last);
@@ -77,10 +79,14 @@ YUI.add('wegas-inputex-ace', function(Y) {
          * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
          */
         setValue: function(value, sendUpdatedEvt) {
-            this.session.setValue(value);
-            if (sendUpdatedEvt !== false) {
-                // fire update event
-                this.fireUpdatedEvt();
+            if (this.session) {
+                this.session.setValue(value);
+                if (sendUpdatedEvt !== false) {
+                    // fire update event
+                    this.fireUpdatedEvt();
+                }
+            } else {    // fallback
+                return inputEx.AceField.superclass.setValue.apply(this, arguments);
             }
         },
         /**
@@ -88,7 +94,11 @@ YUI.add('wegas-inputex-ace', function(Y) {
          * @return {String} the ace area content string
          */
         getValue: function() {
-            return this.session.getValue();
+            if (this.session) {
+                return this.session.getValue();
+            } else {
+                return inputEx.AceField.superclass.getValue.apply(this);
+            }
         }
     });
 

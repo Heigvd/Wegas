@@ -81,7 +81,7 @@ YUI.add("wegas-inputex-url", function (Y) {
                     bodyContent: '',
                     width: 600,
                     height: Y.DOM.winHeight() - 150,
-                    zIndex: 25,
+                    zIndex: 80,
                     modal: true,
                     render: true,
                     centered: true
