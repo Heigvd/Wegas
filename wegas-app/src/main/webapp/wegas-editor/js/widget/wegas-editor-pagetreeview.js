@@ -162,7 +162,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             for (i in index) {
 
                 node = new Y.TreeNode({
-                    label: index[i] !== "" ? index[i] : "<i>Unnamed (" + i + ")</i>",
+                    label: index[i] !== "" ? index[i] + " (" + i + ")" : "<i>Unnamed (" + i + ")</i>",
                     data: {
                         page: i,
                         name: index[i]
