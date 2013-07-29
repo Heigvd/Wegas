@@ -11,6 +11,9 @@
 .wegas-pageloader{
     -webkit-transition: padding-top 0.7s;
 }
+.wegas-pageeditor-designmode .wegas-pageloader-content{
+    position: relative;
+}
 .wegas-pageeditor-designmode .wegas-list,
 .wegas-pageeditor-designmode .wegas-choicelist,
 .wegas-pageeditor-designmode .wegas-pageloader{
@@ -155,4 +158,8 @@
 /*special rules*/
 .wegas-pageeditor-layoutmode .timed-hidden-node{
     visibility: visible;
+}
+body > .wegas-pageloader{
+    position: absolute;
+    background: inherit;
 }

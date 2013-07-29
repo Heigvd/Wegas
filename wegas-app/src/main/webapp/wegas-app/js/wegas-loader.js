@@ -572,6 +572,11 @@ YUI().use(function(Y) {
                         "wegas-pageeditor-dragdrop", 'wegas-pageeditorcss',
                         'wegas-pageeditor-resize']
                 },
+                'wegas-preview-fullscreen':{
+                    path:'wegas-editor/js/plugin/wegas-preview-fullscreen-min.js',
+                    ws_provides: 'PreviewFullScreen',
+                    requires:["plugin"]
+                },
                 'wegas-pageeditor-dragdrop': {
                     path: 'wegas-editor/js/util/wegas-pageeditor-dragdrop-min.js',
                     ws_provides: "PageEditorDD",
