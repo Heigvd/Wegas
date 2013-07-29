@@ -81,7 +81,13 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-layoutmode",
                             e.newVal);
                 }, this));
-
+                /*Refresh*/
+                this.refreshButton = new Y.Button({
+                    label:"<span class='wegas-icon wegas-icon-reset'></span>Refresh"
+                }).render(el);
+                this.fixedHandlers.push(this.refreshButton.after("click", function(e) {
+                    this.get("host").reload();
+                }, this));
                 /** Source view**/
 
                 this.sourceButton = new Y.ToggleButton({
@@ -303,6 +309,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             }
             if (this.layoutButton) {
                 this.layoutButton.destroy(true);
+            }
+            if (this.refreshButton) {
+                this.refreshButton.destroy(true);
             }
             if (this.sourceButton) {
                 this.sourceButton.destroy(true);

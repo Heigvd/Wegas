@@ -15,7 +15,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
     var dateFormatter = function(o) {
         return (new Date(+o.value)).toLocaleString();
     }, UNWANTED_PROPS = function(item) {
-        return item !== "date";
+        return item !== "date" && item !== "";
     }, getChildById = function(widget, id) {
         var returnItem = null;
         widget.some(function(item) {
@@ -118,7 +118,8 @@ YUI.add("wegas-flexitests-results", function(Y) {
             for (i in demographics) {
                 if (demographics.hasOwnProperty(i)) {
                     o = demographics[i].properties;
-                    j = Y.Array.filter(Y.Object.keys(demographics[i].properties), UNWANTED_PROPS);
+                    j = Y.Array.filter(Y.Object.keys(o), UNWANTED_PROPS);
+
                     if (this.resultTable) {
                         this.resultTable.destroy();
                     }
@@ -136,7 +137,9 @@ YUI.add("wegas-flexitests-results", function(Y) {
                             "valid",
                             {label: "total time (ms)", key: "totalTime"}
                         ].concat(j)});
-                    break;
+                    if (j.length !== 0) {
+                        break;
+                    }
                 }
             }
             for (i in tests) {
