@@ -163,3 +163,6 @@ body > .wegas-pageloader{
     position: absolute;
     background: inherit;
 }
+.yui3-skin-sam .wegas-icon-fullscreen{
+    background: url(../../wegas-editor/images/full_screen.png) no-repeat;
+}

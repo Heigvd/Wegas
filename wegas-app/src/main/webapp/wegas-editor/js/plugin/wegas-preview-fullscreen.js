@@ -26,7 +26,7 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
                 Y.one("body").append(this.swapNode);
                 el = host.toolbar.get('header');
                 this.fullScreenButton = new Y.ToggleButton({
-                    label: "<span class='wegas-icon'></span>Fullscreen"
+                    label: "<span class='wegas-icon wegas-icon-fullscreen'></span>Fullscreen"
                 }).render(el);
                 this.handlers.push(this.fullScreenButton.after("pressedChange", function() {
                     this.get("host").get("boundingBox").swap(this.swapNode);
