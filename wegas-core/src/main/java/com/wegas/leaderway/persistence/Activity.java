@@ -35,6 +35,10 @@ public class Activity extends AbstractAssignement {
     @Column(name = "wtime")
     private Double time;
     /**
+     * 
+     */
+    private Boolean editable;
+    /**
      *
      */
     @Column(name = "wcompletion")
