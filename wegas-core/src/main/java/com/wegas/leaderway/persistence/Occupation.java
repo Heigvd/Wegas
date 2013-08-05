@@ -132,7 +132,11 @@ public class Occupation extends AbstractAssignement {
      * @return
      */
     public Long getTaskDescriptorId() {
-        return this.getTaskDescriptor().getId();
+        if (this.taskDescriptor != null) {
+            return this.taskDescriptor.getId();
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -513,6 +513,8 @@
                             "cfg": {
                                 "columnToAdd": 10
                             }
+                        },{
+                            "fn": "Reservation" 
                         }]
                     }
                 ]

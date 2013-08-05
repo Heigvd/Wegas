@@ -741,6 +741,11 @@ YUI().use(function(Y) {
                     requires: ['anim'],
                     ws_provides: "PmgSlidePanel"
                 },
+                "wegas-pmg-reservation": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-reservation-min.js',
+                    requires: [],
+                    ws_provides: 'Reservation'
+                },
                 /**book CYOA**/
                 'wegas-book': {
                     path: 'wegas-book/js/wegas-book-fight-min.js',

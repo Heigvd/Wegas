@@ -356,6 +356,14 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 type: ARRAY,
                 value: []
             },
+            occupations: {
+                type: ARRAY,
+                value: []
+            },
+            activities: {
+                type: ARRAY,
+                value: []
+            },
             moralHistory: {
                 type: ARRAY
             },
@@ -587,16 +595,36 @@ YUI.add('wegas-leaderway-entities', function(Y) {
     /**
      * Activity mapper
      */
-    Y.Wegas.persistence.Activity = Y.Base.create("WRequirement", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence.Activity = Y.Base.create("Activity", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 value: "Activity"
             },
-            startTime: {
+            taskDescriptorId: {
+                type: STRING
+            },
+            time: {
                 type: NUMBER
             },
-            duration: {
+            completion: {
                 type: NUMBER
+            }
+        }
+    });
+    
+    /**
+     * Occupation mapper
+     */
+    Y.Wegas.persistence.Occupation = Y.Base.create("Occupation", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "Occupation"
+            },
+            time: {
+                type: NUMBER
+            },
+            editable: {
+                type: BOOLEAN
             },
             taskDescriptorId: {
                 type: STRING
