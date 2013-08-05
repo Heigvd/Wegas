@@ -109,7 +109,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-widget': {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
-                    requires: ['widget', 'widget-child', 'wegas-editable']
+                    requires: ['widget', 'widget-child', 'widget-parent', 'wegas-editable']
                 },
                 'wegas-container': {
                     path: 'wegas-app/js/widget/wegas-container-min.js',
