@@ -1,0 +1,27 @@
+{
+    "1": {
+        "id": 1,
+        "direction": "vertical",
+        "type": "List",
+        "cssClass": "layout",
+        "children": [
+            {
+                "type": "List",
+                "direction": "horizontal",
+                "cssClass": "header",
+                "children": [
+                    {
+                        "type": "Text",
+                        "cssClass": "title",
+                        "content": "Activité - pédagogie"
+                    }
+                ]
+            },
+            {
+                "type": "Text",
+                "cssClass": "data",
+                "content": "<p>Description de l'exercice...</p><p><a href=\"article1.pdf\">Article 1</a></p><p><a href=\"article2.pdf\">Article 2</a></p>"
+            }
+        ]
+    }
+}

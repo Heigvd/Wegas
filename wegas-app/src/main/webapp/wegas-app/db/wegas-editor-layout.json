@@ -337,7 +337,10 @@
                                     }, {
                                         "fn": "PopupListener",
                                         "showServerMessages": true
+                                    }, {
+                                        "fn": "PreviewFullScreen"
                                     }
+
                                 ]
                             }]
                     }]
