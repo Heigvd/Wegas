@@ -24,7 +24,7 @@ YUI.add('wegas-list', function(Y) {
      * @constructor
      * @description class to serialize widgets
      */
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Editable, Y.Wegas.Container], {
         /** @lends Y.Wegas.List# */
 
         // *** Private fields *** //
@@ -48,22 +48,6 @@ YUI.add('wegas-list', function(Y) {
                 cb.removeClass(this.getClassName('vertical'));
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
-        },
-        //Children serialization
-        /**
-         * @function
-         * @private
-         * @return object
-         * @description Children serialization
-         */
-        toObject: function() {
-            var i, object, children = [], args = Array.prototype.slice.call(arguments);
-            object = Y.Wegas.Editable.prototype.toObject.apply(this, args);
-            for (i = 0; i < this.size(); i = i + 1) {
-                children.push(this.item(i).toObject(args));
-            }
-            object.children = children;
-            return object;
         }
     }, {
         /** @lends Y.Wegas.List */
@@ -81,13 +65,6 @@ YUI.add('wegas-list', function(Y) {
          * </ul>
          */
         ATTRS: {
-            defaultChildType: {
-                value: "Text",
-                "transient": true
-            },
-            children: {
-                "transient": true
-            },
             direction: {
                 value: 'vertical',
                 type: "string",
@@ -105,192 +82,8 @@ YUI.add('wegas-list', function(Y) {
             //    value: 2,
             //    readonly: true
             //}
-        },
-        EDITMENU: [{
-                type: "Button",
-                label: "Properties",
-                cssClass: "editor-exploreGameModel-button",
-                plugins: [{
-                        fn: "EditWidgetAction"
-                    }
-                ]
-            }, {
-                type: "Button",
-                label: "Add",
-                cssClass: "editor-exploreGameModel-button",
-                plugins: [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "menuCfg": {
-                                points: ["tl", "tr"]
-                            },
-                            "event": "mouseenter",
-                            "children": [{
-                                    type: "Button",
-                                    label: "Text",
-                                    plugins: [{
-                                            fn: "AddChildWidgetAction",
-                                            cfg: {
-                                                "childType": "Text"
-                                            }
-                                        }
-                                    ]
-                                }, {
-                                    type: "Button",
-                                    label: "Image",
-                                    plugins: [{
-                                            fn: "AddChildWidgetAction",
-                                            cfg: {
-                                                "childType": "Image"
-                                            }
-                                        }
-                                    ]
-                                }, {
-                                    type: "Button",
-                                    label: "Button",
-                                    plugins: [{
-                                            fn: "AddChildWidgetAction",
-                                            cfg: {
-                                                "childType": "Button"
-                                            }
-                                        }
-                                    ]
-                                }, {
-                                    "fn": "WidgetMenu",
-                                    "label": "Variable display",
-                                    plugins: [{
-                                            "fn": "WidgetMenu",
-                                            "cfg": {
-                                                "menuCfg": {
-                                                    points: ["tl", "tr"]
-                                                },
-                                                "event": "mouseenter",
-                                                "children": [{
-                                                        type: "Button",
-                                                        label: "Template",
-                                                        plugins: [{
-                                                                fn: "AddChildWidgetAction",
-                                                                cfg: {
-                                                                    "childType": "Template"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }, {
-                                                        type: "Button",
-                                                        label: "Gauge",
-                                                        plugins: [{
-                                                                fn: "AddChildWidgetAction",
-                                                                cfg: {
-                                                                    "childType": "GaugeDisplay"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }, {
-                                                        type: "Button",
-                                                        label: "Question list",
-                                                        plugins: [{
-                                                                fn: "AddChildWidgetAction",
-                                                                cfg: {
-                                                                    "childType": "MCQTabView"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }, {
-                                                        type: "Button",
-                                                        label: "Inbox",
-                                                        plugins: [{
-                                                                fn: "AddChildWidgetAction",
-                                                                cfg: {
-                                                                    "childType": "InboxDisplay"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }, {
-                                                        type: "Button",
-                                                        label: "Chart",
-                                                        plugins: [{
-                                                                fn: "AddChildWidgetAction",
-                                                                cfg: {
-                                                                    "childType": "Chart"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
-                                                ]
-                                            }
-                                        }
-                                    ]
-                                }, {
-                                    type: "Button",
-                                    label: "Containers",
-                                    cssClass: "wegas-advanced-feature",
-                                    plugins: [{
-                                            "fn": "WidgetMenu",
-                                            "cfg": {
-                                                "menuCfg": {
-                                                    points: ["tl", "tr"]
-                                                },
-                                                "event": "mouseenter",
-                                                "children": [{
-                                                        type: "Button",
-                                                        label: "List",
-                                                        plugins: [{
-                                                                fn: "AddChildWidgetAction",
-                                                                cfg: {
-                                                                    "childType": "List"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }, {
-                                                        type: "Button",
-                                                        label: "Choice list",
-                                                        plugins: [{
-                                                                fn: "AddChildWidgetAction",
-                                                                cfg: {
-                                                                    "childType": "ChoiceList"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }, {
-                                                        type: "Button",
-                                                        label: "Absolute layout",
-                                                        plugins: [{
-                                                                fn: "AddChildWidgetAction",
-                                                                cfg: {
-                                                                    "childType": "AbsoluteLayout"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
+        }
 
-                                                ]
-                                            }
-                                        }
-                                    ]
-                                }, {
-                                    type: "Button",
-                                    label: "Sub page zone",
-                                    plugins: [{
-                                            fn: "AddChildWidgetAction",
-                                            cfg: {
-                                                "childType": "PageLoader"
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }, {
-                type: "Button",
-                label: "Delete",
-                cssClass: "editor-exploreGameModel-button",
-                plugins: [{
-                        fn: "DeleteWidgetAction"
-                    }
-                ]
-            }]
     });
     Y.namespace('Wegas').List = List;
 
