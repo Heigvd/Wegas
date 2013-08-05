@@ -40,6 +40,9 @@ YUI.add('wegas-absolutelayout', function(Y) {
                         }
                     });
                 }
+                if (!e.child.CSSSize) {
+                    e.child.plug(Y.Plugin.CSSSize);
+                }
             });
             this.onceAfter("render", function(e) {
                 this.each(function(item) {
@@ -50,6 +53,9 @@ YUI.add('wegas-absolutelayout', function(Y) {
                                 left: "0px"
                             }
                         });
+                    }
+                    if (!e.child.CSSSize) {
+                        e.child.plug(Y.Plugin.CSSSize);
                     }
                 });
             });
@@ -70,15 +76,19 @@ YUI.add('wegas-absolutelayout', function(Y) {
         EDITMENU: Y.Wegas.List.EDITMENU, /* @TODO: Dependency to Wegas.List remove this */
         NAME: "wegas-absolutelayout",
         CSS_PREFIX: "wegas-absolutelayout",
-        EDITORNAME: "Absolute Layout",
+        EDITORNAME: "Layout",
         ATTRS: {
         }
     });
+    /**
+     * @deprecated use CSSPosition instead
+     */
     PositionPlugin = Y.Base.create("wegas-position", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /**
          * @lends Y.Plugin.Position#
          */
         initializer: function() {
+            Y.log("warn", "Deprecated, use Y.Plugin.CSSPosition", "Y.Plugin.Position");
             this.get("host").get("boundingBox").setStyle("position", "absolute");
             this.set("left", this.get("left"));
             this.set("top", this.get("top"));

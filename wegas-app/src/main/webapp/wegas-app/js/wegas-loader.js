@@ -205,7 +205,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-absolutelayout': {
                     path: 'wegas-app/js/widget/wegas-absolutelayout-min.js',
-                    requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss", "wegas-list", "wegas-cssposition"],
+                    requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss", "wegas-list",
+                        "wegas-cssposition", "wegas-csssize"],
                     ws_provides: ['AbsoluteLayout', "Position"]
                 },
                 'wegas-absolutelayoutcss': {
@@ -600,6 +601,11 @@ YUI().use(function(Y) {
                         "event-mouse-startstop", "node-scroll-info", "anim",
                         "wegas-pageeditor-dragdrop", 'wegas-pageeditorcss',
                         'wegas-pageeditor-resize']
+                },
+                'wegas-preview-fullscreen':{
+                    path:'wegas-editor/js/plugin/wegas-preview-fullscreen-min.js',
+                    ws_provides: 'PreviewFullScreen',
+                    requires:["plugin"]
                 },
                 'wegas-pageeditor-dragdrop': {
                     path: 'wegas-editor/js/util/wegas-pageeditor-dragdrop-min.js',
