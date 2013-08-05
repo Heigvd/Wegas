@@ -29,7 +29,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          */
         initializer: function() {
             this.get("host").onceAfter("render", function() {
-                this.set("columToAdd", this.get("columnToAdd"));
+                this.set("columnToAdd", this.get("columnToAdd"));
 //                this.get("host").datatable.delegate("click", function(e) {
 //                    console.log(e.target);
 //                    alert("Yes");
@@ -51,7 +51,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             if (newval) {
                 var table = this.get("host").datatable, i;
                 for (i = 1; i <= newval; i++) {
-                    table.addColumn({key: i.toString(), className : "scheduleColumn"});
+                    table.addColumn({key: i.toString(), className: "scheduleColumn", time: i});
                 }
             }
         },
@@ -75,7 +75,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                 }
             }
         },
-        NS: "ScheduleDT",
+        NS: "scheduleDT",
         NAME: "ScheduleDT"
     });
     Y.namespace("Plugin").ScheduleDT = ScheduleDT;

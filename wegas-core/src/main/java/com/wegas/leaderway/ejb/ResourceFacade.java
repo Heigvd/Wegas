@@ -9,6 +9,7 @@ package com.wegas.leaderway.ejb;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.leaderway.persistence.AbstractAssignement;
 import com.wegas.leaderway.persistence.Activity;
 import com.wegas.leaderway.persistence.Assignment;
 import com.wegas.leaderway.persistence.Occupation;
@@ -16,6 +17,7 @@ import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.leaderway.persistence.TaskInstance;
 import com.wegas.leaderway.persistence.WRequirement;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -143,5 +145,48 @@ public class ResourceFacade {
         TaskInstance ti = (TaskInstance) variableInstanceFacade.find(taskInstanceId);
         ti.getRequirements().add(requirement);
         return ti;
+    }
+    
+    public ResourceInstance addAbstractAssignement(Long resourceInstanceId, AbstractAssignement abstractAssignement) {
+        ResourceInstance res = (ResourceInstance)variableInstanceFacade.find(resourceInstanceId);
+        if (abstractAssignement instanceof Occupation) {
+            Occupation o = (Occupation)abstractAssignement;
+            res.addOccupation(o);
+        } else if (abstractAssignement instanceof Assignment) {
+            Assignment a = (Assignment)abstractAssignement;
+            res.addAssignement(a);
+        } else {
+            Activity a = (Activity)abstractAssignement;
+            res.addActivity(a);
+        }
+        return res;
+    }
+    
+    public void removeAbstractAssignement(Long abstractAssignementId, String type) {
+        switch (type) {
+            case "occupations":
+                Occupation o = this.findOccupation(abstractAssignementId);
+                em.remove(o);
+                break;
+            case "assignment":
+                Assignment a = this.findAssignment(abstractAssignementId);
+                em.remove(a);
+                break;
+            default:
+                Activity ac = this.findActivity(abstractAssignementId);
+                em.remove(ac);
+        }
+    }
+    
+    public Occupation findOccupation(Long id){
+        return em.find(Occupation.class, id);
+    }
+    
+    public Activity findActivity(Long id) {
+        return em.find(Activity.class, id);
+    }
+    
+    public Assignment findAssignment(Long id){
+        return em.find(Assignment.class, id);
     }
 }
