@@ -295,9 +295,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     };
             }
         }
-    }, {
     });
     Y.namespace('Wegas').VariableTreeView = VariableTreeView;
-
 
 });

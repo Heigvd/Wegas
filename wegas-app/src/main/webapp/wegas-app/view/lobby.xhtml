@@ -70,17 +70,19 @@
 
                         Y.Wegas.Facade.Game.cache.on("added", function() {      // After a game is created
                             Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2);// select the hosted games tab
+                            Y.Wegas.Facade.PublicGames.cache.clear();
+                            Y.Wegas.Facade.PublicGames.sendInitialRequest();
                         });
                     });
                     app.render();                                               // Launch the editor as soon as Dom is ready
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
+                        window.open(app.get("base") + "wegas-app/view/play.html?gameId=" + e.gameId);// open the game in a new tab
                         Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
                         Y.Wegas.Facade.RegisteredGames.cache.clear();           // reload datasources
                         Y.Wegas.Facade.RegisteredGames.sendInitialRequest();
                         Y.Wegas.Facade.PublicGames.cache.clear();
                         Y.Wegas.Facade.PublicGames.sendInitialRequest();
-                        window.open(app.get("base") + "wegas-app/view/play.html?gameId=" + e.gameId);// open the game in a new tab
                     });
                 });
             </script>
