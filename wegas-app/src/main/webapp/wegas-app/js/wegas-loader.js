@@ -109,7 +109,11 @@ YUI().use(function(Y) {
                  */
                 'wegas-widget': {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
-                    requires: ['widget', 'widget-parent', 'widget-child', 'wegas-editable']
+                    requires: ['widget', 'widget-child', 'widget-parent', 'wegas-editable']
+                },
+                'wegas-container': {
+                    path: 'wegas-app/js/widget/wegas-container-min.js',
+                    requires: ['wegas-widget', 'widget-parent']
                 },
                 'wegas-pageloader': {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
@@ -173,7 +177,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-list': {
                     path: 'wegas-app/js/widget/wegas-list-min.js',
-                    requires: ['wegas-widget'],
+                    requires: ['wegas-container'],
                     ws_provides: 'List'
                 },
                 'wegas-text': {
@@ -205,7 +209,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-absolutelayout': {
                     path: 'wegas-app/js/widget/wegas-absolutelayout-min.js',
-                    requires: ["widget-child", "widget-parent", "wegas-editable", "wegas-absolutelayoutcss", "wegas-list", "wegas-cssposition"],
+                    requires: ["wegas-absolutelayoutcss", "wegas-cssposition",
+                        "wegas-csssize", "wegas-container"],
                     ws_provides: ['AbsoluteLayout', "Position"]
                 },
                 'wegas-absolutelayoutcss': {
@@ -572,6 +577,11 @@ YUI().use(function(Y) {
                         "wegas-pageeditor-dragdrop", 'wegas-pageeditorcss',
                         'wegas-pageeditor-resize']
                 },
+                'wegas-preview-fullscreen': {
+                    path: 'wegas-editor/js/plugin/wegas-preview-fullscreen-min.js',
+                    ws_provides: 'PreviewFullScreen',
+                    requires: ["plugin"]
+                },
                 'wegas-pageeditor-dragdrop': {
                     path: 'wegas-editor/js/util/wegas-pageeditor-dragdrop-min.js',
                     ws_provides: "PageEditorDD",
@@ -659,7 +669,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
-                    requires: ['wegas-datasource', 'wegas-list'],
+                    requires: ['wegas-datasource'],
                     ws_provides: "PageTreeview"
                 },
                 'wegas-sharerole': {

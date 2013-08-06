@@ -81,7 +81,13 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-layoutmode",
                             e.newVal);
                 }, this));
-
+                /*Refresh*/
+                this.refreshButton = new Y.Button({
+                    label:"<span class='wegas-icon wegas-icon-reset'></span>Refresh"
+                }).render(el);
+                this.fixedHandlers.push(this.refreshButton.after("click", function(e) {
+                    this.get("host").reload();
+                }, this));
                 /** Source view**/
 
                 this.sourceButton = new Y.ToggleButton({
@@ -99,7 +105,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     }
                 }).render(el);
             }
-            this.fixedHandlers.push(this.afterHostEvent("widgetChange", this.processSource));
+            this.fixedHandlers.push(this.afterHostEvent("contentUpdated", this.processSource));
             this.highlightOverlay = new Alignable({// Init the highlighting overlay
                 zIndex: 30,
                 render: true,
@@ -175,15 +181,24 @@ YUI.add('wegas-pageeditor', function(Y) {
         },
         processSave: function() {
             var host = this.get("host"),
-                    page = Y.JSON.parse(this.jsonView.getValue());
+                    page;
+            try {
+                page = Y.JSON.parse(this.jsonView.getValue());
+                page["@pageId"] = this.get("host").get("pageId");
+            } catch (e) {
+                host.get(BOUNDINGBOX).get("parentNode").emitDOMMessage("error", e.toString());
+                return;
+            }
             this.sourceButton.set("pressed", false);
             host.get(CONTENTBOX).show();
             this.jsonView.hide();
             this.designButton.enable();
             this.saveButton.hide();
             //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
-            page["@pageId"] = host.get("widget")["@pageId"];
-            Y.Wegas.Facade.Page.cache.patch(page);
+            host.showOverlay();
+            Y.Wegas.Facade.Page.cache.patch(page, Y.bind(function() {
+                this.reload();
+            }, host));
         },
         saveCurrentPage: function() {
             var page = this.get("host").get("widget").toObject();
@@ -198,7 +213,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.initJsonView();
                     return;
                 }
-                this.jsonView.setValue(Y.JSON.stringify(host.get("widget").toObject("@pageId"), null, "\t"));
+                this.jsonView.setValue(host.get("widgetCfg"));
                 host.get(CONTENTBOX).hide();
                 this.jsonView.show();
                 this.jsonView.editor.resize();
@@ -294,6 +309,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             }
             if (this.layoutButton) {
                 this.layoutButton.destroy(true);
+            }
+            if (this.refreshButton) {
+                this.refreshButton.destroy(true);
             }
             if (this.sourceButton) {
                 this.sourceButton.destroy(true);

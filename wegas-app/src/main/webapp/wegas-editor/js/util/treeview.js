@@ -28,7 +28,7 @@ YUI.add('treeview', function(Y) {
             if (rightWidget instanceof Y.Node) {                            // Case 1: Y.Node
                 rightWidget.remove();
             } else {
-                rightWidget.get(BOUNDING_BOX).remove();                     // Case 2: Y.Widget
+                rightWidget.get(BOUNDING_BOX).remove(); // Case 2: Y.Widget
                 rightWidget.removeTarget(this);
                 this.set("parent", null);
             }
@@ -48,7 +48,6 @@ YUI.add('treeview', function(Y) {
         }
         return v;
     };
-
     /**
      * TreeView main class
      * <p><strong>Attributes</strong></p>
@@ -115,6 +114,33 @@ YUI.add('treeview', function(Y) {
                     item.collapseAll();
                 }
             });
+        },
+        saveState: function() {
+            var State = {}, getChildsState = function(o, item, index) {
+                if (item instanceof Y.TreeNode) {
+                    o[index] = {"expanded": !item.get(BOUNDING_BOX).hasClass(classNames.collapsed)};
+                    item.each(Y.bind(getChildsState, item, o[index]));
+                }
+            };
+            this.each(Y.bind(getChildsState, this, State));
+            return State;
+        },
+        applyState: function(State) {
+            var setChildsState = function(o, item, index) {
+                if (item instanceof Y.TreeNode) {
+                    if (o[index]) {
+                        if (o[index].expanded) {
+                            item.expand(false);
+                        }else if(o[index].expanded === false){
+                            item.collapse(false);
+                        }
+                        item.each(Y.bind(setChildsState, item, o[index]));
+                    }
+
+
+                }
+            };
+            this.each(Y.bind(setChildsState, this, State));
         }
     }, {
         /**
@@ -134,7 +160,6 @@ YUI.add('treeview', function(Y) {
             }
         }
     });
-
     /**
      * TreeView's TreeNode
      * <p><strong>Attributes</strong></p>
@@ -225,7 +250,7 @@ YUI.add('treeview', function(Y) {
             this.after("selectedChange", function(e) {
                 if (e.newVal && !e.target.get("selection")) {
                     e.target.get(BOUNDING_BOX).addClass("selected");
-                } else {
+                } else if (e.target.get(BOUNDING_BOX)._node) {
                     e.target.get(BOUNDING_BOX).removeClass("selected");
                 }
             });
@@ -256,7 +281,6 @@ YUI.add('treeview', function(Y) {
                     node: this,
                     domEvent: e
                 });
-
             }, this);
             this.get(BOUNDING_BOX).on("click", function(e) {
                 e.stopPropagation();
@@ -284,7 +308,8 @@ YUI.add('treeview', function(Y) {
          */
         destructor: function() {
             var event;
-            this.blur();                                                        //remove a focused node generates some errors
+            this.blur(); //remove a focused node generates some errors
+            this.set("selected", 0);
             for (event in this.eventInstances) {
                 this.eventInstances[event].detach();
             }
@@ -469,7 +494,6 @@ YUI.add('treeview', function(Y) {
             data: {}
         }
     });
-
     /**
      * TreeLeaf widget. Default child type for TreeView.
      * It extends  WidgetChild, please refer to it's documentation for more info.
@@ -573,7 +597,6 @@ YUI.add('treeview', function(Y) {
                     domEvent: e
                 });
             }, this);
-
             //one line, prevent special chars
             this.labelNode.on("blur", function(e) {
                 e.target.setContent(e.target.getContent().replace(/&[^;]*;/gm, "").replace(/(\r\n|\n|\r|<br>|<br\/>)/gm, "").replace(/(<|>|\|\\|:|;)/gm, "").replace(/^\s+/g, '').replace(/\s+$/g, ''));
@@ -600,7 +623,8 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         destructor: function() {
-            this.blur();                                                        //remove a focused node generates some errors
+            this.blur(); //remove a focused node generates some errors
+            this.set("selected", 0);
             if (this.get("rightWidget") && this.get("rightWidget").destroy) {
                 try {
                     this.get("rightWidget").destroy();

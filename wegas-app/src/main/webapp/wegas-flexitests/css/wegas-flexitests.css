@@ -128,7 +128,26 @@ body > .wegas-pageloader, html{
 .wegas-pageeditor-layoutmode .fix-point{
     display:inline !important;
 }
-
+/*FORM*/
+.editor-preview .wegas-form,
+.flexitests .wegas-form{
+    position: relative; 
+}
+.editor-preview .wegas-form .wegas-toolbar,
+.flexitests .wegas-form .wegas-toolbar{
+    position: absolute;
+    bottom: -5px;
+    background:none;
+    box-shadow: none;
+}
+.editor-preview .wegas-form .wegas-toolbar button + button,
+.flexitests .wegas-form .wegas-toolbar button + button{
+    display: none;
+}
+.editor-preview .wegas-form .wegas-toolbar button,
+.flexitests .wegas-form .wegas-toolbar button{
+    margin-left:135px;
+}
 /*userVoice*/
 #uvTab{
     display:none;

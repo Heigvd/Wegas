@@ -11,9 +11,12 @@
 .wegas-pageloader{
     -webkit-transition: padding-top 0.7s;
 }
-.wegas-pageeditor-designmode .wegas-list,
-.wegas-pageeditor-designmode .wegas-choicelist,
+.wegas-pageeditor-designmode .wegas-pageloader-content{
+    position: relative;
+}
+.wegas-pageeditor-designmode .wegas-container,
 .wegas-pageeditor-designmode .wegas-pageloader{
+    padding: 10px;
     padding-top: 20px !important;
 }
 .wegas-pageeditor-designmode .pageeditor-overlay-mask{
@@ -155,4 +158,11 @@
 /*special rules*/
 .wegas-pageeditor-layoutmode .timed-hidden-node{
     visibility: visible;
+}
+body > .wegas-pageloader{
+    position: absolute;
+    background: inherit;
+}
+.yui3-skin-sam .wegas-icon-fullscreen{
+    background: url(../../wegas-editor/images/full_screen.png) no-repeat;
 }
