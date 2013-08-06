@@ -90,15 +90,11 @@ YUI.add("treeview-sortable", function(Y) {
         ATTRS: {
             /*
              * Defines groups of items to be moved and items on which they can be dropped, even when they are empty.
-             *
              */
             nodeGroups: {
                 value: [{
-                        nodeClass: "wegas-editor-questionitem",
-                        parentNode: ".wegas-editor-question"
-                    }, {
-                        nodeClass: "wegas-editor-listitem",
-                        parentNode: ".wegas-editor-list"
+                        nodeClass: "yui3-widget",
+                        parentNode: ".yui3-widgget"
                     }]
             }
         }
