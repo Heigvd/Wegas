@@ -1,0 +1,23 @@
+{
+    "@class": "GameModel",
+    "name": "Teaching",
+    "properties": {
+            "cssUri":"wegas-teaching/css/wegas-teaching.css",
+            "pagesUri":"wegas-teaching/db/wegas-teaching-pages.json?"
+        },
+    "childVariableDescriptors": [
+        {
+            "@class": "NumberDescriptor",
+            "name":"currentPage",
+            "editorLabel":"currentPage",
+            "label":"currentPage",
+            "defaultInstance":{
+                "@class":"NumberInstance",
+                "value":2.0
+            },
+            "scope":{
+                "@class":"TeamScope"
+            }
+        }
+    ]
+}
