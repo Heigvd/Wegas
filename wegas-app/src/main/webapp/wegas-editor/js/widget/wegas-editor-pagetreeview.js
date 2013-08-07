@@ -47,11 +47,11 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             });
             this.treeView.sortable.after("sort", function(e) {
                 if (e.dropWidget.get("data.widget")) {
-                    e.dropWidget.get("data.widget").add(e.dragWidget.get("data.widget"), e.index);
-                    this.dataSource.patch(e.dropWidget.get("data.widget").get("root").toObject());
+//                    e.dropWidget.get("data.widget").add(e.dragWidget.get("data.widget"), e.index);
+//                    this.dataSource.patch(e.dropWidget.get("data.widget").get("root").toObject());
                 }
             }, this);
-            this.handlers.push(this.treeView.on("treenode:click", function(e) {
+            this.treeView.on("treenode:click", function(e) {
                 var node = e.node;
                 if (!node.get("data")) {
                     return;
@@ -65,8 +65,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     node.get("rightWidget").menu.getMenu().item(0).fire("click");
                     node.get("rightWidget").menu.menu.hide();
                 }
-            }, this));
-            this.handlers.push(this.treeView.on("treeleaf:click", function(e) {
+            }, this);
+            this.treeView.on("treeleaf:click", function(e) {
                 var node = e.node;
                 if (!node.get("data")) {
                     return;
@@ -77,8 +77,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     node.get("rightWidget").menu.getMenu().item(0).fire("click");
                     node.get("rightWidget").menu.menu.hide();
                 }
-            }, this));
-            this.handlers.push(this.treeView.on("treenode:nodeExpanded", function(e) {
+            }, this);
+            this.treeView.on("treenode:nodeExpanded", function(e) {
                 var node = e.node;
                 if (!node.get("data")) {
                     return;
@@ -86,8 +86,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 if (node.get("data").page) {
                     this.get("pageLoader").set("pageId", node.get("data").page);
                 }
-            }, this));
-            this.handlers.push(this.treeView.get(CONTENT_BOX).delegate("mouseenter", function(e) {
+            }, this);
+            this.treeView.get(CONTENT_BOX).delegate("mouseenter", function(e) {
                 var node = Y.Widget.getByNode(e.target);
                 e.halt(true);
                 if (node.get("data.widget")) {
@@ -97,8 +97,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         node.get("data.widget").get(BOUNDING_BOX).addClass("wegas-focused-widget");
                     }
                 }
-            }, ".content-header", this));
-            this.handlers.push(this.treeView.get(CONTENT_BOX).delegate("mouseleave", function(e) {
+            }, ".content-header", this);
+            this.treeView.get(CONTENT_BOX).delegate("mouseleave", function(e) {
                 var node = Y.Widget.getByNode(e.target);
                 e.halt(true);
                 if (node.get("data.widget")) {
@@ -108,13 +108,13 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         node.get("data.widget").get(BOUNDING_BOX).removeClass("wegas-focused-widget");
                     }
                 }
-            }, ".content-header", this));
-            this.handlers.push(this.dataSource.after("pageUpdated", function(e) {
+            }, ".content-header", this);
+            this.dataSource.after("pageUpdated", function(e) {
                 this.getIndex();
-            }, this));
-//            if (this.get("pageLoader")) {
-//                this.get("pageLoader").after("pageIdChange", this.syncUI, this);
-//            }
+            }, this);
+            //if (this.get("pageLoader")) {
+            //    this.get("pageLoader").after("pageIdChange", this.syncUI, this);
+            //}
             //this.get("pageLoader").get("widget").after("*:destroy", this.syncUI, this);
         },
         buildWidgetTree: function(node) {
@@ -176,7 +176,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     twState = this.treeView.saveState(),
                     widget = this.get("pageLoader").get("widget"), button,
                     deletePage = function(pageId) {
-                this.dataSource.deletePage(pageId);
+                Y.Wegas.Facade.Page.cache.deletePage(pageId);
                 this.destroy();
             }, duplicatePage = function(pageId) {
                 this.dataSource.duplicate(pageId, Y.bind(function(page, id) {
@@ -262,7 +262,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     }
                 }
             } catch (e) {
-                //don't care
+                // don't care !!!! @fixme POKEMON ANTI-PATTERN
             }
         }
     }, {
