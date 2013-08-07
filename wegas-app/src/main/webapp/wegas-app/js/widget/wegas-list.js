@@ -19,7 +19,7 @@ YUI.add('wegas-list', function(Y) {
     /**
      * @name Y.Wegas.ItemSelector
      * @extends Y.Widget
-     * @borrows Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
+     * @borrows Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Container
      * @class class to serialize widgets
      * @constructor
      * @description class to serialize widgets
