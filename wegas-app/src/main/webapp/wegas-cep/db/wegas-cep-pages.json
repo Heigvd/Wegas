@@ -4,9 +4,6 @@
         "direction": "vertical",
         "type": "List",
         "cssClass": "layout wegas-cep",
-        "plugins": [{
-                "fn": "Popup"
-            }],
         "children": [{
                 "type": "List",
                 "cssClass": "header",

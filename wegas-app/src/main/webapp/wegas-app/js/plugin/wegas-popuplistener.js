@@ -13,12 +13,7 @@
 YUI.add('wegas-popuplistener', function(Y) {
     "use strict";
     var stringToObject = function(o) {
-        if (Y.Lang.isString(o)) {
-            o = {
-                content: o
-            };
-        }
-        return o;
+        return (Y.Lang.isString(o)) ? {content: o} : o;
     },
             PopupListener = Y.Base.create("wegas-popuplistener", Y.Plugin.Base, [], {
         DEFAULT_CONFIG: function() {

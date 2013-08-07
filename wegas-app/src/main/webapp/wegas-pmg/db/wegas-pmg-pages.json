@@ -3,9 +3,6 @@
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout",
-        "plugins": [{
-            "fn": "Popup"
-        }],
         "children": [
             {
                 "type": "List",
@@ -321,7 +318,7 @@
                         "type": "Chart",
                         "variables": [{
                             "name": "fixedCosts",
-                            "label": "Costs"            
+                            "label": "Costs"
                         },{
                             "name": "delay",
                             "label": "Shedule"
