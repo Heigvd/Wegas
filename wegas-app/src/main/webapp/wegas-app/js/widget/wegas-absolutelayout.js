@@ -15,7 +15,7 @@ YUI.add('wegas-absolutelayout', function(Y) {
     /**
      * @name Y.Wegas.AbsoluteLayout
      * @extends Y.Widget
-     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
+     * @borrows Y.WidgetChild, Y.WidgetParent, Y.Wegas.Editable, Y.Wegas.Container
      * @constructor
      * @description Absolute position container
      */
