@@ -170,7 +170,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id "
                 + "AND p.user.id = :userId "
-                + "ORDER BY p.joinTime DESC");
+                + "ORDER BY p.joinTime ASC");
         getByGameId.setParameter("userId", userId);
 
         return this.findRegisterdGames(getByGameId);
