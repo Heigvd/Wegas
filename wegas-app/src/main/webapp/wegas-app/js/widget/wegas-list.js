@@ -24,7 +24,7 @@ YUI.add('wegas-list', function(Y) {
      * @constructor
      * @description class to serialize widgets
      */
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Editable, Y.Wegas.Container], {
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Container], {
         /** @lends Y.Wegas.List# */
 
         // *** Private fields *** //
