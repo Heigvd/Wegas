@@ -143,6 +143,7 @@ YUI.add('wegas-jointeam', function(Y) {
 
                         var parent = this.get("parent");
                         if (parent) {
+                            parent.remove();
                             parent.destroy();
                         }
                     }, this),
