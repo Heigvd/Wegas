@@ -20,7 +20,7 @@ YUI.add('wegas-absolutelayout', function(Y) {
      * @description Absolute position container
      */
     AbsoluteLayout = Y.Base.create("wegas-absolutelayout", Y.Widget,
-            [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Editable, Y.Wegas.Container], {
+            [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Container], {
         /**
          * @lends Y.Wegas.AbsoluteLayout#
          */
