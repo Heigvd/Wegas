@@ -449,10 +449,10 @@ h2{
     border-bottom:1px solid #ADADAE;
 }
 
-.body .yui3-datatable-data tr:hover td{
+/*.body .yui3-datatable-data tr:hover td{
     background-image:url(../../wegas-pmg/images/previous-week.png);
     background-repeat: repeat;
-}
+}*/
 
 .body td{
     cursor: pointer;
@@ -502,7 +502,7 @@ h2{
 }
 
 /*------------------------gantt-page & resources-pages------------------------*/
-.gantt-page .yui3-datatable-table .yui3-datatable-data .cell-gantt,
+/*.gantt-page .yui3-datatable-table .yui3-datatable-data .cell-gantt,
 .resources-page .yui3-datatable-table .yui3-datatable-data .cell-gantt{
     background-color: transparent;
     border-left:1px #DBDBDB solid;
@@ -510,16 +510,16 @@ h2{
     text-align: center;
     padding:0;
     overflow:hidden;
-}
+}*/
 
-.gantt-page .yui3-datatable-table .yui3-datatable-data .scheduled,
+/*.gantt-page .yui3-datatable-table .yui3-datatable-data .scheduled,
 .resources-page .yui3-datatable-table .yui3-datatable-data .scheduled{
     display:block;
     background-color: #3399FF;
     width:100%;
     height:40%;
     padding-top: 1px;
-}
+}*/
 
 .gantt-page .yui3-datatable-col-Name,
 .resources-page .yui3-datatable-col-Name{
@@ -654,4 +654,60 @@ h2{
 .project-page .total .variableValue{
     float: right;
     margin-right: 350px;
+}
+
+/*new css datatable + schedule*/ 
+
+.yui3-datatable-table .editable {
+    display:block;
+    background-color: #3399FF;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
+}
+
+.yui3-datatable-table .notEditable {
+    display:block;
+    background-color: #FF0000;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
+}
+
+.yui3-datatable-table .engagementDelay {
+    display:block;
+    background-image:url(../../wegas-pmg/images/hatching.png);
+    background-repeat: repeat;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
+}
+
+.yui3-datatable-table .delay .editable {
+    display:block;
+    background-image:url(../../wegas-pmg/images/hatching.png);
+    background-repeat: repeat;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
+}
+
+tbody .past span {
+    border: inherit;
+    opacity:  0.3;
+}
+
+.body .yui3-datatable-cell.schedulColumn{
+    border-left: 1px solid #ADADAE;
+}
+
+.yui3-datatable-columns .schedulColumn.present{
+    background-image: url(../../wegas-pmg/images/next.png), url(../../wegas-pmg/images/h2.png);
+    background-repeat: no-repeat, repeat-x;
+    background-position: left, center;
+}
+
+.body .yui3-datatable-columns .past{
+    background-color: #c0c0c0;
+    background-image: none;
 }

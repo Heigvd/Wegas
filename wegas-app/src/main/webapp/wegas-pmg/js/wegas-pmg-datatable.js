@@ -43,7 +43,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             this.datatable.render(cb);
         },
         bindUI: function() {
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("response", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         syncUI: function() {
             this.data = [];

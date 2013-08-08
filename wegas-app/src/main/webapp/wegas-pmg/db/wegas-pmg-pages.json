@@ -4,8 +4,8 @@
         "type": "List",
         "cssClass": "layout",
         "plugins": [{
-            "fn": "Popup"
-        }],
+                "fn": "Popup"
+            }],
         "children": [
             {
                 "type": "List",
@@ -81,7 +81,7 @@
                                 "label": "Quality",
                                 "variable": {
                                     "name": "quality"
-                                }     
+                                }
                             }, {
                                 "type": "GaugeDisplay",
                                 "label": "Costs",
@@ -346,15 +346,15 @@
                         "type": "Chart",
                         "chartWidth": "90%",
                         "variables": [{
-                            "name": "actualCost",
-                            "label": "AC (Actual Cost)"            
-                        },{
-                            "name": "planedValue",
-                            "label": "PV (Planed Value)"
-                        },{
-                            "name": "earnedValue",
-                            "label": "EV (Earned Value)"
-                        }]
+                                "name": "actualCost",
+                                "label": "AC (Actual Cost)"
+                            }, {
+                                "name": "planedValue",
+                                "label": "PV (Planed Value)"
+                            }, {
+                                "name": "earnedValue",
+                                "label": "EV (Earned Value)"
+                            }]
                     }
                 ]
             }, {
@@ -367,12 +367,12 @@
                         "type": "Chart",
                         "chartWidth": "90%",
                         "variables": [{
-                            "name": "managementApproval",
-                            "label": "Management"            
-                        },{
-                            "name": "userApproval",
-                            "label": "Users"
-                        }]
+                                "name": "managementApproval",
+                                "label": "Management"
+                            }, {
+                                "name": "userApproval",
+                                "label": "Users"
+                            }]
                     }
                 ]
             }, {
@@ -385,15 +385,15 @@
                         "type": "Chart",
                         "chartWidth": "90%",
                         "variables": [{
-                            "name": "actualCost",
-                            "label": "Costs"            
-                        },{
-                            "name": "delay",
-                            "label": "Shedule"
-                        },{
-                            "name": "quality",
-                            "label": "Quality"
-                        }]
+                                "name": "actualCost",
+                                "label": "Costs"
+                            }, {
+                                "name": "delay",
+                                "label": "Shedule"
+                            }, {
+                                "name": "quality",
+                                "label": "Quality"
+                            }]
                     }
                 ]
             }
@@ -409,44 +409,43 @@
                     "name": "tasks"
                 },
                 "columnsCfg": [{
-                    "key" : "index",
-                    "label" : "No"
-                }, {
-                    "key" : "label",
-                    "label" : "Name"
-                }, {
-                    "label" : "Estimated duration",
-                    "formatter" : "template",
-                    "field": "instance.duration"
-                }, {
-                    "label" : "Fixed costs",
-                    "formatter" : "template",
-                    "field": "instance.properties.fixedCosts"
-                }, {
-                    "label" : "Wages",
-                    "formatter": "template",
-                    "field" : "instance.properties.wages"
-                }, {
-                    "label" : "Quality",
-                    "formatter": "template",
-                    "field" : "instance.properties.quality"
-                }, {
-                    "label" : "BAC",
-                    "formatter": "template",
-                    "field" : "instance.properties.bac"
-                }, {
-                    "label" : "Realised %",
-                    "formatter": "template",
-                    "field" : "instance.properties.completeness"
-                }, {
-                    "key" : "requirements",
-                    "label" : "Ressources",
-                    "formatter": "requieredRessources"
-                }, {
-                    
-                    "label" : "Assigned resources",
-                    "formatter": "assignedRessources"
-                }]
+                        "key": "index",
+                        "label": "No"
+                    }, {
+                        "key": "label",
+                        "label": "Name"
+                    }, {
+                        "label": "Estimated duration",
+                        "formatter": "template",
+                        "field": "instance.duration"
+                    }, {
+                        "label": "Fixed costs",
+                        "formatter": "template",
+                        "field": "instance.properties.fixedCosts"
+                    }, {
+                        "label": "Wages",
+                        "formatter": "template",
+                        "field": "instance.properties.wages"
+                    }, {
+                        "label": "Quality",
+                        "formatter": "template",
+                        "field": "instance.properties.quality"
+                    }, {
+                        "label": "BAC",
+                        "formatter": "template",
+                        "field": "instance.properties.bac"
+                    }, {
+                        "label": "Realised %",
+                        "formatter": "template",
+                        "field": "instance.properties.completeness"
+                    }, {
+                        "key": "requirements",
+                        "label": "Ressources",
+                        "formatter": "requieredRessources"
+                    }, {
+                        "label": "Assigned resources",
+                        "formatter": "assignedRessources"
+                    }]
             }
         ]
     },
@@ -460,18 +459,21 @@
                     "name": "tasks"
                 },
                 "columnsCfg": [{
-                    "key" : "index",
-                    "label" : "No"
-                }, {
-                    "key" : "label",
-                    "label" : "Name"
-                }],
+                        "key": "index",
+                        "label": "No"
+                    }, {
+                        "key": "label",
+                        "label": "Name"
+                    }],
                 "plugins": [{
-                    "fn": "ScheduleDT",
-                    "cfg": {
-                        "columnToAdd": 10
-                    }
-                }]
+                        "fn": "ScheduleDT",
+                        "cfg": {
+                            "columnToAdd": 10,
+                            "variable": {
+                                "name": "periodPhase3"
+                            }
+                        }
+                    }]
             }
         ]
     },
@@ -489,70 +491,92 @@
                             "name": "webDesigner"
                         },
                         "columnsCfg": [{
-                            "key" : "label",
-                            "label" : "Name"
-                        }, {
-                            "label" : "Grade",
-                            "formatter": "object",
-                            "field" : "instance.skillsets"
-                        }, {
-                            "label" : "Wage",
-                            "formatter": "template",
-                            "field" : "instance.properties.wage"
-                        }, {
-                            "label" : "Ratio",
-                            "formatter": "template",
-                            "field" : "instance.properties.ratio"
-                        }, {
-                            "label" : "Motiv.",
-                            "formatter": "template",
-                            "field" : "instance.moral"
-                        }],
+                                "key": "label",
+                                "label": "Name"
+                            }, {
+                                "label": "Grade",
+                                "formatter": "object",
+                                "field": "instance.skillsets"
+                            }, {
+                                "label": "Wage",
+                                "formatter": "template",
+                                "field": "instance.properties.wage"
+                            }, {
+                                "label": "Ratio",
+                                "formatter": "template",
+                                "field": "instance.properties.ratio"
+                            }, {
+                                "label": "Motiv.",
+                                "formatter": "template",
+                                "field": "instance.moral"
+                            }],
                         "plugins": [{
-                            "fn": "ScheduleDT",
-                            "cfg": {
-                                "columnToAdd": 10
-                            }
-                        },{
-                            "fn": "Reservation" 
-                        }]
+                                "fn": "ScheduleDT",
+                                "cfg": {
+                                    "columnToAdd": 10,
+                                    "variable": {
+                                        "name": "periodPhase3"
+                                    }
+                                }
+                            }, {
+                                "fn": "Reservation",
+                                "cfg": {
+                                    "type": "occupations"
+                                }
+                            }, {
+                                "fn": "OccupationColor"
+                            }, {
+                                "fn": "ActivityColor"
+                            }]
                     }
                 ]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Business specialist",
                 "children": [
-                    { 
+                    {
                         "type": "PmgDatatable",
                         "variable": {
                             "name": "businessSpecialist"
                         },
                         "columnsCfg": [{
-                            "key" : "label",
-                            "label" : "Name"
-                        }, {
-                            "label" : "Grade",
-                            "formatter": "object",
-                            "field" : "instance.skillsets"
-                        }, {
-                            "label" : "Wage",
-                            "formatter": "template",
-                            "field" : "instance.properties.wage"
-                        }, {
-                            "label" : "Ratio",
-                            "formatter": "template",
-                            "field" : "instance.properties.ratio"
-                        }, {
-                            "label" : "Motiv.",
-                            "formatter": "template",
-                            "field" : "instance.moral"
-                        }],
+                                "key": "label",
+                                "label": "Name"
+                            }, {
+                                "label": "Grade",
+                                "formatter": "object",
+                                "field": "instance.skillsets"
+                            }, {
+                                "label": "Wage",
+                                "formatter": "template",
+                                "field": "instance.properties.wage"
+                            }, {
+                                "label": "Ratio",
+                                "formatter": "template",
+                                "field": "instance.properties.ratio"
+                            }, {
+                                "label": "Motiv.",
+                                "formatter": "template",
+                                "field": "instance.moral"
+                            }],
                         "plugins": [{
-                            "fn": "ScheduleDT",
-                            "cfg": {
-                                "columnToAdd": 10
-                            }
-                        }]
+                                "fn": "ScheduleDT",
+                                "cfg": {
+                                    "columnToAdd": 10,
+                                    "variable": {
+                                        "name": "periodPhase3"
+                                    }
+                                }
+                            }, {
+                                "fn": "Reservation",
+                                "cfg": {
+                                    "type": "occupations"
+                                }
+                            }, {
+                                "fn": "OccupationColor"
+                            }, {
+                                "fn": "ActivityColor"
+                            }]
                     }
                 ]
             }

@@ -20,7 +20,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
      */
     var Wegas = Y.Wegas,
             Reservation = Y.Base.create("wegas-pmg-reservation", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
-        /** @lends Y.Plugin.CSSStyles */
+        /** @lends Y.Plugin.Reservation */
 
         /**
          * Lifecycle methods
@@ -34,10 +34,10 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                 this.get("host").datatable.delegate("click", function(e, a) {
                     dt = this.get("host").datatable;
                     id = dt.getRecord(e.target).get("id");
-                    columnsCfg = dt.get('columns')[e.target.getDOMNode().cellIndex];
+                    columnsCfg = dt.get('columns')[dt.getCell(e.target).get("cellIndex")];
 
                     this.checkCache(id, columnsCfg.time);
-                }, "tbody .scheduleColumn", this);
+                }, "tbody .present, tbody .futur", this);
             }, this);
         },
         checkCache: function(descriptorId, periode) {
@@ -46,13 +46,15 @@ YUI.add('wegas-pmg-reservation', function(Y) {
 
             for (i = 0; i < vd.getInstance().get(type).length; i++) {
                 abstractAssignement = vd.getInstance().get(type)[i];
-                if (abstractAssignement.get("time") === periode) {
+                if (abstractAssignement.get("time") === periode && abstractAssignement.get("editable")) {
                     this.remove(abstractAssignement.get("id"), type);
+                    return;
+                } else if (abstractAssignement.get("time") === periode) {
                     return;
                 }
             }
 
-            if (type === "occupations"){
+            if (type === "occupations") {
                 data = this.dataOccupation(periode);
             } else {
                 data = this.dataActivity(periode);
@@ -81,14 +83,6 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                     method: "POST",
                     data: Y.JSON.stringify(data)
                 }
-//                on: {
-//                    success: function(r) {
-//                        console.log(r);
-//                    },
-//                    failure: function(r) {
-//                        console.log(r);
-//                    }
-//                }
             });
         },
         remove: function(abstractAssignementId, type) {
@@ -97,14 +91,6 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                 cfg: {
                     method: "DELETE"
                 }
-//                on: {
-//                    success: function(r) {
-//                        console.log(r);
-//                    },
-//                    failure: function(r) {
-//                        console.log(r);
-//                    }
-//                }
             });
         },
         /**
