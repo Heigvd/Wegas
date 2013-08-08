@@ -248,15 +248,17 @@ YUI.add("wegas-flexitests-results", function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Test results storage (Object)",
-                    description: "Test result storage"
+                    legend: "Test results storage",
+                    description: "Test result storage",
+                    classFilter: ["ObjectDescriptor"]
                 }
             }, demographics: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Demographic form storage(Object)",
-                    description: "Form variable storage"
+                    legend: "Demographic form storage",
+                    description: "Form variable storage",
+                    classFilter: ["ObjectDescriptor"]
                 }
             },
             simpleMode: {
