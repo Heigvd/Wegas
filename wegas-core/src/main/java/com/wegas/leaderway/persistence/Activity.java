@@ -142,6 +142,22 @@ public class Activity extends AbstractAssignement {
     public void setTime(Double time) {
         this.time = time;
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    public Boolean getEditable() {
+        return editable;
+    }
+
+    /**
+     * 
+     * @param editable 
+     */
+    public void setEditable(Boolean editable) {
+        this.editable = editable;
+    }
 
     /**
      *

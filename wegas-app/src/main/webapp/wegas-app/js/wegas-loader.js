@@ -752,6 +752,14 @@ YUI().use(function(Y) {
                     requires: [],
                     ws_provides: 'Reservation'
                 },
+                "wegas-pmg-occupationcolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-occupationcolor-min.js',
+                    ws_provides: 'OccupationColor'
+                },
+                "wegas-pmg-activitycolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-activitycolor-min.js',
+                    ws_provides: 'ActivityColor'
+                },
                 /**book CYOA**/
                 'wegas-book': {
                     path: 'wegas-book/js/wegas-book-fight-min.js',

@@ -28,12 +28,13 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @private
          */
         initializer: function() {
+            this.handlers = {};
             this.get("host").onceAfter("render", function() {
                 this.set("columnToAdd", this.get("columnToAdd"));
-//                this.get("host").datatable.delegate("click", function(e) {
-//                    console.log(e.target);
-//                    alert("Yes");
-//                }, "tbody .scheduleColumn", this);
+            }, this);
+
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", function() {
+                this.set("columnToAdd", this.get("columnToAdd"));
             }, this);
         },
         /**
@@ -51,9 +52,20 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             if (newval) {
                 var table = this.get("host").datatable, i;
                 for (i = 1; i <= newval; i++) {
-                    table.addColumn({key: i.toString(), className: "scheduleColumn", time: i});
+                    if (i === this.currentPeriod()) {
+                        table.addColumn({key: i.toString(), className: "schedulColumn present", time: i});
+                    } else if (i < this.currentPeriod()) {
+                        table.addColumn({key: i.toString(), className: "schedulColumn past", time: i});
+                    } else {
+                        table.addColumn({key: i.toString(), className: "schedulColumn futur", time: i});
+                    }
+
                 }
             }
+        },
+        currentPeriod: function() {
+            var variable = this.get('variable.evaluated');
+            return variable.getInstance().get("value");
         },
         /**
          * Destructor methods.
@@ -61,6 +73,10 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @private
          */
         destructor: function() {
+            var i;
+            for (i = 0; i < this.handlers.length; i++) {
+                this.handlers[i].detach();
+            }
         }
     }, {
         ATTRS: {
@@ -72,6 +88,13 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                 _inputex: {
                     _type: "integer",
                     label: "No of column"
+                }
+            },
+            variable: {
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "Periode variable"
                 }
             }
         },
