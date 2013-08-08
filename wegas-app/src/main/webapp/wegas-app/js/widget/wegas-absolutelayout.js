@@ -11,16 +11,16 @@
  */
 YUI.add('wegas-absolutelayout', function(Y) {
     "use strict";
-    var CONTENTBOX = 'contentBox', AbsoluteLayout, PositionPlugin;
+    var AbsoluteLayout, PositionPlugin;
     /**
      * @name Y.Wegas.AbsoluteLayout
      * @extends Y.Widget
-     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
+     * @borrows Y.WidgetChild, Y.WidgetParent, Y.Wegas.Editable, Y.Wegas.Container
      * @constructor
      * @description Absolute position container
      */
     AbsoluteLayout = Y.Base.create("wegas-absolutelayout", Y.Widget,
-            [Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable], {
+            [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Container], {
         /**
          * @lends Y.Wegas.AbsoluteLayout#
          */
@@ -54,26 +54,16 @@ YUI.add('wegas-absolutelayout', function(Y) {
                             }
                         });
                     }
-                    if (!e.child.CSSSize) {
-                        e.child.plug(Y.Plugin.CSSSize);
+                    if (!item.CSSSize) {
+                        item.plug(Y.Plugin.CSSSize);
                     }
                 });
             });
-        },
-        toObject: function() {
-            var i, object, children = [], args = Array.prototype.slice.call(arguments);
-            object = Y.Wegas.Editable.prototype.toObject.apply(this, args);
-            for (i = 0; i < this.size(); i = i + 1) {
-                children.push(this.item(i).toObject(args));
-            }
-            object.children = children;
-            return object;
         }
     }, {
         /**
          * @lends Y.Wegas.AbsoluteLayout
          */
-        EDITMENU: Y.Wegas.List.EDITMENU, /* @TODO: Dependency to Wegas.List remove this */
         NAME: "wegas-absolutelayout",
         CSS_PREFIX: "wegas-absolutelayout",
         EDITORNAME: "Layout",
@@ -106,11 +96,11 @@ YUI.add('wegas-absolutelayout', function(Y) {
                 type: "number",
                 optional: true,
                 setter: function(value) {
-                    if (!Y.Lang.isNumber(parseInt(value))) {
+                    if (!Y.Lang.isNumber(parseInt(value, 10))) {
                         return null;
                     }
                     this.get("host").get("boundingBox").setStyle("left", +value + "px");
-                    return parseInt(value);
+                    return parseInt(value, 10);
                 },
                 getter: Y.Wegas.Editable.removeNullValue
             },
@@ -118,11 +108,11 @@ YUI.add('wegas-absolutelayout', function(Y) {
                 type: "number",
                 optional: true,
                 setter: function(value) {
-                    if (!Y.Lang.isNumber(parseInt(value))) {
+                    if (!Y.Lang.isNumber(parseInt(value, 10))) {
                         return null;
                     }
                     this.get("host").get("boundingBox").setStyle("top", +value + "px");
-                    return parseInt(value);
+                    return parseInt(value, 10);
                 },
                 getter: Y.Wegas.Editable.removeNullValue
             },
@@ -130,11 +120,11 @@ YUI.add('wegas-absolutelayout', function(Y) {
                 type: "number",
                 optional: true,
                 setter: function(value) {
-                    if (!Y.Lang.isNumber(parseInt(value))) {
+                    if (!Y.Lang.isNumber(parseInt(value, 10))) {
                         return null;
                     }
                     this.get("host").get("boundingBox").setStyle("right", +value + "px");
-                    return parseInt(value);
+                    return parseInt(value, 10);
                 },
                 getter: Y.Wegas.Editable.removeNullValue
             },
@@ -142,11 +132,11 @@ YUI.add('wegas-absolutelayout', function(Y) {
                 type: "number",
                 optional: true,
                 setter: function(value) {
-                    if (!Y.Lang.isNumber(parseInt(value))) {
+                    if (!Y.Lang.isNumber(parseInt(value, 10))) {
                         return null;
                     }
                     this.get("host").get("boundingBox").setStyle("bottom", +value + "px");
-                    return parseInt(value);
+                    return parseInt(value, 10);
                 },
                 getter: Y.Wegas.Editable.removeNullValue
             }

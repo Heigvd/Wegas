@@ -1,3 +1,7 @@
+.body {
+    margin: 15px;
+}
+
 .header {
     height:55px;
     width: 100%;
@@ -18,4 +22,6 @@
     margin: 6px;
 }
 
-
+.button, .data p {
+    margin-top: 10px;
+}
