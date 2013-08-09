@@ -67,10 +67,9 @@ YUI.add("treeview-sortable", function(Y) {
                             found = this.testGroups(dragNode, dropNode),
                             tOl = dropNode.one("ul");                           // tOl is looking for a child ol below the li
 
-                    console.log("drag:over(", dropNode.get("nodeName").toLowerCase(), tOl ? "has tol" : "no tol",
-                            found,
-                            dropNode._node.className,
-                            dropNode.one(".yui3-treenode-content-label") ? dropNode.one(".yui3-treenode-content-label").getHTML() : "nolabel");
+                    //console.log("drag:over(", dropNode.get("nodeName").toLowerCase(), tOl ? "has tol" : "no tol",
+                    //        found, dropNode._node.className,
+                    //        dropNode.one(".yui3-treenode-content-label") ? dropNode.one(".yui3-treenode-content-label").getHTML() : "nolabel");
 
                     switch (dropNode.get("nodeName").toLowerCase()) {           // if we've over an li, add the new ol child block
                         case "li":
@@ -119,7 +118,7 @@ YUI.add("treeview-sortable", function(Y) {
                             index = dropNode.get("children").indexOf(node),
                             targetNode = ev.target.get("node");
 
-                    Y.log("onDragEnd()", "info", "Wegas.VariableTreeView");
+                    //Y.log("onDragEnd()", "info", "Wegas.VariableTreeView");
 
 
                     addedNode = undefined;
@@ -204,20 +203,18 @@ YUI.add("treeview-sortable", function(Y) {
             // console.log("_onDropEnter(" + dropNode._node.className + ", " + dropNode.one(".yui3-treenode-content-label").getHTML() + ")");
 
             if (!this.treeSortPlg.testGroups(dragNode, dropNode)) {
-                console.log("rejected1");
                 return;
             }
             NestedSortable.superclass._onDropEnter.apply(this, e);
 
         },
         _onDragOver: function(e) {
-
             var dragNode = e.drag.get(NODE),
                     dropNode = e.drop.get(NODE);
 
-            console.log("_onDragOver(", dropNode._node.className,
-                    (dropNode.one(".yui3-treenode-content-label")) ?
-                    dropNode.one(".yui3-treenode-content-label").getHTML() : "no label");
+            //console.log("_onDragOver(", dropNode._node.className,
+            //        (dropNode.one(".yui3-treenode-content-label")) ?
+            //        dropNode.one(".yui3-treenode-content-label").getHTML() : "no label");
 
             if (!this.treeSortPlg.testGroups(dragNode, dropNode)) {
                 return;

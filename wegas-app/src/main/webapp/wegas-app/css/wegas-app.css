@@ -326,3 +326,13 @@ font{
     right: 5px;
     margin: 0;
 }
+
+/* Unread count plugin */
+.unread-count .value{
+    background-image: url(../images/unread-count.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    color:white;
+    padding:5px;
+    margin-left:2px;
+}

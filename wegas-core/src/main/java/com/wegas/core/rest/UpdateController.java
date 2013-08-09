@@ -67,7 +67,9 @@ public class UpdateController {
         List<VariableDescriptor> findAll = descriptorFacade.findByGameModelId(gameModelId);
         for (VariableDescriptor vd : findAll) {
             vd.setName(Helper.encodeVariableName(vd.getName()));
-            descriptorFacade.findUniqueName(vd, descriptorFacade.findDistinctNames(vd.getGameModel()));
+            List<String> findDistinctNames = descriptorFacade.findDistinctNames(vd.getGameModel());
+            findDistinctNames.remove(vd.getName());
+            descriptorFacade.findUniqueName(vd, findDistinctNames);
             descriptorFacade.findUniqueLabel(vd);
             descriptorFacade.flush();
         }

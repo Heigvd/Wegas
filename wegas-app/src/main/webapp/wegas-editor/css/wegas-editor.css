@@ -35,7 +35,6 @@ body {
 
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner {
     position: relative;
-    overflow: auto;
 }
 .yui3-skin-sam .editor-tab > div > div > div > .panel-inner {
     position: relative;
