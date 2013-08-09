@@ -1,6 +1,6 @@
 /*
  * Wegas
- * http://www.albasim.ch/wegas/
+ * http://wegas.albasim.ch
  *
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
@@ -37,7 +37,6 @@ YUI().use(function(Y) {
                     requires: [
                         'wegas-helper', 'wegas-entity', 'wegas-datasource',
                         'wegas-pageloader', 'wegas-button'
-                                // 'wegas-rights'
                                 // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
                 },
@@ -172,7 +171,7 @@ YUI().use(function(Y) {
                     ws_provides: 'Layout'
                 },
                 'wegas-layoutcss': {
-                    path: 'wegas-app/css/wegas-layout-min.css',
+                    path: 'wegas-app/css/wegas-layout.css',
                     type: 'css'
                 },
                 'wegas-list': {
@@ -195,7 +194,7 @@ YUI().use(function(Y) {
                     ws_provides: 'TabView'
                 },
                 'wegas-tabviewcss': {
-                    path: 'wegas-app/css/wegas-tabview-min.css',
+                    path: 'wegas-app/css/wegas-tabview.css',
                     type: "css"
                 },
                 'wegas-variabledisplay': {
@@ -527,10 +526,6 @@ YUI().use(function(Y) {
                 /** Editor **/
                 'wegas-editorcss': {
                     path: 'wegas-editor/css/wegas-editor-min.css',
-                    type: 'css'
-                },
-                'wegas-rightscss': {
-                    path: 'wegas-editor/css/wegas-rights-min.css',
                     type: 'css'
                 },
                 'gallery-colorpickercss': {

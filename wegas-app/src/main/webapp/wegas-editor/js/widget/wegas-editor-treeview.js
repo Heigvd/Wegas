@@ -72,18 +72,18 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
             var ds = this.get(DATASOURCE),
                     selector = this.get("dataSelector"),
-                    entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll(),
-                    msg = this.get(CONTENTBOX).one(".wegas-smallmessage");
+                    entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll();
 
-            if (msg) {
-                msg.remove(true);
-            }
+            this.get(CONTENTBOX).all(".wegas-smallmessage").remove();
+
             this.treeView.removeAll();
-            if (entities.length === 0) {
+
+            var treeNodes = this.genTreeViewElements(entities);
+            if (treeNodes.length === 0) {
                 this.get(CONTENTBOX).append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
                 return;
             }
-            this.treeView.add(this.genTreeViewElements(entities));
+            this.treeView.add(treeNodes);
             this.treeView.syncUI();
 
             this.hideOverlay();
@@ -368,7 +368,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 //
                 ////tab.set("visible", true);
                 ////tab.set("selected", 2);
-                ////tab.witem(0).set("emptyMessage", "This model has no games.");
+                //tab.witem(0).set("emptyMessage", "This model has no games.");
                 //tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
 
                 //Wegas.Facade.Game.set("source",
@@ -558,7 +558,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {
                 this.get(HOST).treeView.before("*:nodeExpanded",
-                        this.fillsLeaf, this);                              //if treeleaf is empty, load elements from sever
+                        this.fillsLeaf, this);                                  //if treeleaf is empty, load elements from sever
             });
 
             //this.afterHostMethod("syncUI", function () {
