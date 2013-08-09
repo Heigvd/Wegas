@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-layout', function(Y) {
+YUI.add('wegas-layout', function (Y) {
     "use strict";
 
     var Layout;
@@ -21,16 +21,7 @@ YUI.add('wegas-layout', function(Y) {
      * @constructor
      * @description Show/hide a page with a slid (tween) effect
      */
-    Layout = Y.Base.create("wegas-layout", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
-        CONTENT_TEMPLATE: '<div>'
-                + '<div class="wegas-layout-hd"></div>'
-                + '<div class="wegas-layout-bd"><div>'
-                + '<div class="wegas-layout-left"></div>'
-                + '<div class="wegas-layout-center"></div>'
-                + '<div class="wegas-layout-right"></div>'
-                + '</div></div>'
-                + '<div class="wegas-layout-ft"></div>'
-                + '</div>',
+    Layout = Y.Base.create("wegas-layout", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.WidgetStdMod], {
         /** @lends Y.Wegas.Layout# */
 
         // *** Private fields *** //
@@ -38,19 +29,27 @@ YUI.add('wegas-layout', function(Y) {
          * Reference to Y.Resize left object of the panel
          */
         resizeLeft: null,
+
         /**
          * Reference to Y.Resize right object of the panel
          */
         resizeRight: null,
+
+        /**
+         * Reference to each used functions
+         */
+        handlers: null,
+
         // *** Lifecycle Methods *** //
         /**
          * @function
          * @private
          * @description Set variables with initials values.
          */
-        initializer: function() {
+        initializer: function(){
             this.handlers = [];
         },
+
         /**
          * @function
          * @private
@@ -58,15 +57,16 @@ YUI.add('wegas-layout', function(Y) {
          *  position (top, left, center and right).
          *  Call function "_syncUIStdMod";
          */
-        renderUI: function() {
+        renderUI: function () {
             this.renderPosition('top');
             this.renderPosition('left');
             this.renderPosition('center');
             this.renderPosition('right');
             //this.renderPosition('bottom');
 
-//            this._syncUIStdMod();
+            this._syncUIStdMod();
         },
+
         /**
          * @function
          * @private
@@ -74,35 +74,33 @@ YUI.add('wegas-layout', function(Y) {
          * When window is resized, do sync.
          * When dom is ready, do sync.
          */
-        bindUI: function() {
-            Y.on("windowresize", Y.bind(this.syncUI, this));                    // Sync the layout whenever the windows is resized
+        bindUI: function () {
+            Y.on("windowresize", Y.bind(this.syncUI, this));                // Sync the layout whenever the windows is resized
             //this.get("boundingBox").on("resize", this._syncUIStdMod, this);
             Y.on('domready', this.syncUI, this);
         },
+
         /**
          * @function
          * @private
          * @description call functions "syncCenterNode" and "_syncUIStdMod";
          */
-        syncUI: function() {
+        syncUI: function () {
             this.syncCenterNode();
+            this._syncUIStdMod();
         },
+
         /**
          * @function
          * @private
          * @description Detach all functions created by this widget.
          */
-        destructor: function() {
-            if (this.resizeLeft) {
-                this.resizeLeft.destroy();
-            }
-            if (this.resizeRight) {
-                this.resizeRight.destroy();
-            }
+        destructor: function () {
             for (var i in this.handlers) {
                 this.handlers[i].detach();
             }
         },
+
         // ** Private Methods ** //
         /**
          * @function
@@ -112,28 +110,35 @@ YUI.add('wegas-layout', function(Y) {
          * @description return a node corresponding to the given position (top,
          * bottom, center, right or left).
          */
-        getPositionNode: function(position) {
-            var cb = this.get("contentBox");
+        getPositionNode: function (position) {
+            var target;
             switch (position) {
                 case "top" :
-                    return cb.one(".wegas-layout-hd");
+                    target = this.getStdModNode("header");
+                    break;
                 case "bottom" :
-                    return cb.one(".wegas-layout-ft");
+                    target = this.getStdModNode("footer");
+                    break;
                 case "left" :
-                    return cb.one(".wegas-layout-left");
+                    target = this.getStdModNode("body").one(".wegas-layout-left");
+                    break;
                 case "center" :
-                    return cb.one(".wegas-layout-center");
+                    target = this.getStdModNode("body").one(".wegas-layout-center");
+                    break;
                 case "right" :
-                    return cb.one(".wegas-layout-right");
+                    target = this.getStdModNode("body").one(".wegas-layout-right");
+                    break;
             }
+            return target;
         },
+
         /**
          * @function
          * @private
          * @param position
          * @description do a slide (tween) animation to hide the panel
          */
-        hidePosition: function(position) {
+        hidePosition: function (position) {
             var anim = new Y.Anim({
                 node: this.getPositionNode(position),
                 to: {
@@ -143,16 +148,17 @@ YUI.add('wegas-layout', function(Y) {
                 duration: 0.6
             });
             anim.on('tween', this.syncCenterNode, this);
-            anim.on('end', this.syncCenterNode, this);
+            //anim.on('end', this.syncCenterNode, this );
             anim.run();
         },
+
         /**
          * @function
          * @private
          * @param position
          * @description do a slide (tween) animation to show the panel
          */
-        showPosition: function(position) {
+        showPosition: function (position) {
             var anim,
                     target = this.getPositionNode(position);
 
@@ -170,13 +176,14 @@ YUI.add('wegas-layout', function(Y) {
                 anim.run();
             }
         },
+
         /**
          * @function
          * @private
          * @param position
          * @description
          */
-        renderPosition: function(position) {
+        renderPosition: function (position) {
             var i, cWidget,
                     target = this.getPositionNode(position),
                     positionCfg = this.get(position);
@@ -188,8 +195,8 @@ YUI.add('wegas-layout', function(Y) {
                         node: target,
                         handles: 'r'
                     });
-                    this.resizeLeft.on("resize", this.syncCenterNode, this);
-                    this.resizeLeft.on("end", this.syncCenterNode, this);
+                    this.handlers.push(this.resizeLeft.on("resize", this.syncCenterNode, this));
+                    this.handlers.push(this.resizeLeft.on("end", this.syncCenterNode, this));
 
 
                 } else if (position === "right") {
@@ -197,8 +204,8 @@ YUI.add('wegas-layout', function(Y) {
                         node: target,
                         handles: 'l'
                     });
-                    this.resizeRight.on("resize", this.syncCenterNode, this);
-                    this.resizeRight.on("end", this.syncCenterNode, this);
+                    this.handlers.push(this.resizeRight.on("resize", this.syncCenterNode, this));
+                    this.handlers.push(this.resizeRight.on("end", this.syncCenterNode, this));
 
                     target.setStyle("width", 0);
                 }
@@ -212,21 +219,22 @@ YUI.add('wegas-layout', function(Y) {
                 target.setStyle("width", "0");
             }
         },
+
         /**
          * @function
          * @private
          * @description refresh the style of the center node
          */
-        syncCenterNode: function() {
-            var cb = this.get("contentBox"),
-                    leftNode = cb.one(".wegas-layout-left"),
-                    rightNode = cb.one(".wegas-layout-right");
+        syncCenterNode: function () {
+            var bodyNode = this.getStdModNode("body"),
+                    leftNode = bodyNode.one(".wegas-layout-left"),
+                    rightNode = bodyNode.one(".wegas-layout-right");
 
             leftNode.setStyles({
                 right: "auto",
                 left: "0px"
             });
-            cb.one(".wegas-layout-center").setStyles({
+            bodyNode.one(".wegas-layout-center").setStyles({
                 "left": leftNode.getStyle("width"),
                 "right": rightNode.getStyle("width")
             });
@@ -235,6 +243,25 @@ YUI.add('wegas-layout', function(Y) {
                 left: "auto"
             });
             Y.Wegas.app.fire("layout:resize");
+        },
+
+        /**
+         * @function
+         * @private
+         * @description Override yui implementation to prevent section's
+         *  content sync.
+         */
+        _syncUIStdMod: function () {
+            this._uiSetFillHeight(this.get("fillHeight"));
+        },
+
+        /**
+         * @function
+         * @private
+         * @description Override yui implementation to use custom templates.
+         */
+        _getStdModTemplate: function (section) {
+            return Y.Node.create(Layout.TEMPLATES[section], this._stdModNode.get("ownerDocument"));
         }
 
     }, {
@@ -278,11 +305,35 @@ YUI.add('wegas-layout', function(Y) {
              */
             center: {},
             /**
+             * Configuration and childrens of the center section.
+             */
+            headerContent: {
+                value: ""
+            },
+            /**
+             *  Reset default value to force display by default.
+             */
+            footerContent: {
+                value: ""
+            },
+            /**
+             *  Reset default value to force display by default.
+             */
+            bodyContent: {
+                value: ''
+            },
+            /**
              * Height of the section.
              */
             height: {
                 value: "100%"
             }
+        },
+
+        TEMPLATES: {
+            header: '<div class="yui-widget-hd wegas-layout-top"></div>',
+            body: '<div class="yui-widget-bd wegas-layout-bd"><div class="wegas-layout-left"></div><div class="wegas-layout-center"></div><div class="wegas-layout-right"></div></div>',
+            footer: '<div class="yui-widget-ft wegas-layout-bottom"></div>'
         }
     });
 

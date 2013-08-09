@@ -217,11 +217,11 @@ body {
 }
 
 /* Editor layout styles */
-.yui3-skin-sam .wegas-layout-top > div {
+.yui3-skin-sam .wegas-layout-hd > div {
     display: inline-block;
     vertical-align: top;
 }
-.yui3-skin-sam .wegas-layout-top .yui3-button {
+.yui3-skin-sam .wegas-layout-hd .yui3-button {
     border: none;
     font-weight: bold;
     font-size: 11px;
@@ -234,19 +234,13 @@ body {
     background: none;
     margin-top: 12px;
 }
-
-/*.yui3-skin-sam .wegas-layout-top .yui3-button .wegas-widgetmenu-submenuindicator {
-    display:none;
-}*/
-
-.yui3-skin-sam .wegas-layout-top .yui3-button.wegas-widgetmenu-hassubmenu:after {
+.yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-widgetmenu-hassubmenu:after {
     content: url("../../wegas-app/images/wegas-submenuindicator-white.png");
 }
-.yui3-skin-sam .wegas-layout-top .wegas-login {
+.yui3-skin-sam .wegas-layout-hd .wegas-login {
     float:right  !important;
 }
-
-.yui3-skin-sam .wegas-layout-top .wegas-login img {
+.yui3-skin-sam .wegas-layout-hd .wegas-login img {
     margin-top: -5px;
     margin-right: 6px;
 }

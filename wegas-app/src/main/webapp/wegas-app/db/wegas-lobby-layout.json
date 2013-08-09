@@ -161,7 +161,7 @@
                         "children": [{
                                 "type": "PublicGameTreeView",
                                 "dataSource": "PublicGames",
-                                "emptyMessage": "No game is available for play.",
+                                "emptyMessage": "No new game is available to play.",
                                 "plugins": [{
                                         "fn": "EditorTVAdminMenu",
                                         "cfg": {
