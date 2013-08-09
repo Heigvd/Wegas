@@ -643,7 +643,9 @@ YUI.add('wegas-datasource', function(Y) {
                         return true;
                     }
                     if (this.walkEntity(item, doFind)) {
-                        ret = item;
+                        if (!ret) {
+                            ret = item;
+                        }
                         return true;
                     }
                     return false;
@@ -665,14 +667,20 @@ YUI.add('wegas-datasource', function(Y) {
             Y.log("Moving cache object from position " + Y.Array.indexOf(tArray, entity) + " to position " + index, "log", "Wegas.VariableTreeView");
 
             tArray.splice(Y.Array.indexOf(tArray, entity), 1);
+            if (oParentEntity) {
+                oParentEntity.set("items", tArray);
+            }
 
             tArray = (parentEntity) ?
                     parentEntity.get("items") : this.getCache();
             tArray.splice(index, 0, entity);                                    // Place the entity at the new position
 
             if (parentEntity) {                                                   // Dropped on a list descriptor
+                parentEntity.set("items", tArray);
+                entity.parentDescriptor = parentEntity;
                 request = "/" + entity.get("id") + "/Move/" + parentEntity.get("id") + "/" + index;
             } else {                                                            // Dropped at root level
+                entity.parentDescriptor = null;
                 request = "/" + entity.get("id") + "/Move/" + index
             }
             host.sendRequest({
@@ -681,11 +689,13 @@ YUI.add('wegas-datasource', function(Y) {
                     method: "PUT"
                 },
                 on: {
-                    success: function(tId, e) {
+                    success: Y.bind(function(tId, e) {
                         Y.log("Item moved", "info", "Wegas.VariableTreeView");
-                    },
+                        this.get("host").fire("update");
+                    }, this),
                     failure: function(tId, e) {
                         //@todo Reset the whole treeview
+                        //.log("Error moving item", "error");
                     }
                 }
             });

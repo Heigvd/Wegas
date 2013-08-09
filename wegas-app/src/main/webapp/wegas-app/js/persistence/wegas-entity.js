@@ -1251,11 +1251,11 @@ YUI.add('wegas-entity', function(Y) {
                             "event": "mouseenter",
                             "children": [{
                                     "type": "AddEntityChildButton",
-                                    "label": NUMBER,
+                                    "label": "Number",
                                     "targetClass": "NumberDescriptor"
                                 }, {
                                     "type": "AddEntityChildButton",
-                                    "label": STRING,
+                                    "label": "String",
                                     "targetClass": "StringDescriptor"
                                 }, {
                                     "type": "AddEntityChildButton",
