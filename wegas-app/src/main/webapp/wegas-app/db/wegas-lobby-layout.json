@@ -304,6 +304,7 @@
                                 "type": "CreatedGameTreeView",
                                 "dataSource": "Game",
                                 "emptyMessage": "You have not created any game yet",
+                                "cssClass": "editor-createdgametreeview",
                                 "plugins": [{
                                         "fn": "EditorTVAdminMenu",
                                         "cfg": {

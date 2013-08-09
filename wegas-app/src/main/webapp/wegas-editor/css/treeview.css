@@ -96,22 +96,22 @@
 .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget{
     opacity:0;
-    transition: opacity 0.2s linear 0.4s;
-    -o-transition: opacity 0.2s linear 0.4s;
-    -moz-transition: opacity 0.2s linear 0.4s;
-    -ms-transition: opacity 0.2s linear 0.4s;
-    -webkit-transition: opacity 0.2s linear 0.4s;
+    transition: opacity 0.1s linear 0.1s;
+    -o-transition: opacity 0.1s linear 0.1s;
+    -moz-transition: opacity 0.1s linear 0.1s;
+    -ms-transition: opacity 0.1s linear 0.1s;
+    -webkit-transition: opacity 0.1s linear 0.1s;
 }
 .yui3-treenode-content-header:hover > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header:hover > .yui3-treeleaf-content-rightwidget,
 .selected > .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
 .selected > div > .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget {
     opacity:1;
-    transition: opacity 0.15s linear 0.1s;
-    -o-transition: opacity 0.15s linear 0.1s;
-    -moz-transition: opacity 0.15s linear 0.1s;
-    -ms-transition: opacity 0.15s linear 0.1s;
-    -webkit-transition: opacity 0.15s linear 0.1s;
+    transition: opacity 0.1s linear 0.05s;
+    -o-transition: opacity 0.1s linear 0.05s;
+    -moz-transition: opacity 0.1s linear 0.05s;
+    -ms-transition: opacity 0.1s linear 0.05s;
+    -webkit-transition: opacity 0.1s linear 0.05s;
 }
 
 .yui3-treenode-content-label,
@@ -149,6 +149,7 @@
 .selected > .yui3-treenode-content-header{
     background-color:#EDEDED;
     box-shadow: 0px 0px 6px #6D6D6D;
+    font-weight: bolder;
 }
 .yui3-treenode>ul:empty::before{
     content:"empty";

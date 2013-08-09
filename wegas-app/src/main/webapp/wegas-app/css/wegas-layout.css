@@ -1,0 +1,56 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
+
+/* Wegas Layout Widget Styles */
+.yui3-skin-sam .wegas-layout {
+    background-color: #072644;
+    /*overflow: hidden;*/
+}
+.yui3-skin-sam .wegas-layout-hd > div {
+    display: inline-block;
+}
+.yui3-skin-sam .wegas-layout-bd {
+    position:absolute;
+    top: 44px;
+    bottom:0px;
+    width: 100%;
+    background-color: #072644;
+}
+.yui3-skin-sam .wegas-layout-left,
+.yui3-skin-sam .wegas-layout-center,
+.yui3-skin-sam .wegas-layout-right {
+    position: absolute;
+    height: 100% !important;
+}
+.yui3-skin-sam .wegas-layout-left > .yui3-widget,
+.yui3-skin-sam .wegas-layout-center > .yui3-widget,
+.yui3-skin-sam .wegas-layout-right > .yui3-widget {
+    position: relative;
+}
+
+.yui3-skin-sam .wegas-layout-center {
+    margin-right: 6px;
+    margin-left: 6px;
+}
+.yui3-skin-sam .wegas-layout-left {
+    width: 300px;
+    padding-right: 6px;
+}
+.yui3-skin-sam .wegas-layout-right {
+    padding-left: 6px;
+    width: 320px;
+    right: 0;
+}
+.yui3-skin-sam .wegas-layout .yui3-resize-handle {
+    background: #072644;
+}
+
+
