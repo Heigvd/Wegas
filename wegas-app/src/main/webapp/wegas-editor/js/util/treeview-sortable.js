@@ -50,7 +50,8 @@ YUI.add("treeview-sortable", function(Y) {
                 //this.sortable.delegate.dd.after('drag:over', this.syncDummies, this);
                 this.sortable.delegate.dd.after('drag:end', this.onDragEnd, this);
             });
-            this.afterHostMethod("syncUI", this.syncDummies, this);
+            this.afterHostMethod("syncUI", this.syncDummies);
+            this.afterHostEvent("*:addChild", this.syncDummies);                //@fixme : addChild is frequent smooth it (Timeout?)
         },
         onDragEnd: function(e) {
             var node = this.sortable.delegate.get('currentNode'),
