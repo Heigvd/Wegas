@@ -79,7 +79,7 @@ public class Pages implements Serializable {
         while (it.hasNext()) {
             Node n = (Node) it.next();
             try {
-                Page p = new Page(n.getName(), n.getProperty("content").getString());
+                Page p = new Page(n);
                 //pageMap.put(p.getId().toString(),  p.getContent());
                 ret.put(p.getId(), p.getContent());
             } catch (IOException ex) {
@@ -104,10 +104,7 @@ public class Pages implements Serializable {
         Page ret = null;
         try {
             if (n != null) {
-                ret = new Page(n.getName(), n.getProperty("content").getString());
-                if (n.hasProperty("pageName")) {
-                    ret.setName(n.getProperty("pageName").getString());
-                }
+                ret = new Page(n);
             }
         } catch (IOException ex) {
             //Well Stored String is wrong
