@@ -22,9 +22,11 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.shiro.SecurityUtils;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -121,7 +123,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Transient
     @JsonView({Views.Export.class})
-    private Map<Integer, JsonNode> pages;
+    private Map<String, JsonNode> pages;
 
     /**
      *
@@ -430,19 +432,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
-     * @fixme This method only adds pages to target game model, it does not
-     * remove existing ones.
-     * @param pages the pages to set
+     *
+     * @param pageMap
+     * @throws RepositoryException
      */
-    public void setPages(Map<String, JsonNode> pageMap) throws RepositoryException {
-        if (pages != null) {
-
-            Pages pagesDAO = new Pages(this.id.toString());
-            pagesDAO.delete();                                                  // Remove existing pages
-
-            for (Entry<String, JsonNode> p : pageMap.entrySet()) {             // Add all pages
-                pagesDAO.store(new Page(p.getKey(), p.getValue()));
-            }
+    public final void setPages(Map<String, JsonNode> pageMap) {
+        this.pages = pageMap;
+        if (this.id != null) {
+            this.storePages();
         }
     }
 
@@ -472,5 +469,35 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Override
     public boolean remove(VariableDescriptor item) {
         return this.childVariableDescriptors.remove(item);
+    }
+
+    @PostPersist
+    private void storePages() {
+        try {
+            Pages pagesDAO = new Pages(this.id.toString());
+            pagesDAO.delete();                                                  // Remove existing pages
+
+            for (Entry<String, JsonNode> p : this.pages.entrySet()) {             // Add all pages
+                pagesDAO.store(new Page(p.getKey(), p.getValue()));
+            }
+        } catch (RepositoryException ex) {
+            System.err.println("Failed to create repository for GameModel " + this.id);
+        }
+
+    }
+
+    @JsonCreator
+    public GameModel(@JsonProperty("pages") JsonNode pageMap) throws RepositoryException {
+        Map<String, JsonNode> map = new HashMap<>();
+        if (pageMap == null) {
+            return;
+        }
+        String curKey;
+        Iterator<String> iterator = pageMap.getFieldNames();
+        while (iterator.hasNext()) {
+            curKey = iterator.next();
+            map.put(curKey, pageMap.get(curKey));
+        }
+        this.setPages(map);
     }
 }

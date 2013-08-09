@@ -10,6 +10,8 @@ package com.wegas.core.jcr.page;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.LinkedList;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import name.fraser.neil.plaintext.StandardBreakScorer;
@@ -17,6 +19,7 @@ import name.fraser.neil.plaintext.diff_match_patch;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -35,28 +38,26 @@ public class Page implements Serializable {
     private String name;
 
     /**
-     *
-     * @param id
-     * @param content
-     * @throws IOException
-     */
-    public Page(String id, String content) throws IOException {
-        this.id = id;
-        this.content = mapper.readTree(content);
-    }
-
-    /**
-     *
      * @param id
      * @param content
      */
     public Page(String id, JsonNode content) {
         this.id = id;
-        this.content = content;
+        this.setContent(content);
+        this.extractAttrs();
+    }
+
+    public Page(Node n) throws RepositoryException, IOException {
+        this.id = n.getName();
+        this.setContent(n.getProperty("content").getString());
+        if (n.hasProperty("pageName")) {
+            this.name = n.getProperty("pageName").getString();
+            this.injectAttrs();
+        }
     }
 
     /**
-     *
+     * 
      */
     public Page() {
     }
@@ -90,7 +91,7 @@ public class Page implements Serializable {
      * @param content
      */
     @JsonIgnore
-    public void setContent(JsonNode content) {
+    public final void setContent(JsonNode content) {
         this.content = content;
     }
 
@@ -100,7 +101,7 @@ public class Page implements Serializable {
      * @throws IOException
      */
     @JsonIgnore
-    public void setContent(String content) throws IOException {
+    public final void setContent(String content) throws IOException {
         this.content = mapper.readTree(content);
     }
 
@@ -118,6 +119,24 @@ public class Page implements Serializable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     *
+     */
+    @JsonIgnore
+    private void extractAttrs() {
+        JsonNode nameNode;
+        nameNode = this.content.path("@name");
+        if (!nameNode.isMissingNode()) {
+            this.name = nameNode.getTextValue();
+            ((ObjectNode) this.content).remove("@name");
+        }
+    }
+
+    @JsonIgnore
+    private void injectAttrs() {
+        ((ObjectNode) this.content).put("@name", this.name);
     }
 
     /**

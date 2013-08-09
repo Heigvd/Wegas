@@ -1025,6 +1025,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         setCache: function(pageId, object) {
             var old = Y.JSON.stringify(this.getCache(pageId));
+            delete object['@name'];
             if (Y.JSON.stringify(object) !== old) {
                 this.get(HOST).data["" + pageId] = object;
                 this.fire("pageUpdated", {
