@@ -148,6 +148,9 @@ body > .wegas-pageloader, html{
 .flexitests .wegas-form .wegas-toolbar button{
     margin-left:135px;
 }
+.yui3-treeview-content > .page-node:first-child{
+    display: none;
+}
 /*userVoice*/
 #uvTab{
     display:none;

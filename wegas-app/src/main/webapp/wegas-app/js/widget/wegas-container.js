@@ -176,8 +176,7 @@ YUI.add("wegas-container", function(Y) {
                                                                 cfg: {
                                                                     "childType": "Chart"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }
                                                 ]
                                             }
@@ -253,7 +252,10 @@ YUI.add("wegas-container", function(Y) {
                         fn: "DeleteWidgetAction"
                     }
                 ]
-            }]
+            }],
+        _buildCfg: {
+            aggregate: ["EDITMENU"]
+        }
     });
     Y.namespace("Wegas").Container = Container;
 });

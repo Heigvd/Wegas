@@ -233,7 +233,8 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Store results"
+                    legend: "Store results",
+                    classFilter: ["ObjectDescriptor"]
                 }
             }
         }

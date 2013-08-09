@@ -83,7 +83,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }, this));
                 /*Refresh*/
                 this.refreshButton = new Y.Button({
-                    label:"<span class='wegas-icon wegas-icon-reset'></span>Refresh"
+                    label: "<span class='wegas-icon wegas-icon-reset'></span>Refresh"
                 }).render(el);
                 this.fixedHandlers.push(this.refreshButton.after("click", function(e) {
                     this.get("host").reload();
@@ -115,7 +115,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.highlightOverlay.get(CONTENTBOX).append("<span class='wegas-editmenubutton'></span>");
             this.overlayMask = new Y.Node.create("<div class='pageeditor-overlay-mask'></div>");
             this.overlayMask.plug(Y.Plugin.WidgetMenu, {
-                event: "click"
+                event: ["click", "contextmenu"]
             });
             this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
             host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
@@ -149,7 +149,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
                     widget: this.targetWidget
                 }));
-                if (inRegion(this.highlightOverlay.get(CONTENTBOX).one(".wegas-editmenubutton"), [e.domEvent.clientX, e.domEvent.clientY])) { /* Clicked editmenu */
+                if (inRegion(this.highlightOverlay.get(CONTENTBOX).one(".wegas-editmenubutton"), [e.domEvent.clientX, e.domEvent.clientY]) || e.domEvent.type === "contextmenu") { /* Clicked editmenu */
                     this.overlayMask.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                 } else {                                                        /* Clicked widget*/
                     this.overlayMask.menu.menu.hide();
