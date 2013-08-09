@@ -70,17 +70,18 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 return;
             }
 
-            var ds = this.get(DATASOURCE),
+            var treeNodes, ds = this.get(DATASOURCE),
+                    cb = this.get(CONTENTBOX),
                     selector = this.get("dataSelector"),
-                    entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll();
+                    entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll(),
+                    treeNodes = this.genTreeViewElements(entities);
 
-            this.get(CONTENTBOX).all(".wegas-smallmessage").remove();
 
             this.treeView.removeAll();
 
-            var treeNodes = this.genTreeViewElements(entities);
+            cb.all(".wegas-smallmessage").remove();
             if (treeNodes.length === 0) {
-                this.get(CONTENTBOX).append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
+                cb.append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
                 return;
             }
             this.treeView.add(treeNodes);
@@ -358,24 +359,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 Y.all(".wegas-editor-treeviewgame").each(function() {           // Filter existing tabs
                     Y.Widget.getByNode(this).treeView.filter.set("searchVal", entity);
                 });
-
-                //var entity = this.get("entity"),
-                //tabCfg = {
-                //    label: entity.get(NAME) || "Unnamed"
-                //}
-                //
-                //tab = Wegas.TabView.createTab("joinedGamesTab", null, {});
-                //
-                ////tab.set("visible", true);
-                ////tab.set("selected", 2);
-                //tab.witem(0).set("emptyMessage", "This model has no games.");
-                //tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
-
-                //Wegas.Facade.Game.set("source",
-                //        Wegas.app.get("base") + sourceUri);                     // Change the source attribute on the datasource
-                //Wegas.Facade.RegisteredGames.set("source",
-                //        Wegas.app.get("base") + registeredGamesUri);            // Change the source attribute on the datasource
-
             }, this);
         },
         syncUI: function() {
