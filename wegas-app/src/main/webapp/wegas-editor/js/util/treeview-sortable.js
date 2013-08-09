@@ -136,7 +136,8 @@ YUI.add("treeview-sortable", function(Y) {
                 }, this);
                 //this.sortable.delegate.dd.after('drag:over', this.syncDummies, this);
             });
-            this.afterHostMethod("syncUI", this.syncDummies, this);
+            this.afterHostMethod("syncUI", this.syncDummies);
+            this.afterHostEvent("*:addChild", this.syncDummies);                //@fixme : addChild is frequent smooth it (Timeout?)
         },
         testGroups: function(dragNode, dropNode) {
             var i, groups = this.get("nodeGroups");
