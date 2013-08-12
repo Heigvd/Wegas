@@ -35,6 +35,10 @@ public class Activity extends AbstractAssignement {
     @Column(name = "wtime")
     private Double time;
     /**
+     * 
+     */
+    private Boolean editable;
+    /**
      *
      */
     @Column(name = "wcompletion")
@@ -137,6 +141,22 @@ public class Activity extends AbstractAssignement {
      */
     public void setTime(Double time) {
         this.time = time;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public Boolean getEditable() {
+        return editable;
+    }
+
+    /**
+     * 
+     * @param editable 
+     */
+    public void setEditable(Boolean editable) {
+        this.editable = editable;
     }
 
     /**

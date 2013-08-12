@@ -148,7 +148,7 @@ YUI.add('wegas-pageloader', function(Y) {
 
     }, {
         /** @lends Y.Wegas.PageLoader */
-        EDITORNAME: "Pageloader",
+        EDITORNAME: "Page sub zone",
         /**
          * @field
          * @static
@@ -248,11 +248,12 @@ YUI.add('wegas-pageloader', function(Y) {
                     var p;
                     if (this.get("widget")) {
                         return Y.JSON.stringify(this.get("widget").toObject("@pageId"), null, "\t");
-                    } else {
+                    } else if(val){
                         p = Y.clone(val);
                         delete p['@pageId'];
                         return Y.JSON.stringify(val, null, "\t");
                     }
+                    return val;
                 }
             }
         },

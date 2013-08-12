@@ -12,7 +12,9 @@
 YUI.add("wegas-widget", function(Y) {
     "use strict";
     var Lang = Y.Lang,
-            BOUNDING_BOX = "boundingBox";
+            BOUNDING_BOX = "boundingBox",
+            baseCreateChild = Y.WidgetParent.prototype._createChild,
+            basePlug = Y.Widget.prototype.plug;
 
     /**
      * @name Y.Wegas.Widget
@@ -540,6 +542,9 @@ YUI.add("wegas-widget", function(Y) {
             }
 
             return val;
+        },
+        _buildCfg: {
+            aggregates: ["EDITMENU"]
         }
     });
     Y.namespace("Wegas").Widget = Widget;
@@ -547,40 +552,18 @@ YUI.add("wegas-widget", function(Y) {
      * @hack We override this function so widget are looked for in Wegas ns.
      */
     Y.WidgetParent.prototype._createChild = function(config) {
-        var defaultType = this.get("defaultChildType"),
-                altType = config.childType || config.type,
-                child,
-                Fn,
-                FnConstructor;
+        var altType = config.childType || config.type;
         if (altType) {
-            Fn = Lang.isString(altType) ? Y.Wegas[altType] || Y[altType] : altType;           // @hacked
+            config.childType = Y.Lang.isString(altType) ? Y.Wegas[altType] || Y[altType] : altType;
         }
-
-        if (Lang.isFunction(Fn)) {
-            FnConstructor = Fn;
-        } else if (defaultType) {
-            // defaultType is normalized to a function in it's setter
-            FnConstructor = defaultType;
-        }
-
-        if (FnConstructor) {
-            child = new FnConstructor(config);
-        } else {
-            Y.error("Could not create a child instance because its constructor is either undefined or invalid (" + altType + ")");
-        }
-        return child;
+        return baseCreateChild.call(this, config);                                        //reroute
     };
     /*
      * @hack Override so plugin host accepts string definition of classes and
      * look it up in the Y.Wegas.* package.
      */
     Y.Widget.prototype.plug = function(Plugin, config) {
-        var i, ln, ns;
-        if (Lang.isArray(Plugin)) {
-            for (i = 0, ln = Plugin.length; i < ln; i += 1) {
-                this.plug(Plugin[i]);
-            }
-        } else {
+        if (!Lang.isArray(Plugin)) {
             if (Plugin && !Lang.isFunction(Plugin)) {
                 config = Plugin.cfg;
                 Plugin = Plugin.fn;
@@ -588,23 +571,8 @@ YUI.add("wegas-widget", function(Y) {
             if (Plugin && !Lang.isFunction(Plugin)) {			// @hacked
                 Plugin = Y.Plugin[Plugin];
             }
-
-            // Plugin should be fn by now
-            if (Plugin && Plugin.NS) {
-                ns = Plugin.NS;
-                config = config || {};
-                config.host = this;
-                if (this.hasPlugin(ns)) {
-                    // Update config
-                    this[ns].setAttrs(config);
-                } else {
-                    // Create new instance
-                    this[ns] = new Plugin(config);
-                    this._plugins[ns] = Plugin;
-                }
-            }
         }
-        return this;
+        basePlug.call(this, Plugin, config);                                    //reroute
     };
 
     /**
