@@ -41,6 +41,11 @@ public class WRequirement extends AbstractEntity implements Serializable {
      */
     @Column(name = "wlevel")
     private Integer level;
+    
+    /*
+     * 
+     */
+    private Integer completeness;
     /*
      * 
      */
@@ -51,6 +56,7 @@ public class WRequirement extends AbstractEntity implements Serializable {
         this.work = "";
         this.level = 0;
         this.quantity = 0L;
+        this.completeness = 0;
     }
 
     @Override
@@ -60,6 +66,7 @@ public class WRequirement extends AbstractEntity implements Serializable {
         this.setLimit(other.getLimit());
         this.setQuantity(other.getQuantity());
         this.setWork(other.getWork());
+        this.setCompleteness(other.getCompleteness());
     }
 
     /**
@@ -131,5 +138,19 @@ public class WRequirement extends AbstractEntity implements Serializable {
      */
     public void setQuantity(Long quantity) {
         this.quantity = quantity;
+    }
+
+    /**
+     * @return the completeness
+     */
+    public Integer getCompleteness() {
+        return completeness;
+    }
+
+    /**
+     * @param completeness the completeness to set
+     */
+    public void setCompleteness(Integer completeness) {
+        this.completeness = completeness;
     }
 }
