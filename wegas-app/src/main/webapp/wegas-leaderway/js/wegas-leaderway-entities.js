@@ -619,6 +619,9 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             },
             completion: {
                 type: NUMBER
+            },
+            editable: {
+                type: BOOLEAN
             }
         }
     });
