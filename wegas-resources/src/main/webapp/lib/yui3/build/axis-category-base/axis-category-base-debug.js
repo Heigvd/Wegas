@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -205,4 +205,4 @@ Y.CategoryImpl = CategoryImpl;
 Y.CategoryAxisBase = Y.Base.create("categoryAxisBase", Y.AxisBase, [Y.CategoryImpl]);
 
 
-}, '3.10.3', {"requires": ["axis-base"]});
+}, '3.11.0', {"requires": ["axis-base"]});

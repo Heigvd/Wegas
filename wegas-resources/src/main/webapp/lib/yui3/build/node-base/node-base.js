@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -268,8 +268,17 @@ Y.mix(Y_Node.prototype, {
      * @deprecated Use getHTML
      * @return {String} The current content
      */
-    getContent: function(content) {
-        return this.get('innerHTML');
+    getContent: function() {
+        var node = this;
+
+        if (node._node.nodeType === 11) { // 11 === Node.DOCUMENT_FRAGMENT_NODE
+            // "this", when it is a document fragment, must be cloned because
+            // the nodes contained in the fragment actually disappear once
+            // the fragment is appended anywhere
+            node = node.create("<div/>").append(node.cloneNode(true));
+        }
+
+        return node.get("innerHTML");
     }
 });
 
@@ -1171,4 +1180,4 @@ Y.mix(Y.NodeList.prototype, {
 });
 
 
-}, '3.10.3', {"requires": ["event-base", "node-core", "dom-base"]});
+}, '3.11.0', {"requires": ["event-base", "node-core", "dom-base"]});

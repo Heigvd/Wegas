@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1101,7 +1101,7 @@ ChartBase.ATTRS = {
         valueFn: function()
         {
             var defDataProvider = [];
-            if(!this._seriesKeysExplicitlySet)
+            if(!this._wereSeriesKeysExplicitlySet())
             {
                 this.set("seriesKeys", this._buildSeriesKeys(defDataProvider), {src: "internal"});
             }
@@ -1111,7 +1111,7 @@ ChartBase.ATTRS = {
         setter: function(val)
         {
             var dataProvider = this._setDataValues(val);
-            if(!this._seriesKeysExplicitlySet)
+            if(!this._wereSeriesKeysExplicitlySet())
             {
                 this.set("seriesKeys", this._buildSeriesKeys(dataProvider), {src: "internal"});
             }
@@ -1338,6 +1338,22 @@ ChartBase.ATTRS = {
 };
 
 ChartBase.prototype = {
+
+    /**
+     * Utility method to determine if `seriesKeys` was explicitly provided
+     * (for example during construction, or set by the user), as opposed to
+     * being derived from the dataProvider for example.
+     *
+     * @method _wereSeriesKeysExplicitlySet
+     * @private
+     * @return boolean true if the `seriesKeys` attribute was explicitly set.
+     */
+    _wereSeriesKeysExplicitlySet : function()
+    {
+        var seriesKeys = this.get("seriesKeys");
+        return seriesKeys && this._seriesKeysExplicitlySet;
+    },
+
     /**
      * Handles groupMarkers change event.
      *
@@ -3392,7 +3408,7 @@ Y.CartesianChart = Y.Base.create("cartesianChart", Y.Widget, [Y.ChartBase, Y.Ren
             this._setBaseAttribute(newAxes[valueAxisName], "type", seriesAxis);
             this._setBaseAttribute(newAxes[valueAxisName], "keys", seriesKeys);
         }
-        if(!this._seriesKeysExplicitlySet)
+        if(!this._wereSeriesKeysExplicitlySet())
         {
             this.set("seriesKeys", seriesKeys, {src: "internal"});
         }
@@ -5089,7 +5105,7 @@ function Chart(cfg)
 Y.Chart = Chart;
 
 
-}, '3.10.3', {
+}, '3.11.0', {
     "requires": [
         "dom",
         "event-mouseenter",

@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -10,8 +10,7 @@ YUI.add('datatable-formatters', function (Y, NAME) {
 /**
 Adds predefined cell formatters to `Y.DataTable.BodyView`.
 
-@module datatable
-@submodule datatable-formatters
+@module datatable-formatters
 @since 3.8.0
 **/
 var Lang = Y.Lang,
@@ -337,11 +336,56 @@ var Lang = Y.Lang,
                 }
                 return fn(value, format);
             };
-        }
+        },
+        /**
+        Returns a formatter function that returns texts from a lookup table
+        based on the stored value.
 
+        It looks for the translation to apply in the `lookupTable` property of the
+        column in either of these two formats:
+
+            {key: "status", formatter: "lookup", lookupTable: {
+                0: "unknown",
+                1: "requested",
+                2: "approved",
+                3: "delivered"
+            }},
+            {key: "otherStatus", formatter: "lookup", lookupTable: [
+                {value:0, text: "unknown"},
+                {value:1, text: "requested"},
+                {value:2, text: "approved"},
+                {value:3, text: "delivered"}
+            ]}
+
+        Applies the CSS className `yui3-datatable-lookup` to the cell.
+
+        @method lookup
+        @param col {Object} The column definition
+        @return {Function} A formatter function that returns the `text`
+                associated with `value`.
+        @static
+         */
+        lookup: function (col) {
+            var className = cName('lookup'),
+                lookup = col.lookupTable || {},
+                entries, i, len;
+
+            if (Lang.isArray(lookup)) {
+                entries = lookup;
+                lookup = {};
+
+                for (i = 0, len = entries.length; i < len; ++i) {
+                    lookup[entries[i].value] = entries[i].text;
+                }
+            }
+            return function (o) {
+                o.className = className;
+                return lookup[o.value];
+            };
+        }
     };
 
 Y.mix(Y.DataTable.BodyView.Formatters, Formatters);
 
 
-}, '3.10.3', {"requires": ["datatable-body", "datatype-number-format", "datatype-date-format", "escape"]});
+}, '3.11.0', {"requires": ["datatable-body", "datatype-number-format", "datatype-date-format", "escape"]});

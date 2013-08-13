@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -559,4 +559,4 @@ YUI.add('dd-drop', function (Y, NAME) {
 
 
 
-}, '3.10.3', {"requires": ["dd-drag", "dd-ddm-drop"]});
+}, '3.11.0', {"requires": ["dd-drag", "dd-ddm-drop"]});

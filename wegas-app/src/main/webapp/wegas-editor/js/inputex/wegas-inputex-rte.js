@@ -47,7 +47,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
             if (!RTEField.init) {
                 RTEField.init = true;
                 tinyMCE.init({
-                    content_css: ["http://yui.yahooapis.com/combo?3.10.3/build/cssreset/cssreset-min.css&amp;3.10.3/build/cssfonts/cssfonts-min.css&amp;3.10.3/build/cssgrids/cssgrids-min.css", "../../wegas-app/css/wegas-app.css"],
+                    content_css: ["http://yui.yahooapis.com/combo?3.11.0/build/cssreset/cssreset-min.css&amp;3.11.0/build/cssfonts/cssfonts-min.css&amp;3.11.0/build/cssgrids/cssgrids-min.css", "../../wegas-app/css/wegas-app.css"],
                     mode: "none", // "none", "textares"
                     theme: "advanced", // "simple", "advanced"
                     plugins: "autolink,autoresize,style,table," +
