@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -412,10 +412,6 @@ Y.extend(Widget, Y.Base, {
          * @preventable false
          * @param {EventFacade} e The Event Facade
          */
-
-        if (this._applyParser) {
-            this._applyParser(config);
-        }
     },
 
     /**
@@ -1267,7 +1263,7 @@ Y.extend(Widget, Y.Base, {
 Y.Widget = Widget;
 
 
-}, '3.10.3', {
+}, '3.11.0', {
     "requires": [
         "attribute",
         "base-base",

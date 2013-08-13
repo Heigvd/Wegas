@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -51,11 +51,6 @@ from those which already exist in its DOM.
 @since 3.4.0
 **/
 function WidgetButtons() {
-    // Require `Y.WidgetStdMod`.
-    if (!this._stdModNode) {
-        Y.error('WidgetStdMod must be added to a Widget before WidgetButtons.');
-    }
-
     // Has to be setup before the `initializer()`.
     this._buttonsHandles = {};
 }
@@ -263,6 +258,11 @@ WidgetButtons.prototype = {
     // -- Lifecycle Methods ----------------------------------------------------
 
     initializer: function () {
+        // Require `Y.WidgetStdMod`.
+        if (!this._stdModNode) {
+            Y.error('WidgetStdMod must be added to a Widget before WidgetButtons.');
+        }
+
         // Creates button mappings and sets the `defaultButton`.
         this._mapButtons(this.get('buttons'));
         this._updateDefaultButton();
@@ -1298,4 +1298,4 @@ WidgetButtons.prototype = {
 Y.WidgetButtons = WidgetButtons;
 
 
-}, '3.10.3', {"requires": ["button-plugin", "cssbutton", "widget-stdmod"]});
+}, '3.11.0', {"requires": ["button-plugin", "cssbutton", "widget-stdmod"]});

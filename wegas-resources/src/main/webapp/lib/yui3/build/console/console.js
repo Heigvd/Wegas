@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -20,10 +20,6 @@ YUI.add('console', function (Y, NAME) {
  * configured logLevel.
  *
  * @module console
- * @class Console
- * @extends Widget
- * @param conf {Object} Configuration object (see Configuration attributes)
- * @constructor
  */
 var getCN = Y.ClassNameManager.getClassName,
     CHECKED        = 'checked',
@@ -97,7 +93,14 @@ var getCN = Y.ClassNameManager.getClassName,
     merge      = Y.merge,
     substitute = Y.Lang.sub;
     
+/**
+A basic console that displays messages logged throughout your application.
 
+@class Console
+@constructor
+@extends Widget
+@param [config] {Object} Object literal specifying widget configuration properties.
+**/
 function Console() {
     Console.superclass.constructor.apply(this,arguments);
 }
@@ -1518,4 +1521,4 @@ Y.Console = Y.extend(Console, Y.Widget,
 });
 
 
-}, '3.10.3', {"requires": ["yui-log", "widget"], "skinnable": true, "lang": ["en", "es", "it", "ja"]});
+}, '3.11.0', {"requires": ["yui-log", "widget"], "skinnable": true, "lang": ["en", "es", "hu", "it", "ja"]});

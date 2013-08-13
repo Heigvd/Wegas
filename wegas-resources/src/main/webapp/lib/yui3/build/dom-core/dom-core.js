@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -393,4 +393,4 @@ Y_DOM = {
 Y.DOM = Y_DOM;
 
 
-}, '3.10.3', {"requires": ["oop", "features"]});
+}, '3.11.0', {"requires": ["oop", "features"]});

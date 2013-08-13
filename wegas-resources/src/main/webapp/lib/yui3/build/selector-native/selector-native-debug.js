@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -246,8 +246,11 @@ var Selector = {
     },
 
     _nativeQuery: function(selector, root, one) {
-        if (Y.UA.webkit && selector.indexOf(':checked') > -1 &&
-                (Y.Selector.pseudos && Y.Selector.pseudos.checked)) { // webkit (chrome, safari) fails to pick up "selected"  with "checked"
+        if (
+            (Y.UA.webkit || Y.UA.opera) &&          // webkit (chrome, safari) and Opera
+            selector.indexOf(':checked') > -1 &&    // fail to pick up "selected"  with ":checked"
+            (Y.Selector.pseudos && Y.Selector.pseudos.checked)
+        ) {
             return Y.Selector.query(selector, root, one, true); // redo with skipNative true to try brute query
         }
         try {
@@ -379,4 +382,4 @@ Y.mix(Y.Selector, Selector, true);
 })(Y);
 
 
-}, '3.10.3', {"requires": ["dom-base"]});
+}, '3.11.0', {"requires": ["dom-base"]});
