@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-container", function(Y) {
@@ -71,7 +71,7 @@ YUI.add("wegas-container", function(Y) {
         }, Y.Wegas.Widget.ATTRS),
         EDITMENU: [{
                 type: "Button",
-                label: "Properties",
+                label: "Edit",
                 cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "EditWidgetAction"
