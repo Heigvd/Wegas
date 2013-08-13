@@ -744,9 +744,9 @@ YUI().use(function(Y) {
                     ws_provides: ['ObjectDescriptor']
                 },
                 /**CEP**/
-                'wegas-cep': {
+                'wegas-cep-folder': {
                     path: 'wegas-cep/js/wegas-cep-folder-min.js',
-                    requires: ['wegas-nodeformatter', 'wegas-itemselector', 'wegas-cep-folder', "wegas-injector", "wegas-inbox"],
+                    requires: ['wegas-nodeformatter', 'wegas-itemselector', "wegas-injector"],
                     ws_provides: 'CEPFolder'
                 },
                 /** CrimeSim **/
