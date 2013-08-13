@@ -227,7 +227,7 @@
         "content": "Welcome to CEP case."
     },
     "3": {
-        "id": 3,
+        "@name": "Employees",
         "type": "CEPFolder",
         "listVariables": "employees",
         "searchInProperties": [
