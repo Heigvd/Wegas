@@ -216,7 +216,7 @@
                 "direction": "horizontal",
                 "children": [{
                         "type": "Text",
-                        "content": "Copyright 2012 Heig-vd.ch"
+                        "content": "Copyright 2013 Heig-vd.ch"
                     }]
             }
         ]
