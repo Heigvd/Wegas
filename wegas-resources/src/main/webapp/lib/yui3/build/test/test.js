@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -26,7 +26,7 @@ if (YUI.YUITest) {
 
     //Make this global for back compat
     YUITest = {
-        version: "3.10.3",
+        version: "3.11.0",
         guid: function(pre) {
             return Y.guid(pre);
         }
@@ -3301,14 +3301,8 @@ YUITest.ObjectAssert = {
      */    
     ownsNoKeys : function (object, message) {
         YUITest.Assert._increment();  
-        var count = 0,
-            name;
-        for (name in object){
-            if (object.hasOwnProperty(name)){
-                count++;
-            }
-        }
-        
+        var count = YUITest.Object.keys(object).length;
+
         if (count !== 0){
             YUITest.Assert.fail(YUITest.Assert._formatMessage(message, "Object owns " + count + " properties but should own none."));        
         }
@@ -3770,4 +3764,4 @@ if (!YUI.YUITest) {
 } //End if for YUI.YUITest
 
 
-}, '3.10.3', {"requires": ["event-simulate", "event-custom", "json-stringify"]});
+}, '3.11.0', {"requires": ["event-simulate", "event-custom", "json-stringify"]});

@@ -59,7 +59,6 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
                 var findVal = Y.Wegas.Facade.VariableDescriptor.cache.findById(val.id);
                 val.name = findVal.get("name");                                 // @fixme
             }
-
             inputEx.Wegas.Variableselect.superclass.setValue.call(this, val, fireUpdatedEvent);
         }
 

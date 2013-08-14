@@ -10,7 +10,7 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 
-YUI.add('wegas-nodeformatter', function (Y) {
+YUI.add('wegas-nodeformatter', function(Y) {
     "use strict";
 
     /**
@@ -22,7 +22,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
      * @description returm value in specifique node. Available type:
      * Text node, image node, value box node, and position node.
      */
-    var NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
+    var NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Base, [], {
         /** @lends Y.Wegas.NodeFormatter# */
 
         // ** Lifecycle Methods ** //
@@ -37,7 +37,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
          *  label corresponding with the given parameters.
          *  Returned node have the given class name.
          */
-        makeNodeText: function (value, label, className) {
+        makeNodeText: function(value, label, className) {
             var node = Y.Node.create('<div class="nodeformatter-properties"></div>');
             value = (value !== null) ? value : 'undefine';
             if (className) {
@@ -49,7 +49,6 @@ YUI.add('wegas-nodeformatter', function (Y) {
             node.append('<span class="value">' + value + '</span>');
             return node;
         },
-
         /**
          * @function
          * @private
@@ -61,7 +60,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
          * will have the given attrs parameters as attribute.
          * Returned node have the given class name.
          */
-        makeNodeImage: function (attrs, className) {
+        makeNodeImage: function(attrs, className) {
             var k, node = new Y.Node.create('<div class="nodeformatter-img"></div>');
             node.append('<img></img>');
             if (className) {
@@ -75,7 +74,6 @@ YUI.add('wegas-nodeformatter', function (Y) {
             }
             return node;
         },
-
         /**
          * @function
          * @private
@@ -89,7 +87,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
          *  value and the max value.
          *  Returned node have the given class name.
          */
-        makeNodeValueBox: function (value, maxVal, label, className) {
+        makeNodeValueBox: function(value, maxVal, label, className) {
             var i, acc = [], node = new Y.Node.create('<div class="nodeformatter-valuebox"></div>');
             value = (typeof parseInt(value) === 'number') ? parseInt(value) : 0;
             maxVal = (maxVal || 'undefine');
@@ -105,7 +103,6 @@ YUI.add('wegas-nodeformatter', function (Y) {
             node.append('<span class="box-value">(' + value + '<span class="box-valueMax">/' + maxVal + '</span>)</span>');
             return node;
         },
-
         /**
          * @function
          * @private
@@ -124,7 +121,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
          * The 'invert' parameter allow to count reversely.
          * Returned node have the given class name.
          */
-        makeNodePosition: function (html, selector, value, minVal, invert, className) {
+        makeNodePosition: function(html, selector, value, minVal, invert, className) {
             var node = new Y.Node.create('<div class="nodeformatter-position"></div>');
             minVal = (typeof parseInt(minVal) === 'number') ? parseInt(minVal) : 0;
             value = (typeof parseInt(value) === 'number') ? parseInt(value) - minVal : -1 - minVal; // if value isn't a number, value egal minVal - 1 (and thus never selected)
@@ -133,7 +130,7 @@ YUI.add('wegas-nodeformatter', function (Y) {
                 node.addClass(className);
             }
             node.append(html);
-            node.all(selector).each(function (n, i, q) { //n = node, i = iteration, q = number of iterations.
+            node.all(selector).each(function(n, i, q) { //n = node, i = iteration, q = number of iterations.
                 i = (invert) ? (q.size() - 1 - i) : i;
                 n.setAttribute('data-position', i + minVal); //keep a reference to real number position
                 if (i < value) {

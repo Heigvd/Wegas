@@ -122,7 +122,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
             this.hideOverlay();
         },
         /**
-         * 
+         *
          * @returns {undefined}
          */
         syncAceField: function() {
@@ -197,11 +197,11 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             },
                             on: Y.Wegas.superbind({
                                 success: function() {
-                                    this.showMessage("success", "Script created");
+                                    this.showMessageBis("success", "Script created", 1000);
                                     this.syncUI();
                                 },
                                 failure: function() {
-                                    this.showMessage("error", "Error while saving script.");
+                                    this.showMessageBis("error", "Error while saving script.");
                                 }
                             }, this)
                         });
@@ -247,7 +247,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             },
                             on: Y.Wegas.superbind({
                                 success: function() {
-                                    this.showMessage("success", "Script saved");
+                                    this.showMessageBis("success", "Script saved");
 
                                     if (this.get("library") === "CSS") {
                                         this.updateLoadedSheet(this.currentScriptName, this.aceField.getValue());
@@ -255,7 +255,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     this.syncUI();
                                 },
                                 failure: function() {
-                                    this.showMessage("error", "Error while saving script");
+                                    this.showMessageBis("error", "Error while saving script");
                                 }
                             }, this)
                         });
@@ -278,7 +278,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                             },
                             on: Y.Wegas.superbind({
                                 success: function() {
-                                    this.showMessage("success", "Script deleted");
+                                    this.showMessageBis("success", "Script deleted");
                                     if (this.get("library") === "CSS") {
                                         this.updateLoadedSheet(this.currentScriptName, "");
                                     }
@@ -286,7 +286,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     this.syncUI();
                                 },
                                 failure: function() {
-                                    this.showMessage("error", "Error while deleting script.");
+                                    this.showMessageBis("error", "Error while deleting script.");
                                 }
                             }, this)
                         });

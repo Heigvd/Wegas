@@ -12,8 +12,7 @@
 YUI.add('wegas-editor-variabletreeview', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox',
-            ID = "id",
+    var ID = "id",
             CLASS = "@class",
             NAME = "name",
             EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>",
@@ -35,11 +34,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             VariableTreeView.superclass.renderUI.apply(this);
 
             this.treeView.plug(Y.Plugin.TreeViewSortable, {
-                nodeClass: "wegas-editor-questionitem",
-                parentNode: ".wegas-editor-question"
-            }, {
-                nodeClass: "wegas-editor-listitem",
-                parentNode: ".wegas-editor-list"
+                nodeGroups: [{
+                        nodeClass: "wegas-editor-questionitem",
+                        parentNode: ".wegas-editor-question"
+                    }, {
+                        nodeClass: "wegas-editor-listitem",
+                        parentNode: ".wegas-editor-list"
+                    }]
             });                                                                 // Add sortable plugin to the treeview
             this.treeView.sortable.on("sort", function(e) {                     // On sort event,
                 var entity = e.dragWidget.get("data.entity"),
@@ -294,9 +295,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     };
             }
         }
-    }, {
     });
     Y.namespace('Wegas').VariableTreeView = VariableTreeView;
-
 
 });

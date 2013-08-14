@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -208,4 +208,4 @@ Y.extend(DSIO, Y.DataSource.Local, {
 Y.DataSource.IO = DSIO;
 
 
-}, '3.10.3', {"requires": ["datasource-local", "io-base"]});
+}, '3.11.0', {"requires": ["datasource-local", "io-base"]});

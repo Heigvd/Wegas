@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -109,4 +109,4 @@ Y.extend(RecordsetFilter, Y.Plugin.Base, {
 Y.namespace("Plugin").RecordsetFilter = RecordsetFilter;
 
 
-}, '3.10.3', {"requires": ["recordset-base", "array-extras", "plugin"]});
+}, '3.11.0', {"requires": ["recordset-base", "array-extras", "plugin"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -90,7 +90,8 @@ VC = {
             event   = options.e,
             newVal  = domNode && domNode.value,
             vcData  = node._data && node._data[DATA_KEY], // another perf cheat
-            facade, prevVal;
+            stopped = 0,
+            facade, prevVal, stopElement;
 
         if (!domNode || !vcData) {
             VC._stopPolling(node);
@@ -110,8 +111,35 @@ VC = {
                 target       : (event && event.target) || node
             };
 
-            Y.Object.each(vcData.notifiers, function (notifier) {
-                notifier.fire(facade);
+            Y.Object.some(vcData.notifiers, function (notifier) {
+                var evt = notifier.handle.evt,
+                    newStopped;
+
+                // support e.stopPropagation()
+                if (stopped !== 1) {
+                    notifier.fire(facade);
+                } else if (evt.el === stopElement) {
+                    notifier.fire(facade);
+                }
+
+                newStopped = evt && evt._facade ? evt._facade.stopped : 0;
+
+                // need to consider the condition in which there are two
+                // listeners on the same element:
+                // listener 1 calls e.stopPropagation()
+                // listener 2 calls e.stopImmediatePropagation()
+                if (newStopped > stopped) {
+                    stopped = newStopped;
+
+                    if (stopped === 1) {
+                        stopElement = evt.el;
+                    }
+                }
+
+                // support e.stopImmediatePropagation()
+                if (stopped === 2) {
+                    return true;
+                }
             });
 
             VC._refreshTimeout(node);
@@ -196,7 +224,7 @@ VC = {
         vcData.notifiers[Y.stamp(notifier)] = notifier;
 
         vcData.interval = setInterval(function () {
-            VC._poll(node, vcData, options);
+            VC._poll(node, options);
         }, VC.POLL_INTERVAL);
 
 
@@ -465,4 +493,4 @@ Y.Event.define('valueChange', config); // deprecated, but supported for backcomp
 Y.ValueChange = VC;
 
 
-}, '3.10.3', {"requires": ["event-focus", "event-synthetic"]});
+}, '3.11.0', {"requires": ["event-focus", "event-synthetic"]});

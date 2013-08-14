@@ -83,10 +83,9 @@ public class GameController {
         final Collection<Game> retGames = new ArrayList<>();
         final Collection<Game> games = (!gameModelId.isEmpty())
                 ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
-                : gameFacade.findAll("createdTime ASC");
+                : gameFacade.findAll("game.createdTime ASC");
 
-        for (Iterator<Game> it = games.iterator(); it.hasNext();) {
-            Game g = it.next();
+        for (Game g : games) {
             if (SecurityHelper.isPermitted(g, "Edit")) {
                 retGames.add(g);
             }

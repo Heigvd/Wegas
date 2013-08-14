@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -113,8 +113,14 @@ Y.mix(JSONPRequest.prototype, {
      * @protected
      */
     _format: function (url, proxy) {
-        var callback = this._template.replace(/\{callback\}/, proxy),
-            lastChar;
+        var callbackRE = /\{callback\}/,
+            callback, lastChar;
+
+        if (callbackRE.test(url)) {
+            return url.replace(callbackRE, proxy);
+        }
+
+        callback = this._template.replace(callbackRE, proxy);
 
         if (this._pattern.test(url)) {
             return url.replace(this._pattern, callback);
@@ -130,4 +136,4 @@ Y.mix(JSONPRequest.prototype, {
 }, true);
 
 
-}, '3.10.3', {"requires": ["jsonp"]});
+}, '3.11.0', {"requires": ["jsonp"]});

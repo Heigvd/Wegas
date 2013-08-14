@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -99,7 +99,19 @@ YUI.add('base-observable', function (Y, NAME) {
 
             this._preInitEventCfg(config);
 
-            this.fire(type, {cfg: config});
+            if (e._hasPotentialSubscribers()) {
+                this.fire(type, {cfg: config});
+            } else {
+
+                this._baseInit(config);
+
+                // HACK. Major hack actually. But really fast for no-listeners.
+                // Since it's fireOnce, subscribers may come along later, so since we're
+                // bypassing the event stack the first time, we need to tell the published
+                // event that it's been "fired". Could extract it into a CE method?
+                e.fired = true;
+                e.firedWith = [{cfg:config}];
+            }
 
             return this;
         },
@@ -212,4 +224,4 @@ YUI.add('base-observable', function (Y, NAME) {
     Y.BaseObservable = BaseObservable;
 
 
-}, '3.10.3', {"requires": ["attribute-observable"]});
+}, '3.11.0', {"requires": ["attribute-observable"]});

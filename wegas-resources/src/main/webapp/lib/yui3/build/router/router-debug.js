@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1434,4 +1434,4 @@ version of YUI.
 Y.Controller = Y.Router;
 
 
-}, '3.10.3', {"optional": ["querystring-parse"], "requires": ["array-extras", "base-build", "history"]});
+}, '3.11.0', {"optional": ["querystring-parse"], "requires": ["array-extras", "base-build", "history"]});
