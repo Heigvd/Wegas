@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -16,7 +16,7 @@ YUI.add('plugin', function (Y, NAME) {
     /**
      * The base class for all Plugin instances.
      *
-     * @class Plugin.Base 
+     * @class Plugin.Base
      * @extends Base
      * @param {Object} config Configuration object with property name/value pairs.
      */
@@ -30,7 +30,7 @@ YUI.add('plugin', function (Y, NAME) {
 
     /**
      * Object defining the set of attributes supported by the Plugin.Base class
-     * 
+     *
      * @property ATTRS
      * @type Object
      * @static
@@ -112,7 +112,7 @@ YUI.add('plugin', function (Y, NAME) {
         },
 
         /**
-         * Listens for the "on" moment of events fired by the host, 
+         * Listens for the "on" moment of events fired by the host,
          * or injects code "before" a given method on the host.
          *
          * @method doBefore
@@ -135,7 +135,7 @@ YUI.add('plugin', function (Y, NAME) {
         },
 
         /**
-         * Listens for the "after" moment of events fired by the host, 
+         * Listens for the "after" moment of events fired by the host,
          * or injects code "after" a given method on the host.
          *
          * @method doAfter
@@ -161,12 +161,12 @@ YUI.add('plugin', function (Y, NAME) {
          * Listens for the "on" moment of events fired by the host object.
          *
          * Listeners attached through this method will be detached when the plugin is unplugged.
-         * 
+         *
          * @method onHostEvent
          * @param {String | Object} type The event type.
          * @param {Function} fn The listener.
          * @param {Object} context The execution context. Defaults to the plugin instance.
-         * @return handle {EventHandle} The detach handle for the listener. 
+         * @return handle {EventHandle} The detach handle for the listener.
          */
         onHostEvent : function(type, fn, context) {
             var handle = this.get("host").on(type, fn, context || this);
@@ -175,18 +175,54 @@ YUI.add('plugin', function (Y, NAME) {
         },
 
         /**
+         * Listens for the "on" moment of events fired by the host object one time only.
+         * The listener is immediately detached when it is executed.
+         *
+         * Listeners attached through this method will be detached when the plugin is unplugged.
+         *
+         * @method onceHostEvent
+         * @param {String | Object} type The event type.
+         * @param {Function} fn The listener.
+         * @param {Object} context The execution context. Defaults to the plugin instance.
+         * @return handle {EventHandle} The detach handle for the listener.
+         */
+        onceHostEvent : function(type, fn, context) {
+            var handle = this.get("host").once(type, fn, context || this);
+            this._handles.push(handle);
+            return handle;
+        },
+
+        /**
          * Listens for the "after" moment of events fired by the host object.
          *
          * Listeners attached through this method will be detached when the plugin is unplugged.
-         * 
+         *
          * @method afterHostEvent
          * @param {String | Object} type The event type.
          * @param {Function} fn The listener.
          * @param {Object} context The execution context. Defaults to the plugin instance.
-         * @return handle {EventHandle} The detach handle for the listener. 
+         * @return handle {EventHandle} The detach handle for the listener.
          */
         afterHostEvent : function(type, fn, context) {
             var handle = this.get("host").after(type, fn, context || this);
+            this._handles.push(handle);
+            return handle;
+        },
+
+        /**
+         * Listens for the "after" moment of events fired by the host object one time only.
+         * The listener is immediately detached when it is executed.
+         *
+         * Listeners attached through this method will be detached when the plugin is unplugged.
+         *
+         * @method onceAfterHostEvent
+         * @param {String | Object} type The event type.
+         * @param {Function} fn The listener.
+         * @param {Object} context The execution context. Defaults to the plugin instance.
+         * @return handle {EventHandle} The detach handle for the listener.
+         */
+        onceAfterHostEvent : function(type, fn, context) {
+            var handle = this.get("host").onceAfter(type, fn, context || this);
             this._handles.push(handle);
             return handle;
         },
@@ -200,7 +236,7 @@ YUI.add('plugin', function (Y, NAME) {
          * @param {String} method The name of the method to inject the function before.
          * @param {Function} fn The function to inject.
          * @param {Object} context The execution context. Defaults to the plugin instance.
-         * @return handle {EventHandle} The detach handle for the injected function. 
+         * @return handle {EventHandle} The detach handle for the injected function.
          */
         beforeHostMethod : function(strMethod, fn, context) {
             var handle = Y.Do.before(fn, this.get("host"), strMethod, context || this);
@@ -217,7 +253,7 @@ YUI.add('plugin', function (Y, NAME) {
          * @param {String} method The name of the method to inject the function after.
          * @param {Function} fn The function to inject.
          * @param {Object} context The execution context. Defaults to the plugin instance.
-         * @return handle {EventHandle} The detach handle for the injected function. 
+         * @return handle {EventHandle} The detach handle for the injected function.
          */
         afterHostMethod : function(strMethod, fn, context) {
             var handle = Y.Do.after(fn, this.get("host"), strMethod, context || this);
@@ -233,4 +269,4 @@ YUI.add('plugin', function (Y, NAME) {
     Y.namespace("Plugin").Base = Plugin;
 
 
-}, '3.10.3', {"requires": ["base-base"]});
+}, '3.11.0', {"requires": ["base-base"]});

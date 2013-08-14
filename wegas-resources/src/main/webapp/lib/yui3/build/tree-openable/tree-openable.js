@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -59,6 +59,7 @@ Openable.prototype = {
     Closes the specified node if it isn't already closed.
 
     @method closeNode
+    @param {Tree.Node} node Node to close.
     @param {Object} [options] Options.
         @param {Boolean} [options.silent=false] If `true`, the `close` event
             will be suppressed.
@@ -86,6 +87,7 @@ Openable.prototype = {
     Opens the specified node if it isn't already open.
 
     @method openNode
+    @param {Tree.Node} node Node to open.
     @param {Object} [options] Options.
         @param {Boolean} [options.silent=false] If `true`, the `open` event
             will be suppressed.
@@ -243,4 +245,4 @@ NodeOpenable.prototype = {
 Y.Tree.Node.Openable = NodeOpenable;
 
 
-}, '3.10.3', {"requires": ["tree"]});
+}, '3.11.0', {"requires": ["tree"]});

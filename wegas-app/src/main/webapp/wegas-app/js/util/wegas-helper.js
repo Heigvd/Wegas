@@ -171,7 +171,8 @@ YUI.add('wegas-helper', function(Y) {
             return o;
         },
         getURLParameter: function(name) {
-            return decodeURI((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1]);
+            var param = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1]
+            return param ? decodeURI(param) : param;
         }
     };
     Y.namespace("Wegas").Helper = Helper;
