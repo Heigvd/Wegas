@@ -852,6 +852,16 @@ YUI().use(function(Y) {
                 //    ws_provides: "ChessBoard",
                 //    requires: ["transition"]
                 //}
+                /* Teaching */
+                'wegas-teaching-arrow': {
+                    path: "wegas-teaching/js/wegas-teaching-arrow.js",
+                    ws_provides: "TeachingArrow"
+                },
+                'wegas-teaching-main': {
+                    path: "wegas-teaching/js/wegas-teaching-main.js",
+                    ws_provides: "TeachingMain",
+                    requires: ["wegas-teaching-arrow"]
+                }
             }
         },
         /* Other libraries */
