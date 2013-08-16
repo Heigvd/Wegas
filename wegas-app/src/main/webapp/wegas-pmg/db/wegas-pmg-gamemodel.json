@@ -256,7 +256,7 @@
                             "description": "Description de Marcel",
                             "properties": {
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
@@ -285,7 +285,7 @@
                             "description": "Description de Béatrice",
                             "properties": {
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
@@ -329,7 +329,7 @@
                             "description": "Description de Claude",
                             "properties": {
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
@@ -359,7 +359,7 @@
                             "description": "Description de Michael",
                             "properties": {
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
@@ -389,7 +389,7 @@
                             "description": "Description de Lucie",
                             "properties": {
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
