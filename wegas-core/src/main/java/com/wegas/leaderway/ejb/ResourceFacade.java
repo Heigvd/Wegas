@@ -134,6 +134,12 @@ public class ResourceFacade {
         assignement.getResourceInstance().getAssignments().add(index, assignement);
         return assignement.getResourceInstance();
     }
+    
+    public ResourceInstance removeAssignment(final Long assignementId) {
+        final Assignment assignement = this.em.find(Assignment.class, assignementId);
+        assignement.getResourceInstance().getAssignments().remove(assignement);
+        return assignement.getResourceInstance();
+    }
 
     /**
      * 
