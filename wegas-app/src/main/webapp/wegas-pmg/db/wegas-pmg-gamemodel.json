@@ -255,9 +255,8 @@
                             "label": "Marcel",
                             "description": "Description de Marcel",
                             "properties": {
-                                "activityRate": 100,
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
@@ -268,7 +267,7 @@
                                 "@class": "ResourceInstance",
                                 "moral": 8,
                                 "properties": {
-                                    "ratio": 80,
+                                    "activityRate": 100,
                                     "wage": 7800
                                 },
                                 "skillsets": {
@@ -285,9 +284,8 @@
                             "label": "Beatrice",
                             "description": "Description de Béatrice",
                             "properties": {
-                                "activityRate": 80,
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
@@ -299,7 +297,7 @@
                                 "moral": 9,
                                 "confidence": 0,
                                 "properties": {
-                                    "ratio": 80,
+                                    "activityRate": 80,
                                     "wage": 5400
                                 },
                                 "skillsets": {
@@ -330,9 +328,8 @@
                             "label": "Claude",
                             "description": "Description de Claude",
                             "properties": {
-                                "activityRate": 100,
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
@@ -344,7 +341,7 @@
                                 "moral": 8,
                                 "confidence": 0,
                                 "properties": {
-                                    "ratio": 80,
+                                    "activityRate": 80,
                                     "wage": 4200
                                 },
                                 "skillsets": {
@@ -361,9 +358,8 @@
                             "label": "Michael",
                             "description": "Description de Michael",
                             "properties": {
-                                "activityRate": 100,
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
@@ -375,7 +371,7 @@
                                 "moral": 6,
                                 "confidence": 0,
                                 "properties": {
-                                    "ratio": 80,
+                                    "activityRate": 100,
                                     "wage": 6000
                                 },
                                 "skillsets": {
@@ -392,9 +388,8 @@
                             "label": "Lucie",
                             "description": "Description de Lucie",
                             "properties": {
-                                "activityRate": 100,
                                 "disengagementCost": 0,
-                                "coef_activityRate": 1,
+                                "coef_activity": 1,
                                 "coef_moral": 1,
                                 "engagementCost": 0,
                                 "engagementDelay": 0,
@@ -406,7 +401,7 @@
                                 "moral": 7,
                                 "confidence": 0,
                                 "properties": {
-                                    "ratio": 80,
+                                    "activityRate": 100,
                                     "wage": 5800
                                 },
                                 "skillsets": {
@@ -463,15 +458,17 @@
                         "requirements": [{
                             "@class": "WRequirement",
                             "work": "Web designer",
-                            "level": "40",
+                            "level": "1",
                             "limit": "100",
-                            "quantity": "1"
+                            "quantity": "1",
+                            "completeness": "0"
                         }, {
                             "@class": "WRequirement",
-                            "work": "Web designer",
-                            "level": "70",
+                            "work": "Business specialist",
+                            "level": "3",
                             "limit": "100",
-                            "quantity": "1"
+                            "quantity": "1",
+                            "completeness": "0"
                         }]
                     },
                     "scope": {
@@ -479,52 +476,40 @@
                     }
                 }, {
                     "@class": "TaskDescriptor",
-                    "name": "Requirements Analysis",
-                    "editorLabel": "Requirements Analysis",
-                    "label": "Requirements Analysis",
-                    "index": 2,
+                    "name": "Web design",
+                    "editorLabel": "Web design",
+                    "label": "Web design",
+                    "index": 1,
                     "description": "description tâche 2",
                     "properties": {
-                        "fixedCosts": 700,
-                        "predecessorsDependances": 1000
+                        "bonusRatio": 0,
+                        "competenceRatioInf": 0,
+                        "competenceRatioSup": 0,
+                        "coordinationRatioInf": 0,
+                        "coordinationRatioSup": 0,
+                        "progressionOfNeeds": 0,
+                        "takeInHandDuration": 0,
+                        "randomDurationInf": 0,
+                        "randomDurationSup": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
                         "active": true,
                         "duration": 1,
                         "properties": {
-                            "bonusRatio": 0,
-                            "competenceRatioInf": 0,
-                            "competenceRatioSup": 0,
-                            "coordinationRatioInf": 0,
-                            "coordinationRatioSup": 0,
-                            "progressionOfNeeds": 0,
-                            "takeInHandDuration": 0,
-                            "randomDurationInf": 15,
-                            "randomDurationSup": 24,
-                            "completeness": 0,
+                            "fixedCosts": 1500,
+                            "predecessorsDependances": 1000,
+                            "completeness": 50,
                             "unworkedHoursCosts": 0,
-                            "wages": 0,
-                            "fixedCosts": 1000
+                            "wages": 0
                         },
                         "requirements": [{
                             "@class": "WRequirement",
-                            "work": "Fitter",
-                            "level": "80",
+                            "work": "Web designer",
+                            "level": "12",
                             "limit": "100",
-                            "quantity": "1"
-                        }, {
-                            "@class": "WRequirement",
-                            "work": "Business Specialist",
-                            "level": "40",
-                            "limit": "100",
-                            "quantity": "2"
-                        }, {
-                            "@class": "WRequirement",
-                            "work": "Business Specialist",
-                            "level": "80",
-                            "limit": "100",
-                            "quantity": "1"
+                            "quantity": "2",
+                            "completeness": "0"
                         }]
                     },
                     "scope": {
