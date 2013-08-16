@@ -52,11 +52,12 @@ YUI.add("wegas-template", function(Y) {
             this.set("variable", this.get("variable"));
         },
         syncUI: function() {
-            var template = this.get("custom"), hashCode = "" + Y.Wegas.Helper.hashCode(template),
+            var hashCode, template = this.get("custom"),
                     data = this.computeData();
-            if (template === "" && this.TEMPLATES[this.get("template")]) {
+            if ((!template || template === "") && this.TEMPLATES[this.get("template")]) {
                 this.get("contentBox").setHTML(this.TEMPLATES[this.get("template")](data));
             } else {
+                hashCode = "" + Y.Wegas.Helper.hashCode(template);
                 if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
                     this.TEMPLATES[hashCode] = engine.compile(template);
                 }
