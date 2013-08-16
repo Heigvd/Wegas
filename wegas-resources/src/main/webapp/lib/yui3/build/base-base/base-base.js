@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -35,6 +35,20 @@ YUI.add('base-base', function (Y, NAME) {
      * the hierarchy as part of object construction and destruction. Additionally, attributes configured
      * through the static <a href="#property_ATTRS">ATTRS</a> property for each class
      * in the hierarchy will be initialized by Base.
+     * </p>
+     *
+     * <p>
+     * **NOTE:** Prior to version 3.11.0, ATTRS would get added a class at a time. That is,
+     * Base would loop through each class in the hierarchy, and add the class' ATTRS, and
+     * then call it's initializer, and move on to the subclass' ATTRS and initializer. As of
+     * 3.11.0, ATTRS from all classes in the hierarchy are added in one `addAttrs` call before
+     * any initializers are called. This fixes subtle edge-case issues with subclass ATTRS overriding
+     * superclass `setter`, `getter` or `valueFn` definitions and being unable to get/set attributes
+     * defined by the subclass. This order of operation change may impact `setter`, `getter` or `valueFn`
+     * code which expects a superclass' initializer to have run. This is expected to be rare, but to support
+     * it, Base supports a `_preAddAttrs()`, method hook (same signature as `addAttrs`). Components can
+     * implement this method on their prototype for edge cases which do require finer control over
+     * the order in which attributes are added (see widget-htmlparser).
      * </p>
      *
      * <p>
@@ -174,4 +188,4 @@ YUI.add('base-base', function (Y, NAME) {
     Y.Base = Base;
 
 
-}, '3.10.3', {"requires": ["attribute-base", "base-core", "base-observable"]});
+}, '3.11.0', {"requires": ["attribute-base", "base-core", "base-observable"]});

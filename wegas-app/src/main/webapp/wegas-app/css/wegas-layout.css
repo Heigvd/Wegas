@@ -11,16 +11,18 @@
 
 /* Wegas Layout Widget Styles */
 .yui3-skin-sam .wegas-layout {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-}
-.yui3-skin-sam .wegas-layout-content {
-    height:100%;
     background-color: #072644;
-    overflow: hidden;
+    /*overflow: hidden;*/
+}
+.yui3-skin-sam .wegas-layout-hd > div {
+    display: inline-block;
+}
+.yui3-skin-sam .wegas-layout-bd {
+    position:absolute;
+    top: 44px;
+    bottom:0px;
+    width: 100%;
+    background-color: #072644;
 }
 .yui3-skin-sam .wegas-layout-left,
 .yui3-skin-sam .wegas-layout-center,
@@ -33,12 +35,7 @@
 .yui3-skin-sam .wegas-layout-right > .yui3-widget {
     position: relative;
 }
-.yui3-skin-sam .wegas-layout-content .wegas-layout-bd {
-    position: relative;
-}
-/*.yui3-skin-sam .wegas-layout-content .wegas-layout-bd > div {*/
-    /*background: white;*/
-/*}*/
+
 .yui3-skin-sam .wegas-layout-center {
     margin-right: 6px;
     margin-left: 6px;
@@ -54,7 +51,4 @@
 }
 .yui3-skin-sam .wegas-layout .yui3-resize-handle {
     background: #072644;
-    /*margin-top: 20px;*/
 }
-
-

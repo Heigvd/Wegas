@@ -47,7 +47,8 @@ YUI.add('wegas-jointeam', function(Y) {
             });
 
             if (gameModel && gameModel.get("properties")["freeForAll"]) {       // For free for all games
-                this.sendJoinTeamRequest(game.get("teams")[0].get("id"));       // directly join
+                this.sendTokenJoinGame(game.get("token"));                      // directly join
+                cb.setContent("<center><em>Joining game</em></center>");
                 return;
             }
 
@@ -116,8 +117,12 @@ YUI.add('wegas-jointeam', function(Y) {
             }, this);
         },
         destructor: function() {
-            this.teamsField.destroy();
-            this.createTeamField.destroy();
+            if (this.teamsField) {
+                this.teamsField.destroy();
+            }
+            if (this.createTeamField) {
+                this.createTeamField.destroy();
+            }
             this.joinTeamButton.destroy();
             this.createButton.destroy();
         },
@@ -133,10 +138,35 @@ YUI.add('wegas-jointeam', function(Y) {
                     success: Y.bind(function() {
                         this.showMessage("success", "Game joined", 4000);
                         this.get("contentBox").empty();
+
                         Y.fire("gameJoined", {gameId: this.get("entity").get("id")});
+
+                        var parent = this.get("parent");
+                        if (parent) {
+                            parent.remove();
+                            parent.destroy();
+                        }
                     }, this),
                     failure: Y.bind(function(e) {
                         this.showMessage("error", "Error joining team");
+                    }, this)
+                }
+            });
+        },
+        sendTokenJoinGame: function(token) {
+            Y.Wegas.Facade.Game.sendRequest({
+                request: "/JoinGame/" + token,
+                on: {
+                    success: Y.bind(function(e) {
+
+                        if (e.response.entity instanceof Y.Wegas.persistence.Team) { // If the returned value is a Team enity
+                            this.sendJoinTeamRequest(e.response.entity.get("id"));
+                        } else {
+                            // TODO
+                        }
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this.showMessage("error", e.response.results.message || "Invalid token", 4000);
                     }, this)
                 }
             });

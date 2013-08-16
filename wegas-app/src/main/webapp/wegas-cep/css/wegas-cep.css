@@ -261,7 +261,7 @@ h3 {
     display:inline-block;
     width:59.5%;
     float:left;
-    overflow:inherit;
+    background:transparent;
 }
 .yui3-skin-sam  .body .yui3-tab-panel  {
     border-left: 1px solid lightgray;

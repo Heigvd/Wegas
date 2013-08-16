@@ -65,15 +65,6 @@ min-width: 800px;
     background:gray;
 }
 
-.unread-count .value{
-    background-image: url(../../wegas-crimesim/images/unread-count.png);
-    background-position: center;
-    background-repeat: no-repeat;
-    color:white;
-    padding:7px;
-    margin-left:2px;
-}
-
 
 .menu .wegas-login {
     padding:5px;

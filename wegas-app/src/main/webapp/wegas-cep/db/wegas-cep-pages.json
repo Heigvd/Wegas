@@ -4,9 +4,6 @@
         "direction": "vertical",
         "type": "List",
         "cssClass": "layout wegas-cep",
-        "plugins": [{
-                "fn": "Popup"
-            }],
         "children": [{
                 "type": "List",
                 "cssClass": "header",
@@ -126,7 +123,7 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "name": "questions2"
+                                                "expr": "questions.items[phases.value].items[phases.items[phases.value].value - 1].descriptorId"
                                             }
                                         }
                                     }
@@ -148,7 +145,7 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "name": "actions"
+                                                "expr": "actions.items[phases.value].items[phases.items[phases.value].value - 1].descriptorId"
                                             }
                                         }
                                     }
@@ -219,7 +216,7 @@
                 "direction": "horizontal",
                 "children": [{
                         "type": "Text",
-                        "content": "Copyright 2012 Heig-vd.ch"
+                        "content": "Copyright 2013 Heig-vd.ch"
                     }]
             }
         ]
@@ -230,7 +227,7 @@
         "content": "Welcome to CEP case."
     },
     "3": {
-        "id": 3,
+        "@name": "Employees",
         "type": "CEPFolder",
         "listVariables": "employees",
         "searchInProperties": [

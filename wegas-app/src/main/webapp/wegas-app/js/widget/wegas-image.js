@@ -25,7 +25,7 @@ YUI.add("wegas-image", function(Y) {
     WImage = Y.Base.create("wegas-image", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.WImage# */
         image: null,
-        CONTENT_TEMPLATE: "<img></img>",
+        CONTENT_TEMPLATE: "<img style='width:inherit;height:inherit'></img>",
         /**
          * Lifecycle method
          * @function
@@ -54,6 +54,9 @@ YUI.add("wegas-image", function(Y) {
             this.handlers.push(this.get(CONTENTBOX).on("load", function(e) {
                 this.getEvent("load").fired = true;
                 this.getEvent("render").fired = true;
+                if (!this.CSSSize) { // adapt only without plugin
+                    this.get("boundingBox").setStyles({"width": this.image.width, height: this.image.height});
+                }
                 this.fire("load");
                 this.fire("render");
             }, this));

@@ -285,7 +285,8 @@ YUI.add('wegas-action', function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    legend: "Save to"
+                    legend: "Save to",
+                    classFilter: ["ObjectDescriptor"]
                 }
             },
             targetEvent: {

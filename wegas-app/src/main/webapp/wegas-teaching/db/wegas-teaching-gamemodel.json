@@ -18,6 +18,141 @@
             "scope":{
                 "@class":"TeamScope"
             }
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "arrow1",
+            "editorLabel": "arrow1",
+            "label": "Arrow 1",
+            "minValue": 0,
+            "maxValue": 3,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "arrow2",
+            "editorLabel": "arrow2",
+            "label": "Arrow 2",
+            "minValue": 0,
+            "maxValue": 3,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "arrow3",
+            "editorLabel": "arrow3",
+            "label": "Arrow 3",
+            "minValue": 0,
+            "maxValue": 3,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "arrow4",
+            "editorLabel": "arrow4",
+            "label": "Arrow 4",
+            "minValue": 0,
+            "maxValue": 3,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "arrow5",
+            "editorLabel": "arrow5",
+            "label": "Arrow 5",
+            "minValue": 0,
+            "maxValue": 3,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "arrow6",
+            "editorLabel": "arrow6",
+            "label": "Arrow 6",
+            "minValue": 0,
+            "maxValue": 3,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "arrow7",
+            "editorLabel": "arrow7",
+            "label": "Arrow 7",
+            "minValue": 0,
+            "maxValue": 3,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "arrow8",
+            "editorLabel": "arrow8",
+            "label": "Arrow 8",
+            "minValue": 0,
+            "maxValue": 3,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "arrow9",
+            "editorLabel": "arrow9",
+            "label": "Arrow 9",
+            "minValue": 0,
+            "maxValue": 3,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 2
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
         }
     ]
 }

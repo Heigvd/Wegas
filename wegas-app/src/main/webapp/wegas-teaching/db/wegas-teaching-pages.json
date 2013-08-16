@@ -72,9 +72,7 @@
         "cssClass": "content",
         "children": [
             {
-                "type": "Text",
-                "cssClass": "data",
-                "content": "TODO: Réponse"
+                "type": "TeachingMain"
             },
             {
                 "type": "List",

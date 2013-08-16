@@ -294,7 +294,7 @@
     width:32px;
     height:32px;
     cursor: pointer;
-    background: url(/Wegas/wegas-proggame/images/terrain.png) no-repeat;
+    background: url(../../wegas-proggame/images/terrain.png) no-repeat;
 }
 .inputex-proggametile:hover {
 
@@ -319,7 +319,7 @@
     overflow:auto;
 }
 .yui3-proggame-alignable .table {
-    background: url(/Wegas/wegas-proggame/images/terrain.png) no-repeat;
+    background: url(../../wegas-proggame/images/terrain.png) no-repeat;
 }
 
 .yui3-proggame-alignable .table > div {

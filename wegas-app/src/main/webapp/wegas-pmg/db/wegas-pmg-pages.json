@@ -3,9 +3,6 @@
         "label": "Main layout",
         "type": "List",
         "cssClass": "layout",
-        "plugins": [{
-                "fn": "Popup"
-            }],
         "children": [
             {
                 "type": "List",
