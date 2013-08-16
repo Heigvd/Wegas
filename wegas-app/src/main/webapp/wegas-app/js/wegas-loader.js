@@ -715,6 +715,10 @@ YUI().use(function(Y) {
                 /**
                  * Project Management Game
                  */
+                'wegas-pmgwidget-css': {
+                    path: 'wegas-pmg/css/wegas-pmgwidget.css',
+                    type: 'css'
+                },
                 'wegas-pmg': {
                     path: 'wegas-pmg/js/wegas-pmg-breadcrumb-min.js',
                     requires: ['wegas-pmg-breadcrumb'],
@@ -753,16 +757,22 @@ YUI().use(function(Y) {
                 },
                 "wegas-pmg-reservation": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-reservation-min.js',
-                    requires: [],
                     ws_provides: 'Reservation'
                 },
                 "wegas-pmg-occupationcolor": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-occupationcolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
                     ws_provides: 'OccupationColor'
                 },
                 "wegas-pmg-activitycolor": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-activitycolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
                     ws_provides: 'ActivityColor'
+                },
+                "wegas-pmg-assignment": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-assignment-min.js',
+                    requires: ['sortable', 'wegas-pmgwidget-css'],
+                    ws_provides: 'Assignment'
                 },
                 /**book CYOA**/
                 'wegas-book': {

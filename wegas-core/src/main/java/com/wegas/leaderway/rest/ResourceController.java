@@ -9,6 +9,7 @@ package com.wegas.leaderway.rest;
 
 import com.wegas.leaderway.ejb.ResourceFacade;
 import com.wegas.leaderway.persistence.AbstractAssignement;
+import com.wegas.leaderway.persistence.ResourceInstance;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -28,21 +29,32 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ResourceController {
-    
+
     @EJB
     private ResourceFacade resourceFacade;
-    
+
     @POST
     @Path("AbstractAssign/{resourceId : [1-9][0-9]*}")
     public void save(@PathParam("resourceId") Long resourceInstanceId, AbstractAssignement data) {
         resourceFacade.addAbstractAssignement(resourceInstanceId, data);
     }
-    
+
     @DELETE
     @Path("AbstractRemove/{abstractAssignementId : [1-9][0-9]*}/{type}")
     public void delete(@PathParam("abstractAssignementId") Long abstractAssignementId,
-                        @PathParam("type") String type) {
+            @PathParam("type") String type) {
         resourceFacade.removeAbstractAssignement(abstractAssignementId, type);
     }
-   
+
+    @POST
+    @Path("MoveAssignment/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
+    public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId, @PathParam("index") Integer index) {
+        return resourceFacade.moveAssignment(assignmentId, index);
+    }
+    
+    @POST
+    @Path("RemoveAssignment/{assignmentId : [1-9][0-9]*}")
+    public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId) {
+        return resourceFacade.removeAssignment(assignmentId);
+    }
 }
