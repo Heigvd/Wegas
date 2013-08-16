@@ -473,15 +473,17 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @PostPersist
     private void storePages() {
-        try {
-            Pages pagesDAO = new Pages(this.id.toString());
-            pagesDAO.delete();                                                  // Remove existing pages
+        if (this.pages != null) {
+            try {
+                Pages pagesDAO = new Pages(this.id.toString());
+                pagesDAO.delete();                                                  // Remove existing pages
+                for (Entry<String, JsonNode> p : this.pages.entrySet()) {             // Add all pages
+                    pagesDAO.store(new Page(p.getKey(), p.getValue()));
+                }
 
-            for (Entry<String, JsonNode> p : this.pages.entrySet()) {             // Add all pages
-                pagesDAO.store(new Page(p.getKey(), p.getValue()));
+            } catch (RepositoryException ex) {
+                System.err.println("Failed to create repository for GameModel " + this.id);
             }
-        } catch (RepositoryException ex) {
-            System.err.println("Failed to create repository for GameModel " + this.id);
         }
 
     }
