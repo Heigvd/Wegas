@@ -8,21 +8,20 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-YUI.add("wegas-userpreferences", function (Y) {
+YUI.add("wegas-userpreferences", function(Y) {
     "use strict";
 
     var UserPreferences = Y.Base.create("wegas-userpreferences", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
-
-        initializer: function () {
+        initializer: function() {
             this.get("host").get("boundingBox").addClass("userPreferences");
-            this.afterHostEvent("render", function () {
+            this.afterHostEvent("render", function() {
                 var k, entity = Y.Wegas.Facade.User.cache.get("currentUser").getMainAccount(),
-                host = this.get("host"),
-                fieldsToIgnore = [];
+                        host = this.get("host"),
+                        fieldsToIgnore = [];
 
                 for (k in entity.toObject()) {                                  //hide ineditable fields
                     if (k !== 'firstname' && k !== 'lastname'
-                        && k !== 'password' && k !== 'submit') {
+                            && k !== 'password' && k !== 'submit') {
                         fieldsToIgnore.push(k);
                     }
                 }
@@ -32,16 +31,15 @@ YUI.add("wegas-userpreferences", function (Y) {
                 host.set("values", entity.toObject());
             });
 
-            this.onHostEvent("submit", function (e) {
+            this.onHostEvent("submit", function(e) {
                 this.get("host").showOverlay();
                 this.sendUpdate();
             }, this);
         },
-
-        sendUpdate: function () {
+        sendUpdate: function() {
             var user = Y.Wegas.Facade.User.cache.get("currentUser").getMainAccount().toObject(),
-            host = this.get("host"),
-            updatedAccount = Y.mix(host.get('form').getValue(), user);//need to send an "JpAccount", thus merge account and updates
+                    host = this.get("host"),
+                    updatedAccount = Y.mix(host.get('form').getValue(), user);//need to send an "JpAccount", thus merge account and updates
 
             Y.Wegas.Facade.User.sendRequest({
                 request: "/Account/" + updatedAccount.id,
@@ -50,11 +48,11 @@ YUI.add("wegas-userpreferences", function (Y) {
                     data: updatedAccount
                 },
                 on: {
-                    success: Y.bind(function (e) {
+                    success: Y.bind(function(e) {
                         this.showMessage("success", "Your account had been successfully updated", 4000);
                         this.hideOverlay();
                     }, host),
-                    failure: Y.bind(function (e) {
+                    failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Error updating user", 4000);
                         this.hideOverlay();
                     }, host)

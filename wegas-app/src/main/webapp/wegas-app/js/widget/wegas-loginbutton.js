@@ -109,6 +109,9 @@ YUI.add("wegas-loginbutton", function(Y) {
          * </ul>
          */
         ATTRS: {
+            label: {
+                transient: true
+            },
             /**
              * Select what kind of label you want (user/team  or team/player)
              */
