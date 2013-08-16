@@ -73,7 +73,9 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.handlers.assignTask = this.menu.on("button:click", this.onTaskMenuClick, this);
 
             this.handlers.showDelete = this.get(HOST).datatable.delegate('hover', function(e) {
-                e.target.getDOMNode().childNodes[0].className = "remove show";
+                if (e.target.getDOMNode().childNodes[0]) {
+                    e.target.getDOMNode().childNodes[0].className = "remove show";
+                }
             }, function(e) {
                 if (e.target.getDOMNode().childNodes[0]) {
                     e.target.getDOMNode().childNodes[0].className = "remove hide";
@@ -243,7 +245,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             }
             this.menu.destroy();
             this.menuDetails.destroy();
-            
+
             for (i = 0; i < this.sortable.length; i++) {
                 this.sortable[i].destroy();
             }

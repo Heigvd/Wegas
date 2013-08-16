@@ -479,7 +479,7 @@
                     "name": "Web design",
                     "editorLabel": "Web design",
                     "label": "Web design",
-                    "index": 1,
+                    "index": 2,
                     "description": "description tâche 2",
                     "properties": {
                         "bonusRatio": 0,
@@ -556,7 +556,7 @@
                             "items": [
                                 {
                                     "@class": "ChoiceDescriptor",
-                                    "name": "a) Reponse 1",
+                                    "name": "Phase1Reponse1",
                                     "editorLabel": "a) Reponse 1",
                                     "label": "a) Reponse 1",
                                     "defaultInstance": {
@@ -602,7 +602,7 @@
                             "items": [
                                 {
                                     "@class": "ChoiceDescriptor",
-                                    "name": "a) Reponse 1",
+                                    "name": "Phase2Reponse1",
                                     "editorLabel": "a) Reponse 1",
                                     "label": "a) Reponse 1",
                                     "defaultInstance": {
@@ -664,7 +664,7 @@
                             "items": [
                                 {
                                     "@class": "ChoiceDescriptor",
-                                    "name": "reponse 1)",
+                                    "name": "Action1Reponse1",
                                     "editorLabel": "reponse 1)",
                                     "label": "reponse 1)",
                                     "defaultInstance": {

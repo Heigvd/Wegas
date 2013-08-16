@@ -59,32 +59,8 @@
             <column name="wwork" type="VARCHAR(255)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-10">
-        <modifyDataType columnName="createdtime" newDataType="TIMESTAMP WITH TIME ZONE" tableName="game"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-11">
-        <modifyDataType columnName="updatedtime" newDataType="TIMESTAMP WITH TIME ZONE" tableName="game"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-12">
-        <modifyDataType columnName="createdtime" newDataType="TIMESTAMP WITH TIME ZONE" tableName="gamemodel"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-13">
-        <modifyDataType columnName="senttime" newDataType="TIMESTAMP WITH TIME ZONE" tableName="message"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-14">
-        <modifyDataType columnName="jointime" newDataType="TIMESTAMP WITH TIME ZONE" tableName="player"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-15">
-        <dropNotNullConstraint columnDataType="int8" columnName="parentteam_id" tableName="player"/>
-    </changeSet>
     <changeSet author="Benjamin (generated)" id="1372152924519-16">
         <modifyDataType columnName="description" newDataType="TEXT" tableName="taskdescriptor"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-17">
-        <dropNotNullConstraint columnDataType="int8" columnName="parentgame_id" tableName="team"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-18">
-        <dropForeignKeyConstraint baseTableName="abstractaccount_permissions" baseTableSchemaName="public" constraintName="fk_abstractaccount_permissions_abstractaccount_id"/>
     </changeSet>
     <changeSet author="Benjamin (generated)" id="1372152924519-19">
         <dropForeignKeyConstraint baseTableName="activity" baseTableSchemaName="public" constraintName="fk_activity_taskinstance_id"/>
@@ -94,9 +70,6 @@
     </changeSet>
     <changeSet author="Benjamin (generated)" id="1372152924519-21">
         <dropForeignKeyConstraint baseTableName="assignment" baseTableSchemaName="public" constraintName="fk_assignment_taskinstance_id"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-22">
-        <dropForeignKeyConstraint baseTableName="role_permissions" baseTableSchemaName="public" constraintName="fk_role_permissions_role_id"/>
     </changeSet>
     <changeSet author="Benjamin (generated)" id="1372152924519-23">
         <dropForeignKeyConstraint baseTableName="wrequirement" baseTableSchemaName="public" constraintName="fk_wrequirement_requierements_variabledescriptor_id"/>
@@ -134,9 +107,6 @@
     <changeSet author="Benjamin (generated)" id="1372152924519-34">
         <dropColumn columnName="taskinstance_id" tableName="assignment"/>
     </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-35">
-        <dropColumn columnName="scope_id" tableName="variableinstance"/>
-    </changeSet>
     <changeSet author="Benjamin (generated)" id="1372152924519-36">
         <dropColumn columnName="number" tableName="wrequirement"/>
     </changeSet>
@@ -145,11 +115,5 @@
     </changeSet>
     <changeSet author="Benjamin (generated)" id="1372152924519-38">
         <dropColumn columnName="requirements_variabledescriptor_id" tableName="wrequirement"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-39">
-        <dropTable tableName="abstractaccount_permissions"/>
-    </changeSet>
-    <changeSet author="Benjamin (generated)" id="1372152924519-40">
-        <dropTable tableName="role_permissions"/>
     </changeSet>
 </databaseChangeLog>
