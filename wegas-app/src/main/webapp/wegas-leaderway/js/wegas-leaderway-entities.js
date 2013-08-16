@@ -489,6 +489,10 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                                         label: "completeness",
                                         name: "completeness",
                                         type: HIDDEN
+                                    }, {
+                                        label: "quality",
+                                        name: "quality",
+                                        type: HIDDEN
                                     }]
                             }
                         }
@@ -563,6 +567,10 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                                 label: "completeness",
                                 name: "completeness",
                                 type: HIDDEN
+                            }, {
+                                label: "quality",
+                                name: "quality",
+                                type: HIDDEN
                             }]
                     }
                 }
@@ -597,6 +605,9 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 type: NUMBER
             },
             completeness: {
+                type: NUMBER
+            },
+            quality: {
                 type: NUMBER
             }
 

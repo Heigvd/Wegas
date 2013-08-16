@@ -25,12 +25,13 @@ function calculTasksProgress(currentStep) {
 
     for (i = 0; i < oneTaskPerActivity.length; i++) {
         taskProgress = 0;
-        taskInst = oneTaskPerActivity.getTaskDescriptor().getInstance(self); 
+        taskInst = oneTaskPerActivity.getTaskDescriptor().getInstance(self);
         requirementsByWork = getRequirementsByWork(taskInst.getRequirements());
-        for (work in requirementsByWork){
+        for (work in requirementsByWork) {
             taskProgress += requirementsByWork[work].completeness;
         }
         taskInst.setProperty("completeness", taskProgress);
+        taskInst.setProperty("quality", taskInst.calculateTaskQuality(oneTaskPerActivity.getTaskDescriptor()));
     }
 }
 
@@ -263,7 +264,8 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
             employeesMotivationFactor, employeesSkillsetXActivityRate = 0, predecessorsAdvance = 1,
             employeeSkillsetFactor, activityCoefficientXActivityRate = 0, otherWorkFactor = 1,
             correctedRessources, reqByWorks, numberOfEmployeeOnNeedOnNewTask = 0,
-            baseProgress;
+            needProgress, motivationXActivityRate = 0, skillsetXActivityRate, level,
+            averageSkillsetQuality, stepQuality;
 
     taskDesc = activityAsNeeds.getTaskDescriptor();
     taskInst = activityAsNeeds.getTaskInst();
@@ -272,7 +274,8 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     workAs = selectFirstUncompletedWork(requirements, reqByWorks);
     selectedReq = selectRequirement(taskInst, activityAsNeeds.getResourceInstance(), workAs, reqByWorks);
     sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allCurrentActivities, activityAsNeeds);
-    deltaLevel = parseInt(selectedReq.getLevel()) - parseInt(activityAsNeeds.getResourceInstance().getSkillsets().get(activityAsNeeds.getResourceInstance().getSkillsets().keySet().toArray()[0]));
+    level = parseInt(activityAsNeeds.getResourceInstance().getSkillsets().get(activityAsNeeds.getResourceInstance().getSkillsets().keySet().toArray()[0]));
+    deltaLevel = parseInt(selectedReq.getLevel()) - level;
 
     //For each need
     for (i = 0; i < sameNeedActivity.length; i++) {
@@ -301,6 +304,10 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         if (!haveCorrespondingActivityInPast(employeeInst, taskDesc, getCurrentInGameTime().period)) {
             numberOfEmployeeOnNeedOnNewTask++;
         }
+        //Calculate variable for quality
+        motivationXActivityRate += parseInt(employeeInst.getMoral()) * activityRate;
+        skillsetXActivityRate += level * activityRate;
+
     }
     //calculate needMotivationFactor, needSkillsetFactor and activityNeedRateFactor
     if (sumActivityRate !== 0) {
@@ -336,18 +343,33 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty("takeInHandDuration") / 100))) / affectedEmployeesDesc.length);//learnFactor 
     }
     //calculate bonusRatio
-    stepAdvance *= parseFloat(taskInst.getProperty("bonusRatio")) / 100; //todo vérifier !
+    stepAdvance *= parseFloat(taskInst.getProperty("bonusRatio")) / 100;
     //calculate predecessor factor
     if (taskDesc.getPredecessors().getSize() > 0) {
         for (i = 0; i < taskDesc.getPredecessors().getSize(); i++) {
             predecessorsAdvance += parseInt(taskDesc.getPredecessors().get(i).getInstance(self).getProperty("completeness"));
         }
-        stepAdvance *= Math.pow((predecessorsAdvance / taskDesc.getPredecessors().getSize()) / 100, parseInt(taskInst.getProperty("todo (+taskInst or desc ?)"))); //predecessor factor
+        stepAdvance *= Math.pow((predecessorsAdvance / taskDesc.getPredecessors().getSize()) / 100, parseInt(taskInst.getProperty("predecessorsDependances"))); //predecessor factor
     }
     //calculate new base completeness
-    baseProgress = Math.round(parseInt(selectedReq.getCompleteness()) + stepAdvance);
-    selectedReq.setCompleteness(baseProgress);
-    return  baseProgress;
+    needProgress = Math.round(parseInt(selectedReq.getCompleteness()) + stepAdvance);
+
+    //calculate stepQuality
+    if (sumActivityRate !== 0) {
+        stepQuality = (motivationXActivityRate / sumActivityRate);
+        averageSkillsetQuality = (skillsetXActivityRate / sumActivityRate);
+        if (averageSkillsetQuality >= selectedReq.getLevel()) {
+            stepQuality += 1 + 0.02 * (averageSkillsetQuality - selectedReq.getLevel());
+        } else {
+            stepQuality += 1 + 0.03 * (averageSkillsetQuality - selectedReq.getLevel());
+        }
+    }
+    stepQuality = (stepQuality / 2) * 100;
+    selectedReq.setQuality((parseInt(selectedReq.getQuality()) * parseInt(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress)
+
+    //set need progress (after calcuateQuality) and return it
+    selectedReq.setCompleteness(needProgress);
+    return  needProgress;
 }
 
 function getRandomFactorFromTask(taskDesc) {
@@ -388,7 +410,16 @@ function getRandomFactorFromTask(taskDesc) {
         randomFactor = minTaskDuration;
     }
     return duration / randomFactor;
+}
 
+function calculateTaskQuality(taskDesc){
+    var i, req, needQualityXNeedProgress = 0, needProgress = 0;
+    for (i = 0; i < taskDesc.getInstance(self).getRequirements().size(); i++) {
+        req = taskDesc.getInstance(self).getRequirements().get(i);
+        needQualityXNeedProgress += (parseInt(req.getQuality()) * parseInt(req.getCompleteness()));
+        needProgress += parseInt(req.getCompleteness());
+    }
+    return (needQualityXNeedProgress / needProgress);
 }
 
 
