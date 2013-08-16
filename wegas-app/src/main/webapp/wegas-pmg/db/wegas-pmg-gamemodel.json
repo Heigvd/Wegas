@@ -470,7 +470,7 @@
                                 "limit": "100",
                                 "quantity": "1",
                                 "completeness": "0",
-                                "quality": "0",
+                                "quality": "0"
                             }]
                     },
                     "scope": {
@@ -513,7 +513,7 @@
                                 "limit": "100",
                                 "quantity": "2",
                                 "completeness": "0",
-                                "quality": "0",
+                                "quality": "0"
                             }]
                     },
                     "scope": {
