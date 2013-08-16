@@ -453,23 +453,25 @@
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
-                            "wages": 0
+                            "wages": 0,
+                            "quality": 0
                         },
                         "requirements": [{
-                            "@class": "WRequirement",
-                            "work": "Web designer",
-                            "level": "1",
-                            "limit": "100",
-                            "quantity": "1",
-                            "completeness": "0"
-                        }, {
-                            "@class": "WRequirement",
-                            "work": "Business specialist",
-                            "level": "3",
-                            "limit": "100",
-                            "quantity": "1",
-                            "completeness": "0"
-                        }]
+                                "@class": "WRequirement",
+                                "work": "Web designer",
+                                "level": "1",
+                                "limit": "100",
+                                "quantity": "1",
+                                "completeness": "0"
+                            }, {
+                                "@class": "WRequirement",
+                                "work": "Business specialist",
+                                "level": "3",
+                                "limit": "100",
+                                "quantity": "1",
+                                "completeness": "0",
+                                "quality": "0",
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -501,16 +503,18 @@
                             "predecessorsDependances": 1000,
                             "completeness": 50,
                             "unworkedHoursCosts": 0,
-                            "wages": 0
+                            "wages": 0,
+                            "quality": 0
                         },
                         "requirements": [{
-                            "@class": "WRequirement",
-                            "work": "Web designer",
-                            "level": "12",
-                            "limit": "100",
-                            "quantity": "2",
-                            "completeness": "0"
-                        }]
+                                "@class": "WRequirement",
+                                "work": "Web designer",
+                                "level": "12",
+                                "limit": "100",
+                                "quantity": "2",
+                                "completeness": "0",
+                                "quality": "0",
+                            }]
                     },
                     "scope": {
                         "@class": "TeamScope"
