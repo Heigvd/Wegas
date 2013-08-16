@@ -10,7 +10,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "Occupation", value = Occupation.class),
     @JsonSubTypes.Type(name = "Activity", value = Activity.class),
-    @JsonSubTypes.Type(name = "Assignement", value = Assignment.class)
+    @JsonSubTypes.Type(name = "Assignment", value = Assignment.class)
 })
 public abstract class AbstractAssignement extends AbstractEntity {
 }
