@@ -92,7 +92,7 @@ YUI.add('wegas-pageloader', function(Y) {
             var val = this.get("variable.evaluated");
             if (val && val.getInstance().get('value')) {                        // If there is a variable to refresh
                 this.set("pageId", val.getInstance().get('value'));
-            } else if (this.get("defaultPageId") && !this.get("pageId")) {      //in case a defaultPageId is defined and no pageId is 
+            } else if (this.get("defaultPageId") && !this.get("pageId")) {      //in case a defaultPageId is defined and no pageId is
                 this.set("pageId", this.get("defaultPageId"));
             } else {
                 this.set("pageId", this.get("pageId")); // Otherwise use pageId (in case the setter has not been called yet)
@@ -217,7 +217,7 @@ YUI.add('wegas-pageloader', function(Y) {
                                 this.set("widget", widget);
                                 widget.addTarget(this); // Event on the loaded widget will be forwarded
                             } catch (e) {
-                                this.get(CONTENTBOX).setContent("Unable to create page's structure ...");
+                                this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
                                 Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
                             } finally {
                                 this.hideOverlay();

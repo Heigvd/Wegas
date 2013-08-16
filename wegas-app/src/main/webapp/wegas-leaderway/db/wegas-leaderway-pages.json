@@ -297,11 +297,5 @@
         "taskListPageId": "6",
         "dialoguePageId": "7",
         "targetPageLoaderId": "maindisplayarea"
-    },
-    "1000": {
-        "type": "Form",
-        "plugins": [{
-            "fn": "UserPreferences"
-        }]
     }
 }
