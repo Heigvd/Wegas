@@ -584,9 +584,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                     label: "is smaller or equal to"
                                 }]
                         }, {
+                            type: "number",
                             value: this.options.rightValue
                         }]
-                            //                value: this.options.arguments
                 });
             } else {
                 this.argsOffset = 1;

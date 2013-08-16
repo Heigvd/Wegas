@@ -15,15 +15,9 @@ YUI.add('wegas-langselector', function (Y) {
 
         CONTENT_TEMPLATE: "<div><select class='wegas-langselector-select'></select></div>",
 
-        handlers: null,
-
-        initializer: function () {
-            this.handlers = [];
-        },
-
         bindUI: function () {
             var cb = this.get(CONTENTBOX);
-            this.handlers.push(cb.one('.wegas-langselector-select').on('change', function (e) {
+            cb.one('.wegas-langselector-select').on('change', function (e) {
                 var lang = e.currentTarget.get('value'),
                 url = window.location.href;
 
@@ -32,7 +26,7 @@ YUI.add('wegas-langselector', function (Y) {
                 } else {
                     location.replace(url + "&lang=" + lang);
                 }
-            }));
+            });
         },
 
         syncUI: function () {
@@ -69,14 +63,6 @@ YUI.add('wegas-langselector', function (Y) {
                 }
             }
         },
-
-        destroy: function () {
-            var i;
-            for (i = 0; i < this.handlers.length; i++) {
-                this.handlers[i].detach();
-            }
-        }
-
     }, {
         ATTRS : {
             items: {

@@ -20,7 +20,7 @@ YUI.add('wegas-choicelist', function(Y) {
      * @description class to serialize widgets
      */
     var List = Y.Base.create("wegas-choicelist", Y.Wegas.List,
-            [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Container], {
+            [Y.Wegas.Editable, Y.Wegas.Container], {
         /** @lends Y.Wegas.ChoiceList# */
         bindUI: function() {
             this.after("addChild", function() {

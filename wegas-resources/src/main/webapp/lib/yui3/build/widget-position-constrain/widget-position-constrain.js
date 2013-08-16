@@ -1,5 +1,5 @@
 /*
-YUI 3.10.3 (build 2fb5187)
+YUI 3.11.0 (build d549e5c)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -20,7 +20,7 @@ var CONSTRAIN = "constrain",
 
     PREVENT_OVERLAP = "preventOverlap",
     ALIGN = "align",
-    
+
     EMPTY_STR = "",
 
     BINDUI = "bindUI",
@@ -38,22 +38,17 @@ var CONSTRAIN = "constrain",
 
 /**
  * A widget extension, which can be used to add constrained xy positioning support to the base Widget class,
- * through the <a href="Base.html#method_build">Base.build</a> method. This extension requires that 
- * the WidgetPosition extension be added to the Widget (before WidgetPositionConstrain, if part of the same 
+ * through the <a href="Base.html#method_build">Base.build</a> method. This extension requires that
+ * the WidgetPosition extension be added to the Widget (before WidgetPositionConstrain, if part of the same
  * extension list passed to Base.build).
  *
  * @class WidgetPositionConstrain
  * @param {Object} User configuration object
  */
-function PositionConstrain(config) {
-    if (!this._posNode) {
-        Y.error("WidgetPosition needs to be added to the Widget, before WidgetPositionConstrain is added"); 
-    }
-    Y.after(this._bindUIPosConstrained, this, BINDUI);
-}
+function PositionConstrain(config) {}
 
 /**
- * Static property used to define the default attribute 
+ * Static property used to define the default attribute
  * configuration introduced by WidgetPositionConstrain.
  *
  * @property ATTRS
@@ -77,10 +72,10 @@ PositionConstrain.ATTRS = {
     /**
      * @attribute preventOverlap
      * @type boolean
-     * @description If set to true, and WidgetPositionAlign is also added to the Widget, 
-     * constrained positioning will attempt to prevent the widget's bounding box from overlapping 
+     * @description If set to true, and WidgetPositionAlign is also added to the Widget,
+     * constrained positioning will attempt to prevent the widget's bounding box from overlapping
      * the element to which it has been aligned, by flipping the orientation of the alignment
-     * for corner based alignments  
+     * for corner based alignments
      */
     preventOverlap : {
         value:false
@@ -112,11 +107,18 @@ PREVENT_OVERLAP_MAP = PositionConstrain._PREVENT_OVERLAP = {
 
 PositionConstrain.prototype = {
 
+    initializer : function() {
+        if (!this._posNode) {
+            Y.error("WidgetPosition needs to be added to the Widget, before WidgetPositionConstrain is added");
+        }
+        Y.after(this._bindUIPosConstrained, this, BINDUI);
+    },
+
     /**
      * Calculates the constrained positions for the XY positions provided, using
-     * the provided node argument is passed in. If no node value is passed in, the value of 
+     * the provided node argument is passed in. If no node value is passed in, the value of
      * the "constrain" attribute is used.
-     * 
+     *
      * @method getConstrainedXY
      * @param {Array} xy The xy values to constrain
      * @param {Node | boolean} node Optional. The node to constrain to, or true for the viewport
@@ -135,17 +137,17 @@ PositionConstrain.prototype = {
     },
 
     /**
-     * Constrains the widget's bounding box to a node (or the viewport). If xy or node are not 
+     * Constrains the widget's bounding box to a node (or the viewport). If xy or node are not
      * passed in, the current position and the value of "constrain" will be used respectively.
-     * 
+     *
      * The widget's position will be changed to the constrained position.
      *
-     * @method constrain 
+     * @method constrain
      * @param {Array} xy Optional. The xy values to constrain
      * @param {Node | boolean} node Optional. The node to constrain to, or true for the viewport
      */
     constrain : function(xy, node) {
-        var currentXY, 
+        var currentXY,
             constrainedXY,
             constraint = node || this.get(CONSTRAIN);
 
@@ -164,7 +166,7 @@ PositionConstrain.prototype = {
      *
      * @method _setConstrain
      * @protected
-     * @param {Node | boolean} val The attribute value 
+     * @param {Node | boolean} val The attribute value
      */
     _setConstrain : function(val) {
         return (val === true) ? val : Node.one(val);
@@ -173,15 +175,15 @@ PositionConstrain.prototype = {
     /**
      * The method which performs the actual constrain calculations for a given axis ("x" or "y") based
      * on the regions provided.
-     * 
+     *
      * @method _constrain
      * @protected
-     * 
+     *
      * @param {Number} val The value to constrain
      * @param {String} axis The axis to use for constrainment
      * @param {Region} nodeRegion The region of the node to constrain
      * @param {Region} constrainingRegion The region of the node (or viewport) to constrain to
-     * 
+     *
      * @return {Number} The constrained value
      */
     _constrain: function(val, axis, nodeRegion, constrainingRegion) {
@@ -217,7 +219,7 @@ PositionConstrain.prototype = {
     /**
      * The method which performs the preventOverlap calculations for a given axis ("x" or "y") based
      * on the value and regions provided.
-     * 
+     *
      * @method _preventOverlap
      * @protected
      *
@@ -225,7 +227,7 @@ PositionConstrain.prototype = {
      * @param {String} axis The axis to being constrained
      * @param {Region} nodeRegion The region of the node being constrained
      * @param {Region} constrainingRegion The region of the node (or viewport) we need to constrain to
-     * 
+     *
      * @return {Number} The constrained value
      */
     _preventOverlap : function(val, axis, nodeRegion, constrainingRegion) {
@@ -236,7 +238,7 @@ PositionConstrain.prototype = {
             alignRegion,
             nearEdge,
             farEdge,
-            spaceOnNearSide, 
+            spaceOnNearSide,
             spaceOnFarSide;
 
         if (align && align.points && PREVENT_OVERLAP_MAP[axis][align.points.join(EMPTY_STR)]) {
@@ -250,7 +252,7 @@ PositionConstrain.prototype = {
                 spaceOnNearSide = (x) ? alignRegion.left - constrainingRegion.left : alignRegion.top - constrainingRegion.top;
                 spaceOnFarSide  = (x) ? constrainingRegion.right - alignRegion.right : constrainingRegion.bottom - alignRegion.bottom;
             }
- 
+
             if (val > nearEdge) {
                 if (spaceOnFarSide < nodeSize && spaceOnNearSide > nodeSize) {
                     val = nearEdge - nodeSize;
@@ -266,7 +268,7 @@ PositionConstrain.prototype = {
     },
 
     /**
-     * Binds event listeners responsible for updating the UI state in response to 
+     * Binds event listeners responsible for updating the UI state in response to
      * Widget constrained positioning related state changes.
      * <p>
      * This method is invoked after bindUI is invoked for the Widget class
@@ -296,10 +298,10 @@ PositionConstrain.prototype = {
     /**
      * Updates the UI if enabling constraints, and sets up the xyChange event listeners
      * to constrain whenever the widget is moved. Disabling constraints removes the listeners.
-     * 
+     *
      * @method enable or disable constraints listeners
      * @private
-     * @param {boolean} enable Enable or disable constraints 
+     * @param {boolean} enable Enable or disable constraints
      */
     _enableConstraints : function(enable) {
         if (enable) {
@@ -307,7 +309,7 @@ PositionConstrain.prototype = {
             this._cxyHandle = this._cxyHandle || this.on(CONSTRAIN_XYCHANGE, this._constrainOnXYChange);
         } else if (this._cxyHandle) {
             this._cxyHandle.detach();
-            this._cxyHandle = null;    
+            this._cxyHandle = null;
         }
     },
 
@@ -326,9 +328,9 @@ PositionConstrain.prototype = {
     },
 
     /**
-     * Utility method to normalize region retrieval from a node instance, 
-     * or the viewport, if no node is provided. 
-     * 
+     * Utility method to normalize region retrieval from a node instance,
+     * or the viewport, if no node is provided.
+     *
      * @method _getRegion
      * @private
      * @param {Node} node Optional.
@@ -350,4 +352,4 @@ PositionConstrain.prototype = {
 Y.WidgetPositionConstrain = PositionConstrain;
 
 
-}, '3.10.3', {"requires": ["widget-position"]});
+}, '3.11.0', {"requires": ["widget-position"]});

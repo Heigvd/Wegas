@@ -159,7 +159,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @return
      */
     public List<Game> findAll(final String orderBy) {
-        final Query getByGameId = em.createQuery("SELECT game FROM Game game ORDER BY game.createdTime DESC");
+        final Query getByGameId = em.createQuery("SELECT game FROM Game game ORDER BY game.createdTime ASC");
         //getByGameId.setParameter("orderBy", orderBy);
         return getByGameId.getResultList();
     }
@@ -170,7 +170,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id "
                 + "AND p.user.id = :userId "
-                + "ORDER BY p.joinTime DESC");
+                + "ORDER BY p.joinTime ASC");
         getByGameId.setParameter("userId", userId);
 
         return this.findRegisterdGames(getByGameId);
@@ -181,7 +181,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
                 em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
-                + "ORDER BY p.joinTime DESC");
+                + "ORDER BY p.joinTime ASC");
         getByGameId.setParameter("userId", userId);
         getByGameId.setParameter("gameModelId", gameModelId);
 

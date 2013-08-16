@@ -22,7 +22,7 @@ YUI.add('wegas-nodeformatter', function(Y) {
      * @description returm value in specifique node. Available type:
      * Text node, image node, value box node, and position node.
      */
-    var NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Widget, [Y.Wegas.Widget], {
+    var NodeFormatter = Y.Base.create("wegas-nodeformatter", Y.Base, [], {
         /** @lends Y.Wegas.NodeFormatter# */
 
         // ** Lifecycle Methods ** //

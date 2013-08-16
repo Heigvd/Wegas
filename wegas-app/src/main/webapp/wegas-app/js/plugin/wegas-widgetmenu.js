@@ -179,6 +179,21 @@ YUI.add('wegas-widgetmenu', function(Y) {
                 emitFacade: true
             });
         },
+        hide: function() {
+            this.get("boundingBox").transition({
+                duration: 0.1,
+                easing: 'ease-out',
+                opacity: 0
+            }, Y.bind(Menu.superclass.hide, this));
+        },
+        show: function() {
+            Menu.superclass.show.call(this);
+            this.get("boundingBox").transition({
+                duration: 0.1,
+                easing: 'ease-out',
+                opacity: 1
+            });
+        },
         renderUI: function() {
             var bb = this.get(BOUNDINGBOX);
 

@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
 import org.codehaus.jettison.json.JSONException;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +158,7 @@ public class PageController {
     }
 
     /**
-     * Create a new page. page'is is generated
+     * Create a new page. page'id is generated
      *
      * @param gameModelId The GameModel's ID
      * @param content A JSONObject
@@ -201,6 +202,8 @@ public class PageController {
                 throw new WegasException("Attempt to duplicate an inexistant page");
             }
             pageName = page.getId();
+        } else if (page.getName() != null) {
+            ((ObjectNode) page.getContent()).put("@name", page.getName() + "-copy");
         }
         return this.createPage(gameModelId, page.getContent(), pageName);
     }
