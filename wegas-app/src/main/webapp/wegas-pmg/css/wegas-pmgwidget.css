@@ -1,0 +1,111 @@
+/*occupation & activity plugin css */
+
+.yui3-datatable-table .editable {
+    display:block;
+    background-color: #3399FF;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
+}
+
+.yui3-datatable-table .notEditable {
+    display:block;
+    background-color: #FF0000;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
+}
+
+.yui3-datatable-table .engagementDelay {
+    display:block;
+    background-image:url(../../wegas-pmg/images/hatching.png);
+    background-repeat: repeat;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
+}
+
+.yui3-datatable-table .delay .editable {
+    display:block;
+    background-image:url(../../wegas-pmg/images/hatching.png);
+    background-repeat: repeat;
+    width:100%;
+    height:40%;
+    padding-top: 1px;
+}
+
+tbody .past span {
+    border: inherit;
+    opacity:  0.3;
+}
+
+.body .yui3-datatable-cell.schedulColumn{
+    border-left: 1px solid #ADADAE;
+}
+
+.yui3-datatable-columns .schedulColumn.present{
+    background-image: url(../../wegas-pmg/images/next.png), url(../../wegas-pmg/images/h2.png);
+    background-repeat: no-repeat, repeat-x;
+    background-position: left, center;
+}
+
+.body .yui3-datatable-columns .past{
+    background-color: #c0c0c0;
+    background-image: none;
+}
+
+/*Assignment plugin CSS */
+.yui3-datatable-col-assignments .assignment{
+    display:block;
+    float: left;
+    width:10%;
+    text-align: center;
+}
+
+.yui3-datatable-col-assignments .assignment span{
+    display:block;
+    float: left;
+    background-repeat: no-repeat;
+    height:16px;
+    width:16px;
+}
+
+.yui3-datatable-col-assignments .assignment .assign{
+    background-image: url(../../wegas-pmg/images/add.png);
+}
+
+.yui3-datatable-col-assignments .tasks{
+    display:block;
+    float: left;
+    width:80%;
+}
+
+.yui3-datatable-col-assignments .task{
+/*    display:inline-block;
+    padding: 0 5px;*/
+    display: block;
+    float: left;
+    font-style:normal;
+    text-align:center;
+    width: 15px;
+    /*height: 40px;*/
+    line-height:17px;
+    border: 1px solid #000;
+    margin: 0 0 0 3px;
+    color:#000000;
+    -moz-box-shadow:4px 4px 7px rgba(0,0,0, 0.4);
+    -webkit-box-shadow:4px 4px 7px rgba(0,0,0, 0.4);
+    box-shadow:4px 4px 7px rgba(0,0,0, 0.4);
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    cursor: move;
+}
+
+.tasks .task .remove.show {
+    display: block;
+    height: 16px;
+    width: 16px;
+    margin-top: -17px;
+    background-image: url(../../wegas-pmg/images/remove.png);
+    cursor: pointer;
+}

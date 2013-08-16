@@ -73,9 +73,9 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @private
          */
         destructor: function() {
-            var i;
-            for (i = 0; i < this.handlers.length; i++) {
-                this.handlers[i].detach();
+            var k;
+            for (k in this.handlers) {
+                this.handlers[k].detach();
             }
         }
     }, {

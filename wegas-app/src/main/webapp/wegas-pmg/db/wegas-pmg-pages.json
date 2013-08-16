@@ -519,6 +519,13 @@
                                     }
                                 }
                             }, {
+                                "fn": "Assignment",
+                                "cfg": {
+                                    "taskList": {
+                                        "name": "tasks"
+                                    }
+                                }
+                            }, {
                                 "fn": "Reservation",
                                 "cfg": {
                                     "type": "occupations"
@@ -565,6 +572,13 @@
                                     "columnToAdd": 10,
                                     "variable": {
                                         "name": "periodPhase3"
+                                    }
+                                }
+                            },{
+                                "fn": "Assignment",
+                                "cfg": {
+                                    "taskList": {
+                                        "name": "tasks"
                                     }
                                 }
                             }, {

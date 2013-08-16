@@ -49,6 +49,8 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                     for (iii = 0; iii < dt.get('columns').length; iii++) {
                         if (dt.get('columns')[iii].time === abstractAssignement[ii].get("time") && dt.get('columns')[iii].time >= this.get("host").scheduleDT.currentPeriod()) { //Affiche les occupations
                             this.addColor(dt.getRow(i).getDOMNode().cells[iii], abstractAssignement[ii].get("editable"));
+                        } else if (dt.get('columns')[iii].time === abstractAssignement[ii].get("time") && !abstractAssignement[ii].get("editable")){
+                            this.addColor(dt.getRow(i).getDOMNode().cells[iii], abstractAssignement[ii].get("editable"));
                         }
                     }
                 }
