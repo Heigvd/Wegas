@@ -181,8 +181,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
 
             return elements;
         },
-        createLoadingEvent
-                : function() {
+        createLoadingEvent: function() {
             this.centerElement.getActiveElement().onceAfter("render", function(e) {
                 this.set("currentLoading.center", false);
             }, this);
