@@ -719,26 +719,6 @@ YUI().use(function(Y) {
                     requires: ['wegas-pmg-breadcrumb'],
                     ws_provides: "PmgBreadcrumb"
                 },
-                'wegas-pmg-tasklist': {//Using simple taskList
-                    path: 'wegas-pmg/js/wegas-pmg-tasklist-min.js',
-                    requires: ['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
-                    ws_provides: "PmgTasklist"
-                },
-                //'wegas-pmg-treebletasklist': { //Using Treeble
-                //    path: 'wegas-pmg/js/wegas-pmg-treebletasklist.js',
-                //    requires: ['wegas-pmg-treebletasklist', 'wegas-pmg-datatable'],
-                //    ws_provides: "PmgTreebleTasklist"
-                //},
-                'wegas-pmg-gantt': {
-                    path: 'wegas-pmg/js/wegas-pmg-gantt-min.js',
-                    requires: ['wegas-pmg-gantt', 'wegas-pmg-datatable'],
-                    ws_provides: "PmgGantt"
-                },
-                'wegas-pmg-resourcelist': {
-                    path: 'wegas-pmg/js/wegas-pmg-resourcelist-min.js',
-                    requires: ['wegas-widgetmenu', 'wegas-pmg-gantt', 'sortable'],
-                    ws_provides: "PmgResourcelist"
-                },
                 'wegas-pmg-datatable': {
                     path: 'wegas-pmg/js/wegas-pmg-datatable-min.js',
                     /*requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],*/ //Using Treeble
@@ -772,6 +752,11 @@ YUI().use(function(Y) {
                 "wegas-pmg-planification": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-planification-min.js',
                     ws_provides: 'Planification'
+                },
+                "wegas-pmg-plannificationcolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-plannificationcolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
+                    ws_provides: 'Plannificationcolor'
                 },
                 /**book CYOA**/
                 'wegas-book': {
