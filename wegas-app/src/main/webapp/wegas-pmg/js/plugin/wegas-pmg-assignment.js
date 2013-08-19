@@ -87,7 +87,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 Wegas.Facade.VariableDescriptor.sendRequest({
                     request: "/ResourceDescriptor/RemoveAssignment/" + node.getAttribute("assignmentid"),
                     cfg: {
-                        method: "POST"
+                        method: "DELETE"
                     }
                 });
             }, '.task .remove', this);
@@ -144,7 +144,6 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             }
             tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("taskList"));
             items = tasks.get('items');
-//            items.sort(Y.bind(this.compareTask, this));
             for (i = 0; i < items.length; i++) {
                 taskExist = false;
                 taskDesc = items[i];

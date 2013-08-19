@@ -470,6 +470,8 @@
                                 "name": "periodPhase3"
                             }
                         }
+                    }, {
+                        "fn": "Planification"
                     }]
             }
         ]

@@ -769,6 +769,10 @@ YUI().use(function(Y) {
                     requires: ['sortable', 'wegas-pmgwidget-css'],
                     ws_provides: 'Assignment'
                 },
+                "wegas-pmg-planification": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-planification-min.js',
+                    ws_provides: 'Planification'
+                },
                 /**book CYOA**/
                 'wegas-book': {
                     path: 'wegas-book/js/wegas-book-fight-min.js',
