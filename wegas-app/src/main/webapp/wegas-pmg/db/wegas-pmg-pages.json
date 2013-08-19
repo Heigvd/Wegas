@@ -472,6 +472,8 @@
                         }
                     }, {
                         "fn": "Planification"
+                    }, {
+                        "fn": "Plannificationcolor"
                     }]
             }
         ]
