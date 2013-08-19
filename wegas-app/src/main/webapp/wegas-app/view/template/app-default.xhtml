@@ -215,7 +215,7 @@
 
                             app.after("render", function() {
                                 try {
-                        #{gameController.clientScripts}  // Add game model specific js footer
+                        #{gameController.clientScripts}             // Add game model specific js footer
                                 } catch (e) {
                                     Y.log("Error running footer scripts.", "error");
                                 }
