@@ -17,7 +17,6 @@ import com.wegas.leaderway.persistence.ResourceInstance;
 import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.leaderway.persistence.TaskInstance;
 import com.wegas.leaderway.persistence.WRequirement;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -194,5 +193,21 @@ public class ResourceFacade {
     
     public Assignment findAssignment(Long id){
         return em.find(Assignment.class, id);
+    }
+    
+    public TaskInstance findTaskInstance(Long id){
+        return em.find(TaskInstance.class, id);
+    }
+    
+    public TaskInstance addTaskPlannification(Long taskInstanceId, Integer periode) {
+        TaskInstance ti = findTaskInstance(taskInstanceId);
+        ti.getPlannification().add(periode);
+        return ti;
+    }
+    
+    public TaskInstance removePlannification(Long taskInstanceId, Integer periode) {
+        TaskInstance ti = findTaskInstance(taskInstanceId);
+        ti.getPlannification().remove(periode);
+        return ti;
     }
 }
