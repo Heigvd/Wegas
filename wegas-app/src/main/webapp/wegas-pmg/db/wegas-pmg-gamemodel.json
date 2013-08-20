@@ -434,15 +434,15 @@
                     "index": 1,
                     "description": "description tâche 1",
                     "properties": {
-                        "bonusRatio": 0,
+                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
                         "takeInHandDuration": 0,
-                        "randomDurationInf": 17,
-                        "randomDurationSup": 26
+                        "randomDurationInf": 0.17,
+                        "randomDurationSup": 0.26
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -484,7 +484,7 @@
                     "index": 2,
                     "description": "description tâche 2",
                     "properties": {
-                        "bonusRatio": 0,
+                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
