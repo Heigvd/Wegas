@@ -10,6 +10,7 @@ package com.wegas.leaderway.rest;
 import com.wegas.leaderway.ejb.ResourceFacade;
 import com.wegas.leaderway.persistence.AbstractAssignement;
 import com.wegas.leaderway.persistence.ResourceInstance;
+import com.wegas.leaderway.persistence.TaskInstance;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -51,10 +52,22 @@ public class ResourceController {
     public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId, @PathParam("index") Integer index) {
         return resourceFacade.moveAssignment(assignmentId, index);
     }
-    
-    @POST
+
+    @DELETE
     @Path("RemoveAssignment/{assignmentId : [1-9][0-9]*}")
-    public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId) {
+    public ResourceInstance removeAssignment(@PathParam("assignmentId") Long assignmentId) {
         return resourceFacade.removeAssignment(assignmentId);
+    }
+
+    @POST
+    @Path("Plannification/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
+    public TaskInstance addTaskPlannification(@PathParam("taskInstanceId") Long taskInstanceId, @PathParam("periode") Integer periode) {
+        return resourceFacade.addTaskPlannification(taskInstanceId, periode);
+    }
+    
+    @DELETE
+    @Path("Plannification/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
+    public TaskInstance removePlannification(@PathParam("taskInstanceId") Long taskInstanceId, @PathParam("periode") Integer periode) {
+        return resourceFacade.removePlannification(taskInstanceId, periode);
     }
 }

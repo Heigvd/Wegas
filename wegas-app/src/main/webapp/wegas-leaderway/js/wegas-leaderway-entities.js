@@ -580,6 +580,9 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                     label: "Properties",
                     _type: OBJECT
                 }
+            },
+            plannification: {
+                type: ARRAY
             }
         }
     });
