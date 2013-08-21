@@ -196,7 +196,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     button.plug(Y.Plugin.WidgetMenu, {
                         children: [{
                                 type: "Button",
-                                label: "Properties",
+                                label: "Edit",
                                 on: {
                                     click: Y.bind(this.editPage, this, node.get("data"))
                                 }

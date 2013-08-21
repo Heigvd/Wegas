@@ -67,7 +67,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             inputEx.Script.superclass.renderComponent.call(this);
 
             this.viewSrc = new Y.Wegas.Button({// Add the "view src" button
-                label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>"
+                label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>",
+                tooltip: "View source"
             });
             this.viewSrc.after("click", function() {
                 if (!this.viewSrc.get("disabled")) {

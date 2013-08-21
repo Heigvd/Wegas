@@ -85,7 +85,7 @@ YUI.add('wegas-tooltip', function(Y) {
          * @private
          * @param {Object} widget attribute litteral
          */
-        initializer: function(config) {
+        initializer: function() {
             this._currTrigger = {// Currently bound trigger node information
                 node: null,
                 title: null,
@@ -94,8 +94,7 @@ YUI.add('wegas-tooltip', function(Y) {
             };
 
             this._eventHandles = {// Event handles - mouse over is set on the delegate
-                delegate: null,
-                // element, mousemove and mouseleave are set on the trigger node
+                delegate: null, // element, mousemove and mouseleave are set on the trigger node
                 trigger: {
                     mouseMove: null,
                     mouseOut: null
@@ -108,8 +107,7 @@ YUI.add('wegas-tooltip', function(Y) {
             };
 
             this.publish("triggerEnter", {// Publish events introduced by Tooltip. Note the
-                defaultFn: this._defTriggerEnterFn,
-                // triggerEnter event is preventable, with the default
+                defaultFn: this._defTriggerEnterFn, // triggerEnter event is preventable, with the default
                 preventable: true                                               // behavior defined in the _defTriggerEnterFn method
             });
             this.publish("triggerLeave", {

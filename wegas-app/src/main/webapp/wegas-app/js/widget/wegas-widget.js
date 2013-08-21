@@ -119,7 +119,7 @@ YUI.add("wegas-widget", function(Y) {
          */
         EDITMENU: [{
                 type: "Button",
-                label: "Properties",
+                label: "Edit",
                 cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "EditWidgetAction"
