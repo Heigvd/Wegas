@@ -186,7 +186,7 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                     data: Y.JSON.stringify({
                         "@class": "Script",
                         "language": "JavaScript",
-                        "content": "importPackage(com.wegas.core.script);\nrectangle" + this.currentRectangle.get("id") + ".value='" + this.currentRectangle.get("label") + "';"
+                        "content": "importPackage(com.wegas.core.script);\nrectangle" + this.currentRectangle.get("id") + ".value='" + Y.Escape.html(this.currentRectangle.get("label")) + "';"
                     })
                 }
             });
