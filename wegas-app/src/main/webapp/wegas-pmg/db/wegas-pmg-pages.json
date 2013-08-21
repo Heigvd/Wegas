@@ -42,7 +42,7 @@
                                             "onClick": {
                                                 "@class": "Script",
                                                 "language": "JavaScript",
-                                                "content": "//todo"
+                                                "content": "nextPeriod()"
                                             }
                                         }
                                     }

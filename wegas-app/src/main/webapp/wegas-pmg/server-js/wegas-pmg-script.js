@@ -1,13 +1,39 @@
 importPackage(javax.naming);
 var gm = self.getGameModel(),
         step = 10, minTaskDuration = 0.1;
-function goToNextPeriod() {
-    //to do test of period
-    this.completePeriod();
-    //this.enter_next_period();
+
+function nextPeriod() {
+    var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, "currentPhase");
+    phases = VariableDescriptorFacade.findByName(gm, "currentPeriod");
+    if (time.period === parseInt(phases.items.get(time.phase).getMaxValue())) { // if end of phase
+        phases.items.get(time.phase).getInstance(self).setValue(1);
+        phase.getInstance(self).setValue(time.phase + 1);
+    } else if (time.phase === 2) { //if current phase is the "realisation" phase
+        completeRealizationPeriod();
+        if (checkEndOfProject()) { //if the project ended
+            phases.items.get(time.phase).getInstance(self).setValue(1);
+            phase.getInstance(self).setValue(time.phase + 1);
+        } else {
+            phases.items.get(time.phase).getInstance(self).setValue(time.period + 1);
+        }
+    } else {
+        phases.items.get(time.phase).getInstance(self).setValue(time.period + 1);
+    }
 }
 
-function completePeriod() {
+function checkEndOfProject() {
+    var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, "tasks"), isTheEnd = true;
+    for (i = 0; i < tasks.items.size(); i++) {
+        taskInst = tasks.items.get(0).getInstance(self);
+        if (taskInst.getActive() && parseInt(taskInst.getProperty("completeness")) < 100) {
+            isTheEnd = false;
+            break;
+        }
+    }
+    return isTheEnd;
+}
+
+function completeRealizationPeriod() {
     println("==============================");
     println("==============================");
     for (var i = 0; i < step; i++) {
@@ -18,7 +44,7 @@ function completePeriod() {
 
 function calculTasksProgress(currentStep) {
     var i, work, activitiesAsNeeds, oneTaskPerActivity, allCurrentActivities,
-            taskProgress, allCurrentActivities,
+            taskProgress, allCurrentActivities, employeeInst,
             requirementsByWork, taskInst;
     allCurrentActivities = createActivities(currentStep);
     activitiesAsNeeds = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);
@@ -36,11 +62,14 @@ function calculTasksProgress(currentStep) {
         taskInst.setProperty("completeness", Math.round(taskProgress));
         taskInst.setProperty("quality", calculateTaskQuality(oneTaskPerActivity[i].getTaskDescriptor()));
     }
+    checkEnd(allCurrentActivities, currentStep);
 }
 
 function getOneTaskPerActivity(activities) {
     var i, j, oneTaskPerActivity = [], wasAdded;
-    oneTaskPerActivity.push(activities[0]);
+    if (activities.length > 0) {
+        oneTaskPerActivity.push(activities[0]);
+    }
     for (i = 0; i < activities.length; i++) {
         wasAdded = false;
         for (j = 0; j < oneTaskPerActivity.length; j++) {
@@ -58,7 +87,9 @@ function getOneTaskPerActivity(activities) {
 
 function getActivitiesWithEmployeeOnDifferentNeeds(activities) {
     var i, j, activitiesAsNeeds = [], wasAdded;
-    activitiesAsNeeds.push(activities[0]);
+    if (activities.length > 0) {
+        activitiesAsNeeds.push(activities[0]);
+    }
     for (i = 1; i < activities.length; i++) { //for each need
         wasAdded = false;
         if (getActivitiesWithEmployeeOnSameNeed(activities, activities[i]).length > 1) {
@@ -77,17 +108,12 @@ function getActivitiesWithEmployeeOnDifferentNeeds(activities) {
 }
 
 function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
-    var i, employeeInst, selectedReq, employeeInstI, sortedActivities = [],
-            reqByWorks, workAs, workAsI, selectedReqI;
+    var i, employeeInst, selectedReq, sortedActivities = [], selectedReqI;
     employeeInst = activity.getResourceInstance();
-    reqByWorks = getRequirementsByWork(activity.getTaskDescriptor().getInstance(self).getRequirements());
-    workAs = selectFirstUncompletedWork(activity.getTaskDescriptor().getInstance(self).getRequirements(), reqByWorks);
-    selectedReq = selectRequirement(activity.getTaskDescriptor().getInstance(self), employeeInst, workAs, reqByWorks);
+    selectedReq = activity.getRequirement();
     for (i = 0; i < activities.length; i++) {
         if (parseFloat(activity.getTime()) === parseFloat(activities[i].getTime()) && activity.getTaskDescriptor() === activities[i].getTaskDescriptor()) {
-            employeeInstI = activities[i].getResourceInstance();
-            workAsI = selectFirstUncompletedWork(activity.getTaskDescriptor().getInstance(self).getRequirements(), reqByWorks);
-            selectedReqI = selectRequirement(activity.getTaskDescriptor().getInstance(self), employeeInstI, workAsI, reqByWorks);
+            selectedReqI = activities[i].getRequirement();
             if (selectedReq === selectedReqI) {
                 sortedActivities.push(activities[i]);
             }
@@ -98,7 +124,7 @@ function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
 
 function createActivities(currentStep) {
     var i, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, "employees")),
-            employeeDesc, employeeInst, activity, activities = [],
+            employeeDesc, employeeInst, activity, activities = [], selectedReq,
             assignables, existanteActivity, time = getCurrentInGameTime().period + currentStep / 10;
     if (!listEmployees) {
         return activities;
@@ -107,7 +133,7 @@ function createActivities(currentStep) {
         employeeDesc = listEmployees[i];
         employeeInst = employeeDesc.getInstance(self);
         if (isReservedToWork(employeeInst)) { //have a "player created" occupation
-            assignables = getAssignables(findAbstractAssignments(employeeInst, "assignments"));
+            assignables = getAssignables(employeeInst.getAssignments());
             if (assignables.length > 0) { //have assignable tasks
                 existanteActivity = findLastStepCorrespondingActivity(employeeInst, assignables[0].getTaskDescriptor(), time);
                 if (existanteActivity) { //set corresponding past activity if it existe. Else create it.
@@ -115,12 +141,22 @@ function createActivities(currentStep) {
                 } else {
                     activity = employeeInst.createActivity(assignables[0].getTaskDescriptor());
                 }
+                activity.setRequirement(selectRequirementFromActivity(activity));
                 activity.setTime(time);
                 activities.push(activity);
             }
         }
     }
     return activities;
+}
+
+function selectRequirementFromActivity(activity) {
+    var selectedReq, workAs, taskInst, reqByWorks;
+    taskInst = activity.getTaskDescriptor().getInstance(self);
+    reqByWorks = getRequirementsByWork(taskInst.getRequirements());
+    workAs = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks);
+    selectedReq = selectRequirement(taskInst, activity.getResourceInstance(), workAs, reqByWorks);
+    return selectedReq;
 }
 
 function findLastStepCorrespondingActivity(employeeInst, taskDesc, currentPeriod) {
@@ -150,24 +186,8 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) 
     return occurence;
 }
 
-function findAbstractAssignments(employeeI, cast) {
-    var AbsAssignments;
-    switch (cast) {
-        case "assignments" :
-            AbsAssignments = employeeI.getAssignments();
-            break;
-        case "occupations" :
-            AbsAssignments = employeeI.getOccupations();
-            break;
-        case "activities" :
-            AbsAssignments = employeeI.getActivities();
-            break;
-    }
-    return AbsAssignments;
-}
-
 function isReservedToWork(employeeInst) {
-    var i, occupations = findAbstractAssignments(employeeInst, "occupations"),
+    var i, occupations = employeeInst.getOccupations(),
             time = getCurrentInGameTime(), reservedToWork = false;
     for (i = 0; i < occupations.size(); i++) {
         if (parseInt(occupations.get(i).getTime()) === time.period && isTrue(occupations.get(i).getEditable())) {
@@ -273,8 +293,8 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     taskInst = taskDesc.getInstance(self);
     requirements = taskInst.getRequirements();
     reqByWorks = getRequirementsByWork(requirements);
-    workAs = selectFirstUncompletedWork(requirements, reqByWorks);
-    selectedReq = selectRequirement(taskInst, activityAsNeeds.getResourceInstance(), workAs, reqByWorks);
+    selectedReq = activityAsNeeds.getRequirement();
+    workAs = selectedReq.getWork();
     sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allCurrentActivities, activityAsNeeds);
     level = parseInt(activityAsNeeds.getResourceInstance().getSkillsets().get(activityAsNeeds.getResourceInstance().getSkillsets().keySet().toArray()[0]));
     deltaLevel = parseInt(selectedReq.getLevel()) - level;
@@ -509,6 +529,77 @@ function flattenList(list, finalList) {
         }
     }
     return finalList;
+}
+function checkEnd(allCurrentActivities, currentStep) {
+    var i, employeeInst, taskInst, taskDesc, employeeName, employeeJob,
+            nextTask, nextWork, reqByWorks;
+    for (i = 0; i < allCurrentActivities.length; i++) {
+        taskDesc = allCurrentActivities[i].getTaskDescriptor();
+        taskInst = taskDesc.getInstance(self);
+        employeeInst = allCurrentActivities[i].getResourceInstance();
+        employeeName = employeeInst.getDescriptor().getLabel();
+        employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
+        if (parseFloat(taskInst.getProperty("completeness")) >= 100) {
+            employeeInst.getAssignments().remove(0);
+            nextTask = getAssignables(employeeInst.getAssignments());
+            if (employeeInst.getAssignments().length > 0) {
+                sendMessage(getStepName(currentStep) + ") Fin de la tâche : " + taskDesc.getLabel(),
+                        "La tâche " + taskDesc.getLabel() + " est terminée, je passe à la tâche " + nextTask.getTaskDescriptor().getLabel() + " <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                        employeeName);
+            } else {
+                sendMessage(getStepName(currentStep) + ") Fin de la tâche : " + taskDesc.getLabel(),
+                        "La tâche " + taskDesc.getLabel() + " est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                        employeeName);
+            }
+        } else {
+            reqByWorks = getRequirementsByWork(taskInst.getRequirements());
+            nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks);
+            if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {
+                sendMessage(getStepName(currentStep) + ") Fin d'une partie de la tâche : " + taskDesc.getLabel(),
+                        "Nous avons terminé la partie " + allCurrentActivities[i].getRequirement().getWork() + " de la tâche " + taskDesc.getLabel() + ". Je passe à " + nextWork + ". <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                        employeeName);
+            }
+        }
+    }
+}
+
+function getStepName(step) {
+    var name;
+    switch (step) {
+        case 0 :
+            name = "Lundi matin";
+            break;
+        case 1 :
+            name = "Lundi après-midi";
+            break;
+        case 2 :
+            name = "Mardi matin";
+            break;
+        case 3 :
+            name = "Mardi après-midi";
+            break;
+        case 4 :
+            name = "Mercredi matin";
+            break;
+        case 5 :
+            name = "Mercredi après-midi";
+            break;
+        case 6 :
+            name = "Jeudi matin";
+            break;
+        case 7 :
+            name = "Jeudi après-midi";
+            break;
+        case 8 :
+            name = "Vendredi matin";
+            break;
+        case 9 :
+            name = "Vendredi après-midi";
+            break;
+        default :
+            name = "samedi matin";
+    }
+    return name;
 }
 
 /**
