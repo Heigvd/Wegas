@@ -255,10 +255,8 @@
                             "label": "Marcel",
                             "description": "Description de Marcel",
                             "properties": {
-                                "disengagementCost": 0,
                                 "coef_activity": 1,
                                 "coef_moral": 1,
-                                "engagementCost": 0,
                                 "engagementDelay": 0,
                                 "maxBilledUnworkedHours": 0,
                                 "planningAvailability": true
@@ -284,10 +282,8 @@
                             "label": "Beatrice",
                             "description": "Description de Béatrice",
                             "properties": {
-                                "disengagementCost": 0,
                                 "coef_activity": 1,
                                 "coef_moral": 1,
-                                "engagementCost": 0,
                                 "engagementDelay": 0,
                                 "maxBilledUnworkedHours": 0,
                                 "planningAvailability": true
@@ -328,10 +324,8 @@
                             "label": "Claude",
                             "description": "Description de Claude",
                             "properties": {
-                                "disengagementCost": 0,
                                 "coef_activity": 1,
                                 "coef_moral": 1,
-                                "engagementCost": 0,
                                 "engagementDelay": 0,
                                 "maxBilledUnworkedHours": 0,
                                 "planningAvailability": true
@@ -358,10 +352,8 @@
                             "label": "Michael",
                             "description": "Description de Michael",
                             "properties": {
-                                "disengagementCost": 0,
                                 "coef_activity": 1,
                                 "coef_moral": 1,
-                                "engagementCost": 0,
                                 "engagementDelay": 0,
                                 "maxBilledUnworkedHours": 0,
                                 "planningAvailability": true
@@ -388,10 +380,8 @@
                             "label": "Lucie",
                             "description": "Description de Lucie",
                             "properties": {
-                                "disengagementCost": 0,
                                 "coef_activity": 1,
                                 "coef_moral": 1,
-                                "engagementCost": 0,
                                 "engagementDelay": 0,
                                 "maxBilledUnworkedHours": 0,
                                 "planningAvailability": true
