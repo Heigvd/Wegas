@@ -31,8 +31,8 @@ YUI.add('wegas-pmg-activitycolor', function(Y) {
                 abstractAssignement = vd.getInstance().get("activities");
                 for (ii = 0; ii < abstractAssignement.length; ii++) {
                     for (iii = 0; iii < dt.get('columns').length; iii++) {
-                        if (dt.get('columns')[iii].time === abstractAssignement[ii].get("time") && dt.get('columns')[iii].time < this.get("host").scheduleDT.currentPeriod()) { //Affiche les occupations
-                            this.addColor(dt.getRow(i).getDOMNode().cells[iii], abstractAssignement[ii].get("editable"));
+                        if (dt.get('columns')[iii].time === parseInt(abstractAssignement[ii].get("time")) && dt.get('columns')[iii].time < this.get("host").scheduleDT.currentPeriod()) { //Affiche les occupations
+                            this.addColor(dt.getRow(i).getDOMNode().cells[iii], abstractAssignement[ii].get("editable") === null ? "true" : abstractAssignement[ii].get("editable"));
                         }
                     }
                 }

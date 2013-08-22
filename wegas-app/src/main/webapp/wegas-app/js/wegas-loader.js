@@ -758,6 +758,11 @@ YUI().use(function(Y) {
                     requires: ['wegas-pmgwidget-css'],
                     ws_provides: 'Plannificationcolor'
                 },
+                "wegas-pmg-plannificationactivitycolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-plannificationactivitycolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
+                    ws_provides: 'PlannificationActivityColor'
+                },
                 "wegas-pmg-bac": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-bac-min.js',
                     ws_provides: 'Bac'
