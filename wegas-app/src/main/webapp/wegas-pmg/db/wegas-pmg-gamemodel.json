@@ -454,7 +454,8 @@
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
-                            "quality": 0
+                            "quality": 0,
+                            "bac": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -504,7 +505,8 @@
                             "completeness": 50,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
-                            "quality": 0
+                            "quality": 0,
+                            "bac": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",

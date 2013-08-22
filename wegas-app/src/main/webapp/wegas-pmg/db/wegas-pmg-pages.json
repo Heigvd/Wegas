@@ -201,6 +201,28 @@
                             }
                         ]
                     }, {
+                        "type": "Button",
+                        "label": "EVM",
+                        "plugins": [
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 10,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
+                                }
+                            }
+                        ]
+                    }, {
                         "type": "LoginButton",
                         "cssClass": "menu-loginbutton",
                         "tooltip": "Logout"
@@ -575,7 +597,7 @@
                                         "name": "periodPhase3"
                                     }
                                 }
-                            },{
+                            }, {
                                 "fn": "Assignment",
                                 "cfg": {
                                     "taskList": {
@@ -655,6 +677,49 @@
                 "variable": {
                     "name": "inbox"
                 }
+            }
+        ]
+    }, "10": {
+        "cssClass": "evm-page",
+        "type": "List",
+        "children": [
+            {
+                "type": "PmgDatatable",
+                "cssClass": "evmDatatable",
+                "variable": {
+                    "name": "tasks"
+                },
+                "columnsCfg": [{
+                        "key": "index",
+                        "label": "No"
+                    }, {
+                        "key": "label",
+                        "label": "Name"
+                    }],
+                "plugins": [{
+                        "fn": "Bac"
+                    }]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "EVM",
+                "cssClass": "evm",
+                "animation": false,
+                "children": [
+                    {
+                        "type": "Chart",
+                        "chartWidth": "90%",
+                        "variables": [{
+                                "name": "actualCost",
+                                "label": "AC (Actual Cost)"
+                            }, {
+                                "name": "planedValue",
+                                "label": "PV (Planed Value)"
+                            }, {
+                                "name": "earnedValue",
+                                "label": "EV (Earned Value)"
+                            }]
+                    }
+                ]
             }
         ]
     }

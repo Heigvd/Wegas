@@ -758,6 +758,10 @@ YUI().use(function(Y) {
                     requires: ['wegas-pmgwidget-css'],
                     ws_provides: 'Plannificationcolor'
                 },
+                "wegas-pmg-bac": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-bac-min.js',
+                    ws_provides: 'Bac'
+                },
                 /**book CYOA**/
                 'wegas-book': {
                     path: 'wegas-book/js/wegas-book-fight-min.js',
