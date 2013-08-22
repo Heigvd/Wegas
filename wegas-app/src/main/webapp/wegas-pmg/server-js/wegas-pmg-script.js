@@ -45,6 +45,27 @@ function completeRealizationPeriod() {
         }
     }
     AddNewFixedCosts();
+    pushHistory();
+}
+
+function pushHistory() {
+    var i, tasks = VariableDescriptorFacade.findByName(gm, "tasks"), taskInst,
+            ev = 0, pv = 0;
+    for (i = 0; i < tasks.items.size(); i++) {
+        taskInst = tasks.items.get(i).getInstance(self);
+        if (taskInst.getActive()) {
+            ev += parseInt(taskInst.getProperty("fixedCosts")) * parseInt(taskInst.getProperty("completeness")) / 100; 
+            pv += parseInt(taskInst.getProperty("bac")) * parseInt(taskInst.getProperty("completeness")) / 100; 
+        }
+    }
+    costs.saveHistory();
+    delay.saveHistory();
+    quality.saveHistory();
+    planedValue.setValue(pv);
+    planedValue.saveHistory();
+    earnedValue.setValue(ev);
+    earnedValue.saveHistory();
+    actualCost.saveHistory();
 }
 
 function AddNewFixedCosts() {
@@ -63,8 +84,6 @@ function AddNewFixedCosts() {
     }
     currentActivities = getUniqueTasksInActivities(currentActivities);
     pastActivities = getUniqueTasksInActivities(pastActivities);
-    println(currentActivities);
-    println(pastActivities);
     for (i = 0; i < currentActivities.length; i++) {
         exist = (pastActivities.length > 0) ? true : false;
         for (j = 0; j < pastActivities.length; j++) {
@@ -96,6 +115,7 @@ function calculTasksProgress(currentStep) {
         for (work in requirementsByWork) {
             taskProgress += requirementsByWork[work].completeness;
         }
+        taskProgress = (taskProgress > 100) ? 100 : taskProgress;
         taskInst.setProperty("completeness", Math.round(taskProgress));
         taskInst.setProperty("quality", calculateTaskQuality(oneTaskPerActivity[i].getTaskDescriptor()));
     }
