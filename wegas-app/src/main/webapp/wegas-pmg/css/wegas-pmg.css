@@ -614,3 +614,44 @@ h2{
     float: right;
     margin-right: 350px;
 }
+
+/*---------------------------- EVM-page (Prototype) ---------------------------------*/
+.evm-page h2 {
+    border: none;
+}
+
+.evm-page .evmDatatable thead tr {
+    height: 26px;
+}
+
+.evm-page .slidepanel{
+    position:relative;
+    float: left;
+    width: 50%;
+    /*height: 260px;*/
+}
+
+.evm-page .evmDatatable{
+    position:relative;
+    float: left;
+    width: 50%;
+    height: 260px;
+}
+
+.evm-page .slidepanel-content{
+    overflow:hidden;
+    width:100%;
+}
+
+.evm-page .slidepanel-title{
+    background-image: url(../../wegas-pmg/images/h2.png);
+    background-repeat: repeat-x;
+    background-color: white;
+    height:26px;
+    width:100%;
+}
+
+.evm-page .chart {
+   margin-left: 24px; 
+   margin-top: 15px;
+}
