@@ -902,10 +902,14 @@ YUI().use(function(Y) {
                     path: "wegas-teaching/js/wegas-teaching-arrow.js",
                     ws_provides: "TeachingArrow"
                 },
+                'wegas-teaching-rectangle': {
+                    path: "wegas-teaching/js/wegas-teaching-rectangle.js",
+                    ws_provides: "TeachingRectangle"
+                },
                 'wegas-teaching-main': {
                     path: "wegas-teaching/js/wegas-teaching-main.js",
                     ws_provides: "TeachingMain",
-                    requires: ["wegas-teaching-arrow"]
+                    requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle", "editor", "escape"]
                 }
             }
         },
