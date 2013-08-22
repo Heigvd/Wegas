@@ -37,7 +37,7 @@
             {
                 "type": "Text",
                 "cssClass": "data",
-                "content": "<p>Description de l'exercice...</p><p><a href=\"article1.pdf\" target=\"_blank\">Article 1</a></p><p><a href=\"article2.pdf\" target=\"_blank\">Article 2</a></p>"
+                "content": "<p>Lisez les articles puis définissez 9 définitions ainsi que les liens entre-elles. Cliquez sur une définition ou un lien pour l'éditer. Lorsque vous êtes prêts, vous pouvez commencer l'exercice en cliquant sur le bouton 'Suivant'.</p><div style='overflow:hidden;'><p style='float:left;'><img src=\"http://www.jeannedarc33.fr/wp-content/uploads/2011/12/pedagogie_jeux_zoom.jpg\" /></p><p><a href=\"article1.pdf\" target=\"_blank\">Article 1</a></p><p><a href=\"article2.pdf\" target=\"_blank\">Article 2</a></p><p><a href=\"article3.pdf\" target=\"_blank\">Article 3</a></p><p><a href=\"article4.pdf\" target=\"_blank\">Article 4</a></p><p><a href=\"article5.pdf\" target=\"_blank\">Article 5</a></p><p><a href=\"article6.pdf\" target=\"_blank\">Article 6</a></p><p><a href=\"article7.pdf\" target=\"_blank\">Article 7</a></p><p><a href=\"article8.pdf\" target=\"_blank\">Article 8</a></p><p><a href=\"article9.pdf\" target=\"_blank\">Article 9</a></p><p><a href=\"article10.pdf\" target=\"_blank\">Article 10</a></p><p><a href=\"article11.pdf\" target=\"_blank\">Article 11</a></p><p><a href=\"article12.pdf\" target=\"_blank\">Article 12</a></p><p><a href=\"article13.pdf\" target=\"_blank\">Article 13</a></p><p><a href=\"article14.pdf\" target=\"_blank\">Article 14</a></p><p><a href=\"article15.pdf\" target=\"_blank\">Article 15</a></p></div>"
             },
             {
                 "type": "Button",
@@ -100,10 +100,6 @@
                                 }
                             }
                         ]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "Sauvegarder"
                     }
                 ]
             }
