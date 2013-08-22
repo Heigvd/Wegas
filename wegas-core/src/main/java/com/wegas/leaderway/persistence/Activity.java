@@ -35,7 +35,7 @@ public class Activity extends AbstractAssignement {
     @Column(name = "wtime")
     private Double time;
     /**
-     * 
+     *
      */
     private Boolean editable;
     /**
@@ -44,7 +44,7 @@ public class Activity extends AbstractAssignement {
     @Column(name = "wcompletion")
     private Integer completion;
     /**
-     * 
+     *
      */
     @Lob
     @Basic(fetch = FetchType.LAZY)
@@ -65,6 +65,13 @@ public class Activity extends AbstractAssignement {
     @JsonBackReference
     @JsonIgnore
     private ResourceInstance resourceInstance;
+    /**
+     *
+     */
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "wrequirement_id", nullable = true)
+    @XmlTransient
+    private WRequirement requirement;
 
     /**
      *
@@ -73,6 +80,7 @@ public class Activity extends AbstractAssignement {
         this.time = 0.0D;
         this.completion = 0;
         this.description = "";
+        this.requirement = null;
     }
 
     /**
@@ -84,6 +92,7 @@ public class Activity extends AbstractAssignement {
         this.time = 0D;
         this.completion = 0;
         this.description = "";
+        this.requirement = null;
     }
 
     /**
@@ -142,18 +151,18 @@ public class Activity extends AbstractAssignement {
     public void setTime(Double time) {
         this.time = time;
     }
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public Boolean getEditable() {
         return editable;
     }
 
     /**
-     * 
-     * @param editable 
+     *
+     * @param editable
      */
     public void setEditable(Boolean editable) {
         this.editable = editable;
@@ -208,5 +217,19 @@ public class Activity extends AbstractAssignement {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return the requirement
+     */
+    public WRequirement getRequirement() {
+        return requirement;
+    }
+
+    /**
+     * @param requirement the requirement to set
+     */
+    public void setRequirement(WRequirement requirement) {
+        this.requirement = requirement;
     }
 }
