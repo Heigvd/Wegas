@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI().use(function(Y) {
-    //"use strict";
+//"use strict";
 
     if (typeof YUI_config === 'undefined') {
         YUI_config = {
@@ -396,6 +396,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-visibilitytimer-min.js',
                     requires: ["wegas-editable", "plugin", "wegas-action"],
                     ws_provides: ["ShowAfter", "HideAfter"]
+                },
+                'datatable-csv': {
+                    path: 'wegas-app/js/plugin/datatableCSV-min.js',
+                    requires: ["plugin"],
+                    ws_provides: ["DatatableCSV"]
                 },
                 /** Inputex Fields **/
                 'wegas-inputex': {
@@ -843,7 +848,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-flexitests-results': {
                     path: "wegas-flexitests/js/wegas-flexitests-results-min.js",
-                    requires: ["wegas-widget", "datatable"],
+                    requires: ["wegas-widget", "datatable", "datatable-csv"],
                     ws_provides: "FlexitestsResults"
                 },
                 /* Chess */
@@ -932,8 +937,8 @@ YUI().use(function(Y) {
                     path: 'crafty/crafty-min.js'
                 },
                 ace: {
-                    //charset: 'utf-8',
-                    //path: "ace/src-min-noconflict/ace.js"
+//charset: 'utf-8',
+//path: "ace/src-min-noconflict/ace.js"
                     fullpath: "http://ajaxorg.github.io/ace-builds/src/ace.js"
                             //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
 
@@ -955,7 +960,7 @@ YUI().use(function(Y) {
                 modulesByType = {};
         for (moduleName in modules) {                                           // Loop through all modules
             if (modules.hasOwnProperty(moduleName)) {
-                allModules.push(moduleName);                                    // Build a list of all modules
+                allModules.push(moduleName); // Build a list of all modules
                 if (modules[moduleName].ws_provides) {                          // Build a reverse index on which module provides what type
                     if (Y.Lang.isArray(modules[moduleName].ws_provides)) {
                         for (i = 0; i < modules[moduleName].ws_provides.length; i = i + 1) {
