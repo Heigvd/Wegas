@@ -71,9 +71,11 @@ YUI.add('wegas-serialization-test', function(Y) {
             Y.Wegas.Facade.VariableDescriptor.after = function() {
                 return new Y.Event.Handle();
             }
+            Y.Wegas.Facade.VariableDescriptor.sendRequest = function() {
+            };
 //            Y.Mock.expect(Y.Wegas.Facade.VariableDescriptor, {
-//                method: "after",
-//                args: [Y.Mock.Value.String, Y.Mock.Value.Object, Y.Mock.Value.Any]
+//                method: "sendRequest",
+//                //args: [Y.Mock.Value.String, Y.Mock.Value.Object, Y.Mock.Value.Any]
 //            });
 
             // Create PageFacade mock
@@ -120,8 +122,8 @@ YUI.add('wegas-serialization-test', function(Y) {
             this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-proggame/db/wegas-proggame-pages.json")
         },
         'should instantiate and serialize flexitests widgets cfg': function() {
-//            this.log("Flexitests pages");
-//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json")
+            this.log("Flexitests pages");
+            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json")
         },
         'should instantiate and serialize PMG widgets cfg': function() {
             //this.log("PMG pages");
