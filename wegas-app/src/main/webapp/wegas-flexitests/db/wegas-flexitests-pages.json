@@ -23,13 +23,13 @@
                         "cfg": {
                             "time": "0,1000"
                         }
-                    }, 
+                    },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "500"
                         }
-                    }, 
+                    },
                     {
                         "fn": "CSSPosition",
                         "cfg": {
@@ -42,6 +42,11 @@
                                 "right": ""
                             }
                         }
+                    }, {
+                        "cfg": {
+                            "styles": {}
+                        },
+                        "fn": "CSSSize"
                     }
                 ],
                 "children": [
@@ -50,7 +55,7 @@
                         "content": "Male"
                     }
                 ]
-            }, 
+            },
             {
                 "id": "rightElement",
                 "type": "ChoiceList",
@@ -60,13 +65,13 @@
                         "cfg": {
                             "time": "0,1500"
                         }
-                    }, 
+                    },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "1000"
                         }
-                    }, 
+                    },
                     {
                         "fn": "CSSPosition",
                         "cfg": {
@@ -79,6 +84,12 @@
                                 "right": "50pt"
                             }
                         }
+                    },
+                    {
+                        "cfg": {
+                            "styles": {}
+                        },
+                        "fn": "CSSSize"
                     }
                 ],
                 "children": [
@@ -87,7 +98,7 @@
                         "content": "Female"
                     }
                 ]
-            }, 
+            },
             {
                 "id": "centerElement",
                 "type": "ChoiceList",
@@ -97,13 +108,13 @@
                         "cfg": {
                             "time": "0"
                         }
-                    }, 
+                    },
                     {
                         "fn": "ShowAfter",
                         "cfg": {
                             "time": "1500"
                         }
-                    }, 
+                    },
                     {
                         "fn": "CSSPosition",
                         "cfg": {
@@ -116,6 +127,11 @@
                                 "right": "300px"
                             }
                         }
+                    }, {
+                        "cfg": {
+                            "styles": {}
+                        },
+                        "fn": "CSSSize"
                     }
                 ],
                 "children": [
@@ -130,7 +146,7 @@
                             }
                         ],
                         "url": "/hectorPerplexe.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -142,7 +158,7 @@
                             }
                         ],
                         "url": "/jessicaPerplexe.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -154,7 +170,7 @@
                             }
                         ],
                         "url": "/lucienPortrait.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -166,7 +182,7 @@
                             }
                         ],
                         "url": "/danielaConfiant.png"
-                    }, 
+                    },
                     {
                         "type": "Image",
                         "plugins": [
@@ -180,7 +196,7 @@
                         "url": "/fernandPensif.png"
                     }
                 ]
-            }, 
+            },
             {
                 "id": "flexi-mcq",
                 "type": "FlexitestsMCQ",
@@ -197,6 +213,11 @@
                                 "right": "200px"
                             }
                         }
+                    }, {
+                        "cfg": {
+                            "styles": {}
+                        },
+                        "fn": "CSSSize"
                     }
                 ],
                 "feedback": 1000,
@@ -204,7 +225,7 @@
                 "variable": {
                     "name": "results"
                 }
-            }, 
+            },
             {
                 "type": "Image",
                 "cssClass": "fix-point",
@@ -221,6 +242,11 @@
                                 "right": ""
                             }
                         }
+                    }, {
+                        "cfg": {
+                            "styles": {}
+                        },
+                        "fn": "CSSSize"
                     }
                 ],
                 "url": "/fix-point/fix_red.png"
@@ -235,11 +261,11 @@
                 "type": "Text",
                 "cssClass": "flexitests-title",
                 "content": "<p>FlexiTests</p>"
-            }, 
+            },
             {
                 "type": "Text",
                 "content": "_INSTRUCTIONS_"
-            }, 
+            },
             {
                 "id": 2,
                 "type": "Form",
@@ -252,7 +278,7 @@
                                 "name": "demographics"
                             }
                         }
-                    }, 
+                    },
                     {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
@@ -272,7 +298,7 @@
                             "label": "Name",
                             "type": "string",
                             "value": ""
-                        }, 
+                        },
                         {
                             "name": "gender",
                             "label": "Gender",
@@ -280,7 +306,7 @@
                                 {
                                     "value": "m",
                                     "label": "M"
-                                }, 
+                                },
                                 {
                                     "value": "f",
                                     "label": "F"
@@ -288,7 +314,7 @@
                             ],
                             "type": "select",
                             "value": "m"
-                        }, 
+                        },
                         {
                             "name": "date",
                             "type": "now",
@@ -338,7 +364,7 @@
                 },
                 "simpleMode": true,
                 "testPage": "3"
-            }, 
+            },
             {
                 "type": "Text",
                 "content": "<p>Score table</p>\n<p>80-100 % Excellent</p>\n<p>60-80 % Good</p>\n<p>40-60 % Satisfying</p>\n<p>0-40 % Bad</p>"

@@ -74,15 +74,23 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          * @returns {undefined}
          */
         syncUI: function() {
-            var props, exist = false, i, j, done = 0;
+            this.mcq = this.getChildById("flexi-mcq");
+
+            var targetDescriptor = this.mcq.get("variable.evaluated"),
+                    props, exist = false, i, j, done = 0;
+
+            if (!targetDescriptor) {
+                this.showMessage("Unable to find target variable");
+                return;
+            }
+
             this.mask();
             this.leftElement = this.getChildById("leftElement");
             this.rightElement = this.getChildById("rightElement");
             this.centerElement = this.getChildById("centerElement");
             this.fixPoint = this.get("contentBox").all(".fix-point");
             this.fixPoint.hide();
-            this.mcq = this.getChildById("flexi-mcq");
-            props = this.mcq.get("variable.evaluated").getInstance().get("properties");
+            props = targetDescriptor.getInstance().get("properties");
             this.maxSize = Math.max(this.leftElement.size(), this.rightElement.size(), this.centerElement.size());
             for (i = 0; i < this.maxSize; i += 1) {
                 exist = false;
