@@ -54,8 +54,8 @@ function pushHistory() {
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
         if (taskInst.getActive()) {
-            ev += parseInt(taskInst.getProperty("fixedCosts")) * parseInt(taskInst.getProperty("completeness")) / 100; 
-            pv += parseInt(taskInst.getProperty("bac")) * parseInt(taskInst.getProperty("completeness")) / 100; 
+            ev += parseInt(taskInst.getProperty("fixedCosts")) * parseInt(taskInst.getProperty("completeness")) / 100;
+            pv += parseInt(taskInst.getProperty("bac")) * parseInt(taskInst.getProperty("completeness")) / 100;
         }
     }
     costs.saveHistory();
@@ -255,15 +255,30 @@ function isReservedToWork(employeeInst) {
 }
 
 function getAssignables(assignments) {
-    var i, taskDesc, assignables = [], work;
+    var i, j, taskDesc, assignables = [], work;
     for (i = 0; i < assignments.size(); i++) {
         work = null;
         taskDesc = assignments.get(i).getTaskDescriptor();
-        if (parseInt(taskDesc.getInstance(self).getProperty("completeness")) < 100) { //if the task isn't terminated
+        if (parseInt(taskDesc.getInstance(self).getProperty("completeness")) < 100 && getAveragePredecessorsAdvancement(taskDesc) > 20) { //if the task isn't terminated and average of predecessors advancement is upper than 20% 
             assignables.push(assignments.get(i));
         }
     }
     return assignables;
+}
+
+function getAveragePredecessorsAdvancement(taskDesc) {
+    var i, predecessorsAdvancements, predecessors, average;
+    predecessorsAdvancements = 0;
+    predecessors = taskDesc.getPredecessors();
+    if (predecessors.size() <= 0) {
+        average = 101;
+    } else {
+        for (i = 0; i < predecessors.size(); i++) {
+            predecessorsAdvancements += parseInt(predecessors[i].getInstance(self).getProperty("completeness"));
+        }
+        average = predecessorsAdvancements / predecessors.size();
+    }
+    return average;
 }
 
 function selectFirstUncompletedWork(requirements, reqByWorks) {
@@ -609,6 +624,11 @@ function checkEnd(allCurrentActivities, currentStep) {
                         "La tâche " + taskDesc.getLabel() + " est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
                         employeeName);
             }
+        } else if (getAveragePredecessorsAdvancement(taskDesc) < 20) {
+            employeeInst.getAssignments().remove(0);
+            sendMessage(getStepName(currentStep) + ") Impossible d'avancer sur la tâche : " + taskDesc.getLabel(),
+                    "Je suis sensé travailler sur la tâche " + taskDesc.getLabel() + " mais les tâches la précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                    employeeName);
         } else {
             reqByWorks = getRequirementsByWork(taskInst.getRequirements());
             nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks);

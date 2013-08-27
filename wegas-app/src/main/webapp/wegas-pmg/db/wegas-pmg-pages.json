@@ -267,7 +267,7 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "expr": "questions.items[currentPhase.value].descriptorId"
+                                                "expr": "questions.items[currentPhase.value].items[currentPhase.items[currentPhase.value].value - 1].descriptorId"
                                             }
                                         }
                                     }, {
@@ -629,7 +629,7 @@
             }, {
                 "type": "MCQTabView",
                 "variable": {
-                    "expr": "actions.items[currentPhase.value].descriptorId"
+                    "expr": "actions.items[currentPhase.value].id"
 
                 }
             }
@@ -645,7 +645,7 @@
             }, {
                 "type": "MCQTabView",
                 "variable": {
-                    "expr": "questions.items[currentPhase.value].descriptorId"
+                    "expr": "questions.items[currentPhase.value].id"
                 }
             }
         ]
