@@ -758,6 +758,11 @@ YUI().use(function(Y) {
                     requires: ['wegas-pmgwidget-css'],
                     ws_provides: 'Plannificationcolor'
                 },
+                "wegas-pmg-plannificationactivitycolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-plannificationactivitycolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
+                    ws_provides: 'PlannificationActivityColor'
+                },
                 "wegas-pmg-bac": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-bac-min.js',
                     ws_provides: 'Bac'
@@ -902,10 +907,14 @@ YUI().use(function(Y) {
                     path: "wegas-teaching/js/wegas-teaching-arrow.js",
                     ws_provides: "TeachingArrow"
                 },
+                'wegas-teaching-rectangle': {
+                    path: "wegas-teaching/js/wegas-teaching-rectangle.js",
+                    ws_provides: "TeachingRectangle"
+                },
                 'wegas-teaching-main': {
                     path: "wegas-teaching/js/wegas-teaching-main.js",
                     ws_provides: "TeachingMain",
-                    requires: ["wegas-teaching-arrow"]
+                    requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle", "editor", "escape"]
                 }
             }
         },
