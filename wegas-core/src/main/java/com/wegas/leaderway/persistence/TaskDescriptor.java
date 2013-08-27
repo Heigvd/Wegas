@@ -65,7 +65,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
         this.setIndex(other.getIndex());
-        ListUtils.mergeLists(this.predecessors, other.getPredecessors());
+        this.predecessors = ListUtils.mergeLists(this.predecessors, other.getPredecessors());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
     }
