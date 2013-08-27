@@ -188,6 +188,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-image-min.js',
                     ws_provides: "Image"
                 },
+                'wegas-box': {
+                    path: 'wegas-app/js/widget/wegas-box-min.js',
+                    ws_provides: "Box",
+                    requires: ['wegas-widget']
+                },
                 'wegas-tabview': {
                     path: 'wegas-app/js/widget/wegas-tabview-min.js',
                     requires: ['tabview', 'wegas-tabviewcss', 'wegas-popuplistener'],
