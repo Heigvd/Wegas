@@ -273,11 +273,11 @@ function getAveragePredecessorsAdvancement(taskDesc) {
     if (predecessors.size() <= 0) {
         average = 101;
     } else {
-        for (i = 0; i < predecessors.size(); i++) {
-            predecessorsAdvancements += parseInt(predecessors[i].getInstance(self).getProperty("completeness"));
-        }
-        average = predecessorsAdvancements / predecessors.size();
+    for (i = 0; i < predecessors.size(); i++) {
+        predecessorsAdvancements += parseInt(predecessors[i].getInstance(self).getProperty("completeness"));
     }
+        average = predecessorsAdvancements / predecessors.size();
+}
     return average;
 }
 

@@ -168,6 +168,8 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     }
                 }
             }
+            
+            this.resultTable.plug(Y.Wegas.DatatableCSV);
             this.resultTable.render(table);
         },
         _extractConfig: function(widget) {
