@@ -119,14 +119,14 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             /* Create and add 12 arrows */
             this.arrow1 = this.createArrow(100, 225, 100, 300, 1);
             this.arrow2 = this.createArrow(375, 225, 375, 300, 2);
-            this.arrow3 = this.createArrow(625, 225, 625, 300, 3);
+            this.arrow3 = this.createArrow(650, 225, 650, 300, 3);
             this.arrow4 = this.createArrow(200, 150, 275, 150, 4);
             this.arrow5 = this.createArrow(475, 150, 550, 150, 5);
             this.arrow6 = this.createArrow(200, 375, 275, 375, 6);
             this.arrow7 = this.createArrow(475, 375, 550, 375, 7);
             this.arrow8 = this.createArrow(100, 450, 100, 525, 8);
             this.arrow9 = this.createArrow(375, 450, 375, 525, 9);
-            this.arrow10 = this.createArrow(625, 450, 625, 525, 10);
+            this.arrow10 = this.createArrow(650, 450, 650, 525, 10);
             this.arrow11 = this.createArrow(200, 600, 275, 600, 11);
             this.arrow12 = this.createArrow(475, 600, 550, 600, 12);
             /* Create and add 9 rectangles */
