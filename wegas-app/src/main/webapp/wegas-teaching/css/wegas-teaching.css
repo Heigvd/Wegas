@@ -25,3 +25,26 @@
 .button, .data p {
     margin-top: 10px;
 }
+
+.rectangle {
+    position: absolute;
+    border: 1px solid #000000;
+    overflow: auto;
+    cursor: pointer;
+    box-shadow: 3px 3px 3px #777;
+    background-color: #f9f9f9;
+    text-shadow: 0 1px 0 #fff;
+}
+
+#editor {
+    border: 1px solid lightgray;
+}
+
+svg {
+    cursor: pointer;
+}
+
+.invisible {
+    width: 0px;
+    height: 0px;
+}

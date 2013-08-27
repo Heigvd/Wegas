@@ -496,6 +496,8 @@
                         "fn": "Planification"
                     }, {
                         "fn": "Plannificationcolor"
+                    }, {
+                        "fn": "PlannificationActivityColor"
                     }]
             }
         ]

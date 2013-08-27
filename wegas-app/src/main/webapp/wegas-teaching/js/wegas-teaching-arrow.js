@@ -211,14 +211,18 @@ YUI.add( "wegas-teaching-arrow", function ( Y ) {
             this.end();
         },
         changeType: function() {
-            this.clear(); // Clear shape (force to redraw it)
-            
             // Change and set value
             var val = this.get('val') + 1;
             if (val > 3 || val < 0) {
                 val = 0;
             }
             
+            this.setType(val);
+        },
+        setType: function(type) {            
+            this.clear(); // Clear shape (force to redraw it)
+            
+            var val = type;
             // Change color
             if (val == 0) {
                 this.get('stroke').color = 'rgb(200,200,200)';

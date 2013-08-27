@@ -39,6 +39,11 @@ tbody .past span {
     opacity:  0.3;
 }
 
+tbody .past .activity {
+    border: inherit;
+    opacity:  1;
+}
+
 .body .yui3-datatable-cell.schedulColumn{
     border-left: 1px solid #ADADAE;
 }
