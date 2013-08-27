@@ -148,7 +148,7 @@ YUI.add('wegas-pageloader', function(Y) {
 
     }, {
         /** @lends Y.Wegas.PageLoader */
-        EDITORNAME: "Page sub zone",
+        EDITORNAME: "Page display",
         /**
          * @field
          * @static
