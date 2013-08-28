@@ -231,6 +231,10 @@ YUI.add( "wegas-teaching-arrow", function ( Y ) {
                 this.get('stroke').color = 'rgb(0,0,0)';
             }
             this.set('val', val);
+        },
+        setText: function(text) {
+            this.get('node').setAttribute('tooltip', text);
+            this.set('text', text);
         }
      });
      Y.TeachingArrow.ATTRS = Y.merge(Y.Path.ATTRS, {
@@ -284,7 +288,7 @@ YUI.add( "wegas-teaching-arrow", function ( Y ) {
            }
         },
         /**
-         * @attribute name
+         * @attribute id
          */
         id: {
             type: "Integer",
@@ -300,6 +304,13 @@ YUI.add( "wegas-teaching-arrow", function ( Y ) {
         val: {
             type: "Integer",
             value: 1
+        },
+        /**
+         * @attribute text
+         */
+        text: {
+            type: "String",
+            value: "Unknown"
         }
      });
 }, '0.0.1', {"requires": ["graphics"], "skinnable": true});
