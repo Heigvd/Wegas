@@ -1,6 +1,6 @@
 importPackage(javax.naming);
 var gm = self.getGameModel(), testMode = false;
-step = 10, minTaskDuration = 0.1;
+steps = 10, minTaskDuration = 0.1;
 
 function nextPeriod() {
     var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, "currentPhase");
@@ -34,11 +34,12 @@ function checkEndOfProject() {
 }
 
 function completeRealizationPeriod() {
+    var i;
     if (testMode) {
         println("==============================");
         println("==============================");
     }
-    for (var i = 0; i < step; i++) {
+    for (i = 0; i < steps; i++) {
         calculTasksProgress(i);
         if (testMode) {
             println("---");
@@ -54,8 +55,8 @@ function pushHistory() {
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
         if (taskInst.getActive()) {
-            ev += parseInt(taskInst.getProperty("fixedCosts")) * parseInt(taskInst.getProperty("completeness")) / 100; 
-            pv += parseInt(taskInst.getProperty("bac")) * parseInt(taskInst.getProperty("completeness")) / 100; 
+            ev += parseInt(taskInst.getProperty("fixedCosts")) * parseInt(taskInst.getProperty("completeness")) / 100;
+            pv += parseInt(taskInst.getProperty("bac")) * parseInt(taskInst.getProperty("completeness")) / 100;
         }
     }
     costs.saveHistory();
@@ -190,7 +191,7 @@ function createActivities(currentStep) {
         employeeDesc = listEmployees[i];
         employeeInst = employeeDesc.getInstance(self);
         if (isReservedToWork(employeeInst)) { //have a "player created" occupation
-            assignables = getAssignables(employeeInst.getAssignments());
+            assignables = checkAssignments(employeeInst.getAssignments(), currentStep);
             if (assignables.length > 0) { //have assignable tasks
                 existanteActivity = findLastStepCorrespondingActivity(employeeInst, assignables[0].getTaskDescriptor(), time);
                 if (existanteActivity) { //set corresponding past activity if it existe. Else create it.
@@ -259,11 +260,66 @@ function getAssignables(assignments) {
     for (i = 0; i < assignments.size(); i++) {
         work = null;
         taskDesc = assignments.get(i).getTaskDescriptor();
-        if (parseInt(taskDesc.getInstance(self).getProperty("completeness")) < 100) { //if the task isn't terminated
+        if (parseInt(taskDesc.getInstance(self).getProperty("completeness")) < 100 && getPredecessorFactor(taskDesc) >= 0.2) { //if the task isn't terminated and average of predecessors advancement is upper than 20% 
             assignables.push(assignments.get(i));
         }
     }
     return assignables;
+}
+
+function checkAssignments(assignments, currentStep) {
+    var i, taskDesc, employeeInst, employeeName,
+            employeeJob, taskInst, nextTasks;
+    if (assignments.size() <= 0) {
+        return [];
+    }
+    employeeInst = assignments.get(0).getResourceInstance();
+    employeeName = employeeInst.getDescriptor().getLabel();
+    employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
+    nextTasks = getAssignables(employeeInst.getAssignments());
+    for (i = 0; i < assignments.size(); i++) {
+        taskDesc = assignments.get(i).getTaskDescriptor();
+        taskInst = taskDesc.getInstance();
+        if (parseFloat(taskInst.getProperty("completeness")) >= 100) {
+            if (nextTasks[0]) {
+                sendMessage(getStepName(currentStep) + ") Fin de la tâche : " + taskDesc.getLabel(),
+                        "La tâche " + taskDesc.getLabel() + " est terminée, je passe à la tâche " + nextTasks[0].getTaskDescriptor().getLabel() + " <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                        employeeName);
+            } else {
+                sendMessage(getStepName(currentStep) + ") Fin de la tâche : " + taskDesc.getLabel(),
+                        "La tâche " + taskDesc.getLabel() + " est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                        employeeName);
+            }
+            assignments.remove(i);
+            break;
+        } else if (getPredecessorFactor(taskDesc) <= 0.2) {
+            sendMessage(getStepName(currentStep) + ") Impossible d'avancer sur la tâche : " + taskDesc.getLabel(),
+                    "Je suis sensé travailler sur la tâche " + taskDesc.getLabel() + " mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                    employeeName);
+            assignments.remove(i);
+            break;
+        }
+    }
+    return nextTasks;
+}
+
+function getPredecessorFactor(taskDesc) {
+    var i, predecessorsAdvancements, predecessors, average, numberOfPredecessors;
+    predecessorsAdvancements = 0;
+    numberOfPredecessors = 0;
+    predecessors = taskDesc.getPredecessors();
+    for (i = 0; i < predecessors.size(); i++) {
+        if (predecessors.get(i).getInstance(self).getActive()) {
+            predecessorsAdvancements += parseInt(predecessors.get(i).getInstance(self).getProperty("completeness"));
+            numberOfPredecessors += 1;
+        }
+    }
+    if (numberOfPredecessors > 0) {
+        average = predecessorsAdvancements / numberOfPredecessors;
+    } else {
+        average = 100;
+    }
+    return Math.pow(average / 100, parseInt(taskDesc.getInstance(self).getProperty("predecessorsDependances")));
 }
 
 function selectFirstUncompletedWork(requirements, reqByWorks) {
@@ -396,7 +452,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     }
 
     // calculate baseAdvance
-    stepAdvance *= 1 / (step * (parseInt(taskDesc.getInstance(self).getDuration()))); //baseAdvance
+    stepAdvance *= 1 / (steps * (parseInt(taskDesc.getInstance(self).getDuration()))); //baseAdvance
 
     // calculate numberOfRessourcesFactor
     if (reqByWorks[workAs].totalOfEmployees !== 0) {
@@ -429,12 +485,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     stepAdvance *= (parseFloat(taskDesc.getProperty("bonusRatio")));
 
     //calculate predecessorFactor
-    if (taskDesc.getPredecessors().size() > 0) {
-        for (i = 0; i < taskDesc.getPredecessors().size(); i++) {
-            predecessorsAdvance += parseInt(taskDesc.getPredecessors().get(i).getInstance(self).getProperty("completeness"));
-        }
-        stepAdvance *= Math.pow((predecessorsAdvance / taskDesc.getPredecessors().size()) / 100, parseInt(taskInst.getProperty("predecessorsDependances"))); //predecessor factor
-    }
+    stepAdvance *= getPredecessorFactor(taskDesc); //predecessor factor
 
     stepAdvance *= 100;
 
@@ -452,7 +503,9 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         }
     }
     stepQuality = (stepQuality / 2) * 100; //step Quality
-    selectedReq.setQuality((parseInt(selectedReq.getQuality()) * parseInt(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);
+    if (needProgress > 0) {
+        selectedReq.setQuality((parseInt(selectedReq.getQuality()) * parseInt(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);
+    }
 
     if (testMode) {
         println("sameNeedActivity.length : " + sameNeedActivity.length);
@@ -469,7 +522,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         println("NeedMotivationFactor : " + employeesMotivationXActivityRate / sumActivityRate);
         println("NeedSkillsetFactor : " + employeesMotivationXActivityRate / sumActivityRate);
         println("ActivityNeedRateFactor : " + activityCoefficientXActivityRate / sumActivityRate);
-        println("baseAdvance : " + 1 / (step * (parseInt(taskDesc.getInstance(self).getDuration()))));
+        println("baseAdvance : " + 1 / (steps * (parseInt(taskDesc.getInstance(self).getDuration()))));
         println("numberOfRessourcesFactor : " + correctedRessources / reqByWorks[workAs].totalOfEmployees);
         println("otherWorkFactor : " + otherWorkFactor);
         println("randomFactor (not same value as used !) : " + getRandomFactorFromTask(taskDesc));
@@ -542,7 +595,9 @@ function calculateTaskQuality(taskDesc) {
 
 
 function tempInitializer() {
-    var occupation, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, "employees"));
+    var occupation, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, "employees")),
+            listTasks = VariableDescriptorFacade.findByName(gm, "tasks");
+
     occupation = listEmployees[0].getInstance(self).addOccupation();
     occupation.setTime(1.0);
     occupation = listEmployees[0].getInstance(self).addOccupation();
@@ -551,8 +606,15 @@ function tempInitializer() {
     occupation.setTime(1.0);
     occupation = listEmployees[2].getInstance(self).addOccupation();
     occupation.setTime(2.0);
-    listEmployees[1].getInstance(self).assign(VariableDescriptorFacade.findByName(gm, "tasks").items.get(0));
-    listEmployees[0].getInstance(self).assign(VariableDescriptorFacade.findByName(gm, "tasks").items.get(1));
+    occupation = listEmployees[2].getInstance(self).addOccupation();
+    occupation.setTime(3.0);
+    occupation.setEditable(false);
+
+    listTasks.items.get(0).getPredecessors().add(listTasks.items.get(1));
+
+    listEmployees[1].getInstance(self).assign(listTasks.items.get(0));
+    listEmployees[0].getInstance(self).assign(listTasks.items.get(1));
+
     return "is initialized";
 }
 
@@ -590,26 +652,16 @@ function flattenList(list, finalList) {
 }
 function checkEnd(allCurrentActivities, currentStep) {
     var i, employeeInst, taskInst, taskDesc, employeeName, employeeJob,
-            nextTask, nextWork, reqByWorks;
+            nextWork, reqByWorks;
     for (i = 0; i < allCurrentActivities.length; i++) {
         taskDesc = allCurrentActivities[i].getTaskDescriptor();
         taskInst = taskDesc.getInstance(self);
         employeeInst = allCurrentActivities[i].getResourceInstance();
         employeeName = employeeInst.getDescriptor().getLabel();
         employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
-        if (parseFloat(taskInst.getProperty("completeness")) >= 100) {
-            employeeInst.getAssignments().remove(0);
-            nextTask = getAssignables(employeeInst.getAssignments());
-            if (employeeInst.getAssignments().length > 0) {
-                sendMessage(getStepName(currentStep) + ") Fin de la tâche : " + taskDesc.getLabel(),
-                        "La tâche " + taskDesc.getLabel() + " est terminée, je passe à la tâche " + nextTask.getTaskDescriptor().getLabel() + " <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
-                        employeeName);
-            } else {
-                sendMessage(getStepName(currentStep) + ") Fin de la tâche : " + taskDesc.getLabel(),
-                        "La tâche " + taskDesc.getLabel() + " est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
-                        employeeName);
-            }
-        } else {
+        if (currentStep === steps - 1) {
+            checkAssignments(employeeInst.getAssignments(), currentStep);
+        } else if (parseFloat(taskInst.getProperty("completeness")) < 100) {
             reqByWorks = getRequirementsByWork(taskInst.getRequirements());
             nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks);
             if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {
@@ -618,6 +670,7 @@ function checkEnd(allCurrentActivities, currentStep) {
                         employeeName);
             }
         }
+
     }
 }
 

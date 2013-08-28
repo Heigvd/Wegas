@@ -190,7 +190,7 @@
                             },
                             "items": [{
                                     "@class": "ChoiceDescriptor",
-                                    "name": "a) Reponse 1",
+                                    "name": "a) Reponse 1a",
                                     "label": "a) Reponse 1",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"
@@ -227,7 +227,7 @@
                             },
                             "items": [{
                                     "@class": "ChoiceDescriptor",
-                                    "name": "a) Reponse 1",
+                                    "name": "a) Reponse 1b",
                                     "label": "a) Reponse 1",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"
@@ -277,7 +277,7 @@
                             },
                             "items": [{
                                     "@class": "ChoiceDescriptor",
-                                    "name": "reponse 1)",
+                                    "name": "reponse 1a)",
                                     "label": "reponse 1)",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"
@@ -320,7 +320,7 @@
                             },
                             "items": [{
                                     "@class": "ChoiceDescriptor",
-                                    "name": "reponse 1)",
+                                    "name": "reponse 1b)",
                                     "label": "reponse 1)",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"
