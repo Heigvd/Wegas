@@ -1273,6 +1273,14 @@ YUI.add('wegas-entity', function(Y) {
                                     "type": "AddEntityChildButton",
                                     "label": "Object",
                                     "targetClass": "ObjectDescriptor"
+                                }, {
+                                    "type": "AddEntityChildButton",
+                                    "label": "Task",
+                                    "targetClass": "TaskDescriptor"
+                                }, {
+                                    "type": "AddEntityChildButton",
+                                    "label": "Resource",
+                                    "targetClass": "ResourceDescriptor"
                                 }]
                         }
                     }]

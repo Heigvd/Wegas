@@ -474,7 +474,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-variabledescriptorselect': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-variabledescriptorselect-min.js',
-                    requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
+                    requires: ['wegas-inputex', 'inputex-group', 'inputex-combine', 'inputex-number',
                         'inputex-select'],
                     ix_provides: ["entityarrayfieldselect", "variabledescriptorselect"]
                 },
@@ -762,6 +762,11 @@ YUI().use(function(Y) {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-plannificationactivitycolor-min.js',
                     requires: ['wegas-pmgwidget-css'],
                     ws_provides: 'PlannificationActivityColor'
+                },
+                "wegas-pmg-plannificationprogresscolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-plannificationprogresscolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
+                    ws_provides: 'PlannificationProgressColor'
                 },
                 "wegas-pmg-bac": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-bac-min.js',

@@ -613,7 +613,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             quality: {
                 type: NUMBER
             }
-
         }
     });
 
@@ -636,6 +635,9 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             },
             editable: {
                 type: BOOLEAN
+            },
+            requirementId: {
+                type: STRING
             }
         }
     });
