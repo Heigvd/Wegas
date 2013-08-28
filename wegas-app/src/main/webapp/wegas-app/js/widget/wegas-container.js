@@ -89,36 +89,59 @@ YUI.add("wegas-container", function(Y) {
                             },
                             "event": "mouseenter",
                             "children": [{
-                                    type: "Button",
-                                    label: "Text",
+                                    "fn": "WidgetMenu",
+                                    "label": "Element",
                                     plugins: [{
-                                            fn: "AddChildWidgetAction",
-                                            cfg: {
-                                                "childType": "Text"
+                                            "fn": "WidgetMenu",
+                                            "cfg": {
+                                                "menuCfg": {
+                                                    points: ["tl", "tr"]
+                                                },
+                                                "event": "mouseenter",
+                                                "children": [{
+                                                        type: "Button",
+                                                        label: "Box",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Box"
+                                                                }
+                                                            }
+                                                        ]
+                                                    },{
+                                                        type: "Button",
+                                                        label: "Text",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Text"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Image",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Image"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Button",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Button"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }]
                                             }
                                         }
-                                    ]
-                                }, {
-                                    type: "Button",
-                                    label: "Image",
-                                    plugins: [{
-                                            fn: "AddChildWidgetAction",
-                                            cfg: {
-                                                "childType": "Image"
-                                            }
-                                        }
-                                    ]
-                                }, {
-                                    type: "Button",
-                                    label: "Button",
-                                    plugins: [{
-                                            fn: "AddChildWidgetAction",
-                                            cfg: {
-                                                "childType": "Button"
-                                            }
-                                        }
-                                    ]
-                                }, {
+                                    ]}, {
                                     "fn": "WidgetMenu",
                                     "label": "Variable display",
                                     plugins: [{
@@ -231,7 +254,7 @@ YUI.add("wegas-container", function(Y) {
                                     ]
                                 }, {
                                     type: "Button",
-                                    label: "Sub page zone",
+                                    label: "Page display",
                                     plugins: [{
                                             fn: "AddChildWidgetAction",
                                             cfg: {

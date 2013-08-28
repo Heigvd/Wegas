@@ -42,6 +42,13 @@
                                 "right": ""
                             }
                         }
+                    }, 
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                            }
+                        }
                     }
                 ],
                 "children": [
@@ -79,12 +86,19 @@
                                 "right": "50pt"
                             }
                         }
+                    }, 
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                            }
+                        }
                     }
                 ],
                 "children": [
                     {
                         "type": "Text",
-                        "content": "Female"
+                        "content": "<p>Female</p>"
                     }
                 ]
             }, 
@@ -114,6 +128,13 @@
                                 "left": "300px",
                                 "bottom": "",
                                 "right": "300px"
+                            }
+                        }
+                    }, 
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
                             }
                         }
                     }
@@ -182,30 +203,6 @@
                 ]
             }, 
             {
-                "id": "flexi-mcq",
-                "type": "FlexitestsMCQ",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "10",
-                                "top": "",
-                                "left": "200px",
-                                "bottom": "30px",
-                                "right": "200px"
-                            }
-                        }
-                    }
-                ],
-                "feedback": 1000,
-                "responseType": "radio",
-                "variable": {
-                    "name": "results"
-                }
-            }, 
-            {
                 "type": "Image",
                 "cssClass": "fix-point",
                 "plugins": [
@@ -221,11 +218,50 @@
                                 "right": ""
                             }
                         }
+                    }, 
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                            }
+                        }
                     }
                 ],
                 "url": "/fix-point/fix_red.png"
+            }, 
+            {
+                "id": "flexi-mcq",
+                "type": "FlexitestsMCQ",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "",
+                                "left": "200px",
+                                "bottom": "30px",
+                                "right": "200px"
+                            }
+                        }
+                    }, 
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                            }
+                        }
+                    }
+                ],
+                "feedback": 1000,
+                "responseType": "radio",
+                "variable": {
+                    "name": "results"
+                }
             }
-        ]
+        ],
+        "@name": "Test"
     },
     "2": {
         "type": "List",
@@ -305,7 +341,8 @@
         "pageLoaderId": "mainarea",
         "variable": {
             "name": "currentPage"
-        }
+        },
+        "@name": "Main"
     },
     "5": {
         "type": "List",
