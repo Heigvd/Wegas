@@ -188,6 +188,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-image-min.js',
                     ws_provides: "Image"
                 },
+                'wegas-box': {
+                    path: 'wegas-app/js/widget/wegas-box-min.js',
+                    ws_provides: "Box",
+                    requires: ['wegas-widget']
+                },
                 'wegas-tabview': {
                     path: 'wegas-app/js/widget/wegas-tabview-min.js',
                     requires: ['tabview', 'wegas-tabviewcss', 'wegas-popuplistener'],
@@ -920,7 +925,7 @@ YUI().use(function(Y) {
                 'wegas-teaching-main': {
                     path: "wegas-teaching/js/wegas-teaching-main.js",
                     ws_provides: "TeachingMain",
-                    requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle", "editor"]
+                    requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle", "editor", "gallery-yui-tooltip"]
                 }
             }
         },

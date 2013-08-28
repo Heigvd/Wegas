@@ -88,6 +88,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             this.treeView.get(CONTENT_BOX).delegate("mouseenter", function(e) {
                 var node = Y.Widget.getByNode(e.target);
                 e.halt(true);
+                if (!node) {
+                    return;
+                }
                 if (node.get("data.widget")) {
                     if (this.get("pageLoader").pageeditor) {
                         this.get("pageLoader").pageeditor.showOverlay(node.get("data.widget"));
@@ -99,6 +102,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             this.treeView.get(CONTENT_BOX).delegate("mouseleave", function(e) {
                 var node = Y.Widget.getByNode(e.target);
                 e.halt(true);
+                if (!node) {
+                    return;
+                }
                 if (node.get("data.widget")) {
                     if (this.get("pageLoader").pageeditor) {
                         this.get("pageLoader").pageeditor.hideOverlay();
