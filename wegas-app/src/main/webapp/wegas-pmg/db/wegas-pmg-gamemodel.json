@@ -587,7 +587,51 @@
                         "properties": {
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
-                            "completeness": 50,
+                            "completeness": 0,
+                            "unworkedHoursCosts": 0,
+                            "wages": 0,
+                            "quality": 0,
+                            "bac": 0
+                        },
+                        "requirements": [{
+                                "@class": "WRequirement",
+                                "work": "Web designer",
+                                "level": "12",
+                                "limit": "100",
+                                "quantity": "2",
+                                "completeness": "0",
+                                "quality": "0"
+                            }]
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "TaskDescriptor",
+                    "name": "Developpement",
+                    "editorLabel": "Developper",
+                    "label": "Developper",
+                    "index": 3,
+                    "description": "description tâche 3",
+                    "properties": {
+                        "bonusRatio": 1,
+                        "competenceRatioInf": 0,
+                        "competenceRatioSup": 0,
+                        "coordinationRatioInf": 0,
+                        "coordinationRatioSup": 0,
+                        "progressionOfNeeds": 0,
+                        "takeInHandDuration": 0,
+                        "randomDurationInf": 0,
+                        "randomDurationSup": 0
+                    },
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "active": true,
+                        "duration": 3,
+                        "properties": {
+                            "fixedCosts": 1500,
+                            "predecessorsDependances": 1000,
+                            "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,

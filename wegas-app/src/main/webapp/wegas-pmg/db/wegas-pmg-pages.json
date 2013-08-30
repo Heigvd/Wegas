@@ -498,6 +498,8 @@
                         "fn": "Plannificationcolor"
                     }, {
                         "fn": "PlannificationActivityColor"
+                    }, {
+                        "fn": "PlannificationProgressColor"
                     }]
             }
         ]
