@@ -25,7 +25,7 @@ function checkEndOfProject() {
     var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, "tasks"), isTheEnd = true;
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(0).getInstance(self);
-        if (taskInst.getActive() && parseInt(taskInst.getProperty("completeness")) < 100) {
+        if (isTrue(taskInst.getActive()) && parseInt(taskInst.getProperty("completeness")) < 100) {
             isTheEnd = false;
             break;
         }
@@ -46,27 +46,119 @@ function completeRealizationPeriod() {
         }
     }
     AddNewFixedCosts();
-    pushHistory();
+    setWeekliesVariables();
 }
 
-function pushHistory() {
-    var i, tasks = VariableDescriptorFacade.findByName(gm, "tasks"), taskInst,
-            ev = 0, pv = 0;
+function setWeekliesVariables() {
+    var i, taskInst, ev = 0, pv = 0, tasks = VariableDescriptorFacade.findByName(gm, "tasks"),
+            costs = VariableDescriptorFacade.findByName(self.getGameModel(), "costs"),
+            delay = VariableDescriptorFacade.findByName(self.getGameModel(), "delay"),
+            quality = VariableDescriptorFacade.findByName(self.getGameModel(), "quality");
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
-        if (taskInst.getActive()) {
+        if (isTrue(taskInst.getActive())) {
             ev += parseInt(taskInst.getProperty("fixedCosts")) * parseInt(taskInst.getProperty("completeness")) / 100;
             pv += parseInt(taskInst.getProperty("bac")) * parseInt(taskInst.getProperty("completeness")) / 100;
         }
     }
-    costs.saveHistory();
-    delay.saveHistory();
-    quality.saveHistory();
+
     planedValue.setValue(pv);
-    planedValue.saveHistory();
     earnedValue.setValue(ev);
+
+    updateGauges();
+
+    costs.getInstance(self).saveHistory();
+    delay.getInstance(self).saveHistory();
+    quality.getInstance(self).saveHistory();
+    planedValue.saveHistory();
     earnedValue.saveHistory();
     actualCost.saveHistory();
+}
+
+function updateGauges() {
+    var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, "tasks"),
+            costs = VariableDescriptorFacade.findByName(self.getGameModel(), "costs"),
+            delay = VariableDescriptorFacade.findByName(self.getGameModel(), "delay"),
+            quality = VariableDescriptorFacade.findByName(self.getGameModel(), "quality"),
+            management = VariableDescriptorFacade.findByName(self.getGameModel(), "managementApproval"),
+            customers = VariableDescriptorFacade.findByName(self.getGameModel(), "userApproval"),
+            tasksQuality = 0, nomberOfTasks = 0, nomberOfBeganTasks = 0, tasksDelay = 0,
+            costsJaugeValue, qualityJaugeValue, delayJaugeValue, managementJaugeValue, customerJaugeValue;
+    
+    for (i = 0; i < tasks.items.size(); i++) {
+        taskInst = tasks.items.get(i).getInstance(self);
+        if (isTrue(taskInst.getActive())) {//if task is active
+            tasksDelay += getCurrentTaskDelay(tasks.items.get(i));
+            nomberOfTasks += 1;
+            if (parseInt(taskInst.getProperty("completeness")) > 0) { //...and started
+                tasksQuality += parseInt(taskInst.getProperty("quality"));
+                nomberOfBeganTasks += 1;
+            }
+        }
+    }
+
+    //costs
+    if (parseInt(planedValue.value) > 0) {
+        costsJaugeValue = Math.round((100 /  parseInt(earnedValue.value)) *parseInt(planedValue.value));
+    }
+    costsJaugeValue = (costsJaugeValue > parseInt(costs.getMinValue())) ? costsJaugeValue : parseInt(costs.getMinValue());
+    costsJaugeValue = (costsJaugeValue < parseInt(costs.getMaxValue())) ? costsJaugeValue : parseInt(costs.getMaxValue());
+    costs.getInstance(self).setValue(costsJaugeValue);
+
+    //delay
+    if (nomberOfTasks > 0) {
+        delayJaugeValue = Math.round(tasksDelay / nomberOfTasks);
+    }
+    delayJaugeValue = (delayJaugeValue > parseInt(delay.getMinValue())) ? delayJaugeValue : parseInt(delay.getMinValue());
+    delayJaugeValue = (delayJaugeValue < parseInt(delay.getMaxValue())) ? delayJaugeValue : parseInt(delay.getMaxValue());
+    delay.getInstance(self).setValue(delayJaugeValue);
+
+    //quality
+    if (nomberOfBeganTasks > 0) {
+        qualityJaugeValue = tasksQuality / nomberOfBeganTasks + parseInt(qualityImpacts.value);
+    }
+    qualityJaugeValue = (qualityJaugeValue > parseInt(quality.getMinValue())) ? qualityJaugeValue : parseInt(quality.getMinValue());
+    qualityJaugeValue = (qualityJaugeValue < parseInt(quality.getMaxValue())) ? qualityJaugeValue : parseInt(quality.getMaxValue());
+    quality.getInstance(self).setValue(qualityJaugeValue);
+
+    //management approval
+    managementJaugeValue = parseInt(management.getInstance(self).getValue()) + parseInt(managementApprovalImpacts.value);
+    managementJaugeValue = (managementJaugeValue > parseInt(management.getMinValue())) ? managementJaugeValue : parseInt(management.getMinValue());
+    managementJaugeValue = (managementJaugeValue < parseInt(management.getMaxValue())) ? managementJaugeValue : parseInt(management.getMaxValue());
+    management.getInstance(self).setValue(managementJaugeValue);
+    management.getInstance(self).saveHistory();
+
+    //customer approval
+    customerJaugeValue = parseInt(customers.getInstance(self).getValue()) + parseInt(userApprovalImpacts.value);
+    customerJaugeValue = (customerJaugeValue > parseInt(customers.getMinValue())) ? customerJaugeValue : parseInt(customers.getMinValue());
+    customerJaugeValue = (customerJaugeValue < parseInt(customers.getMaxValue())) ? customerJaugeValue : parseInt(customers.getMaxValue());
+    customers.getInstance(self).setValue(customerJaugeValue);
+    customers.getInstance(self).saveHistory();
+
+}
+
+function getCurrentTaskDelay(taskDesc) {
+    var i, planif, pastPeriods = [], delay = 0, time = getCurrentInGameTime(),
+            completeness = parseInt(taskDesc.getInstance(self).getProperty("completeness")),
+            planif = taskDesc.getInstance(self).getPlannification(), planifArray = [];
+    for (i = 0; i < planif.size(); i++) {
+        planifArray.push(parseInt(planif.get(i)));
+    }
+    planif = planifArray;
+    for (i = 0; i <= time.period; i++) {
+        if (planif.indexOf(i) > -1) {
+            pastPeriods.push(i);
+        }
+    }
+    if (completeness > 0 && planif.length > 0) {
+        if (pastPeriods.length <= 0) {
+            delay = completeness + 100;
+        }
+        else {
+            delay = (100 / ((pastPeriods.length / planif.length) * 100)) * completeness;
+        }
+    }
+    return delay;
 }
 
 function AddNewFixedCosts() {
@@ -116,7 +208,7 @@ function calculTasksProgress(currentStep) {
         for (work in requirementsByWork) {
             taskProgress += requirementsByWork[work].completeness;
         }
-        taskProgress = (taskProgress > 100) ? 100 : taskProgress;
+        taskProgress = (taskProgress > 97) ? 100 : taskProgress; //>97 yes, don't frustrate the players please.
         taskInst.setProperty("completeness", Math.round(taskProgress));
         taskInst.setProperty("quality", calculateTaskQuality(oneTaskPerActivity[i].getTaskDescriptor()));
     }
@@ -309,7 +401,7 @@ function getPredecessorFactor(taskDesc) {
     numberOfPredecessors = 0;
     predecessors = taskDesc.getPredecessors();
     for (i = 0; i < predecessors.size(); i++) {
-        if (predecessors.get(i).getInstance(self).getActive()) {
+        if (isTrue(predecessors.get(i).getInstance(self).getActive())) {
             predecessorsAdvancements += parseInt(predecessors.get(i).getInstance(self).getProperty("completeness"));
             numberOfPredecessors += 1;
         }
@@ -594,7 +686,7 @@ function calculateTaskQuality(taskDesc) {
 }
 
 
-function tempInitializer() {
+function tempInit() {
     var occupation, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, "employees")),
             listTasks = VariableDescriptorFacade.findByName(gm, "tasks");
 
@@ -610,7 +702,7 @@ function tempInitializer() {
     occupation.setTime(3.0);
     occupation.setEditable(false);
 
-    listTasks.items.get(0).getPredecessors().add(listTasks.items.get(1));
+    //listTasks.items.get(0).getPredecessors().add(listTasks.items.get(1));
 
     listEmployees[1].getInstance(self).assign(listTasks.items.get(0));
     listEmployees[0].getInstance(self).assign(listTasks.items.get(1));

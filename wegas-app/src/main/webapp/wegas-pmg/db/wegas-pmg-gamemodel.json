@@ -33,76 +33,6 @@
             }
         }, {
             "@class": "NumberDescriptor",
-            "name": "managementApproval",
-            "editorLabel": "managementApproval",
-            "label": "managementApproval",
-            "minValue": 0,
-            "maxValue": 200,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 100
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
-            "name": "userApproval",
-            "editorLabel": "userApproval",
-            "label": "userApproval",
-            "minValue": 0,
-            "maxValue": 200,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 100
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
-            "name": "costs",
-            "editorLabel": "costs",
-            "label": "costs",
-            "minValue": 0,
-            "maxValue": 200,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 100
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
-            "name": "quality",
-            "editorLabel": "quality",
-            "label": "quality",
-            "minValue": 0,
-            "maxValue": 200,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 100
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
-            "name": "delay",
-            "editorLabel": "delay",
-            "label": "delay",
-            "minValue": 0,
-            "maxValue": 200,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 100
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
             "name": "timeCards",
             "editorLabel": "timeCards",
             "label": "timeCards",
@@ -154,6 +84,171 @@
             "scope": {
                 "@class": "TeamScope"
             }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "managementApprovalImpacts",
+            "editorLabel": "managementApproval impacts",
+            "label": "managementApproval impacts",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "userApprovalImpacts",
+            "editorLabel": "userApproval impacts",
+            "label": "userApproval impacts",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "costsImpacts",
+            "editorLabel": "costs impacts",
+            "label": "costs impacts",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "qualityImpacts",
+            "editorLabel": "quality impacts",
+            "label": "quality impacts",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "delayImpacts",
+            "editorLabel": "delay impacts",
+            "label": "delay impacts",
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "ListDescriptor",
+            "name": "pageUtilities",
+            "label": "page utilities",
+            "editorLabel": "page utilities",
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "items": [{
+                    "@class": "NumberDescriptor",
+                    "name": "managementApproval",
+                    "editorLabel": "managementApproval",
+                    "label": "managementApproval",
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 100
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "userApproval",
+                    "editorLabel": "userApproval",
+                    "label": "userApproval",
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 100
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "costs",
+                    "editorLabel": "costs",
+                    "label": "costs",
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 100
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "quality",
+                    "editorLabel": "quality",
+                    "label": "quality",
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 100
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "delay",
+                    "editorLabel": "delay",
+                    "label": "delay",
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 100
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "ganttPage",
+                    "label": "ganttPage",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "taskPage",
+                    "label": "taskPage",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }]
         }, {
             "@class": "ListDescriptor",
             "name": "currentPeriod",
@@ -445,7 +540,7 @@
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 0
+                            "bac": 1200
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -496,7 +591,7 @@
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 0
+                            "bac": 1500
                         },
                         "requirements": [{
                                 "@class": "WRequirement",

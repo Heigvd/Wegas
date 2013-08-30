@@ -453,6 +453,9 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                     duration: {
                         type: NUMBER
                     },
+                    plannification: {
+                        type: ARRAY
+                    },
                     requirements: {
                         type: ARRAY,
                         _inputex: {
@@ -636,10 +639,13 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             },
             editable: {
                 type: BOOLEAN
+            },
+            requirementId: {
+                type: STRING
             }
         }
     });
-    
+
     /**
      * Occupation mapper
      */
