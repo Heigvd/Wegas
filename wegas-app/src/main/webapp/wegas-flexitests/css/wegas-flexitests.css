@@ -98,16 +98,17 @@ body > .wegas-pageloader, html{
 }
 .wegas-flexitests-mcqdisplay-input label span{
     width:45px;
+    white-space: nowrap;
     background: none;
     display: inline-block;
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
     -webkit-transform-origin: 0 0;
     -moz-transform-origin: 0 0;
     -o-transform-origin: 0 0;
-    transform-origin: 0 0;
     -webkit-transform: rotate(-60deg) translate(20px,-100%);
     -moz-transform: rotate(-60deg) translate(20px,-100%);
     -o-transform: rotate(-60deg) translate(20px,-100%);
+    transform-origin: 0 0;
     transform: rotate(-60deg) translate(20px,-100%);
     font-size: 75%;
 }
