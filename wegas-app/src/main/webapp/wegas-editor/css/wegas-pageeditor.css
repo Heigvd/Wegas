@@ -19,7 +19,7 @@
     padding: 10px;
     padding-top: 20px !important;
 }
-.wegas-pageeditor-designmode .pageeditor-overlay-mask{
+.wegas-pageeditor-designmode > .wegas-pageloader-content > .pageeditor-overlay-mask{
     z-index: 49;
     width: 100%;
     height: 100%;
