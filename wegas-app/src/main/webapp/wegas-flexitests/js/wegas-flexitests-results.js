@@ -102,7 +102,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
             var demographics = results[0],
                     tests = results[1],
                     table = this.get("contentBox").one(".results"),
-                    o, i, j, elements = {
+                    o, i, j, k, elements = {
                 left: getChildById(page, "leftElement"),
                 right: getChildById(page, "rightElement"),
                 center: getChildById(page, "centerElement")
@@ -119,7 +119,9 @@ YUI.add("wegas-flexitests-results", function(Y) {
                 if (demographics.hasOwnProperty(i)) {
                     o = demographics[i].properties;
                     j = Y.Array.filter(Y.Object.keys(o), UNWANTED_PROPS);
-
+                    for (k = 0; k < j.length; k++) {
+                        j[k] = {"key": j[k], sortable: true};
+                    }
                     if (this.resultTable) {
                         this.resultTable.destroy();
                     }
@@ -168,7 +170,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     }
                 }
             }
-            
+
             this.resultTable.plug(Y.Wegas.DatatableCSV);
             this.resultTable.render(table);
         },
