@@ -441,8 +441,9 @@ h2{
 .body .yui3-datatable-even .yui3-datatable-cell{
     background: none;
     height: 30px;
-    padding-top:6px;
-    padding-bottom:6px;
+/*    padding-top:6px;
+    padding-bottom:6px;*/
+    padding: 6px 0 6px 0
 }
 
 .body .yui3-datatable-cell{
