@@ -3,12 +3,12 @@ var gm = self.getGameModel(), testMode = false;
 steps = 10, minTaskDuration = 0.1;
 
 function nextPeriod() {
-    var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, "currentPhase");
-    phases = VariableDescriptorFacade.findByName(gm, "currentPeriod");
+    var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, 'currentPhase');
+    phases = VariableDescriptorFacade.findByName(gm, 'currentPeriod');
     if (time.period === parseInt(phases.items.get(time.phase).getMaxValue())) { // if end of phase
         phases.items.get(time.phase).getInstance(self).setValue(1);
         phase.getInstance(self).setValue(time.phase + 1);
-    } else if (time.phase === 2) { //if current phase is the "realisation" phase
+    } else if (time.phase === 2) { //if current phase is the 'realisation' phase
         completeRealizationPeriod();
         if (checkEndOfProject()) { //if the project ended
             phases.items.get(time.phase).getInstance(self).setValue(1);
@@ -22,10 +22,10 @@ function nextPeriod() {
 }
 
 function checkEndOfProject() {
-    var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, "tasks"), isTheEnd = true;
+    var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'), isTheEnd = true;
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(0).getInstance(self);
-        if (taskInst.getActive() && parseInt(taskInst.getProperty("completeness")) < 100) {
+        if (isTrue(taskInst.getActive()) && parseInt(taskInst.getProperty('completeness')) < 100) {
             isTheEnd = false;
             break;
         }
@@ -36,41 +36,133 @@ function checkEndOfProject() {
 function completeRealizationPeriod() {
     var i;
     if (testMode) {
-        println("==============================");
-        println("==============================");
+        println('==============================');
+        println('==============================');
     }
     for (i = 0; i < steps; i++) {
         calculTasksProgress(i);
         if (testMode) {
-            println("---");
+            println('---');
         }
     }
     AddNewFixedCosts();
-    pushHistory();
+    setWeekliesVariables();
 }
 
-function pushHistory() {
-    var i, tasks = VariableDescriptorFacade.findByName(gm, "tasks"), taskInst,
-            ev = 0, pv = 0;
+function setWeekliesVariables() {
+    var i, taskInst, ev = 0, pv = 0, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
+            costs = VariableDescriptorFacade.findByName(self.getGameModel(), 'costs'),
+            delay = VariableDescriptorFacade.findByName(self.getGameModel(), 'delay'),
+            quality = VariableDescriptorFacade.findByName(self.getGameModel(), 'quality');
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
-        if (taskInst.getActive()) {
-            ev += parseInt(taskInst.getProperty("fixedCosts")) * parseInt(taskInst.getProperty("completeness")) / 100;
-            pv += parseInt(taskInst.getProperty("bac")) * parseInt(taskInst.getProperty("completeness")) / 100;
+        if (isTrue(taskInst.getActive())) {
+            ev += parseInt(taskInst.getProperty('fixedCosts')) * parseInt(taskInst.getProperty('completeness')) / 100;
+            pv += parseInt(taskInst.getProperty('bac')) * parseInt(taskInst.getProperty('completeness')) / 100;
         }
     }
-    costs.saveHistory();
-    delay.saveHistory();
-    quality.saveHistory();
+
     planedValue.setValue(pv);
-    planedValue.saveHistory();
     earnedValue.setValue(ev);
+
+    updateGauges();
+
+    costs.getInstance(self).saveHistory();
+    delay.getInstance(self).saveHistory();
+    quality.getInstance(self).saveHistory();
+    planedValue.saveHistory();
     earnedValue.saveHistory();
     actualCost.saveHistory();
 }
 
+function updateGauges() {
+    var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
+            costs = VariableDescriptorFacade.findByName(self.getGameModel(), 'costs'),
+            delay = VariableDescriptorFacade.findByName(self.getGameModel(), 'delay'),
+            quality = VariableDescriptorFacade.findByName(self.getGameModel(), 'quality'),
+            management = VariableDescriptorFacade.findByName(self.getGameModel(), 'managementApproval'),
+            customers = VariableDescriptorFacade.findByName(self.getGameModel(), 'userApproval'),
+            tasksQuality = 0, nomberOfTasks = 0, nomberOfBeganTasks = 0, tasksDelay = 0,
+            costsJaugeValue, qualityJaugeValue, delayJaugeValue, managementJaugeValue, customerJaugeValue;
+    
+    for (i = 0; i < tasks.items.size(); i++) {
+        taskInst = tasks.items.get(i).getInstance(self);
+        if (isTrue(taskInst.getActive())) {//if task is active
+            tasksDelay += getCurrentTaskDelay(tasks.items.get(i));
+            nomberOfTasks += 1;
+            if (parseInt(taskInst.getProperty('completeness')) > 0) { //...and started
+                tasksQuality += parseInt(taskInst.getProperty('quality'));
+                nomberOfBeganTasks += 1;
+            }
+        }
+    }
+
+    //costs
+    if (parseInt(planedValue.value) > 0) {
+        costsJaugeValue = Math.round((100 /  parseInt(earnedValue.value)) *parseInt(planedValue.value));
+    }
+    costsJaugeValue = (costsJaugeValue > parseInt(costs.getMinValue())) ? costsJaugeValue : parseInt(costs.getMinValue());
+    costsJaugeValue = (costsJaugeValue < parseInt(costs.getMaxValue())) ? costsJaugeValue : parseInt(costs.getMaxValue());
+    costs.getInstance(self).setValue(costsJaugeValue);
+
+    //delay
+    if (nomberOfTasks > 0) {
+        delayJaugeValue = Math.round(tasksDelay / nomberOfTasks);
+    }
+    delayJaugeValue = (delayJaugeValue > parseInt(delay.getMinValue())) ? delayJaugeValue : parseInt(delay.getMinValue());
+    delayJaugeValue = (delayJaugeValue < parseInt(delay.getMaxValue())) ? delayJaugeValue : parseInt(delay.getMaxValue());
+    delay.getInstance(self).setValue(delayJaugeValue);
+
+    //quality
+    if (nomberOfBeganTasks > 0) {
+        qualityJaugeValue = tasksQuality / nomberOfBeganTasks + parseInt(qualityImpacts.value);
+    }
+    qualityJaugeValue = (qualityJaugeValue > parseInt(quality.getMinValue())) ? qualityJaugeValue : parseInt(quality.getMinValue());
+    qualityJaugeValue = (qualityJaugeValue < parseInt(quality.getMaxValue())) ? qualityJaugeValue : parseInt(quality.getMaxValue());
+    quality.getInstance(self).setValue(qualityJaugeValue);
+
+    //management approval
+    managementJaugeValue = parseInt(management.getInstance(self).getValue()) + parseInt(managementApprovalImpacts.value);
+    managementJaugeValue = (managementJaugeValue > parseInt(management.getMinValue())) ? managementJaugeValue : parseInt(management.getMinValue());
+    managementJaugeValue = (managementJaugeValue < parseInt(management.getMaxValue())) ? managementJaugeValue : parseInt(management.getMaxValue());
+    management.getInstance(self).setValue(managementJaugeValue);
+    management.getInstance(self).saveHistory();
+
+    //customer approval
+    customerJaugeValue = parseInt(customers.getInstance(self).getValue()) + parseInt(userApprovalImpacts.value);
+    customerJaugeValue = (customerJaugeValue > parseInt(customers.getMinValue())) ? customerJaugeValue : parseInt(customers.getMinValue());
+    customerJaugeValue = (customerJaugeValue < parseInt(customers.getMaxValue())) ? customerJaugeValue : parseInt(customers.getMaxValue());
+    customers.getInstance(self).setValue(customerJaugeValue);
+    customers.getInstance(self).saveHistory();
+
+}
+
+function getCurrentTaskDelay(taskDesc) {
+    var i, planif, pastPeriods = [], delay = 0, time = getCurrentInGameTime(),
+            completeness = parseInt(taskDesc.getInstance(self).getProperty('completeness')),
+            planif = taskDesc.getInstance(self).getPlannification(), planifArray = [];
+    for (i = 0; i < planif.size(); i++) {
+        planifArray.push(parseInt(planif.get(i)));
+    }
+    planif = planifArray;
+    for (i = 0; i <= time.period; i++) {
+        if (planif.indexOf(i) > -1) {
+            pastPeriods.push(i);
+        }
+    }
+    if (completeness > 0 && planif.length > 0) {
+        if (pastPeriods.length <= 0) {
+            delay = completeness + 100;
+        }
+        else {
+            delay = (100 / ((pastPeriods.length / planif.length) * 100)) * completeness;
+        }
+    }
+    return delay;
+}
+
 function AddNewFixedCosts() {
-    var i, j, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, "employees")),
+    var i, j, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, 'employees')),
             activities, pastActivities = [], currentActivities = [], time = getCurrentInGameTime(),
             exist = true;
     for (i = 0; i < listEmployees.length; i++) {
@@ -94,7 +186,7 @@ function AddNewFixedCosts() {
             }
         }
         if (!exist) {
-            actualCost.setValue(parseInt(actualCost.getValue()) + parseInt(currentActivities[i].getTaskDescriptor().getInstance(self).getProperty("fixedCosts")));
+            actualCost.setValue(parseInt(actualCost.getValue()) + parseInt(currentActivities[i].getTaskDescriptor().getInstance(self).getProperty('fixedCosts')));
         }
     }
 }
@@ -116,9 +208,9 @@ function calculTasksProgress(currentStep) {
         for (work in requirementsByWork) {
             taskProgress += requirementsByWork[work].completeness;
         }
-        taskProgress = (taskProgress > 100) ? 100 : taskProgress;
-        taskInst.setProperty("completeness", Math.round(taskProgress));
-        taskInst.setProperty("quality", calculateTaskQuality(oneTaskPerActivity[i].getTaskDescriptor()));
+        taskProgress = (taskProgress > 97) ? 100 : taskProgress; //>97 yes, don t frustrate the players please.
+        taskInst.setProperty('completeness', Math.round(taskProgress));
+        taskInst.setProperty('quality', calculateTaskQuality(oneTaskPerActivity[i].getTaskDescriptor()));
     }
     checkEnd(allCurrentActivities, currentStep);
 }
@@ -181,7 +273,7 @@ function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
 }
 
 function createActivities(currentStep) {
-    var i, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, "employees")),
+    var i, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, 'employees')),
             employeeDesc, employeeInst, activity, activities = [], assignables,
             existanteActivity, time = getCurrentInGameTime().period + currentStep / 10;
     if (!listEmployees) {
@@ -190,7 +282,7 @@ function createActivities(currentStep) {
     for (i = 0; i < listEmployees.length; i++) {
         employeeDesc = listEmployees[i];
         employeeInst = employeeDesc.getInstance(self);
-        if (isReservedToWork(employeeInst)) { //have a "player created" occupation
+        if (isReservedToWork(employeeInst)) { //have a 'player created' occupation
             assignables = checkAssignments(employeeInst.getAssignments(), currentStep);
             if (assignables.length > 0) { //have assignable tasks
                 existanteActivity = findLastStepCorrespondingActivity(employeeInst, assignables[0].getTaskDescriptor(), time);
@@ -222,7 +314,7 @@ function findLastStepCorrespondingActivity(employeeInst, taskDesc, currentPeriod
     for (i = 0; i < employeeInst.getActivities().size(); i++) {
         activity = employeeInst.getActivities().get(i);
         if (activity.getTaskDescriptor() === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity) 
-                && currentPeriod - Math.floor(currentPeriod) !== 0 //if it's not a new period (current step !== 0) 
+                && currentPeriod - Math.floor(currentPeriod) !== 0 //if it s not a new period (current step !== 0) 
                 && parseFloat(activity.getTime()) === getFloat(currentPeriod - 0.1)) { //if activity was used the last step
             occurence = activity;
             break;
@@ -260,7 +352,7 @@ function getAssignables(assignments) {
     for (i = 0; i < assignments.size(); i++) {
         work = null;
         taskDesc = assignments.get(i).getTaskDescriptor();
-        if (parseInt(taskDesc.getInstance(self).getProperty("completeness")) < 100 && getPredecessorFactor(taskDesc) >= 0.2) { //if the task isn't terminated and average of predecessors advancement is upper than 20% 
+        if (parseInt(taskDesc.getInstance(self).getProperty('completeness')) < 100 && getPredecessorFactor(taskDesc) >= 0.2) { //if the task isn t terminated and average of predecessors advancement is upper than 20% 
             assignables.push(assignments.get(i));
         }
     }
@@ -280,21 +372,21 @@ function checkAssignments(assignments, currentStep) {
     for (i = 0; i < assignments.size(); i++) {
         taskDesc = assignments.get(i).getTaskDescriptor();
         taskInst = taskDesc.getInstance();
-        if (parseFloat(taskInst.getProperty("completeness")) >= 100) {
+        if (parseFloat(taskInst.getProperty('completeness')) >= 100) {
             if (nextTasks[0]) {
-                sendMessage(getStepName(currentStep) + ") Fin de la tâche : " + taskDesc.getLabel(),
-                        "La tâche " + taskDesc.getLabel() + " est terminée, je passe à la tâche " + nextTasks[0].getTaskDescriptor().getLabel() + " <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
+                        'La tâche ' + taskDesc.getLabel() + ' est terminée, je passe à la tâche ' + nextTasks[0].getTaskDescriptor().getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             } else {
-                sendMessage(getStepName(currentStep) + ") Fin de la tâche : " + taskDesc.getLabel(),
-                        "La tâche " + taskDesc.getLabel() + " est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
+                        'La tâche ' + taskDesc.getLabel() + ' est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             }
             assignments.remove(i);
             break;
         } else if (getPredecessorFactor(taskDesc) <= 0.2) {
-            sendMessage(getStepName(currentStep) + ") Impossible d'avancer sur la tâche : " + taskDesc.getLabel(),
-                    "Je suis sensé travailler sur la tâche " + taskDesc.getLabel() + " mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+            sendMessage(getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
+                    'Je suis sensé travailler sur la tâche ' + taskDesc.getLabel() + ' mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
             assignments.remove(i);
             break;
@@ -309,8 +401,8 @@ function getPredecessorFactor(taskDesc) {
     numberOfPredecessors = 0;
     predecessors = taskDesc.getPredecessors();
     for (i = 0; i < predecessors.size(); i++) {
-        if (predecessors.get(i).getInstance(self).getActive()) {
-            predecessorsAdvancements += parseInt(predecessors.get(i).getInstance(self).getProperty("completeness"));
+        if (isTrue(predecessors.get(i).getInstance(self).getActive())) {
+            predecessorsAdvancements += parseInt(predecessors.get(i).getInstance(self).getProperty('completeness'));
             numberOfPredecessors += 1;
         }
     }
@@ -319,7 +411,7 @@ function getPredecessorFactor(taskDesc) {
     } else {
         average = 100;
     }
-    return Math.pow(average / 100, parseInt(taskDesc.getInstance(self).getProperty("predecessorsDependances")));
+    return Math.pow(average / 100, parseInt(taskDesc.getInstance(self).getProperty('predecessorsDependances')));
 }
 
 function selectFirstUncompletedWork(requirements, reqByWorks) {
@@ -417,24 +509,24 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         employeeInst = sameNeedActivity[i].getResourceInstance();
         employeeDesc = employeeInst.getDescriptor();
         affectedEmployeesDesc.push(employeeDesc);
-        activityRate = parseFloat(employeeDesc.getInstance(self).getProperty("activityRate"));
+        activityRate = parseFloat(employeeDesc.getInstance(self).getProperty('activityRate'));
         sumActivityRate += activityRate;
         //Calculate ressource motivation factor
-        employeesMotivationFactor = 1 + 0.05 * parseFloat(employeeDesc.getProperty("coef_moral")) * (parseInt(employeeDesc.getInstance(self).getMoral()) - 7);
+        employeesMotivationFactor = 1 + 0.05 * parseFloat(employeeDesc.getProperty('coef_moral')) * (parseInt(employeeDesc.getInstance(self).getMoral()) - 7);
         //Calcul variables for needMotivationFactor
         employeesMotivationXActivityRate += employeesMotivationFactor * activityRate;
         //Calcul variables for needSkillsetFactor
         if (deltaLevel > 0) {
-            employeeSkillsetFactor = 1 + 0.05 * parseFloat(taskDesc.getProperty("competenceRatioSup")) * deltaLevel;
+            employeeSkillsetFactor = 1 + 0.05 * parseFloat(taskDesc.getProperty('competenceRatioSup')) * deltaLevel;
             if (employeeSkillsetFactor < 0) {
                 employeeSkillsetFactor = 0;
             }
         } else {
-            employeeSkillsetFactor = 1 + 0.05 * parseFloat(taskDesc.getProperty("competenceRatioInf")) * deltaLevel;
+            employeeSkillsetFactor = 1 + 0.05 * parseFloat(taskDesc.getProperty('competenceRatioInf')) * deltaLevel;
         }
         employeesSkillsetXActivityRate += employeeSkillsetFactor * activityRate;
         //Calcul variable for needSkillsetFactor
-        activityCoefficientXActivityRate += parseFloat(employeeDesc.getProperty("coef_activity")) * activityRate;
+        activityCoefficientXActivityRate += parseFloat(employeeDesc.getProperty('coef_activity')) * activityRate;
         //Calcul variable for learnFactor
         if (!haveCorrespondingActivityInPast(employeeInst, taskDesc, getCurrentInGameTime().period)) {
             numberOfEmployeeOnNeedOnNewTask++;
@@ -457,12 +549,12 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     // calculate numberOfRessourcesFactor
     if (reqByWorks[workAs].totalOfEmployees !== 0) {
         if (affectedEmployeesDesc.length <= reqByWorks[workAs].totalOfEmployees) {
-            correctedRessources = reqByWorks[workAs].totalOfEmployees + parseFloat(taskDesc.getProperty("coordinationRatioInf")) * (affectedEmployeesDesc.length - reqByWorks[workAs].totalOfEmployees);
+            correctedRessources = reqByWorks[workAs].totalOfEmployees + parseFloat(taskDesc.getProperty('coordinationRatioInf')) * (affectedEmployeesDesc.length - reqByWorks[workAs].totalOfEmployees);
             if (correctedRessources / affectedEmployeesDesc.length < 0.2) {
                 correctedRessources = 0.2 * affectedEmployeesDesc.length;
             }
         } else {
-            correctedRessources = reqByWorks[workAs].totalOfEmployees + parseFloat(taskDesc.getProperty("coordinationRatioSup")) * (affectedEmployeesDesc.length - reqByWorks[workAs].totalOfEmployees);
+            correctedRessources = reqByWorks[workAs].totalOfEmployees + parseFloat(taskDesc.getProperty('coordinationRatioSup')) * (affectedEmployeesDesc.length - reqByWorks[workAs].totalOfEmployees);
         }
         stepAdvance *= correctedRessources / reqByWorks[workAs].totalOfEmployees; //numberOfRessourcesFactor
     }
@@ -477,12 +569,12 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     stepAdvance *= getRandomFactorFromTask(taskDesc);
 
     //calculate learnFactor
-    if (parseInt(taskInst.getProperty("completeness")) > 15) {
-        stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty("takeInHandDuration") / 100))) / affectedEmployeesDesc.length);//learnFactor 
+    if (parseInt(taskInst.getProperty('completeness')) > 15) {
+        stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor 
     }
 
     //calculate bonusRatio
-    stepAdvance *= (parseFloat(taskDesc.getProperty("bonusRatio")));
+    stepAdvance *= (parseFloat(taskDesc.getProperty('bonusRatio')));
 
     //calculate predecessorFactor
     stepAdvance *= getPredecessorFactor(taskDesc); //predecessor factor
@@ -508,31 +600,31 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     }
 
     if (testMode) {
-        println("sameNeedActivity.length : " + sameNeedActivity.length);
-        println("employeesMotivationFactor : " + employeesMotivationFactor);
-        println("employeesMotivationXActivityRate : " + employeesMotivationXActivityRate);
-        println("sumActivityRate : " + sumActivityRate);
-        println("deltaLevel : " + deltaLevel);
-        println("employeeSkillsetFactor : " + employeeSkillsetFactor);
-        println("employeesSkillsetXActivityRate : " + employeesSkillsetXActivityRate);
-        println("activityCoefficientXActivityRate : " + activityCoefficientXActivityRate);
-        println("numberOfEmployeeOnNeedOnNewTask : " + numberOfEmployeeOnNeedOnNewTask);
-        println("motivationXActivityRate: " + motivationXActivityRate);
-        println("skillsetXActivityRate: " + skillsetXActivityRate);
-        println("NeedMotivationFactor : " + employeesMotivationXActivityRate / sumActivityRate);
-        println("NeedSkillsetFactor : " + employeesMotivationXActivityRate / sumActivityRate);
-        println("ActivityNeedRateFactor : " + activityCoefficientXActivityRate / sumActivityRate);
-        println("baseAdvance : " + 1 / (steps * (parseInt(taskDesc.getInstance(self).getDuration()))));
-        println("numberOfRessourcesFactor : " + correctedRessources / reqByWorks[workAs].totalOfEmployees);
-        println("otherWorkFactor : " + otherWorkFactor);
-        println("randomFactor (not same value as used !) : " + getRandomFactorFromTask(taskDesc));
-        println("learnFactor : " + (1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty("takeInHandDuration") / 100))) / affectedEmployeesDesc.length)));
-        println("bonusRatio : " + parseFloat(taskDesc.getProperty("bonusRatio")));
-        println("predecessorFactor : " + Math.pow((predecessorsAdvance / taskDesc.getPredecessors().size()) / 100, parseInt(taskInst.getProperty("predecessorsDependances")))); //predecessor factor);
-        println("stepAdvance : " + stepAdvance);
-        println("need completeness : " + parseInt(selectedReq.getCompleteness()));
-        println("needProgress : " + needProgress);
-        println("StepQuality : " + ((parseInt(selectedReq.getQuality()) * parseInt(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress));
+        println('sameNeedActivity.length : ' + sameNeedActivity.length);
+        println('employeesMotivationFactor : ' + employeesMotivationFactor);
+        println('employeesMotivationXActivityRate : ' + employeesMotivationXActivityRate);
+        println('sumActivityRate : ' + sumActivityRate);
+        println('deltaLevel : ' + deltaLevel);
+        println('employeeSkillsetFactor : ' + employeeSkillsetFactor);
+        println('employeesSkillsetXActivityRate : ' + employeesSkillsetXActivityRate);
+        println('activityCoefficientXActivityRate : ' + activityCoefficientXActivityRate);
+        println('numberOfEmployeeOnNeedOnNewTask : ' + numberOfEmployeeOnNeedOnNewTask);
+        println('motivationXActivityRate: ' + motivationXActivityRate);
+        println('skillsetXActivityRate: ' + skillsetXActivityRate);
+        println('NeedMotivationFactor : ' + employeesMotivationXActivityRate / sumActivityRate);
+        println('NeedSkillsetFactor : ' + employeesMotivationXActivityRate / sumActivityRate);
+        println('ActivityNeedRateFactor : ' + activityCoefficientXActivityRate / sumActivityRate);
+        println('baseAdvance : ' + 1 / (steps * (parseInt(taskDesc.getInstance(self).getDuration()))));
+        println('numberOfRessourcesFactor : ' + correctedRessources / reqByWorks[workAs].totalOfEmployees);
+        println('otherWorkFactor : ' + otherWorkFactor);
+        println('randomFactor (not same value as used !) : ' + getRandomFactorFromTask(taskDesc));
+        println('learnFactor : ' + (1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length)));
+        println('bonusRatio : ' + parseFloat(taskDesc.getProperty('bonusRatio')));
+        println('predecessorFactor : ' + Math.pow((predecessorsAdvance / taskDesc.getPredecessors().size()) / 100, parseInt(taskInst.getProperty('predecessorsDependances')))); //predecessor factor);
+        println('stepAdvance : ' + stepAdvance);
+        println('need completeness : ' + parseInt(selectedReq.getCompleteness()));
+        println('needProgress : ' + needProgress);
+        println('StepQuality : ' + ((parseInt(selectedReq.getQuality()) * parseInt(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress));
     }
 
     //set need progress (after calcuateQuality) and return it
@@ -542,8 +634,8 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
 
 function getRandomFactorFromTask(taskDesc) {
     var rn = Math.floor(Math.random() * 100), //number 0 to 100 (0 inclusive, 100 exclusive);
-            randomDurationSup = parseFloat(taskDesc.getProperty("randomDurationSup")),
-            randomDurationInf = parseFloat(taskDesc.getProperty("randomDurationInf")),
+            randomDurationSup = parseFloat(taskDesc.getProperty('randomDurationSup')),
+            randomDurationInf = parseFloat(taskDesc.getProperty('randomDurationInf')),
             duration = parseInt(taskDesc.getInstance(self).getDuration()), delta,
             randomFactor, x = Math.random();
 
@@ -594,9 +686,9 @@ function calculateTaskQuality(taskDesc) {
 }
 
 
-function tempInitializer() {
-    var occupation, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, "employees")),
-            listTasks = VariableDescriptorFacade.findByName(gm, "tasks");
+function tempInit() {
+    var occupation, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, 'employees')),
+            listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');
 
     occupation = listEmployees[0].getInstance(self).addOccupation();
     occupation.setTime(1.0);
@@ -610,17 +702,17 @@ function tempInitializer() {
     occupation.setTime(3.0);
     occupation.setEditable(false);
 
-    listTasks.items.get(0).getPredecessors().add(listTasks.items.get(1));
+    //listTasks.items.get(0).getPredecessors().add(listTasks.items.get(1));
 
     listEmployees[1].getInstance(self).assign(listTasks.items.get(0));
     listEmployees[0].getInstance(self).assign(listTasks.items.get(1));
 
-    return "is initialized";
+    return 'is initialized';
 }
 
 function getCurrentInGameTime() {
     var inGameTime = {phase: null, period: null},
-    phases = VariableDescriptorFacade.findByName(gm, "currentPeriod");
+    phases = VariableDescriptorFacade.findByName(gm, 'currentPeriod');
     inGameTime.phase = parseInt(currentPhase.value);
     if (phases !== null && inGameTime.phase !== null) {
         inGameTime.period = parseInt(phases.items.get(inGameTime.phase).getInstance(self).value);
@@ -629,7 +721,7 @@ function getCurrentInGameTime() {
 }
 
 function isTrue(arg) {
-    return (arg == true || arg == "true") ? true : false;
+    return (arg == true || arg == 'true') ? true : false;
 }
 
 function getFloat(number, numberOfDigit) {
@@ -642,7 +734,7 @@ function flattenList(list, finalList) {
     finalList = (finalList) ? finalList : [];
     for (i = 0; i < list.items.size(); i++) {
         el = list.items.get(i);
-        if (el.getClass() && el.getClass().toString() == "class com.wegas.core.persistence.variable.ListDescriptor") {
+        if (el.getClass() && el.getClass().toString() == 'class com.wegas.core.persistence.variable.ListDescriptor') {
             finalList = this.flattenList(el, finalList);
         } else {
             finalList.push(el);
@@ -661,12 +753,12 @@ function checkEnd(allCurrentActivities, currentStep) {
         employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
         if (currentStep === steps - 1) {
             checkAssignments(employeeInst.getAssignments(), currentStep);
-        } else if (parseFloat(taskInst.getProperty("completeness")) < 100) {
+        } else if (parseFloat(taskInst.getProperty('completeness')) < 100) {
             reqByWorks = getRequirementsByWork(taskInst.getRequirements());
             nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks);
             if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {
-                sendMessage(getStepName(currentStep) + ") Fin d'une partie de la tâche : " + taskDesc.getLabel(),
-                        "Nous avons terminé la partie " + allCurrentActivities[i].getRequirement().getWork() + " de la tâche " + taskDesc.getLabel() + ". Je passe à " + nextWork + ". <br/> Salutations <br/>" + employeeName + "<br/> " + employeeJob,
+                sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',
+                        'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. Je passe à ' + nextWork + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             }
         }
@@ -678,37 +770,37 @@ function getStepName(step) {
     var name;
     switch (step) {
         case 0 :
-            name = "Lundi matin";
+            name = 'Lundi matin';
             break;
         case 1 :
-            name = "Lundi après-midi";
+            name = 'Lundi après-midi';
             break;
         case 2 :
-            name = "Mardi matin";
+            name = 'Mardi matin';
             break;
         case 3 :
-            name = "Mardi après-midi";
+            name = 'Mardi après-midi';
             break;
         case 4 :
-            name = "Mercredi matin";
+            name = 'Mercredi matin';
             break;
         case 5 :
-            name = "Mercredi après-midi";
+            name = 'Mercredi après-midi';
             break;
         case 6 :
-            name = "Jeudi matin";
+            name = 'Jeudi matin';
             break;
         case 7 :
-            name = "Jeudi après-midi";
+            name = 'Jeudi après-midi';
             break;
         case 8 :
-            name = "Vendredi matin";
+            name = 'Vendredi matin';
             break;
         case 9 :
-            name = "Vendredi après-midi";
+            name = 'Vendredi après-midi';
             break;
         default :
-            name = "samedi matin";
+            name = 'samedi matin';
     }
     return name;
 }

@@ -9,19 +9,19 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-YUI.add("wegas-pmg-breadcrumb", function (Y) {
+YUI.add("wegas-pmg-breadcrumb", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Breadcrumb;
 
     Breadcrumb = Y.Base.create("wegas-pmg-breadcrumb", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
-        initializer: function () {
+        initializer: function() {
             this.handlers = {};
         },
-        renderUI: function () {
+        renderUI: function() {
             var i, node, cb = this.get(CONTENTBOX), locations = this.get("locations");
-            if (locations.length == 0)
+            if (locations.length === 0)
                 return;
             node = Y.Node.create("<div class='pmg-breadcrumb'></div>");
             for (i = 0; i < locations.length; i++) {
@@ -29,17 +29,18 @@ YUI.add("wegas-pmg-breadcrumb", function (Y) {
             }
             cb.append(node);
         },
-        bindUI: function () {
+        bindUI: function() {
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
-        syncUI: function () {
+        syncUI: function() {
             var i, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,
                     varDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("variable"));
-            if (locations.length == 0 || varDesc == null)
+            if (locations.length === 0 || !varDesc) {
                 return;
-            for (i = 0; i < locations.length; i++) {
-                cb.one(".pmg-breadcrumb span").removeClass("previous").removeClass("current").removeClass("next");
             }
+            cb.all(".pmg-breadcrumb span").each(function(node) {
+                node.removeClass("previous").removeClass("current").removeClass("next");
+            });
             varValue = varDesc.getInstance().get("value") - varDesc.get("minValue");
             if (typeof varValue === "string") {
                 for (i = 0; i < locations.length; i++) {
@@ -64,7 +65,7 @@ YUI.add("wegas-pmg-breadcrumb", function (Y) {
                 }
             }
         },
-        destructor: function () {
+        destructor: function() {
             var k;
             for (k in this.handlers) {
                 this.handlers[k].detach();
