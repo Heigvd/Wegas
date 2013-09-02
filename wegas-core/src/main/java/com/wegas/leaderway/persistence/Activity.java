@@ -68,7 +68,7 @@ public class Activity extends AbstractAssignement {
     /**
      *
      */
-    @ManyToOne(optional = true)
+    @ManyToOne(optional = true, cascade = CascadeType.ALL, targetEntity = WRequirement.class)
     @JoinColumn(name = "wrequirement_id", nullable = true)
     @XmlTransient
     private WRequirement requirement;
