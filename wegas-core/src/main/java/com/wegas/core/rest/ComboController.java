@@ -10,8 +10,9 @@ package com.wegas.core.rest;
 import com.wegas.core.Helper;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -60,13 +61,22 @@ public class ComboController {
     @GET
     @Produces({MediaTypeJs, MediaTypeCss})
     public Response index(@Context Request req) throws IOException {
-        final Set<String> files = this.uriInfo.getQueryParameters().keySet();
+
+        //final Set<String> files = this.uriInfo.getQueryParameters().keySet(); // Old version, removed cause query parameters where in the wrong order
+
+        ArrayList<String> files = new ArrayList<>();                            // New version, with parameters in the right order
+        for (String parameter : this.uriInfo.getRequestUri().getQuery().split("&")) {
+            String split = parameter.split("=")[0];
+            if (split != null) {
+                files.add(split);
+            }
+        }
+
         files.remove("v");
         files.remove("version");
+
         final String mediaType = (files.iterator().next().endsWith("css"))
                 ? MediaTypeCss : MediaTypeJs;                            // Select the content-type based on the first file extension
-
-
 
         // MediaType types[] = {"application/json", "application/xml"};
         // List<Variant> vars = Variant.mediaTypes(types).add().build();
@@ -89,7 +99,7 @@ public class ComboController {
                 build();
     }
 
-    private String getCombinedFile(Set<String> fileList, String mediaType) throws IOException {
+    private String getCombinedFile(List<String> fileList, String mediaType) throws IOException {
         StringBuilder acc = new StringBuilder();
         for (String fileName : fileList) {
             try {
