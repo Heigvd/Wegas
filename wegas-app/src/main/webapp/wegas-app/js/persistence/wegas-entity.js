@@ -879,7 +879,7 @@ YUI.add('wegas-entity', function(Y) {
      */
     Wegas.persistence.GameScope = Y.Base.create("GameScope", Wegas.persistence.Scope, [], {
         getInstance: function() {
-            return this.get("variableInstances")[""+Wegas.app.get('currentGame')];
+            return this.get("variableInstances")["" + Wegas.app.get('currentGame')];
         }
     }, {
         ATTRS: {
@@ -1132,6 +1132,14 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 _inputex: {
                     regexp: /^[0-9]*$/
+                }
+            },
+            history: {
+                type: ARRAY,
+                _inputex: {
+                    _type: "list",
+                    useButtons: true,
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
         }
