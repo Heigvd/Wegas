@@ -122,7 +122,7 @@
                         "type": "Template",
                         "label": "Available time: ",
                         "variable": {
-                            "name": "timeCards"
+                            "expr": "timeCards.items[currentPhase.value].descriptorId"
                         },
                         "template": "box"
                     }

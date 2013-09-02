@@ -33,20 +33,6 @@
             }
         }, {
             "@class": "NumberDescriptor",
-            "name": "timeCards",
-            "editorLabel": "timeCards",
-            "label": "timeCards",
-            "minValue": 0,
-            "maxValue": 50,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 15
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
             "name": "actualCost",
             "editorLabel": "actualCost",
             "label": "actualCost",
@@ -144,6 +130,76 @@
             "scope": {
                 "@class": "TeamScope"
             }
+        }, {
+            "@class": "ListDescriptor",
+            "name": "timeCards",
+            "editorLabel": "time cards",
+            "label": "time cards",
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "items": [
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase1",
+                    "editorLabel": "Cards phase 1",
+                    "label": "Cards phase 1",
+                    "minValue": 0,
+                    "maxValue": 15,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 15
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase2",
+                    "editorLabel": "Cards phase 2",
+                    "label": "Cards phase 2",
+                    "minValue": 0,
+                    "maxValue": 7,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 7
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase3",
+                    "editorLabel": "Cards phase 3",
+                    "label": "Cards phase 3",
+                    "minValue": 0,
+                    "maxValue": 10,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 10
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase4",
+                    "editorLabel": "Cards phase 4",
+                    "label": "Cards phase 4",
+                    "minValue": 0,
+                    "maxValue": 5,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 5
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }
+            ]
         }, {
             "@class": "ListDescriptor",
             "name": "pageUtilities",

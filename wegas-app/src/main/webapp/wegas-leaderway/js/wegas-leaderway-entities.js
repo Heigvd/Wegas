@@ -393,6 +393,15 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             }, this);
 
             return data;
+        },
+        test: function() {
+            return [{
+                    value: "a"
+                }, {
+                    value: "b"
+                }, {
+                    value: "c"
+                }];
         }
     }, {
         ATTRS: {
@@ -410,9 +419,15 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 optional: true
             },
             predecessors: {
+                type: ARRAY,
                 _inputex: {
                     label: "Predecessors",
-                    _type: HIDDEN
+                    _type: LIST,
+                    useButtons: true,
+                    elementType: {
+                        type: SELECT,
+                        value: "taskDescriptorId"
+                    }
                 }
             },
             properties: {
