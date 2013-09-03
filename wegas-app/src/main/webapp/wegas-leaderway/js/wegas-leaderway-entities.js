@@ -420,6 +420,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             },
             predecessors: {
                 type: ARRAY,
+                value: [],
                 _inputex: {
                     label: "Predecessors",
                     _type: LIST,

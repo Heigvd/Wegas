@@ -31,7 +31,7 @@ function nextPeriod() {
 function checkEndOfProject() {
     var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'), isTheEnd = true;
     for (i = 0; i < tasks.items.size(); i++) {
-        taskInst = tasks.items.get(0).getInstance(self);
+        taskInst = tasks.items.get(i).getInstance(self);
         if (isTrue(taskInst.getActive()) && parseInt(taskInst.getProperty('completeness')) < 100) {
             isTheEnd = false;
             break;
@@ -605,6 +605,9 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     if (needProgress > 0) {
         selectedReq.setQuality((parseInt(selectedReq.getQuality()) * parseInt(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);
     }
+    
+    //set Wage (add 1/steps of the need's wage at task);
+    taskInst.setProperty("wage", parseInt(taskInst.getProperty("wage")) + (parseInt(activityAsNeeds.getResourceInstance().getProperty("wage")) / steps));
 
     if (testMode) {
         println('sameNeedActivity.length : ' + sameNeedActivity.length);
