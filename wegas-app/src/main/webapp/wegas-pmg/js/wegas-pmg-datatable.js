@@ -9,121 +9,172 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-YUI.add("wegas-pmg-datatable", function (Y) {
+YUI.add("wegas-pmg-datatable", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Datatable;
 
-    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
+    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Wegas.DataTable, [Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
         datatable: null,
         data: null,
         // *** Lifecycle Methods *** //
-        initializer: function () {
-            var i, ct = this.get("columnTitles"), columnTitles = new Array();
+        initializer: function() {
+            var i, ct = this.get("columnsCfg"), columnTitles = new Array();
             this.handlers = {};
             this.data = [];
-            if (ct == null || ct.length == 0 || ct.length != this.get("columnValues").length) {
-                return;
-            }
-            columnTitles.push({
-                key: "_id",
-                label: "_id"
-            });                                                                 //First column is always the name (but not displayed)
+
             for (i = 0; i < ct.length; i++) {                                         //construct Datatable's columns
-                columnTitles.push(
-                        {
-                            key: ct[i],
-                            label: ct[i],
-                            sortable: true
-                        }
-                );
+
+                Y.mix(ct[i], {
+                    sortable: true,
+                    allowHTML: true
+                });
             }
-//            this.datatable = new Y.Treeble({                                  //Using Treeble (comment also the sorting methode belove)
+
             this.datatable = new Y.DataTable({//Using simple database
-                columns: columnTitles
+                columns: ct
             });
-            if (this.get("defaultSort") && this.get("defaultSort").indexOf(this.get("columnValues") > -1)) { //Add columns sorting possibilities
-                this.datatable.sort(this.get("defaultSort"));
-            } else {
-                this.datatable.sort(this.get("columnTitles")[0]);
-            }
         },
-        renderUI: function () {
+        renderUI: function() {
             var cb = this.get(CONTENTBOX);
             if (!this.datatable)
                 return;
             this.datatable.render(cb);
         },
-        bindUI: function () {
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("response", this.syncUI, this);
+        bindUI: function() {
+            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
-        syncUI: function () {
-            if (this.datatable == null || this.get("variables") == null)
+        syncUI: function() {
+            this.data = [];
+            if (this.datatable === null || this.get("variables") === null)
                 return;
             this.datatable.set("data", []);
-            this.data.length = 0;
-            this.getData();
-            this.datatable.addRows(this.data);
+            var data = this.getData();
+            this.datatable.addRows(data);
         },
-        destructor: function () {
-            var i;
-            for (i = 0; i < this.handlers.length; i++) {
-                this.handlers[i].detach();
+        destructor: function() {
+            var k;
+            for (k in this.handlers) {
+                this.handlers[k].detach();
             }
             this.datatable.destroy();
         },
         //*** Private Methods ***/
-        getData: function () {
-            var i, j, variables, variableDesc, variableInst, oneRowDatas, data,
-                    ct = this.get("columnTitles"), cv = this.get("columnValues");
-            if (cv == null)
+        getData: function() {
+            var i, oneRowDatas, data,
+                    variables = this.get('variable.evaluated'),
+                    items = variables.get('items'),
+                    data = [];
+
+            if (!variables || !variables instanceof Y.Wegas.persistence.ListDescriptor) {
+                this.showMessage("error", "Variable is not a ListDescriptor");
                 return;
-            variables = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("variables"));
-            for (i = 0; i < variables.get('items').length; i++) {
-                variableDesc = variables.get('items')[i];
-                variableInst = variableDesc.getInstance();
-                oneRowDatas = {};
-                oneRowDatas["_id"] = variableDesc.get("id");
-                for (j = 0; j < ct.length; j++) {
-                    if (variableDesc.get(cv[j])) {
-                        data = variableDesc.get(cv[j]);
-                    } else if (variableInst.get(cv[j])) {
-                        data = variableInst.get(cv[j]);
-                    } else {
-                        data = variableInst.get('properties')[cv[j]];
-                    }
-                    //change texte-number in number to prepare the value to be sorted.
-                    if (parseFloat(data)) {
-                        data = parseFloat(data);
-                    }
-                    oneRowDatas[ct[j]] = data;
-                }
-                this.data.push(oneRowDatas);
             }
+
+            for (i = 0; i < items.length; i++) {
+                var oneRowDatas = items[i].toJSON();
+                oneRowDatas.descriptor = items[i];
+                oneRowDatas.instance = items[i].getInstance().toJSON();
+                data.push(oneRowDatas);
+            }
+            return data;
         }
     }, {
         ATTRS: {
-            variables: {
-                value: null,
-                validator: function (s) {
-                    return s === null || Y.Lang.isString(s);
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variable: {
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "variable"
                 }
             },
-            columnTitles: {
-                validator: Y.Lang.isArray
-            },
-            columnValues: {
+            columnsCfg: {
                 validator: Y.Lang.isArray
             },
             defaultSort: {
                 value: null,
-                validator: function (s) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             }
         }
     });
+    Y.mix(Y.DataTable.BodyView.Formatters, {
+//        "instance": function(o) {
+//            return function(o) {
+//                return o.data.instance[o.column.field];
+//            }
+//        },
+//        "map": function(o) {
+//            return function(o) {
+//                var i, names = o.column.key.split("."),
+//                    data = o.data;
+//                for (var i = 0; i < names.length; i += 1) {
+//                    data = data[names[i]];
+//                }
+//
+//                if (!data)
+//                    data = " - ";
+//                return data;
+//            }
+//        },
+        "requieredRessources": function(o) {
+            return function(o) {
+                var i, data = "";
+                for (i = 0; i < o.data.instance["requirements"].length; i++) {
+                    data = data + "<p>";
+                    data = data + "<span class='quantity'>" + o.data.instance.requirements[i].get("quantity") + "x</span> ";
+                    data = data + "<span class='work'>" + o.data.instance["requirements"][i].get("work") + " </span> ";
+                    data = data + "<span class='level'>" + o.data.instance["requirements"][i].get("level") + " </span> ";
+                    data = data + "</p>";
+                }
+                return data;
+            }
+        },
+        "assignedRessources": function(o) {
+            return function(o) {
+                var assignedRessources = o.data.descriptor.findAssociatedRessources("assignments"),
+                        data = "", i, t;
+                for (i = 0; i < assignedRessources.length; i++) {
+                    for (t in assignedRessources[i].ressourceInstance.get("skillsets")) {
+                        data = data + "<p>" + t + " " + assignedRessources[i].ressourceInstance.get("skillsets")[t] + "</p>";
+                    }
+                }
+                if (!data)
+                    data = " - ";
+                return data;
+            }
+        },
+        "template": function(o) {
+            return function(o) {
+                var data = "";
+                Y.use('template', function(Y) {
+                    var micro = new Y.Template();
+                    data = micro.render('<%= this.' + o.column.field + ' %>', o.data);
+                });
+                if (!data)
+                    data = " - ";
+                return data;
+            }
+        },
+        "object": function() {
+            return function(o) {
+                var data = "";
+                Y.use('template', function(Y) {
+                    var micro = new Y.Template();
+                    data = micro.render('<% for(var i in this.' + o.column.field + '){%> <%= this.' + o.column.field + '[i]%> <%} %>', o.data);
+                });
+                if (!data)
+                    data = " - ";
+                return data;
+            }
+        }
+    });
 
     Y.namespace("Wegas").PmgDatatable = Datatable;
-});
+}); 

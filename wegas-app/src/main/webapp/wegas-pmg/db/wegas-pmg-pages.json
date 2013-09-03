@@ -24,10 +24,10 @@
                                 ],
                                 "variable": "currentPhase"
                             }, {
-                                "type": "VariableDisplay",
+                                "type": "Template",
                                 "cssClass": "pmg-period",
                                 "label": "Periods",
-                                "view": "valuebox",
+                                "template": "valuebox",
                                 "variable": {
                                     "expr": "currentPeriod.items[currentPhase.value].descriptorId"
                                 }
@@ -42,7 +42,7 @@
                                             "onClick": {
                                                 "@class": "Script",
                                                 "language": "JavaScript",
-                                                "content": "//todo"
+                                                "content": "nextPeriod()"
                                             }
                                         }
                                     }
@@ -75,32 +75,56 @@
                         "children": [
                             {
                                 "type": "GaugeDisplay",
-                                "label": "Fixed costs",
-                                "variable": {
-                                    "name": "fixedCosts"
-                                }
-                            }, {
-                                "type": "GaugeDisplay",
                                 "label": "Quality",
                                 "variable": {
                                     "name": "quality"
                                 }
                             }, {
                                 "type": "GaugeDisplay",
+                                "label": "Costs",
+                                "variable": {
+                                    "name": "costs"
+                                },
+                                "plugins": [
+                                    {
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }, {
+                                "type": "GaugeDisplay",
                                 "label": "Delay",
                                 "variable": {
                                     "name": "delay"
-                                }
+                                },
+                                "plugins": [
+                                    {
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     }, {
                         "cssClass": "pmg-timevariable",
-                        "type": "VariableDisplay",
+                        "type": "Template",
                         "label": "Available time: ",
                         "variable": {
                             "name": "timeCards"
                         },
-                        "view": "box"
+                        "template": "box"
                     }
                 ]
             }, {
@@ -142,6 +166,16 @@
                                     "subpageId": 4,
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
+                                }
                             }
                         ]
                     }, {
@@ -153,6 +187,38 @@
                                 "cfg": {
                                     "subpageId": 5,
                                     "targetPageLoaderId": "maindisplayarea"
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
+                                }
+                            }
+                        ]
+                    }, {
+                        "type": "Button",
+                        "label": "EVM",
+                        "plugins": [
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 10,
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            },
+                            {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
                                 }
                             }
                         ]
@@ -277,24 +343,37 @@
         "children": [
             {
                 "type": "PmgSlidePanel",
-                "title": "EVM",
-                "cssClass": "evm",
-                "animation": false,
-                "children": [
-                    {
-                        "type": "Text",
-                        "content": "EVM chart"
-                    }
-                ]
-            }, {
-                "type": "PmgSlidePanel",
                 "title": "Finances",
                 "cssClass": "finances",
                 "animation": false,
                 "children": [
                     {
-                        "type": "Text",
-                        "content": "Finances values"
+                        "type": "Template",
+                        "custom": "<%  var fixedCosts=0, wages=0, unworked=0, total=0; for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); unworked = unworked + parseFloat(properties.unworkedHoursCosts); } total = wages + fixedCosts + unworked; %><div class='wages'><span class='label'>Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>Unworked Hours</span><span class='variableValue'><%= unworked %></span></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
+                        "variable": {
+                            "name": "tasks"
+                        }
+                    }
+                ]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "EVM",
+                "cssClass": "evm",
+                "animation": false,
+                "children": [
+                    {
+                        "type": "Chart",
+                        "chartWidth": "90%",
+                        "variables": [{
+                                "name": "actualCost",
+                                "label": "AC (Actual Cost)"
+                            }, {
+                                "name": "planedValue",
+                                "label": "PV (Planed Value)"
+                            }, {
+                                "name": "earnedValue",
+                                "label": "EV (Earned Value)"
+                            }]
                     }
                 ]
             }, {
@@ -304,8 +383,15 @@
                 "animation": false,
                 "children": [
                     {
-                        "type": "Text",
-                        "content": "management indicators chart"
+                        "type": "Chart",
+                        "chartWidth": "90%",
+                        "variables": [{
+                                "name": "managementApproval",
+                                "label": "Management"
+                            }, {
+                                "name": "userApproval",
+                                "label": "Users"
+                            }]
                     }
                 ]
             }, {
@@ -316,8 +402,9 @@
                 "children": [
                     {
                         "type": "Chart",
+                        "chartWidth": "90%",
                         "variables": [{
-                                "name": "fixedCosts",
+                                "name": "actualCost",
                                 "label": "Costs"
                             }, {
                                 "name": "delay",
@@ -337,22 +424,48 @@
         "direction": "vertical",
         "children": [
             {
-                "type": "PmgTasklist",
-                "variables": "tasks",
-                "columnTitles": [
-                    "No",
-                    "Name",
-                    "Estimated duration",
-                    "Realized (%)"
-                ],
-                "columnValues": [
-                    "no",
-                    "label",
-                    "duration",
-                    "realized"
-                ],
-                "viewDescription": "true",
-                "assignements": "false"
+                "type": "PmgDatatable",
+                "variable": {
+                    "name": "tasks"
+                },
+                "columnsCfg": [{
+                        "key": "index",
+                        "label": "No"
+                    }, {
+                        "key": "label",
+                        "label": "Name"
+                    }, {
+                        "label": "Estimated duration",
+                        "formatter": "template",
+                        "field": "instance.duration"
+                    }, {
+                        "label": "Fixed costs",
+                        "formatter": "template",
+                        "field": "instance.properties.fixedCosts"
+                    }, {
+                        "label": "Wages",
+                        "formatter": "template",
+                        "field": "instance.properties.wages"
+                    }, {
+                        "label": "Quality",
+                        "formatter": "template",
+                        "field": "instance.properties.quality"
+                    }, {
+                        "label": "BAC",
+                        "formatter": "template",
+                        "field": "instance.properties.bac"
+                    }, {
+                        "label": "Realised %",
+                        "formatter": "template",
+                        "field": "instance.properties.completeness"
+                    }, {
+                        "key": "requirements",
+                        "label": "Ressources",
+                        "formatter": "requieredRessources"
+                    }, {
+                        "label": "Assigned resources",
+                        "formatter": "assignedRessources"
+                    }]
             }
         ]
     },
@@ -361,20 +474,34 @@
         "type": "List",
         "children": [
             {
-                "type": "PmgGantt",
-                "variables": "tasks",
-                "columnTitles": [
-                    "No",
-                    "Name",
-                    "Realized (%)"
-                ],
-                "columnValues": [
-                    "no",
-                    "label",
-                    "realized"
-                ],
-                "viewDescription": "true",
-                "periods": "currentPeriod.items[currentPhase.value].descriptorId"
+                "type": "PmgDatatable",
+                "variable": {
+                    "name": "tasks"
+                },
+                "columnsCfg": [{
+                        "key": "index",
+                        "label": "No"
+                    }, {
+                        "key": "label",
+                        "label": "Name"
+                    }],
+                "plugins": [{
+                        "fn": "ScheduleDT",
+                        "cfg": {
+                            "columnToAdd": 10,
+                            "variable": {
+                                "name": "periodPhase3"
+                            }
+                        }
+                    }, {
+                        "fn": "Planification"
+                    }, {
+                        "fn": "Plannificationcolor"
+                    }, {
+                        "fn": "PlannificationActivityColor"
+                    }, {
+                        "fn": "PlannificationProgressColor"
+                    }]
             }
         ]
     },
@@ -388,26 +515,55 @@
                 "title": "Web designer",
                 "children": [
                     {
-                        "type": "PmgResourcelist",
-                        "variables": "webDesigner",
-                        "columnTitles": [
-                            "Name",
-                            "Grade",
-                            "Wage",
-                            "%",
-                            "Motivation"
-                        ],
-                        "columnValues": [
-                            "label",
-                            "grade",
-                            "wage",
-                            "ratio",
-                            "motivation"
-                        ],
-                        "viewDescription": "true",
-                        "periods": "currentPeriod.items[currentPhase.value].descriptorId",
-                        "taskList": "tasks",
-                        "taskSortBy": "no"
+                        "type": "PmgDatatable",
+                        "variable": {
+                            "name": "webDesigner"
+                        },
+                        "columnsCfg": [{
+                                "key": "label",
+                                "label": "Name"
+                            }, {
+                                "label": "Grade",
+                                "formatter": "object",
+                                "field": "instance.skillsets"
+                            }, {
+                                "label": "Wage",
+                                "formatter": "template",
+                                "field": "instance.properties.wage"
+                            }, {
+                                "label": "Ratio",
+                                "formatter": "template",
+                                "field": "instance.properties.ratio"
+                            }, {
+                                "label": "Motiv.",
+                                "formatter": "template",
+                                "field": "instance.moral"
+                            }],
+                        "plugins": [{
+                                "fn": "ScheduleDT",
+                                "cfg": {
+                                    "columnToAdd": 10,
+                                    "variable": {
+                                        "name": "periodPhase3"
+                                    }
+                                }
+                            }, {
+                                "fn": "Assignment",
+                                "cfg": {
+                                    "taskList": {
+                                        "name": "tasks"
+                                    }
+                                }
+                            }, {
+                                "fn": "Reservation",
+                                "cfg": {
+                                    "type": "occupations"
+                                }
+                            }, {
+                                "fn": "OccupationColor"
+                            }, {
+                                "fn": "ActivityColor"
+                            }]
                     }
                 ]
             }, {
@@ -415,26 +571,55 @@
                 "title": "Business specialist",
                 "children": [
                     {
-                        "type": "PmgResourcelist",
-                        "variables": "businessSpecialist",
-                        "columnTitles": [
-                            "Name",
-                            "Grade",
-                            "Wage",
-                            "%",
-                            "Motivation"
-                        ],
-                        "columnValues": [
-                            "name",
-                            "label",
-                            "wage",
-                            "ratio",
-                            "motivation"
-                        ],
-                        "viewDescription": "true",
-                        "periods": "currentPeriod.items[currentPhase.value].descriptorId",
-                        "taskList": "tasks",
-                        "taskSortBy": "no"
+                        "type": "PmgDatatable",
+                        "variable": {
+                            "name": "businessSpecialist"
+                        },
+                        "columnsCfg": [{
+                                "key": "label",
+                                "label": "Name"
+                            }, {
+                                "label": "Grade",
+                                "formatter": "object",
+                                "field": "instance.skillsets"
+                            }, {
+                                "label": "Wage",
+                                "formatter": "template",
+                                "field": "instance.properties.wage"
+                            }, {
+                                "label": "Ratio",
+                                "formatter": "template",
+                                "field": "instance.properties.ratio"
+                            }, {
+                                "label": "Motiv.",
+                                "formatter": "template",
+                                "field": "instance.moral"
+                            }],
+                        "plugins": [{
+                                "fn": "ScheduleDT",
+                                "cfg": {
+                                    "columnToAdd": 10,
+                                    "variable": {
+                                        "name": "periodPhase3"
+                                    }
+                                }
+                            }, {
+                                "fn": "Assignment",
+                                "cfg": {
+                                    "taskList": {
+                                        "name": "tasks"
+                                    }
+                                }
+                            }, {
+                                "fn": "Reservation",
+                                "cfg": {
+                                    "type": "occupations"
+                                }
+                            }, {
+                                "fn": "OccupationColor"
+                            }, {
+                                "fn": "ActivityColor"
+                            }]
                     }
                 ]
             }
@@ -502,6 +687,49 @@
                 "variable": {
                     "name": "inbox"
                 }
+            }
+        ]
+    }, "10": {
+        "cssClass": "evm-page",
+        "type": "List",
+        "children": [
+            {
+                "type": "PmgDatatable",
+                "cssClass": "evmDatatable",
+                "variable": {
+                    "name": "tasks"
+                },
+                "columnsCfg": [{
+                        "key": "index",
+                        "label": "No"
+                    }, {
+                        "key": "label",
+                        "label": "Name"
+                    }],
+                "plugins": [{
+                        "fn": "Bac"
+                    }]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "EVM",
+                "cssClass": "evm",
+                "animation": false,
+                "children": [
+                    {
+                        "type": "Chart",
+                        "chartWidth": "90%",
+                        "variables": [{
+                                "name": "actualCost",
+                                "label": "AC (Actual Cost)"
+                            }, {
+                                "name": "planedValue",
+                                "label": "PV (Planed Value)"
+                            }, {
+                                "name": "earnedValue",
+                                "label": "EV (Earned Value)"
+                            }]
+                    }
+                ]
             }
         ]
     }

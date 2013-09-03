@@ -52,8 +52,7 @@ YUI.add('wegas-nodeformatter', function(Y) {
         /**
          * @function
          * @private
-         * @param value
-         * @param label
+         * @param attrs
          * @param className
          * @return node
          * @description return a div node containing an image node. This image
@@ -142,6 +141,18 @@ YUI.add('wegas-nodeformatter', function(Y) {
                 }
             });
             return node;
+        },
+        makeNodeLongText: function(cb, variable, value, className) {
+            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(variable, "Extended", {// Retrieve the object from the server in Export view
+                on: Y.Wegas.superbind({
+                    success: function(e) {
+                        cb.one("."+className).setContent(e.response.entity.get(value) || "No "+value);
+                    },
+                    failure: function(e) {
+                        cb.one("."+className).setContent("No "+value);
+                    }
+                }, this)
+            });
         }
 
     }, {

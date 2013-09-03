@@ -208,12 +208,12 @@ YUI.add('wegas-leaderway-folder', function (Y) {
          * @return String, a texte including all the Requirements
          *  of the given task (example : engineer - 48).
          */
-        getRequirements: function(td) {
+        getRequirements: function(ti) {
             var i, j, temp = [], req = [];
-            for (i = 0; i < td.get('requirements').length; i++) {
-                if (td.get('requirements')[i].getAttrs) {
-                    req = td.get('requirements')[i].getAttrs();
-                    temp.push(req.purview + " - " + req.level);
+            for (i = 0; i < ti.get('requirements').length; i++) {
+                if (ti.get('requirements')[i].getAttrs) {
+                    req = ti.get('requirements')[i].getAttrs();
+                    temp.push(req.work + " - " + req.level);
                 }
             }
             return temp.join(", ");
@@ -241,7 +241,7 @@ YUI.add('wegas-leaderway-folder', function (Y) {
                     occupation.push(occupationObject.taskDescriptor.get('name'));
                     occupation.push('</span></div>');
                     occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>');
-                    occupation.push(this.getRequirements(taskDescriptor));
+                    occupation.push(this.getRequirements(taskInstance));
                     occupation.push('</ul></div>');
                     occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">');
                     occupation.push(taskDescriptor.get('properties').salary);

@@ -292,8 +292,24 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          *
          */
-        findAll: function() {
-            return this.getCache();
+        findAll: function(key, needle) {
+            if (!key) {
+                return this.getCache();
+            } else {
+                // Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.WegasCache');
+                var ret = [],
+                        doFind = function(stack) {
+                    return Y.Array.find(stack, function(item, index, array) {
+                        if (this.testEntity(item, key, needle)) {                   // We check the current element if it's a match
+                            ret.push(item);
+                        }
+                        this.walkEntity(item, doFind);
+                        return false;
+                    }, this);
+                };
+                doFind.call(this, this.getCache());
+                return ret;
+            }
         },
         /**
          * Retrieves an entity from the cache

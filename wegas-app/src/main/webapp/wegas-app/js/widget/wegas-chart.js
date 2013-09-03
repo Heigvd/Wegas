@@ -40,6 +40,7 @@ YUI.add('wegas-chart', function(Y) {
             }
         },
         destructor: function() {
+            if (this.chart) this.chart.destroy();
             for (var i = 0; i < this.handlers.length; i = i + 1) {
                 this.handlers[i].detach();
             }
@@ -72,11 +73,13 @@ YUI.add('wegas-chart', function(Y) {
             if (this.chart)
                 this.chart.destroy();
             if (this.vdList.length < 1)
-                return;
-            var i,
+                return; 
+            var i, cb = this.get(CONTENTBOX),
                     seriesCollection = [],
                     rawSeries = [],
                     obj;
+            if (!cb._node) return;
+            
             for (i = 0; i < this.vdList.length; i++) {
                 obj = {
                     yDisplayName: this.vdList[i].label
@@ -88,6 +91,7 @@ YUI.add('wegas-chart', function(Y) {
             this.chart = new Y.Chart({
                 type: this.get("chartType"),
                 seriesCollection: seriesCollection,
+//                categoryType:"time",                                          Start sur l'axe mais l'axe devient time
                 axes: {
                     values: {
                         minimum: this.findMinValue(),
@@ -105,7 +109,7 @@ YUI.add('wegas-chart', function(Y) {
                 horizontalGridlines: this.get("horizontalGridlines"),
                 verticalGridlines: this.get("verticalGridlines")
             });
-            this.chart.render(".chart");
+            this.chart.render(cb._node.childNodes[0]);
         },
         findMinValue: function(){
             var i, h, minVal = null;
@@ -160,6 +164,12 @@ YUI.add('wegas-chart', function(Y) {
                 }
                 fitSeries.push(serieFitData.slice());
             }
+            
+            if (fitSeries[0].length === 0){
+                for (i=1; i<10; i++){
+                   fitSeries[0].push(i); 
+                }
+            }
             return fitSeries;
         },
         chartTooltip: {
@@ -173,7 +183,7 @@ YUI.add('wegas-chart', function(Y) {
         },
         clear: function(cb) {
             this.chart = null;
-            cb.one('.chart').setHTML();
+            if (cb.one('.chart')) cb.one('.chart').setHTML();
         },
         checkType: function(value){
             value = value.trim();

@@ -936,9 +936,19 @@ YUI.add('wegas-entity', function(Y) {
             }]
     });
     /**
+     * Meant to augment primitive Descriptors (Number, Text, String) with some functions
+     */
+    Wegas.persistence.PrimitiveDescriptor = Y.Base.create("Primitive", Y.Base, [], {
+        getValue: function(playerId) {
+            playerId = playerId instanceof Y.Wegas.persistence.Player ? playerId.get("id") : playerId;
+            return this.getInstance(playerId).get("value");
+        }
+    }, {
+    });
+    /**
      * StringDescriptor mapper
      */
-    Wegas.persistence.StringDescriptor = Y.Base.create("StringDescriptor", Wegas.persistence.VariableDescriptor, [], {}, {
+    Wegas.persistence.StringDescriptor = Y.Base.create("StringDescriptor", Wegas.persistence.VariableDescriptor, [Wegas.persistence.PrimitiveDescriptor], {}, {
         ATTRS: {
             "@class": {
                 value: "StringDescriptor"
@@ -967,7 +977,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * StringInstance mapper
      */
-    Wegas.persistence.StringInstance = Y.Base.create("StringInstance", Wegas.persistence.VariableInstance, [], {}, {
+    Wegas.persistence.StringInstance = Y.Base.create("StringInstance", Wegas.persistence.VariableInstance, [Wegas.persistence.PrimitiveDescriptor], {}, {
         ATTRS: {
             "@class": {
                 value: "StringInstance"
@@ -980,7 +990,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * StringDescriptor mapper
      */
-    Wegas.persistence.TextDescriptor = Y.Base.create("TextDescriptor", Wegas.persistence.VariableDescriptor, [], {}, {
+    Wegas.persistence.TextDescriptor = Y.Base.create("TextDescriptor", Wegas.persistence.VariableDescriptor, [Wegas.persistence.PrimitiveDescriptor], {}, {
         ATTRS: {
             "@class": {
                 value: "TextDescriptor"
@@ -1043,7 +1053,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * NumberDescriptor mapper
      */
-    Wegas.persistence.NumberDescriptor = Y.Base.create("NumberDescriptor", Wegas.persistence.VariableDescriptor, [], {}, {
+    Wegas.persistence.NumberDescriptor = Y.Base.create("NumberDescriptor", Wegas.persistence.VariableDescriptor, [Wegas.persistence.PrimitiveDescriptor], {}, {
         ATTRS: {
             "@class": {
                 value: "NumberDescriptor"
@@ -1281,6 +1291,14 @@ YUI.add('wegas-entity', function(Y) {
                                     "type": "AddEntityChildButton",
                                     "label": "Object",
                                     "targetClass": "ObjectDescriptor"
+                                }, {
+                                    "type": "AddEntityChildButton",
+                                    "label": "Task",
+                                    "targetClass": "TaskDescriptor"
+                                }, {
+                                    "type": "AddEntityChildButton",
+                                    "label": "Resource",
+                                    "targetClass": "ResourceDescriptor"
                                 }]
                         }
                     }]
@@ -1306,7 +1324,12 @@ YUI.add('wegas-entity', function(Y) {
     });
 
 
-    Wegas.persistence.InboxDescriptor = Y.Base.create("", Wegas.persistence.VariableDescriptor, [], {}, {
+    Wegas.persistence.InboxDescriptor = Y.Base.create("", Wegas.persistence.VariableDescriptor, [], {
+        isEmpty: function(playerId){
+            playerId = playerId instanceof Y.Wegas.persistence.Player ? playerId.get("id") : playerId;
+            return this.getInstance(playerId).get("messages").length < 1;
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "InboxDescriptor"

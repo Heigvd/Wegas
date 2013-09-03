@@ -7,11 +7,16 @@
  */
 package com.wegas.leaderway.ejb;
 
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.leaderway.persistence.AbstractAssignement;
 import com.wegas.leaderway.persistence.Activity;
 import com.wegas.leaderway.persistence.Assignment;
+import com.wegas.leaderway.persistence.Occupation;
 import com.wegas.leaderway.persistence.ResourceInstance;
+import com.wegas.leaderway.persistence.TaskDescriptor;
 import com.wegas.leaderway.persistence.TaskInstance;
+import com.wegas.leaderway.persistence.WRequirement;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -42,15 +47,20 @@ public class ResourceFacade {
      */
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
+    /**
+     *
+     */
+    @EJB
+    private VariableDescriptorFacade variableDescriptorFacade;
 
     /**
      *
      * @param resourceInstance
      * @param taskInstance
      */
-    public Assignment assign(ResourceInstance resourceInstance, TaskInstance taskInstance) {
+    public Assignment assign(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
         resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
-        return resourceInstance.assign(taskInstance);
+        return resourceInstance.assign(taskDescriptor);
     }
 
     /**
@@ -59,8 +69,8 @@ public class ResourceFacade {
      * @param resourceDescriptorId
      * @param taskDescriptorId
      */
-    public Assignment assign(Long resourceInstanceId, Long taskInstanceId) {
-        return this.assign((ResourceInstance) variableInstanceFacade.find(resourceInstanceId), (TaskInstance) variableInstanceFacade.find(taskInstanceId));
+    public Assignment assign(Long resourceInstanceId, Long taskDescriptorId) {
+        return this.assign((ResourceInstance) variableInstanceFacade.find(resourceInstanceId), (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
     }
 
     /**
@@ -68,9 +78,9 @@ public class ResourceFacade {
      * @param resourceInstance
      * @param taskInstance
      */
-    public Activity assignActivity(ResourceInstance resourceInstance, TaskInstance taskInstance) {
+    public Activity createActivity(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
         resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
-        return resourceInstance.assignActivity(taskInstance);
+        return resourceInstance.createActivity(taskDescriptor);
     }
 
     /**
@@ -78,9 +88,38 @@ public class ResourceFacade {
      * @param resourceInstance
      * @param taskInstance
      */
-    public Activity assignActivity(Long resourceInstanceId, Long taskInstanceId) {
-        return this.assignActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
-                (TaskInstance) variableInstanceFacade.find(taskInstanceId));
+    public Activity createActivity(Long resourceInstanceId, Long taskDescriptorId) {
+        return this.createActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
+                (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
+    }
+    /**
+     * 
+     * @param resourceInstance
+     * @param editable
+     * @return 
+     */
+    public Occupation addOccupation(ResourceInstance resourceInstance, Boolean editable) {
+        Occupation occupation = this.addOccupation(resourceInstance);
+        occupation.setEditable(editable);
+        return occupation;
+    }
+    /**
+     *
+     * @param resourceInstance
+     */
+    public Occupation addOccupation(ResourceInstance resourceInstance) {
+        resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
+        Occupation occupation = resourceInstance.addOccupation();
+        return occupation;
+    }
+     /**
+     *
+     * @param resourceInstance
+     * @param taskInstance
+     */
+    public Occupation addOccupation(Long resourceInstanceId) {
+        ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
+        return resourceInstance.addOccupation();
     }
 
     /**
@@ -88,19 +127,87 @@ public class ResourceFacade {
      * @param assignementId
      * @param index
      */
-    public void moveAssignment(final Long assignementId, final int index) {
+    public ResourceInstance moveAssignment(final Long assignementId, final int index) {
         final Assignment assignement = this.em.find(Assignment.class, assignementId);
         assignement.getResourceInstance().getAssignments().remove(assignement);
         assignement.getResourceInstance().getAssignments().add(index, assignement);
+        return assignement.getResourceInstance();
+    }
+    
+    public ResourceInstance removeAssignment(final Long assignementId) {
+        final Assignment assignement = this.em.find(Assignment.class, assignementId);
+        assignement.getResourceInstance().getAssignments().remove(assignement);
+        return assignement.getResourceInstance();
     }
 
-//    public void test(WRequirement requirement, Long taskId, Long resId, Player player) {
-//        TaskDescriptor td = this.em.find(TaskDescriptor.class, taskId);
-//        ResourceDescriptor rd = this.em.find(ResourceDescriptor.class, resId);
-//        td.getRequirements().add(requirement);
-//
-//        //assigne activity between resource to task and assigne Activity between requirement and resource
-//        Activity activity = this.assignActivity(rd.getInstance(player).getId(), td.getInstance(player).getId());
-//        activity.setWrequirement(requirement);
-//    }
+    /**
+     * 
+     * @param requirement
+     * @param taskInstanceId
+     * @return 
+     */
+    public TaskInstance addRequierement(WRequirement requirement, Long taskInstanceId) {
+        TaskInstance ti = (TaskInstance) variableInstanceFacade.find(taskInstanceId);
+        ti.getRequirements().add(requirement);
+        return ti;
+    }
+    
+    public ResourceInstance addAbstractAssignement(Long resourceInstanceId, AbstractAssignement abstractAssignement) {
+        ResourceInstance res = (ResourceInstance)variableInstanceFacade.find(resourceInstanceId);
+        if (abstractAssignement instanceof Occupation) {
+            Occupation o = (Occupation)abstractAssignement;
+            res.addOccupation(o);
+        } else if (abstractAssignement instanceof Assignment) {
+            Assignment a = (Assignment)abstractAssignement;
+            res.addAssignement(a);
+        } else {
+            Activity a = (Activity)abstractAssignement;
+            res.addActivity(a);
+        }
+        return res;
+    }
+    
+    public void removeAbstractAssignement(Long abstractAssignementId, String type) {
+        switch (type) {
+            case "occupations":
+                Occupation o = this.findOccupation(abstractAssignementId);
+                em.remove(o);
+                break;
+            case "assignment":
+                Assignment a = this.findAssignment(abstractAssignementId);
+                em.remove(a);
+                break;
+            default:
+                Activity ac = this.findActivity(abstractAssignementId);
+                em.remove(ac);
+        }
+    }
+    
+    public Occupation findOccupation(Long id){
+        return em.find(Occupation.class, id);
+    }
+    
+    public Activity findActivity(Long id) {
+        return em.find(Activity.class, id);
+    }
+    
+    public Assignment findAssignment(Long id){
+        return em.find(Assignment.class, id);
+    }
+    
+    public TaskInstance findTaskInstance(Long id){
+        return em.find(TaskInstance.class, id);
+    }
+    
+    public TaskInstance addTaskPlannification(Long taskInstanceId, Integer periode) {
+        TaskInstance ti = findTaskInstance(taskInstanceId);
+        ti.getPlannification().add(periode);
+        return ti;
+    }
+    
+    public TaskInstance removePlannification(Long taskInstanceId, Integer periode) {
+        TaskInstance ti = findTaskInstance(taskInstanceId);
+        ti.getPlannification().remove(periode);
+        return ti;
+    }
 }

@@ -15,6 +15,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
+ * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
 public class Assignment extends AbstractAssignement {
@@ -27,9 +28,9 @@ public class Assignment extends AbstractAssignement {
     @GeneratedValue
     private Long id;
     @ManyToOne(optional = false)
-    @JoinColumn(name = "taskinstance_id", nullable = false)
+    @JoinColumn(name = "taskdescriptor_id", nullable = false)
     @XmlTransient
-    private TaskInstance taskInstance;
+    private TaskDescriptor taskDescriptor;
     /**
      *
      */
@@ -47,10 +48,10 @@ public class Assignment extends AbstractAssignement {
 
     /**
      *
-     * @param taskInstance
+     * @param taskDescriptor
      */
-    public Assignment(TaskInstance taskInstance) {
-        this.taskInstance = taskInstance;
+    public Assignment(TaskDescriptor taskDescriptor) {
+        this.taskDescriptor = taskDescriptor;
     }
 
     /**
@@ -61,7 +62,7 @@ public class Assignment extends AbstractAssignement {
     public void merge(AbstractEntity a) {
         Assignment other = (Assignment) a;
         this.setResourceInstance(other.getResourceInstance());
-        this.setTaskInstance(other.getTaskInstance());
+        this.setTaskDescriptor(other.getTaskDescriptor());
     }
 
     @PostPersist
@@ -98,21 +99,21 @@ public class Assignment extends AbstractAssignement {
      * @return
      */
     public Long getTaskDescriptorId() {
-        return this.getTaskInstance().getDescriptorId();
+        return this.getTaskDescriptor().getId();
     }
 
     /**
      * @return the taskInstance
      */
     @XmlTransient
-    public TaskInstance getTaskInstance() {
-        return taskInstance;
+    public TaskDescriptor getTaskDescriptor() {
+        return taskDescriptor;
     }
 
     /**
      * @param taskInstance the taskInstance to set
      */
-    public void setTaskInstance(TaskInstance taskInstance) {
-        this.taskInstance = taskInstance;
+    public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
+        this.taskDescriptor = taskDescriptor;
     }
 }

@@ -22,49 +22,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
         _inputex: {
             _type: HIDDEN
         }
-    }, SKILLSDEF = {
-        type: COMBINE,
-        required: true,
-        fields: [{
-                type: SELECT,
-                name: NAME,
-                choices: [{
-                        value: 'softwareEngineer',
-                        label: "Software engineering"
-                    }, {
-                        value: 'webDesgign',
-                        label: "Web design"
-                    }, {
-                        value: 'negotiation',
-                        label: "Negotiation"
-                    }, {
-                        value: 'dbEngineer',
-                        label: "Database engineer"
-                    }, {
-                        value: 'processModeling',
-                        label: "Process modeling"
-                    }, {
-                        value: 'graphicDesign',
-                        label: "Graphic design"
-                    }]
-            }, {
-                type: SELECT,
-                name: VALUE,
-                choices: [{
-                        value: 0,
-                        label: "Junior"
-                    }, {
-                        value: 20,
-                        label: "Intermediate"
-                    }, {
-                        value: 20,
-                        label: "Senior"
-                    }, {
-                        value: 99,
-                        label: "Expert"
-                    }]
-            }]
-    };
+    }
 
     /**
      * ResourceDescriptor mapper
@@ -398,6 +356,14 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 type: ARRAY,
                 value: []
             },
+            occupations: {
+                type: ARRAY,
+                value: []
+            },
+            activities: {
+                type: ARRAY,
+                value: []
+            },
             moralHistory: {
                 type: ARRAY
             },
@@ -410,10 +376,62 @@ YUI.add('wegas-leaderway-entities', function(Y) {
     /**
      * TaskDescriptor mapper
      */
-    Y.Wegas.persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+    Y.Wegas.persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+        findAssociatedRessources: function(abstractAssignments) {
+            var ressources, i, data = [], assignments, dict;
+            ressources = Y.Wegas.Facade.VariableDescriptor.cache.findAll("@class", "ResourceDescriptor");
+            Y.Array.forEach(ressources, function(employee) {
+                assignments = employee.getInstance().get(abstractAssignments);
+                for (i = 0; i < assignments.length; i++) {
+                    dict = {};
+                    if (assignments[i].get('taskDescriptorId') === this.get("id")) {
+                        dict["taskDescriptor"] = this;
+                        dict["ressourceInstance"] = employee.getInstance();
+                        data.push(dict);
+                    }
+                }
+            }, this);
+
+            return data;
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "TaskDescriptor"
+            },
+            description: {
+                type: STRING,
+                format: HTML,
+                optional: true
+            },
+            index: {
+                type: NUMBER,
+                format: HTML,
+                optional: true
+            },
+            predecessors: {
+                _inputex: {
+                    label: "Predecessors",
+                    _type: HIDDEN
+                }
+            },
+            properties: {
+                _inputex: {
+                    label: "Properties",
+                    _type: HASHLIST,
+                    keyField: NAME,
+                    valueField: VALUE,
+                    elementType: {
+                        type: COMBINE,
+                        fields: [{
+                                name: NAME,
+                                typeInvite: NAME
+                            }, {
+                                name: VALUE,
+                                typeInvite: VALUE
+                            }]
+                    }
+                }
             },
             defaultInstance: {
                 properties: {
@@ -435,6 +453,53 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                     duration: {
                         type: NUMBER
                     },
+                    plannification: {
+                        type: ARRAY
+                    },
+                    requirements: {
+                        type: ARRAY,
+                        _inputex: {
+                            label: "Default requirements",
+                            _type: LIST,
+                            useButtons: true,
+                            keyField: NAME,
+                            valueField: VALUE,
+                            elementType: {
+                                type: GROUP,
+                                fields: [{
+                                        name: "@class",
+                                        type: HIDDEN,
+                                        value: "WRequirement"
+                                    }, {
+                                        label: "Work",
+                                        name: "work",
+                                        typeInvite: NAME
+//                                        type: "wegasvarautocomplete",
+//                                        variableClass: "WRequirement"
+                                    }, {
+                                        label: "Limit",
+                                        name: "limit",
+                                        typeInvite: VALUE
+                                    }, {
+                                        label: "Level",
+                                        name: "level",
+                                        typeInvite: VALUE
+                                    }, {
+                                        label: "Number",
+                                        name: "quantity",
+                                        typeInvite: VALUE
+                                    }, {
+                                        label: "completeness",
+                                        name: "completeness",
+                                        type: HIDDEN
+                                    }, {
+                                        label: "quality",
+                                        name: "quality",
+                                        type: HIDDEN
+                                    }]
+                            }
+                        }
+                    },
                     properties: {
                         _inputex: {
                             label: "Default properties",
@@ -452,73 +517,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                                     }]
                             }
                         }
-                    }
-                }
-            },
-            description: {
-                type: STRING,
-                format: HTML,
-                optional: true
-            },
-            index: {
-                type: NUMBER,
-                format: HTML,
-                optional: true
-            },
-            predecessors: {
-                _inputex: {
-                    label: "Predecessors",
-                    _type: HIDDEN
-                }
-            },
-            requirements: {
-                type: ARRAY,
-                _inputex: {
-                    label: "requirements",
-                    _type: LIST,
-                    useButtons: true,
-                    keyField: NAME,
-                    valueField: VALUE,
-                    elementType: {
-                        type: GROUP,
-                        fields: [{
-                                name: "@class",
-                                type: HIDDEN
-                            }, {
-                                /*label: "Purview",*/
-                                name: "purview",
-                                typeInvite: NAME
-                            }, {
-                                label: "Limit",
-                                name: "limit",
-                                typeInvite: VALUE
-                            }, {
-                                label: "Level",
-                                name: "level",
-                                typeInvite: VALUE
-                            }, {
-                                label: "Number",
-                                name: "number",
-                                typeInvite: VALUE
-                            }]
-                    }
-                }
-            },
-            properties: {
-                _inputex: {
-                    label: "Properties",
-                    _type: HASHLIST,
-                    keyField: NAME,
-                    valueField: VALUE,
-                    elementType: {
-                        type: COMBINE,
-                        fields: [{
-                                name: NAME,
-                                typeInvite: NAME
-                            }, {
-                                name: VALUE,
-                                typeInvite: VALUE
-                            }]
                     }
                 }
             }
@@ -539,11 +537,55 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             duration: {
                 type: NUMBER
             },
+            requirements: {
+                type: ARRAY,
+                _inputex: {
+                    label: "requirements",
+                    _type: LIST,
+                    useButtons: true,
+                    keyField: NAME,
+                    valueField: VALUE,
+                    elementType: {
+                        type: GROUP,
+                        fields: [{
+                                name: "@class",
+                                type: HIDDEN
+                            }, {
+                                label: "Work",
+                                name: "work",
+                                typeInvite: NAME
+                            }, {
+                                label: "Limit",
+                                name: "limit",
+                                typeInvite: VALUE
+                            }, {
+                                label: "Level",
+                                name: "level",
+                                typeInvite: VALUE
+                            }, {
+                                label: "Number",
+                                name: "quantity",
+                                typeInvite: VALUE
+                            }, {
+                                label: "completeness",
+                                name: "completeness",
+                                type: HIDDEN
+                            }, {
+                                label: "quality",
+                                name: "quality",
+                                type: HIDDEN
+                            }]
+                    }
+                }
+            },
             properties: {
                 _inputex: {
                     label: "Properties",
                     _type: OBJECT
                 }
+            },
+            plannification: {
+                type: ARRAY
             }
         }
     });
@@ -556,7 +598,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             "@class": {
                 value: "WRequirement"
             },
-            purview: {
+            work: {
                 type: STRING
             },
             limit: {
@@ -565,26 +607,57 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             level: {
                 type: NUMBER
             },
-            number: {
+            quantity: {
+                type: NUMBER
+            },
+            completeness: {
+                type: NUMBER
+            },
+            quality: {
                 type: NUMBER
             }
-
         }
     });
 
     /**
      * Activity mapper
      */
-    Y.Wegas.persistence.Activity = Y.Base.create("WRequirement", Y.Wegas.persistence.Entity, [], {}, {
+    Y.Wegas.persistence.Activity = Y.Base.create("Activity", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 value: "Activity"
             },
-            startTime: {
+            taskDescriptorId: {
+                type: STRING
+            },
+            time: {
                 type: NUMBER
             },
-            duration: {
+            completion: {
                 type: NUMBER
+            },
+            editable: {
+                type: BOOLEAN
+            },
+            requirementId: {
+                type: STRING
+            }
+        }
+    });
+
+    /**
+     * Occupation mapper
+     */
+    Y.Wegas.persistence.Occupation = Y.Base.create("Occupation", Y.Wegas.persistence.Entity, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "Occupation"
+            },
+            time: {
+                type: NUMBER
+            },
+            editable: {
+                type: BOOLEAN
             },
             taskDescriptorId: {
                 type: STRING

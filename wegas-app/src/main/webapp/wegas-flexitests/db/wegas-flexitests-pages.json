@@ -42,11 +42,13 @@
                                 "right": ""
                             }
                         }
-                    }, {
+                    },
+                    {
+                        "fn": "CSSSize",
                         "cfg": {
-                            "styles": {}
-                        },
-                        "fn": "CSSSize"
+                            "styles": {
+                            }
+                        }
                     }
                 ],
                 "children": [
@@ -86,16 +88,17 @@
                         }
                     },
                     {
+                        "fn": "CSSSize",
                         "cfg": {
-                            "styles": {}
-                        },
-                        "fn": "CSSSize"
+                            "styles": {
+                            }
+                        }
                     }
                 ],
                 "children": [
                     {
                         "type": "Text",
-                        "content": "Female"
+                        "content": "<p>Female</p>"
                     }
                 ]
             },
@@ -127,11 +130,13 @@
                                 "right": "300px"
                             }
                         }
-                    }, {
+                    },
+                    {
+                        "fn": "CSSSize",
                         "cfg": {
-                            "styles": {}
-                        },
-                        "fn": "CSSSize"
+                            "styles": {
+                            }
+                        }
                     }
                 ],
                 "children": [
@@ -198,35 +203,6 @@
                 ]
             },
             {
-                "id": "flexi-mcq",
-                "type": "FlexitestsMCQ",
-                "plugins": [
-                    {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "zIndex": "10",
-                                "top": "",
-                                "left": "200px",
-                                "bottom": "30px",
-                                "right": "200px"
-                            }
-                        }
-                    }, {
-                        "cfg": {
-                            "styles": {}
-                        },
-                        "fn": "CSSSize"
-                    }
-                ],
-                "feedback": 1000,
-                "responseType": "radio",
-                "variable": {
-                    "name": "results"
-                }
-            },
-            {
                 "type": "Image",
                 "cssClass": "fix-point",
                 "plugins": [
@@ -242,16 +218,50 @@
                                 "right": ""
                             }
                         }
-                    }, {
+                    },
+                    {
+                        "fn": "CSSSize",
                         "cfg": {
-                            "styles": {}
-                        },
-                        "fn": "CSSSize"
+                            "styles": {
+                            }
+                        }
                     }
                 ],
                 "url": "/fix-point/fix_red.png"
+            },
+            {
+                "id": "flexi-mcq",
+                "type": "FlexitestsMCQ",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "",
+                                "left": "200px",
+                                "bottom": "30px",
+                                "right": "200px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                            }
+                        }
+                    }
+                ],
+                "feedback": 1000,
+                "responseType": "radio",
+                "variable": {
+                    "name": "results"
+                }
             }
-        ]
+        ],
+        "@name": "Test"
     },
     "2": {
         "type": "List",
@@ -331,7 +341,8 @@
         "pageLoaderId": "mainarea",
         "variable": {
             "name": "currentPage"
-        }
+        },
+        "@name": "Main"
     },
     "5": {
         "type": "List",

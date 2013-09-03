@@ -8,17 +8,20 @@
 package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.CascadeType;
+import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
+import javax.persistence.FetchType;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -32,6 +35,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
     private String description;
     /**
      *
@@ -47,14 +53,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     @ManyToMany
     private List<TaskDescriptor> predecessors = new ArrayList<>();
-    /**
-     *
-     */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(referencedColumnName = "variabledescriptor_id")
-    private List<WRequirement> requirements = new ArrayList<>();
 
     /**
+     * /**
      *
      * @param a
      */
@@ -64,12 +65,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
         this.setIndex(other.getIndex());
-        this.predecessors.clear();
-        this.predecessors.addAll(other.getPredecessors());
+        this.predecessors = ListUtils.mergeLists(this.predecessors, other.getPredecessors());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
-        this.requirements.clear();
-        this.requirements.addAll(other.getRequirements());
     }
 
     /**
@@ -126,38 +124,6 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void setPredecessor(Integer index, TaskDescriptor taskDescriptor) {
         this.predecessors.set(index, taskDescriptor);
-    }
-
-    /**
-     * @return the requirements
-     */
-    public List<WRequirement> getRequirements() {
-        return this.requirements;
-    }
-
-    /**
-     * @param requierement the requierement to set
-     */
-    public void setRequirements(List<WRequirement> requirements) {
-        this.requirements = requirements;
-    }
-
-    /**
-     *
-     * @param key
-     * @return WRequirement
-     */
-    public WRequirement getRequirement(Integer index) {
-        return this.requirements.get(index);
-    }
-
-    /**
-     *
-     * @param key
-     * @param WRequirement
-     */
-    public void setRequirement(Integer index, WRequirement val) {
-        this.requirements.set(index, val);
     }
 
     /**
