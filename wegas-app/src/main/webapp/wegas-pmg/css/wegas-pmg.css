@@ -378,7 +378,7 @@ h2{
     margin-bottom:5px;
 }
 .wegas-mcqtabview .numberOfReplies{
-   float:right;
+    float:right;
 }
 .wegas-mcqtabview .unread {
     font-weight:bold;
@@ -418,9 +418,9 @@ h2{
 }
 
 /*----------------------------------Datatable---------------------------------*/
-.body .yui3-datatable-col-_id{
+/*.body .yui3-datatable-col-_id{
     display:none;
-}
+}*/
 
 .body .yui3-datatable table{
     width:100%;
@@ -440,24 +440,24 @@ h2{
 .body .yui3-datatable-odd .yui3-datatable-cell,
 .body .yui3-datatable-even .yui3-datatable-cell{
     background: none;
-    height: 30px;
-/*    padding-top:6px;
-    padding-bottom:6px;*/
-    padding: 6px 0 6px 0
+    height: 40px;
+    padding: 0 0 0 10px;
 }
 
 .body .yui3-datatable-cell{
     border-bottom:1px solid #ADADAE;
 }
 
+/*---------------------------- SchedulColumn -------------------------------- */
+.yui3-datatable-table .yui3-datatable-data .schedulColumn {
+    padding: 0 0 0 0;
+}
+
 /*.body .yui3-datatable-data tr:hover td{
     background-image:url(../../wegas-pmg/images/previous-week.png);
     background-repeat: repeat;
 }*/
-
-.body td{
-    cursor: pointer;
-}
+/*
 
 .body .description{
     max-width: 250px;
@@ -474,15 +474,15 @@ h2{
     text-transform: capitalize;
     text-decoration: underline;
     padding-bottom: 10px;
-}
+}*/
 
 /*-------------------------------task-page------------------------------------*/
-.task-page .yui3-datatable-col-treeblenub{
+/*.task-page .yui3-datatable-col-treeblenub{
     width:20px;
-}
+}*/
 
 /*----------------------task-page & gantt-page--------------------------------*/
-.task-page .yui3-datatable-col-No,
+/*.task-page .yui3-datatable-col-No,
 .gantt-page .yui3-datatable-col-No{
     width:20px;
 }
@@ -500,7 +500,7 @@ h2{
 .task-page .yui3-datatable-data  .completed .yui3-datatable-cell ,
 .gantt-page .yui3-datatable-data .completed .yui3-datatable-cell{
     background-color: #CCFFCC;
-}
+}*/
 
 /*------------------------gantt-page & resources-pages------------------------*/
 /*.gantt-page .yui3-datatable-table .yui3-datatable-data .cell-gantt,
@@ -522,7 +522,7 @@ h2{
     padding-top: 1px;
 }*/
 
-.gantt-page .yui3-datatable-col-Name,
+/*.gantt-page .yui3-datatable-col-Name,
 .resources-page .yui3-datatable-col-Name{
     width:300px;
 }
@@ -543,7 +543,7 @@ h2{
 .gantt-page .yui3-datatable-table .yui3-datatable-data .previous-week,
 .resources-page .yui3-datatable-table .yui3-datatable-data .previous-week{
     background-color:#DDDDDD;
-}
+}*/
 
 /*----------------------------------resources-page----------------------------*/
 .resources-page .slidepanel{
@@ -565,9 +565,6 @@ h2{
     border-width: 1px 0 0 0;
 }
 
-.resources-page .noDescription{
-    cursor:default;
-}
 /*---------------------------- project-page ---------------------------------*/
 .project-page .slidepanel{
     position:relative;
@@ -590,8 +587,8 @@ h2{
 }
 
 .project-page .chart {
-   margin-left: 24px; 
-   margin-top: 15px;
+    margin-left: 24px; 
+    margin-top: 15px;
 }
 
 .project-page .finances .slidepanel-content {
@@ -616,27 +613,35 @@ h2{
     margin-right: 350px;
 }
 
-/*---------------------------- EVM-page (Prototype) ---------------------------------*/
+/*---------------------------- Cursor pointer ---------------------*/
+.gantt-plannification-page tbody .present, .gantt-plannification-page tbody .futur, 
+.resources-page tbody .present, .resources-page tbody .futur, .assignment span{
+    cursor: pointer;
+}
+
+/*----------------------------Task-Plannification-Page------------------*/
+.task-plannification-page input {
+    width: 85px;
+}
+
+/*---------------------------- Gantt-Execution-Page---------------------*/
+.gantt-execution-page .plannification {
+    background-color: #878787;
+    opacity: 0.3;
+}
+
+.gantt-execution-page .plannification:only-child{
+    margin-top: -14px;
+}
+
+.gantt-execution-page .activity:only-child, 
+.gantt-execution-page .progress:nth-of-type(1) {
+    margin-top: 14px;
+}
+
+/*---------------------------- EVM-page---------------------------------*/
 .evm-page h2 {
     border: none;
-}
-
-.evm-page .evmDatatable thead tr {
-    height: 26px;
-}
-
-.evm-page .slidepanel{
-    position:relative;
-    float: left;
-    width: 50%;
-    /*height: 260px;*/
-}
-
-.evm-page .evmDatatable{
-    position:relative;
-    float: left;
-    width: 50%;
-    height: 260px;
 }
 
 .evm-page .slidepanel-content{
@@ -653,6 +658,6 @@ h2{
 }
 
 .evm-page .chart {
-   margin-left: 24px; 
-   margin-top: 15px;
+    margin-left: 48px; 
+    margin-top: 15px;
 }

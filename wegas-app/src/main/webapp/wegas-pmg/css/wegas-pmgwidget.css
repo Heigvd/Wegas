@@ -3,46 +3,40 @@
 .yui3-datatable-table .editable {
     display:block;
     background-color: #3399FF;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
 }
 
 .yui3-datatable-table .notEditable {
     display:block;
     background-color: #FF0000;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
 }
 
 .yui3-datatable-table .engagementDelay {
     display:block;
     background-image:url(../../wegas-pmg/images/hatching.png);
     background-repeat: repeat;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
 }
 
 .yui3-datatable-table .delay .editable {
     display:block;
     background-image:url(../../wegas-pmg/images/hatching.png);
     background-repeat: repeat;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
 }
 
 .yui3-datatable-table .fill100 {
     display:block;
     background-color: #3399FF;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
     opacity:  0.3;
 }
 
 .yui3-datatable-table .fill0to25 {
     display:block;
     background-color: #3399FF;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
     opacity:  0.3;
     margin-right: 75%;
 }
@@ -50,8 +44,7 @@
 .yui3-datatable-table .fill0to50 {
     display:block;
     background-color: #3399FF;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
     opacity:  0.3;
     margin-right: 50%;
 }
@@ -59,8 +52,7 @@
 .yui3-datatable-table .fill0to75 {
     display:block;
     background-color: #3399FF;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
     opacity:  0.3;
     margin-right: 25%;
 }
@@ -68,8 +60,7 @@
 .yui3-datatable-table .fill25to100 {
     display:block;
     background-color: #3399FF;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
     opacity:  0.3;
     margin-left: 25%;
 }
@@ -77,8 +68,7 @@
 .yui3-datatable-table .fill50to100 {
     display:block;
     background-color: #3399FF;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
     opacity:  0.3;
     margin-left: 50%;
 }
@@ -86,19 +76,16 @@
 .yui3-datatable-table .fill75to100 {
     display:block;
     background-color: #3399FF;
-    height:13px;
-    /*padding-top: 1px;*/
+    height:14px;
     opacity:  0.3;
     margin-left: 75%;
 }
 
 tbody .past span {
-    border: inherit;
     opacity:  0.3;
 }
 
 tbody .past .activity {
-    border: inherit;
     opacity:  1;
 }
 
