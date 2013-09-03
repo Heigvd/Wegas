@@ -30,6 +30,41 @@ YUI.add('wegas-loginwidget', function(Y) {
         /**
          * @lends Y.Wegas.LoginWidget#
          */
+        CONTENT_TEMPLATE: "<div><a href=\"https://github.com/Heigvd/Wegas\"><img style=\"position: absolute; top: 0; left: 0; border: 0;\" src=\"https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png\" alt=\"Fork me on GitHub\"></a>\n\
+               <div class='header'>\n\
+                    <div class='content'>\n\
+                        <div class='left'>\n\
+                            <div class='logo'>\n\</div>\n\
+                        </div>\n\
+                        <div class='right login'></div>\n\
+                    </div>\n\
+                </div>\n\
+                <div class='content'>\n\
+                    <div class='main left'>\n\
+                        <h1>Welcome to Wegas</h1>\n\
+                        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games. No programming skills is required, you can create your own scenario or adapt an existing one by adding elements from other simulations. Advanced users can even create their own serious game from A to Z!</p>\n\
+                        <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='254px' width='633px'/></div>\n\
+                    </div>\n\
+                    <div class='main right signup-zone'>\n\
+                        <h1 class='title'>Create an account</h1>\n\
+                        <div class='signup'></div>\n\
+                        <h1 class='title'>Try Wegas</h1>\n\
+                        <div class='guestlogin'></div>\n\
+                    </div>\n\
+                    <div class='main right ask-pass-zone'>\n\
+                        <h1 class='title'>Get a new password</h1>\n\
+                        <div class='ask-pass'></div>\n\
+                    </div>\n\
+                    <div class='footer'>\n\
+                        <div class='partner'>\n\
+                            <a href='http://www.heig-vd.ch/' target='_blank'><div class='heigvd'></div></a>\n\
+                          </div>\n\
+                        <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
+                        <div class='followus'>\n\
+                  <a href='http://www.albasim.com' target='_blank'><div class='albasim'></div></a>\n\
+                            </div>\n\
+                    </div>\n\
+                </div></div>",
         // *** Private fields *** //
         /**
          * Default link to redirect user
@@ -72,17 +107,14 @@ YUI.add('wegas-loginwidget', function(Y) {
             this.loginButton = new Y.Button({
                 label: "Log in"
             });
-            this.loginButton.get(CONTENTBOX).addClass("loginbutton");
 
             this.signUpButton = new Y.Button({
                 label: "Sign in"
             });
-            this.signUpButton.get(CONTENTBOX).addClass("signupbutton");
 
             this.askPassButton = new Y.Button({
                 label: "Submit"
             });
-            this.askPassButton.get(CONTENTBOX).addClass("askPass");
         },
         /**
          * @function
@@ -95,47 +127,10 @@ YUI.add('wegas-loginwidget', function(Y) {
             var cb = this.get(CONTENTBOX),
                     cUser = Y.Wegas.app.get("currentUser");
 
-            if (cUser.accounts[0]["@class"] !== "GuestJpaAccount") {
+            if (cUser && cUser.getMainAccount() instanceof Y.Wegas.persistence.GuestJpaAccount) {
                 this.showMessage("success", "You are already logged in.", 4000);
                 this.redirect();
             }
-
-            //Core of the page
-            cb.append("<a href=\"https://github.com/Heigvd/Wegas\"><img style=\"position: absolute; top: 0; left: 0; border: 0;\" src=\"https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png\" alt=\"Fork me on GitHub\"></a>\n\
-               <div class='header'>\n\
-                    <div class='content'>\n\
-                        <div class='left'>\n\
-                            <div class='logo'>\n\</div>\n\
-                        </div>\n\
-                        <div class='right login'></div>\n\
-                    </div>\n\
-                </div>\n\
-                <div class='content'>\n\
-                    <div class='main left'>\n\
-                        <h1>Welcome to Wegas</h1>\n\
-                        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games. No programming skills is required, you can create your own scenario or adapt an existing one by adding elements from other simulations. Advanced users can even create their own serious game from A to Z!</p>\n\
-                        <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='254px' width='633px'/></div>\n\
-                    </div>\n\
-                    <div class='main right signup-zone'>\n\
-                        <h1 class='title'>Create an account</h1>\n\
-                        <div class='signup'></div>\n\
-                    </div>\n\
-                    <div class='main right ask-pass-zone'>\n\
-                        <h1 class='title'>Get a new password</h1>\n\
-                        <div class='ask-pass'></div>\n\
-                    </div>\n\
-                    <div class='footer'>\n\
-                        <div class='partner'>\n\
-                            <a href='http://www.heig-vd.ch/' target='_blank'><div class='heigvd'></div></a>\n\
-                          </div>\n\
-                        <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
-                        <div class='followus'>\n\
-                  <a href='http://www.albasim.com' target='_blank'><div class='albasim'></div></a>\n\
-                            </div>\n\
-                    </div>\n\
-                </div>");
-            //<span>Follow us:</span>\n\
-            //<a href='https://github.com/Heigvd/Wegas' target='_blank'><img src='../images/github-icon.png' alt='Github' height='30px' width='30px'/></a>\n\
 
             //create and append login form
             this.loginForm = new Y.inputEx.Group({
@@ -153,7 +148,6 @@ YUI.add('wegas-loginwidget', function(Y) {
                         capsLockWarning: true,
                         className: "password"
                     }, {
-                        label: "",
                         type: "boolean",
                         name: "remember",
                         rightLabel: "&nbsp;Remember me",
@@ -224,6 +218,11 @@ YUI.add('wegas-loginwidget', function(Y) {
             cb.one(".signup .password").ancestor("div").setStyle("width", "330px");
             this.signUpButton.render(cb.one(".signup"));
 
+            this.guestLoginButton = new Y.Wegas.Button({
+                label: "Log in as guest"
+            });
+            this.guestLoginButton.render(cb.one(".signup-zone .guestlogin"));
+
             //Create, append and hide from to ask a new password.
             this.sendNewPasswordForm = new Y.inputEx.Group({
                 fields: [{
@@ -279,6 +278,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                 }
             }, this);
 
+            this.guestLoginButton.on("click", this.guestLogin, this);
+
             this.askPassButton.on("click", function() {
                 var data;
                 if (this.sendNewPasswordForm.validate()) {
@@ -294,7 +295,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 }
             });
 
-            this.after("render", inputNode.focus, inputNode);
+            this.after("render", inputNode.focus, inputNode);                   // Focus on login node on
         },
         /**
          * @function
@@ -309,7 +310,6 @@ YUI.add('wegas-loginwidget', function(Y) {
             this.signUpButton.destroy();
             this.sendNewPasswordForm.destroy();
             this.createAccountForm.destroy();
-
         },
         // *** Private methods *** //
         /**
@@ -322,9 +322,9 @@ YUI.add('wegas-loginwidget', function(Y) {
         changeRightForms: function(showAskForm) {
             var cb = this.get(CONTENTBOX);
             if (showAskForm) {
+                cb.one(".ask-pass-zone").show();
                 cb.one(".signup-zone").hide();
                 cb.one(".forgot").hide();
-                cb.one(".ask-pass-zone").show();
             } else {
                 cb.one(".ask-pass-zone").hide();
                 cb.one(".signup-zone").show();
@@ -356,6 +356,24 @@ YUI.add('wegas-loginwidget', function(Y) {
                     }, this),
                     failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Email/password combination not found", 4000);
+                    }, this)
+                }
+            });
+        },
+        guestLogin: function() {
+            Y.Wegas.Facade.User.sendRequest({
+                request: "/GuestLogin/",
+                cfg: {
+                    method: "POST"
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        this.showMessage("success", "Login successful", 4000);
+                        this.redirect();
+                        return;
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this.showMessage("error", e.response.results.message || "Guest login failed", 4000);
                     }, this)
                 }
             });

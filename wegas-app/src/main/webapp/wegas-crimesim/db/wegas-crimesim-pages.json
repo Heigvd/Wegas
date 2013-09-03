@@ -24,6 +24,8 @@
                         "cssClass": "wegas-crimesim-title"
                     }, {
                         "type": "Template",
+                        "data": {},
+                        "custom": null,
                         "template": "valuebox",
                         "variable": {
                             "name": "period"
@@ -52,6 +54,8 @@
                     }, {
                         "type": "Template",
                         "template": "text",
+                        "data": {},
+                        "custom": null,
                         "variable": {
                             "name": "cost"
                         }
@@ -61,6 +65,7 @@
                         "data": {
                             "maxValue": 15
                         },
+                        "custom": null,
                         "variable": {
                             "name": "humanResources"
                         }
@@ -168,7 +173,6 @@
                     }, {
                         "cssClass": "menu-loginbutton",
                         "disabled": false,
-                        "label": "",
                         "labelIsUser": false,
                         "preferencePageId": 1000,
                         "targetPageLoader": "maindisplayarea",
@@ -186,6 +190,8 @@
     "2": {
         "type": "Template",
         "custom": "<%== this.value || 'Unable to find welcome text' %>",
+        "data": {},
+        "template": "text",
         "variable": {
             "name": "welcomeText"
         }
@@ -211,12 +217,5 @@
     "6": {
         "id": 6,
         "type": "ResultsDisplay"
-    },
-    "1000": {
-        "id": 1000,
-        "type": "Form",
-        "plugins": [{
-                "fn": "UserPreferences"
-            }]
     }
 }

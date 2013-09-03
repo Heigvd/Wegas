@@ -49,6 +49,13 @@ public class JavaScriptTest {
         glassfish.dispose();
     }
 
+//    @Test
+//    public void testJs() throws GlassFishException, IOException {
+//        beginAt("tests/wegas-alltests.htm");
+//        assertTitleEquals("Wegas Test Suite");
+//       //  beginAt("tests/widget/wegas-serialization-test.htm.htm");
+//    }
+
     @Test
     public void testJs() throws GlassFishException, IOException {
         beginAt("tests/wegas-alltests.htm");

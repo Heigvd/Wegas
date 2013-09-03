@@ -22,13 +22,17 @@
                                 "cssClass": "timeIndicators",
                                 "children": [{
                                         "type": "Template",
+                                        "data": {},
+                                        "template": "text",
                                         "custom": "<div class='wegas-template-title'><label>Phase</label><div><%= this.variable.getPublicLabel() || 'Undefined' %></div></div>",
                                         "variable": {
                                             "name": "phases"
                                         }
                                     }, {
                                         "type": "Template",
+                                        "data": {},
                                         "template": "valuebox",
+                                        "custom": "",
                                         "variable": {
                                             "name": "phases"
                                         },
@@ -60,6 +64,7 @@
                             }, {
                                 "type": "Template",
                                 "template": "box",
+                                "custom": "",
                                 "data": {
                                     "label": "Time cards"
                                 },
@@ -196,7 +201,6 @@
                             }, {
                                 "cssClass": "menu-loginbutton",
                                 "disabled": false,
-                                "label": "",
                                 "labelIsUser": false,
                                 "preferencePageId": "UserPreferences",
                                 "targetPageLoader": "maindisplayarea",
@@ -227,7 +231,6 @@
         "content": "Welcome to CEP case."
     },
     "3": {
-        "@name": "Employees",
         "type": "CEPFolder",
         "listVariables": "employees",
         "searchInProperties": [

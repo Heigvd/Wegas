@@ -7,9 +7,12 @@
  */
 package com.wegas.core.security.rest;
 
+import com.wegas.core.Helper;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
@@ -84,7 +87,7 @@ public class UserController {
 
         return userFacade.find(entityId);
     }
-    
+
     @GET
     @Path("AutoComplete/{value}")
     public List<Map> getAutoComplete(@PathParam("value") String value) {
@@ -172,6 +175,18 @@ public class UserController {
         token.setRememberMe(remember);
         subject.login(token);
         //}
+    }
+
+    @POST
+    @Path("GuestLogin")
+    public void guestLogin() {
+        if (Helper.getWegasProperty("guestallowed").equals("true")) {
+            User newUser = new User(new GuestJpaAccount());                     // return a Guest user
+            userFacade.create(newUser);                                         // Persist it
+
+            Subject subject = SecurityUtils.getSubject();
+            subject.login(new GuestToken(newUser.getMainAccount().getId()));
+        }
     }
 
     /**
@@ -294,7 +309,7 @@ public class UserController {
 
         return this.userFacade.addRolePermission(roleId, permission);
     }
-     
+
     @POST
     @Path("AddPermission/{roleName}/{permission}")
     public boolean addPermissionsByInstance(@PathParam(value = "roleName") String roleName, @PathParam(value = "permission") String permission) {
@@ -317,58 +332,58 @@ public class UserController {
 
         return this.userFacade.deleteRolePermissionsByIdAndInstance(roleId, id);
     }
-    
+
     @POST
     @Path("DeleteAllRolePermissions/{roleName}/{gameModelId}")
     public boolean deleteAllRolePermissions(@PathParam("roleName") String roleName,
             @PathParam("gameModelId") String id) {
         return this.deleteAllRolePermissions(roleFacade.findByName(roleName).getId(), id);
     }
-    
+
     @GET
     @Path("FindAccountPermissionByInstance/{entityId}")
     public List<AbstractAccount> findAccountPermissionByInstance(@PathParam("entityId") String entityId) {
-        
+
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
- 
+
         return userFacade.findAccountPermissionByInstance(entityId);
     }
-    
+
     @POST
     @Path("addAccountPermission/{permission}/{accountId : [1-9][0-9]*}")
-    public void addAccountPermission(@PathParam("permission") String permission, 
+    public void addAccountPermission(@PathParam("permission") String permission,
             @PathParam("accountId") Long accountId) {
-        
+
         String splitedPermission[] = permission.split(":");
-        
+
         checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
-        
+
         userFacade.addAccountPermission(accountId, permission);
     }
-    
+
     @DELETE
     @Path("DeleteAccountPermissionByInstanceAndAccount/{entityId}/{accountId : [1-9][0-9]*}")
-    public void deleteAccountPermissionByInstanceAndAccount(@PathParam("entityId") String entityId, 
+    public void deleteAccountPermissionByInstanceAndAccount(@PathParam("entityId") String entityId,
             @PathParam("accountId") Long accountId) {
-        
+
         checkGmOrGPermission(entityId, "GameModel:Edit:", "Game:Edit:");
-        
+
         userFacade.deleteAccountPermissionByInstanceAndAccount(entityId, accountId);
     }
-    
+
     @DELETE
     @Path("DeleteAccountPermissionByPermissionAndAccount/{permission}/{accountId : [1-9][0-9]*}")
-    public void DeleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission, 
+    public void DeleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission,
             @PathParam("accountId") Long accountId) {
-        
+
         String splitedPermission[] = permission.split(":");
-        
+
         checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
-        
+
         userFacade.DeleteAccountPermissionByPermissionAndAccount(permission, accountId);
     }
-    
-    private void checkGmOrGPermission(String entityId, String gmPermission, String gPermission) {        
+
+    private void checkGmOrGPermission(String entityId, String gmPermission, String gPermission) {
         if (entityId.substring(0, 2).equals("gm")) {
             SecurityUtils.getSubject().checkPermission(gmPermission + entityId);
         } else {
