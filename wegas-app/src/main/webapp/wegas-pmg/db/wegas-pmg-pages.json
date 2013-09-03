@@ -59,12 +59,18 @@
                                 "label": "Direction",
                                 "variable": {
                                     "name": "managementApproval"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 }
                             }, {
                                 "type": "GaugeDisplay",
                                 "label": "User",
                                 "variable": {
                                     "name": "userApproval"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 }
                             }
                         ]
@@ -78,12 +84,18 @@
                                 "label": "Quality",
                                 "variable": {
                                     "name": "quality"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 }
                             }, {
                                 "type": "GaugeDisplay",
                                 "label": "Costs",
                                 "variable": {
                                     "name": "costs"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 },
                                 "plugins": [
                                     {
@@ -102,6 +114,9 @@
                                 "label": "Delay",
                                 "variable": {
                                     "name": "delay"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 },
                                 "plugins": [
                                     {
