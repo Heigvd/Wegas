@@ -8,7 +8,7 @@
 /**
  * Wegas loader, contains module definitions.
  *
- * @fileoverviewa
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI().use(function(Y) {
@@ -45,7 +45,8 @@ YUI().use(function(Y) {
                     type: 'css'
                 },
                 'wegas-helper': {
-                    path: 'wegas-app/js/util/wegas-helper-min.js'
+                    path: 'wegas-app/js/util/wegas-helper-min.js',
+                    requires: ['array-extras']
                 },
                 'wegas-editable': {
                     path: 'wegas-app/js/util/wegas-editable-min.js',

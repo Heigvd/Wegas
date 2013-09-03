@@ -7,7 +7,6 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -19,8 +18,8 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.rest.UserController;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +73,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      */
     @EJB
     private GameFacade gameFacade;
+    /**
+     *
+     */
+    @EJB
+    private UserController userController;
 
     /**
      *
@@ -103,17 +107,13 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             return accountFacade.find((Long) subject.getPrincipal()).getUser();
 
         } else {
-
-            if (Helper.getWegasProperty("guestallowed").equals("true")) {
-                User newUser = new User(new GuestJpaAccount());                     // return a Guest user
-                //super.create(newUser);                                        // Persist it
-                //subject.login(new GuestToken(newUser.getMainAccount().getId()));
-                return newUser;
-
-            } else {
-                //  @todo Throw an error, should redirect to home page
-                throw new RuntimeException("Unable to find user.");
-            }
+//            if (Helper.getWegasProperty("guestallowed").equals("true")) {
+//                userController.guestLogin();
+//                return accountFacade.find((Long) subject.getPrincipal()).getUser();
+//            } else {
+            //  @todo Throw an error, should redirect to home page
+            throw new NoResultException("Unable to find user");
+            //}
 
         }
     }
@@ -122,9 +122,9 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         Query findByToken = em.createNamedQuery("findAccountByValue");
         findByToken.setParameter("search", "%" + search.toLowerCase() + "%");
         findByToken.setMaxResults(MAXRESULT);
-        List<AbstractAccount> res = (List<AbstractAccount>) findByToken.getResultList();
+        List<JpaAccount> res = (List<JpaAccount>) findByToken.getResultList();
         List<Map> returnValue = new ArrayList<>();
-        for (AbstractAccount a : res) {
+        for (JpaAccount a : res) {
             Map account = new HashMap<>();
             returnValue.add(account);
             if (a.getFirstname() != null && a.getLastname() != null) {
@@ -140,8 +140,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     @Override
     public void create(User user) {
         try {
-            accountFacade.findByEmail(user.getMainAccount().getEmail());
-            throw new WegasException("This email is already associated with an existing account.");
+            AbstractAccount account = user.getMainAccount();
+            if (account instanceof JpaAccount) {                                // @fixme This is only done to have a nice error and not the unparsable ConstraintViolationException
+                accountFacade.findByEmail(((JpaAccount) user.getMainAccount()).getEmail());
+                throw new WegasException("This email is already associated with an existing account.");
+            }
         } catch (PersistenceException e) {
             // GOTCHA
         }

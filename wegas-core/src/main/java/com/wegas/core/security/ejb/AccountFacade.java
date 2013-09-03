@@ -8,6 +8,8 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.jparealm.JpaAccount_;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.AbstractAccount_;
 import com.wegas.core.security.persistence.Role;
@@ -113,12 +115,12 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
      * @return
      * @throws NoResultException
      */
-    public AbstractAccount findByEmail(String email) throws NoResultException {
+    public JpaAccount findByEmail(String email) throws NoResultException {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
-        Root<AbstractAccount> account = cq.from(AbstractAccount.class);
-        cq.where(cb.equal(account.get(AbstractAccount_.email), email));
+        Root<JpaAccount> account = cq.from(JpaAccount.class);
+        cq.where(cb.equal(account.get(JpaAccount_.email), email));
         Query q = em.createQuery(cq);
-        return (AbstractAccount) q.getSingleResult();
+        return (JpaAccount) q.getSingleResult();
     }
 }

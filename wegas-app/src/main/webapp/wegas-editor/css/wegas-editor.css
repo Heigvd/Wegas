@@ -27,10 +27,18 @@ body {
 /* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
 .yui3-skin-sam .wegas-layout .yui3-tabview,
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content ,
-.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel,
-.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel,
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner {
     height: inherit;
+}
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel {
+    position:absolute;
+    top: 26px;
+    bottom:0px;
+    width:100%;
+}
+.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel {
+    position:relative;
+    height: 100%;
 }
 
 .yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner {
@@ -42,7 +50,7 @@ body {
 .yui3-skin-sam .editor-tab > div > div > div > .panel-inner > .wegas-hastoolbar > .wegas-toolbar-sibling {
     position: absolute;
     top: 31px;
-    bottom: 26px;
+    bottom: 0px;
     left: 0px;
     right: 0px;
     overflow: auto;
@@ -286,4 +294,12 @@ body {
     font-style: italic;
     font-size: 7pt;
     content:" Experimental"
+}
+
+/** Google help is displayed in max height size in the tab */
+.yui3-skin-sam .editor-help,
+.yui3-skin-sam .editor-help > div,
+.yui3-skin-sam .editor-help > div > iframe    {
+    width: 100%;
+    height:100%;
 }

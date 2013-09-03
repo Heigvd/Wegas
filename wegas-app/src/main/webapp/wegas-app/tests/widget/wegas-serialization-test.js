@@ -24,6 +24,12 @@ YUI.add('wegas-serialization-test', function(Y) {
                 method: "after",
                 args: [Y.Mock.Value.String, Y.Mock.Value.Function, Y.Mock.Value.Object]
             });
+            Y.Wegas.app.get = function(name) {
+                switch (name) {
+                    case "base":
+                        return YUI_config.groups.wegas.base;
+                }
+            };
 
             // Create UserFacade mock
             Y.namespace("Wegas.Facade").User = Y.Mock();
@@ -62,10 +68,15 @@ YUI.add('wegas-serialization-test', function(Y) {
                     return null;
                 }
             };
-            Y.Mock.expect(Y.Wegas.Facade.VariableDescriptor, {
-                method: "after",
-                args: [Y.Mock.Value.String, Y.Mock.Value.Object, Y.Mock.Value.Any]
-            });
+            Y.Wegas.Facade.VariableDescriptor.after = function() {
+                return new Y.Event.Handle();
+            }
+            Y.Wegas.Facade.VariableDescriptor.sendRequest = function() {
+            };
+//            Y.Mock.expect(Y.Wegas.Facade.VariableDescriptor, {
+//                method: "sendRequest",
+//                //args: [Y.Mock.Value.String, Y.Mock.Value.Object, Y.Mock.Value.Any]
+//            });
 
             // Create PageFacade mock
             Y.Wegas.Facade.Page = Y.Mock();
@@ -106,22 +117,22 @@ YUI.add('wegas-serialization-test', function(Y) {
             this.log("CEP pages");
             this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-cep/db/wegas-cep-pages.json")
         },
+        'should instantiate and serialize proggame widgets cfg': function() {
+            this.log("Proggame pages");
+            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-proggame/db/wegas-proggame-pages.json")
+        },
         'should instantiate and serialize flexitests widgets cfg': function() {
             this.log("Flexitests pages");
             this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json")
         },
-        //'should instantiate and serialize flexitests widgets cfg': function() {
-        //this.log("PMG pages");
-        //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json")
-        //},
-//        'should instantiate and serialize proggame widgets cfg': function() {
-//            this.log("Proggame pages");
-//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-proggame/db/wegas-proggame-pages.json")
-//        },
-//        'should instantiate and serialize leaderway widget from an io request': function() {
-//            this.log("Leaderway pages");
-//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-leaderway/db/wegas-leaderway-pages.json")
-//        },
+        'should instantiate and serialize PMG widgets cfg': function() {
+            //this.log("PMG pages");
+            //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json")
+        },
+        'should instantiate and serialize leaderway widget cfgt': function() {
+            //this.log("Leaderway pages");
+            //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-leaderway/db/wegas-leaderway-pages.json")
+        },
 //        'should instantiate and serialize book widget from an io request': function() {
 //            this.log("Book pages");
 //            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-book/db/wegas-book-pages.json")
@@ -130,14 +141,15 @@ YUI.add('wegas-serialization-test', function(Y) {
 //            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-leaderway/db/wegas-lobby-layout.json")
 //        },
 //        'should instantiate and serialize leaderway widget from an io request': function() {
-//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-leaderway/db/wegas-login-layout.json")
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-app/db/wegas-login-layout.json")
 //        },
 //        'should instantiate and serialize leaderway widget from an io request': function() {
-//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-leaderway/db/wegas-editor-layout.json")
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-app/db/wegas-editor-layout.json")
 //        },
-//        'should instantiate and serialize leaderway widget from an io request': function() {
-//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-leaderway/db/wegas-app-layout.json")
-//        },
+        //'should instantiate and serialize leaderway widget from an io request': function() {
+        //this.log("Player page");
+        //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-app/db/wegas-app-layout.json")
+        //},
         /**
          *
          */
@@ -182,22 +194,18 @@ YUI.add('wegas-serialization-test', function(Y) {
          */
         assertUseAndRevive: function(cfg) {
             Y.Wegas.Widget.use(cfg, Y.bind(function(cfg) {                      // Load the subwidget dependencies
-                var widget = Y.Wegas.Widget.create(Y.clone(cfg)),
-                        // Render the subwidget
-                        serializedCfg = widget.toObject(), // Serialize
-                        escape = function(t) {
-                    return Y.JSON.stringify(this.sortObject(t), null, "\t")
-                },
-                        a = escape.call(this, cfg),
-                        b = escape.call(this, serializedCfg);
+                var widget = Y.Wegas.Widget.create(Y.clone(cfg)), a, b;
+
+                widget.render();                                                // Render
+
+                a = this.escape(cfg);
+                b = this.escape(widget.toObject());                             // Serialize
 
                 this.logResult(a, b);
                 Y.Assert.areSame(a, b, "Seralized version does not match original version");
 
-                //widget.destroy();                                            // Delete
-                //Y.Assert.isTrue(widget.get("destroyed"));
-
-                widget.render();
+                widget.destroy();                                               // Delete
+                Y.Assert.isTrue(widget.get("destroyed"));
 
                 Y.later(1, this, function() {
                     this.resume(function() {                                    // Resume test
@@ -240,6 +248,9 @@ YUI.add('wegas-serialization-test', function(Y) {
                         + "<td><div>" + format(b) + "</div></td></tr>");// Display results
             }
         },
+        escape: function(t) {
+            return Y.JSON.stringify(this.sortObject(t), null, "\t");
+        },
         sortObject: function(obj) {
 
             if (Y.Lang.isArray(obj)) {
@@ -267,6 +278,9 @@ YUI.add('wegas-serialization-test', function(Y) {
         }
     }));
 }, '@VERSION@', {
-    requires: ['wegas-editable', 'wegas-widget', 'wegas-entity', 'test', 'json', 'io-base', 'io-xdr']
+    requires: [
+        'test', 'json', 'io-base', 'io-xdr',
+        'wegas-app',
+        'wegas-editable', 'wegas-widget', 'wegas-entity', 'wegas-button', ]
 });
 
