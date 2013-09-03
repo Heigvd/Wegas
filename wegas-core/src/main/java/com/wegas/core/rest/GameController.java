@@ -186,7 +186,7 @@ public class GameController {
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
 
         } catch (NoResultException e) {             // If there is no NoResultException, everything is ok, we can return the game
-            SecurityUtils.getSubject().checkPermission("Game:Token:g" + game.getId());
+            this.checkPermissions(game.getId());
             return (team != null) ? team : game;
         }
     }
