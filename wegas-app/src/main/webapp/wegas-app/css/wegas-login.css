@@ -28,6 +28,7 @@
 }
 
 .right{
+    margin-top: 8px;
     width:330px;
     float:right;
 }
@@ -59,10 +60,13 @@ div.inputEx-label{
 .logingroup .password input{
     width:90px;
 }
+.logingroup .remember {
+    padding-top: 5px;
+}
 
-.header  .login .loginbutton{
+.header  .login .yui3-button {
     float:right;
-    margin: -52px 10px 0 0;
+    margin: -41px 10px 0 0;
     width: 55px;
     min-height: 20px;
     background-color: #DDDDDD;
@@ -75,12 +79,10 @@ div.inputEx-label{
     text-decoration: underline;
     cursor: pointer;
 }
-
 .main{
-    margin: 15px auto 45px;
+    margin: 15px auto 120px;
 }
-
-.main>*{
+.main > * {
     margin-bottom:15px;
 }
 
@@ -92,12 +94,11 @@ h1, .title{
 
 .main p{
     margin-bottom:35px;
-    font-size:1.1em;
     text-align:justify;
-    margin-right:20px;
+    margin-right:35px;
 }
 
-.wegas-text, .bd{
+.wegas-text, .bd {
     padding:15px 0 15px 0;
 }
 
@@ -116,7 +117,8 @@ h1, .title{
 input[type="text"] {
     width: 155px;
 }
-
+.signupgroup {
+}
 .signupgroup div{
     float:left;
     width:165px;
@@ -137,12 +139,19 @@ input[type="text"] {
     width:8px;
     margin: 0 2px 0 0;
 }
-
-.main .signup .signupbutton{
-    float:left;
-    margin: 0px 10px 0 0;
+.main .signup {
+    margin-bottom: 30px;
+    border-bottom: 1px solid lightgray;
+}
+.main .signup .yui3-button,
+.main .guestlogin .yui3-button {
+    float: right;
+    margin: -41px 6px 0px 0;
     width:155px;
     min-height: 20px;
+}
+.main .guestlogin .yui3-button {
+    margin-top: -39px
 }
 
 .yui3-skin-sam  button.yui3-button{
@@ -166,7 +175,7 @@ input[type="text"] {
     border-width: 0 0 1px;
 }*/
 
-.ask-pass-zone .askPass{
+.ask-pass-zone .yui3-button{
     float:right;
     margin: -22px 10px 0 0;
     width:155px;
@@ -182,7 +191,7 @@ input[type="text"] {
     font-size: 1em;
 }
 
-.main .ask-pass button{
+.main .ask-pass .yui3-button{
     color:white;
     background-color: #072644;
 }

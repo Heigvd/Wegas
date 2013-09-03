@@ -62,7 +62,7 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
         showArrowEditor: function(arrow) {
             this.currentArrow = arrow;
             this.setArrowEditorButtons(arrow.get('val'));
-            Y.one('#arrowCurrentText').setAttribute("value", arrow.get('text'));
+            document.getElementById('arrowCurrentText').value = arrow.get('text');
             Y.one('#arrowCurrentText').focus();
             this.arrowEditor.show();
         },
@@ -186,7 +186,7 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                         "@class": "Script",
                         "language": "JavaScript",
                         "content": "importPackage(com.wegas.core.script);\n" +
-                            "\nfleche" + this.currentArrow.get("id") + ".properties.put('value'," + this.currentArrow.get("val") + ");" +
+                            "\nfleche" + this.currentArrow.get("id") + ".properties.put('value','" + this.currentArrow.get("val") + "');" +
                             "\nfleche" + this.currentArrow.get("id") + ".properties.put('text','" + this.currentArrow.get("text") + "');"
                     })
                 }
@@ -215,9 +215,9 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             this.arrowEditor = new Y.Panel({
                 srcNode: "#arrowEditor",
                 headerContent: "Editeur lien",
+                xy: [120,100],
                 width: 300,
-                zIndex: 5,
-                centered: true,
+                zIndex: 50000,
                 modal: true,
                 visible: false,
                 render: true,
@@ -273,8 +273,8 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                srcNode: "#rectangleEditor",
                headerContent: "Editeur définition",
                width: 300,
-               zIndex: 5,
-               centered: true,
+               zIndex: 50000,
+               xy: [120, 100],
                modal: true,
                visible: false,
                render: true,

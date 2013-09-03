@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.jparealm;
 
+import com.wegas.core.Helper;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
@@ -22,8 +23,17 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = "email")
+})
+@NamedQueries({
+    @NamedQuery(name = "findAccountByValue", query = "SELECT DISTINCT abstractaccount FROM JpaAccount abstractaccount WHERE lower(abstractaccount.email) LIKE :search OR lower(abstractaccount.firstname) LIKE :search OR lower(abstractaccount.lastname) LIKE :search")})
 public class JpaAccount extends AbstractAccount {
 
+    /**
+     *
+     */
+    private String email;
     /**
      *
      */
@@ -46,6 +56,7 @@ public class JpaAccount extends AbstractAccount {
     public void merge(AbstractEntity other) {
         super.merge(other);
         JpaAccount a = (JpaAccount) other;
+        this.setEmail(a.getEmail());
         if (a.getPassword() != null && !a.getPassword().isEmpty()) {                                          // Only update the password if it is set
             this.setPassword(a.getPassword());
             this.setPasswordHex(null);                                          // Force jpa update
@@ -119,5 +130,28 @@ public class JpaAccount extends AbstractAccount {
      */
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    public String getHash() {
+        if (email != null) {
+            return Helper.md5Hex(email);
+
+        } else {
+            return Helper.md5Hex("default");
+        }
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
