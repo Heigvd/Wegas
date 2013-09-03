@@ -37,21 +37,18 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             }, this);
         },
         findCell: function() {
-            var i, ii, iii, isSameTask, dt = this.get("host").datatable,
-                    taskActivities = this.findTaskActivities();
+            var i, ii, iii, dt = this.get("host").datatable,
+                    taskActivities = this.taskActivitiesToAdd();
 
             for (i = 0; i < dt.data._items.length; i++) {
-                isSameTask = false;
                 for (ii = 0; ii < taskActivities.length; ii++) {
-                    if (taskActivities[ii].get("taskDescriptorId") === dt.getRecord(i).get("id") && !isSameTask) {
+                    if (taskActivities[ii].get("taskDescriptorId") === dt.getRecord(i).get("id")) {
                         for (iii = 0; iii < dt.get('columns').length; iii++) {
                             if (dt.get('columns')[iii].time === parseInt(taskActivities[ii].get("time"))) {
                                 this.addColor(dt.getRow(i).getDOMNode().cells[iii]);
                                 break;
                             }
                         }
-                        isSameTask = true;
-                        break;
                     }
                 }
             }
@@ -77,6 +74,27 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
 
             }
             return taskActivities;
+        },
+        taskActivitiesToAdd: function() {
+            var taskActivities = this.findTaskActivities(), activitiesToAdd = [],
+                    i, ii, exist;
+            for (i = 0; i < taskActivities.length; i++) {
+                exist = false;
+                if (activitiesToAdd.length === 0) {
+                    activitiesToAdd.push(taskActivities[i]);
+                } else {
+                    for (ii = 0; ii < activitiesToAdd.length; ii++) {
+                        if (activitiesToAdd[ii].get("taskDescriptorId") === taskActivities[i].get("taskDescriptorId") &&
+                                activitiesToAdd[ii].get("time") === taskActivities[i].get("time")) {
+                            exist = true;
+                        }
+                    }
+                    if (!exist){
+                        activitiesToAdd.push(taskActivities[i]);
+                    }
+                }
+            }
+            return activitiesToAdd;
         },
         addColor: function(cell) {
             cell.innerHTML = cell.innerHTML + "<span class='editable activity'></span>";
