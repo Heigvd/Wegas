@@ -60,9 +60,12 @@ public class JpaRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         try {
-            Long accountId = (Long) principals.fromRealm(getName()).iterator().next();
+//            if (principals.fromRealm(this.getName()).size() > 0) {
+//                Long accountId = (Long) principals.fromRealm(getName()).iterator().next();
+//                AbstractAccount account = accountFacade().find(accountId);
+//            }
 
-            AbstractAccount account = accountFacade().find(accountId);
+            AbstractAccount account = accountFacade().find((Long) principals.getPrimaryPrincipal());
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
             for (Role role : account.getRoles()) {
                 info.addRole(role.getName());

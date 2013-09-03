@@ -12,7 +12,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.List;
 import javax.naming.NamingException;
@@ -53,7 +52,7 @@ public class GameFacadeTest extends AbstractEJBTest {
         t.setName("team");
         teamFacade.create(t);
         final User u = new User();
-        final AbstractAccount abstractAccount = new JpaAccount();
+        final JpaAccount abstractAccount = new JpaAccount();
         abstractAccount.setEmail("a@a.com");
         u.addAccount(abstractAccount);
         userFacade.create(u);
