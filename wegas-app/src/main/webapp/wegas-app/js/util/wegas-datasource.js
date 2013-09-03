@@ -223,7 +223,7 @@ YUI.add('wegas-datasource', function(Y) {
                     //this.fire("serverEvent", evtPayload);
                 }
             }
-            if (this.updated) {
+            if (e.cfg.updateEvent !== false && this.updated) {
                 this.get(HOST).fire("update", e);
             }
         },
@@ -577,6 +577,13 @@ YUI.add('wegas-datasource', function(Y) {
                 this.get("host").fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
             });
         },
+        generateRequest: function(data) {
+            if (data['@class'].indexOf("Instance") > -1) {
+                return '/' + data.descriptorId + '/VariableInstance/' + data.id;
+            } else {
+                return "/" + data.id;
+            }
+        },
         /**
          * @function
          * @private
@@ -585,11 +592,11 @@ YUI.add('wegas-datasource', function(Y) {
             if (entity.get && entity.get("items")) {
                 return callback.call(this, entity.get("items"));
             }
-            //            if (entity.get && entity.get("scope")) {
-            //                if (callback(Y.Object.values(entity.get("scope").get("variableInstances")))) {
-            //                    return true;
-            //                }
-            //            }
+            //if (entity.get && entity.get("scope")) {
+            //    if (callback(Y.Object.values(entity.get("scope").get("variableInstances")))) {
+            //        return true;
+            //    }
+            //}
             return false;
         },
         /**

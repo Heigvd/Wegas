@@ -576,7 +576,7 @@ YUI.add('wegas-entity', function(Y) {
                 return this.get("firstname") + " " + this.get("lastname");
 
             } else {
-                return this.get("email") + " " + this.get("lastname");
+                return this.get("email");
             }
         }
 
@@ -1142,6 +1142,14 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 _inputex: {
                     regexp: /^[0-9]*$/
+                }
+            },
+            history: {
+                type: ARRAY,
+                _inputex: {
+                    _type: "list",
+                    useButtons: true,
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
         }

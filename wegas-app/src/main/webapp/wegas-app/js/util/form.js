@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileoverview
+ * @fileoverview New version of Form widget to replace inputex, not in use yet.
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('form', function(Y) {

@@ -347,9 +347,6 @@ YUI.add('wegas-proggame-display', function(Y) {
             map: {
                 validator: Y.Lang.isArray
             },
-            mapObjects: {
-                validator: Y.Lang.isArray
-            },
             objects: {
             }
         },
