@@ -61,9 +61,9 @@ body > .wegas-pageloader, html{
     height: 50px;
     margin: auto;
 }
-.wegas-flexitests-mcqdisplay{
+/*.wegas-flexitests-mcqdisplay{
     z-index: inherit !important;
-}
+}*/
 .wegas-flexitests-mcqdisplay-hidden{
     display: none;
 }
@@ -148,9 +148,6 @@ body > .wegas-pageloader, html{
 .editor-preview .wegas-form .wegas-toolbar button,
 .flexitests .wegas-form .wegas-toolbar button{
     margin-left:135px;
-}
-.yui3-treeview-content > .page-node:first-child{
-    display: none;
 }
 /*userVoice*/
 #uvTab{

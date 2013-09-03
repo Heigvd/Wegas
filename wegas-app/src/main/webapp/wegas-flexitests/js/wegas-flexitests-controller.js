@@ -106,7 +106,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     reponseElement,
                     elements = this.collectElements();
             this.ongoing = false;
-            this.mask();
+            //this.mask();
             elements.index = +this.maxSize - this.questionToDo.length;
             elements.id = this.currentQuestionId;
             elements.response = response;
@@ -122,7 +122,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 this.mcq.error(responseTime);
             }
             this.mcq.save(elements);
-            this.mask();
+            //this.mask();
             if (this.questionToDo.length !== 0) {
                 Y.later(+this.mcq.get("feedback"), this, this.next);
             }
