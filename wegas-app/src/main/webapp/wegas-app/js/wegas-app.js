@@ -91,8 +91,12 @@ YUI.add('wegas-app', function(Y) {
             });
 
             Y.on("io:failure", function(tId, req, e) {                          // Add a global io failure listener
-                var msg = "Error sending request : " + e.target.get("source") + e.request
-                        + "\n Server reply " + Y.JSON.stringify(Y.JSON.parse(req.response), null, "\t");
+                var msg = "Error sending request : " + e.target.get("source") + e.request;
+                try {
+                    msg += "\n Server reply " + Y.JSON.stringify(Y.JSON.parse(req.response), null, "\t");
+                } catch (e) {                                                   // JSON PARSE ERROR
+                    msg += "\n Server reply " + req.response;
+                }
                 Y.log(msg, "error");
                 if (window.Muscula) {                                           // Send an event to muscula
                     window.Muscula.errors.push(new Error(msg));

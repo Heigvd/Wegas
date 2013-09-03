@@ -23,6 +23,10 @@ public class NoResultException extends PersistenceException {
         super();
     }
 
+    public NoResultException(String message) {
+        super(message);
+    }
+
     /**
      *
      * @param cause

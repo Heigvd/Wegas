@@ -7,13 +7,13 @@
  */
 package com.wegas.core.security.persistence;
 
-import com.wegas.core.Helper;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.facebook.FacebookAccount;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,12 +30,9 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @Cacheable(true)
-@Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = "email")
-})
 @NamedQueries({
     @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance"),
-    @NamedQuery(name = "findAccountByValue", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount WHERE lower(abstractaccount.email) LIKE :search OR lower(abstractaccount.firstname) LIKE :search OR lower(abstractaccount.lastname) LIKE :search")})
+    @NamedQuery(name = "findAccountByValue", query = "SELECT DISTINCT abstractaccount FROM JpaAccount abstractaccount WHERE lower(abstractaccount.email) LIKE :search OR lower(abstractaccount.firstname) LIKE :search OR lower(abstractaccount.lastname) LIKE :search")})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
     @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
@@ -75,7 +72,9 @@ public class AbstractAccount extends AbstractEntity {
     /**
      *
      */
-    private String email;
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonIgnore
+    private Date createdTime = new Date();
     /**
      *
      */
@@ -108,10 +107,8 @@ public class AbstractAccount extends AbstractEntity {
     @Override
     public void merge(AbstractEntity other) {
         AbstractAccount a = (AbstractAccount) other;
-        this.setEmail(a.getEmail());
         this.setFirstname(a.getFirstname());
         this.setLastname(a.getLastname());
-        this.setEmail(a.getEmail());
         this.setUsername(a.getUsername());
         ListUtils.mergeLists(this.permissions, a.getPermissions());
     }
@@ -180,29 +177,6 @@ public class AbstractAccount extends AbstractEntity {
     }
 
     /**
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    public String getHash() {
-        if (email != null) {
-            return Helper.md5Hex(email);
-
-        } else {
-            return Helper.md5Hex("default");
-        }
-    }
-
-    /**
-     * @param email the email to set
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
      * @return the roles
      */
     public Set<Role> getRoles() {
@@ -268,5 +242,19 @@ public class AbstractAccount extends AbstractEntity {
         } else {
             return false;
         }
+    }
+
+    /**
+     * @return the createdTime
+     */
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    /**
+     * @param createdTime the createdTime to set
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
     }
 }
