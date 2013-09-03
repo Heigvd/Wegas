@@ -47,10 +47,10 @@ YUI.add("wegas-loginbutton", function(Y) {
                         type: "Button",
                         label: "Preferences",
                         plugins: [{
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": this.get("preferencePageId"), // @fixme
-                                    "targetPageLoaderId": this.get("targetPageLoader")
+                                fn: "OpenPageAction",
+                                cfg: {
+                                    subpageId: this.get("preferencePageId"), // @fixme
+                                    targetPageLoaderId: this.get("targetPageLoader")
                                 }
                             }]
                     }, {
@@ -84,6 +84,11 @@ YUI.add("wegas-loginbutton", function(Y) {
             if (mainAccount) {
                 name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
             }
+
+            if (mainAccount instanceof Y.Wegas.persistence.GuestJpaAccount) {   // If current account is a Guest,
+                this.menu.getMenu().item(0).hide();                             // hide the "Preference" button
+            }
+
             if (!this.get('labelIsUser')) {
                 if (cPlayer) {
                     name = cPlayer.get("name");

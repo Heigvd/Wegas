@@ -576,7 +576,7 @@ YUI.add('wegas-entity', function(Y) {
                 return this.get("firstname") + " " + this.get("lastname");
 
             } else {
-                return this.get("email") + " " + this.get("lastname");
+                return this.get("email");
             }
         }
 
