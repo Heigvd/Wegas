@@ -9,7 +9,7 @@
         <ui:define name="title">#{wegasAppBundle["LobbyPage.Title"]}</ui:define>
 
         <ui:define name="page">
-            <h:body class="yui3-skin-sam wegas-stdmode wegas-loading-overlay #{requestController.currentRoles}">
+            <h:body class="yui3-skin-sam wegas-stdmode wegas-loading-overlay #{requestController.currentRoles}"> <!-- @fixme currentRoles should not be display on all pages, since login page does not provide for an account nor any role -->
 
                 <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
                     <!-- Muscula error tracking -->
@@ -215,7 +215,7 @@
 
                             app.after("render", function() {
                                 try {
-                        #{gameController.clientScripts}  // Add game model specific js footer
+                        #{gameController.clientScripts}             // Add game model specific js footer
                                 } catch (e) {
                                     Y.log("Error running footer scripts.", "error");
                                 }

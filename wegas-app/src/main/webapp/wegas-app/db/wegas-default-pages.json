@@ -21,6 +21,8 @@
                                 "cssClass": "timeIndicators",
                                 "direction": "vertical",
                                 "children": [{
+                                        "custom": "",
+                                        "data": {},
                                         "type": "Template",
                                         "variable": {
                                             "name": "phases"
@@ -28,6 +30,8 @@
                                         "template": "title"
                                     }, {
                                         "type": "Template",
+                                        "custom": "",
+                                        "data": {},
                                         "variable": {
                                             "name": "phases"
                                         },
@@ -60,6 +64,7 @@
                                 "variable": {
                                     "name": "humanResources"
                                 },
+                                "custom": "",
                                 "template": "box",
                                 "data": {
                                     "label": "Time cards"
@@ -138,7 +143,6 @@
                             }, {
                                 "cssClass": "menu-loginbutton",
                                 "disabled": false,
-                                "label": "",
                                 "labelIsUser": false,
                                 "preferencePageId": 1000,
                                 "targetPageLoader": "maindisplayarea",
@@ -183,12 +187,5 @@
         "variable": {
             "name": "inbox"
         }
-    },
-    "1000": {
-        "id": 1000,
-        "type": "Form",
-        "plugins": [{
-                "fn": "UserPreferences"
-            }]
     }
 }

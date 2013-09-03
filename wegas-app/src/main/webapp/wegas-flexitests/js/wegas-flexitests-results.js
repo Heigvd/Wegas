@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-results", function(Y) {
@@ -27,15 +27,8 @@ YUI.add("wegas-flexitests-results", function(Y) {
         return returnItem;
     };
     Y.namespace("Wegas").FlexitestsResults = Y.Base.create("wegas-flexitests-results", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        initializer: function() {
-
-        },
-        renderUI: function() {
-            this.get("contentBox").append("<div class='config'></div>");
-            this.get("contentBox").append("<div class='results'>Collecting results</div>");
-        },
-        bindUI: function() {
-        },
+        CONTENT_TEMPLATE: "<div><div class='config'></div>"
+                + "<div class='results'>Collecting results</div>",
         syncUI: function() {
             var script = "getInstances([";
             try {
@@ -84,6 +77,11 @@ YUI.add("wegas-flexitests-results", function(Y) {
             }
         },
         renderResult: function(results) {
+            if (!results) {
+                this.get("contentBox").one(".config").setHTML("Unable to find target variable.");
+                return;
+            }
+
             var props = results.getInstance().get("properties"), i, sum = 0, correct = 0;
             for (i in props) {
                 if (props.hasOwnProperty(i)) {

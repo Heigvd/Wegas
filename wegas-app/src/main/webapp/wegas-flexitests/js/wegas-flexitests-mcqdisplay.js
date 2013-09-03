@@ -16,6 +16,7 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
 
     Y.namespace('Wegas').FlexitestsMCQ = Y.Base.create("wegas-flexitests-mcqdisplay", Y.Widget,
             [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+                
         /**
          * Lifecycle method
          * @function

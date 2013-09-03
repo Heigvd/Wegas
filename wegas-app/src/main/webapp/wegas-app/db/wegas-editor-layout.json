@@ -150,6 +150,14 @@
                                             "type": "ScriptLibrary",
                                             "library": "ClientScript"
                                         }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "label": "Help & FAQS",
+                                    "wchildren": [{
+                                            "type": "Text",
+                                            "cssClass": "editor-help",
+                                            "content": "<iframe src=\"https://docs.google.com/document/d/16S3uGvSGkweay9Dng6mIus3ERdq5D1_GJIwMynTMcuo/pub?embedded=true\"></iframe>"
+                                        }]
                                 }]
                         }
                     }]

@@ -37,7 +37,7 @@ public class NumberInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    @JsonView(Views.Export.class)
+    @JsonView(Views.Extended.class)
     private List<Double> history = new ArrayList<>();
 
     /**
@@ -80,14 +80,14 @@ public class NumberInstance extends VariableInstance {
 
         this.val = value;
     }
-    
-    public void saveHistory(){
+
+    public void saveHistory() {
         this.history.add(this.val);
         if (this.history.size() > HISTORYSIZE) {
             this.history.remove(0);
         }
     }
-    
+
     public List<Double> getHistory() {
         return history;
     }
@@ -104,6 +104,6 @@ public class NumberInstance extends VariableInstance {
     public void merge(AbstractEntity a) {
         NumberInstance vi = (NumberInstance) a;
         this.setValue(vi.getValue());
-        //this.setHistory(vi.getHistory());     @fixme By setting value from editor view history is cleaned.
+        this.setHistory(vi.getHistory());
     }
 }

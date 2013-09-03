@@ -421,6 +421,7 @@
     "3": {
         "cssClass": "task-page",
         "type": "List",
+        "direction": "vertical",
         "children": [
             {
                 "type": "PmgDatatable",
@@ -506,6 +507,7 @@
     },
     "5": {
         "cssClass": "resources-page",
+        "direction": "vertical",
         "type": "List",
         "children": [
             {
@@ -626,6 +628,7 @@
     "6": {
         "cssClass": "actions-page",
         "type": "List",
+        "direction": "vertical",
         "children": [
             {
                 "type": "Text",
@@ -642,6 +645,7 @@
     "7": {
         "cssClass": "questions-page",
         "type": "List",
+        "direction": "vertical",
         "children": [
             {
                 "type": "Text",
@@ -657,6 +661,7 @@
     "8": {
         "cssClass": "inbox-page",
         "type": "List",
+        "direction": "vertical",
         "children": [
             {
                 "type": "Text",
@@ -672,6 +677,7 @@
     "9": {
         "cssClass": "history-page",
         "type": "List",
+        "direction": "vertical",
         "children": [
             {
                 "type": "Text",
