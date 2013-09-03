@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI().use(function(Y) {
-    //"use strict";
+//"use strict";
 
     if (typeof YUI_config === 'undefined') {
         YUI_config = {
@@ -188,6 +188,11 @@ YUI().use(function(Y) {
                 'wegas-image': {
                     path: 'wegas-app/js/widget/wegas-image-min.js',
                     ws_provides: "Image"
+                },
+                'wegas-box': {
+                    path: 'wegas-app/js/widget/wegas-box-min.js',
+                    ws_provides: "Box",
+                    requires: ['wegas-widget']
                 },
                 'wegas-tabview': {
                     path: 'wegas-app/js/widget/wegas-tabview-min.js',
@@ -389,6 +394,31 @@ YUI().use(function(Y) {
                     requires: ['wegas-cssstyles'],
                     ws_provides: 'CSSSize'
                 },
+                "wegas-scheduledatatable": {
+                    path: 'wegas-app/js/plugin/wegas-scheduledatatable-min.js',
+                    requires: [],
+                    ws_provides: 'ScheduleDT'
+                },
+                "wegas-inputex-object": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
+                    requires: ['inputex-object'],
+                    ix_provides: 'wegasobject'
+                },
+                "wegas-inputex-colorpicker": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-colorpicker-min.js',
+                    requires: ['inputex-field', 'overlay'],
+                    ix_provides: 'colorpicker'
+                },
+                "wegas-inputex-keyvalue": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-keyvalue-min.js',
+                    requires: ['inputex-keyvalue'],
+                    ix_provides: 'wegaskeyvalue'
+                },
+                "wegas-inputex-var-autocomplete": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-var-autocomplete-min.js',
+                    requires: ['inputex-string'],
+                    ix_provides: 'wegasvarautocomplete'
+                },
                 "wegas-blockrightclick": {
                     path: 'wegas-app/js/plugin/wegas-blockrightclick-min.js',
                     ws_provides: 'BlockRightclick'
@@ -397,6 +427,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/plugin/wegas-visibilitytimer-min.js',
                     requires: ["wegas-editable", "plugin", "wegas-action"],
                     ws_provides: ["ShowAfter", "HideAfter"]
+                },
+                'datatable-csv': {
+                    path: 'wegas-app/js/plugin/datatableCSV-min.js',
+                    requires: ["plugin"],
+                    ws_provides: ["DatatableCSV"]
                 },
                 /** Inputex Fields **/
                 'wegas-inputex': {
@@ -446,7 +481,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-variabledescriptorselect': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-variabledescriptorselect-min.js',
-                    requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
+                    requires: ['wegas-inputex', 'inputex-group', 'inputex-combine', 'inputex-number',
                         'inputex-select'],
                     ix_provides: ["entityarrayfieldselect", "variabledescriptorselect"]
                 },
@@ -682,41 +717,67 @@ YUI().use(function(Y) {
                 /**
                  * Project Management Game
                  */
+                'wegas-pmgwidget-css': {
+                    path: 'wegas-pmg/css/wegas-pmgwidget.css',
+                    type: 'css'
+                },
                 'wegas-pmg': {
                     path: 'wegas-pmg/js/wegas-pmg-breadcrumb-min.js',
                     requires: ['wegas-pmg-breadcrumb'],
                     ws_provides: "PmgBreadcrumb"
                 },
-                'wegas-pmg-tasklist': {//Using simple taskList
-                    path: 'wegas-pmg/js/wegas-pmg-tasklist-min.js',
-                    requires: ['wegas-pmg-tasklist', 'wegas-pmg-datatable'],
-                    ws_provides: "PmgTasklist"
-                },
-                //'wegas-pmg-treebletasklist': { //Using Treeble
-                //    path: 'wegas-pmg/js/wegas-pmg-treebletasklist.js',
-                //    requires: ['wegas-pmg-treebletasklist', 'wegas-pmg-datatable'],
-                //    ws_provides: "PmgTreebleTasklist"
-                //},
-                'wegas-pmg-gantt': {
-                    path: 'wegas-pmg/js/wegas-pmg-gantt-min.js',
-                    requires: ['wegas-pmg-gantt', 'wegas-pmg-datatable'],
-                    ws_provides: "PmgGantt"
-                },
-                'wegas-pmg-resourcelist': {
-                    path: 'wegas-pmg/js/wegas-pmg-resourcelist-min.js',
-                    requires: ['wegas-widgetmenu', 'wegas-pmg-gantt', 'sortable'],
-                    ws_provides: "PmgResourcelist"
-                },
                 'wegas-pmg-datatable': {
                     path: 'wegas-pmg/js/wegas-pmg-datatable-min.js',
                     /*requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],*/ //Using Treeble
-                    requires: ['wegas-pmg-datatable', 'datatable', 'datatable-mutable'], //Using simple datatable
+                    requires: ['wegas-datatable', 'datatable', 'datatable-mutable'], //Using simple datatable
                     ws_provides: "PmgDatatable"
                 },
                 'wegas-pmg-slidepanel': {
                     path: 'wegas-pmg/js/wegas-pmg-slidepanel-min.js',
                     requires: ['anim'],
                     ws_provides: "PmgSlidePanel"
+                },
+                "wegas-pmg-reservation": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-reservation-min.js',
+                    ws_provides: 'Reservation'
+                },
+                "wegas-pmg-occupationcolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-occupationcolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
+                    ws_provides: 'OccupationColor'
+                },
+                "wegas-pmg-activitycolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-activitycolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
+                    ws_provides: 'ActivityColor'
+                },
+                "wegas-pmg-assignment": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-assignment-min.js',
+                    requires: ['sortable', 'wegas-pmgwidget-css'],
+                    ws_provides: 'Assignment'
+                },
+                "wegas-pmg-planification": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-planification-min.js',
+                    ws_provides: 'Planification'
+                },
+                "wegas-pmg-plannificationcolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-plannificationcolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
+                    ws_provides: 'Plannificationcolor'
+                },
+                "wegas-pmg-plannificationactivitycolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-plannificationactivitycolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
+                    ws_provides: 'PlannificationActivityColor'
+                },
+                "wegas-pmg-plannificationprogresscolor": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-plannificationprogresscolor-min.js',
+                    requires: ['wegas-pmgwidget-css'],
+                    ws_provides: 'PlannificationProgressColor'
+                },
+                "wegas-pmg-bac": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-bac-min.js',
+                    ws_provides: 'Bac'
                 },
                 /**book CYOA**/
                 'wegas-book': {
@@ -844,7 +905,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-flexitests-results': {
                     path: "wegas-flexitests/js/wegas-flexitests-results-min.js",
-                    requires: ["wegas-widget", "datatable"],
+                    requires: ["wegas-widget", "datatable", "datatable-csv"],
                     ws_provides: "FlexitestsResults"
                 },
                 /* Chess */
@@ -858,10 +919,14 @@ YUI().use(function(Y) {
                     path: "wegas-teaching/js/wegas-teaching-arrow.js",
                     ws_provides: "TeachingArrow"
                 },
+                'wegas-teaching-rectangle': {
+                    path: "wegas-teaching/js/wegas-teaching-rectangle.js",
+                    ws_provides: "TeachingRectangle"
+                },
                 'wegas-teaching-main': {
                     path: "wegas-teaching/js/wegas-teaching-main.js",
                     ws_provides: "TeachingMain",
-                    requires: ["wegas-teaching-arrow"]
+                    requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle", "editor", "gallery-yui-tooltip"]
                 }
             }
         },
@@ -929,8 +994,8 @@ YUI().use(function(Y) {
                     path: 'crafty/crafty-min.js'
                 },
                 ace: {
-                    //charset: 'utf-8',
-                    //path: "ace/src-min-noconflict/ace.js"
+//charset: 'utf-8',
+//path: "ace/src-min-noconflict/ace.js"
                     fullpath: "http://ajaxorg.github.io/ace-builds/src/ace.js"
                             //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
 
@@ -952,7 +1017,7 @@ YUI().use(function(Y) {
                 modulesByType = {};
         for (moduleName in modules) {                                           // Loop through all modules
             if (modules.hasOwnProperty(moduleName)) {
-                allModules.push(moduleName);                                    // Build a list of all modules
+                allModules.push(moduleName); // Build a list of all modules
                 if (modules[moduleName].ws_provides) {                          // Build a reverse index on which module provides what type
                     if (Y.Lang.isArray(modules[moduleName].ws_provides)) {
                         for (i = 0; i < modules[moduleName].ws_provides.length; i = i + 1) {

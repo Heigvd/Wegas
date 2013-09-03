@@ -1,5 +1,6 @@
 package com.wegas.leaderway.persistence;
 
+import com.wegas.core.persistence.AbstractEntity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,14 +12,14 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *
- * @author Benjamin
+ * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
 @XmlRootElement
 @XmlType(name = "")                                                             // This forces to use Class's short name as type
 //@XmlAccessorType(XmlAccessType.FIELD)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class WRequirement implements Serializable {
+public class WRequirement extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -28,23 +29,64 @@ public class WRequirement implements Serializable {
     /**
      *
      */
-    private String purview;
-    /**
-     *
-     */
     @Column(name = "wlimit")
     private Integer limit;
     /**
      *
      */
-    private Long number;
-    /**
-     *
+    @Column(name = "wwork")
+    private String work;
+    /*
+     * 
      */
     @Column(name = "wlevel")
     private Integer level;
+    /*
+     * 
+     */
+    private Long quantity;
+    /*
+     * 
+     */
+    private Integer completeness;
+    /*
+     * 
+     */
+    private Integer quality;
 
     public WRequirement() {
+        this.limit = 0;
+        this.work = "";
+        this.level = 0;
+        this.quantity = 0L;
+        this.completeness = 0;
+        this.quality = 0;
+    }
+
+    @Override
+    public void merge(AbstractEntity a) {
+        WRequirement other = (WRequirement) a;
+        this.setLevel(other.getLevel());
+        this.setLimit(other.getLimit());
+        this.setQuantity(other.getQuantity());
+        this.setWork(other.getWork());
+        this.setCompleteness(other.getCompleteness());
+        this.setQuality(other.getQuality());
+    }
+
+    /**
+     * @return the id
+     */
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
@@ -62,45 +104,17 @@ public class WRequirement implements Serializable {
     }
 
     /**
-     * @return the id
+     * @return the work
      */
-    public Long getId() {
-        return id;
+    public String getWork() {
+        return work;
     }
 
     /**
-     * @param id the id to set
+     * @param work the work to set
      */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * @return the purview
-     */
-    public String getPurview() {
-        return purview;
-    }
-
-    /**
-     * @param purview the purview to set
-     */
-    public void setPurview(String purview) {
-        this.purview = purview;
-    }
-
-    /**
-     * @return the number
-     */
-    public Long getNumber() {
-        return number;
-    }
-
-    /**
-     * @param number the number to set
-     */
-    public void setNumber(Long number) {
-        this.number = number;
+    public void setWork(String work) {
+        this.work = work;
     }
 
     /**
@@ -115,5 +129,47 @@ public class WRequirement implements Serializable {
      */
     public void setLevel(Integer level) {
         this.level = level;
+    }
+
+    /**
+     * @return the quantity
+     */
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    /**
+     * @param quantity the quantity to set
+     */
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
+
+    /**
+     * @return the completeness
+     */
+    public Integer getCompleteness() {
+        return completeness;
+    }
+
+    /**
+     * @param completeness the completeness to set
+     */
+    public void setCompleteness(Integer completeness) {
+        this.completeness = completeness;
+    }
+
+    /**
+     * @return the quality
+     */
+    public Integer getQuality() {
+        return quality;
+    }
+
+    /**
+     * @param quality the quality to set
+     */
+    public void setQuality(Integer quality) {
+        this.quality = quality;
     }
 }

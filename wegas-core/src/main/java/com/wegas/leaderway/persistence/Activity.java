@@ -8,13 +8,16 @@
 package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
+ * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
 public class Activity extends AbstractAssignement {
@@ -29,18 +32,12 @@ public class Activity extends AbstractAssignement {
     /**
      *
      */
-    private Double startTime;
+    @Column(name = "wtime")
+    private Double time;
     /**
      *
      */
-    private Double duration;
-    /**
-     *
-     */
-    @OneToOne(optional = true, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "wrequirement_id", nullable = true)
-    @XmlTransient
-    private WRequirement wrequirement;
+    private Boolean editable;
     /**
      *
      */
@@ -49,10 +46,17 @@ public class Activity extends AbstractAssignement {
     /**
      *
      */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
+    private String description;
+    /**
+     *
+     */
     @ManyToOne(optional = false)
-    @JoinColumn(name = "taskinstance_id", nullable = false)
+    @JoinColumn(name = "taskdescriptor_id", nullable = false)
     @XmlTransient
-    private TaskInstance taskInstance;
+    private TaskDescriptor taskDescriptor;
     /**
      *
      */
@@ -61,22 +65,34 @@ public class Activity extends AbstractAssignement {
     @JsonBackReference
     @JsonIgnore
     private ResourceInstance resourceInstance;
+    /**
+     *
+     */
+    @ManyToOne(optional = true, cascade = CascadeType.ALL, targetEntity = WRequirement.class)
+    @JoinColumn(name = "wrequirement_id", nullable = true)
+    @XmlTransient
+    private WRequirement requirement;
 
     /**
      *
      */
     public Activity() {
+        this.time = 0.0D;
+        this.completion = 0;
+        this.description = "";
+        this.requirement = null;
     }
 
     /**
      *
-     * @param taskInstance
+     * @param taskDescriptor
      */
-    public Activity(TaskInstance taskInstance) {
-        this.taskInstance = taskInstance;
-        this.startTime = 0D;
-        this.duration = 0D;
+    public Activity(TaskDescriptor taskDescriptor) {
+        this.taskDescriptor = taskDescriptor;
+        this.time = 0D;
         this.completion = 0;
+        this.description = "";
+        this.requirement = null;
     }
 
     /**
@@ -87,10 +103,10 @@ public class Activity extends AbstractAssignement {
     public void merge(AbstractEntity a) {
         Activity other = (Activity) a;
         this.setResourceInstance(other.getResourceInstance());
-        this.setStartTime(other.getStartTime());
-        this.setDuration(other.getDuration());
+        this.setTime(other.getTime());
         this.setCompletion(other.getCompletion());
-        //this.setTaskInstance(other.getTaskInstance());
+        this.setTaskDescriptor(other.getTaskDescriptor());
+        this.setDescription(other.getDescription());
     }
 
     @PostPersist
@@ -123,17 +139,33 @@ public class Activity extends AbstractAssignement {
     }
 
     /**
-     * @return the startTime
+     * @return the time
      */
-    public Double getStartTime() {
-        return startTime;
+    public Double getTime() {
+        return time;
     }
 
     /**
-     * @param startTime the startTime to set
+     * @param time the time to set
      */
-    public void setStartTime(double startTime) {
-        this.startTime = startTime;
+    public void setTime(Double time) {
+        this.time = time;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Boolean getEditable() {
+        return editable;
+    }
+
+    /**
+     *
+     * @param editable
+     */
+    public void setEditable(Boolean editable) {
+        this.editable = editable;
     }
 
     /**
@@ -141,36 +173,22 @@ public class Activity extends AbstractAssignement {
      * @return
      */
     public Long getTaskDescriptorId() {
-        return this.getTaskInstance().getDescriptorId();
+        return this.getTaskDescriptor().getId();
     }
 
     /**
-     * @return the taskInstance
+     * @return the taskDescriptor
      */
     @XmlTransient
-    public TaskInstance getTaskInstance() {
-        return taskInstance;
+    public TaskDescriptor getTaskDescriptor() {
+        return taskDescriptor;
     }
 
     /**
-     * @param taskInstance the taskInstance to set
+     * @param taskDescriptor the taskDescriptor to set
      */
-    public void setTaskInstance(TaskInstance taskInstance) {
-        this.taskInstance = taskInstance;
-    }
-
-    /**
-     * @return the duration
-     */
-    public Double getDuration() {
-        return duration;
-    }
-
-    /**
-     * @param duration the duration to set
-     */
-    public void setDuration(Double duration) {
-        this.duration = duration;
+    public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
+        this.taskDescriptor = taskDescriptor;
     }
 
     /**
@@ -188,16 +206,30 @@ public class Activity extends AbstractAssignement {
     }
 
     /**
-     * @return the wrequirement
+     * @return the description
      */
-    public WRequirement getWrequirement() {
-        return wrequirement;
+    public String getDescription() {
+        return description;
     }
 
     /**
-     * @param wrequirement the wrequirement to set
+     * @param description the description to set
      */
-    public void setWrequirement(WRequirement wrequirement) {
-        this.wrequirement = wrequirement;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * @return the requirement
+     */
+    public WRequirement getRequirement() {
+        return requirement;
+    }
+
+    /**
+     * @param requirement the requirement to set
+     */
+    public void setRequirement(WRequirement requirement) {
+        this.requirement = requirement;
     }
 }

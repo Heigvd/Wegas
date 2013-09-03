@@ -288,7 +288,13 @@ font{
 .wegas-image-hidden{
     display: none;
 }
-
+/*
+ * Box widget
+ */
+.wegas-box{
+    width:100%;
+    height:50px;
+}
 
 /* Chat widget */
 .wegas-chat-content {
