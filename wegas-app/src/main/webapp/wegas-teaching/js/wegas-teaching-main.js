@@ -63,8 +63,8 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             this.currentArrow = arrow;
             this.setArrowEditorButtons(arrow.get('val'));
             document.getElementById('arrowCurrentText').value = arrow.get('text');
-            Y.one('#arrowCurrentText').focus();
             this.arrowEditor.show();
+            Y.one('#arrowCurrentText').focus();
         },
         
         createArrow: function(x1, y1, x2, y2, id) {
