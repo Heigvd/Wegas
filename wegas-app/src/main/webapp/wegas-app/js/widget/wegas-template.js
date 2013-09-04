@@ -82,7 +82,7 @@ YUI.add("wegas-template", function(Y) {
                     desc = desc.get("currentItem");                             // display it with the current list and the current element
                 }
 
-                data.label = undefinedToEmpty(desc.getPublicLabel());
+                data.label = undefinedToEmpty(desc.getLabel());
                 data.value = undefinedToEmpty(desc.getInstance().get("value"));
                 data.maxValue = undefinedToEmpty(desc.get("maxValue"));
                 data.minValue = undefinedToEmpty(desc.get("minValue"));

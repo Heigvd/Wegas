@@ -143,14 +143,14 @@ YUI.add('wegas-mcqtabview', function(Y) {
 
                     if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
                         choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length -1 ].getChoiceDescriptor();
-                        cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15);
+                        cReplyLabel = choiceDescriptor.getLabel().substr(0, 15);
                         cReplyLabel  = (cReplyLabel.length >= 15) ? cReplyLabel + "..." : cReplyLabel;
                     }
 
                     tab = new Y.Tab({
                         label: '<div class="'
                                 + (cQuestionInstance.get("replies").length === 0 ? "unread" : "")
-                                + '"><div class="label">' + (cQuestion.getPublicLabel() || "undefined") + '</div>'
+                                + '"><div class="label">' + (cQuestion.getLabel() || "undefined") + '</div>'
                                 + '<div class="status">' + (cReplyLabel || this.jsTranslator.getRB().Unanswered) + '</div></div>',
                         content: "<div class=\"wegas-loading-div\"><div>"
                     });
@@ -206,7 +206,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
             extendedQuestion = extendedQuestion || cQuestion;
 
             ret = ['<div class="content">',
-                '<div class="title">', cQuestion.getPublicLabel() || "undefined", '</div>',
+                '<div class="title">', cQuestion.getLabel() || "undefined", '</div>',
                 '<div class="description">', extendedQuestion.get("description"), '</div>'];
 
 

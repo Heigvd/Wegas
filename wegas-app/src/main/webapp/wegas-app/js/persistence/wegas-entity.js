@@ -724,11 +724,11 @@ YUI.add('wegas-entity', function(Y) {
             playerId = playerId || Wegas.app.get('currentPlayer');
             return this.get("scope").getInstance(playerId);
         },
-        getPrivateLabel: function() {
-            return this.get("editorLabel");
-        },
-        getPublicLabel: function() {
+        getLabel: function() {
             return this.get("label");
+        },
+        getEditorLabel: function() {
+            return this.get("editorLabel");
         }
     }, {
         ATTRS: {

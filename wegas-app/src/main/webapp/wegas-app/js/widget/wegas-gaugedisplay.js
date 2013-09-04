@@ -116,7 +116,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 return;
             }
 
-            label = this.get("label") || variableDescriptor.getPublicLabel();
+            label = this.get("label") || variableDescriptor.getLabel();
             minVal = variableDescriptor.get("minValue");
             maxVal = variableDescriptor.get("maxValue") - minVal;
             value = (variableDescriptor.getInstance().
