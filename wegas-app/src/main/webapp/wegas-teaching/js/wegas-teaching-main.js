@@ -224,6 +224,17 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                 plugins: [Y.Plugin.Drag]
             });
             
+            var links = [];
+            var listLinks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "links").getAttrs().items;
+            for (var i = 0; i < listLinks.length; i++) {
+                links.push(listLinks[i].getInstance().get("value"));
+            }
+            Y.one("#arrowCurrentText").plug(Y.Plugin.AutoComplete, {
+                resultHighlighter: "phraseMatch",
+                resultFilters: "phraseMatch",
+                source: links
+            });
+            
             var onNormalClick = function(e, parent) {
                 parent.setArrowEditorButtons(parent.ARROW_NORMAL);
             };
