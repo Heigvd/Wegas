@@ -102,7 +102,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      *
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "variableInstance")
     @JsonIgnore
     private GameModelScope gameModelScope;
     /**
