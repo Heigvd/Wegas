@@ -237,7 +237,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         optional: true,
                         _inputex: {
                             _type: "entityarrayfieldselect",
-                            label: "Default result"
+                            label: "Default result",
+                            returnAttr: "id"
                         }
                     }
                 }
