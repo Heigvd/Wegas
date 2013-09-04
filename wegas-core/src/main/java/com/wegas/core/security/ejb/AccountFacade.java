@@ -14,6 +14,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.AbstractAccount_;
 import com.wegas.core.security.persistence.Role;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -92,6 +93,12 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
     public void create(AbstractAccount entity) {
         getEntityManager().persist(entity);
     }
+    public List<JpaAccount> findAllRegistered() {
+        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
+        query.select(query.from(JpaAccount.class));
+        return getEntityManager().createQuery(query).getResultList();
+    }
+
 
     /**
      * Return a user based on his principal.
