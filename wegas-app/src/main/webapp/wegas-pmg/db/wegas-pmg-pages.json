@@ -286,7 +286,7 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "expr": "questions.items[currentPhase.value].descriptorId"
+                                                "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
                                             }
                                         }
                                     }, {
@@ -670,7 +670,7 @@
             }, {
                 "type": "MCQTabView",
                 "variable": {
-                    "expr": "questions.items[currentPhase.value].descriptorId"
+                    "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
                 }
             }
         ]

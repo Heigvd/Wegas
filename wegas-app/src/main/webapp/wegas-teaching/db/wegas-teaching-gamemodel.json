@@ -306,6 +306,55 @@
             "scope": {
                 "@class": "TeamScope"
             }
+        },
+        {
+            "@class": "ListDescriptor",
+            "name": "links",
+            "label": "links",
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "items": [
+                {
+                    "@class": "TextDescriptor",
+                    "name": "link1",
+                    "label": "link1",
+                    "defaultInstance": {
+                        "@class": "TextInstance",
+                        "value": "Hérite"
+                    }
+                },
+                {
+                    "@class": "TextDescriptor",
+                    "name": "link2",
+                    "label": "link2",
+                    "defaultInstance": {
+                        "@class": "TextInstance",
+                        "value": "Spécialise"
+                    }
+                },
+                {
+                    "@class": "TextDescriptor",
+                    "name": "link3",
+                    "label": "link3",
+                    "defaultInstance": {
+                        "@class": "TextInstance",
+                        "value": "Sous-ensemble"
+                    }
+                },
+                {
+                    "@class": "TextDescriptor",
+                    "name": "link4",
+                    "label": "link4",
+                    "defaultInstance": {
+                        "@class": "TextInstance",
+                        "value": "Appartient"
+                    }
+                }
+            ]
         }
     ]
 }
