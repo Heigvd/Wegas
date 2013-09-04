@@ -3,11 +3,18 @@ var gm = self.getGameModel(), testMode = false;
 steps = 10, minTaskDuration = 0.1;
 
 function nextPeriod() {
-    var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, 'currentPhase');
+    var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, 'currentPhase'),
+            ganttPage, taskPage;
     phases = VariableDescriptorFacade.findByName(gm, 'currentPeriod');
     if (time.period === parseInt(phases.items.get(time.phase).getMaxValue())) { // if end of phase
         phases.items.get(time.phase).getInstance(self).setValue(1);
         phase.getInstance(self).setValue(time.phase + 1);
+        if (parseInt(phase.getInstance(self).getValue()) === 2) {
+            ganttPage = VariableDescriptorFacade.findByName(gm, 'ganttPage');
+            ganttPage.getInstance(self).setValue(11);
+            taskPage = VariableDescriptorFacade.findByName(gm, 'taskPage');
+            taskPage.getInstance(self).setValue(12);
+        } 
     } else if (time.phase === 2) { //if current phase is the 'realisation' phase
         completeRealizationPeriod();
         if (checkEndOfProject()) { //if the project ended
@@ -24,7 +31,7 @@ function nextPeriod() {
 function checkEndOfProject() {
     var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'), isTheEnd = true;
     for (i = 0; i < tasks.items.size(); i++) {
-        taskInst = tasks.items.get(0).getInstance(self);
+        taskInst = tasks.items.get(i).getInstance(self);
         if (isTrue(taskInst.getActive()) && parseInt(taskInst.getProperty('completeness')) < 100) {
             isTheEnd = false;
             break;
@@ -84,7 +91,7 @@ function updateGauges() {
             customers = VariableDescriptorFacade.findByName(self.getGameModel(), 'userApproval'),
             tasksQuality = 0, nomberOfTasks = 0, nomberOfBeganTasks = 0, tasksDelay = 0,
             costsJaugeValue, qualityJaugeValue, delayJaugeValue, managementJaugeValue, customerJaugeValue;
-    
+
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
         if (isTrue(taskInst.getActive())) {//if task is active
@@ -99,7 +106,7 @@ function updateGauges() {
 
     //costs
     if (parseInt(planedValue.value) > 0) {
-        costsJaugeValue = Math.round((100 /  parseInt(earnedValue.value)) *parseInt(planedValue.value));
+        costsJaugeValue = Math.round((100 / parseInt(earnedValue.value)) * parseInt(planedValue.value));
     }
     costsJaugeValue = (costsJaugeValue > parseInt(costs.getMinValue())) ? costsJaugeValue : parseInt(costs.getMinValue());
     costsJaugeValue = (costsJaugeValue < parseInt(costs.getMaxValue())) ? costsJaugeValue : parseInt(costs.getMaxValue());
@@ -598,6 +605,9 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     if (needProgress > 0) {
         selectedReq.setQuality((parseInt(selectedReq.getQuality()) * parseInt(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);
     }
+    
+    //set Wage (add 1/steps of the need's wage at task);
+    taskInst.setProperty("wage", parseInt(taskInst.getProperty("wage")) + (parseInt(activityAsNeeds.getResourceInstance().getProperty("wage")) / steps));
 
     if (testMode) {
         println('sameNeedActivity.length : ' + sameNeedActivity.length);

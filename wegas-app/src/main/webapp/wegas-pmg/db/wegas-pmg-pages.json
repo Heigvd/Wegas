@@ -59,12 +59,18 @@
                                 "label": "Direction",
                                 "variable": {
                                     "name": "managementApproval"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 }
                             }, {
                                 "type": "GaugeDisplay",
                                 "label": "User",
                                 "variable": {
                                     "name": "userApproval"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 }
                             }
                         ]
@@ -78,12 +84,18 @@
                                 "label": "Quality",
                                 "variable": {
                                     "name": "quality"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 }
                             }, {
                                 "type": "GaugeDisplay",
                                 "label": "Costs",
                                 "variable": {
                                     "name": "costs"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 },
                                 "plugins": [
                                     {
@@ -102,6 +114,9 @@
                                 "label": "Delay",
                                 "variable": {
                                     "name": "delay"
+                                },
+                                "cfg":{
+                                    "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 },
                                 "plugins": [
                                     {
@@ -122,7 +137,7 @@
                         "type": "Template",
                         "label": "Available time: ",
                         "variable": {
-                            "name": "timeCards"
+                            "expr": "timeCards.items[currentPhase.value].descriptorId"
                         },
                         "template": "box"
                     }
@@ -151,7 +166,9 @@
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
-                                    "subpageId": 3,
+                                    "subpageVariable": {
+                                        "name": "taskPage"
+                                    },
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
                             }
@@ -163,7 +180,9 @@
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
-                                    "subpageId": 4,
+                                    "subpageVariable": {
+                                        "name": "ganttPage"
+                                    },
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
                             },
@@ -419,7 +438,7 @@
         ]
     },
     "3": {
-        "cssClass": "task-page",
+        "cssClass": "task-plannification-page",
         "type": "List",
         "direction": "vertical",
         "children": [
@@ -451,10 +470,6 @@
                         "formatter": "template",
                         "field": "instance.properties.quality"
                     }, {
-                        "label": "BAC",
-                        "formatter": "template",
-                        "field": "instance.properties.bac"
-                    }, {
                         "label": "Realised %",
                         "formatter": "template",
                         "field": "instance.properties.completeness"
@@ -465,12 +480,18 @@
                     }, {
                         "label": "Assigned resources",
                         "formatter": "assignedRessources"
+                    }],
+                "plugins": [{
+                        "fn": "Bac",
+                        "cfg": {
+                            "columnPosition": 4
+                        }
                     }]
             }
         ]
     },
     "4": {
-        "cssClass": "gantt-page",
+        "cssClass": "gantt-plannification-page",
         "type": "List",
         "children": [
             {
@@ -497,10 +518,6 @@
                         "fn": "Planification"
                     }, {
                         "fn": "Plannificationcolor"
-                    }, {
-                        "fn": "PlannificationActivityColor"
-                    }, {
-                        "fn": "PlannificationProgressColor"
                     }]
             }
         ]
@@ -692,24 +709,7 @@
     }, "10": {
         "cssClass": "evm-page",
         "type": "List",
-        "children": [
-            {
-                "type": "PmgDatatable",
-                "cssClass": "evmDatatable",
-                "variable": {
-                    "name": "tasks"
-                },
-                "columnsCfg": [{
-                        "key": "index",
-                        "label": "No"
-                    }, {
-                        "key": "label",
-                        "label": "Name"
-                    }],
-                "plugins": [{
-                        "fn": "Bac"
-                    }]
-            }, {
+        "children": [{
                 "type": "PmgSlidePanel",
                 "title": "EVM",
                 "cssClass": "evm",
@@ -718,6 +718,7 @@
                     {
                         "type": "Chart",
                         "chartWidth": "90%",
+                        "chartHeight": "400px",
                         "variables": [{
                                 "name": "actualCost",
                                 "label": "AC (Actual Cost)"
@@ -730,6 +731,90 @@
                             }]
                     }
                 ]
+            }
+        ]
+    },
+    "11": {
+        "cssClass": "gantt-execution-page",
+        "type": "List",
+        "children": [
+            {
+                "type": "PmgDatatable",
+                "variable": {
+                    "name": "tasks"
+                },
+                "columnsCfg": [{
+                        "key": "index",
+                        "label": "No"
+                    }, {
+                        "key": "label",
+                        "label": "Name"
+                    }],
+                "plugins": [{
+                        "fn": "ScheduleDT",
+                        "cfg": {
+                            "columnToAdd": 10,
+                            "variable": {
+                                "name": "periodPhase3"
+                            }
+                        }
+                    }, {
+                        "fn": "Plannificationcolor"
+                    }, {
+                        "fn": "PlannificationActivityColor"
+                    }, {
+                        "fn": "PlannificationProgressColor"
+                    }]
+            }
+        ]
+    },
+    "12": {
+        "cssClass": "task-execution-page",
+        "type": "List",
+        "children": [
+            {
+                "type": "PmgDatatable",
+                "variable": {
+                    "name": "tasks"
+                },
+                "columnsCfg": [{
+                        "key": "index",
+                        "label": "No"
+                    }, {
+                        "key": "label",
+                        "label": "Name"
+                    }, {
+                        "label": "Estimated duration",
+                        "formatter": "template",
+                        "field": "instance.duration"
+                    }, {
+                        "label": "Fixed costs",
+                        "formatter": "template",
+                        "field": "instance.properties.fixedCosts"
+                    }, {
+                        "label": "BAC",
+                        "formatter": "template",
+                        "field": "instance.properties.bac"
+                    }, {
+                        "label": "Wages",
+                        "formatter": "template",
+                        "field": "instance.properties.wages"
+                    }, {
+                        "label": "Quality",
+                        "formatter": "template",
+                        "field": "instance.properties.quality"
+                    }, {
+                        "label": "Realised %",
+                        "formatter": "template",
+                        "field": "instance.properties.completeness"
+                    }, {
+                        "key": "requirements",
+                        "label": "Ressources",
+                        "formatter": "requieredRessources"
+                    }, {
+                        "label": "Assigned resources",
+                        "formatter": "assignedRessources"
+                    }]
             }
         ]
     }
