@@ -107,8 +107,12 @@ YUI.add("wegas-flexitests-results", function(Y) {
             }, extractValue = function(element, qId) {
                 var el = elements[element],
                         selectElement = el.item(qId % el.size());
-                return selectElement.get("content")
-                        || selectElement.get("url");
+                if (selectElement) {
+                    return selectElement.get("content")
+                            || selectElement.get("url");
+                } else {
+                    return "";
+                }
             };
             delete demographics["@class"];
             delete tests["@class"];

@@ -96,6 +96,9 @@ body > .wegas-pageloader, html{
 .wegas-flexitests-mcqdisplay-input label input:hover{
     cursor:inherit;
 }
+.wegas-choicelist-content:empty:before {
+    content: "" !important;
+}
 .wegas-flexitests-mcqdisplay-input label span{
     width:45px;
     white-space: nowrap;
