@@ -56,7 +56,6 @@ YUI.add("wegas-flexitests-results", function(Y) {
                             Y.Wegas.Facade.Page.cache.getPage(this.get("testPage"), Y.bind(function(page) {
                                 Y.Wegas.Widget.use(page, Y.bind(function() {
                                     this.renderTable(Y.JSON.parse(e.data.response).entities, Y.Wegas.Widget.create(page));
-                                   //TEST: this.renderTable([{"42897": {"id": 42922, "properties": {"": ""}, "descriptorId": 42918}, "42898": {"id": 42923, "properties": {"": ""}, "descriptorId": 42918}, "42899": {"id": 42924, "properties": {"": ""}, "descriptorId": 42918}, "42900": {"id": 42921, "properties": {"": ""}, "descriptorId": 42918}, "42992": {"id": 42994, "properties": {"": ""}, "descriptorId": 42918}, "43012": {"id": 43015, "properties": {"firstname": "", "date": "1378132640773", "etude": "etudes", "gender": "m", "fullname": "joueur test", "droitier ou gaucher": "g", "totalTime": 21117}, "descriptorId": 42918}, "43023": {"id": 43027, "properties": {"firstname": "test", "date": "1378132369233", "etude": "bac+3", "gender": "f", "fullname": "delphinetest", "droitier ou gaucher": "d", "totalTime": 22800}, "descriptorId": 42918}}, {"42897": {"id": 42929, "properties": {}, "descriptorId": 42925}, "42898": {"id": 42930, "properties": {}, "descriptorId": 42925}, "42899": {"id": 42931, "properties": {}, "descriptorId": 42925}, "42900": {"id": 42928, "properties": {}, "descriptorId": 42925}, "42992": {"id": 42995, "properties": {}, "descriptorId": 42925}, "43012": {"id": 43014, "properties": {"1": "{\"left\":\"left\",\"right\":\"right\",\"id\":1,\"response\":\"2\",\"delay\":5385,\"valid\":false}", "2": "{\"left\":\"left\",\"right\":\"right\",\"id\":4,\"response\":\"2\",\"delay\":3418,\"valid\":false}", "3": "{\"left\":\"left\",\"right\":\"right\",\"id\":8,\"response\":\"2\",\"delay\":4066,\"valid\":false}", "4": "{\"left\":\"left\",\"right\":\"right\",\"id\":6,\"response\":\"2\",\"delay\":3559,\"valid\":true}", "5": "{\"left\":\"left\",\"right\":\"right\",\"id\":5,\"response\":\"1\",\"delay\":4689,\"valid\":true}"}, "descriptorId": 42925}, "43023": {"id": 43025, "properties": {"1": "{\"left\":\"left\",\"right\":\"right\",\"id\":7,\"response\":\"1\",\"delay\":5735,\"valid\":true}", "2": "{\"left\":\"left\",\"right\":\"right\",\"id\":8,\"response\":\"1\",\"delay\":4097,\"valid\":true}", "3": "{\"left\":\"left\",\"right\":\"right\",\"id\":6,\"response\":\"2\",\"delay\":3959,\"valid\":true}", "4": "{\"left\":\"left\",\"right\":\"right\",\"id\":0,\"response\":\"1\",\"delay\":4003,\"valid\":true}", "5": "{\"left\":\"left\",\"right\":\"right\",\"id\":9,\"response\":\"1\",\"delay\":5006,\"valid\":true}"}, "descriptorId": 42925}}], Y.Wegas.Widget.create(page));
                                     this._createConfig(Y.Wegas.Widget.create(page));
                                 }, this));
                             }, this));
@@ -124,12 +123,12 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     if (this.resultTable) {
                         this.resultTable.destroy();
                     }
-                    this.resultTable = new Y.DataTable({columns: [
+                    this.resultTable = new Y.DataTable({columns: j.concat([
                             {label: "order", key: "order"},
                             {label: "Start time", key: "date", sortable: true,
                                 formatter: dateFormatter
                             },
-                            {label: "question id", key: "id", sortable: true},
+                            {label: "question id", key: "qid", sortable: true},
                             "left",
                             "center",
                             "right",
@@ -137,7 +136,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
                             {label: "Response time (ms)", key: "delay", sortable: true},
                             "valid",
                             {label: "total time (ms)", key: "totalTime"}
-                        ].concat(j)});
+                        ])});
                     if (j.length !== 0) {
                         break;
                     }
@@ -164,6 +163,9 @@ YUI.add("wegas-flexitests-results", function(Y) {
                             o.right = extractValue(o.right, o.id);
                             o.center = extractValue("center", o.id);
                             o.order = j;
+                            /*Remove id as it should be unique*/
+                            o.qid = o.id;
+                            delete o.id;
                             this.resultTable.addRow(Y.merge(demographics[i].properties, o));
                         }
                     }
