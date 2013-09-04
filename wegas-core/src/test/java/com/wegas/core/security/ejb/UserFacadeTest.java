@@ -247,7 +247,7 @@ public class UserFacadeTest {
 
         Assert.assertEquals("Test", roleFacade.find(r.getId()).getName());
 
-        //@FIXME This is the buggus part, if a user still belongs to the role, can't delete it
+        //@FIXME This is the buggus part, if a user still belongs to the role, can't delete it (need to uncomment to see it)
 //        abstractAccount.addRole(r);
 //        accountFacade.merge(abstractAccount);
 //        Assert.assertEquals(3, accountFacade.find(abstractAccount.getId()).getRoles().size());
