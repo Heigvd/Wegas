@@ -62,10 +62,9 @@ public class QuestionController {
 
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
-        Reply reply = questionDescriptorFacade.selectAndValidateChoice(choiceId, playerId);
-
-        questionDescriptorFacade.validateReply(playerId, reply.getId());
+        questionDescriptorFacade.selectAndValidateChoice(choiceId, playerId);
         requestFacade.commit();
+
         return Response.ok().build();
     }
 
