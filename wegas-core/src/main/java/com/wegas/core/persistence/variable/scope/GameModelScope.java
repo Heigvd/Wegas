@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.xml.bind.annotation.XmlTransient;
@@ -34,7 +35,7 @@ public class GameModelScope extends AbstractScope {
     /**
      *
      */
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @XmlTransient
     private VariableInstance variableInstance;
 
@@ -99,7 +100,7 @@ public class GameModelScope extends AbstractScope {
     @Override
     public void setVariableInstance(Long userId, VariableInstance v) {
         this.setVariableInstance(v);
-//        v.setScope(this); @fixme @fixme
+        v.setGameModelScope(this);
     }
 
     /**

@@ -9,6 +9,7 @@ package com.wegas.app;
 
 import java.io.File;
 import java.io.IOException;
+import net.sourceforge.jwebunit.junit.JWebUnit;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
@@ -40,7 +41,7 @@ public class JavaScriptTest {
         ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR, new File("./src/main/webapp/wegas-app/"));
         appName = glassfish.getDeployer().deploy(archive.toURI(), "--contextroot=wegas-app");
 
-        setBaseUrl("http://localhost:5353/wegas-app/");
+        JWebUnit.setBaseUrl("http://localhost:5353/wegas-app/");
     }
 
     @AfterClass
@@ -55,9 +56,10 @@ public class JavaScriptTest {
 //        assertTitleEquals("Wegas Test Suite");
 //       //  beginAt("tests/widget/wegas-serialization-test.htm.htm");
 //    }
-
     @Test
-    public void testJs() throws GlassFishException, IOException {
+    public void testJs() {
+        JWebUnit.setScriptingEnabled(true);
+        // JWebUnit.setExpectedJavaScriptAlert("Test run success");
         beginAt("tests/wegas-alltests.htm");
         assertTitleEquals("Wegas Test Suite");
     }

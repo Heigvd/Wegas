@@ -7,6 +7,7 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.embeddable.EJBContainer;
@@ -36,6 +37,7 @@ public class UserFacadeTest {
         userFacade = Helper.lookupBy(container.getContext(), UserFacade.class);
         roleFacade = Helper.lookupBy(container.getContext(), RoleFacade.class);
         accountFacade = Helper.lookupBy(container.getContext(), AccountFacade.class);
+
         abstractAccount = new JpaAccount();
         abstractAccount.setEmail("a@a.com");
         roleP = new Role("Public");
@@ -217,5 +219,41 @@ public class UserFacadeTest {
     public void testCreateSameUser() throws Exception {
         u.addAccount(abstractAccount);
         userFacade.create(u);
+    }
+
+    @Test
+    public void testIdleGuestRemoval() {
+        userFacade.guestLogin();                                                // Log in as guest
+
+        Assert.assertEquals(2, userFacade.findAll().size());                    // Assert creation
+
+        User user = userFacade.getCurrentUser();                                // Set created time to 3 month ago
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 13);
+        AbstractAccount account = user.getMainAccount();
+        account.setCreatedTime(calendar.getTime());
+        accountFacade.merge(account);
+
+        userFacade.removeIdleGuests();                                          // Run idle guest account removal
+
+        Assert.assertEquals(1, userFacade.findAll().size());                    // Assert removal succes
+    }
+
+    @Test
+    public void testRemoveRole() {
+
+        Role r = new Role("Test");
+        roleFacade.create(r);
+
+        Assert.assertEquals("Test", roleFacade.find(r.getId()).getName());
+
+        //@FIXME This is the buggus part, if a user still belongs to the role, can't delete it (need to uncomment to see it)
+//        abstractAccount.addRole(r);
+//        accountFacade.merge(abstractAccount);
+//        Assert.assertEquals(3, accountFacade.find(abstractAccount.getId()).getRoles().size());
+
+        roleFacade.remove(r.getId());
+
+        Assert.assertNull(roleFacade.find(r.getId()));                                             // A not NoResultException should be thrown here
     }
 }

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -18,20 +19,26 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.rest.UserController;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -93,6 +100,16 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+
+    public void guestLogin() {
+        if (Helper.getWegasProperty("guestallowed").equals("true")) {
+            User newUser = new User(new GuestJpaAccount());                     // return a Guest user
+            this.create(newUser);                                         // Persist it
+
+            Subject subject = SecurityUtils.getSubject();
+            subject.login(new GuestToken(newUser.getMainAccount().getId()));
+        }
     }
 
     /**
@@ -353,10 +370,8 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
             String p = sit.next().getValue();
             String splitedPermission[] = p.split(":");
-            if (splitedPermission.length >= 3) {
-                if (p.equals(permission)) {
-                    sit.remove();
-                }
+            if (splitedPermission.length >= 3 && p.equals(permission)) {
+                sit.remove();
             }
         }
         //em.merge(account);
@@ -378,6 +393,23 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             acc.setPassword(newPassword);
             acc.setPasswordHex(null);                                           //force JPA update
         }
+    }
+
+    @Schedule(hour = "9", minute = "14")
+    public void removeIdleGuests() {
+        Query findIdleGuests = em.createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
+                + "WHERE account.createdTime < :idletime;");
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
+        findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
+
+        List<GuestJpaAccount> resultList = findIdleGuests.getResultList();
+
+        for (GuestJpaAccount account : resultList) {
+            this.remove(account.getUser());
+        }
+
+        logger.info("removeIdleGuests(): " + resultList.size() + " unused guest accounts removed");
     }
 
     /**
