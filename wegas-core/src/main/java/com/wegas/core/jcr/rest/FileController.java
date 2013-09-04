@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.rest;
+package com.wegas.core.jcr.rest;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
@@ -127,7 +127,6 @@ public class FileController {
             connector.save();
         } catch (final WegasException ex) {
             Response.StatusType status = new Response.StatusType() {
-
                 @Override
                 public int getStatusCode() {
                     return 430;
@@ -251,7 +250,6 @@ public class FileController {
 
         final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
         StreamingOutput out = new StreamingOutput() {
-
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
@@ -284,7 +282,6 @@ public class FileController {
 
         final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
         StreamingOutput out = new StreamingOutput() {
-
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try {
@@ -321,7 +318,6 @@ public class FileController {
 
         final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
         StreamingOutput out = new StreamingOutput() {
-
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try (ZipOutputStream zipOutputStream = new ZipOutputStream(output)) {

@@ -17,6 +17,7 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -66,10 +67,14 @@ public class UserController {
     public Collection<User> index() {
 
         SecurityUtils.getSubject().checkPermission("User:Edit");
-        List<User> findAll = userFacade.findAll();
 
-        // @fixme Manually sort not to use a query
-        Collections.sort(findAll);
+        //List<User> findAll = userFacade.findAll();
+        List<User> findAll = new ArrayList<>();
+        for (JpaAccount account : accountFacade.findAllRegistered()) {
+            findAll.add(account.getUser());
+        }
+
+        Collections.sort(findAll);                                              // @fixme Manually sort not to use a query
         return findAll;
     }
 
@@ -180,13 +185,7 @@ public class UserController {
     @POST
     @Path("GuestLogin")
     public void guestLogin() {
-        if (Helper.getWegasProperty("guestallowed").equals("true")) {
-            User newUser = new User(new GuestJpaAccount());                     // return a Guest user
-            userFacade.create(newUser);                                         // Persist it
-
-            Subject subject = SecurityUtils.getSubject();
-            subject.login(new GuestToken(newUser.getMainAccount().getId()));
-        }
+        userFacade.guestLogin();
     }
 
     /**

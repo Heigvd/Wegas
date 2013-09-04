@@ -164,7 +164,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         return newEntity;
     }
 
-    private DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {
+    public DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {
         if (vd instanceof ChoiceDescriptor) {                                   // QuestionDescriptor descriptor case
             return ((ChoiceDescriptor) vd).getQuestion();
         } else {
