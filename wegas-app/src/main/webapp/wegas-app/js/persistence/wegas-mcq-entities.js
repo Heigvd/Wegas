@@ -317,6 +317,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         value: SELF
                     }]
             },
+            hasBeenSelected: {
+                label: "has been selected",
+                returns: BOOLEAN,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
             isActive: {
                 label: "is active",
                 returns: BOOLEAN,
@@ -449,6 +457,22 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             },
             desactivate: {
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            hasBeenSelected: {
+                label: "has been selected",
+                returns: BOOLEAN,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            isActive: {
+                label: "is active",
+                returns: BOOLEAN,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
