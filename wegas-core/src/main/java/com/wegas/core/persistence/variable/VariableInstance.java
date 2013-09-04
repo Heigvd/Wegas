@@ -14,6 +14,7 @@ import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
@@ -80,15 +81,30 @@ abstract public class VariableInstance extends AbstractEntity {
 //    private AbstractScope scope;
     //@ManyToOne
     //private GameModelScope gameModelScope;
+    /**
+     *
+     */
     @ManyToOne
     @JsonIgnore
     private GameScope gameScope;
+    /**
+     *
+     */
     @ManyToOne
     @JsonIgnore
     private TeamScope teamScope;
+    /**
+     *
+     */
     @ManyToOne
     @JsonIgnore
     private PlayerScope playerScope;
+    /**
+     *
+     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private GameModelScope gameModelScope;
     /**
      *
      */
@@ -139,7 +155,9 @@ abstract public class VariableInstance extends AbstractEntity {
     @XmlTransient
     @JsonIgnore
     public AbstractScope getScope() {
-        if (this.gameScope != null) {
+        if (this.gameModelScope != null) {
+            return this.gameModelScope;
+        } else if (this.gameScope != null) {
             return this.gameScope;
         } else if (this.teamScope != null) {
             return this.teamScope;
@@ -271,5 +289,19 @@ abstract public class VariableInstance extends AbstractEntity {
      */
     public void setDefaultDescriptor(VariableDescriptor defaultDescriptor) {
         this.defaultDescriptor = defaultDescriptor;
+    }
+
+    /**
+     * @return the gameModelScope
+     */
+    public GameModelScope getGameModelScope() {
+        return gameModelScope;
+    }
+
+    /**
+     * @param gameModelScope the gameModelScope to set
+     */
+    public void setGameModelScope(GameModelScope gameModelScope) {
+        this.gameModelScope = gameModelScope;
     }
 }
