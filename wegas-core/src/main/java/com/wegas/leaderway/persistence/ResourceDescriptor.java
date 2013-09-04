@@ -146,6 +146,34 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     }
 
     /**
+     * 
+     * @param p
+     * @param key
+     * @param value 
+     */
+    public void setInstanceProperty(Player p, String key, String value) {
+        this.getInstance(p).setProperty(key, value);
+    }
+
+    public void addOccupation(Player p, Double time /*, Boolean editable, String description*/) {
+        ResourceInstance instance = this.getInstance(p);
+        Occupation occupation = new Occupation();
+        //occupation.setDescription(description);
+        //occupation.setEditable(editable);
+        occupation.setTime(time);
+        instance.addOccupation(occupation);
+    }
+
+    public void removeOccupationsAtTime(Player p, Double time) {
+        ResourceInstance instance = this.getInstance(p);
+        for (Occupation occupation : instance.getOccupations()) {
+            if (occupation.getTime() == time) {
+                instance.getOccupations().remove(occupation);
+            }
+        }
+    }
+
+    /**
      *
      * @param p
      * @param value
