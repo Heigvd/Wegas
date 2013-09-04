@@ -83,6 +83,11 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
         return oldEntity;
     }
 
+    public T merge(final T entity) {
+        this.getEntityManager().merge(entity);
+        return entity;
+    }
+
     /**
      *
      * Duplicate an entity by serializing it using the "Editor" view and
