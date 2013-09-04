@@ -34,7 +34,7 @@ public class GameModelScope extends AbstractScope {
     /**
      *
      */
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, mappedBy = "gameModelScope")
     @XmlTransient
     private VariableInstance variableInstance;
 
@@ -99,7 +99,7 @@ public class GameModelScope extends AbstractScope {
     @Override
     public void setVariableInstance(Long userId, VariableInstance v) {
         this.setVariableInstance(v);
-//        v.setScope(this); @fixme @fixme
+        v.setGameModelScope(this);
     }
 
     /**
