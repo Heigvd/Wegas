@@ -8,10 +8,12 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import static com.wegas.core.ejb.GameModelFacadeTest.lookupBy;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.ejb.UserFacade;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
 import org.junit.After;
@@ -48,9 +50,14 @@ public class AbstractEJBTest {
         ejbContainer = TestHelper.getEJBContainer();
         gameModelFacade = lookupBy(GameModelFacade.class);
         descriptorFacade = lookupBy(VariableDescriptorFacade.class);
+        lookupBy(UserFacade.class).guestLogin();
+    }
 
+    @AfterClass
+    public static void tearDown() {
 
-
+        ejbContainer.close();
+        //logger.info("Closing the container");
     }
 
     @Before
@@ -76,13 +83,6 @@ public class AbstractEJBTest {
         team2.addPlayer(player2);
 
         gameModelFacade.create(gameModel);                                      // Commit the game model
-    }
-
-    @AfterClass
-    public static void tearDown() {
-
-        ejbContainer.close();
-        //logger.info("Closing the container");
     }
 
     @After
