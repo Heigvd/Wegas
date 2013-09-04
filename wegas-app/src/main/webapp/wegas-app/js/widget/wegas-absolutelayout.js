@@ -36,7 +36,8 @@ YUI.add('wegas-absolutelayout', function(Y) {
                     e.child.plug(Y.Plugin.CSSPosition, {styles: {
                             position: "absolute",
                             top: "0px",
-                            left: "0px"
+                            left: "0px",
+                            zIndex:"10"
                         }
                     });
                 }
