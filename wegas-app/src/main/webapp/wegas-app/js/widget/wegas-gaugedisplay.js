@@ -79,8 +79,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 },
                 colorStart: this.get('cfg').colorStart || '#0981A9', // Colors
                 colorStop: this.get('cfg').colorStop || '#000000',
-                //strokeColor: '#E0E0E0',
                 strokeColor: this.get('cfg').strokeColor || '#FFFFFF',
+                percentColors: this.get('cfg').percentColors || [[0.0, "#0981A9"]],
                 generateGradient: this.get('cfg').generateGradient || true
             };
             this.gauge = new Gauge(this.get("contentBox").one("canvas").
@@ -97,7 +97,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
-            this.after('disabledChange', function(e){
+            this.after('disabledChange', function(e) {
                 this.disable = e.newVal;
                 this.syncUI();
             }, this);
