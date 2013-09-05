@@ -33,20 +33,6 @@
             }
         }, {
             "@class": "NumberDescriptor",
-            "name": "timeCards",
-            "editorLabel": "timeCards",
-            "label": "timeCards",
-            "minValue": 0,
-            "maxValue": 50,
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "value": 15
-            },
-            "scope": {
-                "@class": "TeamScope"
-            }
-        }, {
-            "@class": "NumberDescriptor",
             "name": "actualCost",
             "editorLabel": "actualCost",
             "label": "actualCost",
@@ -144,6 +130,76 @@
             "scope": {
                 "@class": "TeamScope"
             }
+        }, {
+            "@class": "ListDescriptor",
+            "name": "timeCards",
+            "editorLabel": "time cards",
+            "label": "time cards",
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope"
+            },
+            "items": [
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase1",
+                    "editorLabel": "Cards phase 1",
+                    "label": "Cards phase 1",
+                    "minValue": 0,
+                    "maxValue": 15,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 15
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase2",
+                    "editorLabel": "Cards phase 2",
+                    "label": "Cards phase 2",
+                    "minValue": 0,
+                    "maxValue": 7,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 7
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase3",
+                    "editorLabel": "Cards phase 3",
+                    "label": "Cards phase 3",
+                    "minValue": 0,
+                    "maxValue": 10,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 10
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase4",
+                    "editorLabel": "Cards phase 4",
+                    "label": "Cards phase 4",
+                    "minValue": 0,
+                    "maxValue": 5,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 5
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }
+            ]
         }, {
             "@class": "ListDescriptor",
             "name": "pageUtilities",
@@ -665,95 +721,108 @@
                 "value": 0.0
             },
             "scope": {
-                "@class": "GameModelScope"
+                "@class": "GameScope"
             },
-            "items": [
-                {
+            "items": [{
                     "@class": "ListDescriptor",
-                    "name": "Questions phase 1",
-                    "editorLabel": "Questions phase 1",
-                    "label": "Questions phase 1",
+                    "name": "questionPhase1",
+                    "label": "Question phase 1",
                     "defaultInstance": {
-                        "@class": "NumberInstance"
+                        "@class": "NumberInstance",
+                        "value": 0.0
                     },
                     "scope": {
-                        "@class": "GameModelScope"
+                        "@class": "GameScope"
                     },
                     "items": [
                         {
-                            "@class": "QuestionDescriptor",
-                            "name": "Comment faire cela?",
-                            "editorLabel": "Comment faire cela?",
-                            "label": "Comment faire cela?",
+                            "@class": "ListDescriptor",
+                            "name": "Questions period 1",
+                            "editorLabel": "Questions period 1",
+                            "label": "Questions period 1",
                             "defaultInstance": {
-                                "@class": "QuestionInstance"
+                                "@class": "NumberInstance"
                             },
                             "scope": {
-                                "@class": "TeamScope"
+                                "@class": "GameScope"
                             },
                             "items": [
                                 {
-                                    "@class": "ChoiceDescriptor",
-                                    "name": "Phase1Reponse1",
-                                    "editorLabel": "a) Reponse 1",
-                                    "label": "a) Reponse 1",
+                                    "@class": "QuestionDescriptor",
+                                    "name": "Comment faire cela?",
+                                    "editorLabel": "Comment faire cela?",
+                                    "label": "Comment faire cela?",
                                     "defaultInstance": {
-                                        "@class": "ChoiceInstance"
+                                        "@class": "QuestionInstance"
                                     },
                                     "scope": {
                                         "@class": "TeamScope"
                                     },
-                                    "results": [
+                                    "items": [
                                         {
-                                            "@class": "Result",
-                                            "name": "Normal",
-                                            "answer": "Faux c'est pas lui."
+                                            "@class": "ChoiceDescriptor",
+                                            "name": "Phase1Reponse1",
+                                            "editorLabel": "a) Reponse 1",
+                                            "label": "a) Reponse 1",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance"
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "Normal",
+                                                    "answer": "Faux c'est pas lui."
+                                                }
+                                            ]
                                         }
                                     ]
                                 }
                             ]
-                        }
-                    ]
-                }, {
-                    "@class": "ListDescriptor",
-                    "name": "Questions phase 2",
-                    "editorLabel": "Questions phase 2",
-                    "label": "Questions phase 2",
-                    "defaultInstance": {
-                        "@class": "NumberInstance"
-                    },
-                    "scope": {
-                        "@class": "GameModelScope"
-                    },
-                    "items": [
-                        {
-                            "@class": "QuestionDescriptor",
-                            "name": "Sample question phase 2?",
-                            "editorLabel": "Sample question phase 2?",
-                            "label": "Sample question phase 2?",
+                        }, {
+                            "@class": "ListDescriptor",
+                            "name": "Questions period 2",
+                            "editorLabel": "Questions period 2",
+                            "label": "Questions period 2",
                             "defaultInstance": {
-                                "@class": "QuestionInstance"
+                                "@class": "NumberInstance"
                             },
                             "scope": {
-                                "@class": "TeamScope"
+                                "@class": "GameScope"
                             },
                             "items": [
                                 {
-                                    "@class": "ChoiceDescriptor",
-                                    "name": "Phase2Reponse1",
-                                    "editorLabel": "a) Reponse 1",
-                                    "label": "a) Reponse 1",
+                                    "@class": "QuestionDescriptor",
+                                    "name": "Sample question phase 2?",
+                                    "editorLabel": "Sample question phase 2?",
+                                    "label": "Sample question phase 2?",
                                     "defaultInstance": {
-                                        "@class": "ChoiceInstance"
+                                        "@class": "QuestionInstance"
                                     },
                                     "scope": {
                                         "@class": "TeamScope"
                                     },
-                                    "results": [
+                                    "items": [
                                         {
-                                            "@class": "Result",
-                                            "name": "Normal",
-                                            "answer": "Faux c'est pas lui."
+                                            "@class": "ChoiceDescriptor",
+                                            "name": "Phase2Reponse1",
+                                            "editorLabel": "a) Reponse 1",
+                                            "label": "a) Reponse 1",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance"
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "Normal",
+                                                    "answer": "Faux c'est pas lui."
+                                                }
+                                            ]
                                         }
                                     ]
                                 }
@@ -772,7 +841,7 @@
                 "value": 0.0
             },
             "scope": {
-                "@class": "GameModelScope"
+                "@class": "GameScope"
             },
             "items": [
                 {
@@ -784,7 +853,7 @@
                         "@class": "NumberInstance"
                     },
                     "scope": {
-                        "@class": "GameModelScope"
+                        "@class": "GameScope"
                     },
                     "items": [
                         {
@@ -836,7 +905,7 @@
                         "@class": "NumberInstance"
                     },
                     "scope": {
-                        "@class": "GameModelScope"
+                        "@class": "GameScope"
                     },
                     "items": [
                         {

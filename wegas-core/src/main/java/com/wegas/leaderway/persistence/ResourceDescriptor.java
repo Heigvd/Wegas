@@ -11,7 +11,9 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
@@ -143,6 +145,41 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     public void setMoral(Player p, Integer value) {
         this.getInstance(p).setMoral(value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param key
+     * @param value
+     */
+    public void setInstanceProperty(Player p, String key, String value) {
+        this.getInstance(p).setProperty(key, value);
+    }
+
+    public void addOccupation(Player p, Double time /*, Boolean editable, String description*/) {
+        ResourceInstance instance = this.getInstance(p);
+        Occupation occupation = new Occupation();
+        //occupation.setDescription(description);
+        //occupation.setEditable(editable);
+        occupation.setEditable(false);
+        occupation.setTime(time);
+        instance.addOccupation(occupation);
+    }
+
+    public void removeOccupationsAtTime(Player p, Double time) {
+        ResourceInstance instance = this.getInstance(p);
+        List<Occupation> toRemove = new ArrayList<>();
+        Integer i = 0;
+        for (Occupation occupation : instance.getOccupations()) {
+            if (occupation.getTime().doubleValue() == time) {
+                toRemove.add(occupation);
+            }
+        }
+        while (toRemove.size() > i) {
+            instance.getOccupations().remove(toRemove.get(i));
+            i++;
+        }
     }
 
     /**

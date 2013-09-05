@@ -17,6 +17,7 @@ import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.*;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import java.io.IOException;
 import java.util.List;
@@ -145,6 +146,42 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(false, instance.getValue());
 
         vdf.remove(booleanDescriptor.getId());
+    }
+
+    @Test
+    public void testGameModelScope() throws NamingException {
+
+        final String VARIABLENAME = "test-variable";
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+
+        // Test the descriptor
+        BooleanDescriptor desc = new BooleanDescriptor(VARIABLENAME);
+        desc.setDefaultInstance(new BooleanInstance(true));
+        desc.setScope(new GameModelScope());
+
+        vdf.create(gameModel.getId(), desc);
+        gameModelFacade.reset(gameModel.getId());
+
+        Assert.assertEquals(desc.getId(), vif.find(desc.getId(), player).getDescriptorId());
+
+        // Check its value
+        BooleanInstance instance = (BooleanInstance) vif.find(desc.getId(), player);
+        Assert.assertEquals(true, instance.getValue());
+
+        // Edit the variable instance
+        //vif.update(desc.getId(), player.getId(), new BooleanInstance(true));
+
+        // Verify the new value
+        //instance = (BooleanInstance) vif.find(desc.getId(), player.getId());
+        //Assert.assertEquals(true, instance.getValue());
+
+        // Reset the game and test
+        // gameModelFacade.reset(gameModel.getId());
+        // instance = (BooleanInstance) vif.find(desc.getId(), player);
+        // Assert.assertEquals(false, instance.getValue());
+
+        vdf.remove(desc.getId());
     }
 
     public <T extends VariableDescriptor> T testVariableDescriptor(T descriptor1, T descriptor2)
@@ -331,13 +368,10 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     @Test
     public void testListDuplicate() throws NamingException, IOException {
         final String VARIABLENAME1 = "test_variable";
-        final String VARIABLENAME2 = "test_variable2";
-        final String VARIABLENAME3 = "test_variable4";
         final String LISTNAME1 = "list1";
         final String LISTNAME2 = "list2";
         final String LISTNAME3 = "list3";
         final String LISTNAME4 = "list4";
-        final String VALUE1 = "test_value";
 
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 

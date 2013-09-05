@@ -188,6 +188,67 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         value: 1
                     }]
             },
+            addOccupation: {
+                label: "add occupation",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: NUMBER,
+                        label: "Time",
+                        scriptType: NUMBER,
+                        value: 1
+                    }//, {
+//                        type: BOOLEAN,
+//                        label: "Editable",
+//                        scriptType: BOOLEAN
+//                    }, {
+//                        type: HTML,
+//                        label: "Description",
+//                        scriptType: STRING
+//                    }
+                ]
+            },
+            removeOccupationsAtTime: {
+                label: "Remove occupation",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: NUMBER,
+                        value: 1
+                    }]
+            },
+            getInstanceProperty: {
+                label: "Get instance's property",
+                returns: STRING,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }]
+            },
+            setInstanceProperty: {
+                label: "Set instance's property",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
             //methods below are temporary ; only for CEP-Game
             getSalary: {
                 label: "Get salary",
@@ -410,9 +471,16 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 optional: true
             },
             predecessors: {
+                type: ARRAY,
+                value: [],
                 _inputex: {
                     label: "Predecessors",
-                    _type: HIDDEN
+                    _type: LIST,
+                    useButtons: true,
+                    elementType: {
+                        type: SELECT,
+                        value: "taskDescriptorId"
+                    }
                 }
             },
             properties: {
@@ -519,6 +587,87 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         }
                     }
                 }
+            }
+        }, METHODS: {
+            getInstanceProperty: {
+                label: "Get instance's property",
+                returns: STRING,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }]
+            },
+            setInstanceProperty: {
+                label: "Set instance's property",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
+            getDuration: {
+                label: "Get Duration",
+                returns: NUMBER,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            addAtDuration: {
+                label: "Add at duration",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
+            },
+            setDuration: {
+                label: "Set duration",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        value: 1
+                    }]
+            },
+            getActive: {
+                label: "Is active",
+                returns: BOOLEAN,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            activate: {
+                label: "Activate",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            desactivate: {
+                label: "Desactivate",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
             }
         }
     });
