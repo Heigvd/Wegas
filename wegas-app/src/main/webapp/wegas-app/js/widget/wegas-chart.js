@@ -30,6 +30,10 @@ YUI.add('wegas-chart', function(Y) {
             var variable = this.get("variables");
             for (i = 0; i < variable.length; i++) {
                 var vd = Y.Wegas.Facade.VariableDescriptor.cache.find("name", variable[i].name);
+                if (!vd){
+                    this.showMessage("error", "Variables not found");
+                    return;
+                }
                 vd.position = i;
                 if (variable[i].label)
                     vd.label = variable[i].label;
@@ -46,8 +50,7 @@ YUI.add('wegas-chart', function(Y) {
             }
         },
         historyRequest: function(vd) {
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/" + vd.get("id") + "/VariableInstance/" + vd.getInstance().get("id") + "?view=Export",
+            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(vd.getInstance(), "Extended", {
                 on: {
                     success: Y.bind(function(r) {
                         var a = Y.JSON.parse(r.data.responseText);    
@@ -112,7 +115,6 @@ YUI.add('wegas-chart', function(Y) {
             this.chart.render(cb._node.childNodes[0]);
         },
         findMinValue: function(){
-            var i, h, minVal = null;
             if (!this.get("minValue")){
                 return null;
             } else {
@@ -120,7 +122,6 @@ YUI.add('wegas-chart', function(Y) {
             }
         },
         findMaxValue: function(){
-            var i, h, maxVal = null;
             if (!this.get("maxValue")){
                 return null;
             } else {
