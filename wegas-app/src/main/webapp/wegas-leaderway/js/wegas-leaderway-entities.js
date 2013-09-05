@@ -198,15 +198,15 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         label: "Time",
                         scriptType: NUMBER,
                         value: 1
-                    }//, {
-//                        type: BOOLEAN,
-//                        label: "Editable",
-//                        scriptType: BOOLEAN
-//                    }, {
-//                        type: HTML,
-//                        label: "Description",
-//                        scriptType: STRING
-//                    }
+                    }, {
+                        type: BOOLEAN,
+                        label: "Editable",
+                        scriptType: BOOLEAN
+                    }, {
+                        type: HTML,
+                        label: "Description",
+                        scriptType: STRING
+                    }
                 ]
             },
             removeOccupationsAtTime: {
