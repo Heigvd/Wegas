@@ -158,11 +158,15 @@
 }
 
 .layout .horizontal-menu .wegas-login{
-
-    float:right;
-    border:none;
-    padding:0 5px 0 0;
-    width:50px;
+    border: medium none currentColor;
+    float: right;
+    margin-right: 2px;
+    overflow: hidden;
+    padding: 0px 5px 0px 0px;
+    text-overflow: ellipsis;
+    width:100%;
+    max-width:50%;
+    text-align:right;
 }
 
 .horizontal-menu .wegas-login:hover{
@@ -287,14 +291,14 @@ h2{
 }
 
 /* TabView Styles */
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-list {
+.yui3-skin-sam  .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
     display: inline-block;
     float:left;
     border: none;
     width: 50%;
 }
 
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-panel {
+.yui3-skin-sam  .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
     display:inline-block;
     width:50%;
     float:left;
@@ -340,8 +344,16 @@ h2{
     line-height: normal;
 }
 
-.wegas-mcqtabview-content .content{
-    width:50%;
+.actions-page .wegas-mcqtabview-content .content{
+    margin-top: -40px;
+}
+
+.questions-page .wegas-mcqtabview-content .content{
+    margin-top: -26px;
+}
+
+.wegas-mcqtabview-content .content .content{
+    margin:0;
 }
 
 .yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected .yui3-tab-label {
@@ -394,14 +406,14 @@ h2{
     height:27px;
 }
 
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-list {
+.yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
     display: inline-block;
     float:left;
     border: none;
     width: 50%;
 }
 
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-panel {
+.yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
     display:inline-block;
     width:50%;
     padding:0;
