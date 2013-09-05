@@ -321,7 +321,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-action': {
                     path: 'wegas-app/js/plugin/wegas-action-min.js',
-                    requires: ['plugin', 'wegas-inputex-pageloaderselect']
+                    requires: ['plugin']
                 },
                 'wegas-popup': {
                     path: 'wegas-app/js/plugin/wegas-popup-min.js',
