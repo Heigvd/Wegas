@@ -1363,12 +1363,7 @@
                                         {
                                             "@class": "Result",
                                             "name": "Normal",
-                                            "answer": "Tout c'est bien passé.",
-                                            "impact": {
-                                                "@class": "Script",
-                                                "language": "JavaScript",
-                                                "content": "humanResources.value -= 1;"
-                                            }
+                                            "answer": "Tout c'est bien passé."
                                         }
                                     ]
                                 }
@@ -1415,12 +1410,7 @@
                                         {
                                             "@class": "Result",
                                             "name": "Normal",
-                                            "answer": "Tout c'est bien passé.",
-                                            "impact": {
-                                                "@class": "Script",
-                                                "language": "JavaScript",
-                                                "content": "humanResources.value -= 1;"
-                                            }
+                                            "answer": "Tout c'est bien passé."
                                         }
                                     ]
                                 }
