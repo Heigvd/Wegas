@@ -475,6 +475,11 @@ YUI().use(function(Y) {
                         'inputex-select'],
                     ix_provides: ["entityarrayfieldselect", "variabledescriptorselect"]
                 },
+                'wegas-inputex-pageloaderselect': {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-pageloaderselect-min.js',
+                    requires: ['inputex-select'],
+                    ix_provides: 'pageloaderselect'
+                },
                 'wegas-inputex-wysiwygscript': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',
                     requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
@@ -685,8 +690,12 @@ YUI().use(function(Y) {
                 },
                 'wegas-mcqtabview': {
                     path: 'wegas-app/js/widget/wegas-mcqtabview-min.js',
-                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator"],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcqtabviewcss'],
                     ws_provides: "MCQTabView"
+                },
+                'wegas-mcqtabviewcss': {
+                    path: 'wegas-app/css/wegas-mcqtabview.css',
+                    type: 'css'
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',

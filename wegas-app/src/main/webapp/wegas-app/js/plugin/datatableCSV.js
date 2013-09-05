@@ -110,7 +110,9 @@ YUI.add('datatable-csv', function(Y) {
          * @returns {undefined}
          */
         destructor: function() {
-            this.get("host").get("boundingBox").one(".datatable-csv-export").destroy(true);
+            if (this.get("host").get("boundingBox").one(".datatable-csv-export")) {
+                this.get("host").get("boundingBox").one(".datatable-csv-export").destroy(true);
+            }
         }
     }, {
         /* @lends Y.Wegas.DatatableCSV */

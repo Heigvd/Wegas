@@ -114,7 +114,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                     reponseElement,
                     elements = this.collectElements();
             this.ongoing = false;
-            this.mask();
+            //this.mask();
             elements.index = +this.maxSize - this.questionToDo.length;
             elements.id = this.currentQuestionId;
             elements.response = response;
@@ -130,7 +130,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 this.mcq.error(responseTime);
             }
             this.mcq.save(elements);
-            this.mask();
+            //this.mask();
             if (this.questionToDo.length !== 0) {
                 Y.later(+this.mcq.get("feedback"), this, this.next);
             }
@@ -189,16 +189,32 @@ YUI.add("wegas-flexitests-controller", function(Y) {
 
             return elements;
         },
+        /**
+         * Check elements to be loaded if they exist
+         * @returns {undefined}
+         */
         createLoadingEvent: function() {
-            this.centerElement.getActiveElement().onceAfter("render", function(e) {
+            if (this.centerElement.getActiveElement()) {
+                this.centerElement.getActiveElement().onceAfter("render", function(e) {
+                    this.set("currentLoading.center", false);
+                }, this);
+            } else {
                 this.set("currentLoading.center", false);
-            }, this);
-            this.leftElement.getActiveElement().onceAfter("render", function(e) {
+            }
+            if (this.leftElement.getActiveElement()) {
+                this.leftElement.getActiveElement().onceAfter("render", function(e) {
+                    this.set("currentLoading.left", false);
+                }, this);
+            } else {
                 this.set("currentLoading.left", false);
-            }, this);
-            this.rightElement.getActiveElement().onceAfter("render", function(e) {
+            }
+            if (this.rightElement.getActiveElement()) {
+                this.rightElement.getActiveElement().onceAfter("render", function(e) {
+                    this.set("currentLoading.right", false);
+                }, this);
+            } else {
                 this.set("currentLoading.right", false);
-            }, this);
+            }
         },
         generateNextId: function() {
             return this.get("random") ?
