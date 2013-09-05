@@ -234,7 +234,7 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-form-min.js',
                     requires: ['wegas-widget', 'wegas-inputex',
                         'inputex-string', 'inputex-jsonschema', "inputex-group",
-                        'wegas-widgettoolbar', "wegas-button"],
+                        'wegas-widgettoolbar', "wegas-button", "inputex-checkbox"],
                     ws_provides: "Form"
                 },
                 form: {
