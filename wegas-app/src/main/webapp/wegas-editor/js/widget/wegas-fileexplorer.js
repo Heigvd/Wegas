@@ -135,7 +135,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     });
                 }
             }
-            this.get("boundingBox").append("<div class='fileexplorer-footer'>Upload file(s) by dragging & dropping them on a directory</div>");
+            this.get("contentBox").append("<div class='fileexplorer-footer'>Upload file(s) by dragging & dropping them on a directory</div>");
             this.tooltip = new Y.Wegas.Tooltip({//
                 delegate: this.get("contentBox"),
                 delegateSelect: ".yui3-treeleaf-content-label",
