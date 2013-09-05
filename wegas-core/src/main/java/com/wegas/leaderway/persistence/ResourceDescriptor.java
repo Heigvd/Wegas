@@ -157,12 +157,11 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
         this.getInstance(p).setProperty(key, value);
     }
 
-    public void addOccupation(Player p, Double time /*, Boolean editable, String description*/) {
+    public void addOccupation(Player p, Double time , Boolean editable, String description) {
         ResourceInstance instance = this.getInstance(p);
         Occupation occupation = new Occupation();
-        //occupation.setDescription(description);
-        //occupation.setEditable(editable);
-        occupation.setEditable(false);
+        occupation.setDescription(description);
+        occupation.setEditable(editable);
         occupation.setTime(time);
         instance.addOccupation(occupation);
     }

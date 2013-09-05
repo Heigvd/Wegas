@@ -198,7 +198,6 @@ YUI.add('wegas-gaugedisplay', function(Y) {
              */
             cfg: {
                 value: {},
-//                "transient": true,
                 _inputex: {
                     _type: "wegasobject",
                     useButtons: true,
@@ -225,5 +224,3 @@ YUI.add('wegas-gaugedisplay', function(Y) {
 
     Y.namespace('Wegas').GaugeDisplay = GaugeDisplay;
 });
-
-
