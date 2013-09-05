@@ -12,7 +12,6 @@
  */
 YUI.add("wegas-image", function(Y) {
     "use strict";
-
     var CONTENTBOX = "contentBox", WImage;
     /**
      * @name Y.Wegas.WWImage
@@ -35,6 +34,9 @@ YUI.add("wegas-image", function(Y) {
             this.publish("error", {fireOnce: true, async: true});
             this.publish("load", {fireOnce: true, async: true});
             this.handlers = [];
+        },
+        getEditorLabel: function() {
+            return this.get("url");
         },
         /**
          * Lifecycle method
@@ -109,6 +111,5 @@ YUI.add("wegas-image", function(Y) {
             }
         }
     });
-
     Y.namespace("Wegas").Image = WImage;
 });

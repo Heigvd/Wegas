@@ -479,7 +479,7 @@ YUI.add('wegas-tooltip', function(Y) {
                 value: false
             },
             zIndex: {
-                value: 26
+                value: 100
             },
             /*
              * The tooltip content. This can either be a fixed content value,
