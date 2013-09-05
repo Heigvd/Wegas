@@ -26,6 +26,7 @@ function nextPeriod() {
     } else {
         phases.items.get(time.phase).getInstance(self).setValue(time.period + 1);
     }
+    setWeekliesVariables();
 }
 
 function checkEndOfProject() {
@@ -52,7 +53,6 @@ function completeRealizationPeriod() {
             println('---');
         }
     }
-    setWeekliesVariables();
 }
 
 function setWeekliesVariables() {
@@ -89,7 +89,7 @@ function updateGauges() {
             delay = VariableDescriptorFacade.findByName(self.getGameModel(), 'delay'),
             quality = VariableDescriptorFacade.findByName(self.getGameModel(), 'quality'),
             tasksQuality = 0, nomberOfBeganTasks = 0, tasksScale = 0, nomberOfEmployeeRequired,
-            costsJaugeValue, qualityJaugeValue, delayJaugeValue;
+            costsJaugeValue, qualityJaugeValue, delayJaugeValue, qualityJaugeValue = 0;
 
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
@@ -124,12 +124,14 @@ function updateGauges() {
     //quality
     //with weighting of task's scale
     if (tasksScale > 0) {
-        qualityJaugeValue = tasksQuality / tasksScale;
+        qualityJaugeValue = (tasksQuality / tasksScale);
     }
     //whitout weighting of task's scale
 //    if (nomberOfBeganTasks > 0) {
-//        qualityJaugeValue = tasksQuality / nomberOfBeganTasks + parseInt(qualityImpacts.value);
+//        qualityJaugeValue = tasksQuality / nomberOfBeganTasks;
 //    }
+    qualityJaugeValue += parseInt(qualityImpacts.value) / 2;
+    println(qualityJaugeValue);
     qualityJaugeValue = (qualityJaugeValue > parseInt(quality.getMinValue())) ? qualityJaugeValue : parseInt(quality.getMinValue());
     qualityJaugeValue = (qualityJaugeValue < parseInt(quality.getMaxValue())) ? qualityJaugeValue : parseInt(quality.getMaxValue());
     quality.getInstance(self).setValue(qualityJaugeValue);
