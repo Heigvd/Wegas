@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.*;
+import com.wegas.core.security.ejb.UserFacade;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -38,6 +39,7 @@ public class GameModelFacadeTest {
         ejbContainer = TestHelper.getEJBContainer();
         context = ejbContainer.getContext();
         gameModelFacade = lookupBy(GameModelFacade.class);
+        lookupBy(UserFacade.class).guestLogin();
     }
 
     @AfterClass
