@@ -127,7 +127,7 @@ YUI.add('wegas-serialization-test', function(Y) {
         },
         'should instantiate and serialize PMG widgets cfg': function() {
             //this.log("PMG pages");
-            //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json")
+            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json")
         },
         'should instantiate and serialize leaderway widget cfgt': function() {
             //this.log("Leaderway pages");

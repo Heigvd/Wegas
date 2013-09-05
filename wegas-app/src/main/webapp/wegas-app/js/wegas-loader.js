@@ -734,7 +734,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-pmg-slidepanel': {
                     path: 'wegas-pmg/js/wegas-pmg-slidepanel-min.js',
-                    requires: ['anim'],
+                    requires: ['anim', 'wegas-pmgwidget-css'],
                     ws_provides: "PmgSlidePanel"
                 },
                 "wegas-pmg-reservation": {
@@ -753,7 +753,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-pmg-assignment": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-assignment-min.js',
-                    requires: ['sortable', 'wegas-pmgwidget-css'],
+                    requires: ['sortable', 'wegas-pmgwidget-css', 'wegas-widgetmenu'],
                     ws_provides: 'Assignment'
                 },
                 "wegas-pmg-planification": {
@@ -777,6 +777,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-pmg-bac": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-bac-min.js',
+                    requires: ['inputex-string'],
                     ws_provides: 'Bac'
                 },
                 /**book CYOA**/
