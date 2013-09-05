@@ -54,10 +54,14 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             }
         },
         findTaskActivities: function() {
-            var employees = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "employees").get("items"),
+            var employees, resourDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "employees"),
                     i, ii, iii, taskIndex, work, activities, dt = this.get("host").datatable,
                     taskActivities = [];
-
+            if (!resourDesc){
+                return;
+            } else {
+                employees = resourDesc.get("items");
+            }
 
             for (i = 0; i < employees.length; i++) {
                 work = employees[i].get("items");
@@ -78,6 +82,10 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
         taskActivitiesToAdd: function() {
             var taskActivities = this.findTaskActivities(), activitiesToAdd = [],
                     i, ii, exist;
+            if (!taskActivities){
+                this.get("host").showMessage("error", "No employees list found");
+                return;
+            }
             for (i = 0; i < taskActivities.length; i++) {
                 exist = false;
                 if (activitiesToAdd.length === 0) {

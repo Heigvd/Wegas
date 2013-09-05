@@ -227,7 +227,7 @@
                     "label": "ganttPage",
                     "defaultInstance": {
                         "@class": "NumberInstance",
-                        "value": 0
+                        "value": 4
                     },
                     "scope": {
                         "@class": "TeamScope"
@@ -239,7 +239,7 @@
                     "label": "taskPage",
                     "defaultInstance": {
                         "@class": "NumberInstance",
-                        "value": 0
+                        "value": 3
                     },
                     "scope": {
                         "@class": "TeamScope"

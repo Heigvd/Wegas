@@ -561,45 +561,24 @@ h2{
     background-color:#DDDDDD;
 }*/
 
-/*----------------------------------resources-page----------------------------*/
-.resources-page .slidepanel{
-    position:relative;
-}
+/*----------------------------------SlidePanel----------------------------*/
 
-.resources-page .slidepanel-content{
-    overflow:hidden;
-    width:100%;
-}
-
-.resources-page .slidepanel-title{
-    background-image: url(../../wegas-pmg/images/h2.png);
-    background-repeat: repeat-x;
-    background-color: white;
-    height:26px;
-    width:100%;
-    border:solid black;
-    border-width: 1px 0 0 0;
-}
-
-/*---------------------------- project-page ---------------------------------*/
-.project-page .slidepanel{
-    position:relative;
-    float: left;
-    width: 50%;
-    height: 260px;
-}
-
-.project-page .slidepanel-content{
-    overflow:hidden;
-    width:100%;
-}
-
+.resources-page .slidepanel-title,
 .project-page .slidepanel-title{
     background-image: url(../../wegas-pmg/images/h2.png);
     background-repeat: repeat-x;
     background-color: white;
-    height:26px;
+    height:27px;
     width:100%;
+    padding-bottom: 1px;
+}
+
+/*---------------------------- project-page ---------------------------------*/
+.project-page .wegas-pmg-slidepanel{
+    position:relative;
+    float: left;
+    width: 50%;
+    height: 260px;
 }
 
 .project-page .chart {
@@ -607,8 +586,8 @@ h2{
     margin-top: 15px;
 }
 
-.project-page .finances .slidepanel-content {
-    margin-top: 20px;
+.project-page .finances .wegas-pmg-slidepanel-content {
+    margin-top: 35px;
     margin-left: 30px;
 }
 
@@ -631,7 +610,8 @@ h2{
 
 /*---------------------------- Cursor pointer ---------------------*/
 .gantt-plannification-page tbody .present, .gantt-plannification-page tbody .futur, 
-.resources-page tbody .present, .resources-page tbody .futur, .assignment span{
+.resources-page tbody .present, .resources-page tbody .futur, .assignment span,
+.animated .slidepanel{
     cursor: pointer;
 }
 
@@ -656,9 +636,9 @@ h2{
 }
 
 /*---------------------------- EVM-page---------------------------------*/
-.evm-page h2 {
+/*.evm-page h2 {
     border: none;
-}
+}*/
 
 .evm-page .slidepanel-content{
     overflow:hidden;
@@ -671,6 +651,7 @@ h2{
     background-color: white;
     height:26px;
     width:100%;
+    padding-bottom: 1px;
 }
 
 .evm-page .chart {
