@@ -152,8 +152,14 @@ public class VariableDescriptorController {
     public VariableDescriptor duplicate(@PathParam("entityId") Long entityId) throws IOException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
+        VariableDescriptor duplicate = variableDescriptorFacade.duplicate(entityId);
 
-        return variableDescriptorFacade.duplicate(entityId);
+        DescriptorListI parent = variableDescriptorFacade.findParentList(duplicate);
+        if (parent instanceof VariableDescriptor) {                             // If the duplicated var is in a list descriptor,
+            return (VariableDescriptor) parent;                                 // return the whole list so the editor will be updated
+        } else {                                                                // Otherwise,
+            return duplicate;                                                   // the duplicate is at root level
+        }
     }
 
     /**

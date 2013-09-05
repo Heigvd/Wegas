@@ -266,7 +266,7 @@ YUI.add('wegas-pageeditor', function(Y) {
 
                 this.runTimeout = Y.later(100, this, function() {
                     try {
-                        this.highlightOverlay.get(CONTENTBOX).one(".overlay-label").setContent(widget.getName());
+                        this.highlightOverlay.get(CONTENTBOX).one(".overlay-label").setContent(widget.getType());
                         this.anim.set("from", {
                             xy: bb.getXY(),
                             width: bb.getDOMNode().offsetWidth,
