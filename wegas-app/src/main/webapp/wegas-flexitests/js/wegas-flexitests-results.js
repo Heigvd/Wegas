@@ -107,8 +107,12 @@ YUI.add("wegas-flexitests-results", function(Y) {
             }, extractValue = function(element, qId) {
                 var el = elements[element],
                         selectElement = el.item(qId % el.size());
-                return selectElement.get("content")
-                        || selectElement.get("url");
+                if (selectElement) {
+                    return selectElement.get("content")
+                            || selectElement.get("url");
+                } else {
+                    return "";
+                }
             };
             delete demographics["@class"];
             delete tests["@class"];
@@ -123,12 +127,12 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     if (this.resultTable) {
                         this.resultTable.destroy();
                     }
-                    this.resultTable = new Y.DataTable({columns: [
+                    this.resultTable = new Y.DataTable({columns: j.concat([
                             {label: "order", key: "order"},
                             {label: "Start time", key: "date", sortable: true,
                                 formatter: dateFormatter
                             },
-                            {label: "question id", key: "id", sortable: true},
+                            {label: "question id", key: "qid", sortable: true},
                             "left",
                             "center",
                             "right",
@@ -136,7 +140,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
                             {label: "Response time (ms)", key: "delay", sortable: true},
                             "valid",
                             {label: "total time (ms)", key: "totalTime"}
-                        ].concat(j)});
+                        ])});
                     if (j.length !== 0) {
                         break;
                     }
@@ -163,6 +167,9 @@ YUI.add("wegas-flexitests-results", function(Y) {
                             o.right = extractValue(o.right, o.id);
                             o.center = extractValue("center", o.id);
                             o.order = j;
+                            /*Remove id as it should be unique*/
+                            o.qid = o.id;
+                            delete o.id;
                             this.resultTable.addRow(Y.merge(demographics[i].properties, o));
                         }
                     }
