@@ -62,7 +62,7 @@
                                 "variable": {
                                     "name": "managementApproval"
                                 },
-                                "cfg":{
+                                "cfg": {
                                     "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 }
                             }, {
@@ -71,7 +71,7 @@
                                 "variable": {
                                     "name": "userApproval"
                                 },
-                                "cfg":{
+                                "cfg": {
                                     "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 }
                             }
@@ -87,27 +87,57 @@
                                 "variable": {
                                     "name": "quality"
                                 },
-                                "cfg":{
+                                "cfg": {
                                     "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
-                                }
+                                },
+                                "plugins": [{
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    }]
                             }, {
                                 "type": "GaugeDisplay",
                                 "label": "Costs",
                                 "variable": {
                                     "name": "costs"
                                 },
-                                "cfg":{
+                                "cfg": {
                                     "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
-                                }
+                                },
+                                "plugins": [{
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    }]
                             }, {
                                 "type": "GaugeDisplay",
                                 "label": "Delay",
                                 "variable": {
                                     "name": "delay"
                                 },
-                                "cfg":{
+                                "cfg": {
                                     "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
-                                }
+                                },
+                                "plugins": [{
+                                        "fn": "ConditionalDisable",
+                                        "cfg": {
+                                            "condition": {
+                                                "@class": "Script",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    }]
                             }
                         ]
                     }, {
@@ -154,6 +184,15 @@
                                     "targetEvent": "click",
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
+                            }, {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
+                                }
                             }
                         ]
                     }, {
@@ -170,6 +209,15 @@
                                     "targetEvent": "click",
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
+                            }, {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
+                                }
                             }
                         ]
                     }, {
@@ -184,6 +232,15 @@
                                     "targetEvent": "click",
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
+                            }, {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
+                                }
                             }
                         ]
                     }, {
@@ -197,6 +254,15 @@
                                     "subpageId": 10,
                                     "targetEvent": "click",
                                     "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }, {
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                        "language": "JavaScript"
+                                    }
                                 }
                             }
                         ]

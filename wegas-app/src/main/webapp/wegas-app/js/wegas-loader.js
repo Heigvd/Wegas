@@ -399,20 +399,10 @@ YUI().use(function(Y) {
                     requires: [],
                     ws_provides: 'ScheduleDT'
                 },
-                "wegas-inputex-object": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
-                    requires: ['inputex-object'],
-                    ix_provides: 'wegasobject'
-                },
-                "wegas-inputex-colorpicker": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-colorpicker-min.js',
-                    requires: ['inputex-field', 'overlay'],
-                    ix_provides: 'colorpicker'
-                },
-                "wegas-inputex-keyvalue": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-keyvalue-min.js',
-                    requires: ['inputex-keyvalue'],
-                    ix_provides: 'wegaskeyvalue'
+                "wegas-conditionaldisable": {
+                    path: 'wegas-app/js/plugin/wegas-conditionaldisable-min.js',
+                    requires: [],
+                    ws_provides: 'ConditionalDisable'
                 },
                 "wegas-inputex-var-autocomplete": {
                     path: 'wegas-editor/js/inputex/wegas-inputex-var-autocomplete-min.js',
