@@ -62,11 +62,12 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         },
         //*** Private Methods ***/
         getData: function() {
-            var i, oneRowDatas, data,
-                    variables = this.get('variable.evaluated'),
-                    items = variables.get('items'),
-                    data = [];
-
+            var i, oneRowDatas, variables = this.get('variable.evaluated'), items, data = [];
+            if (variables) {
+                items = variables.get('items');
+            } else {
+                this.showMessage("error", "No variable found");
+            }
             if (!variables || !variables instanceof Y.Wegas.persistence.ListDescriptor) {
                 this.showMessage("error", "Variable is not a ListDescriptor");
                 return;

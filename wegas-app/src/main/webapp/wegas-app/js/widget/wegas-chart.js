@@ -30,6 +30,10 @@ YUI.add('wegas-chart', function(Y) {
             var variable = this.get("variables");
             for (i = 0; i < variable.length; i++) {
                 var vd = Y.Wegas.Facade.VariableDescriptor.cache.find("name", variable[i].name);
+                if (!vd){
+                    this.showMessage("error", "Variables not found");
+                    return;
+                }
                 vd.position = i;
                 if (variable[i].label)
                     vd.label = variable[i].label;
