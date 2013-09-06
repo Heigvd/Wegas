@@ -91,6 +91,9 @@ YUI.add("wegas-template", function(Y) {
             }
             return Y.mix(Y.merge(this.get("data")), data, false, null, 0, true);
         },
+        getEditorLabel: function() {
+            return this.get("variable.evaluated").getEditorLabel();
+        },
         destructor: function() {
             this.vdUpdateHandler.detach();
         }
