@@ -24,13 +24,12 @@ body {
     display: none;
 }
 
-/* @FIXME This rule is way to broad, and should only apply to direct children of the layout widget */
-.yui3-skin-sam .wegas-layout .yui3-tabview,
-.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content ,
-.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner {
+.yui3-skin-sam .wegas-layout > .wegas-layout-content > div > div > div> .yui3-tabview,
+.yui3-skin-sam .wegas-layout > .wegas-layout-content > div > div > div> .yui3-tabview > .yui3-tabview-content ,
+.yui3-skin-sam .wegas-layout > .wegas-layout-content > div > div > div> .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner {
     height: inherit;
 }
-.yui3-skin-sam .wegas-layout .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel {
+.yui3-skin-sam .wegas-layout > .wegas-layout-content > div > div > div> .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel {
     position:absolute;
     top: 26px;
     bottom:0px;
