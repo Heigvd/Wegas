@@ -357,6 +357,9 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     break;
 
                 case 'add file':
+                    // Directly show the file panel directly (comment to force the user to click on the browse button)
+                    this.uploader.openFileSelectDialog();
+
                     this.addFile(node, true);
                     break;
 
