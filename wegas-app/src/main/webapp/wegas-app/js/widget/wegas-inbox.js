@@ -68,7 +68,7 @@ YUI.add('wegas-inbox', function(Y) {
             this.jsTranslator = new Y.Wegas.JSTranslator();
             this.plug(Y.Plugin.WidgetToolbar);
             this.deleteButton = new Y.Wegas.Button({
-                label: "<span class='wegas-icon wegas-icon-cancel'></span>"+this.jsTranslator.getRB().Delete
+                label: "<span class='wegas-icon wegas-icon-cancel'></span>" + this.jsTranslator.getRB().Delete
             });
             this.toolbar.add(this.deleteButton);
             this.tabView = new Y.TabView();
@@ -80,6 +80,7 @@ YUI.add('wegas-inbox', function(Y) {
          */
         renderUI: function() {
             this.tabView.render(this.get(CONTENTBOX));
+            this.tabView.get("boundingBox").addClass("horizontal-tabview");
         },
         /**
          * @function
@@ -91,7 +92,7 @@ YUI.add('wegas-inbox', function(Y) {
          */
         bindUI: function() {
             this.tabView.after("selectionChange", this.onTabSelected, this);
-            this.handlers.dataUpdated = this.dataSource.after("update", function (e) {
+            this.handlers.dataUpdated = this.dataSource.after("update", function(e) {
                 if (e.tId !== this.readRequestTid) {
                     this.syncUI();
                 }
