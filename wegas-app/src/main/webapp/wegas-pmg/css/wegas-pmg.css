@@ -158,11 +158,15 @@
 }
 
 .layout .horizontal-menu .wegas-login{
-
-    float:right;
-    border:none;
-    padding:0 5px 0 0;
-    width:50px;
+    border: medium none currentColor;
+    float: right;
+    margin-right: 2px;
+    overflow: hidden;
+    padding: 0px 5px 0px 0px;
+    text-overflow: ellipsis;
+    width:100%;
+    max-width:50%;
+    text-align:right;
 }
 
 .horizontal-menu .wegas-login:hover{
@@ -287,14 +291,14 @@ h2{
 }
 
 /* TabView Styles */
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-list {
+.yui3-skin-sam  .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
     display: inline-block;
     float:left;
     border: none;
     width: 50%;
 }
 
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tabview-panel {
+.yui3-skin-sam  .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
     display:inline-block;
     width:50%;
     float:left;
@@ -338,6 +342,14 @@ h2{
 }
 .wegas-mcqtabview {
     line-height: normal;
+}
+
+.main .wegas-mcqtabview-content .content{
+    margin-top: -40px;
+}
+
+.wegas-mcqtabview-content .content .content{
+    margin:0;
 }
 
 .yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected .yui3-tab-label {
@@ -390,14 +402,14 @@ h2{
     height:27px;
 }
 
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-list {
+.yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
     display: inline-block;
     float:left;
     border: none;
     width: 50%;
 }
 
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-panel {
+.yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
     display:inline-block;
     width:50%;
     padding:0;
@@ -545,45 +557,24 @@ h2{
     background-color:#DDDDDD;
 }*/
 
-/*----------------------------------resources-page----------------------------*/
-.resources-page .slidepanel{
-    position:relative;
-}
+/*----------------------------------SlidePanel----------------------------*/
 
-.resources-page .slidepanel-content{
-    overflow:hidden;
-    width:100%;
-}
-
-.resources-page .slidepanel-title{
-    background-image: url(../../wegas-pmg/images/h2.png);
-    background-repeat: repeat-x;
-    background-color: white;
-    height:26px;
-    width:100%;
-    border:solid black;
-    border-width: 1px 0 0 0;
-}
-
-/*---------------------------- project-page ---------------------------------*/
-.project-page .slidepanel{
-    position:relative;
-    float: left;
-    width: 50%;
-    height: 260px;
-}
-
-.project-page .slidepanel-content{
-    overflow:hidden;
-    width:100%;
-}
-
+.resources-page .slidepanel-title,
 .project-page .slidepanel-title{
     background-image: url(../../wegas-pmg/images/h2.png);
     background-repeat: repeat-x;
     background-color: white;
-    height:26px;
+    height:27px;
     width:100%;
+    padding-bottom: 1px;
+}
+
+/*---------------------------- project-page ---------------------------------*/
+.project-page .wegas-pmg-slidepanel{
+    position:relative;
+    float: left;
+    width: 50%;
+    height: 260px;
 }
 
 .project-page .chart {
@@ -591,8 +582,8 @@ h2{
     margin-top: 15px;
 }
 
-.project-page .finances .slidepanel-content {
-    margin-top: 20px;
+.project-page .finances .wegas-pmg-slidepanel-content {
+    margin-top: 35px;
     margin-left: 30px;
 }
 
@@ -615,7 +606,8 @@ h2{
 
 /*---------------------------- Cursor pointer ---------------------*/
 .gantt-plannification-page tbody .present, .gantt-plannification-page tbody .futur, 
-.resources-page tbody .present, .resources-page tbody .futur, .assignment span{
+.resources-page tbody .present, .resources-page tbody .futur, .assignment span,
+.animated .slidepanel{
     cursor: pointer;
 }
 
@@ -640,9 +632,9 @@ h2{
 }
 
 /*---------------------------- EVM-page---------------------------------*/
-.evm-page h2 {
+/*.evm-page h2 {
     border: none;
-}
+}*/
 
 .evm-page .slidepanel-content{
     overflow:hidden;
@@ -655,6 +647,7 @@ h2{
     background-color: white;
     height:26px;
     width:100%;
+    padding-bottom: 1px;
 }
 
 .evm-page .chart {

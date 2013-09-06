@@ -159,3 +159,9 @@ tbody .past .activity {
     background-image: url(../../wegas-pmg/images/remove.png);
     cursor: pointer;
 }
+
+/* --------------- SlidePanel css ------------------------------------*/
+.wegas-pmg-slidepanel .wegas-pmg-slidepanel-content{
+    overflow:hidden;
+    width:100%;
+}

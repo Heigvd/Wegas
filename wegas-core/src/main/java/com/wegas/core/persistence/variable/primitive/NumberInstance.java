@@ -37,7 +37,7 @@ public class NumberInstance extends VariableInstance {
      *
      */
     @ElementCollection
-    @JsonView(Views.Extended.class)
+    @JsonView(Views.ExtendedI.class)
     private List<Double> history = new ArrayList<>();
 
     /**

@@ -65,6 +65,10 @@ YUI.add('wegas-scheduledatatable', function(Y) {
         },
         currentPeriod: function() {
             var variable = this.get('variable.evaluated');
+            if (!variable){
+                this.get("host").showMessage("error", "No variable found");
+                return;
+            }
             return variable.getInstance().get("value");
         },
         /**

@@ -99,29 +99,29 @@ YUI.add('wegas-serialization-test', function(Y) {
         /**
          *
          */
-        'should instantiate and serialize default widget from an io request': function() {
-            this.log("Default pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-app/db/wegas-default-pages.json");
-        },
-        'should instantiate and serialize crimesim widgets cfg': function() {
-            this.log("Crimesim pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-crimesim/db/wegas-crimesim-pages.json");
-        },
-        'should instantiate and serialize cep game widgets cfg': function() {
-            this.log("CEP pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-cep/db/wegas-cep-pages.json");
-        },
-        'should instantiate and serialize proggame widgets cfg': function() {
-            this.log("Proggame pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-proggame/db/wegas-proggame-pages.json");
-        },
-        'should instantiate and serialize flexitests widgets cfg': function() {
-            this.log("Flexitests pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json");
-        },
+//        'should instantiate and serialize default widget from an io request': function() {
+//            this.log("Default pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-app/db/wegas-default-pages.json");
+//        },
+//        'should instantiate and serialize crimesim widgets cfg': function() {
+//            this.log("Crimesim pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-crimesim/db/wegas-crimesim-pages.json");
+//        },
+//        'should instantiate and serialize cep game widgets cfg': function() {
+//            this.log("CEP pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-cep/db/wegas-cep-pages.json");
+//        },
+//        'should instantiate and serialize proggame widgets cfg': function() {
+//            this.log("Proggame pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-proggame/db/wegas-proggame-pages.json");
+//        },
+//        'should instantiate and serialize flexitests widgets cfg': function() {
+//            this.log("Flexitests pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json");
+//        },
         'should instantiate and serialize PMG widgets cfg': function() {
-            //this.log("PMG pages");
-            //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json")
+            this.log("PMG pages");
+            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json");
         },
         'should instantiate and serialize leaderway widget cfgt': function() {
             //this.log("Leaderway pages");

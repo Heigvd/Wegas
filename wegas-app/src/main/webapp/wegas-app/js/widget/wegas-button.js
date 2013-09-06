@@ -60,6 +60,9 @@ YUI.add("wegas-button", function(Y) {
                 });
             }
         },
+        getEditorLabel: function() {
+            return this.get("label");
+        },
         /**
          * @function
          * @private
