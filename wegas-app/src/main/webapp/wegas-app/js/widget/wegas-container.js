@@ -51,6 +51,9 @@ YUI.add("wegas-container", function(Y) {
             }
             object.children = children;
             return object;
+        },
+        getEditorLabel: function() {
+            return;
         }
     }, true);
     Y.mix(Container, {
@@ -108,7 +111,7 @@ YUI.add("wegas-container", function(Y) {
                                                                 }
                                                             }
                                                         ]
-                                                    },{
+                                                    }, {
                                                         type: "Button",
                                                         label: "Text",
                                                         plugins: [{
