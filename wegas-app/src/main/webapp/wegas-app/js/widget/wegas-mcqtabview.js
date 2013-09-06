@@ -66,6 +66,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
             this.tabView.render(cb);
+            this.tabView.get("boundingBox").addClass("horizontal-tabview");
             cb.append("<div style='clear:both'></div>");
         },
         /**
