@@ -65,23 +65,31 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          *  or given cfg (in ATTRS)
          */
         renderUI: function() {
+            this.setValue(this.get("cfg"));
+        },
+        /**
+         * @function
+         * @private
+         * @description Create and set value to gauge.
+         */
+        setValue: function(cfg) {
             var opts = {
-                lines: this.get('cfg').lines || 12,
+                lines: cfg.lines || 12,
                 // The number of lines to draw
-                angle: this.get('cfg').angle || 0.15,
+                angle: cfg.angle || 0.15,
                 // The length of each line
-                lineWidth: this.get('cfg').lineWidth || 0.44,
+                lineWidth: cfg.lineWidth || 0.44,
                 // The line thickness
-                pointer: this.get('cfg').pointer || {
+                pointer: cfg.pointer || {
                     length: 0.5, // The radius of the inner circle
                     strokeWidth: 0.035, // The rotation offset
                     color: '#000000'                                            // Fill color
                 },
-                colorStart: this.get('cfg').colorStart || '#0981A9', // Colors
-                colorStop: this.get('cfg').colorStop || '#000000',
-                strokeColor: this.get('cfg').strokeColor || '#FFFFFF',
-                percentColors: this.get('cfg').percentColors || [[0.0, "#0981A9"]],
-                generateGradient: this.get('cfg').generateGradient || true
+                colorStart: cfg.colorStart || '#0981A9', // Colors
+                colorStop: cfg.colorStop || '#000000',
+                strokeColor: cfg.strokeColor || '#FFFFFF',
+                percentColors: cfg.percentColors || [[0.0, "#0981A9"]],
+                generateGradient: cfg.generateGradient || true
             };
             this.gauge = new Gauge(this.get("contentBox").one("canvas").
                     getDOMNode());// create the  gauge!conso
@@ -101,6 +109,10 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 this.disable = e.newVal;
                 this.syncUI();
             }, this);
+
+            this.after("cfgChange", function(e) {
+                this.setValue(e.newVal);
+            });
         },
         /**
          * @function
@@ -186,9 +198,25 @@ YUI.add('wegas-gaugedisplay', function(Y) {
              */
             cfg: {
                 value: {},
-                "transient": true,
                 _inputex: {
-                    _type: "object"
+                    _type: "wegasobject",
+                    useButtons: true,
+                    elementType: {
+                        type: "wegaskeyvalue",
+                        availableFields: [{
+                                name: "percentColors",
+                                type: "list",
+                                useButtons: true,
+                                elementType: {
+                                    type: "combine",
+                                    fields: [
+                                        {type: 'string', name: 'value', typeInvite: 'value'},
+                                        {type: 'colorpicker', name: 'color'}
+                                    ]
+                                },
+                                palette: 3
+                            }]
+                    }
                 }
             }
         }
