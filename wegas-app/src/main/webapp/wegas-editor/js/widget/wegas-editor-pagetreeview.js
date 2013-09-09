@@ -157,7 +157,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         widget: widget
                     },
                     cssClass: "container-node widget-node",
-                    iconCSS:"icon-" + widget.constructor.NAME
+                    iconCSS:"wegas-icon-" + widget.constructor.NAME
                 });
                 widget.each(function(item) {
                     this.buildSubTree(treeNode, item);
@@ -170,7 +170,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         widget: widget
                     },
                     cssClass: "widget-node",
-                    iconCSS:"icon-" + widget.constructor.NAME
+                    iconCSS:"wegas-icon-" + widget.constructor.NAME
                 });
             }
             node.add(treeNode);
@@ -198,7 +198,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                             name: index[i]
                         },
                         cssClass: "page-node",
-                        iconCSS: "icon-page"
+                        iconCSS: "wegas-icon-page"
                     });
                     this.treeView.add(node);
                     button = new Y.Node.create("<span class=\"wegas-treeview-editmenubutton\"></span>");
