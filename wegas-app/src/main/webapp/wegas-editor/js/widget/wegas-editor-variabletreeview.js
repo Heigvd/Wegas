@@ -95,7 +95,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 collapsed: collapsed,
                                 selected: selected,
                                 rightWidget: Y.Node.create(EDITBUTTONTPL),
-                                iconCSS: "wegas-icon-variabledescriptor",
+                                iconCSS: "wegas-icon-variabledescriptor wegas-icon-" + elClass.toLowerCase(),
                                 cssClass: "wegas-editor-listitem"
                                         //iconCSS: "wegas-icon-" + el.get(CLASS)
                             });
@@ -128,7 +128,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 data: {
                                     entity: el
                                 },
-                                iconCSS: "wegas-icon-variabledescriptor",
+                                iconCSS: "wegas-icon-questiondescriptor",
                                 rightWidget: Y.Node.create(EDITBUTTONTPL),
                                 cssClass: "wegas-editor-listitem wegas-editor-question"
                             });
@@ -162,7 +162,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 collapsed: collapsed,
                                 selected: selected,
                                 rightWidget: Y.Node.create(EDITBUTTONTPL),
-                                iconCSS: "wegas-icon-variabledescriptor",
+                                iconCSS: "wegas-icon-choicedescriptor",
                                 cssClass: "wegas-editor-questionitem"
                             });
                             break;
@@ -177,7 +177,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                     entity: el
                                 },
                                 rightWidget: Y.Node.create(EDITBUTTONTPL),
-                                iconCSS: "wegas-icon-variabledescriptor",
+                                iconCSS: "wegas-icon-choicedescriptor",
                                 cssClass: "wegas-editor-questionitem"
                             });
                             break;
