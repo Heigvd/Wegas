@@ -779,6 +779,11 @@ YUI().use(function(Y) {
                     requires: ['inputex-string'],
                     ws_provides: 'Bac'
                 },
+                "wegas-pmg-tablepopup": {
+                    path: 'wegas-pmg/js/plugin/wegas-pmg-tablepopup-min.js',
+                    requires: ['wegas-widgetmenu'],
+                    ws_provides: 'Tablepopup'
+                },
                 /**book CYOA**/
                 'wegas-book': {
                     path: 'wegas-book/js/wegas-book-fight-min.js',
