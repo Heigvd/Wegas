@@ -128,7 +128,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 return;
             }
 
-            label = this.get("label") || variableDescriptor.getPublicLabel();
+            label = this.get("label") || variableDescriptor.getLabel();
             minVal = variableDescriptor.get("minValue");
             maxVal = variableDescriptor.get("maxValue") - minVal;
             value = (variableDescriptor.getInstance().
@@ -141,6 +141,9 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").
                     setContent(Math.round(value / this.MAXVAL * 100) + "%");
+        },
+        getEditorLabel: function() {
+            return this.get("variable.evaluated").getEditorLabel();
         },
         /**
          * @function
@@ -241,9 +244,3 @@ YUI.add('wegas-gaugedisplay', function(Y) {
 
     Y.namespace('Wegas').GaugeDisplay = GaugeDisplay;
 });
-
-//pointer: cfg.pointer || {
-//                    length: 0.5, // The radius of the inner circle
-//                    strokeWidth: 0.035, // The rotation offset
-//                    color: '#000000'                                            // Fill color
-//                }

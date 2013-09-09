@@ -237,7 +237,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         optional: true,
                         _inputex: {
                             _type: "entityarrayfieldselect",
-                            label: "Default result"
+                            label: "Default result",
+                            returnAttr: "id"
                         }
                     }
                 }
@@ -311,6 +312,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             },
             desactivate: {
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            hasBeenSelected: {
+                label: "has been selected",
+                returns: BOOLEAN,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -448,6 +457,22 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             },
             desactivate: {
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            hasBeenSelected: {
+                label: "has been selected",
+                returns: BOOLEAN,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            isActive: {
+                label: "is active",
+                returns: BOOLEAN,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
