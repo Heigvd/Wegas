@@ -81,13 +81,6 @@ YUI.add('wegas-widgetmenu', function(Y) {
         show: function(node) {
             node = node || this.get("targetNode");
             this.getMenu().attachTo(node);                                      // /Get a menu instance and attach it to the target node
-
-//-            var host = this.get(HOST).get(BOUNDINGBOX) ?
-//-                    this.get(HOST).get(BOUNDINGBOX).one(this.get("selector")) : //Widget
-//-                    this.get(HOST);                                             //Node
-//-            this.getMenu().attachTo(// Get a menu instance
-//-                    host); // Attach it to the target node
-//+            var menu = this.getMenu();
         },
         // *** Private methods *** //
         /**
@@ -255,6 +248,9 @@ YUI.add('wegas-widgetmenu', function(Y) {
                 value: ["tl", "bl"]
             },
             constrain: {
+                value: true
+            },
+            preventOverlap: {
                 value: true
             },
             zIndex: {

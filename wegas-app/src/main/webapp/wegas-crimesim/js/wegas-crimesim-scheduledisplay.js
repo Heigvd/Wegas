@@ -204,7 +204,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
                 acc.push('<tr data-questionId="', question.get("id"), '"><td class="schedule-leftcolum',
                         (question.get("id") === this.currentQuestionId) ? " schedule-leftcolum-selected" : "",
-                        '" >', question.getPublicLabel() || "undefined", "</td>");
+                        '" >', question.getLabel() || "undefined", "</td>");
                 cols = [];
                 names = [];
                 replies = [];
@@ -233,7 +233,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         cols[cIndex].push("schedule-ongoingtask");
                     }
 
-                    names[cIndex] = choiceDescriptor.getPublicLabel();
+                    names[cIndex] = choiceDescriptor.getLabel();
                     replies[cIndex] = reply;
 
                     for (k = 1; k < choiceDescriptor.get("duration"); k += 1) {
@@ -281,7 +281,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             acc.push("</tr></tfoot></table>");
 
             if (cb) {
-                cb.set("innerHTML", acc.join(""));                                  // Update ContentBox   
+                cb.set("innerHTML", acc.join(""));                                  // Update ContentBox
             }
         },
         renderDetailsPanel: function(node) {
@@ -327,7 +327,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     extendedQuestion = ScheduleDisplay.EXTENDEDQUESTIONS.find(this.currentQuestionId);
             this.data.length = 0;
 
-            cb.one("h1").setContent(question.getPublicLabel() || "undefined");
+            cb.one("h1").setContent(question.getLabel() || "undefined");
             cb.one(".content").setContent(extendedQuestion.get("description") || "<em>" + this.translator.getRB().No_description + "</em>");
 
             while (this.datatable.datatable.getRow(0)) {
@@ -355,7 +355,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         delete replyData.fileLinks;
                     }
                 }
-                replyData.analyis = reply.getChoiceDescriptor().getPublicLabel();
+                replyData.analyis = reply.getChoiceDescriptor().getLabel();
                 replyData.startTime = replyData.startTime + 1;
                 this.data.push(replyData);
             }
@@ -383,7 +383,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var choiceDescriptor = reply.getChoiceDescriptor(),
                     status = reply.getStatus(this.currentTime),
                     ret = ['<div class="schedule-detail-reply"><h3>Period ',
-                reply.get("startTime") + 1, ': ', choiceDescriptor.getPublicLabel() || "undefined",
+                reply.get("startTime") + 1, ': ', choiceDescriptor.getLabel() || "undefined",
                 '</h3><div class="content">'];
 
             if (status === 0) {
@@ -455,7 +455,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     label: '<span ' +
                             //'class="wegas-tooltip-trigger" title="' +
                             //escape( choice.get("description")) + '"' +
-                            '>' + (choice.getPublicLabel() || "undefined") + "</span>",
+                            '>' + (choice.getLabel() || "undefined") + "</span>",
                     data: {
                         choice: choice,
                         startTime: startTime

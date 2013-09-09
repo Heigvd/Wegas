@@ -24,7 +24,7 @@
                                         "type": "Template",
                                         "data": {},
                                         "template": "text",
-                                        "custom": "<div class='wegas-template-title'><label>Phase</label><div><%= this.variable.getPublicLabel() || 'Undefined' %></div></div>",
+                                        "custom": "<div class='wegas-template-title'><label>Phase</label><div><%= this.variable.getLabel() || 'Undefined' %></div></div>",
                                         "variable": {
                                             "name": "phases"
                                         }

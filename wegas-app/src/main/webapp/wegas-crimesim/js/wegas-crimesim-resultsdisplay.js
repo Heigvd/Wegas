@@ -173,7 +173,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                     period = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period"),
                     periodInstance = period.getInstance(),
                     currentTime = periodInstance.get("value") - period.get("minValue");
-            
+
             this.showOverlay();
             for (i = 0; i < questions.length; i += 1) {
                 questionInstance = questions[i].getInstance();
@@ -187,8 +187,8 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                         this.unreadEvidences.push(replyData.id);
                     }
 
-                    replyData.evidence = questions[i].getPublicLabel();
-                    replyData.analyis = reply.getChoiceDescriptor().getPublicLabel();
+                    replyData.evidence = questions[i].getLabel();
+                    replyData.analyis = reply.getChoiceDescriptor().getLabel();
 
                     replyData.startTime += 1;
 
