@@ -134,47 +134,49 @@ YUI.add("wegas-inputex-rte", function(Y) {
             }, this);
         },
         onFileBrowserClick: function(field_name, url, type, win) {
-            if (!RTEField.filePanel) {
-                RTEField.filePanel = new Y.Panel({
-                    headerContent: 'Choose a file from library',
-                    bodyContent: '',
-                    width: 600,
-                    height: Y.DOM.winHeight() - 150,
-                    zIndex: 303000,
-                    modal: true,
-                    render: true,
-                    centered: true
+            RTEField.filePanel = new Y.Panel({
+                headerContent: 'Choose a file from library',
+                bodyContent: '',
+                width: 600,
+                height: Y.DOM.winHeight() - 150,
+                zIndex: 303000,
+                modal: true,
+                render: true,
+                centered: true
+            });
+
+            RTEField.filePanel.on("visibleChange", function() {
+                Y.later(0, this, function() {
+                    RTEField.filePanel.explorer.destroy();
+                    RTEField.filePanel.destroy();
                 });
+            }, this);
+            RTEField.filePanel.explorer = new Y.Wegas.FileExplorer()
+                    .render(RTEField.filePanel.getStdModNode(Y.WidgetStdMod.BODY));
 
-                RTEField.filePanel.explorer = new Y.Wegas.FileExplorer()
-                        .render(RTEField.filePanel.getStdModNode(Y.WidgetStdMod.BODY));
+            RTEField.filePanel.explorer.on("*:fileSelected", function(e, path) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                RTEField.filePanel.hide();
 
-                RTEField.filePanel.explorer.on("*:fileSelected", function(e, path) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                    RTEField.filePanel.hide();
+                var win = RTEField.filePanel.win,
+                        field_name = RTEField.filePanel.field_name,
+                        targetInput = win.document.getElementById(field_name);
+                targetInput.value = Y.Plugin.CRDataSource.getFullpath(path);    // update the input field
 
-                    var win = RTEField.filePanel.win,
-                            field_name = RTEField.filePanel.field_name,
-                            targetInput = win.document.getElementById(field_name);
-                    targetInput.value = Y.Plugin.CRDataSource.getFullpath(path);  // update the input field
-
-                    if (typeof (win.ImageDialog) !== "undefined") { // are we an image browser
-                        if (win.ImageDialog.getImageData) {         // we are, so update image dimensions...
-                            win.ImageDialog.getImageData();
-                        }
-
-                        if (win.ImageDialog.showPreviewImage) {     // ... and preview if necessary
-                            win.ImageDialog.showPreviewImage(Y.Plugin.CRDataSource.getFullpath(path));
-                        }
+                if (typeof (win.ImageDialog) !== "undefined") {                 // are we an image browser
+                    if (win.ImageDialog.getImageData) {                         // we are, so update image dimensions...
+                        win.ImageDialog.getImageData();
                     }
-                    if (win.Media) {                                // If in an editor window
-                        win.Media.formToData("src");                // update the data
-                    }
-                });
-            }
 
-            RTEField.filePanel.show();
+                    if (win.ImageDialog.showPreviewImage) {                     // ... and preview if necessary
+                        win.ImageDialog.showPreviewImage(Y.Plugin.CRDataSource.getFullpath(path));
+                    }
+                }
+                if (win.Media) {                                                // If in an editor window
+                    win.Media.formToData("src");                                // update the data
+                }
+            });
             RTEField.filePanel.win = win;
             RTEField.filePanel.field_name = field_name;
             return false;

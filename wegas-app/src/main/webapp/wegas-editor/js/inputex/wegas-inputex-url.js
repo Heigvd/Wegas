@@ -10,7 +10,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-inputex-url", function (Y) {
+YUI.add("wegas-inputex-url", function(Y) {
     "use strict";
 
     var inputEx = Y.inputEx;
@@ -25,30 +25,27 @@ YUI.add("wegas-inputex-url", function (Y) {
      *   <li>favicon: boolean whether the domain favicon.ico should be displayed or not (default is true, except for https)</li>
      * </ul>
      */
-    Y.namespace("inputEx.Wegas").UrlField = function (options) {
+    Y.namespace("inputEx.Wegas").UrlField = function(options) {
         inputEx.Wegas.UrlField.superclass.constructor.call(this, options);
     };
 
     Y.extend(inputEx.Wegas.UrlField, inputEx.StringField, {
-
         filepanel: null,
-
         /**
          * Adds the invalid Url message
          * @param {Object} options Options object as passed to the constructor
          */
-        setOptions: function (options) {
+        setOptions: function(options) {
             inputEx.Wegas.UrlField.superclass.setOptions.call(this, options);
 
-        //            this.options.className = options.className ? options.className : "inputEx-Field inputEx-UrlField";
-        //            this.options.messages.invalid = inputEx.messages.invalidUrl;
-        //            this.options.favicon = lang.isUndefined(options.favicon) ? (("https:" == document.location.protocol) ? false : true) : options.favicon;
-        //            this.options.size = options.size || 50;
+            //            this.options.className = options.className ? options.className : "inputEx-Field inputEx-UrlField";
+            //            this.options.messages.invalid = inputEx.messages.invalidUrl;
+            //            this.options.favicon = lang.isUndefined(options.favicon) ? (("https:" == document.location.protocol) ? false : true) : options.favicon;
+            //            this.options.size = options.size || 50;
 
-        // validate with url regexp
-        //            this.options.regexp = inputEx.regexps.url;
+            // validate with url regexp
+            //            this.options.regexp = inputEx.regexps.url;
         },
-
         /**
          *
          */
@@ -57,11 +54,16 @@ YUI.add("wegas-inputex-url", function (Y) {
         //        srcUrl: inputEx.Wegas.UrlField.superclass.getValue.call(this)
         //    }
         //},
-
+        destructor: function() {
+            if (this.filepanel) {
+                this.fileExplorer.destroy();
+                this.filepanel.destroy();
+            }
+        },
         /**
          * Adds a img tag before the field to display the favicon
          */
-        render: function () {
+        render: function() {
             inputEx.Wegas.UrlField.superclass.render.call(this);
 
             this.fieldContainer.classList.add("inputEx-wegas-UrlField");
@@ -73,30 +75,32 @@ YUI.add("wegas-inputex-url", function (Y) {
                 }
             }).render(this.fieldContainer);
         },
-
-        showFileExplorer: function () {
-            if (!this.filepanel) {
-                this.filepanel = new Y.Panel({
-                    headerContent: 'Choose a file from library',
-                    bodyContent: '',
-                    width: 600,
-                    height: Y.DOM.winHeight() - 150,
-                    zIndex: 80,
-                    modal: true,
-                    render: true,
-                    centered: true
+        showFileExplorer: function() {
+            this.filepanel = new Y.Panel({
+                headerContent: 'Choose a file from library',
+                bodyContent: '',
+                width: 600,
+                height: Y.DOM.winHeight() - 150,
+                zIndex: 80,
+                modal: true,
+                render: true,
+                centered: true
+            });
+            this.filepanel.on("visibleChange", function() {
+                Y.later(0, this, function() {
+                    this.fileExplorer.destroy();
+                    this.filepanel.destroy();
                 });
+            }, this);
 
-                this.fileExplorer = new Y.Wegas.FileExplorer().render(this.filepanel.getStdModNode(Y.WidgetStdMod.BODY));
+            this.fileExplorer = new Y.Wegas.FileExplorer().render(this.filepanel.getStdModNode(Y.WidgetStdMod.BODY));
 
-                this.fileExplorer.on("*:fileSelected", function (e, path) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                    this.filepanel.hide();
-                    this.setValue(path);
-                }, this);
-            }
-            this.filepanel.show();
+            this.fileExplorer.on("*:fileSelected", function(e, path) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                this.filepanel.hide();
+                this.setValue(path);
+            }, this);
         }
     });
 

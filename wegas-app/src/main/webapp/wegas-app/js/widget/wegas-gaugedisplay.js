@@ -128,7 +128,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 return;
             }
 
-            label = this.get("label") || variableDescriptor.getPublicLabel();
+            label = this.get("label") || variableDescriptor.getLabel();
             minVal = variableDescriptor.get("minValue");
             maxVal = variableDescriptor.get("maxValue") - minVal;
             value = (variableDescriptor.getInstance().
@@ -141,6 +141,9 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").
                     setContent(Math.round(value / this.MAXVAL * 100) + "%");
+        },
+        getEditorLabel: function() {
+            return this.get("variable.evaluated").getEditorLabel();
         },
         /**
          * @function
