@@ -426,10 +426,20 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 value: []
             },
             moralHistory: {
-                type: ARRAY
+                type: ARRAY,
+                _inputex: {
+                    label: "Moral history",
+                    _type: LIST,
+                    useButtons: true
+                }
             },
             confidenceHistory: {
-                type: ARRAY
+                type: ARRAY,
+                _inputex: {
+                    label: "Confidence history",
+                    _type: LIST,
+                    useButtons: true
+                }
             }
         }
     });

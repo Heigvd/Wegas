@@ -9,12 +9,14 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -67,6 +69,8 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     @ElementCollection
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
     private List<Integer> moralHistory = new ArrayList<>();
     /**
      *
@@ -76,6 +80,8 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     @ElementCollection
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
     private List<Integer> confidenceHistory = new ArrayList<>();
 
     public ResourceInstance() {
