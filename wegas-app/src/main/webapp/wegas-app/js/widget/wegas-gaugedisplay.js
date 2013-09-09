@@ -74,7 +74,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         setValue: function(cfg) {
             var opts = {
-                lines: cfg.lines || 12,
+//                lines: cfg.lines || 1, //don't work with this new version of gauge library
                 // The number of lines to draw
                 angle: cfg.angle || 0.15,
                 // The length of each line
@@ -85,11 +85,11 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                     strokeWidth: 0.035, // The rotation offset
                     color: '#000000'                                            // Fill color
                 },
-                colorStart: cfg.colorStart || '#0981A9', // Colors
-                colorStop: cfg.colorStop || '#000000',
+//                colorStart: cfg.colorStart || '#0981A9', // Colors, don't work with this new version of gauge library
+//                colorStop: cfg.colorStop || '#000000',
                 strokeColor: cfg.strokeColor || '#FFFFFF',
                 percentColors: cfg.percentColors || [[0.0, "#0981A9"]],
-                generateGradient: cfg.generateGradient || true
+//              generateGradient: cfg.generateGradient || false //don't work with this new version of gauge library
             };
             this.gauge = new Gauge(this.get("contentBox").one("canvas").
                     getDOMNode());// create the  gauge!conso
@@ -207,14 +207,31 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                     elementType: {
                         type: "wegaskeyvalue",
                         availableFields: [{
+                                name: "angle",
+                                type: "number"
+                            }, {
+                                name: "lineWidth",
+                                type: "number"
+                            }, {
+                                name: "strokeColor",
+                                type: "colorpicker"
+                            }, {
+                                name: "pointer",
+                                type: "group",
+                                fields: [
+                                    {type: "number", name: 'length', typeInvite: "length"},
+                                    {type: "number", name: 'strokeWidth', typeInvite: "stroke width"},
+                                    {type: "colorpicker", name: 'color'}
+                                ]
+                            }, {
                                 name: "percentColors",
                                 type: "list",
                                 useButtons: true,
                                 elementType: {
                                     type: "combine",
                                     fields: [
-                                        {type: 'string', name: 'value', typeInvite: 'value'},
-                                        {type: 'colorpicker', name: 'color'}
+                                        {type: "string", name: "value", typeInvite: "value"},
+                                        {type: "colorpicker", name: "color"}
                                     ]
                                 },
                                 palette: 3

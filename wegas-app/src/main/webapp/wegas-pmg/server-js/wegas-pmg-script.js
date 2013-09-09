@@ -23,10 +23,10 @@ function nextPeriod() {
         } else {
             phases.items.get(time.phase).getInstance(self).setValue(time.period + 1);
         }
+        setWeekliesVariables();
     } else {
         phases.items.get(time.phase).getInstance(self).setValue(time.period + 1);
     }
-    setWeekliesVariables();
 }
 
 function checkEndOfProject() {
