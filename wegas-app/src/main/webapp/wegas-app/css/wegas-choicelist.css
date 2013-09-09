@@ -8,7 +8,10 @@
 .wegas-choicelist-content > .hiddenChild{
     display: none;
 }
-.wegas-choicelist > .wegas-choicelist-content > .highlighted{
+.wegas-pageeditor-layoutmode .wegas-choicelist > .wegas-choicelist-content > .wegas-widget{
+    display:none;
+}
+.wegas-pageeditor-layoutmode .wegas-choicelist > .wegas-choicelist-content > .highlighted{
     display:block !important;
 }
 .wegas-pageeditor-layoutmode .wegas-choicelist-hidden{
