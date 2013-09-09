@@ -25,9 +25,6 @@ YUI.add('wegas-absolutelayout', function(Y) {
          * @lends Y.Wegas.AbsoluteLayout#
          */
         CONTENT_TEMPLATE: "<div style='position:relative'></div>",
-        getEditorLabel: function() {
-            return null;
-        },
         /**
          * @private
          * @function
