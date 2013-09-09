@@ -81,7 +81,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         case 'ObjectDescriptor':
                         case 'ResourceDescriptor':
                         case 'DialogueDescriptor':
-                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
                             var els = this.genScopeTreeViewElements(el);
                             ret.push({
                                 type: 'TreeNode',
@@ -95,14 +95,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 collapsed: collapsed,
                                 selected: selected,
                                 rightWidget: Y.Node.create(EDITBUTTONTPL),
-                                iconCSS: "wegas-icon-variabledescriptor",
+                                iconCSS: "wegas-icon-variabledescriptor wegas-icon-" + elClass.toLowerCase(),
                                 cssClass: "wegas-editor-listitem"
                                         //iconCSS: "wegas-icon-" + el.get(CLASS)
                             });
                             break;
 
                         case 'ListDescriptor':
-                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
@@ -118,7 +118,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             break;
 
                         case 'QuestionDescriptor':
-                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
@@ -128,14 +128,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 data: {
                                     entity: el
                                 },
-                                iconCSS: "wegas-icon-variabledescriptor",
+                                iconCSS: "wegas-icon-questiondescriptor",
                                 rightWidget: Y.Node.create(EDITBUTTONTPL),
                                 cssClass: "wegas-editor-listitem wegas-editor-question"
                             });
                             break;
 
                         case 'ChoiceDescriptor':
-                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getPrivateLabel();
+                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
                             children = [];
 
                             for (l = 0; l < el.get("results").length; l += 1) {
@@ -162,13 +162,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 collapsed: collapsed,
                                 selected: selected,
                                 rightWidget: Y.Node.create(EDITBUTTONTPL),
-                                iconCSS: "wegas-icon-variabledescriptor",
+                                iconCSS: "wegas-icon-choicedescriptor",
                                 cssClass: "wegas-editor-questionitem"
                             });
                             break;
 
                         case 'SingleResultChoiceDescriptor':
-                            text = 'Choice: ' + el.getPrivateLabel();
+                            text = 'Choice: ' + el.getEditorLabel();
                             ret.push({
                                 type: 'TreeLeaf',
                                 label: text,
@@ -177,7 +177,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                     entity: el
                                 },
                                 rightWidget: Y.Node.create(EDITBUTTONTPL),
-                                iconCSS: "wegas-icon-variabledescriptor",
+                                iconCSS: "wegas-icon-choicedescriptor",
                                 cssClass: "wegas-editor-questionitem"
                             });
                             break;

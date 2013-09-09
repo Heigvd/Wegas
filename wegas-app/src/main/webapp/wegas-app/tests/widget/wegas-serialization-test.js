@@ -70,7 +70,7 @@ YUI.add('wegas-serialization-test', function(Y) {
             };
             Y.Wegas.Facade.VariableDescriptor.after = function() {
                 return new Y.Event.Handle();
-            }
+            };
             Y.Wegas.Facade.VariableDescriptor.sendRequest = function() {
             };
 //            Y.Mock.expect(Y.Wegas.Facade.VariableDescriptor, {
@@ -95,39 +95,33 @@ YUI.add('wegas-serialization-test', function(Y) {
                 method: "get",
                 args: [Y.Mock.Value.String]
             });
-
-            //Y.io.transport({                                                  // Enable Cross-domain requests by using flash
-            //    src: './io.swf'
-            //});
-
-            //Y.one("body").append("<table></table");
         },
         /**
          *
          */
-        'should instantiate and serialize default widget from an io request': function() {
-            this.log("Default pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-app/db/wegas-default-pages.json")
-        },
-        'should instantiate and serialize crimesim widgets cfg': function() {
-            this.log("Crimesim pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-crimesim/db/wegas-crimesim-pages.json")
-        },
-        'should instantiate and serialize cep game widgets cfg': function() {
-            this.log("CEP pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-cep/db/wegas-cep-pages.json")
-        },
-        'should instantiate and serialize proggame widgets cfg': function() {
-            this.log("Proggame pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-proggame/db/wegas-proggame-pages.json")
-        },
-        'should instantiate and serialize flexitests widgets cfg': function() {
-            this.log("Flexitests pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json")
-        },
+//        'should instantiate and serialize default widget from an io request': function() {
+//            this.log("Default pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-app/db/wegas-default-pages.json");
+//        },
+//        'should instantiate and serialize crimesim widgets cfg': function() {
+//            this.log("Crimesim pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-crimesim/db/wegas-crimesim-pages.json");
+//        },
+//        'should instantiate and serialize cep game widgets cfg': function() {
+//            this.log("CEP pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-cep/db/wegas-cep-pages.json");
+//        },
+//        'should instantiate and serialize proggame widgets cfg': function() {
+//            this.log("Proggame pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-proggame/db/wegas-proggame-pages.json");
+//        },
+//        'should instantiate and serialize flexitests widgets cfg': function() {
+//            this.log("Flexitests pages");
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-flexitests/db/wegas-flexitests-pages.json");
+//        },
         'should instantiate and serialize PMG widgets cfg': function() {
-            //this.log("PMG pages");
-            //this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json")
+            this.log("PMG pages");
+            this.assertJsonCfg(YUI_config.groups.wegas.base + "wegas-pmg/db/wegas-pmg-pages.json");
         },
         'should instantiate and serialize leaderway widget cfgt': function() {
             //this.log("Leaderway pages");
@@ -189,6 +183,21 @@ YUI.add('wegas-serialization-test', function(Y) {
         },
         /**
          *
+         */
+        nextPage: function() {
+            if (!this.pagesAcc || this.pagesAcc.length === 0) {
+                return;
+            }
+            var cPage = this.pagesAcc.pop();
+
+            delete cPage["@name"];                                              // Remove @page (hacky declaration)
+            Y.log("Testing page: " + Y.JSON.stringify(cPage), "log");
+
+            this.assertUseAndRevive(cPage);
+            this.wait();
+        },
+        /**
+         *
          * @param {type} cfg
          * @returns {undefined}
          */
@@ -197,6 +206,7 @@ YUI.add('wegas-serialization-test', function(Y) {
                 var widget = Y.Wegas.Widget.create(Y.clone(cfg)), a, b;
 
                 widget.render();                                                // Render
+
 
                 a = this.escape(cfg);
                 b = this.escape(widget.toObject());                             // Serialize
@@ -214,20 +224,6 @@ YUI.add('wegas-serialization-test', function(Y) {
                     });
                 });
             }, this, cfg));
-        },
-        /**
-         *
-         */
-        nextPage: function() {
-            if (!this.pagesAcc || this.pagesAcc.length === 0) {
-                return;
-            }
-            var cPage = this.pagesAcc.pop();
-
-            Y.log("Testing page: " + Y.JSON.stringify(cPage), "log");
-
-            this.assertUseAndRevive(cPage);
-            this.wait();
         },
         log: function(a) {
             var targetEl = Y.one("body > table");

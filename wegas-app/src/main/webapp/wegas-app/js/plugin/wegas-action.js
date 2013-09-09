@@ -138,15 +138,23 @@ YUI.add('wegas-action', function(Y) {
             OpenPageAction.superclass.initializer.apply(this, arguments);
             this.afterHostEvent("render", function() {
                 var targetPageLoader = Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                if (targetPageLoader.get("pageId") === this.get("subpageId")) {
+                if (targetPageLoader.get("pageId") === this.subpage()) {
                     this.get(HOST).set("selected", 1);
                 }
             }, this);
         },
         execute: function() {
             var targetPageLoader = Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-            targetPageLoader.set("pageId", this.get("subpageId"));
+            targetPageLoader.set("pageId", this.subpage());
             this.get(HOST).set("selected", 1);
+        },
+        subpage: function () {
+            if (!this.get("subpageId")){
+                if (this.get("subpageVariable.evaluated")){
+                    return this.get("subpageVariable.evaluated").getInstance().get("value");
+                }
+            }
+            return this.get("subpageId");
         }
     }, {
         NS: "OpenPageAction",
@@ -165,8 +173,17 @@ YUI.add('wegas-action', function(Y) {
                 value: "maindisplayarea",
                 _inputex: {
                     label: "Target zone",
-                    value: "maindisplayarea",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    _type: "pageloaderselect"/*,
+                     value: "maindisplayarea",
+                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'*/
+                }
+            },
+            subpageVariable: {
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "variable",
+                    className: "wegas-advanced-feature"
                 }
             }
         }

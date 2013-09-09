@@ -163,9 +163,11 @@
 body > .wegas-pageloader{
     position: absolute;
     background: white;
+    overflow: auto;
+    bottom: 0;
 }
 body > .wegas-pageloader > .wegas-pageloader-content{
-    position:relative;
+    position: relative;
 }
 .yui3-skin-sam .wegas-icon-fullscreen{
     background: url(../../wegas-editor/images/full_screen.png) no-repeat;

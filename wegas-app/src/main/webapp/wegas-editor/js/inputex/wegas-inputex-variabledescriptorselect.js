@@ -619,7 +619,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
             for (i = 0; i < results.length; i = i + 1) {
                 options.choices.push({
-                    value: results[i].get("name"),
+                    value: results[i].get(options.returnAttr || "name"),
                     label: results[i].get("editorLabel")
                 });
             }
