@@ -344,12 +344,8 @@ h2{
     line-height: normal;
 }
 
-.actions-page .wegas-mcqtabview-content .content{
+.main .wegas-mcqtabview-content .content{
     margin-top: -40px;
-}
-
-.questions-page .wegas-mcqtabview-content .content{
-    margin-top: -26px;
 }
 
 .wegas-mcqtabview-content .content .content{
