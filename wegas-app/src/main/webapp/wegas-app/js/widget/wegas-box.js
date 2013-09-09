@@ -25,18 +25,11 @@ YUI.add("wegas-box", function(Y) {
         /** @lends Y.Wegas.Box# */
         CONTENT_TEMPLATE: null,
         getEditorLabel: function() {
-            return this.get("label");
+            return null;
         }
     }, {
         /** @lends Y.Wegas.Box */
-        EDITORNAME: "Box",
-        ATTRS: {
-            label: {
-                type: "string",
-                optional: true,
-                getter: Y.Wegas.Editable.removeNullValue
-            }
-        }
+        EDITORNAME: "Box"
     });
     Y.namespace("Wegas").Box = Box;
 
