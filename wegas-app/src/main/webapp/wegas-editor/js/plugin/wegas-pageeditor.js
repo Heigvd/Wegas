@@ -117,6 +117,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.overlayMask.plug(Y.Plugin.WidgetMenu, {
                 event: ["click", "contextmenu"]
             });
+            this.overlayMask.menu.getMenu().set("preventOverlap", false);
             this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
             host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
             this.fixedHandlers.push(this.doBefore("pageIdChange", function() {

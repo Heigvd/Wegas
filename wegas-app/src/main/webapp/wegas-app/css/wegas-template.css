@@ -21,3 +21,11 @@
 .wegas-template-valuebox-selected {
     background:white;
 }
+
+.wegas-gauge-content .label{
+    margin-top:5px;
+}
+
+.wegas-gauge-content .percent{
+    margin-top:1em;
+}

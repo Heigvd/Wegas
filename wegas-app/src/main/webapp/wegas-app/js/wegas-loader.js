@@ -209,7 +209,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-gaugedisplay': {
                     path: 'wegas-app/js/widget/wegas-gaugedisplay-min.js',
-                    requires: ["gauge"],
+                    requires: ["gauge", "wegas-templatecss"],
                     ws_provides: 'GaugeDisplay'
                 },
                 'wegas-absolutelayout': {
