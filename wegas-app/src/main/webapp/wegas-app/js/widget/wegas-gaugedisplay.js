@@ -142,6 +142,9 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             this.get(CONTENTBOX).one(".percent").
                     setContent(Math.round(value / this.MAXVAL * 100) + "%");
         },
+        getEditorLabel: function() {
+            return this.get("variable.evaluated").getEditorLabel();
+        },
         /**
          * @function
          * @private

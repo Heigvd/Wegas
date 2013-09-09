@@ -253,6 +253,9 @@ YUI.add('wegas-inbox', function(Y) {
                     }, [e.newVal.msg, e.newVal]);
                 }
             }
+        },
+        getEditorLabel: function() {
+            return this.get("variable.evaluated").getEditorLabel();
         }
 
     }, {
