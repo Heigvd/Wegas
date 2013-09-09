@@ -143,9 +143,9 @@ YUI.add('wegas-mcqtabview', function(Y) {
                         && cQuestionInstance.get("active")) {                    // If current question is active
 
                     if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
-                        choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length -1 ].getChoiceDescriptor();
+                        choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
                         cReplyLabel = choiceDescriptor.getLabel().substr(0, 15);
-                        cReplyLabel  = (cReplyLabel.length >= 15) ? cReplyLabel + "..." : cReplyLabel;
+                        cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel + "..." : cReplyLabel;
                     }
 
                     tab = new Y.Tab({
@@ -281,6 +281,9 @@ YUI.add('wegas-mcqtabview', function(Y) {
             }
             return occurrence;
         },
+        getEditorLabel: function() {
+            return this.get("variable.evaluated").getEditorLabel();
+        },
         /**
          * @function
          * @private
@@ -298,6 +301,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
             }
         }
     }, {
+        EDITORNAME: "Question display",
         /** @lends Y.Wegas.MCQTabView */
 
         /**

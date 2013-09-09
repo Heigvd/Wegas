@@ -14,4 +14,7 @@
     width: inherit;
     height: inherit;
 }
+.wegas-absolutelayout-content:empty:before{
+    content: "Empty container, add me some elements"
+}
 
