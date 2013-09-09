@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-text", function (Y) {
+YUI.add("wegas-text", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Text;
@@ -30,8 +30,11 @@ YUI.add("wegas-text", function (Y) {
          * @private
          * @description set the "content" ATTRS (which set the contentbox)
          */
-        syncUI: function () {
+        syncUI: function() {
             this.set("content", this.get("content"));
+        },
+        getEditorLabel: function() {
+            return this.get(CONTENTBOX).get("text");
         }
 
     }, {
@@ -55,7 +58,7 @@ YUI.add("wegas-text", function (Y) {
             content: {
                 type: "string",
                 format: "html",
-                setter: function (val) {
+                setter: function(val) {
                     this.get(CONTENTBOX).setContent(val);
                     return val;
                 }

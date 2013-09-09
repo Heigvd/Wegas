@@ -188,8 +188,14 @@ YUI.add('wegas-editable', function(Y) {
          * @public
          * @returns {String} static EDITORNAME or NAME
          */
-        getName: function() {
+        getType: function() {
             return this.constructor.EDITORNAME || this.constructor.NAME;
+        },
+        getLabel: function() {
+            return "no label";
+        },
+        getEditorLabel: function() {
+            return this.getLabel();
         },
         /**
          * Check if this widget is augmented (extended) by a specifique Widget
@@ -241,7 +247,7 @@ YUI.add('wegas-editable', function(Y) {
          * @param {Function} cb callback to be called when modules are loaded
          */
         use: function(cfg, cb) {
-            var modules = Y.Array.reject(Editable.getModulesFromDefinition(cfg), function (i){
+            var modules = Y.Array.reject(Editable.getModulesFromDefinition(cfg), function(i) {
                 return i === "";
             });
             if (modules.length > 0) {

@@ -102,7 +102,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
             var acc, i, maxVal = variableDescriptor.get("maxValue"),
                     minVal = variableDescriptor.get("minValue"),
                     value = variableDescriptor.getInstance().get("value"),
-                    label = this.get("label") || variableDescriptor.getPublicLabel();
+                    label = this.get("label") || variableDescriptor.getLabel();
 
             switch (this.get('view')) {
                 case 'text':
@@ -112,7 +112,7 @@ YUI.add('wegas-variabledisplay', function(Y) {
 
                 case 'title':
                     return '<span class="wegas-label wegas-variabledisplay-text-label">' + label + '</span>'
-                            + ' <span class="wegas-value wegas-variabledisplay-text-value">' + variableDescriptor.getPublicLabel() + '</span>';
+                            + ' <span class="wegas-value wegas-variabledisplay-text-value">' + variableDescriptor.getLabel() + '</span>';
                     break;
 
                 case 'box':

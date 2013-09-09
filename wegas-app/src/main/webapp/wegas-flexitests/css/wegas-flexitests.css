@@ -61,16 +61,31 @@ body > .wegas-pageloader, html{
     height: 50px;
     margin: auto;
 }
-.wegas-flexitests-mcqdisplay{
+/*.wegas-flexitests-mcqdisplay{
     z-index: inherit !important;
-}
+}*/
 .wegas-flexitests-mcqdisplay-hidden{
     display: none;
 }
 .wegas-flexitests-mcqdisplay-feedback{
     position: relative;
     z-index: 25;
-}.wegas-flexitests-mcqdisplay-input table{
+}
+.wegas-flexitests-mcqdisplay-feedback > .flexitests-mcq-good{
+    display: inline-block;
+    zoom: 1;
+    width: 120px;
+    height: 120px;
+    background: url(../../wegas-flexitests/images/Vrai.png) no-repeat;
+}
+.wegas-flexitests-mcqdisplay-feedback > .flexitests-mcq-wrong{
+    display: inline-block;
+    zoom: 1;
+    width: 120px;
+    height: 130px;
+    background: url(../../wegas-flexitests/images/Faux.png) no-repeat;
+}
+.wegas-flexitests-mcqdisplay-input table{
     width:100%;
 }
 .wegas-flexitests-mcqdisplay-input label{
@@ -95,6 +110,9 @@ body > .wegas-pageloader, html{
 }
 .wegas-flexitests-mcqdisplay-input label input:hover{
     cursor:inherit;
+}
+.wegas-choicelist-content:empty:before {
+    content: "" !important;
 }
 .wegas-flexitests-mcqdisplay-input label span{
     width:45px;
@@ -148,9 +166,6 @@ body > .wegas-pageloader, html{
 .editor-preview .wegas-form .wegas-toolbar button,
 .flexitests .wegas-form .wegas-toolbar button{
     margin-left:135px;
-}
-.yui3-treeview-content > .page-node:first-child{
-    display: none;
 }
 /*userVoice*/
 #uvTab{

@@ -209,7 +209,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-gaugedisplay': {
                     path: 'wegas-app/js/widget/wegas-gaugedisplay-min.js',
-                    requires: ["gauge"],
+                    requires: ["gauge", "wegas-templatecss"],
                     ws_provides: 'GaugeDisplay'
                 },
                 'wegas-absolutelayout': {
@@ -234,7 +234,7 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-form-min.js',
                     requires: ['wegas-widget', 'wegas-inputex',
                         'inputex-string', 'inputex-jsonschema', "inputex-group",
-                        'wegas-widgettoolbar', "wegas-button"],
+                        'wegas-widgettoolbar', "wegas-button", "inputex-checkbox"],
                     ws_provides: "Form"
                 },
                 form: {
@@ -399,20 +399,10 @@ YUI().use(function(Y) {
                     requires: [],
                     ws_provides: 'ScheduleDT'
                 },
-                "wegas-inputex-object": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-object-min.js',
-                    requires: ['inputex-object'],
-                    ix_provides: 'wegasobject'
-                },
-                "wegas-inputex-colorpicker": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-colorpicker-min.js',
-                    requires: ['inputex-field', 'overlay'],
-                    ix_provides: 'colorpicker'
-                },
-                "wegas-inputex-keyvalue": {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-keyvalue-min.js',
-                    requires: ['inputex-keyvalue'],
-                    ix_provides: 'wegaskeyvalue'
+                "wegas-conditionaldisable": {
+                    path: 'wegas-app/js/plugin/wegas-conditionaldisable-min.js',
+                    requires: [],
+                    ws_provides: 'ConditionalDisable'
                 },
                 "wegas-inputex-var-autocomplete": {
                     path: 'wegas-editor/js/inputex/wegas-inputex-var-autocomplete-min.js',
@@ -484,6 +474,11 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', 'inputex-group', 'inputex-combine', 'inputex-number',
                         'inputex-select'],
                     ix_provides: ["entityarrayfieldselect", "variabledescriptorselect"]
+                },
+                'wegas-inputex-pageloaderselect': {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-pageloaderselect-min.js',
+                    requires: ['inputex-select'],
+                    ix_provides: 'pageloaderselect'
                 },
                 'wegas-inputex-wysiwygscript': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-wysiwygscript-min.js',
@@ -695,8 +690,12 @@ YUI().use(function(Y) {
                 },
                 'wegas-mcqtabview': {
                     path: 'wegas-app/js/widget/wegas-mcqtabview-min.js',
-                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator"],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcqtabviewcss'],
                     ws_provides: "MCQTabView"
+                },
+                'wegas-mcqtabviewcss': {
+                    path: 'wegas-app/css/wegas-mcqtabview.css',
+                    type: 'css'
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
@@ -734,7 +733,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-pmg-slidepanel': {
                     path: 'wegas-pmg/js/wegas-pmg-slidepanel-min.js',
-                    requires: ['anim'],
+                    requires: ['anim', 'wegas-pmgwidget-css'],
                     ws_provides: "PmgSlidePanel"
                 },
                 "wegas-pmg-reservation": {
@@ -753,7 +752,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-pmg-assignment": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-assignment-min.js',
-                    requires: ['sortable', 'wegas-pmgwidget-css'],
+                    requires: ['sortable', 'wegas-pmgwidget-css', 'wegas-widgetmenu'],
                     ws_provides: 'Assignment'
                 },
                 "wegas-pmg-planification": {
@@ -777,6 +776,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-pmg-bac": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-bac-min.js',
+                    requires: ['inputex-string'],
                     ws_provides: 'Bac'
                 },
                 /**book CYOA**/

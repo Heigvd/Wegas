@@ -151,24 +151,26 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 //            });
             if (widget.each && !(widget instanceof Y.Wegas.PageLoader)) {
                 treeNode = new Y.TreeNode({
-                    label: "" + widget.getName(),
+                    label: "" + widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
                     rightWidget: button,
                     data: {
                         widget: widget
                     },
-                    cssClass: "container-node widget-node"
+                    cssClass: "container-node widget-node",
+                    iconCSS:"icon-" + widget.constructor.NAME
                 });
                 widget.each(function(item) {
                     this.buildSubTree(treeNode, item);
                 }, this);
             } else {
                 treeNode = new Y.TreeLeaf({
-                    label: "" + widget.getName(),
+                    label: "" + widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
                     rightWidget: button,
                     data: {
                         widget: widget
                     },
-                    cssClass: "widget-node"
+                    cssClass: "widget-node",
+                    iconCSS:"icon-" + widget.constructor.NAME
                 });
             }
             node.add(treeNode);
@@ -195,7 +197,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                             page: i,
                             name: index[i]
                         },
-                        cssClass: "page-node"
+                        cssClass: "page-node",
+                        iconCSS: "icon-page"
                     });
                     this.treeView.add(node);
                     button = new Y.Node.create("<span class=\"wegas-treeview-editmenubutton\"></span>");

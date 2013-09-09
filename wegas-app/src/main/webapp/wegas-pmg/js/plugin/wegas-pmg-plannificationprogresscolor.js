@@ -111,7 +111,6 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                     }
                 }
             }
-            console.log(this.taskTable);
         },
         findCell: function() {
             var taskId, taskDesc, dt = this.get("host").datatable, i, ii, cell;

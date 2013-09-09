@@ -9,6 +9,7 @@ package com.wegas.leaderway.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
@@ -156,5 +157,82 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public String getProperty(String key) {
         return this.properties.get(key);
+    }
+
+    //Methods for impacts
+    public String getInstanceProperty(Player p, String key) {
+        return this.getInstance(p).getProperty(key);
+    }
+    /**
+     * 
+     * @param p
+     * @param key
+     * @param value 
+     */
+    public void setInstanceProperty(Player p, String key, String value) {
+        this.getInstance(p).setProperty(key, value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     */
+    public Integer getDuration(Player p) {
+        return this.getInstance(p).getDuration();
+    }
+    
+        /**
+     *
+     * @param p
+     * @param value
+     */
+    public void setDuration(Player p, Integer value) {
+        this.getInstance(p).setDuration(value);
+    }
+    
+        /**
+     *
+     * @param p
+     * @param value
+     */
+    public void addAtDuration(Player p, Integer value) {
+        TaskInstance instance = this.getInstance(p);
+        instance.setDuration(instance.getDuration() + value);
+    }
+
+    /**
+     *
+     * @param p
+     */
+    public void getActive(Player p) {
+        TaskInstance instance = this.getInstance(p);
+        instance.getActive();
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     */
+    public void setActive(Player p, Boolean value) {
+        TaskInstance instance = this.getInstance(p);
+        instance.setActive(value);
+    }
+
+    /**
+     *
+     * @param p
+     */
+    public void activate(Player p) {
+        this.setActive(p, true);
+    }
+
+    /**
+     *
+     * @param p
+     */
+    public void desactivate(Player p) {
+        this.setActive(p, false);
     }
 }

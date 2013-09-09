@@ -125,6 +125,9 @@ YUI.add('wegas-pageloader', function(Y) {
             this.currentPageId = null;
             this.syncUI();
         },
+        getEditorLabel: function() {
+            return this.get("pageLoaderId");
+        },
 // *** Private Methods ***/
         /**
          * @function
@@ -248,7 +251,7 @@ YUI.add('wegas-pageloader', function(Y) {
                     var p;
                     if (this.get("widget")) {
                         return Y.JSON.stringify(this.get("widget").toObject("@pageId"), null, "\t");
-                    } else if(val){
+                    } else if (val) {
                         p = Y.clone(val);
                         delete p['@pageId'];
                         return Y.JSON.stringify(val, null, "\t");

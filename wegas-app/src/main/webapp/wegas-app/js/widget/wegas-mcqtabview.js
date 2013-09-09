@@ -66,6 +66,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
             this.tabView.render(cb);
+            this.tabView.get("boundingBox").addClass("horizontal-tabview");
             cb.append("<div style='clear:both'></div>");
         },
         /**
@@ -142,15 +143,15 @@ YUI.add('wegas-mcqtabview', function(Y) {
                         && cQuestionInstance.get("active")) {                    // If current question is active
 
                     if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
-                        choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length -1 ].getChoiceDescriptor();
-                        cReplyLabel = choiceDescriptor.getPublicLabel().substr(0, 15);
-                        cReplyLabel  = (cReplyLabel.length >= 15) ? cReplyLabel + "..." : cReplyLabel;
+                        choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
+                        cReplyLabel = choiceDescriptor.getLabel().substr(0, 15);
+                        cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel + "..." : cReplyLabel;
                     }
 
                     tab = new Y.Tab({
                         label: '<div class="'
                                 + (cQuestionInstance.get("replies").length === 0 ? "unread" : "")
-                                + '"><div class="label">' + (cQuestion.getPublicLabel() || "undefined") + '</div>'
+                                + '"><div class="label">' + (cQuestion.getLabel() || "undefined") + '</div>'
                                 + '<div class="status">' + (cReplyLabel || this.jsTranslator.getRB().Unanswered) + '</div></div>',
                         content: "<div class=\"wegas-loading-div\"><div>"
                     });
@@ -206,7 +207,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
             extendedQuestion = extendedQuestion || cQuestion;
 
             ret = ['<div class="content">',
-                '<div class="title">', cQuestion.getPublicLabel() || "undefined", '</div>',
+                '<div class="title">', cQuestion.getLabel() || "undefined", '</div>',
                 '<div class="description">', extendedQuestion.get("description"), '</div>'];
 
 
@@ -280,6 +281,9 @@ YUI.add('wegas-mcqtabview', function(Y) {
             }
             return occurrence;
         },
+        getEditorLabel: function() {
+            return this.get("variable.evaluated").getEditorLabel();
+        },
         /**
          * @function
          * @private
@@ -297,6 +301,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
             }
         }
     }, {
+        EDITORNAME: "Question display",
         /** @lends Y.Wegas.MCQTabView */
 
         /**
