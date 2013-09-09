@@ -560,6 +560,13 @@
                         "cfg": {
                             "columnPosition": 4
                         }
+                    }, {
+                        "fn": "Tablepopup",
+                        "cfg": {
+                            "width": "250px",
+                            "field": "description",
+                            "column": 1
+                        }
                     }]
             }
         ]
@@ -598,6 +605,13 @@
                         "fn": "Planification"
                     }, {
                         "fn": "Plannificationcolor"
+                    }, {
+                        "fn": "Tablepopup",
+                        "cfg": {
+                            "width": "250px",
+                            "field": "description",
+                            "column": 1
+                        }
                     }]
             }
         ]
@@ -883,6 +897,13 @@
                         "fn": "PlannificationActivityColor"
                     }, {
                         "fn": "PlannificationProgressColor"
+                    }, {
+                        "fn": "Tablepopup",
+                        "cfg": {
+                            "width": "250px",
+                            "field": "description",
+                            "column": 1
+                        }
                     }]
             }
         ]
@@ -955,6 +976,14 @@
                         "label": "Assigned resources",
                         "formatter": "assignedRessources",
                         "sortable": false
+                    }],
+                "plugins": [{
+                        "fn": "Tablepopup",
+                        "cfg": {
+                            "width": "250px",
+                            "field": "description",
+                            "column": 1
+                        }
                     }]
             }
         ]

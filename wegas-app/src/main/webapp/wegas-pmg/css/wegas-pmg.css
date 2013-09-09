@@ -611,7 +611,7 @@ h2{
 /*---------------------------- Cursor pointer ---------------------*/
 .gantt-plannification-page tbody .present, .gantt-plannification-page tbody .futur, 
 .resources-page tbody .present, .resources-page tbody .futur, .assignment span,
-.animated .slidepanel{
+.animated .slidepanel, table tbody .popup{
     cursor: pointer;
 }
 
