@@ -101,7 +101,6 @@
     -moz-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
     -webkit-box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
     box-shadow: 0px 0px 25px black, 0 0 15px white inset !important;
-    z-index:5;
 }
 .editor-preview .wegas-pageloader-content .highlighted:after{
     position: absolute;
