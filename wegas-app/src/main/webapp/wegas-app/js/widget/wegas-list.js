@@ -52,6 +52,7 @@ YUI.add('wegas-list', function(Y) {
     }, {
         /** @lends Y.Wegas.List */
         CSS_PREFIX: "wegas-list",
+        EDITORNAME: "List",
         /**
          * @field
          * @static

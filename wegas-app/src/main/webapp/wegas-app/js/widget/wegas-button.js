@@ -77,6 +77,7 @@ YUI.add("wegas-button", function(Y) {
         /**
          * @lends Y.Wegas.Button
          */
+        EDITORNAME: "Button",
         /**
          * @field
          * @static
