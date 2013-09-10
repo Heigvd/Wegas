@@ -97,10 +97,18 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 value: "unnamed",
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
+                },
+                _inputex: {
+                    _type: "string",
+                    label: "Titel"
                 }
             },
             animation: {
-                value: true
+                value: true,
+                _inputex: {
+                    _type: "boolean",
+                    label: "Animation"
+                }
             }
         }
     });

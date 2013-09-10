@@ -1,6 +1,6 @@
 {
     "@class": "GameModel",
-    "name": "Project Management Game v2",
+    "name": "Project Management Game template",
     "properties": {
         "cssUri": "wegas-pmg/css/wegas-pmg.css",
         "pagesUri": "wegas-pmg/db/wegas-pmg-pages.json?"
@@ -343,9 +343,9 @@
             "items": [
                 {
                     "@class": "ListDescriptor",
-                    "name": "businessSpecialist",
-                    "editorLabel": "businessSpecialist",
-                    "label": "businessSpecialist",
+                    "name": "consultantIT",
+                    "editorLabel": "consultantIT",
+                    "label": "consultantIT",
                     "defaultInstance": {
                         "@class": "ListInstance"
                     },
@@ -412,9 +412,9 @@
                     ]
                 }, {
                     "@class": "ListDescriptor",
-                    "name": "webDesigner",
-                    "editorLabel": "webDesigner",
-                    "label": "webDesigner",
+                    "name": "commercial",
+                    "editorLabel": "commercial",
+                    "label": "commercial",
                     "defaultInstance": {
                         "@class": "ListInstance"
                     },
@@ -508,6 +508,54 @@
                             }
                         }
                     ]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "informaticienHardware",
+                    "editorLabel": "informaticienHardware",
+                    "label": "informaticienHardware",
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    },
+                    "items": []
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "informaticienLogiciel",
+                    "editorLabel": "informaticienLogiciel",
+                    "label": "informaticienLogiciel",
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    },
+                    "items": []
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "monteur",
+                    "editorLabel": "monteur",
+                    "label": "monteur",
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    },
+                    "items": []
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "webDesigner",
+                    "editorLabel": "webDesigner",
+                    "label": "webDesigner",
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    },
+                    "items": []
                 }
             ]
         }, {
