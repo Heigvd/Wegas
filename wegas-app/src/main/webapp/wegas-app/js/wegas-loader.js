@@ -46,7 +46,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-helper': {
                     path: 'wegas-app/js/util/wegas-helper-min.js',
-                    requires: ['array-extras']
+                    requires: ['array-extras', 'base']
                 },
                 'wegas-editable': {
                     path: 'wegas-app/js/util/wegas-editable-min.js',
