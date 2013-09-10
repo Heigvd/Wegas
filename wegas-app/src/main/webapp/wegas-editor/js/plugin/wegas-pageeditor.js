@@ -120,8 +120,10 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.overlayMask.menu.getMenu().set("preventOverlap", false);
             this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
             host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
-            this.fixedHandlers.push(this.doBefore("pageIdChange", function() {
-                this.designButton.set("pressed", false);
+            this.fixedHandlers.push(this.doBefore("pageIdChange", function(e) {
+                if (this.get("host") === e.target) {
+                    this.designButton.set("pressed", false);
+                }
             }));
             this.anim = new Y.Anim({
                 node: this.highlightOverlay.get(BOUNDINGBOX),

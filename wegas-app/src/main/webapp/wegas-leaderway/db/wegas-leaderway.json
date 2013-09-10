@@ -660,7 +660,7 @@
                     }
                 }, {
                     "@class": "TaskDescriptor",
-                    "name": "Analyse des besoins pour un privé.",
+                    "name": "Analyse des besoins pour un privé. 1",
                     "label": "Analyse des besoins pour un privé.",
                     "description": "",
                     "properties": {
@@ -688,7 +688,7 @@
                     }
                 }, {
                     "@class": "TaskDescriptor",
-                    "name": "Analyse des besoins pour un privé.",
+                    "name": "Analyse des besoins pour un privé. 2",
                     "label": "Analyse des besoins pour un privé.",
                     "properties": {
                         "salary": 7400,
@@ -714,7 +714,7 @@
                     }
                 }, {
                     "@class": "TaskDescriptor",
-                    "name": "Analyse des besoins pour un privé.",
+                    "name": "Analyse des besoins pour un privé. 3",
                     "label": "Analyse des besoins pour un privé.",
                     "properties": {
                         "salary": 8400,
@@ -905,7 +905,7 @@
                     }
                 }, {
                     "@class": "TaskDescriptor",
-                    "name": "Maquette pour un site web de paris sportif.",
+                    "name": "Maquette pour un site web de paris sportif. 1",
                     "label": "Maquette pour un site web de paris sportif.",
                     "properties": {
                         "salary": 8000,
@@ -931,7 +931,7 @@
                     }
                 }, {
                     "@class": "TaskDescriptor",
-                    "name": "Maquette pour un site web de paris sportif.",
+                    "name": "Maquette pour un site web de paris sportif. 2",
                     "label": "Maquette pour un site web de paris sportif.",
                     "properties": {
                         "salary": 9000,
@@ -957,7 +957,7 @@
                     }
                 }, {
                     "@class": "TaskDescriptor",
-                    "name": "Maquette pour un site web de paris sportif.",
+                    "name": "Maquette pour un site web de paris sportif. 3",
                     "label": "Maquette pour un site web de paris sportif.",
                     "description": "",
                     "properties": {

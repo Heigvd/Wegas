@@ -70,7 +70,22 @@ body > .wegas-pageloader, html{
 .wegas-flexitests-mcqdisplay-feedback{
     position: relative;
     z-index: 25;
-}.wegas-flexitests-mcqdisplay-input table{
+}
+.wegas-flexitests-mcqdisplay-feedback > .flexitests-mcq-good{
+    display: inline-block;
+    zoom: 1;
+    width: 120px;
+    height: 120px;
+    background: url(../../wegas-flexitests/images/Vrai.png) no-repeat;
+}
+.wegas-flexitests-mcqdisplay-feedback > .flexitests-mcq-wrong{
+    display: inline-block;
+    zoom: 1;
+    width: 120px;
+    height: 130px;
+    background: url(../../wegas-flexitests/images/Faux.png) no-repeat;
+}
+.wegas-flexitests-mcqdisplay-input table{
     width:100%;
 }
 .wegas-flexitests-mcqdisplay-input label{

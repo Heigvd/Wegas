@@ -103,14 +103,14 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
         },
         success: function() {
             if (+this.get("feedback") > 0) {
-                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:lightgreen'>GOOD</i>");
+                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<span class='flexitests-mcq-good'></span>");
                 this.get("contentBox").one("." + this.getClassName("input")).hide();
                 Y.later(+this.get("feedback"), this, this.clearFeedBack);
             }
         },
         error: function() {
             if (+this.get("feedback") > 0) {
-                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<i style='color:red'>WRONG</i>");
+                this.get("contentBox").one("." + this.getClassName("feedback")).setContent("<span class='flexitests-mcq-wrong'></span>");
                 this.get("contentBox").one("." + this.getClassName("input")).hide();
                 Y.later(+this.get("feedback"), this, this.clearFeedBack);
             }

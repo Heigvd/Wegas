@@ -80,7 +80,9 @@
 .wegas-icon-gamemodel,
 .wegas-icon-team,
 .wegas-icon-player,
-.wegas-icon-variabledescriptor {
+.wegas-icon-variabledescriptor,
+.wegas-icon-questiondescriptor,
+.wegas-icon-triggerdescriptor {
     margin: -4px 0 -6px;
     height: 24px;
 }
@@ -100,4 +102,18 @@
 .wegas-icon-variabledescriptor {
     background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -976px no-repeat;
 }
-
+.wegas-icon-questiondescriptor {
+    background: transparent url(../images/wegas-icon-pages.png) 0 -756px no-repeat;
+}
+.wegas-icon-choicedescriptor {
+    background: transparent url(../images/wegas-icon-pages.png) 0 -850px no-repeat;
+}
+.wegas-icon-triggerdescriptor {
+    background: transparent url(../images/wegas-icon-pages.png) 0 -940px no-repeat;
+}
+.wegas-icon-inboxdescriptor {
+    background: transparent url(../images/wegas-icon-pages.png) 0 -424px no-repeat;
+}
+.wegas-icon-resourcedescriptor {
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -590px no-repeat;
+}

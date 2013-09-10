@@ -192,7 +192,7 @@ YUI.add('wegas-editable', function(Y) {
             return this.constructor.EDITORNAME || this.constructor.NAME;
         },
         getLabel: function() {
-            return "no label";
+            return null;
         },
         getEditorLabel: function() {
             return this.getLabel();
