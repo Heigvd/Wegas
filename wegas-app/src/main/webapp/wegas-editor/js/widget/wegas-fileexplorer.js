@@ -187,7 +187,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         try {
                             this.fileUploader.addFile(file);
                         } catch (e) {
-                            this.showMessage("error", e.message);
+                            this.showMessageBis("error", e.message);
                             file.treeLeaf.destroy();
                         }
                     }
@@ -229,7 +229,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             }, this);
             this.fakeFile.after("uploadcomplete", function(e) {
                 this.pathToNode(this.rootNode, JSON.parse(e.data).path).expand();
-                this.showMessage("success", "Directory successfully created");
+                this.showMessageBis("success", "Directory successfully created");
             }, this);
             this.uploader.after("fileselect", function(e) {
                 if (this.uploader.parentNode.get("label") === "Filename") {
@@ -266,10 +266,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 node = this.createNode(e.data);
                 if (node) {
                     e.file.treeLeaf.get("parent").add(node);
-                    this.showMessage("success", JSON.parse(e.data).name + ": upload successfull");
+                    this.showMessageBis("success", JSON.parse(e.data).name + ": upload successfull");
                 } else {
                     e.file.progressBar.set("color", "red");
-                    this.showMessage("error", JSON.parse(e.data).name + ": upload failed");
+                    this.showMessageBis("error", JSON.parse(e.data).name + ": upload failed");
                 }
                 try {
                     e.file.treeLeaf.destroy();
@@ -279,7 +279,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.fileUploader.on("fileuploaderror", function(e) {
                 e.file.progressBar.set("color", "red");
                 e.file.treeLeaf.set("loading", false);
-                this.showMessage("error", e.statusText);
+                this.showMessageBis("error", e.statusText);
                 try {
                     e.file.treeLeaf.destroy();
                 } catch (ex) {
@@ -334,7 +334,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             try {
                 this.fileUploader.addFile(file);
             } catch (e) {
-                this.showMessage("error", e.message);
+                this.showMessageBis("error", e.message);
                 // file.treeLeaf.destroy();
             }
         },
@@ -371,7 +371,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     name = prompt("Directory name:");
                     path = Y.Wegas.app.get("dataSources").File.source + "upload" + node.path;
                     if (name === null || name === "") {
-                        this.showMessage("error", "Directory name is required");
+                        this.showMessageBis("error", "Directory name is required");
                     } else {
                         this.uploader.upload(this.fakeFile, path, {
                             name: name
