@@ -183,8 +183,10 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     twState = this.treeView.saveState(),
                     widget = this.get("pageLoader").get("widget"), button,
                     deletePage = function(pageId) {
-                DATASOURCE.deletePage(pageId);
-                this.destroy();
+                if (confirm("You are removing a page, this can't be undone. Are you sure?")) {
+                    DATASOURCE.deletePage(pageId);
+                    this.destroy();
+                }
             }, duplicatePage = function(pageId) {
                 DATASOURCE.duplicate(pageId, Y.bind(function(page, id) {
                     this.get("pageLoader").set("pageId", id);
