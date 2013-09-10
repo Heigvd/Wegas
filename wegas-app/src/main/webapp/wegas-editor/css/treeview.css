@@ -103,9 +103,10 @@
     -webkit-transition: opacity 0.1s linear 0.1s;
 }
 .yui3-treenode-content-header:hover > .yui3-treenode-content-rightwidget,
-.yui3-treeleaf-content-header:hover > .yui3-treeleaf-content-rightwidget,
-.selected > .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
-.selected > div > .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget {
+.yui3-treeleaf-content-header:hover > .yui3-treeleaf-content-rightwidget
+/*.selected > .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
+.selected > div > .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget */
+{
     opacity:1;
     transition: opacity 0.1s linear 0.05s;
     -o-transition: opacity 0.1s linear 0.05s;

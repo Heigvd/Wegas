@@ -79,10 +79,13 @@ YUI.add('wegas-widgetmenu', function(Y) {
          * @private
          */
         show: function(node) {
+            var menu = this.getMenu();
             node = node || this.get("targetNode");
-            this.getMenu().attachTo(node);                                      // /Get a menu instance and attach it to the target node
+            menu.attachTo(node);                                                // /Get a menu instance and attach it to the target node
+            menu.focus();
         },
         // *** Private methods *** //
+
         /**
          * @function
          * @private
@@ -93,6 +96,8 @@ YUI.add('wegas-widgetmenu', function(Y) {
                         host = this.get(HOST),
                         parent = host.get("parent"),
                         menu;
+                cfg.zIndex = WidgetMenu.menuIndex;                              // Better exemple for this at http://yuilibrary.com/yui/docs/overlay/overlay-stack.html
+                WidgetMenu.menuIndex += 1;
                 cfg.children = this.get("children");
 
                 menu = new Menu(cfg);
@@ -115,6 +120,8 @@ YUI.add('wegas-widgetmenu', function(Y) {
             return this.menu;
         }
     }, {
+
+        menuIndex: 50,
         /** @lends Y.Plugin.WidgetMenu */
 
         NS: "menu",
