@@ -178,11 +178,9 @@
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
-                                    "subpageVariable": {
-                                        "name": "taskPage"
-                                    },
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
+                                    "subpageId": 13,
+                                    "targetPageLoaderId": "maindisplayarea",
+                                    "targetEvent": "click"
                                 }
                             }, {
                                 "fn": "ConditionalDisable",
@@ -203,11 +201,9 @@
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
-                                    "subpageVariable": {
-                                        "name": "ganttPage"
-                                    },
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
+                                    "subpageId": 14,
+                                    "targetPageLoaderId": "maindisplayarea",
+                                    "targetEvent": "click"
                                 }
                             }, {
                                 "fn": "ConditionalDisable",
@@ -987,5 +983,19 @@
                     }]
             }
         ]
+    },
+    "13": {
+        "type": "PageLoader",
+        "cssClass": "task-page",
+        "variable": {
+            "name": "taskPage"
+        }
+    },
+    "14": {
+        "type": "PageLoader",
+        "cssClass": "gantt-page",
+        "variable": {
+            "name": "ganttPage"
+        }
     }
 }
