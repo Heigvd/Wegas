@@ -4,23 +4,20 @@
 
 YUI.add('wegas-leaderway-tasklist', function(Y) {
     "use strict";
-
     var CONTENTBOX = 'contentBox', TaskList;
-
-    TaskList = Y.Base.create("wegas-tasklist", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
-        // *** Fields *** /
+    TaskList = Y.Base.create("wegas-tasklist", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
+// *** Fields *** /
         table: null,
         data: null,
         selectedTaskDescriptor: null,
         resourceDescriptor: null,
-        nextPageId: null,
         handlers: null,
         pickingMode: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
+            var name;
             this.data = [];
             this.handlers = {};
-            this.pickingMode = false;
             this.waitOnServer = false;
             this.table = new Y.DataTable({
                 columns: [
@@ -66,6 +63,8 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                     }
                 ]
             });
+            name = Y.Wegas.Facade.VariableDescriptor.cache.find("name", 'nameOfCurrentEmployee');
+            this.resourceDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", name.getInstance().get("value"));
         },
         /**
          * Render the widget.
@@ -79,6 +78,9 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
             cb.one('.resourceName').hide();
             cb.one('.footer').hide();
             cb.one('.footer .buttonOK').hide();
+            if (this.get("pickingMode") === "true") {
+                this.switchToPickingMode();
+            }
         },
         /**
          * Bind some function at nodes of this widget
@@ -86,28 +88,16 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
         bindUI: function() {
             var cb = this.get(CONTENTBOX);
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-
             this.handlers.selectRow = this.table.delegate('click', function(e) {
                 this.selectRow(e);
             }, '.yui3-datatable-data tr', this);
-
             this.handlers.assignTask = cb.one('.buttons').delegate('click', function(e) {
                 this.showOverlay();
                 this.assignTask(this.resourceDescriptor, this.selectedTaskDescriptor);
             }, '.buttonOK', this);
-
             this.handlers.cancelAssign = cb.one('.buttons').delegate('click', function(e) {
-                var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-                targetPageLoader.once("widgetChange", function(e) {
-                    if (e.newVal.setResourceDescriptor) {
-                        e.newVal.setResourceDescriptor(this.resourceDescriptor);
-                    }
-                }, {
-                    resourceDescriptor: this.resourceDescriptor
-                });
-                targetPageLoader.set("pageId", this.nextPageId);
+                this.backToPreviousPage();
             }, '.buttonCancel', this);
-
         },
         /**
          * Synchronise the content of this widget.
@@ -125,7 +115,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
             } else {
                 this.table.hideMessage();
             }
-            this.goToFinalPage();// ! hack function
+            this.goToFinalPage(); // ! hack function
         },
         /*
          * Destroy all child widget and all function
@@ -145,15 +135,10 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          * Display the surname of the selected resoure
          * Display the button used to assign the task and display the informations of the selected task.
          * Set the identifiant of the next page reached by quitting this widget by a hit on the picking-mode's buttons
-         * @param ResourceDescriptor resourceDescriptor, the new resourceDescriptor
-         * @param String nextPageId the identifiant of the nexte page id.
          */
-        switchToPickingMode: function(resourceDescriptor, nextPageId) {
+        switchToPickingMode: function() {
             var cb = this.get(CONTENTBOX);
-            this.resourceDescriptor = resourceDescriptor;
             if (this.resourceDescriptor) {
-                this.pickingMode = true;
-                this.nextPageId = nextPageId;
                 cb.addClass('modePicking');
                 cb.one('.resourceName p').setHTML('Assigner un mandat à ' + this.resourceDescriptor.getInstance().get('properties').surname);
                 cb.one('.resourceName').show();
@@ -177,7 +162,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                     resourceInstance = resourceDescriptor.getInstance();
                     for (k = 0; k < resourceInstance.get('assignments').length; k++) {
                         if (taskDescriptor.get('id') == resourceInstance.get('assignments')[k].get('taskDescriptorId')) {
-                            workers.push(resourceInstance.get('properties').surname);
+                            workers.push(resourceDescriptor.get('properties').surname);
                             break;
                         }
                     }
@@ -236,12 +221,12 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
             var i, cb = this.get(CONTENTBOX),
                     listTasksDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), taskDescriptorId;
             //deselect old row
-            if (this.pickingMode) {
+            if (this.get("pickingMode") === "true") {
                 cb.all('.yui3-datatable-content .selected').removeClass('selected');
             }
             //select new row
             taskDescriptorId = e.currentTarget.one("*").getContent();
-            if (this.pickingMode) {
+            if (this.get("pickingMode") === "true") {
                 e.currentTarget.addClass('selected');
             }
             //get new task descriptor
@@ -263,6 +248,21 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         assignTask: function(resourceDescriptor, taskDescriptor) {
             if (taskDescriptor && resourceDescriptor) {
+                Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                    headers: {
+                        'Content-Type': 'application/json; charset=ISO-8859-1',
+                        'Managed-Mode': 'false'
+                    },
+                    cfg: {
+                        method: "POST",
+                        data: Y.JSON.stringify({
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "importPackage(com.wegas.core.script);\nactions.value -= 1"
+                        })
+                    }
+                });
                 Y.Wegas.Facade.VariableDescriptor.sendRequest({
                     request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                     headers: {
@@ -307,20 +307,13 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                 Y.one('.leaderway-feedback').one('p').removeClass('green');
                 Y.one('.leaderway-feedback').one('p').removeClass('red');
             }, 5000);
-
             //change the current page
-            var targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-            targetPageLoader.once("widgetChange", function(e) {
-                if (e.newVal.setResourceDescriptor) {
-                    e.newVal.setResourceDescriptor(this.resourceDescriptor);
-                }
-                if (e.newVal.decreaseResourceState) {
-                    e.newVal.decreaseResourceState();
-                }
-            }, {
-                resourceDescriptor: this.resourceDescriptor
-            });
-            targetPageLoader.set("pageId", this.nextPageId);
+            this.backToPreviousPage();
+        },
+        backToPreviousPage: function() {
+            var targetPageLoader = Y.Wegas.PageLoader.find("maindisplayarea");
+            var previousPageId = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "previousPage").getInstance().get("value");
+            targetPageLoader.set("pageId", targetPageLoader.set("pageId", previousPageId));
         },
         // *** hack Methods *** //
         /**
@@ -329,7 +322,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         goToFinalPage: function() {
             var currentWeek = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week"),
-                    targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                    targetPageLoader = Y.Wegas.PageLoader.find("maindisplayarea");
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue("dialogueFinal");
@@ -340,20 +333,19 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
 
     }, {
         ATTRS: {
+            pickingMode: {
+                value: null,
+                validator: function(s) {
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
             dialoguePageId: {
                 value: null,
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
-            targetPageLoaderId: {
-                value: null,
-                validator: function(s) {
-                    return s === null || Y.Lang.isString(s);
-                }
-            }
         }
     });
-
     Y.namespace('Wegas').TaskList = TaskList;
 });

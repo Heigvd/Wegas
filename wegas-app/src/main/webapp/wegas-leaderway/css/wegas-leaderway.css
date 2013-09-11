@@ -391,7 +391,7 @@
     height:20px;
 }
 
-.leaderway-folder .wegas-leaderway-folder-content .actions{
+.body .wegas-widget .wegas-leaderway-folder-actions{
     display:block;
     position:absolute;
     top: 450px;
@@ -408,7 +408,7 @@
 
 }
 
-.leaderway-folder .actions:hover{
+.body .wegas-widget .wegas-leaderway-folder-actions:hover{
     background-color:#BFDAFF;
     cursor:pointer;
 }
