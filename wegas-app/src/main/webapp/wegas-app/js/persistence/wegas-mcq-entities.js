@@ -498,6 +498,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             answer: {
                 type: STRING,
+                optional: true,
                 format: HTML
             },
             impact: {
