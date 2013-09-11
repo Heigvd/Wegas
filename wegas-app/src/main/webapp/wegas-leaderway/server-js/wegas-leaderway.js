@@ -1,4 +1,5 @@
 importPackage(javax.naming);
+var gm = self.getGameModel();
 
 /**
  * terminate the current week.
@@ -12,9 +13,8 @@ importPackage(javax.naming);
  * - Check the moral of all active resources (checkMoral)
  * - Check the 'LeadershipLevel' of all active resources (checkLeadershipLevel)
  */
-function finishCurrentWeek () {
-    var gm = self.getGameModel(),
-            weekDescriptor = VariableDescriptorFacade.findByName(gm, 'week'),
+function finishCurrentWeek() {
+    var weekDescriptor = VariableDescriptorFacade.findByName(gm, 'week'),
             actionsDescriptor = VariableDescriptorFacade.findByName(gm, 'actions'),
             weekInstance = weekDescriptor.getInstance(self);
     if (weekInstance.getValue() <= weekDescriptor.getMaxValue()) {
@@ -35,8 +35,8 @@ function finishCurrentWeek () {
 /**
  * @return an Array of all active and not absent resourceDescriptor.
  */
-function getValideResources () {
-    var i, j, k, gm = self.getGameModel(), valideResources = new Array(), isValid = false,
+function getValideResources() {
+    var i, j, k, valideResources = new Array(), isValid = false,
             listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceDescriptor, resourceInstance,
             listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absencesInstance, assignment;
     for (i = 0; i < listResources.items.size(); i++) {
@@ -65,8 +65,8 @@ function getValideResources () {
  * @param ListDescriptor of ResourceDescriptor listResources, the list of all resources
  * @return An Array of all task assigned at one or many active and not absent resource.
  */
-function getWorkedTasks (listResources) {
-    var i, j, k, gm = self.getGameModel(), workedTasks = new Array(), isWorked = false, assignment,
+function getWorkedTasks(listResources) {
+    var i, j, k, workedTasks = new Array(), isWorked = false, assignment,
             resourceInstance, listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance;
     for (i = 0; i < listTasks.items.size(); i++) {
         taskDescriptor = listTasks.items.get(i);
@@ -94,7 +94,7 @@ function getWorkedTasks (listResources) {
  * for each worked task that have a duration <=0, call the fonction 'doTaskEnd'
  * with the task and the corresponding workers for args.
  */
-function checkTasksEnd () {
+function checkTasksEnd() {
     var i, j, k, assignment, taskWorkers = new Array(),
             listValidResource = this.getValideResources(), resourceInstance,
             listWorkedTasks = this.getWorkedTasks(listValidResource), taskInstance;
@@ -127,11 +127,11 @@ function checkTasksEnd () {
  * @param Array of resourceDescriptor workersDescriptor, all the resources that worked on the task.
  * @param TaskDescriptor taskDescriptor, the task ended.
  */
-function doTaskEnd (workersDescriptor, taskDescriptor) {
+function doTaskEnd(workersDescriptor, taskDescriptor) {
     if (workersDescriptor.length <= 0 || !taskDescriptor) {
         return;
     }
-    var i, j, gm = self.getGameModel(), remuneration, taskInstance = taskDescriptor.getInstance(self),
+    var i, j, remuneration, taskInstance = taskDescriptor.getInstance(self),
             budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
             clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskRequirementKey, wish, hate,
             taskRequirementValue, listTaskRequirement = taskInstance.getRequirements(),
@@ -300,8 +300,8 @@ function doTaskEnd (workersDescriptor, taskDescriptor) {
  * If the duration must reach 0, remove this assignation, set the resource 'moral' to 40 and recalculate the teamMotivation's value.
  * If duration is smaller than 0, deactivate the task.
  */
-function checkAbsencesEnd () {
-    var i, j, k, l, gm = self.getGameModel(), assignment, duration,
+function checkAbsencesEnd() {
+    var i, j, k, l, assignment, duration,
             listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absenceInstance,
             listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance,
             assignmentToRemove = new Array(), assignmentToAdd = new Array();
@@ -345,8 +345,8 @@ function checkAbsencesEnd () {
  * Check 'active' value in each tasks (from list 'tasks')
  * Activate and deactivate tasks according with its variables and if a resource work on.
  */
-function checkTasksState () {
-    var i, j, k, gm = self.getGameModel(), listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance,
+function checkTasksState() {
+    var i, j, k, listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance,
             newWeek = VariableDescriptorFacade.findByName(gm, 'week').getInstance(self), inProgress = false,
             listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance, assignment,
             newclientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self);
@@ -384,9 +384,8 @@ function checkTasksState () {
 /**
  * Decreases current budget value by the sum of all salary of actives resources
  */
-function payResources () {
-    var i, gm = self.getGameModel(),
-            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
+function payResources() {
+    var i, listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
             budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),
             budgetInstance = budgetDescriptor.getInstance(self),
             resourceDescriptor, resourceInstance,
@@ -404,8 +403,8 @@ function payResources () {
 /**
  * Remove all assignements of resources (from list of tasks and list of absence) which are not 'active'.
  */
-function removeDeactivatedAssignements () {
-    var i, j, k, assignments = new Array(), assignment, gm = self.getGameModel(), resourceInstance,
+function removeDeactivatedAssignements() {
+    var i, j, k, assignments = new Array(), assignment, resourceInstance,
             listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
             listTasksObjects = this.getTasksAndAbsences(), taskObjectInstance;
     for (i = 0; i < listResources.items.size(); i++) {
@@ -429,9 +428,8 @@ function removeDeactivatedAssignements () {
 /**
  * @return a Array of all tasks comming from list of task and list of absences)
  */
-function getTasksAndAbsences () {
-    var i, taskObjects = new Array(), gm = self.getGameModel(),
-            listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
+function getTasksAndAbsences() {
+    var i, taskObjects = new Array(), listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
             listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');
     for (i = 0; i < listTasks.items.size(); i++) {
         taskObjects.push(listTasks.items.get(i));
@@ -447,9 +445,9 @@ function getTasksAndAbsences () {
  * If the moral value is low enough, give it a absence.
  * Recalculate the teamMotivation.
  */
-function checkMoral () {
+function checkMoral() {
     var i, j, k, moral, randomNumber, absent = false, resourceDescriptor, resourceInstance,
-            gm = self.getGameModel(), listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'),
+            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'),
             absenceInstance, listResources = VariableDescriptorFacade.findByName(gm, 'resources');
     for (i = 0; i < listResources.items.size(); i++) {
         resourceDescriptor = listResources.items.get(i);
@@ -501,8 +499,8 @@ function checkMoral () {
  * then make an average between this value and the worst moral value.
  * set the 'teamMotivation' value with this new value.
  */
-function calculateTeamMotivation () {
-    var i, sumMotivation = 0, gm = self.getGameModel(), activeResources = 0, moral,
+function calculateTeamMotivation() {
+    var i, sumMotivation = 0, activeResources = 0, moral,
             listResources = VariableDescriptorFacade.findByName(gm, 'resources'), worstMoralValue = 100,
             teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self);
     for (i = 0; i < listResources.items.size(); i++) {
@@ -521,8 +519,8 @@ function calculateTeamMotivation () {
 /**
  * Set the 'LeadershipLevel' value for each active resource.
  */
-function checkLeadershipLevel () {
-    var i, gm = self.getGameModel(), resourceInstance, newLeadershipLevel, leadershipPoints,
+function checkLeadershipLevel() {
+    var i, resourceInstance, newLeadershipLevel, leadershipPoints,
             listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
             weekMaxValue = parseInt(VariableDescriptorFacade.findByName(gm, 'week').getMaxValue()),
             pointsMinToLlvl2 = 10 * (weekMaxValue - 1) + 75,
@@ -549,7 +547,7 @@ function checkLeadershipLevel () {
 /**
  * send an in-game message with the current score to the player.
  */
-function sendScore () {
+function sendScore() {
     var content = new Array(), oldScore, newScore;
     oldScore = VariableDescriptorFacade.findByName(self.getGameModel(), 'score').getInstance(self).getValue(),
             newScore = this.calculateScore();
@@ -580,8 +578,8 @@ function sendScore () {
 /**
  * @return Integer score, the current player's score
  */
-function calculateScore () {
-    var gm = self.getGameModel(), teamMotivation, budget, clientSatisfaction, score,
+function calculateScore() {
+    var teamMotivation, budget, clientSatisfaction, score,
             punderationBudget = 0.2,
             punderationMotivation = 0.45,
             punderationSatisfaction = 0.35;
@@ -598,8 +596,8 @@ function calculateScore () {
  * @param Integer resourceDescriptorId, the resourceDescriptor to sicken
  * @param Integer duration the duration of the sickness.
  */
-function sickenResource (resourceDescriptor, duration) {
-    var i, resInstance, taskDescriptor, gm = self.getGameModel(),
+function sickenResource(resourceDescriptor, duration) {
+    var i, resInstance, taskDescriptor,
             listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');
     resInstance = resourceDescriptor.getInstance(self);
     for (i = 0; i < listAbsences.items.size(); i++) {
@@ -622,8 +620,8 @@ function sickenResource (resourceDescriptor, duration) {
  * @param Integer resourceDescriptorId, the id of resourceDescriptors to assign
  * @param Integer taskDescriptorId, the id of task to assign
  */
-function assignTask (resourceDescriptorId, taskDescriptorId) {
-    var i, j, resInstance, taskDescriptor, gm = self.getGameModel(),
+function assignTask(resourceDescriptorId, taskDescriptorId) {
+    var i, j, resInstance, taskDescriptor,
             listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
             listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');
     //Search resource
@@ -659,7 +657,7 @@ function assignTask (resourceDescriptorId, taskDescriptorId) {
  * @param String name, the name of the bean
  * @return the wanted bean or null
  */
-function lookupBean (name) {
+function lookupBean(name) {
     var ctx = new InitialContext();
     return ctx.lookup('java:module/' + name);
 }
@@ -670,7 +668,7 @@ function lookupBean (name) {
  * @param String message, the content of the message.
  * @param String from, the sender of the message.
  */
-function sendMessage (subject, content, from) {
+function sendMessage(subject, content, from) {
     var EF = lookupBean('MessageFacade');
     if (EF) {
         EF.send(self, subject, content, from);
@@ -680,12 +678,27 @@ function sendMessage (subject, content, from) {
     }
 }
 
+function currentRessourceCantReceiveTask() {
+    var actions = VariableDescriptorFacade.findByName(gm, 'actions').getInstance(self),
+            currentResourceName = VariableDescriptorFacade.findByName(gm, 'nameOfCurrentEmployee'),
+            currentResource = VariableDescriptorFacade.findByName(gm, currentResourceName.getInstance(self).getValue()),
+            cantReceiveTask = false;
+    println(actions.getValue());
+    println(currentResource);
+    println(currentResource.getInstance(self).getAssignments().size());
+    if (actions.getValue() <= 0 || !currentResource || currentResource.getInstance(self).getAssignments().size() > 0) {
+        cantReceiveTask = true;
+    }
+    ;
+    return cantReceiveTask;
+}
+
 /**
  * Reset the values specific to the current scenario's dialogues.
  * Must be called weekly.
  */
-function resetDialogueValues () {
-    var i, gm = self.getGameModel(), resourceInstance,
+function resetDialogueValues() {
+    var i, resourceInstance,
             listResources = VariableDescriptorFacade.findByName(gm, 'resources');
     for (i = 0; i < listResources.items.size(); i++) {
         resourceInstance = listResources.items.get(i).getInstance(self);
@@ -698,9 +711,8 @@ function resetDialogueValues () {
 /**
  * initiate the game'scenario
  */
-function doIntroduction () {
-    var gm = self.getGameModel(),
-            budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),
+function doIntroduction() {
+    var budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),
             budgetvalue = budgetDescriptor.getInstance(self).getValue(), mail = new Array();
     mail.push('Bonjour');
     mail.push('<br /><br />');
@@ -731,8 +743,8 @@ function doIntroduction () {
  * - lastWorkQuality
  * - each skillset's value
  */
-function limitValues () {
-    var i, j, value, valueInst, valueDescr, gm = self.getGameModel(), skillsets,
+function limitValues() {
+    var i, j, value, valueInst, valueDescr, skillsets,
             skillKey, skillValue, listResources = VariableDescriptorFacade.findByName(gm, 'resources');
     //actions
     valueDescr = VariableDescriptorFacade.findByName(gm, 'actions')

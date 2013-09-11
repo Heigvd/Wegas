@@ -249,6 +249,23 @@ YUI.add('wegas-leaderway-entities', function(Y) {
 
                     }]
             },
+            addAtInstanceProperty: {
+                label: "Add at instance's property",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
             //methods below are temporary ; only for CEP-Game
             getSalary: {
                 label: "Get salary",
@@ -614,6 +631,23 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             },
             setInstanceProperty: {
                 label: "Set instance's property",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
+            addAtInstanceProperty: {
+                label: "Add at instance's property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
