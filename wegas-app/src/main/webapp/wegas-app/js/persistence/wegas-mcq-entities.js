@@ -37,11 +37,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 value: "QuestionDescriptor"
             },
-            editorLabel: {
-                _inputex: {
-                    _type: STRING,
-                    label: "Title"
-                }
+            title: {
+                type: STRING,
+                optional: true
             },
             allowMultipleReplies: {
                 value: false,
@@ -211,11 +209,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
             "@class": {
                 value: "ChoiceDescriptor"
             },
-            editorLabel: {
-                _inputex: {
-                    _type: STRING,
-                    label: "Title"
-                }
+            title: {
+                type: STRING,
+                optional: true
             },
             description: {
                 type: STRING,
