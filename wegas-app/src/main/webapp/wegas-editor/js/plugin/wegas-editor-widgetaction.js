@@ -156,6 +156,32 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             if (confirm("Are your sure your want to delete this widget ?")) {
                 var targetWidget = this.get("widget"),
                         root = targetWidget.get("root");
+                targetWidget.destroy();
+                this.get("dataSource").cache.patch(root.toObject());
+            }
+        }
+    }, {
+        NS: "DeleteWidgetAction",
+        NAME: "DeleteWidgetAction"
+    });
+    Plugin.DeleteWidgetAction = DeleteWidgetAction;
+    /**
+     * @class
+     * @name Y.Plugin.DeleteContainerWidgetAction
+     * @extends Y.Plugin.WidgetAction
+     * @constructor
+     */
+    Plugin.DeleteContainerWidgetAction = function() {
+        DeleteWidgetAction.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(Plugin.DeleteContainerWidgetAction, WidgetAction, {
+        execute: function() {
+            var targetWidget = this.get("widget"),
+                    root = targetWidget.get("root");
+            if (targetWidget.size() > 0) {
+                alert("Please delete content first");
+            } else if (confirm("Are your sure your want to delete this widget and all of its content ?")) {
+
 
                 if (root !== targetWidget) {
                     targetWidget.destroy();
@@ -167,9 +193,8 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             }
         }
     }, {
-        NS: "DeleteWidgetAction",
-        NAME: "DeleteWidgetAction"
+        NS: "DeleteContainerWidgetAction",
+        NAME: "DeleteContainerWidgetAction"
     });
-    Plugin.DeleteWidgetAction = DeleteWidgetAction;
 
 });

@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-box", function(Y) {
@@ -23,10 +23,7 @@ YUI.add("wegas-box", function(Y) {
      */
     var Box = Y.Base.create("wegas-box", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.Box# */
-        CONTENT_TEMPLATE: null,
-        getEditorLabel: function() {
-            return null;
-        }
+        CONTENT_TEMPLATE: null
     }, {
         /** @lends Y.Wegas.Box */
         EDITORNAME: "Box"
