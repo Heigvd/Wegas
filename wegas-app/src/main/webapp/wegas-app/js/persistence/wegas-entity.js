@@ -728,7 +728,7 @@ YUI.add('wegas-entity', function(Y) {
             return this.get("label");
         },
         getEditorLabel: function() {
-            return this.get("editorLabel");
+            return this.get("label");
         }
     }, {
         ATTRS: {
@@ -737,6 +737,10 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": false,
                 getter: function(val) {
                     return val || this.get(NAME);
+                },
+                _inputex: {
+                    label: "Name",
+                    index: -1
                 }
             },
             editorLabel: {
@@ -744,13 +748,10 @@ YUI.add('wegas-entity', function(Y) {
                 optional: true,
                 "transient": false,
                 _inputex: {
-                    label: "Editor label"
+                    _type: HIDDEN
                 },
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
-                },
-                getter: function(val) {
-                    return val || this.get("label");
                 }
             },
             name: {
@@ -1325,7 +1326,7 @@ YUI.add('wegas-entity', function(Y) {
 
 
     Wegas.persistence.InboxDescriptor = Y.Base.create("", Wegas.persistence.VariableDescriptor, [], {
-        isEmpty: function(playerId){
+        isEmpty: function(playerId) {
             playerId = playerId instanceof Y.Wegas.persistence.Player ? playerId.get("id") : playerId;
             return this.getInstance(playerId).get("messages").length < 1;
         }

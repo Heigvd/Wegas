@@ -101,6 +101,7 @@ public class ChoiceInstance extends VariableInstance {
 //    public void setCurrentResultName(String currentResultName) {
 //        this.currentResultName = currentResultName;
 //    }
+
     /**
      *
      * @param a
@@ -183,7 +184,7 @@ public class ChoiceInstance extends VariableInstance {
             try {
                 return ((ChoiceDescriptor) this.getDescriptor()).getResults().get(0);
             } catch (ArrayIndexOutOfBoundsException ex) {
-                throw new WegasException("No result found for choice \"" + this.getDescriptor().getEditorLabel() + "\"", ex);
+                throw new WegasException("No result found for choice \"" + this.getDescriptor().getLabel() + "\"", ex);
             }
         }
     }
