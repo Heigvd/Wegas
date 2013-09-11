@@ -25,13 +25,17 @@
                     text-shadow: 1px 0 1px black, 0 1px 1px black;
                     background-size: 35px;
                 }
+                /* Move Uservoice widget so it does not overlap right tab */
+                #uvTab {
+                    left: 320px !important;
+                }
             </style>
 
             <!-- Dev tool: style sheet reference injected directly in the game model -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.getProperty('cssUri') != null}"
                        var="o" value="#{editorGameController.currentGameModel.getProperty('cssUri').split(',')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o}?#{wegasConfig.timestamp}" />
-           </ui:repeat>
+            </ui:repeat>
 
         </ui:define>
         <ui:define name="body">
