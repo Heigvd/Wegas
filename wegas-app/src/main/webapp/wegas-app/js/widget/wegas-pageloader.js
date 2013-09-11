@@ -212,21 +212,25 @@ YUI.add('wegas-pageloader', function(Y) {
                         this.set("widgetCfg", widgetCfg);
                         this.get(CONTENTBOX).empty();
                         this.showOverlay();
-                        Y.Wegas.Widget.use(widgetCfg, Y.bind(function() {    // Load the subwidget dependencies
-                            try {
-                                var widget = Y.Wegas.Widget.create(widgetCfg); // Render the subwidget
-                                widget.render(this.get(CONTENTBOX));
-                                widget['@pageId'] = widgetCfg['@pageId'];
-                                this.set("widget", widget);
-                                widget.addTarget(this); // Event on the loaded widget will be forwarded
-                            } catch (e) {
-                                this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
-                                Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
-                            } finally {
-                                this.hideOverlay();
-                                this.fire("contentUpdated");
-                            }
-                        }, this));
+                        Y.soon(Y.bind(function(cfg) {                        //let the overlay appear during rendering
+                            Y.Wegas.Widget.use(cfg, Y.bind(function() {    // Load the subwidget dependencies
+                                try {
+                                    var widget = Y.Wegas.Widget.create(cfg); // Render the subwidget
+                                    widget.render(this.get(CONTENTBOX));
+                                    widget['@pageId'] = cfg['@pageId'];
+                                    this.set("widget", widget);
+                                    widget.addTarget(this); // Event on the loaded widget will be forwarded
+                                } catch (e) {
+                                    this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
+                                    Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
+                                } finally {
+                                    this.hideOverlay();
+                                    this.fire("contentUpdated");
+                                }
+                            }, this));
+
+                        },this, widgetCfg));
+
                     }, this));
                     return val;
                 }

@@ -153,7 +153,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 //            });
             if (widget.each && !(widget instanceof Y.Wegas.PageLoader)) {
                 treeNode = new Y.TreeNode({
-                    label: "" + widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
+                    label: widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
                     rightWidget: button,
                     data: {
                         widget: widget
@@ -166,7 +166,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }, this);
             } else {
                 treeNode = new Y.TreeLeaf({
-                    label: "" + widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
+                    label: widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
                     rightWidget: button,
                     data: {
                         widget: widget
@@ -191,8 +191,18 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 DATASOURCE.duplicate(pageId, Y.bind(function(page, id) {
                     this.get("pageLoader").set("pageId", id);
                 }, this));
+            }, buildSub = function(node, widget) {
+                this.buildSubTree(node, widget);
+                node.expand(false);
+                if (node.item(0) && node.item(0).expand) {
+                    node.item(0).expand(false);
+                }
+                node.set("selected", 2);
+                this.hideOverlay();
             };
-            this.treeView.removeAll();
+            this.treeView.removeAll().each(function() {
+                this.destroy();
+            });
             for (i in index) {
                 if (index.hasOwnProperty(i)) {
                     node = new Y.TreeNode({
@@ -230,9 +240,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     });
                     node.set("rightWidget", button);
                     if (+i === +page) {
-                        this.buildSubTree(node, widget);
-                        node.expand(false);
-                        node.set("selected", 2);
+                        this.showOverlay();
+                        Y.soon(Y.bind(buildSub, this, node, widget));
                     }
                 }
             }
