@@ -32,9 +32,10 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             "@class": {
                 value: "ResourceDescriptor"
             },
-            editorLabel: {
+            title: {
+                type: STRING,
+                optional: true,
                 _inputex: {
-                    _type: STRING,
                     label: "Resource name"
                 }
             },
@@ -493,11 +494,9 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             "@class": {
                 value: "TaskDescriptor"
             },
-            editorLabel: {
-                _inputex: {
-                    _type: STRING,
-                    label: "Title"
-                }
+            title: {
+                type: STRING,
+                optional: true
             },
             description: {
                 type: STRING,

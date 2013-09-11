@@ -74,12 +74,6 @@ YUI.add('wegas-entity', function(Y) {
                 getter: function(val) {
                     return val || this.get(NAME);
                 }
-            },
-            editorLabel: {
-                "transient": true,
-                getter: function(val) {
-                    return val || this.get(NAME);
-                }
             }
         },
         /**
@@ -726,9 +720,6 @@ YUI.add('wegas-entity', function(Y) {
         },
         getLabel: function() {
             return this.get("label");
-        },
-        getEditorLabel: function() {
-            return this.get("label");
         }
     }, {
         ATTRS: {
@@ -739,19 +730,7 @@ YUI.add('wegas-entity', function(Y) {
                     return val || this.get(NAME);
                 },
                 _inputex: {
-                    label: "Name",
-                    index: -1
-                }
-            },
-            editorLabel: {
-                type: STRING,
-                optional: true,
-                "transient": false,
-                _inputex: {
-                    _type: HIDDEN
-                },
-                validator: function(s) {
-                    return s === null || Y.Lang.isString(s);
+                    label: "Name"
                 }
             },
             name: {

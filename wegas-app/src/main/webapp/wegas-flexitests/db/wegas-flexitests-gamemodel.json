@@ -25,13 +25,13 @@
                             "cfg": {
                                 "time": "0,1000"
                             }
-                        }, 
+                        },
                         {
                             "fn": "ShowAfter",
                             "cfg": {
                                 "time": "500"
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSPosition",
                             "cfg": {
@@ -44,7 +44,7 @@
                                     "right": ""
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSSize",
                             "cfg": {
@@ -59,7 +59,7 @@
                             "content": "Male"
                         }
                     ]
-                }, 
+                },
                 {
                     "id": "rightElement",
                     "type": "ChoiceList",
@@ -69,13 +69,13 @@
                             "cfg": {
                                 "time": "0,1500"
                             }
-                        }, 
+                        },
                         {
                             "fn": "ShowAfter",
                             "cfg": {
                                 "time": "1000"
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSPosition",
                             "cfg": {
@@ -88,7 +88,7 @@
                                     "right": "50pt"
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSSize",
                             "cfg": {
@@ -103,7 +103,7 @@
                             "content": "<p>Female</p>"
                         }
                     ]
-                }, 
+                },
                 {
                     "id": "centerElement",
                     "type": "ChoiceList",
@@ -113,13 +113,13 @@
                             "cfg": {
                                 "time": "0"
                             }
-                        }, 
+                        },
                         {
                             "fn": "ShowAfter",
                             "cfg": {
                                 "time": "1500"
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSPosition",
                             "cfg": {
@@ -132,7 +132,7 @@
                                     "right": "300px"
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSSize",
                             "cfg": {
@@ -153,7 +153,7 @@
                                 }
                             ],
                             "url": "/hectorPerplexe.png"
-                        }, 
+                        },
                         {
                             "type": "Image",
                             "plugins": [
@@ -165,7 +165,7 @@
                                 }
                             ],
                             "url": "/jessicaPerplexe.png"
-                        }, 
+                        },
                         {
                             "type": "Image",
                             "plugins": [
@@ -177,7 +177,7 @@
                                 }
                             ],
                             "url": "/lucienPortrait.png"
-                        }, 
+                        },
                         {
                             "type": "Image",
                             "plugins": [
@@ -189,7 +189,7 @@
                                 }
                             ],
                             "url": "/danielaConfiant.png"
-                        }, 
+                        },
                         {
                             "type": "Image",
                             "plugins": [
@@ -203,7 +203,7 @@
                             "url": "/fernandPensif.png"
                         }
                     ]
-                }, 
+                },
                 {
                     "type": "Image",
                     "cssClass": "fix-point",
@@ -220,7 +220,7 @@
                                     "right": ""
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSSize",
                             "cfg": {
@@ -230,7 +230,7 @@
                         }
                     ],
                     "url": "/fix-point/fix_red.png"
-                }, 
+                },
                 {
                     "id": "flexi-mcq",
                     "type": "FlexitestsMCQ",
@@ -247,7 +247,7 @@
                                     "right": "200px"
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSSize",
                             "cfg": {
@@ -273,11 +273,11 @@
                     "type": "Text",
                     "cssClass": "flexitests-title",
                     "content": "<p>FlexiTests</p>"
-                }, 
+                },
                 {
                     "type": "Text",
                     "content": "_INSTRUCTIONS_"
-                }, 
+                },
                 {
                     "id": 2,
                     "type": "Form",
@@ -290,7 +290,7 @@
                                     "name": "demographics"
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "ExecuteScriptAction",
                             "cfg": {
@@ -310,7 +310,7 @@
                                 "label": "Name",
                                 "type": "string",
                                 "value": ""
-                            }, 
+                            },
                             {
                                 "name": "gender",
                                 "label": "Gender",
@@ -318,7 +318,7 @@
                                     {
                                         "value": "m",
                                         "label": "M"
-                                    }, 
+                                    },
                                     {
                                         "value": "f",
                                         "label": "F"
@@ -326,7 +326,7 @@
                                 ],
                                 "type": "select",
                                 "value": "m"
-                            }, 
+                            },
                             {
                                 "name": "date",
                                 "type": "now",
@@ -377,7 +377,7 @@
                     },
                     "simpleMode": true,
                     "testPage": "3"
-                }, 
+                },
                 {
                     "type": "Text",
                     "content": "<p>Score table</p>\n<p>80-100 % Excellent</p>\n<p>60-80 % Good</p>\n<p>40-60 % Satisfying</p>\n<p>0-40 % Bad</p>"
@@ -391,7 +391,6 @@
         {
             "@class": "NumberDescriptor",
             "name": "currentPage",
-            "editorLabel": "Page",
             "label": "Page",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -403,11 +402,10 @@
             },
             "minValue": 2,
             "maxValue": null
-        }, 
+        },
         {
             "@class": "TriggerDescriptor",
             "name": "end",
-            "editorLabel": "End",
             "label": "End",
             "defaultInstance": {
                 "@class": "TriggerInstance",
@@ -431,11 +429,10 @@
                 "content": "VariableDescriptorFacade.find(gameModel, \"currentPage\").setValue(self, 4);",
                 "language": "JavaScript"
             }
-        }, 
+        },
         {
             "@class": "ObjectDescriptor",
             "name": "results",
-            "editorLabel": "Test",
             "label": "Test",
             "defaultInstance": {
                 "@class": "ObjectInstance",
@@ -453,11 +450,10 @@
                 "2": "OPTION2",
                 "1": "OPTION1"
             }
-        }, 
+        },
         {
             "@class": "ObjectDescriptor",
             "name": "demographics",
-            "editorLabel": "demographics",
             "label": "demographics",
             "defaultInstance": {
                 "@class": "ObjectInstance",

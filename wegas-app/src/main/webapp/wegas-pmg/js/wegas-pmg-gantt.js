@@ -9,7 +9,7 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-YUI.add("wegas-pmg-gantt", function (Y) {
+YUI.add("wegas-pmg-gantt", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Gantt;
@@ -17,11 +17,11 @@ YUI.add("wegas-pmg-gantt", function (Y) {
     Gantt = Y.Base.create("wegas-pmg-gantt", Y.Wegas.PmgDatatable, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
         schedule: null,
-        initializer: function () {
+        initializer: function() {
             this.handlers = {};
             this.schedule = {};
         },
-        renderUI: function () {
+        renderUI: function() {
             var i, periods;
             Gantt.superclass.renderUI.apply(this);
             periods = this.get("periodsDesc");
@@ -34,25 +34,25 @@ YUI.add("wegas-pmg-gantt", function (Y) {
                 });
             }
         },
-        bindUI: function () {
+        bindUI: function() {
             Gantt.superclass.bindUI.apply(this);
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
 
             this.handlers.sort = this.datatable.after('sort', this.syncUI, this);
 
-            this.handlers.displayDescription = this.datatable.delegate('click', function (e) {
+            this.handlers.displayDescription = this.datatable.delegate('click', function(e) {
                 this.displayDescription(e);
             }, '.yui3-datatable-data td', this);
 
-            this.handlers.removeDescription = this.datatable.delegate('mouseout', function (e) {
+            this.handlers.removeDescription = this.datatable.delegate('mouseout', function(e) {
                 this.removeDescription(e);
             }, '.yui3-datatable-data tr', this);
 
-            this.handlers.toggleBooking = this.datatable.delegate('click', function (e) {
+            this.handlers.toggleBooking = this.datatable.delegate('click', function(e) {
                 this.toggleBooking(e);
             }, '.yui3-datatable-data .cell-gantt', this);
         },
-        syncUI: function () {
+        syncUI: function() {
             var cb = this.get(CONTENTBOX), currentWeek;
             Gantt.superclass.syncUI.apply(this);
             currentWeek = (this.get("periodsDesc")) ? this.get("periodsDesc").getInstance().get("value") : null;
@@ -60,15 +60,14 @@ YUI.add("wegas-pmg-gantt", function (Y) {
             this.displayCurrentWeek(currentWeek);
             this.syncGantt();
         },
-        destructor: function () {
+        destructor: function() {
             var k;
             for (k in this.handlers) {
                 this.handlers[k].detach();
             }
         },
-
         //*** Private Methods ***/
-        checkRealization: function () {
+        checkRealization: function() {
             var i, cb = this.get(CONTENTBOX), tasks, taskDesc, taskInst, realized, allRow;
             if (this.data == null
                     || this.data.length == 0
@@ -78,7 +77,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
             tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("variables"));
             allRow = cb.all(".yui3-datatable-data tr");
             allRow.removeClass("notstarted").removeClass("started").removeClass("completed");
-            allRow.each(function (node) {
+            allRow.each(function(node) {
                 for (i = 0; i < tasks.get('items').length; i++) {
                     taskDesc = tasks.get('items')[i];
                     taskInst = taskDesc.getInstance();
@@ -98,7 +97,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
                 }
             });
         },
-        displayDescription: function (e) {
+        displayDescription: function(e) {
             var i, id, label, tasks, node, divDesc, taskDesc, description;
             node = e.currentTarget;
             if (this.get("viewDescription") == "false"
@@ -112,8 +111,8 @@ YUI.add("wegas-pmg-gantt", function (Y) {
                 return;
             for (i = 0; i < tasks.get('items').length; i++) {
                 taskDesc = tasks.get('items')[i];
-                if (taskDesc.get('id') == id) {
-                    label = (taskDesc.get("label") || taskDesc.get("name"));
+                if (taskDesc.get('id') === id) {
+                    label = taskDesc.get("title") || taskDesc.get("name");
                     description = taskDesc.get("description");
                     break;
                 }
@@ -122,7 +121,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
             divDesc.append("<p class='task_name'>" + label + "</p>").append("<p class='content'>" + description + "</p>");
             node.append(divDesc);
         },
-        removeDescription: function (e) {
+        removeDescription: function(e) {
             var disappearAnim, node;
             node = this.get(CONTENTBOX).one('.description');
             if (!node)
@@ -135,19 +134,19 @@ YUI.add("wegas-pmg-gantt", function (Y) {
                 duration: 0.2
             });
             disappearAnim.run();
-            disappearAnim.on('end', function () {
+            disappearAnim.on('end', function() {
                 node.remove();
             });
         },
-        syncGantt: function () {
+        syncGantt: function() {
             var i, cb = this.get(CONTENTBOX), week, type, row;
-            cb.all('.yui3-datatable-data .yui3-datatable-cell').each(function (node) {
+            cb.all('.yui3-datatable-data .yui3-datatable-cell').each(function(node) {
                 if (node.get("className").indexOf(".yui3-datatable-col-week") > -1) {
                     node.setHTML();
                 }
             });
             for (var key in this.schedule) {
-                cb.all('.yui3-datatable-data tr').each(function (node) {
+                cb.all('.yui3-datatable-data tr').each(function(node) {
                     if (node.one("*").getContent() == key) {
                         row = node;
                     }
@@ -162,7 +161,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
 
             }
         },
-        toggleBooking: function (e) {
+        toggleBooking: function(e) {
             var node, week, taskName;
             node = e.currentTarget;
             if (node.get("className").indexOf("previous-week") > -1)
@@ -178,7 +177,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
             }
 
         },
-        scheduleTask: function (taskName, week) {
+        scheduleTask: function(taskName, week) {
             var i, exist = false;
             if (!this.schedule[taskName]) {
                 this.schedule[taskName] = new Array();
@@ -196,7 +195,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
                 });
             }
         },
-        unScheduleTask: function (taskName, week) {
+        unScheduleTask: function(taskName, week) {
             var i;
             if (this.schedule[taskName]) {
                 for (i = 0; i < this.schedule[taskName].length; i++) {
@@ -209,7 +208,7 @@ YUI.add("wegas-pmg-gantt", function (Y) {
                 }
             }
         },
-        getCellWeek: function (cell) {
+        getCellWeek: function(cell) {
             var week;
             if (cell.get("className").indexOf("yui3-datatable-col-week") <= -1)
                 return null;
@@ -219,11 +218,11 @@ YUI.add("wegas-pmg-gantt", function (Y) {
             }
             return week;
         },
-        displayCurrentWeek: function (currentWeek) {
+        displayCurrentWeek: function(currentWeek) {
             var week, cb = this.get(CONTENTBOX);
             if (!currentWeek)
                 return; //add class "previous-week", "current-week" and "next-week" to the column title in Gantt
-            cb.all(".yui3-datatable-columns th, .yui3-datatable-data td").each(function (node) {
+            cb.all(".yui3-datatable-columns th, .yui3-datatable-data td").each(function(node) {
                 if (node.get('className').indexOf("yui3-datatable-col-week") > -1) {
                     if (node.get("nodeName") == "td" || node.get("nodeName") == "TD") {
                         node.addClass("cell-gantt");
@@ -244,13 +243,13 @@ YUI.add("wegas-pmg-gantt", function (Y) {
         ATTRS: {
             viewDescription: {
                 value: true,
-                validator: function (b) {
+                validator: function(b) {
                     return b == "false" || b == "true";
                 }
             },
             periods: {}, // to change to accept global expresssion or simple variable.
             periodsDesc: {
-                getter: function () {
+                getter: function() {
                     return Y.Wegas.Facade.VariableDescriptor.cache.findById(
                             Y.Wegas.Facade.VariableDescriptor.script.scopedEval(this.get("periods")));
                 }
