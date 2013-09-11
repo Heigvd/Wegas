@@ -179,6 +179,40 @@
             }
         }, {
             "@class": "ListDescriptor",
+            "name": "pageUtilities",
+            "label": "Page utilities",
+            "items": [{
+                    "@class": "NumberDescriptor",
+                    "name": "previousPage",
+                    "label": "Previous page",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "value": 2
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }, {
+                    "@class": "StringDescriptor",
+                    "name": "nameOfCurrentEmployee",
+                    "label": "Name of current employee",
+                    "defaultInstance": {
+                        "@class": "StringInstance",
+                        "value": "Salmero"
+                    },
+                    "scope": {
+                        "@class": "TeamScope"
+                    }
+                }],
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "value": 0
+            },
+            "scope": {
+                "@class": "GameModelScope"
+            }
+        }, {
+            "@class": "ListDescriptor",
             "name": "resources",
             "label": "resources",
             "items": [{

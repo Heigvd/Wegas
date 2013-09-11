@@ -11,7 +11,7 @@
 YUI.add('wegas-leaderway-score', function (Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', Score = Y.Base.create("wegas-score", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
+    var CONTENTBOX = 'contentBox', Score = Y.Base.create("wegas-score", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
 
         // *** Fields *** /
         table: null,
@@ -122,7 +122,7 @@ YUI.add('wegas-leaderway-score', function (Y) {
          */
         goToFinalPage: function () {
             var currentWeek = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week"),
-                    targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                    targetPageLoader = Y.Wegas.PageLoader.find("maindisplayarea");
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
                 targetPageLoader.once("widgetChange", function (e) {
                     e.newVal.setCurrentDialogue("dialogueFinal");
@@ -145,12 +145,6 @@ YUI.add('wegas-leaderway-score', function (Y) {
                 }
             },
             dialoguePageId: {
-                value: null,
-                validator: function (s) {
-                    return s === null || Y.Lang.isString(s);
-                }
-            },
-            targetPageLoaderId: {
                 value: null,
                 validator: function (s) {
                     return s === null || Y.Lang.isString(s);
