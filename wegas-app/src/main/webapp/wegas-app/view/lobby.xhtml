@@ -7,11 +7,15 @@
 
         <ui:define name="head">
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
-             <style type="text/css">
-                 .yui3-skin-sam .editor-createdgametreeview li .yui3-treeleaf-content-header,
-                 .yui3-skin-sam .editor-createdgametreeview li .yui3-treenode-content-header {
-                     cursor: auto;
-                 }
+            <style type="text/css">
+                .yui3-skin-sam .editor-createdgametreeview li .yui3-treeleaf-content-header,
+                .yui3-skin-sam .editor-createdgametreeview li .yui3-treenode-content-header {
+                    cursor: auto;
+                }
+                /* Move Uservoice widget so it does not overlap right tab */
+                #uvTab {
+                    left: 320px !important;
+                }
             </style>
         </ui:define>
 
