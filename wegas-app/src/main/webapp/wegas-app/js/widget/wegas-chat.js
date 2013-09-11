@@ -51,6 +51,7 @@ YUI.add('wegas-chat', function(Y) {
             this.responseEvent.detach();
         }
     }, {
+        EDITORNAME: "Chart",
         ATTRS: {
             size: {
                 value: 34
