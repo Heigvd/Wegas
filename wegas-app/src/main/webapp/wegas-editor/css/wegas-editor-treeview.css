@@ -111,3 +111,9 @@
 .wegas-icon-triggerdescriptor {
     background: transparent url(../images/wegas-icon-pages.png) 0 -940px no-repeat;
 }
+.wegas-icon-inboxdescriptor {
+    background: transparent url(../images/wegas-icon-pages.png) 0 -424px no-repeat;
+}
+.wegas-icon-resourcedescriptor {
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -590px no-repeat;
+}

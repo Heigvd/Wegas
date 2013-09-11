@@ -62,6 +62,9 @@ YUI.add('wegas-helper', function(Y) {
         unesacapeJSString: function(str) {
             return str.replace(/\\"/g, '"');
         },
+        escapeCSSClass: function(str) {
+            return str.replace(/ /g, "-").toLowerCase();
+        },
         /**
          * Format a date, using provided format string.
          *
