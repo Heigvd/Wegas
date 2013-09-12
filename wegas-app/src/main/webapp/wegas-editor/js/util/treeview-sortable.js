@@ -14,8 +14,6 @@ YUI.add("treeview-sortable", function(Y) {
 
     var HOST = "host",
             NODE = 'node',
-            PARENT_NODE = 'parentNode',
-            NODES = 'nodes',
             CONTENTBOX = 'contentBox',
             TreeViewSortable;
 
@@ -37,7 +35,8 @@ YUI.add("treeview-sortable", function(Y) {
 
                 this.sortable = new NestedSortable({
                     container: cb,
-                    nodes: 'li',
+                    //nodes: 'li',
+                    nodes: 'li.treeview-draggable',
                     opacity: '.2',
                     invalid: ".wegas-editor-dummy",
                     moveType: "insert"
@@ -46,16 +45,16 @@ YUI.add("treeview-sortable", function(Y) {
 
                 });
                 this.sortable.treeSortPlg = this;
-//                this.sortable.delegate.dd.plug(Y.Plugin.DDNodeScroll, {
-//                    node: cb,
-//                    horizontal: false
-//                });
+                //this.sortable.delegate.dd.plug(Y.Plugin.DDNodeScroll, {
+                //    node: cb,
+                //    horizontal: false
+                //});
                 var addedNode, newNode;
 
                 this.sortable.delegate.dd.on("drag:start", function(ev) {
                     newNode = Y.Node.create("<ul></ul>");
                     newNode.setAttribute("id", Y.guid());
-                    this.syncDummies();
+                    this.sync();
                 }, this);
 
                 this.sortable.delegate.dd.on("drag:over", function(ev) {
@@ -120,51 +119,65 @@ YUI.add("treeview-sortable", function(Y) {
 
                     //Y.log("onDragEnd()", "info", "Wegas.VariableTreeView");
 
-
                     addedNode = undefined;
                     newNode = undefined;
                     targetNode.removeAttribute("style");// DD somewhere sets some element styles, which mess up alignment somewhere in IE
 
-                    dropWidget.add(dragWidget, index);                                  // Update treeview
+                    dropWidget.add(dragWidget, index);                          // Update treeview
                     this.fire("sort", {
                         dragWidget: dragWidget,
                         dropWidget: dropWidget,
                         index: index
-                    });                                                                 // Fire sorted event
-                    this.syncDummies();
-
+                    });                                                         // Fire sorted event
+                    this.sync();                                                // Sync dummies
                 }, this);
-                //this.sortable.delegate.dd.after('drag:over', this.syncDummies, this);
+                //this.sortable.delegate.dd.after('drag:over', this.sync, this);
             });
-            this.afterHostMethod("syncUI", this.syncDummies);
-            this.afterHostEvent("*:addChild", this.syncDummies);                //@fixme : addChild is frequent smooth it (Timeout?)
+            this.afterHostMethod("syncUI", this.sync);
+            this.afterHostEvent("*:addChild", this.sync);                       //@fixme : addChild is frequent smooth it (Timeout?)
         },
-        testGroups: function(dragNode, dropNode) {
-            var i, groups = this.get("nodeGroups");
-            if (groups) {
-                for (i = 0; i < groups.length; i += 1) {                        // Added custom class mathing for node groups
-                    if (dragNode.hasClass(groups[i].nodeClass) && dropNode.hasClass(groups[i].nodeClass)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        },
-        syncDummies: function() {
+        sync: function() {
             var cb = this.get(HOST).get(CONTENTBOX), i,
                     nodeGroups = this.get("nodeGroups");
             // cb.all(".wegas-editor-dummy").remove(true);
-            cb.all(".wegas-editor-dummy").each(function(n) {
+
+            cb.all(".wegas-editor-dummy").each(function(n) {                    // Remove useless dummies
                 if (n.ancestor("ul").get("children").size() > 1) {
                     n.remove(true);
                 }
             });
-            for (i = 0; i < nodeGroups.length; i += 1) {                       // Add dummies to allow drag on empty nodes
-                cb.all(nodeGroups[i].parentNode + " ul:empty")
-//                        .append("<li class=\"wegas-editor-dummy " + nodeGroups[i].nodeClass + " \">Empty<ul></ul></li>");
-                        .append('<li class="yui3-widget yui3-treenode wegas-editor-listitem yui3-dd-drop wegas-editor-dummy" tabindex="1"><div class="content-header yui3-treenode-content-header"><span class="yui3-treenode-content-label" ><i>empty</i></span></div></li>');
+
+            Y.Array.each(nodeGroups, function(item) {
+                cb.all("." + item.nodeClass).addClass("treeview-draggable");          // Add class to all draggable nodes
+
+                cb.all(item.parentNode + " ul:empty")                                      // Add dummies to allow drag on empty nodes
+                        .append("<li class=\"yui3-widget yui3-treenode wegas-editor-dummy " + item.nodeClass + " \">Empty<ul></ul></li>");
+                //.append('<li class="yui3-widget yui3-treenode wegas-editor-dummy wegas-editor-listitem yui3-dd-drop " tabindex="1"><div class="content-header yui3-treenode-content-header"><span class="yui3-treenode-content-label" ><i>empty</i></span></div></li>');
+
+            });
+
+
+            for (i = 0; i < nodeGroups.length; i += 1) {
             }
             this.sortable.sync();
+        },
+        testGroups: function(dragNode, dropNode) {
+            var i, groups = this.get("nodeGroups");
+            if (groups) {
+                return !!Y.Array.find(groups, function(item) {                // Added custom class mathing for node groups
+                    return dragNode.hasClass(item.nodeClass) && dropNode.hasClass(item.nodeClass);
+                });
+            }
+            return false;
+        },
+        testDrag: function(dragNode) {
+            var groups = this.get("nodeGroups");
+            if (groups) {
+                return !!Y.Array.find(groups, function(item) {
+                    return dragNode.hasClass(item.nodeClass);
+                });
+            }
+            return false;
         },
         destructor: function() {
             this.sortable.destroy();
@@ -185,7 +198,6 @@ YUI.add("treeview-sortable", function(Y) {
             }
         }
     });
-
     Y.namespace("Plugin").TreeViewSortable = TreeViewSortable;
 
     /**
@@ -197,17 +209,17 @@ YUI.add("treeview-sortable", function(Y) {
         NestedSortable.superclass.constructor.apply(this, arguments);
     }
     Y.extend(NestedSortable, Y.Sortable, {
+        //_onDragStart: function(e) {
+        //    if (this.treeSortPlg.testDrag(e.drag.get(NODE))) {
+        //        NestedSortable.superclass._onDragStart.apply(this, e);
+        //    }
+        //},
         _onDropEnter: function(e) {
-            var dropNode = e.drop.get(NODE),
-                    dragNode = e.drag.get(NODE);
-
             // console.log("_onDropEnter(" + dropNode._node.className + ", " + dropNode.one(".yui3-treenode-content-label").getHTML() + ")");
 
-            if (!this.treeSortPlg.testGroups(dragNode, dropNode)) {
-                return;
+            if (this.treeSortPlg.testGroups(e.drag.get(NODE), e.drop.get(NODE))) {
+                NestedSortable.superclass._onDropEnter.apply(this, e);
             }
-            NestedSortable.superclass._onDropEnter.apply(this, e);
-
         },
         _onDragOver: function(e) {
             var dragNode = e.drag.get(NODE),

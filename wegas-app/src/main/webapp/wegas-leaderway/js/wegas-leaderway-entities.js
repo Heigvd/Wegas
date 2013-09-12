@@ -22,7 +22,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
         _inputex: {
             _type: HIDDEN
         }
-    }
+    };
 
     /**
      * ResourceDescriptor mapper
