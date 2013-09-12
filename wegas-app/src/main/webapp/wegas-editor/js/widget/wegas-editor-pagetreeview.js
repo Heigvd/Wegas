@@ -45,8 +45,12 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     this.get("pageLoader").set("pageId", id);
                 }, this));
             });
-            this.treeView.sortable.after("sort", function(e) {
-                if (e.dropWidget.get("data.widget")) {
+            this.treeView.sortable.on("sort", function(e) {
+
+                if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
+                    e.preventDefault();
+                    this.getIndex();
+                } else if (e.dropWidget.get("data.widget")) {
                     e.dropWidget.get("data.widget").add(e.dragWidget.get("data.widget"), e.index);
                     DATASOURCE.patch(e.dropWidget.get("data.widget").get("root").toObject());
                 }
@@ -193,13 +197,16 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }, this));
             }, buildSub = function(node, widget) {
                 this.buildSubTree(node, widget);
-                node.expand(false);
+                if (node.get("boundingBox")._node) {
+                    node.expand(false);
+                }
                 if (node.item(0) && node.item(0).expand) {
                     node.item(0).expand(false);
                 }
                 node.set("selected", 2);
                 this.hideOverlay();
             };
+            this.showOverlay();
             this.treeView.removeAll().each(function() {
                 this.destroy();
             });
@@ -240,7 +247,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     });
                     node.set("rightWidget", button);
                     if (+i === +page) {
-                        this.showOverlay();
                         Y.soon(Y.bind(buildSub, this, node, widget));
                     }
                 }

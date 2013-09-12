@@ -131,7 +131,7 @@ YUI.add('treeview', function(Y) {
                     if (o[index]) {
                         if (o[index].expanded) {
                             item.expand(false);
-                        }else if(o[index].expanded === false){
+                        } else if (o[index].expanded === false) {
                             item.collapse(false);
                         }
                         item.each(Y.bind(setChildsState, item, o[index]));
@@ -435,11 +435,11 @@ YUI.add('treeview', function(Y) {
                 value: true,
                 validator: Y.Lang.isBoolean,
                 setter: function(v) {
-                    if (v) {
-                        this.get(BOUNDING_BOX).addClass(classNames.collapsed);
-                    } else {
-                        this.get(BOUNDING_BOX).removeClass(classNames.collapsed);
-                    }
+                        if (v) {
+                            this.get(BOUNDING_BOX).addClass(classNames.collapsed);
+                        } else {
+                            this.get(BOUNDING_BOX).removeClass(classNames.collapsed);
+                        }
                     return v;
                 }
             },
