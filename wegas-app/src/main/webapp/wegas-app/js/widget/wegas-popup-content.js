@@ -14,7 +14,8 @@ YUI.add('wegas-popup-content', function(Y) {
     "use strict";
     Y.namespace("Wegas").PopupContent = Y.Base.create("wegas-popup-content",
             Y.Widget,
-            [Y.WidgetPosition,
+            [Y.WidgetParent,
+                Y.WidgetPosition,
                 Y.WidgetStdMod,
                 Y.WidgetButtons,
                 Y.WidgetModality,
