@@ -64,7 +64,7 @@ YUI.add('wegas-app', function(Y) {
              * @param {MyEventObject} e
              * @param {Boolean} [e.withIce=false]
              */
-            this.publish("render", {});
+            this.publish("render");
         },
         /**
          * Destructor methods.
@@ -120,11 +120,9 @@ YUI.add('wegas-app', function(Y) {
              * Shortcut to activate developper mode. Allow access to Y instance. Toggle.
              * Event keypress '°'
              */
-            Y.one("body").on("keypress", function(e) {
-                if ((e.charCode === 176 || e.charCode === 167) /*&& e.target === this*/) {
-                    Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
-                }
-            });
+            Y.one("body").on("key", function() {
+                Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
+            }, "167");
         },
         // *** Private methods ** //
         /**

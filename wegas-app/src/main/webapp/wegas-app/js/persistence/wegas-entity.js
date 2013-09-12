@@ -730,7 +730,8 @@ YUI.add('wegas-entity', function(Y) {
                     return val || this.get(NAME);
                 },
                 _inputex: {
-                    label: "Name"
+                    label: "Name",
+                    index: -1
                 }
             },
             name: {
@@ -1257,7 +1258,7 @@ YUI.add('wegas-entity', function(Y) {
                                     "targetClass": "StringDescriptor"
                                 }, {
                                     "type": "AddEntityChildButton",
-                                    "label": "List",
+                                    "label": "Folder",
                                     "targetClass": "ListDescriptor"
                                 }, {
                                     "type": "AddEntityChildButton",
