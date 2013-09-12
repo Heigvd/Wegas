@@ -151,7 +151,7 @@ YUI.add("treeview-sortable", function(Y) {
                 cb.all("." + item.nodeClass).addClass("treeview-draggable");          // Add class to all draggable nodes
 
                 cb.all(item.parentNode + " ul:empty")                                      // Add dummies to allow drag on empty nodes
-                        .append("<li class=\"yui3-widget yui3-treenode wegas-editor-dummy " + item.nodeClass + " \">Empty<ul></ul></li>");
+                        .append("<li class=\"yui3-widget yui3-treenode wegas-editor-dummy " + item.nodeClass + " \"><div class=\"content-header yui3-treenode-content-header\"><span class=\"yui3-treenode-content-label\" ><i>empty</i></span></div></li>");
                 //.append('<li class="yui3-widget yui3-treenode wegas-editor-dummy wegas-editor-listitem yui3-dd-drop " tabindex="1"><div class="content-header yui3-treenode-content-header"><span class="yui3-treenode-content-label" ><i>empty</i></span></div></li>');
 
             });
