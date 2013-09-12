@@ -57,8 +57,8 @@
         {
             "@class": "NumberDescriptor",
             "name": "projectFixedCosts",
-            "editorLabel": "Project FixedCosts",
-            "label": "Project FixedCosts",
+            "editorLabel": "Project fixed costs",
+            "label": "Project fixed costs",
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "history": [],
@@ -102,59 +102,7 @@
             },
             "minValue": 0,
             "maxValue": 4
-        },
-        {
-            "@class": "NumberDescriptor",
-            "name": "actualCost",
-            "editorLabel": "actualCost",
-            "label": "actualCost",
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "history": [],
-                "value": 0
-            },
-            "scope": {
-                "@class": "TeamScope",
-                "broadcastScope": "PlayerScope"
-            },
-            "minValue": 0,
-            "maxValue": null
-        },
-        {
-            "@class": "NumberDescriptor",
-            "name": "planedValue",
-            "editorLabel": "planedValue",
-            "label": "planedValue",
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "history": [],
-                "value": 0
-            },
-            "scope": {
-                "@class": "TeamScope",
-                "broadcastScope": "PlayerScope"
-            },
-            "minValue": 0,
-            "maxValue": null
-        },
-        {
-            "@class": "NumberDescriptor",
-            "name": "earnedValue",
-            "editorLabel": "earnedValue",
-            "label": "earnedValue",
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "history": [],
-                "value": 0
-            },
-            "scope": {
-                "@class": "TeamScope",
-                "broadcastScope": "PlayerScope"
-            },
-            "minValue": 0,
-            "maxValue": null
-        },
-        {
+        }, {
             "@class": "ListDescriptor",
             "name": "actions",
             "editorLabel": "Actions",
@@ -4350,8 +4298,55 @@
                     },
                     "minValue": 0,
                     "maxValue": 200
-                },
-                {
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "actualCost",
+                    "editorLabel": "actualCost",
+                    "label": "actualCost",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "planedValue",
+                    "editorLabel": "planedValue",
+                    "label": "planedValue",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "earnedValue",
+                    "editorLabel": "earnedValue",
+                    "label": "earnedValue",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null
+                }, {
                     "@class": "NumberDescriptor",
                     "name": "quality",
                     "editorLabel": "quality",

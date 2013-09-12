@@ -57,37 +57,44 @@ function completeRealizationPeriod() {
 
 function setWeekliesVariables() {
     var i, taskInst, ev = 0, pv = 0, ac = 0, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
-            costs = VariableDescriptorFacade.findByName(self.getGameModel(), 'costs'),
-            delay = VariableDescriptorFacade.findByName(self.getGameModel(), 'delay'),
-            quality = VariableDescriptorFacade.findByName(self.getGameModel(), 'quality');
+            costs = VariableDescriptorFacade.findByName(gm, 'costs'),
+            delay = VariableDescriptorFacade.findByName(gm, 'delay'),
+            quality = VariableDescriptorFacade.findByName(gm, 'quality'),
+            planedValue = VariableDescriptorFacade.findByName(gm, 'planedValue'),
+            earnedValue = VariableDescriptorFacade.findByName(gm, 'earnedValue'),
+            actualCost = VariableDescriptorFacade.findByName(gm, 'actualCost'),
+            projectFixCosts = VariableDescriptorFacade.findByName(gm, 'projectFixedCosts');
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
         if (isTrue(taskInst.getActive())) {
             ev += parseInt(taskInst.getProperty('bac')) * (getPlannifiedCompleteness(taskInst) / 100);
             pv += parseInt(taskInst.getProperty('bac')) * (parseInt(taskInst.getProperty('completeness')) / 100);
-            ac += parseInt(taskInst.getProperty('wages')) + (parseInt(taskInst.getProperty('completeness')) / 100) * parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts'));
+            ac += parseInt(taskInst.getProperty('wages')) + (parseInt(taskInst.getProperty('completeness')) / 100) * parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts') + parseInt(projectFixCosts.getInstance(self).getValue()));
         }
     }
 
-    planedValue.setValue(pv);
-    earnedValue.setValue(ev);
-    actualCost.setValue(ac);
+    planedValue.getInstance(self).setValue(pv);
+    earnedValue.getInstance(self).setValue(ev);
+    actualCost.getInstance(self).setValue(ac);
 
     updateGauges();
 
     costs.getInstance(self).saveHistory();
     delay.getInstance(self).saveHistory();
     quality.getInstance(self).saveHistory();
-    planedValue.saveHistory();
-    earnedValue.saveHistory();
-    actualCost.saveHistory();
+    planedValue.getInstance(self).saveHistory();
+    earnedValue.getInstance(self).saveHistory();
+    actualCost.getInstance(self).saveHistory();
 }
 
 function updateGauges() {
     var i, j, taskInst, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
-            costs = VariableDescriptorFacade.findByName(self.getGameModel(), 'costs'),
-            delay = VariableDescriptorFacade.findByName(self.getGameModel(), 'delay'),
-            quality = VariableDescriptorFacade.findByName(self.getGameModel(), 'quality'),
+            costs = VariableDescriptorFacade.findByName(gm, 'costs'),
+            delay = VariableDescriptorFacade.findByName(gm, 'delay'),
+            quality = VariableDescriptorFacade.findByName(gm, 'quality'),
+            planedValue = VariableDescriptorFacade.findByName(gm, 'planedValue'),
+            earnedValue = VariableDescriptorFacade.findByName(gm, 'earnedValue'),
+            actualCost = VariableDescriptorFacade.findByName(gm, 'actualCost'),
             tasksQuality = 0, nomberOfBeganTasks = 0, tasksScale = 0, nomberOfEmployeeRequired,
             costsJaugeValue, qualityJaugeValue, delayJaugeValue, qualityJaugeValue = 0;
 
@@ -108,15 +115,15 @@ function updateGauges() {
     }
 
     //costs
-    if (parseInt(planedValue.value) > 0) {
-        costsJaugeValue = Math.round((parseInt(earnedValue.value) / parseInt(actualCost.value)) * 100);
+    if (parseInt(planedValue.getInstance(self).getValue()) > 0) {
+        costsJaugeValue = Math.round((parseInt(earnedValue.getInstance(self).getValue()) / parseInt(actualCost.getInstance(self).getValue())) * 100);
     }
     costsJaugeValue = (costsJaugeValue > parseInt(costs.getMinValue())) ? costsJaugeValue : parseInt(costs.getMinValue());
     costsJaugeValue = (costsJaugeValue < parseInt(costs.getMaxValue())) ? costsJaugeValue : parseInt(costs.getMaxValue());
     costs.getInstance(self).setValue(costsJaugeValue);
 
     //delay
-    delayJaugeValue = Math.round(parseInt((earnedValue.value) / parseInt(planedValue.value)) * 100);
+    delayJaugeValue = Math.round(parseInt((earnedValue.getInstance(self).getValue()) / parseInt(planedValue.getInstance(self).getValue())) * 100);
     delayJaugeValue = (delayJaugeValue > parseInt(delay.getMinValue())) ? delayJaugeValue : parseInt(delay.getMinValue());
     delayJaugeValue = (delayJaugeValue < parseInt(delay.getMaxValue())) ? delayJaugeValue : parseInt(delay.getMaxValue());
     delay.getInstance(self).setValue(delayJaugeValue);

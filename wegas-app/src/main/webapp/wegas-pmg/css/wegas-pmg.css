@@ -337,7 +337,11 @@ h2{
 }
 
 .main .wegas-mcqtabview-content .content{
-    margin-top: -40px;
+    margin-top: 0px;
+}
+
+.yui3-skin-sam .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel{
+    margin-top:1px
 }
 
 .wegas-mcqtabview-content .content .content{
