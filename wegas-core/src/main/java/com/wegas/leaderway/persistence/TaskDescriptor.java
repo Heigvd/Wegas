@@ -160,14 +160,38 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     //Methods for impacts
-    public String getInstanceProperty(Player p, String key) {
-        return this.getInstance(p).getProperty(key);
-    }
     /**
      * 
      * @param p
      * @param key
-     * @param value 
+     * @return 
+     */
+    public double getNumberInstanceProperty(Player p, String key) {
+        String value = this.getInstance(p).getProperty(key);
+        double parsedValue;
+        try {
+            parsedValue = Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            parsedValue = Double.NaN;
+        }
+        return parsedValue;
+    }
+
+    /**
+     * 
+     * @param p
+     * @param key
+     * @return 
+     */
+    public String getStringInstanceProperty(Player p, String key) {
+        return this.getInstance(p).getProperty(key);
+    }
+
+    /**
+     *
+     * @param p
+     * @param key
+     * @param value
      */
     public void setInstanceProperty(Player p, String key, String value) {
         this.getInstance(p).setProperty(key, value);
@@ -181,8 +205,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     public Integer getDuration(Player p) {
         return this.getInstance(p).getDuration();
     }
-    
-        /**
+
+    /**
      *
      * @param p
      * @param value
@@ -190,8 +214,8 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     public void setDuration(Player p, Integer value) {
         this.getInstance(p).setDuration(value);
     }
-    
-        /**
+
+    /**
      *
      * @param p
      * @param value

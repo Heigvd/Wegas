@@ -146,6 +146,33 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     public void setMoral(Player p, Integer value) {
         this.getInstance(p).setMoral(value);
     }
+    
+    /**
+     * 
+     * @param p
+     * @param key
+     * @return 
+     */
+    public double getNumberInstanceProperty(Player p, String key) {
+        String value = this.getInstance(p).getProperty(key);
+        double parsedValue;
+        try {
+            parsedValue = Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            parsedValue = Double.NaN;
+        }
+        return parsedValue;
+    }
+
+    /**
+     * 
+     * @param p
+     * @param key
+     * @return 
+     */
+    public String getStringInstanceProperty(Player p, String key) {
+        return this.getInstance(p).getProperty(key);
+    }
 
     /**
      *

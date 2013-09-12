@@ -219,8 +219,21 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         value: 1
                     }]
             },
-            getInstanceProperty: {
-                label: "Get instance's property",
+            getNumberInstanceProperty: {
+                label: "Get number instance's property",
+                returns: NUMBER,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }]
+            },
+            getStringInstanceProperty: {
+                label: "Get text instance's property",
                 returns: STRING,
                 arguments: [{
                         type: HIDDEN,
@@ -599,8 +612,21 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 }
             }
         }, METHODS: {
-            getInstanceProperty: {
-                label: "Get instance's property",
+            getNumberInstanceProperty: {
+                label: "Get number instance's property",
+                returns: NUMBER,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }]
+            },
+            getStringInstanceProperty: {
+                label: "Get text instance's property",
                 returns: STRING,
                 arguments: [{
                         type: HIDDEN,
