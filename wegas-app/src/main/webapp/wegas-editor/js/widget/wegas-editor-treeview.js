@@ -78,8 +78,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
 
             this.treeView.removeAll();
-
             cb.all(".wegas-smallmessage").remove();
+            
             if (treeNodes.length === 0) {
                 cb.append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
                 return;
