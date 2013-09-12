@@ -119,7 +119,7 @@ YUI.add('wegas-form', function(Y) {
 
     }, {
         /** @lends Y.Wegas.Form */
-
+        EDITORNAME: "Form",
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>

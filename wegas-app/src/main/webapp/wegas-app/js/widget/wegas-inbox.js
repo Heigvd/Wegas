@@ -262,6 +262,7 @@ YUI.add('wegas-inbox', function(Y) {
         /**
          * @lends Y.Wegas.InboxDisplay
          */
+        EDITORNAME: "Inbox",
         /**
          * @field
          * @static
