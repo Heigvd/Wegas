@@ -10,7 +10,6 @@ package com.wegas.mcq.ejb;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.event.DescriptorRevivedEvent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
@@ -49,20 +48,17 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     @EJB
     private ScriptFacade scriptManager;
-    /**
-     *
-     */
-    @EJB
-    private VariableDescriptorFacade variableDescriptorFacade;
 
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
-        logger.debug("Received Reset event");
+        logger.debug("Received DescriptorRevivedEvent event");
 
         if (event.getEntity() instanceof ChoiceDescriptor) {
             ChoiceDescriptor choice = (ChoiceDescriptor) event.getEntity();
             ChoiceInstance defaultInstance = ((ChoiceInstance) choice.getDefaultInstance());
-            if (defaultInstance.getSerializedResultIndex() != -1) {
+            if (defaultInstance.getSerializedResultIndex() != -1
+                    && defaultInstance.getSerializedResultIndex() < choice.getResults().size()) {
                 Result cr = choice.getResults().get(defaultInstance.getSerializedResultIndex());
+
                 defaultInstance.setCurrentResultId(cr.getId());
                 defaultInstance.setCurrentResult(cr);
             }
@@ -100,6 +96,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         if (!questionDescriptor.getAllowMultipleReplies() && !questionInstance.getReplies().isEmpty()) {
             throw new WegasException("A choice already exists for that question");
         }
+        
         Reply reply = new Reply();
 
         reply.setStartTime(startTime);

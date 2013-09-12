@@ -8,6 +8,7 @@
 package com.wegas.mcq.persistence;
 
 import javax.persistence.Entity;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlType;
 
@@ -21,4 +22,14 @@ import javax.xml.bind.annotation.XmlType;
 public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * When a choice is created, automatically add a result.
+     */
+    @PrePersist
+    public void prePersist2() {
+        if (this.getResults().isEmpty()) {
+            this.addResult(new Result("Default"));                              // When a choice is created, automatically add a result by default
+        }
+    }
 }
