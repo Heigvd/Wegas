@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -34,4 +34,4 @@ YUI.add('file', function (Y, NAME) {
     Y.File = Y.FileFlash;
  }
 
-}, '3.11.0', {"requires": ["file-flash", "file-html5"]});
+}, '3.12.0', {"requires": ["file-flash", "file-html5"]});

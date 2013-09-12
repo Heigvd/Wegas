@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -388,4 +388,4 @@ var Lang = Y.Lang,
 Y.mix(Y.DataTable.BodyView.Formatters, Formatters);
 
 
-}, '3.11.0', {"requires": ["datatable-body", "datatype-number-format", "datatype-date-format", "escape"]});
+}, '3.12.0', {"requires": ["datatable-body", "datatype-number-format", "datatype-date-format", "escape"]});
