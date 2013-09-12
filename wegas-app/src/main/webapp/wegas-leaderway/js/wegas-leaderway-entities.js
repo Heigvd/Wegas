@@ -32,6 +32,12 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             "@class": {
                 value: "ResourceDescriptor"
             },
+            editorLabel: {
+                _inputex: {
+                    _type: STRING,
+                    label: "Resource name"
+                }
+            },
             description: {
                 type: STRING,
                 format: HTML,
@@ -247,6 +253,23 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             },
             setInstanceProperty: {
                 label: "Set instance's property",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
+            addAtInstanceProperty: {
+                label: "Add at instance's property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -483,6 +506,12 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             "@class": {
                 value: "TaskDescriptor"
             },
+            editorLabel: {
+                _inputex: {
+                    _type: STRING,
+                    label: "Title"
+                }
+            },
             description: {
                 type: STRING,
                 format: HTML,
@@ -640,6 +669,23 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             },
             setInstanceProperty: {
                 label: "Set instance's property",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
+            addAtInstanceProperty: {
+                label: "Add at instance's property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF

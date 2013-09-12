@@ -21,6 +21,14 @@ YUI.add('wegas-conditionaldisable', function(Y) {
                 this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.conditionEval, this));
                 this.conditionEval();
             }, this);
+            this.bind();
+        },
+        bind: function() {
+            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.script.on("evaluated", function(e, o, id) {
+                if (id === this._yuid) {
+                    this.get('host').set('disabled', o);
+                }
+            }, this));
         },
         destructor: function() {
             for (var i = 0; i < this.handlers.length; i += 1) {
@@ -30,8 +38,10 @@ YUI.add('wegas-conditionaldisable', function(Y) {
         conditionEval: function() {
             var conditionValid;
             if (Y.Wegas.Facade.VariableDescriptor.script) {
-                conditionValid = Y.Wegas.Facade.VariableDescriptor.script.scopedEval(this.get("condition").content);
-                this.get('host').set('disabled', conditionValid);
+                conditionValid = Y.Wegas.Facade.VariableDescriptor.script.scopedEval(this.get("condition").content, this._yuid);
+                if (conditionValid.io === undefined) {
+                    this.get('host').set('disabled', conditionValid);
+                }
             }
         }
     }, {

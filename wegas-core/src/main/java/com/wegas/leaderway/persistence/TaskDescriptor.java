@@ -178,7 +178,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     /**
-     * 
+     *
      * @param p
      * @param key
      * @return 
@@ -195,6 +195,16 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void setInstanceProperty(Player p, String key, String value) {
         this.getInstance(p).setProperty(key, value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param key
+     * @param value
+     */
+    public void addAtInstanceProperty(Player p, String key, String value) {
+        this.getInstance(p).setProperty(key, "" + (Float.parseFloat(this.getInstance(p).getProperty(key)) + value));
     }
 
     /**

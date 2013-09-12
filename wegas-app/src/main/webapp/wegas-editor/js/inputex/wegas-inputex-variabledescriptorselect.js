@@ -171,7 +171,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     if (!this.options.classFilter || this.options.classFilter.indexOf(items[i].get("@class")) > -1) {
                         choices.push({
                             value: items[i].get("name"),
-                            label: items[i].get("editorLabel")
+                            label: items[i].getEditorLabel()
                         });
                     }
                 }
@@ -620,7 +620,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             for (i = 0; i < results.length; i = i + 1) {
                 options.choices.push({
                     value: results[i].get(options.returnAttr || "name"),
-                    label: results[i].get("editorLabel")
+                    label: results[i].getEditorLabel()
                 });
             }
 

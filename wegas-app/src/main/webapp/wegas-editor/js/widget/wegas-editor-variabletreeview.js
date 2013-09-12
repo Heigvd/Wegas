@@ -102,7 +102,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             break;
 
                         case 'ListDescriptor':
-                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
+                            //text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
+                            text = "Folder" + ': ' + el.getEditorLabel();
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,

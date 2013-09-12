@@ -37,6 +37,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 value: "QuestionDescriptor"
             },
+            editorLabel: {
+                _inputex: {
+                    _type: STRING,
+                    label: "Title"
+                }
+            },
             allowMultipleReplies: {
                 value: false,
                 type: BOOLEAN,
@@ -205,6 +211,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
             "@class": {
                 value: "ChoiceDescriptor"
             },
+            editorLabel: {
+                _inputex: {
+                    _type: STRING,
+                    label: "Title"
+                }
+            },
             description: {
                 type: STRING,
                 format: HTML,
@@ -302,7 +314,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: "entityarrayfieldselect"
+                        type: "entityarrayfieldselect",
+                        returnAttr: "id"
                     }]
             },
             activate: {
@@ -497,6 +510,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             answer: {
                 type: STRING,
+                optional: true,
                 format: HTML
             },
             impact: {

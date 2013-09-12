@@ -2,10 +2,10 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 
-YUI.add('wegas-leaderway-dialogue', function (Y) {
+YUI.add('wegas-leaderway-dialogue', function(Y) {
     "use strict";
     var CONTENTBOX = 'contentBox', Dialogue;
-    Dialogue = Y.Base.create("wegas-dialogue", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
+    Dialogue = Y.Base.create("wegas-dialogue", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
         chart: null,
         seriesName: null,
         seriesValue: null,
@@ -16,20 +16,30 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         responseIsDisplayed: null,
         availableActions: null,
         state: null,
-
+        rawSeries: [],
+        isDestroying: null,
         /***Lifecycle methode***/
-        initializer: function () {
+        initializer: function() {
+            var name;
+            this.isDestroying = false;
             this.responseIsDisplayed = false;
             this.seriesName = [];
             this.seriesValue = [];
             this.handlers = {};
             this.timers = [];
+            name = Y.Wegas.Facade.VariableDescriptor.cache.find("name", 'nameOfCurrentEmployee');
+            if (Y.Wegas.Facade.VariableDescriptor.cache.find("name", name.getInstance().get("value"))) {
+                this.resourceDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", name.getInstance().get("value"));
+                this.currentDialogue = this.resourceDescriptor.getInstance().get('properties').dialogue;
+            }
+            if (name === "final") {
+                this.currentDialogue = "dialogueFinal";
+            }
         },
-
         /**
          * Render the widget.
          */
-        renderUI: function () {
+        renderUI: function() {
             var cb = this.get(CONTENTBOX);
             cb.setContent(
                     '<div class="pictures">\n\
@@ -42,14 +52,13 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                  <div class="dialogue"><div class="talk"></div><div class="response"></div></div>'
                     );
         },
-
         /**
          * Bind some function at nodes of this widget
          */
-        bindUI: function () {
+        bindUI: function() {
             var cb = this.get(CONTENTBOX);
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-            this.handlers.dialogueResponse = cb.one('.dialogue .response').delegate('click', function (e) {
+            this.handlers.dialogueResponse = cb.one('.dialogue .response').delegate('click', function(e) {
                 var no = parseInt(e.currentTarget._node.attributes[0].nodeValue),
                         dialogue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.currentDialogue);
                 this.responseIsDisplayed = false;
@@ -58,29 +67,29 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 }
             }, '.responseElements li', this);
         },
-
         /**
          * Synchronise the content of this widget.
          * Recreat the chart widget
          */
-        syncUI: function () {
+        syncUI: function() {
             var cb = this.get(CONTENTBOX);
             if (!this.currentDialogue)
                 return;
             if (!this.responseIsDisplayed) {
                 this.responseIsDisplayed = true;
                 this.clear(cb);
-                this.createChart(this.resourceDescriptor);
+                this.getRawSeriesThenCreateChart();
                 this.readStateMachine(cb);
             }
         },
-
         /*
          * Destroy all child widget and all function
          */
-        destructor: function () {
+        destructor: function() {
             var k;
-            if (!this.chart) {
+            this.isDestroying = true;
+            this.setCurrentPage();
+            if (this.chart) {
                 this.chart.destroy();
             }
             for (k in this.handlers) {
@@ -90,13 +99,45 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 this.timers[k].cancel();
             }
         },
-
+        getRawSeriesThenCreateChart: function() {
+            this.rawSeries.length = 0;
+            //getMoralHistory
+            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(this.resourceDescriptor.getInstance(), "Extended", {// Retrieve the reply description from the server
+                cfg: {
+                    updateCache: false
+                },
+                on: Y.Wegas.superbind({
+                    success: Y.bind(function(e) {
+                        var res = e.serverResponse.get("entities")[0];
+                        this.rawSeries.push(res.get("moralHistory"));
+                        if (this.rawSeries.length === 2 && !this.isDestroying) {
+                            this.createChart(this.resourceDescriptor, this.rawSeries);
+                        }
+                    }, this)
+                })
+            });
+            //getMoralHistory
+            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(this.resourceDescriptor.getInstance(), "Extended", {// Retrieve the reply description from the server
+                cfg: {
+                    updateCache: false
+                },
+                on: Y.Wegas.superbind({
+                    success: Y.bind(function(e) {
+                        var res = e.serverResponse.get("entities")[0];
+                        this.rawSeries.push(res.get("confidenceHistory"));
+                        if (this.rawSeries.length === 2 && !this.isDestroying) {
+                            this.createChart(this.resourceDescriptor, this.rawSeries);
+                        }
+                    }, this)
+                })
+            });
+        },
         /***Particular Methode***/
         /**
          *Create tooltips for the chart's values
          */
         chartTooltip: {
-            markerLabelFunction: function (categoryItem, valueItem, itemIndex, series, seriesIndex) {
+            markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex) {
                 var msg = document.createElement("div"),
                         boldTextBlock = document.createElement("div");
                 boldTextBlock.appendChild(document.createTextNode(valueItem.displayName + ': ' + valueItem.axis.get("labelFunction").apply(this, [valueItem.value])));
@@ -104,14 +145,15 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 return msg;
             }
         },
-
         /**
          * Clear each node created in the renderUI function
          * Delete the chart too.
          * @param String cb, the widget's contentbox.
          */
-        clear: function (cb) {
-            this.chart = null;
+        clear: function(cb) {
+            if (this.chart) {
+                this.chart.destroy();
+            }
             this.seriesName.length = 0;
             this.seriesValue.length = 0;
             cb.one('.pictures .backgroundLayer').setHTML();
@@ -122,30 +164,25 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             cb.one('.dialogue .talk').setHTML();
             cb.one('.dialogue .response').setHTML();
         },
-
         /**
          * Creat a YUI3 Charts combospline' with values of a resource's moral and confidence historic values.
          * If any resource is given, the chart will be not created.
          * @ Param ResourceDescriptor resourceDescriptor, the source of chart's values
          */
-        createChart: function (resourceDescriptor) {
-            if (this.chart)
-                this.chart.destroy();
-            if (!resourceDescriptor)
-                return;
-            var i, resourceInstance = resourceDescriptor.getInstance(),
-                    seriesCollection = [
+        createChart: function(resourceDescriptor, rawSeries) {
+            var seriesCollection = [
                 {
                     yDisplayName: 'moral'
                 },
                 {
                     yDisplayName: 'confiance'
                 }
-            ],
-                    rawSeries = [
-                    resourceInstance.get('moralHistory'),
-                    resourceInstance.get('confidenceHistory')
             ];
+            if (this.chart) {
+                this.chart.destroy();
+            }
+            if (!resourceDescriptor)
+                return;
             this.chart = new Y.Chart({
                 type: 'combospline',
                 seriesCollection: seriesCollection,
@@ -171,7 +208,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             });
             this.chart.render(".chart");
         },
-
         /**
          * Create series for the chart.
          * i = numberOfValues
@@ -180,7 +216,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * @param Integer numberOfValues, the number of value wanted in the series.
          * @param Array rawSeries, an array of array of Integer.
          */
-        getChartValues: function (numberOfValues, rawSeries) {
+        getChartValues: function(numberOfValues, rawSeries) {
             var i, j, fitSeries = new Array(), serieRawData = new Array(), serieFitData = new Array();
             for (i = 0; i < numberOfValues; i++) {
                 serieFitData.push(i);
@@ -200,7 +236,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             return fitSeries;
         },
-
         /**
          * Get the dialogue corresponding the currentDialogue's name.
          * Get the current state.
@@ -208,7 +243,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * Hide div for images and div for responses.
          *@param String cb, the widget's contentbox.
          */
-        readStateMachine: function (cb) {
+        readStateMachine: function(cb) {
             //Read state
             var dialogue;
             if (!this.currentDialogue) {
@@ -233,7 +268,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             this.state.getAvailableActions(Y.bind(this.readStateContent, this));
         },
-
         /**
          * Read a dialogue corresponding with the current dialogue value in this widget.
          * if current state is empty, doTransition with the first available actions.
@@ -246,7 +280,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * For more information about object image, read comments on the function "renderJSONImages()" in this widget.
          * hide the layer "answerImage".
          */
-        readStateContent: function (availableActions) {
+        readStateContent: function(availableActions) {
             var dialogue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.currentDialogue),
                     content, rawContent, texts, splittedText = [], cb = this.get(CONTENTBOX);
             //get availableActions
@@ -296,7 +330,6 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             //this.timers.push(Y.later(400, this, Y.bind(this.displayText, this, cb, splittedText))); // add time to load picture before displying text.
             this.displayText(cb, splittedText);
         },
-
         /**
          * Destroy this widget and open a newer corresponding to the subPageId at place defined by the targetPageLoaderId.
          * A function can be evaluated after the transition if the JSON contain a param "functionAfterTransition";
@@ -304,10 +337,10 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
          * @param Dialogue dialogue, the readed dialogue.
          * @param Object content, a object with obligatory param "targetPageLoaderId" and "subPageId" and a non-obligatory param "functionAfterTransition"
          */
-        displayWidget: function (dialogue, content) {
+        displayWidget: function(dialogue, content) {
             if (content.subPageId && content.targetPageLoaderId) {
                 var targetPageLoader = Y.Wegas.PageLoader.find(content.targetPageLoaderId);
-                targetPageLoader.once("widgetChange", function (e) {
+                targetPageLoader.once("widgetChange", function(e) {
                     if (content.functionAfterTransition) {
                         try {
                             eval(content.functionAfterTransition);
@@ -320,13 +353,12 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 targetPageLoader.set("pageId", content.subPageId);
             }
         },
-
         /**
          * Insert a image to the DOM with given parametre
          * @param Node node, node where the image must be render.
          * @param Array[Object] imageObject, a array of objects. Each object can contain a link, an possible height, a possible width, a possible array named "css"  with css properties.
          */
-        renderImages: function (node, imageObjects) {
+        renderImages: function(node, imageObjects) {
             var i, key, imageHTML = new Array();
             for (i = 0; i < imageObjects.length; i++) {
                 imageHTML.push('<img data-file="');
@@ -354,14 +386,13 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 node.insert(imageHTML.join(""));
             }
         },
-
         /**
          * Recursive function that display text each 70 milisseconde in the ".dialogue .talk p" node of this widget.
          * call the function "displayResponse" when all the text is displayed.
          * @param String cb, the widget's contentbox.
          * @param Array[String] textParts, an array with a splitted string.
          */
-        displayText: function (cb, textParts) {
+        displayText: function(cb, textParts) {
             cb.one('.dialogue .talk p').insert(textParts[0] + ' &thinsp;');
             textParts.shift();
             if (textParts.length > 0) {
@@ -372,13 +403,12 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
                 this.displayResponse();
             }
         },
-
         /**
          * Show all available transitions for the current state.
          * hide the .questionLayer and sho the .answerLayer to display images.
          * @param Event object containing actionsAvailable (available transitions)
          */
-        displayResponse: function (e) {
+        displayResponse: function(e) {
             var i, cb = this.get(CONTENTBOX);
             if (!this.availableActions) {
                 return;
@@ -394,53 +424,34 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
             }
             cb.one('.response').show();
         },
-
-        /**
-         * Set the current dialogue and search the resource owner of this new dialogue.
-         * If a resource is finded, set the resourceDescriptor of this widget.
-         * call the function syncUI of this widget.
-         * @param String newDialogueRef, the new DialogueDescriptor's name
-         */
-        setCurrentDialogue: function (newDialogueRef) {
-            var i, listResource = Y.Wegas.Facade.VariableDescriptor.cache.find("name", 'resources'),
-                    resourceDescriptor;
-            if (typeof newDialogueRef !== "string" || this.currentDialogue === newDialogueRef) {
-                return;
+        setCurrentPage: function() {
+            var currentPage = this.get("root").get("@pageId");
+            if (currentPage || currentPage === 0) {
+                Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                    'Managed-Mode': 'false',
+                    cfg: {
+                        method: "POST",
+                        data: Y.JSON.stringify({
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
+                        })
+                    }
+                });
             }
-            this.currentDialogue = newDialogueRef;
-            this.resourceDescriptor = null;
-            for (i = 0; i < listResource.get('items').length; i++) {
-                resourceDescriptor = listResource.get('items')[i];
-                if (resourceDescriptor.getInstance().get('properties').dialogue === this.currentDialogue) {
-                    this.resourceDescriptor = resourceDescriptor;
-                    break;
-                }
-            }
-            this.syncUI();
-        },
-
-        /**
-         * Set the resourceDescriptor used by this widget.
-         * if the new resource have a dialogue set the current dialogue used by this widget.
-         * @param ResourceDescriptor resourceDescriptor, the new resourceDescriptor
-         */
-        setResourceDescriptor: function (resourceDescriptor) {
-            if (!resourceDescriptor)
-                return;
-            this.resourceDescriptor = resourceDescriptor;
-            this.setCurrentDialogue(resourceDescriptor.getInstance().get('properties').dialogue);
         },
         // *** hack Methods *** //
         /**
          * if current week > max value of week value, then
          * change the current widget to go on the "dialogue" widget.
          */
-        goToFinalPage: function () {
+        goToFinalPage: function() {
             var currentWeek = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week"),
-                    targetPageLoader = Y.Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                    targetPageLoader = Y.Wegas.PageLoader.find("maindisplayarea");
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
-                targetPageLoader.once("widgetChange", function (e) {
-                    e.newVal.setCurrentDialogue("dialogueFinal");
+                targetPageLoader.once("widgetChange", function(e) {
+                    e.newVal.setCurrentDialogue("final");
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));
             }
@@ -450,13 +461,7 @@ YUI.add('wegas-leaderway-dialogue', function (Y) {
         ATTRS: {
             dialoguePageId: {
                 value: null,
-                validator: function (s) {
-                    return s === null || Y.Lang.isString(s);
-                }
-            },
-            targetPageLoaderId: {
-                value: null,
-                validator: function (s) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             }

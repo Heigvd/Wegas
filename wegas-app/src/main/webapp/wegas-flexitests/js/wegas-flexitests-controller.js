@@ -130,16 +130,19 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 this.mcq.error(responseTime);
             }
             this.mcq.save(elements);
-            //this.mask();
-            if (this.questionToDo.length !== 0) {
-                Y.later(+this.mcq.get("feedback"), this, this.next);
-            }
+
+            Y.later(+this.mcq.get("feedback"), this, this.next);
         },
         next: function() {
             var onSuccess = Y.bind(function() {
                 Y.later(+this.get("fixPoint"), this, this.createLoadingEvent);
                 this.fixPoint.show();
             }, this);
+            if (this.questionToDo.length === 0) {
+                this.runEndScript();
+                this.unmask();
+                return;
+            }
             this.mask();
             this.set("currentLoading", {"left": true, "center": true, "right": true});
             this.currentQuestionId = this.generateNextId();
@@ -227,6 +230,20 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             Y.soon(Y.bind(this.unmask, this));
             this.ongoing = true;
         },
+        runEndScript: function() {
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                cfg: {
+                    method: "POST",
+                    data: Y.JSON.stringify(this.get("endImpact"))
+                },
+                on: {
+                    failure: Y.bind(function(e) {
+                        Y.log("error", "Failed to store data", "Y.Wegas.FlexitestsController");
+                    }, this)
+                }
+            });
+        },
         mask: function() {
             this.get("boundingBox").one(".flexi-mask").show();
         },
@@ -296,6 +313,14 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 format: "html",
                 _inputex: {
                     label: "Popup content"
+                }
+            },
+            endImpact: {
+                label: "End impact",
+                _inputex: {
+                    _type: "script",
+                    description: "What should happen once there is no more questions",
+                    optional: true
                 }
             }
         }
