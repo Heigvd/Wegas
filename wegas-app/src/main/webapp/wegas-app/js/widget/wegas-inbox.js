@@ -255,7 +255,11 @@ YUI.add('wegas-inbox', function(Y) {
             }
         },
         getEditorLabel: function() {
-            return this.get("variable.evaluated").getEditorLabel();
+            var variable = this.get("variable.evaluated");
+            if (variable) {
+                return variable.getEditorLabel();
+            }
+            return null;
         }
 
     }, {
