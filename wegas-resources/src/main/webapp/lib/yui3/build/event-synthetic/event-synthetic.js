@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -104,6 +104,17 @@ Notifier.prototype.fire = function (e) {
 
     sub.context = thisObj || event.currentTarget || ce.host;
     ret = ce.fire.apply(ce, args);
+
+    // have to handle preventedFn and stoppedFn manually because
+    // Notifier CustomEvents are forced to emitFacade=false
+    if (e.prevented && ce.preventedFn) {
+        ce.preventedFn.apply(ce, args);
+    }
+
+    if (e.stopped && ce.stoppedFn) {
+        ce.stoppedFn.apply(ce, args);
+    }
+
     sub.context = thisObj; // reset for future firing
 
     // to capture callbacks that return false to stopPropagation.
@@ -838,4 +849,4 @@ Y.Event.define = function (type, config, force) {
 };
 
 
-}, '3.11.0', {"requires": ["node-base", "event-custom-complex"]});
+}, '3.12.0', {"requires": ["node-base", "event-custom-complex"]});

@@ -22,7 +22,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
         _inputex: {
             _type: HIDDEN
         }
-    }
+    };
 
     /**
      * ResourceDescriptor mapper
@@ -31,6 +31,13 @@ YUI.add('wegas-leaderway-entities', function(Y) {
         ATTRS: {
             "@class": {
                 value: "ResourceDescriptor"
+            },
+            title: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    label: "Resource name"
+                }
             },
             description: {
                 type: STRING,
@@ -219,8 +226,21 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         value: 1
                     }]
             },
-            getInstanceProperty: {
-                label: "Get instance's property",
+            getNumberInstanceProperty: {
+                label: "Get number instance's property",
+                returns: NUMBER,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }]
+            },
+            getStringInstanceProperty: {
+                label: "Get text instance's property",
                 returns: STRING,
                 arguments: [{
                         type: HIDDEN,
@@ -234,6 +254,23 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             },
             setInstanceProperty: {
                 label: "Set instance's property",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
+            addAtInstanceProperty: {
+                label: "Add at instance's property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -470,6 +507,10 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             "@class": {
                 value: "TaskDescriptor"
             },
+            title: {
+                type: STRING,
+                optional: true
+            },
             description: {
                 type: STRING,
                 format: HTML,
@@ -599,8 +640,20 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                 }
             }
         }, METHODS: {
-            getInstanceProperty: {
-                label: "Get instance's property",
+            getNumberInstanceProperty: {
+                label: "Get number instance's property",
+                returns: NUMBER,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+                    }]
+            },
+            getStringInstanceProperty: {
+                label: "Get text instance's property",
                 returns: STRING,
                 arguments: [{
                         type: HIDDEN,
@@ -614,6 +667,23 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             },
             setInstanceProperty: {
                 label: "Set instance's property",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
+            addAtInstanceProperty: {
+                label: "Add at instance's property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF

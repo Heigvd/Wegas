@@ -5,7 +5,6 @@
     "childVariableDescriptors": [{
             "@class": "NumberDescriptor",
             "name": "money",
-            "editorLabel": "Money",
             "label": "Money",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -20,7 +19,6 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "diceValue",
-            "editorLabel": "DiceValue",
             "label": "DiceValue",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -35,7 +33,6 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "turnOf",
-            "editorLabel": "TurnOf",
             "label": "TurnOf",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -50,7 +47,6 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "position",
-            "editorLabel": "Position",
             "label": "Position",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -65,7 +61,6 @@
         }, {
             "@class": "StringDescriptor",
             "name": "state",
-            "editorLabel": "State",
             "label": "State",
             "defaultInstance": {
                 "@class": "StringInstance",
@@ -79,7 +74,6 @@
         }, {
             "@class": "StringDescriptor",
             "name": "restart",
-            "editorLabel": "",
             "label": "Restart",
             "defaultInstance": {
                 "@class": "StringInstance",
@@ -93,7 +87,6 @@
         }, {
             "@class": "ListDescriptor",
             "name": "boxValue",
-            "editorLabel": "",
             "label": "BoxValue",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -105,7 +98,6 @@
             "items": [{
                     "@class": "ObjectDescriptor",
                     "name": "box1",
-                    "editorLabel": "box1",
                     "label": "box1",
                     "defaultInstance": {
                         "@class": "ObjectInstance",
@@ -123,7 +115,6 @@
                 }, {
                     "@class": "ObjectDescriptor",
                     "name": "box2",
-                    "editorLabel": "box2",
                     "label": "box2",
                     "defaultInstance": {
                         "@class": "ObjectInstance",
@@ -141,7 +132,6 @@
                 }, {
                     "@class": "ObjectDescriptor",
                     "name": "box3",
-                    "editorLabel": "box3",
                     "label": "box3",
                     "defaultInstance": {
                         "@class": "ObjectInstance",
@@ -159,7 +149,6 @@
                 }, {
                     "@class": "ObjectDescriptor",
                     "name": "box4",
-                    "editorLabel": "box4",
                     "label": "box4",
                     "defaultInstance": {
                         "@class": "ObjectInstance",
@@ -177,7 +166,6 @@
                 }, {
                     "@class": "ObjectDescriptor",
                     "name": "box5",
-                    "editorLabel": "box5",
                     "label": "box5",
                     "defaultInstance": {
                         "@class": "ObjectInstance",
@@ -195,7 +183,6 @@
                 }, {
                     "@class": "ObjectDescriptor",
                     "name": "box6",
-                    "editorLabel": "box6",
                     "label": "box6",
                     "defaultInstance": {
                         "@class": "ObjectInstance",
@@ -213,7 +200,6 @@
                 }, {
                     "@class": "ObjectDescriptor",
                     "name": "box7",
-                    "editorLabel": "box7",
                     "label": "box7",
                     "defaultInstance": {
                         "@class": "ObjectInstance",

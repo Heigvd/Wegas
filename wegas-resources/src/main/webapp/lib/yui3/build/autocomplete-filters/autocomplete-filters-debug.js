@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -243,4 +243,4 @@ Filters = Y.mix(Y.namespace('AutoCompleteFilters'), {
 });
 
 
-}, '3.11.0', {"requires": ["array-extras", "text-wordbreak"]});
+}, '3.12.0', {"requires": ["array-extras", "text-wordbreak"]});

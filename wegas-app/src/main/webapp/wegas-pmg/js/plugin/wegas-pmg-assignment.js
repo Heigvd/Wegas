@@ -160,7 +160,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 });
                 if (!taskExist) {
                     no = taskDesc.get("index");
-                    label = (taskDesc.get("label") || taskDesc.get("name") || "undefined");
+                    label = (taskDesc.get("title") || taskDesc.get("name") || "undefined");
                     array.push({
                         type: "Button",
                         label: no + ". " + label,

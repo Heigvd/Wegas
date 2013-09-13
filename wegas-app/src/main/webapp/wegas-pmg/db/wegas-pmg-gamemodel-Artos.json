@@ -6,7 +6,6 @@
         {
             "@class": "NumberDescriptor",
             "name": "managementApproval",
-            "editorLabel": "ManagementApproval",
             "label": "ManagementApproval",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -23,7 +22,6 @@
         {
             "@class": "NumberDescriptor",
             "name": "userApproval",
-            "editorLabel": "UserApproval",
             "label": "UserApproval",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -40,7 +38,6 @@
         {
             "@class": "NumberDescriptor",
             "name": "qualityImpacts",
-            "editorLabel": "Project Quality",
             "label": "Project Quality",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -57,8 +54,7 @@
         {
             "@class": "NumberDescriptor",
             "name": "projectFixedCosts",
-            "editorLabel": "Project FixedCosts",
-            "label": "Project FixedCosts",
+            "label": "Project fixed costs",
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "history": [],
@@ -74,7 +70,6 @@
         {
             "@class": "InboxDescriptor",
             "name": "inbox",
-            "editorLabel": "Inbox",
             "label": "Inbox",
             "defaultInstance": {
                 "@class": "InboxInstance",
@@ -89,7 +84,6 @@
         {
             "@class": "NumberDescriptor",
             "name": "currentPhase",
-            "editorLabel": "CurrentPhase",
             "label": "Current phase",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -102,62 +96,9 @@
             },
             "minValue": 0,
             "maxValue": 4
-        },
-        {
-            "@class": "NumberDescriptor",
-            "name": "actualCost",
-            "editorLabel": "actualCost",
-            "label": "actualCost",
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "history": [],
-                "value": 0
-            },
-            "scope": {
-                "@class": "TeamScope",
-                "broadcastScope": "PlayerScope"
-            },
-            "minValue": 0,
-            "maxValue": null
-        },
-        {
-            "@class": "NumberDescriptor",
-            "name": "planedValue",
-            "editorLabel": "planedValue",
-            "label": "planedValue",
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "history": [],
-                "value": 0
-            },
-            "scope": {
-                "@class": "TeamScope",
-                "broadcastScope": "PlayerScope"
-            },
-            "minValue": 0,
-            "maxValue": null
-        },
-        {
-            "@class": "NumberDescriptor",
-            "name": "earnedValue",
-            "editorLabel": "earnedValue",
-            "label": "earnedValue",
-            "defaultInstance": {
-                "@class": "NumberInstance",
-                "history": [],
-                "value": 0
-            },
-            "scope": {
-                "@class": "TeamScope",
-                "broadcastScope": "PlayerScope"
-            },
-            "minValue": 0,
-            "maxValue": null
-        },
-        {
+        }, {
             "@class": "ListDescriptor",
             "name": "actions",
-            "editorLabel": "Actions",
             "label": "Actions",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -172,7 +113,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "Actions phase 1",
-                    "editorLabel": "Actions phase 1",
                     "label": "Actions phase 1",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -187,7 +127,6 @@
                         {
                             "@class": "QuestionDescriptor",
                             "name": "rencontrerIng_EtCommercial_Dur_eT_ches",
-                            "editorLabel": "A01 - Rencontrer Ing. et commercial : durée tâches",
                             "label": "Rencontrer Ing. et commercial : durée tâches",
                             "defaultInstance": {
                                 "@class": "QuestionInstance",
@@ -205,7 +144,6 @@
                                 {
                                     "@class": "ChoiceDescriptor",
                                     "name": "variable_3",
-                                    "editorLabel": "result",
                                     "label": " ",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance",
@@ -263,7 +201,6 @@
                         {
                             "@class": "QuestionDescriptor",
                             "name": "rencontrerIng_EtCommercial_IdentifierT_ches",
-                            "editorLabel": "A03B - Rencontrer Ing. et commercial: identifier tâches",
                             "label": "Rencontrer Ing. et commercial: identifier tâches",
                             "defaultInstance": {
                                 "@class": "QuestionInstance",
@@ -281,7 +218,6 @@
                                 {
                                     "@class": "ChoiceDescriptor",
                                     "name": "variable",
-                                    "editorLabel": "Results",
                                     "label": " ",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance",
@@ -330,7 +266,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "Actions phase 2",
-                    "editorLabel": "Actions phase 2",
                     "label": "Actions phase 2",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -348,7 +283,6 @@
         {
             "@class": "ListDescriptor",
             "name": "questions",
-            "editorLabel": "Questions",
             "label": "Questions",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -363,7 +297,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "questionPhase1",
-                    "editorLabel": null,
                     "label": "Question phase 1",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -378,7 +311,6 @@
                         {
                             "@class": "ListDescriptor",
                             "name": "questionPeriod1",
-                            "editorLabel": null,
                             "label": "Question period 1",
                             "defaultInstance": {
                                 "@class": "NumberInstance",
@@ -393,7 +325,6 @@
                                 {
                                     "@class": "QuestionDescriptor",
                                     "name": "evaluationDesBesoinsDesMonteurs",
-                                    "editorLabel": "A102B - Evaluation des besoins des monteurs",
                                     "label": "Evaluation des besoins des monteurs",
                                     "defaultInstance": {
                                         "@class": "QuestionInstance",
@@ -411,7 +342,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "a_Rencontrer",
-                                            "editorLabel": "a) rencontrer",
                                             "label": "a) rencontrer",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -444,7 +374,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "b_RencontreBr_ve",
-                                            "editorLabel": "b) rencontre brève",
                                             "label": "b) rencontre brève",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -477,7 +406,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "c_Refuser",
-                                            "editorLabel": "c) refuser",
                                             "label": "c) refuser",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -513,7 +441,6 @@
                                 {
                                     "@class": "QuestionDescriptor",
                                     "name": "pr_sentationPrototypeUtilisateurs",
-                                    "editorLabel": "A103 - Présentation prototype utilisateurs",
                                     "label": "Présentation prototype utilisateurs",
                                     "defaultInstance": {
                                         "@class": "QuestionInstance",
@@ -531,7 +458,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "a_Accepter",
-                                            "editorLabel": "a) accepter",
                                             "label": "a) accepter",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -564,7 +490,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "b_Refuser",
-                                            "editorLabel": "b) refuser",
                                             "label": "b) refuser",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -600,7 +525,6 @@
                                 {
                                     "@class": "QuestionDescriptor",
                                     "name": "evaluationDesBesoinsDesClients",
-                                    "editorLabel": "A110B - Evaluation des besoins des clients",
                                     "label": "Evaluation des besoins des clients",
                                     "defaultInstance": {
                                         "@class": "QuestionInstance",
@@ -618,7 +542,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "a_EffectuerL__valuation",
-                                            "editorLabel": "a) effectuer l'évaluation",
                                             "label": "a) effectuer l'évaluation",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -651,7 +574,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "b__valuationSommaire",
-                                            "editorLabel": "b) évaluation sommaire",
                                             "label": "b) évaluation sommaire",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -684,7 +606,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "c_Refuser_1",
-                                            "editorLabel": "c) refuser",
                                             "label": "c) refuser",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -720,7 +641,6 @@
                                 {
                                     "@class": "QuestionDescriptor",
                                     "name": "a112_AnalysesDeFaisabilit_",
-                                    "editorLabel": "A112 - Analyses de faisabilité",
                                     "label": "Analyses de faisabilité",
                                     "defaultInstance": {
                                         "@class": "QuestionInstance",
@@ -738,7 +658,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "a_March__Technique_Economique",
-                                            "editorLabel": "",
                                             "label": "a) Marché - Technique - Economique",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -771,7 +690,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "b_Technique_Economique_March_",
-                                            "editorLabel": "b) Technique - Economique - Marché",
                                             "label": "b) Technique - Economique - Marché",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -804,7 +722,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "c_Economique_Technique_March_",
-                                            "editorLabel": "",
                                             "label": "c) Economique - Technique - Marché",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -837,7 +754,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "d_NeSaisPas",
-                                            "editorLabel": "",
                                             "label": "d) Ne sais pas",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -873,7 +789,6 @@
                                 {
                                     "@class": "QuestionDescriptor",
                                     "name": "a113B_AssuranceTauxDeChange",
-                                    "editorLabel": "A113B - Assurance taux de change",
                                     "label": "Assurance taux de change",
                                     "defaultInstance": {
                                         "@class": "QuestionInstance",
@@ -891,7 +806,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "a_Accepter_1",
-                                            "editorLabel": "a) accepter",
                                             "label": "a) accepter",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -924,7 +838,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "b_Refuser_1",
-                                            "editorLabel": "b) refuser",
                                             "label": "b) refuser",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -960,7 +873,6 @@
                                 {
                                     "@class": "QuestionDescriptor",
                                     "name": "faisabilit_DeMarch_",
-                                    "editorLabel": "A151 - Faisabilité de marché",
                                     "label": "Faisabilité de marché",
                                     "defaultInstance": {
                                         "@class": "QuestionInstance",
@@ -978,7 +890,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "a_R_aliserL__tude",
-                                            "editorLabel": "a) réaliser l'étude",
                                             "label": "a) réaliser l'étude",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -1011,7 +922,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "b_R_aliserUne_tudeSommaire",
-                                            "editorLabel": "b) réaliser une étude sommaire",
                                             "label": "b) réaliser une étude sommaire",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -1044,7 +954,6 @@
                                         {
                                             "@class": "SingleResultChoiceDescriptor",
                                             "name": "c_NePasR_aliserL__tude",
-                                            "editorLabel": "c) ne pas réaliser l'étude",
                                             "label": "c) ne pas réaliser l'étude",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance",
@@ -1082,7 +991,6 @@
                         {
                             "@class": "ListDescriptor",
                             "name": "Questions period 2",
-                            "editorLabel": "Questions period 2",
                             "label": "Questions period 2",
                             "defaultInstance": {
                                 "@class": "NumberInstance",
@@ -1102,7 +1010,6 @@
         {
             "@class": "ListDescriptor",
             "name": "tasks",
-            "editorLabel": "Tasks",
             "label": "Tasks",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -1115,7 +1022,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "ChoixEnvironnementDéveloppement",
-                    "editorLabel": "Choix environnement développement",
                     "label": "Choix environnement développement",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1174,7 +1080,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "AnalyseExistant",
-                    "editorLabel": "Analyse existant",
                     "label": "Analyse existant",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1233,7 +1138,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "AnalyseBesoins",
-                    "editorLabel": "Analyse besoins",
                     "label": "Analyse besoins",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1301,7 +1205,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "DossierSpécifications",
-                    "editorLabel": "Dossier spécification",
                     "label": "Dossier spécification",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1360,7 +1263,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "ModélisationDonnées",
-                    "editorLabel": "Modélisation données",
                     "label": "Modélisation données",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1419,7 +1321,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "ModélisationTraitements",
-                    "editorLabel": "Modélisation traitements",
                     "label": "Modélisation traitements",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1487,7 +1388,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "ModélisationIHM",
-                    "editorLabel": "Modélisation IHM",
                     "label": "Modélisation IHM",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1546,7 +1446,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "ProgrammationBD",
-                    "editorLabel": "Programmation BD",
                     "label": "Programmation BD",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1605,7 +1504,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "ProgrammationTraitements",
-                    "editorLabel": "Programmation traitements",
                     "label": "Programmation traitements",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1673,7 +1571,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "ProgrammationIHM",
-                    "editorLabel": "Programmation IHM",
                     "label": "Programmation IHM",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1732,7 +1629,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "PromotionSystème",
-                    "editorLabel": "Promotion du système",
                     "label": "Promotion du système",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1800,7 +1696,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "Tests",
-                    "editorLabel": "Tests",
                     "label": "Tests",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1868,7 +1763,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "ImplantationMachine",
-                    "editorLabel": "Implantation machine",
                     "label": "Implantation machine",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1936,7 +1830,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "PrototypeUtilisateur",
-                    "editorLabel": "Prototype utilisateur",
                     "label": "Prototype utilisateur",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1995,7 +1888,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "CorrectionModélisationTraitements",
-                    "editorLabel": "Correction \"modélisation des traitements\"",
                     "label": "Correction \"modélisation des traitements\"",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -2054,7 +1946,6 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "CorrectionProgrammationTraitements",
-                    "editorLabel": "Correction programmation traitements",
                     "label": "Correction programmation traitements",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -2115,7 +2006,6 @@
         {
             "@class": "ListDescriptor",
             "name": "employees",
-            "editorLabel": "Employees",
             "label": "Employees",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -2128,7 +2018,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "commercial",
-                    "editorLabel": "Commercial",
                     "label": "Commercial",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -2141,7 +2030,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Gaelle",
-                            "editorLabel": "Gaelle",
                             "label": "Gaelle",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2183,7 +2071,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Irène",
-                            "editorLabel": "Irène",
                             "label": "Irène",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2234,7 +2121,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Yves",
-                            "editorLabel": "Yves",
                             "label": "Yves",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2291,7 +2177,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "René",
-                            "editorLabel": "René",
                             "label": "René",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2351,7 +2236,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Claude",
-                            "editorLabel": "Claude",
                             "label": "Claude",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2417,7 +2301,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Luc",
-                            "editorLabel": "Luc",
                             "label": "Luc",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2488,7 +2371,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "consultantIT",
-                    "editorLabel": "Consultant IT",
                     "label": "Consultant IT",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -2501,7 +2383,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Jean",
-                            "editorLabel": "Jean",
                             "label": "Jean",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2546,7 +2427,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Kurt",
-                            "editorLabel": "Kurt",
                             "label": "Kurt",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2594,7 +2474,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "André",
-                            "editorLabel": "André",
                             "label": "André",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2647,7 +2526,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "informaticienHardware",
-                    "editorLabel": "Informaticien Hardware",
                     "label": "Informaticien Hardware",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -2660,7 +2538,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Fabien",
-                            "editorLabel": "Fabien",
                             "label": "Fabien",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2714,7 +2591,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Murielle",
-                            "editorLabel": "Murielle",
                             "label": "Murielle",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2771,7 +2647,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Bastien",
-                            "editorLabel": "Bastien",
                             "label": "Bastien",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2831,7 +2706,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Hervé",
-                            "editorLabel": "Hervé",
                             "label": "Hervé",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2894,7 +2768,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Pierre",
-                            "editorLabel": "Pierre",
                             "label": "Pierre",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -2960,7 +2833,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Zoé",
-                            "editorLabel": "Zoé",
                             "label": "Zoé",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3031,7 +2903,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "informaticienLogiciel",
-                    "editorLabel": "Informaticien Logiciel",
                     "label": "Informaticien Logiciel",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -3044,7 +2915,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Philippe",
-                            "editorLabel": "Philippe",
                             "label": "Philippe",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3115,7 +2985,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Tom",
-                            "editorLabel": "Tom",
                             "label": "Tom",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3188,7 +3057,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Diane",
-                            "editorLabel": "Diane",
                             "label": "Diane",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3263,7 +3131,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Noémie",
-                            "editorLabel": "Noémie",
                             "label": "Noémie",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3340,7 +3207,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Urs",
-                            "editorLabel": "Urs",
                             "label": "Urs",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3419,7 +3285,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Xavier",
-                            "editorLabel": "Xavier",
                             "label": "Xavier",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3500,7 +3365,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Yvonne",
-                            "editorLabel": "Yvonne",
                             "label": "Yvonne",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3583,7 +3447,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Sébastien",
-                            "editorLabel": "Sébastien",
                             "label": "Sébastien",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3670,7 +3533,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "monteur",
-                    "editorLabel": "Monteur",
                     "label": "Monteur",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -3683,7 +3545,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Quentin",
-                            "editorLabel": "Quentin",
                             "label": "Quentin",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3770,7 +3631,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Wolf",
-                            "editorLabel": "Wolf",
                             "label": "Wolf",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3861,7 +3721,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "webDesigner",
-                    "editorLabel": "Web Designer",
                     "label": "Web Designer",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -3874,7 +3733,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Karim",
-                            "editorLabel": "Karim",
                             "label": "Karim",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -3965,7 +3823,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Valérie",
-                            "editorLabel": "Valérie",
                             "label": "Valérie",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -4057,7 +3914,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Orianne",
-                            "editorLabel": "Orianne",
                             "label": "Orianne",
                             "defaultInstance": {
                                 "@class": "ResourceInstance",
@@ -4158,7 +4014,6 @@
         {
             "@class": "ListDescriptor",
             "name": "timeCards",
-            "editorLabel": "Time cards",
             "label": "Time cards",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -4171,7 +4026,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "cardsPhase1",
-                    "editorLabel": "Cards phase 1",
                     "label": "Cards phase 1",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4188,7 +4042,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "cardsPhase2",
-                    "editorLabel": "Cards phase 2",
                     "label": "Cards phase 2",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4205,7 +4058,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "cardsPhase3",
-                    "editorLabel": "Cards phase 3",
                     "label": "Cards phase 3",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4222,7 +4074,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "cardsPhase4",
-                    "editorLabel": "Cards phase 4",
                     "label": "Cards phase 4",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4241,7 +4092,6 @@
         {
             "@class": "ListDescriptor",
             "name": "currentPeriod",
-            "editorLabel": "CurrentPeriod",
             "label": "Current period",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -4254,7 +4104,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase1",
-                    "editorLabel": "periodPhase1",
                     "label": "periodPhase1",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4271,7 +4120,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase2",
-                    "editorLabel": "periodPhase2",
                     "label": "periodPhase2",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4288,7 +4136,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase3",
-                    "editorLabel": "periodPhase3",
                     "label": "periodPhase3",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4305,7 +4152,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase1_4",
-                    "editorLabel": "periodPhase1_4",
                     "label": "periodPhase1_4",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4324,7 +4170,6 @@
         {
             "@class": "ListDescriptor",
             "name": "pageUtilities",
-            "editorLabel": "!! page utilities",
             "label": "!! page utilities",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -4337,7 +4182,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "costs",
-                    "editorLabel": "costs",
                     "label": "costs",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4350,11 +4194,54 @@
                     },
                     "minValue": 0,
                     "maxValue": 200
-                },
-                {
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "actualCost",
+                    "label": "actualCost",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "planedValue",
+                    "label": "planedValue",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "earnedValue",
+                    "label": "earnedValue",
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null
+                }, {
                     "@class": "NumberDescriptor",
                     "name": "quality",
-                    "editorLabel": "quality",
                     "label": "quality",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4371,7 +4258,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "delay",
-                    "editorLabel": "delay",
                     "label": "delay",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4388,7 +4274,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "ganttPage",
-                    "editorLabel": null,
                     "label": "ganttPage",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4405,7 +4290,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "taskPage",
-                    "editorLabel": null,
                     "label": "taskPage",
                     "defaultInstance": {
                         "@class": "NumberInstance",
@@ -4433,7 +4317,7 @@
     "clientScriptLibrary": {
         "default": {
             "@class": "GameModelContent",
-            "content": "Y.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({type:\"AddEntityChildButton\",label:\"Resource\",targetClass:\"ResourceDescriptor\"}, {type:\"AddEntityChildButton\",label:\"Task\",targetClass:\"TaskDescriptor\"});"
+            "content": "Y.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({type:\"AddEntityChildButton\",label:\"Resource\",targetClass:\"ResourceDescriptor\"}, {type:\"AddEntityChildButton\",label:\"Task\",targetClass:\"TaskDescriptor\"});\nY.Wegas.persistence.TaskDescriptor.METHODS.getNumberInstanceProperty = {\n                label: \"Get number instance's property\",\n                returns: \"number\",\n                arguments: [{\n                        type: \"hidden\",\n                        value: \"self\"\n                    }, {\n                        label: \"Key\",\n                        scriptType: \"string\",\n                        type: \"select\",\n                        choices: [{\n                                value: \"fixedCosts\"\n                            }, {\n                                value: \"wages\"\n                            },{\n                                value: \"bac\"\n                            },{\n                                value: \"unworkedHoursCosts\"\n                            },{\n                                value: \"predecessorsDependances\"\n                            },{\n                                value: \"quality\"\n                            },{\n                                value: \"completeness\"\n                            }]\n                    }]\n            }\nY.Wegas.persistence.ResourceDescriptor.METHODS.getNumberInstanceProperty = {\n                label: \"Get number instance's property\",\n                returns: \"number\",\n                arguments: [{\n                        type: \"hidden\",\n                        value: \"self\"\n                    }, {\n                        label: \"Key\",\n                        scriptType: \"string\",\n                        type: \"select\",\n                        choices: [{\n                                value: \"activityRate\"\n                            }, {\n                                value: \"wage\"\n                            }]\n                    }]\n            }"
         }
     },
     "properties": {

@@ -78,8 +78,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
 
             this.treeView.removeAll();
-
             cb.all(".wegas-smallmessage").remove();
+            
             if (treeNodes.length === 0) {
                 cb.append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
                 return;
@@ -205,16 +205,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
                             });
                             break;
 
-                        case 'List':
-                        case 'Folder':
-                        case "TaskList":
-                        case "InboxDisplay":
-                        case "Score":
-                        case "Layout":
-                        case "Dialogue":
-                            ret = ret.concat(this.genPageTreeViewElements(el));
-                            break;
-
                         default:
                             text = el.get(CLASS) + ': ' + el.get(NAME);
                             ret.push({
@@ -223,68 +213,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
                             });
                             break;
                     }
-                }
-            }
-            return ret;
-        },
-        /**
-         * @function
-         * @private
-         */
-        genPageTreeViewElements: function(elts) {
-            var ret = [], j, text, el;
-            if (!Y.Lang.isArray(elts)) {
-                elts = [elts];
-            }
-
-            for (j = 0; j < elts.length; j += 1) {
-                el = elts[j];
-                text = el.type + ': ' + (el.label || el.name || el.id || 'unnamed');
-                switch (el.type) {
-                    case 'List':
-                        ret.push({
-                            type: 'TreeNode',
-                            label: 'List: ' + (el.label || 'unnamed'),
-                            data: {
-                                entity: el
-                            },
-                            children: this.genPageTreeViewElements(el.children)
-                        });
-                        break;
-                    case 'VariableDisplay':
-                        text = 'Variable displayer: ' + (el.variable);
-                        ret.push({
-                            label: text,
-                            data: {
-                                entity: el
-                            }
-                        });
-                        break;
-                    case 'Text':
-                        ret.push({
-                            label: 'Text: ' + el.content.substring(0, 15) + "...",
-                            data: {
-                                entity: el
-                            }
-                        });
-                        break;
-                    case 'Button':
-                        ret.push({
-                            label: text,
-                            data: {
-                                entity: el
-                            }
-                        });
-                        break;
-                    default:
-                        ret.push({
-                            label: text,
-                            data: {
-                                entity: el
-                            }
-                        });
-                        break;
-
                 }
             }
             return ret;

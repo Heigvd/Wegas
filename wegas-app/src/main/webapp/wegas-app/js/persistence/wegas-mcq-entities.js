@@ -14,7 +14,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
             SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
-            HTML = "html", SCRIPT = "script",
+            HTML = "html", SCRIPT = "script", NUMBER = "number",
             IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
@@ -36,6 +36,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
             "@class": {
                 type: STRING,
                 value: "QuestionDescriptor"
+            },
+            title: {
+                type: STRING,
+                optional: true
             },
             allowMultipleReplies: {
                 value: false,
@@ -205,6 +209,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
             "@class": {
                 value: "ChoiceDescriptor"
             },
+            title: {
+                type: STRING,
+                optional: true
+            },
             description: {
                 type: STRING,
                 format: HTML,
@@ -233,7 +241,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         }
                     },
                     currentResultId: {
-                        type: STRING,
+                        type: NUMBER,
                         optional: true,
                         _inputex: {
                             _type: "entityarrayfieldselect",
@@ -302,7 +310,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: "entityarrayfieldselect"
+                        type: "entityarrayfieldselect",
+                        returnAttr: "id"
                     }]
             },
             activate: {
@@ -486,6 +495,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
     Wegas.persistence.Result = Y.Base.create("Result", Wegas.persistence.Entity, [], {
         getChoiceDescriptor: function() {
             return Wegas.Facade.VariableDescriptor.cache.findById(this.get("choiceDescriptorId"));
+        },
+        getLabel: function() {
+            return this.get("name");
         }
     }, {
         ATTRS: {
@@ -497,6 +509,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             answer: {
                 type: STRING,
+                optional: true,
                 format: HTML
             },
             impact: {

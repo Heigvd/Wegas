@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1303,12 +1303,17 @@ if (config.injected || YUI.Env.windowLoaded) {
 // Process onAvailable/onContentReady items when when the DOM is ready in IE
 if (Y.UA.ie) {
     Y.on(EVENT_READY, Event._poll);
-}
 
-try {
-    add(win, "unload", onUnload);
-} catch(e) {
-    /*jshint maxlen:300*/
+    // In IE6 and below, detach event handlers when the page is unloaded in
+    // order to try and prevent cross-page memory leaks. This isn't done in
+    // other browsers because a) it's not necessary, and b) it breaks the
+    // back/forward cache.
+    if (Y.UA.ie < 7) {
+        try {
+            add(win, "unload", onUnload);
+        } catch(e) {
+        }
+    }
 }
 
 Event.Custom = Y.CustomEvent;
@@ -1374,4 +1379,4 @@ Y.Env.evt.plugins.contentready = {
 };
 
 
-}, '3.11.0', {"requires": ["event-custom-base"]});
+}, '3.12.0', {"requires": ["event-custom-base"]});

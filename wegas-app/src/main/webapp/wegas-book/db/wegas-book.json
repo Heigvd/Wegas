@@ -8,7 +8,6 @@
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",
         "name":"combatSkill",
-        "editorLabel":"Talent de combat",
         "label":"Combat skill",
         "defaultInstance":{
             "@class":"NumberInstance",
@@ -22,7 +21,6 @@
     }, {
         "@class":"NumberDescriptor",
         "name":"stamina",
-        "editorLabel":"Vigueur",
         "label":"Stamina",
         "defaultInstance":{
             "@class":"NumberInstance",
@@ -36,7 +34,6 @@
     },{
         "@class":"NumberDescriptor",
         "name":"currentPage",
-        "editorLabel":"currentPage",
         "label":"currentPage",
         "defaultInstance":{
             "@class":"NumberInstance",

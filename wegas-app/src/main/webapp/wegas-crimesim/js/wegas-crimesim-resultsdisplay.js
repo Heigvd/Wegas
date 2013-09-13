@@ -187,8 +187,8 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                         this.unreadEvidences.push(replyData.id);
                     }
 
-                    replyData.evidence = questions[i].getLabel();
-                    replyData.analyis = reply.getChoiceDescriptor().getLabel();
+                    replyData.evidence = questions[i].get("title");
+                    replyData.analyis = reply.getChoiceDescriptor().get("title");
 
                     replyData.startTime += 1;
 

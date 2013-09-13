@@ -159,6 +159,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         /**
          * @lends Y.Wegas.GaugeDisplay#
          */
+        EDITORNAME: "Gauge",
         /**
          * @field
          * @static

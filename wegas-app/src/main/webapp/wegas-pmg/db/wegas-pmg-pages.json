@@ -286,15 +286,7 @@
                                 "cssClass": "actions",
                                 "disabled": false,
                                 "label": "",
-                                "plugins": [
-                                    {
-                                        "fn": "UnreadCount",
-                                        "cfg": {
-                                            "variable": {
-                                                "expr": "actions.items[currentPhase.value].descriptorId"
-                                            }
-                                        }
-                                    }, {
+                                "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 6,

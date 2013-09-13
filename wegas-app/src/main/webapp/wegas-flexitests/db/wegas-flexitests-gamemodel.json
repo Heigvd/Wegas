@@ -12,9 +12,14 @@
                 }
             ],
             "fixPoint": 1000,
-            "random": true,
+            "random": false,
             "popupAfter": 3,
             "popupContent": "<p>A popup shown after 3 questions</p>",
+            "endImpact": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "VariableDescriptorFacade.find(gameModel, \"currentPage\").setValue(self, 4);"
+            },
             "children": [
                 {
                     "id": "leftElement",
@@ -25,13 +30,13 @@
                             "cfg": {
                                 "time": "0,1000"
                             }
-                        }, 
+                        },
                         {
                             "fn": "ShowAfter",
                             "cfg": {
                                 "time": "500"
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSPosition",
                             "cfg": {
@@ -44,7 +49,7 @@
                                     "right": ""
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSSize",
                             "cfg": {
@@ -54,12 +59,8 @@
                         }
                     ],
                     "children": [
-                        {
-                            "type": "Text",
-                            "content": "Male"
-                        }
                     ]
-                }, 
+                },
                 {
                     "id": "rightElement",
                     "type": "ChoiceList",
@@ -69,13 +70,13 @@
                             "cfg": {
                                 "time": "0,1500"
                             }
-                        }, 
+                        },
                         {
                             "fn": "ShowAfter",
                             "cfg": {
                                 "time": "1000"
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSPosition",
                             "cfg": {
@@ -88,7 +89,7 @@
                                     "right": "50pt"
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSSize",
                             "cfg": {
@@ -103,7 +104,7 @@
                             "content": "<p>Female</p>"
                         }
                     ]
-                }, 
+                },
                 {
                     "id": "centerElement",
                     "type": "ChoiceList",
@@ -113,26 +114,26 @@
                             "cfg": {
                                 "time": "0"
                             }
-                        }, 
+                        },
                         {
                             "fn": "ShowAfter",
                             "cfg": {
                                 "time": "1500"
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSPosition",
                             "cfg": {
                                 "styles": {
                                     "position": "absolute",
                                     "zIndex": "10",
-                                    "top": "300px",
-                                    "left": "300px",
+                                    "top": "258px",
+                                    "left": "338px",
                                     "bottom": "",
-                                    "right": "300px"
+                                    "right": "262px"
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSSize",
                             "cfg": {
@@ -153,7 +154,7 @@
                                 }
                             ],
                             "url": "/hectorPerplexe.png"
-                        }, 
+                        },
                         {
                             "type": "Image",
                             "plugins": [
@@ -165,7 +166,7 @@
                                 }
                             ],
                             "url": "/jessicaPerplexe.png"
-                        }, 
+                        },
                         {
                             "type": "Image",
                             "plugins": [
@@ -177,7 +178,7 @@
                                 }
                             ],
                             "url": "/lucienPortrait.png"
-                        }, 
+                        },
                         {
                             "type": "Image",
                             "plugins": [
@@ -189,7 +190,7 @@
                                 }
                             ],
                             "url": "/danielaConfiant.png"
-                        }, 
+                        },
                         {
                             "type": "Image",
                             "plugins": [
@@ -203,34 +204,7 @@
                             "url": "/fernandPensif.png"
                         }
                     ]
-                }, 
-                {
-                    "type": "Image",
-                    "cssClass": "fix-point",
-                    "plugins": [
-                        {
-                            "fn": "CSSPosition",
-                            "cfg": {
-                                "styles": {
-                                    "position": "absolute",
-                                    "zIndex": "10",
-                                    "top": "250pt",
-                                    "left": "350pt",
-                                    "bottom": "",
-                                    "right": ""
-                                }
-                            }
-                        }, 
-                        {
-                            "fn": "CSSSize",
-                            "cfg": {
-                                "styles": {
-                                }
-                            }
-                        }
-                    ],
-                    "url": "/fix-point/fix_red.png"
-                }, 
+                },
                 {
                     "id": "flexi-mcq",
                     "type": "FlexitestsMCQ",
@@ -247,11 +221,13 @@
                                     "right": "200px"
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "CSSSize",
                             "cfg": {
                                 "styles": {
+                                    "width": "",
+                                    "height": ""
                                 }
                             }
                         }
@@ -261,6 +237,33 @@
                     "variable": {
                         "name": "results"
                     }
+                }, 
+                {
+                    "type": "Image",
+                    "cssClass": "fix-point",
+                    "plugins": [
+                        {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "344px",
+                                    "left": "472px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        },
+                        {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                }
+                            }
+                        }
+                    ],
+                    "url": "/fix-point/fix_red.png"
                 }
             ],
             "@name": "test"
@@ -273,11 +276,11 @@
                     "type": "Text",
                     "cssClass": "flexitests-title",
                     "content": "<p>FlexiTests</p>"
-                }, 
+                },
                 {
                     "type": "Text",
                     "content": "_INSTRUCTIONS_"
-                }, 
+                },
                 {
                     "id": 2,
                     "type": "Form",
@@ -290,7 +293,7 @@
                                     "name": "demographics"
                                 }
                             }
-                        }, 
+                        },
                         {
                             "fn": "ExecuteScriptAction",
                             "cfg": {
@@ -310,7 +313,7 @@
                                 "label": "Name",
                                 "type": "string",
                                 "value": ""
-                            }, 
+                            },
                             {
                                 "name": "gender",
                                 "label": "Gender",
@@ -318,7 +321,7 @@
                                     {
                                         "value": "m",
                                         "label": "M"
-                                    }, 
+                                    },
                                     {
                                         "value": "f",
                                         "label": "F"
@@ -326,7 +329,7 @@
                                 ],
                                 "type": "select",
                                 "value": "m"
-                            }, 
+                            },
                             {
                                 "name": "date",
                                 "type": "now",
@@ -341,6 +344,7 @@
             "type": "PageLoader",
             "cssClass": "flexitests",
             "pageLoaderId": "mainarea",
+            "defaultPageId": "2",
             "variable": {
                 "name": "currentPage"
             },
@@ -377,7 +381,7 @@
                     },
                     "simpleMode": true,
                     "testPage": "3"
-                }, 
+                },
                 {
                     "type": "Text",
                     "content": "<p>Score table</p>\n<p>80-100 % Excellent</p>\n<p>60-80 % Good</p>\n<p>40-60 % Satisfying</p>\n<p>0-40 % Bad</p>"
@@ -391,10 +395,15 @@
         {
             "@class": "NumberDescriptor",
             "name": "currentPage",
-            "editorLabel": "Page",
             "label": "Page",
             "defaultInstance": {
                 "@class": "NumberInstance",
+                "history": [
+                    2.0, 
+                    2.0, 
+                    2.0, 
+                    2.0
+                ],
                 "value": 2.0
             },
             "scope": {
@@ -403,39 +412,10 @@
             },
             "minValue": 2,
             "maxValue": null
-        }, 
-        {
-            "@class": "TriggerDescriptor",
-            "name": "end",
-            "editorLabel": "End",
-            "label": "End",
-            "defaultInstance": {
-                "@class": "TriggerInstance",
-                "currentStateId": 1,
-                "enabled": true,
-                "transitionHistory": [
-                ]
-            },
-            "scope": {
-                "@class": "PlayerScope",
-                "broadcastScope": "TeamScope"
-            },
-            "oneShot": true,
-            "triggerEvent": {
-                "@class": "Script",
-                "content": "VariableDescriptorFacade.find(gameModel, \"results\").size(self)>4",
-                "language": "JavaScript"
-            },
-            "postTriggerEvent": {
-                "@class": "Script",
-                "content": "VariableDescriptorFacade.find(gameModel, \"currentPage\").setValue(self, 4);",
-                "language": "JavaScript"
-            }
-        }, 
+        },
         {
             "@class": "ObjectDescriptor",
             "name": "results",
-            "editorLabel": "Test",
             "label": "Test",
             "defaultInstance": {
                 "@class": "ObjectInstance",
@@ -453,11 +433,10 @@
                 "2": "OPTION2",
                 "1": "OPTION1"
             }
-        }, 
+        },
         {
             "@class": "ObjectDescriptor",
             "name": "demographics",
-            "editorLabel": "demographics",
             "label": "demographics",
             "defaultInstance": {
                 "@class": "ObjectInstance",
@@ -487,13 +466,13 @@
         "load": {
             "@class": "GameModelContent",
             "contentType": null,
-            "content": "Y.use([\"wegas-flexitests-controller\", \"wegas-text\", \"wegas-image\", \"wegas-choicelist\"], function (Z) {\r\n    Y.Wegas.FlexitestsController.EDITMENU = [{\r\n            type : \"Button\",\r\n            label : \"Properties\",\r\n            cssClass : \"editor-exploreGameModel-button\",\r\n            plugins : [{\r\n                    fn : \"EditWidgetAction\"\r\n                }\r\n            ]\r\n        }, {\r\n            type : \"Button\",\r\n            label : \"Add\",\r\n            cssClass : \"editor-exploreGameModel-button\",\r\n            plugins : [{\r\n                    \"fn\" : \"WidgetMenu\",\r\n                    \"cfg\" : {\r\n                        \"menuCfg\" : {\r\n                            points : [\"tl\", \"tr\"]\r\n                        },\r\n                        \"event\" : \"mouseenter\",\r\n                        \"children\" : [{\r\n                                type : \"Button\",\r\n                                label : \"Single choice list\",\r\n                                plugins : [{\r\n                                        fn : \"AddChildWidgetAction\",\r\n                                        cfg : {\r\n                                            \"childType\" : \"ChoiceList\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }, {\r\n                                type : \"Button\",\r\n                                label : \"Image (fix point)\",\r\n                                plugins : [{\r\n                                        fn : \"AddChildWidgetAction\",\r\n                                        cfg : {\r\n                                            \"childType\" : \"Image\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }\r\n                        ]\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    ];\r\n    Y.Wegas.ChoiceList.EDITMENU = [{\r\n            type : \"Button\",\r\n            label : \"Properties\",\r\n            cssClass : \"editor-exploreGameModel-button\",\r\n            plugins : [{\r\n                    fn : \"EditWidgetAction\"\r\n                }\r\n            ]\r\n        }, {\r\n            type : \"Button\",\r\n            label : \"Add\",\r\n            cssClass : \"editor-exploreGameModel-button\",\r\n            plugins : [{\r\n                    \"fn\" : \"WidgetMenu\",\r\n                    \"cfg\" : {\r\n                        \"menuCfg\" : {\r\n                            points : [\"tl\", \"tr\"]\r\n                        },\r\n                        \"event\" : \"mouseenter\",\r\n                        \"children\" : [{\r\n                                type : \"Button\",\r\n                                label : \"Text\",\r\n                                plugins : [{\r\n                                        fn : \"AddChildWidgetAction\",\r\n                                        cfg : {\r\n                                            \"childType\" : \"Text\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }, {\r\n                                type : \"Button\",\r\n                                label : \"Image\",\r\n                                plugins : [{\r\n                                        fn : \"AddChildWidgetAction\",\r\n                                        cfg : {\r\n                                            \"childType\" : \"Image\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }\r\n                        ]\r\n                    }\r\n                }\r\n            ]\r\n        }, {\r\n            type : \"Button\",\r\n            label : \"Delete\",\r\n            cssClass : \"editor-exploreGameModel-button\",\r\n            plugins : [{\r\n                    fn : \"DeleteWidgetAction\"\r\n                }\r\n            ]\r\n        }\r\n    ];\r\n    Y.Wegas.List.EDITMENU = [{\r\n            type : \"Button\",\r\n            label : \"Properties\",\r\n            cssClass : \"editor-exploreGameModel-button\",\r\n            plugins : [{\r\n                    fn : \"EditWidgetAction\"\r\n                }\r\n            ]\r\n        }, {\r\n            type : \"Button\",\r\n            label : \"Add\",\r\n            cssClass : \"editor-exploreGameModel-button\",\r\n            plugins : [{\r\n                    \"fn\" : \"WidgetMenu\",\r\n                    \"cfg\" : {\r\n                        \"menuCfg\" : {\r\n                            points : [\"tl\", \"tr\"]\r\n                        },\r\n                        \"event\" : \"mouseenter\",\r\n                        \"children\" : [{\r\n                                type : \"Button\",\r\n                                label : \"Text\",\r\n                                plugins : [{\r\n                                        fn : \"AddChildWidgetAction\",\r\n                                        cfg : {\r\n                                            \"childType\" : \"Text\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }, {\r\n                                type : \"Button\",\r\n                                label : \"Form\",\r\n                                plugins : [{\r\n                                        fn : \"AddChildWidgetAction\",\r\n                                        cfg : {\r\n                                            \"childType\" : \"Form\"\r\n                                      }\r\n                                    }\r\n                                ]\r\n                            }, {\r\n                                type : \"Button\",\r\n                              label : \"Results\",\r\n                                plugins : [{\r\n                                        fn : \"AddChildWidgetAction\",\r\n                                        cfg : {\r\n                                            \"childType\" : \"FlexitestsResults\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }\r\n\r\n                        ]\r\n                    }\r\n                }\r\n            ]\r\n        }, {\r\n            type : \"Button\",\r\n            label : \"Delete\",\r\n            cssClass : \"editor-exploreGameModel-button\",\r\n            plugins : [{\r\n                    fn : \"DeleteWidgetAction\"\r\n                }\r\n            ]\r\n        }\r\n    ];\r\n    Y.Wegas.Image.ATTRS.plugins = Y.clone(Y.Wegas.Text.ATTRS.plugins);\r\n    Y.Wegas.Image.ATTRS.plugins._inputex.items.push({\r\n        type : \"Button\",\r\n        label : \"Flexitests, expected response\",\r\n        data : \"FlexiResponse\"\r\n    });\r\n   });\r\n"
+            "content": "/*\r\n * Wegas\r\n * http://wegas.albasim.ch\r\n *\r\n * Copyright (c) 2013 School of Business and Engineering Vaud, Comem\r\n * Licensed under the MIT License\r\n */\r\n\r\n/**\r\n * @fileOverview \r\n * @author Cyril Junod <cyril.junod at gmail.com>\r\n */\r\n/*global Y */\r\nY.use([\"wegas-flexitests-controller\", \"wegas-text\", \"wegas-image\", \"wegas-choicelist\"], function(Z) {\r\n    \"use strict\";\r\n    Y.Wegas.FlexitestsController.EDITMENU = [{\r\n            type: \"Button\",\r\n            label: \"Properties\",\r\n            cssClass: \"editor-exploreGameModel-button\",\r\n            plugins: [{\r\n                    fn: \"EditWidgetAction\"\r\n                }\r\n            ]\r\n        }, {\r\n            type: \"Button\",\r\n            label: \"Add\",\r\n            cssClass: \"editor-exploreGameModel-button\",\r\n            plugins: [{\r\n                    \"fn\": \"WidgetMenu\",\r\n                    \"cfg\": {\r\n                        \"menuCfg\": {\r\n                            points: [\"tl\", \"tr\"]\r\n                        },\r\n                        \"event\": \"mouseenter\",\r\n                        \"children\": [{\r\n                                type: \"Button\",\r\n                                label: \"Single choice list\",\r\n                                plugins: [{\r\n                                        fn: \"AddChildWidgetAction\",\r\n                                        cfg: {\r\n                                            \"childType\": \"ChoiceList\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }, {\r\n                                type: \"Button\",\r\n                                label: \"Image (fix point)\",\r\n                                plugins: [{\r\n                                        fn: \"AddChildWidgetAction\",\r\n                                        cfg: {\r\n                                            \"childCfg\": {\r\n                                                \"type\": \"Image\",\r\n                                                \"cssClass\": \"fix-point\",\r\n                                                \"url\": \"/fix-point/fix_red.png\",\r\n                                                \"plugins\": [{\r\n                                                        \"fn\": \"CSSPosition\",\r\n                                                        \"cfg\": {\r\n                                                            \"styles\": {\r\n                                                                \"position\": \"absolute\",\r\n                                                                \"top\": \"344px\",\r\n                                                                \"left\": \"472px\"\r\n                                                            }\r\n                                                        }\r\n                                                    }]\r\n                                            }\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }\r\n                        ]\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    ];\r\n    Y.Wegas.ChoiceList.EDITMENU = [{\r\n            type: \"Button\",\r\n            label: \"Properties\",\r\n            cssClass: \"editor-exploreGameModel-button\",\r\n            plugins: [{\r\n                    fn: \"EditWidgetAction\"\r\n                }\r\n            ]\r\n        }, {\r\n            type: \"Button\",\r\n            label: \"Add\",\r\n            cssClass: \"editor-exploreGameModel-button\",\r\n            plugins: [{\r\n                    \"fn\": \"WidgetMenu\",\r\n                    \"cfg\": {\r\n                        \"menuCfg\": {\r\n                            points: [\"tl\", \"tr\"]\r\n                        },\r\n                        \"event\": \"mouseenter\",\r\n                        \"children\": [{\r\n                                type: \"Button\",\r\n                                label: \"Text\",\r\n                                plugins: [{\r\n                                        fn: \"AddChildWidgetAction\",\r\n                                        cfg: {\r\n                                            \"childType\": \"Text\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }, {\r\n                                type: \"Button\",\r\n                                label: \"Image\",\r\n                                plugins: [{\r\n                                        fn: \"AddChildWidgetAction\",\r\n                                        cfg: {\r\n                                            \"childType\": \"Image\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }\r\n                        ]\r\n                    }\r\n                }\r\n            ]\r\n        }, {\r\n            type: \"Button\",\r\n            label: \"Delete\",\r\n            cssClass: \"editor-exploreGameModel-button\",\r\n            plugins: [{\r\n                    fn: \"DeleteWidgetAction\"\r\n                }\r\n            ]\r\n        }\r\n    ];\r\n    Y.Wegas.List.EDITMENU = [{\r\n            type: \"Button\",\r\n            label: \"Properties\",\r\n            cssClass: \"editor-exploreGameModel-button\",\r\n            plugins: [{\r\n                    fn: \"EditWidgetAction\"\r\n                }\r\n            ]\r\n        }, {\r\n            type: \"Button\",\r\n            label: \"Add\",\r\n            cssClass: \"editor-exploreGameModel-button\",\r\n            plugins: [{\r\n                    \"fn\": \"WidgetMenu\",\r\n                    \"cfg\": {\r\n                        \"menuCfg\": {\r\n                            points: [\"tl\", \"tr\"]\r\n                        },\r\n                        \"event\": \"mouseenter\",\r\n                        \"children\": [{\r\n                                type: \"Button\",\r\n                                label: \"Text\",\r\n                                plugins: [{\r\n                                        fn: \"AddChildWidgetAction\",\r\n                                        cfg: {\r\n                                            \"childType\": \"Text\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }, {\r\n                                type: \"Button\",\r\n                                label: \"Form\",\r\n                                plugins: [{\r\n                                        fn: \"AddChildWidgetAction\",\r\n                                        cfg: {\r\n                                            \"childType\": \"Form\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }, {\r\n                                type: \"Button\",\r\n                                label: \"Results\",\r\n                                plugins: [{\r\n                                        fn: \"AddChildWidgetAction\",\r\n                                        cfg: {\r\n                                            \"childType\": \"FlexitestsResults\"\r\n                                        }\r\n                                    }\r\n                                ]\r\n                            }\r\n\r\n                        ]\r\n                    }\r\n                }\r\n            ]\r\n        }, {\r\n            type: \"Button\",\r\n            label: \"Delete\",\r\n            cssClass: \"editor-exploreGameModel-button\",\r\n            plugins: [{\r\n                    fn: \"DeleteWidgetAction\"\r\n                }\r\n            ]\r\n        }\r\n    ];\r\n    Y.Wegas.Image.ATTRS.plugins = Y.clone(Y.Wegas.Text.ATTRS.plugins);\r\n    Y.Wegas.Image.ATTRS.plugins._inputex.items.push({\r\n        type: \"Button\",\r\n        label: \"Flexitests, expected response\",\r\n        data: \"FlexiResponse\"\r\n    });\r\n});\r\n"
         }
     },
     "properties": {
         "cssUri": "wegas-flexitests/css/wegas-flexitests.css"
     },
-    "canEdit": true,
     "canInstantiate": true,
-    "canDuplicate": true
+    "canDuplicate": true,
+    "canEdit": true
 }

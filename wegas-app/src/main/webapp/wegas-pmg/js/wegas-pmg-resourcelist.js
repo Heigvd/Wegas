@@ -169,7 +169,7 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
             }
             return 0;
         },
-        
+
         getTasks: function (resourceDesc) {
             //add is a boolean to determine if target is remove or add a task
             //you can only add a task which isn't already added.
@@ -184,7 +184,7 @@ YUI.add("wegas-pmg-resourcelist", function (Y) {
             for (i = 0; i < items.length; i++) {
                 taskDesc = items[i];
                 no = (taskDesc.getInstance().get('properties').no || "");
-                label = (taskDesc.get("label") || taskDesc.get("name") || "undefined");
+                label = (taskDesc.get("title") || taskDesc.get("name") || "undefined");
                 description = (taskDesc.get("description") || "No description.");
                 array.push({
                     type: "Button",

@@ -63,12 +63,13 @@ YUI.add('wegas-pageeditor', function(Y) {
                         });
                         this.bind();
                         this.layoutbutton.show();
+                        this.get("host").get(CONTENTBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
                         host.get(CONTENTBOX).prepend(this.overlayMask);
                     } else {
                         this.detach();
                         host.toolbar.setStatusMessage("");
                         this.overlayMask.remove(false);
-                        this.highlightOverlay.hide();
+                        this.highlightOverlay.get(BOUNDINGBOX).remove(false);
                         this.layoutbutton.set("pressed", false);
                         this.layoutbutton.hide();
                     }
@@ -118,7 +119,6 @@ YUI.add('wegas-pageeditor', function(Y) {
                 event: ["click", "contextmenu"]
             });
             this.overlayMask.menu.getMenu().set("preventOverlap", false);
-            this.get("host").get(BOUNDINGBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
             host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
             this.fixedHandlers.push(this.doBefore("pageIdChange", function(e) {
                 if (this.get("host") === e.target) {

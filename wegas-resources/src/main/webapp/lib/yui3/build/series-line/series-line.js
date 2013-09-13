@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -117,4 +117,4 @@ Y.LineSeries = Y.Base.create("lineSeries", Y.CartesianSeries, [Y.Lines], {
 
 
 
-}, '3.11.0', {"requires": ["series-cartesian", "series-line-util"]});
+}, '3.12.0', {"requires": ["series-cartesian", "series-line-util"]});
