@@ -31,7 +31,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 });
             }
 
-            this.datatable = new Y.DataTable({//Using simple database
+            this.datatable = new Y.DataTable({                                  //Using simple database
                 columns: ct
             });
         },
@@ -62,12 +62,11 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 this.showMessage("error", "Variable is not a ListDescriptor");
                 return [];
             }
-
-            for (i = 0; i < items.length; i++) {
-                if (items[i].getInstance().get("active") !== false) {
-                    var oneRowDatas = items[i].toJSON();
-                    oneRowDatas.descriptor = items[i];
-                    oneRowDatas.instance = items[i].getInstance().toJSON();
+            Y.Array.each(variables.get("items"), function(item) {
+                if (item.getInstance().get("active") !== false) {
+                    var oneRowDatas = item.toJSON();
+                    oneRowDatas.descriptor = item;
+                    oneRowDatas.instance = item.getInstance().toJSON();
                     data.push(oneRowDatas);
                 }
             });
@@ -147,7 +146,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             return function(o) {
                 var data = "";
                 var micro = new Y.Template();
-                    data = micro.render('<%= this.' + o.column.field + ' %>', o.data);
+                data = micro.render('<%= this.' + o.column.field + ' %>', o.data);
                 if (!data)
                     data = " - ";
                 return data;
