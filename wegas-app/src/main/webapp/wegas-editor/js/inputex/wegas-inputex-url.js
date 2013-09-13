@@ -37,14 +37,9 @@ YUI.add("wegas-inputex-url", function(Y) {
          */
         setOptions: function(options) {
             inputEx.Wegas.UrlField.superclass.setOptions.call(this, options);
-
-            //            this.options.className = options.className ? options.className : "inputEx-Field inputEx-UrlField";
-            //            this.options.messages.invalid = inputEx.messages.invalidUrl;
-            //            this.options.favicon = lang.isUndefined(options.favicon) ? (("https:" == document.location.protocol) ? false : true) : options.favicon;
-            //            this.options.size = options.size || 50;
-
+            //this.options.favicon = lang.isUndefined(options.favicon) ? (("https:" == document.location.protocol) ? false : true) : options.favicon;
             // validate with url regexp
-            //            this.options.regexp = inputEx.regexps.url;
+            // this.options.regexp = inputEx.regexps.url;
         },
         /**
          *
@@ -105,4 +100,30 @@ YUI.add("wegas-inputex-url", function(Y) {
     });
 
     inputEx.registerType("wegasurl", inputEx.Wegas.UrlField);                   // Register this class as "wegasurl" type
+
+    Y.namespace("inputEx.Wegas").ImageUrlField = function(options) {
+        inputEx.Wegas.ImageUrlField.superclass.constructor.call(this, options);
+    };
+
+    Y.extend(inputEx.Wegas.ImageUrlField, inputEx.Wegas.UrlField, {
+        /**
+         * Adds a img tag before the field to display the favicon
+         */
+        render: function() {
+            inputEx.Wegas.ImageUrlField.superclass.render.call(this);
+            var cb = new Y.Node(this.divEl);
+            cb.append("<div class=\"preview\"></div>");
+        },
+        setValue: function(val) {
+            inputEx.Wegas.ImageUrlField.superclass.setValue.apply(this, arguments);
+            var cb = new Y.Node(this.divEl),
+                    previewNode = cb.one(".preview");
+            if (val && val.length > 0) {
+                previewNode.setContent('<img data-file="' + val + '" style="max-width:100%;border: 1px solid lightgray;padding: 2px;" />');
+                Y.Plugin.Injector.parser(previewNode.one("img"));               // Manually run parser, since it is not plugged on the editor
+            }
+        }
+    });
+
+    inputEx.registerType("wegasimageurl", inputEx.Wegas.ImageUrlField);         // Register this class as "wegasurl" type
 });

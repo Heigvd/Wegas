@@ -493,7 +493,7 @@ YUI().use(function(Y) {
                 'wegas-inputex-url': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-url-min.js',
                     requires: ['inputex-url', 'panel', 'wegas-fileexplorer'],
-                    ix_provides: 'wegasurl'
+                    ix_provides: ['wegasurl', 'wegasimageurl']
                 },
                 'wegas-inputex-ace': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-ace-min.js',
