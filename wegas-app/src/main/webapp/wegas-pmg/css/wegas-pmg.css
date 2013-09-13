@@ -154,16 +154,14 @@
     float: right;
     margin-right: 2px;
     overflow: hidden;
-    padding: 0px 5px 0px 0px;
+    padding: 0px 20px 0px 0px;
     text-overflow: ellipsis;
-    width:100%;
     max-width:50%;
     text-align:right;
 }
 
 .horizontal-menu .wegas-login:hover{
     border:none;
-    padding:0 5px 0 0;
     background:none;
 }
 
@@ -538,7 +536,7 @@ h2{
 }
 
 .project-page .chart {
-    margin-left: 24px; 
+    margin-left: 24px;
     margin-top: 15px;
 }
 
@@ -565,7 +563,7 @@ h2{
 }
 
 /*---------------------------- Cursor pointer ---------------------*/
-.gantt-plannification-page tbody .present, .gantt-plannification-page tbody .futur, 
+.gantt-plannification-page tbody .present, .gantt-plannification-page tbody .futur,
 .resources-page tbody .present, .resources-page tbody .futur, .assignment span,
 .animated .slidepanel, table tbody .popup{
     cursor: pointer;
@@ -586,7 +584,7 @@ h2{
     margin-top: -14px;
 }
 
-.gantt-execution-page .activity:only-child, 
+.gantt-execution-page .activity:only-child,
 .gantt-execution-page .progress:nth-of-type(1) {
     margin-top: 14px;
 }
@@ -611,6 +609,6 @@ h2{
 }
 
 .evm-page .chart {
-    margin-left: 48px; 
+    margin-left: 48px;
     margin-top: 15px;
 }
