@@ -13,6 +13,11 @@ YUI.add("wegas-injector", function(Y) {
     "use strict";
 
     var MATCHER = "[data-file]",
+            parseHost = function() {
+        this.get("host").get("boundingBox").all(MATCHER).each(this.parser);
+        this.instanciateGallery(this.get("host").get("boundingBox"));
+        this.timer = null;
+    },
             Injector = function(cfg) {
         Injector.superclass.constructor.apply(this, arguments);
     };
@@ -25,14 +30,19 @@ YUI.add("wegas-injector", function(Y) {
                 DOMCharacterDataModified: true
             });
             this.gallery = false;
-
+            this.timer;
             this.insertEvent = this.get("host").get("boundingBox").delegate("DOMNodeInserted", function(e) {
                 e.halt(true);
-                e.currentTarget.all(MATCHER).each(this.parser);
-                this.instanciateGallery(e.currentTarget);
-            }, function(item) {
-                return (item.all(MATCHER).size() > 0);
-            }, this);
+                if (this.timer) {
+                    this.timer.cancel();
+                }
+                this.timer = Y.later(100, this, parseHost);
+//                e.currentTarget.all(MATCHER).each(this.parser);
+//                this.instanciateGallery(e.currentTarget);
+            }, '*', this);
+            /*function(item) {
+             return (item.all(MATCHER).size() > 0);
+             }*/
 
             this.afterHostEvent("*:render", function(e) {
                 var bb = e.currentTarget.get("boundingBox");
@@ -73,6 +83,9 @@ YUI.add("wegas-injector", function(Y) {
         },
         destructor: function() {
             this.insertEvent.detach();
+            if (this.timer) {
+                this.timer.cancel();
+            }
             if (this.gallery && Injector.GALLERY) {
                 Injector.GALLERY_COUNTER -= 1;
                 if (Injector.GALLERY_COUNTER === 0) {
