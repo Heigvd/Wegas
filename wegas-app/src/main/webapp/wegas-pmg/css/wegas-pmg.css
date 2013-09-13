@@ -579,21 +579,27 @@ h2{
     margin-left: 30px;
 }
 
-.project-page .wages, .project-page .fixedCosts, .project-page .unworkedHours{
+.project-page .projectFixedCost, .project-page .taskTotal {
     font-weight: bold;
+    font-size: 11pt;
+    margin-top: 8px;
+}
+
+.project-page .wages, .project-page .fixedCosts, .project-page .unworkedHours{
+    margin-left: 20px;
     margin-top: 5px;
 }
 
 .project-page .total {
     font-weight: bold;
-    font-size: 11pt;
-    margin-top: 7px;
+    font-size: 12pt;
+    margin-top: 10px;
 }
 
 .project-page .wages .variableValue, .project-page .fixedCosts .variableValue, .project-page .unworkedHours .variableValue,
-.project-page .total .variableValue{
+.project-page .total .variableValue, .project-page .projectFixedCost .variableValue, .project-page .taskTotal .variableValue{
     float: right;
-    margin-right: 350px;
+    margin-right: 280px;
 }
 
 /*---------------------------- Cursor pointer ---------------------*/

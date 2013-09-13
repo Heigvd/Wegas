@@ -14,13 +14,13 @@ YUI.add("wegas-pmg-datatable", function(Y) {
 
     var CONTENTBOX = "contentBox", Datatable;
 
-    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Wegas.DataTable, [Y.Wegas.Widget, Y.Wegas.Editable], {
+    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
         datatable: null,
         data: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
-            var i, ct = this.get("columnsCfg"), columnTitles = new Array();
+            var i, ct = this.get("columnsCfg");
             this.handlers = {};
             this.data = [];
 
@@ -74,7 +74,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             }
 
             for (i = 0; i < items.length; i++) {
-                if (items[i].getInstance().get("active") !== false){
+                if (items[i].getInstance().get("active") !== false) {
                     var oneRowDatas = items[i].toJSON();
                     oneRowDatas.descriptor = items[i];
                     oneRowDatas.instance = items[i].getInstance().toJSON();
@@ -156,10 +156,8 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         "template": function(o) {
             return function(o) {
                 var data = "";
-                Y.use('template', function(Y) {
-                    var micro = new Y.Template();
+                var micro = new Y.Template();
                     data = micro.render('<%= this.' + o.column.field + ' %>', o.data);
-                });
                 if (!data)
                     data = " - ";
                 return data;
@@ -168,10 +166,8 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         "object": function() {
             return function(o) {
                 var data = "";
-                Y.use('template', function(Y) {
-                    var micro = new Y.Template();
-                    data = micro.render('<% for(var i in this.' + o.column.field + '){%> <%= this.' + o.column.field + '[i]%> <%} %>', o.data);
-                });
+                var micro = new Y.Template();
+                data = micro.render('<% for(var i in this.' + o.column.field + '){%> <%= this.' + o.column.field + '[i]%> <%} %>', o.data);
                 if (!data)
                     data = " - ";
                 return data;

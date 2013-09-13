@@ -88,7 +88,10 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                     predecessors = taskDesc.get("predecessors");
 
                     for (i = 0; i < predecessors.length; i++) {
-                        predecessorId = predecessors[i].get("id")
+                        predecessorId = predecessors[i].get("id");
+                        if (!this.taskTable[predecessorId]){
+                            continue;
+                        }
                         // verifie si le prédecesseur possede le debut pert
                         if (this.taskTable[predecessorId].startPert) {
                             // defini la durée du prédecesseur
