@@ -816,3 +816,82 @@ function sendMessage(subject, content, from) {
     }
 }
 
+// Functions for addArtosPredecessor
+function addArtosPredecessor(){
+    var listPredName = [];
+    // ChoixEnvironnementDéveloppement predecessor
+    listPredName.push("ChoixEnvironnementDéveloppement", "AnalyseExistant", "AnalyseBesoins");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'DossierSpécifications').getName(), listPredName);
+    
+    // ModélisationDonnées predecessor
+    listPredName = [];
+    listPredName.push("DossierSpécifications", "PrototypeUtilisateur");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "ModélisationDonnées").getName(), listPredName);
+    
+    // ModélisationTraitements predecessor
+    listPredName = [];
+    listPredName.push("DossierSpécifications", "PrototypeUtilisateur");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "ModélisationTraitements").getName(), listPredName);
+    
+    // ModélisationIHM predecessor
+    listPredName = [];
+    listPredName.push("DossierSpécifications", "PrototypeUtilisateur");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "ModélisationIHM").getName(), listPredName);
+    
+    // ProgrammationBD predecessor
+    listPredName = [];
+    listPredName.push("ModélisationDonnées");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "ProgrammationBD").getName(), listPredName);
+    
+    // ProgrammationTraitements predecessor
+    listPredName = [];
+    listPredName.push("ModélisationDonnées", "ModélisationTraitements");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "ProgrammationTraitements").getName(), listPredName);
+    
+    // ProgrammationIHM predecessor
+    listPredName = [];
+    listPredName.push("ModélisationIHM");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "ProgrammationIHM").getName(), listPredName);
+    
+    // PromotionSystème predecessor
+    listPredName = [];
+    listPredName.push("DossierSpécifications");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "PromotionSystème").getName(), listPredName);
+    
+    // Tests predecessor
+    listPredName = [];
+    listPredName.push("ProgrammationBD", "ProgrammationTraitements", "ProgrammationIHM", "CorrectionModélisationTraitements", "CorrectionProgrammationTraitements");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "Tests").getName(), listPredName);
+    
+    // ImplantationMachine predecessor
+    listPredName = [];
+    listPredName.push("ProgrammationBD", "ProgrammationTraitements", "ProgrammationIHM");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "ImplantationMachine").getName(), listPredName);
+    
+    // PrototypeUtilisateur predecessor
+    listPredName = [];
+    listPredName.push("ChoixEnvironnementDéveloppement", "AnalyseExistant", "AnalyseBesoins");
+    addPredecessor(VariableDescriptorFacade.findByName(gm, "PrototypeUtilisateur").getName(), listPredName);
+}
+
+// Function for add taskPredecessor
+function addPredecessor(descName, listPredName){
+    var i, ii, iii, taskDescList = VariableDescriptorFacade.findByName(gm, 'tasks'),
+            taskDesc;
+    
+    for (i=0; i<taskDescList.items.size(); i++){
+        taskDesc = taskDescList.items.get(i);
+        if(taskDesc.getName() == descName){
+            for (ii=0; ii<listPredName.length; ii++){
+                for (iii=0; iii<taskDescList.items.size(); iii++){
+                    if (listPredName[ii] == taskDescList.items.get(iii).getName()){
+                        taskDesc.getPredecessors().add(taskDescList.items.get(iii));
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+}
+
