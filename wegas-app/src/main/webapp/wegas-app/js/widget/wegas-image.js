@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-image", function(Y) {
@@ -99,7 +99,7 @@ YUI.add("wegas-image", function(Y) {
                     return val;
                 },
                 _inputex: {
-                    _type: "wegasurl"
+                    _type: "wegasimageurl"
                 }
             },
             complete: {
