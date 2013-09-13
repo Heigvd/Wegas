@@ -39,8 +39,6 @@ YUI.add('wegas-pmg-activitycolor', function(Y) {
             }
         }
     }, {
-        ATTRS: {
-        },
         NS: "activitycolor",
         NAME: "ActivityColor"
     });

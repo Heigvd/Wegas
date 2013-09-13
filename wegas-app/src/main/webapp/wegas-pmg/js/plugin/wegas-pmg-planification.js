@@ -63,8 +63,6 @@ YUI.add('wegas-pmg-planification', function(Y) {
             });
         }
     }, {
-        ATTRS: {
-        },
         NS: "planification",
         NAME: "Planification"
     });

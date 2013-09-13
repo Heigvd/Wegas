@@ -49,9 +49,9 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                     field = this.get("field");
                     record = dt.getRecord(e.target);
                     descriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("id", record.get("id"));
-                    
+
                     this.menuDetails.attachTo(e.target);
-                    
+
                     if (descriptor.get(field)) {
                         this.display(descriptor.get(field));
                     } else {
@@ -62,7 +62,6 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                 this.handlers.push(dt.getCell([i, 1]).on('mouseout', function(e) {
                     this.menuDetails.hide();
                 }, this));
-
             }
         },
         request: function(descriptor) {
@@ -102,18 +101,12 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
     }, {
         ATTRS: {
             width: {
-                value: "250px",
-                _inputex: {
-                    _type: "string",
-                    label: "width"
-                }
+                type: "string",
+                value: "250px"
             },
             field: {
+                type: "string",
                 value: "description",
-                _inputex: {
-                    _type: "string",
-                    label: "field"
-                }
             },
             column: {
                 value: 1,

@@ -14,18 +14,17 @@ YUI.add("wegas-pmg-datatable", function(Y) {
 
     var CONTENTBOX = "contentBox", Datatable;
 
-    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Wegas.DataTable, [Y.Wegas.Widget, Y.Wegas.Editable], {
+    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Wegas.DataTable, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
         datatable: null,
         data: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
-            var i, ct = this.get("columnsCfg"), columnTitles = new Array();
+            var i, ct = this.get("columnsCfg");
             this.handlers = {};
             this.data = [];
 
             for (i = 0; i < ct.length; i++) {                                         //construct Datatable's columns
-
                 Y.mix(ct[i], {
                     sortable: true,
                     allowHTML: true
@@ -37,50 +36,41 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             });
         },
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
-            if (!this.datatable)
-                return;
-            this.datatable.render(cb);
+            this.datatable.render(this.get(CONTENTBOX));
         },
         bindUI: function() {
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.updateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         syncUI: function() {
-            this.data = [];
-            if (this.datatable === null || this.get("variables") === null)
-                return;
             this.datatable.set("data", []);
-            var data = this.getData();
-            this.datatable.addRows(data);
+            this.datatable.addRows(this.getData());
         },
         destructor: function() {
-            var k;
-            for (k in this.handlers) {
-                this.handlers[k].detach();
-            }
+            this.updateHandler.detach();
             this.datatable.destroy();
         },
         //*** Private Methods ***/
         getData: function() {
-            var i, oneRowDatas, variables = this.get('variable.evaluated'), items, data = [];
-            if (variables) {
-                items = variables.get('items');
-            } else {
-                this.showMessage("error", "No variable found");
-            }
-            if (!variables || !variables instanceof Y.Wegas.persistence.ListDescriptor) {
+            var oneRowDatas,
+                    variables = this.get('variable.evaluated'),
+                    data = [];
+
+            if (!variables) {
+                this.showMessage("error", "Could not find variable");
+                return [];
+            } else if (!variables instanceof Y.Wegas.persistence.ListDescriptor) {
                 this.showMessage("error", "Variable is not a ListDescriptor");
-                return;
+                return [];
             }
 
-            for (i = 0; i < items.length; i++) {
-                if (items[i].getInstance().get("active") !== false){
-                    var oneRowDatas = items[i].toJSON();
-                    oneRowDatas.descriptor = items[i];
-                    oneRowDatas.instance = items[i].getInstance().toJSON();
+            Y.Array.each(variables.get('items'), function(item) {
+                if (item.getInstance().get("active") !== false) {
+                    oneRowDatas = item.toJSON();
+                    oneRowDatas.descriptor = item;
+                    oneRowDatas.instance = item.getInstance().toJSON();
                     data.push(oneRowDatas);
                 }
-            }
+            });
             return data;
         }
     }, {
@@ -180,4 +170,4 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     });
 
     Y.namespace("Wegas").PmgDatatable = Datatable;
-}); 
+});
