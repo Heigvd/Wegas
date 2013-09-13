@@ -31,7 +31,8 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
         initializer: function() {
             this.handlers = [];
             this.menuDetails = new Y.Wegas.Menu({
-                width: this.get("width")
+                width: this.get("width"),
+                points: ["tl", "tr"]
             });
             this.get("host").onceAfter("render", function() {
                 this.bind();
@@ -39,7 +40,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
             }, this);
         },
         bind: function() {
-            var i, record, dt = this.get("host").datatable, field;
+            var i, record, dt = this.get("host").datatable, field, descriptor;
 
             for (i = 0; i < dt.get("data")._items.length; i++) {
                 dt.getCell([i, this.get("column")]).addClass("popup");
@@ -47,17 +48,14 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                     dt = this.get("host").datatable;
                     field = this.get("field");
                     record = dt.getRecord(e.target);
-
-                    this.menuDetails.set("align", {
-                        node: e.target,
-                        points: (e.clientX + parseInt(this.get("width")) > Y.DOM.winWidth()) ?
-                                ["tr", "tl"] : ["tl", "tr"]
-                    });
-
-                    if (record.get(field)) {
-                        this.display(record.get(field));
+                    descriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("id", record.get("id"));
+                    
+                    this.menuDetails.attachTo(e.target);
+                    
+                    if (descriptor.get(field)) {
+                        this.display(descriptor.get(field));
                     } else {
-                        this.request(Y.Wegas.Facade.VariableDescriptor.cache.find("id", record.get("id")));
+                        this.request(descriptor); // todo change.
                     }
                 }, this));
 
@@ -73,6 +71,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                     success: function(e) {
                         var field = this.get("field");
                         if (e.response.entity.get(field)) {
+                            descriptor.set(field, e.response.entity.get(field));
                             this.display(e.response.entity.get(field));
                         } else {
                             this.get("host").showMessage("error", "This information does not exist");

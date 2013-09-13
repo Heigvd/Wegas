@@ -178,11 +178,9 @@
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
-                                    "subpageVariable": {
-                                        "name": "taskPage"
-                                    },
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
+                                    "subpageId": 13,
+                                    "targetPageLoaderId": "maindisplayarea",
+                                    "targetEvent": "click"
                                 }
                             }, {
                                 "fn": "ConditionalDisable",
@@ -203,11 +201,9 @@
                             {
                                 "fn": "OpenPageAction",
                                 "cfg": {
-                                    "subpageVariable": {
-                                        "name": "ganttPage"
-                                    },
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
+                                    "subpageId": 14,
+                                    "targetPageLoaderId": "maindisplayarea",
+                                    "targetEvent": "click"
                                 }
                             }, {
                                 "fn": "ConditionalDisable",
@@ -309,7 +305,7 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value].descriptorId"
+                                                "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
                                             }
                                         }
                                     }, {
@@ -615,14 +611,14 @@
         "children": [
             {
                 "type": "PmgSlidePanel",
-                "title": "Web designer",
+                "title": "Commercial",
                 "cssClass": "animated",
                 "animation": true,
                 "children": [
                     {
                         "type": "PmgDatatable",
                         "variable": {
-                            "name": "webDesigner"
+                            "name": "commercial"
                         },
                         "columnsCfg": [{
                                 "allowHTML": true,
@@ -685,14 +681,294 @@
                 ]
             }, {
                 "type": "PmgSlidePanel",
-                "title": "Business specialist",
+                "title": "Consultant IT",
                 "cssClass": "animated",
                 "animation": true,
                 "children": [
                     {
                         "type": "PmgDatatable",
                         "variable": {
-                            "name": "businessSpecialist"
+                            "name": "consultantIT"
+                        },
+                        "columnsCfg": [{
+                                "allowHTML": true,
+                                "key": "label",
+                                "label": "Name",
+                                "sortable": true
+                            }, {
+                                "allowHTML": true,
+                                "label": "Grade",
+                                "formatter": "object",
+                                "field": "instance.skillsets",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Wage",
+                                "formatter": "template",
+                                "field": "instance.properties.wage",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Ratio",
+                                "formatter": "template",
+                                "field": "instance.properties.ratio",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Motiv.",
+                                "formatter": "template",
+                                "field": "instance.moral",
+                                "sortable": false
+                            }],
+                        "defaultSort": null,
+                        "plugins": [{
+                                "fn": "ScheduleDT",
+                                "cfg": {
+                                    "columnToAdd": 10,
+                                    "variable": {
+                                        "name": "periodPhase3"
+                                    }
+                                }
+                            }, {
+                                "fn": "Assignment",
+                                "cfg": {
+                                    "columnPosition": 5,
+                                    "taskList": {
+                                        "name": "tasks"
+                                    }
+                                }
+                            }, {
+                                "fn": "Reservation",
+                                "cfg": {
+                                    "type": "occupations"
+                                }
+                            }, {
+                                "fn": "OccupationColor"
+                            }, {
+                                "fn": "ActivityColor"
+                            }]
+                    }
+                ]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "Informaticien Hardware",
+                "cssClass": "animated",
+                "animation": true,
+                "children": [
+                    {
+                        "type": "PmgDatatable",
+                        "variable": {
+                            "name": "informaticienHardware"
+                        },
+                        "columnsCfg": [{
+                                "allowHTML": true,
+                                "key": "label",
+                                "label": "Name",
+                                "sortable": true
+                            }, {
+                                "allowHTML": true,
+                                "label": "Grade",
+                                "formatter": "object",
+                                "field": "instance.skillsets",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Wage",
+                                "formatter": "template",
+                                "field": "instance.properties.wage",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Ratio",
+                                "formatter": "template",
+                                "field": "instance.properties.ratio",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Motiv.",
+                                "formatter": "template",
+                                "field": "instance.moral",
+                                "sortable": false
+                            }],
+                        "defaultSort": null,
+                        "plugins": [{
+                                "fn": "ScheduleDT",
+                                "cfg": {
+                                    "columnToAdd": 10,
+                                    "variable": {
+                                        "name": "periodPhase3"
+                                    }
+                                }
+                            }, {
+                                "fn": "Assignment",
+                                "cfg": {
+                                    "columnPosition": 5,
+                                    "taskList": {
+                                        "name": "tasks"
+                                    }
+                                }
+                            }, {
+                                "fn": "Reservation",
+                                "cfg": {
+                                    "type": "occupations"
+                                }
+                            }, {
+                                "fn": "OccupationColor"
+                            }, {
+                                "fn": "ActivityColor"
+                            }]
+                    }
+                ]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "Informaticien Lociciel",
+                "cssClass": "animated",
+                "animation": true,
+                "children": [
+                    {
+                        "type": "PmgDatatable",
+                        "variable": {
+                            "name": "informaticienLogiciel"
+                        },
+                        "columnsCfg": [{
+                                "allowHTML": true,
+                                "key": "label",
+                                "label": "Name",
+                                "sortable": true
+                            }, {
+                                "allowHTML": true,
+                                "label": "Grade",
+                                "formatter": "object",
+                                "field": "instance.skillsets",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Wage",
+                                "formatter": "template",
+                                "field": "instance.properties.wage",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Ratio",
+                                "formatter": "template",
+                                "field": "instance.properties.ratio",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Motiv.",
+                                "formatter": "template",
+                                "field": "instance.moral",
+                                "sortable": false
+                            }],
+                        "defaultSort": null,
+                        "plugins": [{
+                                "fn": "ScheduleDT",
+                                "cfg": {
+                                    "columnToAdd": 10,
+                                    "variable": {
+                                        "name": "periodPhase3"
+                                    }
+                                }
+                            }, {
+                                "fn": "Assignment",
+                                "cfg": {
+                                    "columnPosition": 5,
+                                    "taskList": {
+                                        "name": "tasks"
+                                    }
+                                }
+                            }, {
+                                "fn": "Reservation",
+                                "cfg": {
+                                    "type": "occupations"
+                                }
+                            }, {
+                                "fn": "OccupationColor"
+                            }, {
+                                "fn": "ActivityColor"
+                            }]
+                    }
+                ]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "Monteur",
+                "cssClass": "animated",
+                "animation": true,
+                "children": [
+                    {
+                        "type": "PmgDatatable",
+                        "variable": {
+                            "name": "monteur"
+                        },
+                        "columnsCfg": [{
+                                "allowHTML": true,
+                                "key": "label",
+                                "label": "Name",
+                                "sortable": true
+                            }, {
+                                "allowHTML": true,
+                                "label": "Grade",
+                                "formatter": "object",
+                                "field": "instance.skillsets",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Wage",
+                                "formatter": "template",
+                                "field": "instance.properties.wage",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Ratio",
+                                "formatter": "template",
+                                "field": "instance.properties.ratio",
+                                "sortable": false
+                            }, {
+                                "allowHTML": true,
+                                "label": "Motiv.",
+                                "formatter": "template",
+                                "field": "instance.moral",
+                                "sortable": false
+                            }],
+                        "defaultSort": null,
+                        "plugins": [{
+                                "fn": "ScheduleDT",
+                                "cfg": {
+                                    "columnToAdd": 10,
+                                    "variable": {
+                                        "name": "periodPhase3"
+                                    }
+                                }
+                            }, {
+                                "fn": "Assignment",
+                                "cfg": {
+                                    "columnPosition": 5,
+                                    "taskList": {
+                                        "name": "tasks"
+                                    }
+                                }
+                            }, {
+                                "fn": "Reservation",
+                                "cfg": {
+                                    "type": "occupations"
+                                }
+                            }, {
+                                "fn": "OccupationColor"
+                            }, {
+                                "fn": "ActivityColor"
+                            }]
+                    }
+                ]
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "Web Designer",
+                "cssClass": "animated",
+                "animation": true,
+                "children": [
+                    {
+                        "type": "PmgDatatable",
+                        "variable": {
+                            "name": "webDesigner"
                         },
                         "columnsCfg": [{
                                 "allowHTML": true,
@@ -784,7 +1060,7 @@
             }, {
                 "type": "MCQTabView",
                 "variable": {
-                    "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value].descriptorId"
+                    "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
                 }
             }
         ]
@@ -979,5 +1255,19 @@
                     }]
             }
         ]
+    },
+    "13": {
+        "type": "PageLoader",
+        "cssClass": "task-page",
+        "variable": {
+            "name": "taskPage"
+        }
+    },
+    "14": {
+        "type": "PageLoader",
+        "cssClass": "gantt-page",
+        "variable": {
+            "name": "ganttPage"
+        }
     }
 }
