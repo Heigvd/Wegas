@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -86,7 +86,7 @@ ArrayListProto = {
      * <p>The callback signature is <code>callback( item, index )</code>.</p>
      *
      * <p>Unlike <code>each</code>, if the callback returns true, the
-     * iteratation will stop.</p>
+     * iteration will stop.</p>
      *
      * @method some
      * @param fn { Function } the function to execute
@@ -218,4 +218,4 @@ Y.mix( ArrayList, {
 Y.ArrayList = ArrayList;
 
 
-}, '3.11.0', {"requires": ["yui-base"]});
+}, '3.12.0', {"requires": ["yui-base"]});

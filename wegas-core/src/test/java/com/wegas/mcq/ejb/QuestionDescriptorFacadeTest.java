@@ -16,6 +16,7 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.mcq.persistence.*;
+import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -102,5 +103,33 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         assertEquals(REPLYNAME2, choice.getInstance(player).getResult().getName());// And check the current result is stored
 
         vdf.remove(question.getId());                                           // Clean up
+    }
+
+    @Test
+    public void testRemoveResponse() throws NamingException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);// Lookup Ejb's
+        final String REPLYNAME1 = "1st reply";
+        final String REPLYNAME2 = "2nd reply";
+
+        QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
+        question.setDefaultInstance(new QuestionInstance());
+        question.setScope(new TeamScope());
+        vdf.create(gameModel.getId(), question);
+
+        ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
+        choice.setDefaultInstance(new ChoiceInstance());
+        choice.setScope(new TeamScope());
+        Result r = new Result(REPLYNAME1);                                      // w/ 2 replies
+        choice.addResult(r);
+        Result r2 = new Result(REPLYNAME2);
+        choice.addResult(r2);
+        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2); // And the default reply is the second
+        vdf.createChild(question.getId(), choice);
+
+        choice.getResults().remove(0);
+        vdf.update(choice.getId(), choice);
+
+        assertEquals(REPLYNAME2, ((ChoiceDescriptor) vdf.find(choice.getId())).getResults().get(0).getName());
+        vdf.remove(question.getId());
     }
 }

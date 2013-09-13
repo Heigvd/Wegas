@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -140,10 +140,10 @@ if (Y.Node.DOM_EVENTS) {
 
 //Add properties to Y.EVENT.GESTURE_MAP based on feature detection.
 if ((win && ("ontouchstart" in win)) && !(Y.UA.chrome && Y.UA.chrome < 6)) {
-    GESTURE_MAP.start = "touchstart";
-    GESTURE_MAP.end = "touchend";
-    GESTURE_MAP.move = "touchmove";
-    GESTURE_MAP.cancel = "touchcancel";
+    GESTURE_MAP.start = ["touchstart", "mousedown"];
+    GESTURE_MAP.end = ["touchend", "mouseup"];
+    GESTURE_MAP.move = ["touchmove", "mousemove"];
+    GESTURE_MAP.cancel = ["touchcancel", "mousecancel"];
 }
 
 
@@ -175,4 +175,4 @@ else {
 Y.Event._GESTURE_MAP = GESTURE_MAP;
 
 
-}, '3.11.0', {"requires": ["node-base"]});
+}, '3.12.0', {"requires": ["node-base"]});

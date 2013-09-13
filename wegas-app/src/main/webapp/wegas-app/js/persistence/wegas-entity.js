@@ -74,12 +74,6 @@ YUI.add('wegas-entity', function(Y) {
                 getter: function(val) {
                     return val || this.get(NAME);
                 }
-            },
-            editorLabel: {
-                "transient": true,
-                getter: function(val) {
-                    return val || this.get(NAME);
-                }
             }
         },
         /**
@@ -726,9 +720,6 @@ YUI.add('wegas-entity', function(Y) {
         },
         getLabel: function() {
             return this.get("label");
-        },
-        getEditorLabel: function() {
-            return this.get("editorLabel");
         }
     }, {
         ATTRS: {
@@ -737,20 +728,10 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": false,
                 getter: function(val) {
                     return val || this.get(NAME);
-                }
-            },
-            editorLabel: {
-                type: STRING,
-                optional: true,
-                "transient": false,
+                },
                 _inputex: {
-                    label: "Editor label"
-                },
-                validator: function(s) {
-                    return s === null || Y.Lang.isString(s);
-                },
-                getter: function(val) {
-                    return val || this.get("label");
+                    label: "Name",
+                    index: -1
                 }
             },
             name: {
@@ -1277,7 +1258,7 @@ YUI.add('wegas-entity', function(Y) {
                                     "targetClass": "StringDescriptor"
                                 }, {
                                     "type": "AddEntityChildButton",
-                                    "label": "List",
+                                    "label": "Folder",
                                     "targetClass": "ListDescriptor"
                                 }, {
                                     "type": "AddEntityChildButton",
@@ -1317,7 +1298,7 @@ YUI.add('wegas-entity', function(Y) {
 
 
     Wegas.persistence.InboxDescriptor = Y.Base.create("", Wegas.persistence.VariableDescriptor, [], {
-        isEmpty: function(playerId){
+        isEmpty: function(playerId) {
             playerId = playerId instanceof Y.Wegas.persistence.Player ? playerId.get("id") : playerId;
             return this.getInstance(playerId).get("messages").length < 1;
         }

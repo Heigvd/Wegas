@@ -88,15 +88,19 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
         ListUtils.mergeLists(this.getResults(), other.getResults());
-    }
 
-    /**
-     * When a choice is created, we automatically add a result by default
-     */
-    @PrePersist
-    public void prePersist2() {
-        if (this.getResults().isEmpty()) {
-            this.addResult(new Result("Default"));              // When a choice is created, we automatically add a result by default
+        // @hack In case a result was deleted and it was current result, set current result to null
+        ChoiceInstance defautlt = (ChoiceInstance) this.getDefaultInstance();
+        boolean found = false;
+        for (Result r : this.getResults()) {
+            if (defautlt.getCurrentResultId() != null && defautlt.getCurrentResultId().equals(r.getId())) {
+                found = true;
+            }
+        }
+//        if (!this.getResults().contains(defautlt.getCurrentResult())) {
+        if (!found) {
+            defautlt.setCurrentResult(null);
+            defautlt.setCurrentResultId(null);
         }
     }
 

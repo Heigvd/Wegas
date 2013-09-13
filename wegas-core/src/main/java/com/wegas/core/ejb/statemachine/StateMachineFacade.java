@@ -198,7 +198,7 @@ public class StateMachineFacade implements Serializable {
                     }
                 }
                 if (validTransition == null) {
-                    throw new WegasException("Please review condition [" + sm.getEditorLabel() + "]:\n"
+                    throw new WegasException("Please review condition [" + sm.getLabel() + "]:\n"
                             + transition.getTriggerCondition().getContent());
                 } else if (validTransition) {
                     if (passedTransitions.contains(transition)) {

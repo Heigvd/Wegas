@@ -141,6 +141,16 @@ YUI.add("wegas-container", function(Y) {
                                                                 }
                                                             }
                                                         ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Form",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Form"
+                                                                }
+                                                            }
+                                                        ]
                                                     }]
                                             }
                                         }
@@ -275,7 +285,7 @@ YUI.add("wegas-container", function(Y) {
                 label: "Delete",
                 cssClass: "editor-exploreGameModel-button",
                 plugins: [{
-                        fn: "DeleteWidgetAction"
+                        fn: "DeleteContainerWidgetAction"
                     }
                 ]
             }],

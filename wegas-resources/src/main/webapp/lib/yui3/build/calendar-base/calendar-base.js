@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1690,7 +1690,7 @@ Y.CalendarBase = Y.extend( CalendarBase, Y.Widget, {
 });
 
 
-}, '3.11.0', {
+}, '3.12.0', {
     "requires": [
         "widget",
         "datatype-date",
@@ -1710,6 +1710,10 @@ Y.CalendarBase = Y.extend( CalendarBase, Y.Widget, {
         "nl",
         "pt-BR",
         "ru",
+        "zh-Hans",
+        "zh-Hans-CN",
+        "zh-Hant",
+        "zh-Hant-HK",
         "zh-HANT-TW"
     ],
     "skinnable": true

@@ -81,7 +81,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      */
     @JsonView(Views.EditorI.class)
-    private String editorLabel;
+    @Column(name = "editorLabel")
+    private String title;
     /**
      *
      */
@@ -159,7 +160,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         VariableDescriptor other = (VariableDescriptor) a;
         this.setName(other.getName());
         this.setLabel(other.getLabel());
-        this.setEditorLabel(other.getEditorLabel());
+        this.setTitle(other.getTitle());
         this.defaultInstance.merge(other.getDefaultInstance());
         if (other.getScope() != null) {
             this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
@@ -222,18 +223,18 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      *
-     * @return editorLabel
+     * @return title
      */
-    public String getEditorLabel() {
-        return editorLabel;
+    public String getTitle() {
+        return title;
     }
 
     /**
      *
-     * @param editorLabel
+     * @param title
      */
-    public void setEditorLabel(String editorLabel) {
-        this.editorLabel = editorLabel;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**

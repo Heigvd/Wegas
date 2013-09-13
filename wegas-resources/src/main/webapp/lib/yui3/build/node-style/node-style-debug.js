@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -110,4 +110,4 @@ Y.NodeList.importMethod(Y.Node.prototype, ['getStyle', 'getComputedStyle', 'setS
 })(Y);
 
 
-}, '3.11.0', {"requires": ["dom-style", "node-base"]});
+}, '3.12.0', {"requires": ["dom-style", "node-base"]});
