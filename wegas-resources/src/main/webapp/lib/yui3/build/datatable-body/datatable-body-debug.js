@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1195,4 +1195,4 @@ Y.namespace('DataTable').BodyView = Y.Base.create('tableBody', Y.View, [], {
 });
 
 
-}, '3.11.0', {"requires": ["datatable-core", "view", "classnamemanager"]});
+}, '3.12.0', {"requires": ["datatable-core", "view", "classnamemanager"]});

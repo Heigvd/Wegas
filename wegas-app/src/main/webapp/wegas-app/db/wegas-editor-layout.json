@@ -269,7 +269,7 @@
                                                                         "targetClass": "StringDescriptor"
                                                                     }, {
                                                                         "type": "NewEntityButton",
-                                                                        "label": "List",
+                                                                        "label": "Folder",
                                                                         "targetClass": "ListDescriptor"
                                                                     }, {
                                                                         "type": "NewEntityButton",

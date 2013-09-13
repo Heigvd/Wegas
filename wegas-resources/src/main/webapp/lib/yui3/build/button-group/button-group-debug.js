@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -52,6 +52,11 @@ Y.ButtonGroup = Y.extend(ButtonGroup, Y.Widget, {
             cb = group.get(CONTENT_BOX);
 
         cb.delegate(CLICK_EVENT, group._handleClick, Y.ButtonGroup.BUTTON_SELECTOR, group);
+        group.after('disabledChange', group._afterDisabledChange);
+    },
+
+    _afterDisabledChange: function () {
+        this.getButtons().each(Y.ButtonCore.prototype.disable);
     },
 
     /**
@@ -190,4 +195,4 @@ Y.ButtonGroup = Y.extend(ButtonGroup, Y.Widget, {
 });
 
 
-}, '3.11.0', {"requires": ["button-plugin", "cssbutton", "widget"]});
+}, '3.12.0', {"requires": ["button-plugin", "cssbutton", "widget"]});

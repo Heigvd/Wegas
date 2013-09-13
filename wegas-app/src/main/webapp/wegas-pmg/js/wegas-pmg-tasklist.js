@@ -94,7 +94,7 @@ YUI.add("wegas-pmg-tasklist", function (Y) {
             for (i = 0; i < tasks.get('items').length; i += 1) {
                 taskDesc = tasks.get('items')[i];
                 if (taskDesc.get('id') == id) {
-                    label = (taskDesc.get("label") || taskDesc.get("name"));
+                    label = (taskDesc.get("title") || taskDesc.get("name"));
                     description = taskDesc.get("description");
                     break;
                 }

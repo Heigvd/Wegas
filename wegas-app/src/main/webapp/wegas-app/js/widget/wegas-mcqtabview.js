@@ -144,14 +144,14 @@ YUI.add('wegas-mcqtabview', function(Y) {
 
                     if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
                         choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                        cReplyLabel = choiceDescriptor.getLabel().substr(0, 15);
+                        cReplyLabel = choiceDescriptor.get("title").substr(0, 15);
                         cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel + "..." : cReplyLabel;
                     }
 
                     tab = new Y.Tab({
                         label: '<div class="'
                                 + (cQuestionInstance.get("replies").length === 0 ? "unread" : "")
-                                + '"><div class="label">' + (cQuestion.getLabel() || "undefined") + '</div>'
+                                + '"><div class="label">' + (cQuestion.get("title") || "undefined") + '</div>'
                                 + '<div class="status">' + (cReplyLabel || this.jsTranslator.getRB().Unanswered) + '</div></div>',
                         content: "<div class=\"wegas-loading-div\"><div>"
                     });
@@ -207,7 +207,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
             extendedQuestion = extendedQuestion || cQuestion;
 
             ret = ['<div class="content">',
-                '<div class="title">', cQuestion.getLabel() || "undefined", '</div>',
+                '<div class="title">', cQuestion.get("title") || "undefined", '</div>',
                 '<div class="description">', extendedQuestion.get("description"), '</div>'];
 
 
@@ -231,7 +231,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
                         }
 
                         ret.push('<div class="reply ', firstChild, ' ', isReplied, '">',
-                                '<div class="name">', cChoices[j].get("label"), '</div>',
+                                '<div class="name">', cChoices[j].get("title"), '</div>',
                                 //'<div class="content">', cChoices[j].get("description"), '</div>',
                                 '<div class="content">', extendedQuestion.get("items")[j].get("description"), '</div>',
                                 numberOfReplies,
@@ -249,7 +249,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
                 for (j = 0; j < cQuestionInstance.get("replies").length; j += 1) {
                     reply = cQuestionInstance.get("replies")[j];
                     choiceDescriptor = reply.getChoiceDescriptor();
-                    ret.push('<div class="replyDiv"><div class="reply"><div class="name">', choiceDescriptor.get("label"), '</div>',
+                    ret.push('<div class="replyDiv"><div class="reply"><div class="name">', choiceDescriptor.get("title"), '</div>',
                             //'<div>', choiceDescriptor.get("description"), '</div>',
                             '<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
                             '<div style="clear:both"></div></div>');

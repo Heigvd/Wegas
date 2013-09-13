@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -179,6 +179,7 @@ Sortable.prototype = {
         }
 
         node.children.sort(Y.rbind(this._sort, this, comparator, reverse));
+        node._isIndexStale = true;
 
         if (!options.silent) {
             this.fire(EVT_SORT, {
@@ -380,4 +381,4 @@ NodeSortable.prototype = {
 Y.Tree.Node.Sortable = NodeSortable;
 
 
-}, '3.11.0', {"requires": ["tree"]});
+}, '3.12.0', {"requires": ["tree"]});
