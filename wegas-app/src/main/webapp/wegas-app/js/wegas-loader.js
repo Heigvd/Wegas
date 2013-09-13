@@ -432,7 +432,7 @@ YUI().use(function(Y) {
                     requires: ['inputex'/*, 'wegas-inputexcss'*/]
                 },
                 'wegas-inputexcss': {
-                    path: 'wegas-editor/css/wegas-inputex-min.css',
+                    path: 'wegas-editor/css/wegas-inputex-.css',
                     type: 'css'
                 },
                 "wegas-inputex-object": {
