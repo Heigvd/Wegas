@@ -305,6 +305,28 @@ h2{
 .yui3-skin-sam .wegas-mcqtabview .yui3-tab  .label {
     text-decoration: underline;
 }
+.yui3-skin-sam .wegas-mcqtabview .pmg-subtitle .right ,
+.yui3-skin-sam .wegas-mcqtabview .yui3-tab .status {
+    float:right;
+    padding-right:8px;
+}
+.yui3-skin-sam .wegas-mcqtabview .yui3-tab a.yui3-tab-label  {
+    background: none;
+    border: none;
+    padding: 6px 0px;
+    width:100%;
+}
+.wegas-mcqtabview {
+    line-height: normal;
+}
+
+.main .wegas-mcqtabview-content .content{
+    margin-top: 0px;
+}
+
+.yui3-skin-sam .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel{
+    margin-top:1px
+}
 
 .wegas-mcqtabview-content .content .content{
     margin:0;

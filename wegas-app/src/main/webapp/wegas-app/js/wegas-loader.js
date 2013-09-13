@@ -47,7 +47,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-helper': {
                     path: 'wegas-app/js/util/wegas-helper-min.js',
-                    requires: ['array-extras']
+                    requires: ['array-extras', 'base']
                 },
                 'wegas-editable': {
                     path: 'wegas-app/js/util/wegas-editable-min.js',
@@ -432,7 +432,7 @@ YUI().use(function(Y) {
                     requires: ['inputex'/*, 'wegas-inputexcss'*/]
                 },
                 'wegas-inputexcss': {
-                    path: 'wegas-editor/css/wegas-inputex-min.css',
+                    path: 'wegas-editor/css/wegas-inputex-.css',
                     type: 'css'
                 },
                 "wegas-inputex-object": {

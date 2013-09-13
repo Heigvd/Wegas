@@ -180,4 +180,31 @@ YUI.add('wegas-helper', function(Y) {
     };
     Y.namespace("Wegas").Helper = Helper;
     Y.namespace("Wegas").superbind = Y.Wegas.Helper.superbind;
+
+    Y.namespace("Wegas").Timer = Y.Base.create("wegas-timer", Y.Base, [], {
+        initializer: function() {
+
+        },
+        start: function() {
+            if (!this.handler) {
+                this.handler = Y.later(this.get("duration"), this, this.timeOut);
+            }
+        },
+        reset: function() {
+            if (this.handler) {
+                this.handler.cancel();
+            }
+            this.handler = Y.later(this.get("duration"), this, this.timeOut);
+        },
+        timeOut: function() {
+            this.handler = null;
+            this.fire("timeOut");
+        }
+    }, {
+        ATTRS: {
+            duration: {
+                value: 0
+            }
+        }
+    });
 });

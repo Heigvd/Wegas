@@ -74,10 +74,12 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             }
 
             for (i = 0; i < items.length; i++) {
-                var oneRowDatas = items[i].toJSON();
-                oneRowDatas.descriptor = items[i];
-                oneRowDatas.instance = items[i].getInstance().toJSON();
-                data.push(oneRowDatas);
+                if (items[i].getInstance().get("active") !== false){
+                    var oneRowDatas = items[i].toJSON();
+                    oneRowDatas.descriptor = items[i];
+                    oneRowDatas.instance = items[i].getInstance().toJSON();
+                    data.push(oneRowDatas);
+                }
             }
             return data;
         }

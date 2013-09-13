@@ -55,13 +55,21 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             }, '.yui3-datatable-data .assignment .assign', this);
 
             this.handlers.moveMenu = this.menu.on("button:mouseenter", function(e) {           // align the menu
+                var timer;
+                this.menuDetails.hide();
                 this.menuDetails.set("align", {
                     node: this.menu.get("boundingBox"),
                     points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ?
                             ["tr", "tl"] : ["tl", "tr"]
                 });
-                this.menuDetails.show();
-                this.getTaskDescription(e.target.get("data").assignement.taskDescriptor);
+                timer = new Y.Wegas.Timer({
+                    duration: "500"
+                });
+                timer.on("timeOut", function() {
+                    this.menuDetails.show();
+                    this.getTaskDescription(e.target.get("data").assignement.taskDescriptor);
+                }, this);
+                timer.start();                
             }, this);
 
             this.handlers.hideMenu = this.menu.on("visibleChange", function(e) {                 // When the menu is hidden, hide the details panel
@@ -179,9 +187,14 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             });
         },
         getTaskDescription: function(taskDescriptor) {
+            if (taskDescriptor.get("description")) {
+                this.menuDetails.get(CONTENTBOX).setHTML('<div style="padding:5px 10px"><i>' + taskDescriptor.get("description") + '</i></div>');
+                return;
+            }
             Y.Wegas.Facade.VariableDescriptor.cache.getWithView(taskDescriptor, "Extended", {// Retrieve the object from the server in Export view
                 on: Y.Wegas.superbind({
                     success: function(e) {
+                        taskDescriptor.set("description", e.response.entity.get("description"));
                         this.menuDetails.get(CONTENTBOX).setHTML('<div style="padding:5px 10px"><i>' + e.response.entity.get("description") + '</i></div>');
                     },
                     failure: function(e) {
