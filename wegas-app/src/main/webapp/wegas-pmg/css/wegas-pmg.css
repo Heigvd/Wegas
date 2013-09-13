@@ -535,7 +535,7 @@ h2{
     height: 260px;
 }
 
-.project-page .chart {
+.project-page .wegas-chart {
     margin-left: 24px;
     margin-top: 15px;
 }
@@ -608,7 +608,7 @@ h2{
     padding-bottom: 1px;
 }
 
-.evm-page .chart {
+.evm-page .wegas-chart {
     margin-left: 48px;
     margin-top: 15px;
 }

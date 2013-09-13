@@ -112,6 +112,13 @@ YUI.add('wegas-datasource', function(Y) {
          */
         ATTRS: {
             initialRequest: {}
+        },
+        abort: function(tId) {
+            if (Y.DataSource.Local.transactions[tId]) {
+                Y.DataSource.Local.transactions[tId].abort();
+
+                Y.DataSource.Local.transactions[tId] = null;                    // @hack Remove reference since Yui won't do it
+            }
         }
     });
 
