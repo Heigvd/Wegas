@@ -43,7 +43,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 this.showOverlay();
                 Y.soon(Y.bind(function(id) {
                     this.get("pageLoader").set("pageId", id);
-                    this.hideOverlay();
                 }, this, [pageId]));
             }, this);
             this.on("*:newPage", function(e) {
@@ -125,7 +124,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     }
                 }
             }, ".content-header", this);
-            DATASOURCE.after("pageUpdated", function(e) {
+            this.dsEvent = DATASOURCE.after("pageUpdated", function(e) {
                 this.showOverlay();
                 Y.soon(Y.bind(this.getIndex, this));
             }, this);
@@ -217,9 +216,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }, this));
             }, buildSub = function(node, widget) {
                 this.buildSubTree(node, widget);
-                if (node.get("boundingBox")._node) {
-                    node.expand(false);
-                }
                 if (node.item(0) && node.item(0).expand) {
                     node.item(0).expand(false);
                 }
@@ -266,8 +262,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         event: "click"
                     });
                     node.set("rightWidget", button);
-                    if (+i === +page) {
+                    if (+i === +page) { //current page
                         pageFound = true;
+                        node.set("collapsed", false);
                         Y.soon(Y.bind(buildSub, this, node, widget));
                     }
                 }
@@ -301,8 +298,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }
         },
         destructor: function() {
-            var i;
             this.treeView.destroy();
+            this.dsEvent.detach();
         }
     }, {
         CSS_PREFIX: "wegas-page-editor",
