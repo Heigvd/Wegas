@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -214,7 +214,7 @@ Y_Node.addMethod = function(name, fn, context) {
             }
             args.unshift(node._node);
 
-            ret = fn.apply(node, args);
+            ret = fn.apply(context || node, args);
 
             if (ret) { // scrub truthy
                 ret = Y_Node.scrubVal(ret, node);
@@ -1611,4 +1611,4 @@ Y.NodeList.importMethod(Y.Node.prototype, [
 ]);
 
 
-}, '3.11.0', {"requires": ["dom-core", "selector"]});
+}, '3.12.0', {"requires": ["dom-core", "selector"]});

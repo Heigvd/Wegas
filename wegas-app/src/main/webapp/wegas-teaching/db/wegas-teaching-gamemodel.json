@@ -9,7 +9,6 @@
         {
             "@class": "NumberDescriptor",
             "name":"currentPage",
-            "editorLabel":"currentPage",
             "label":"currentPage",
             "defaultInstance":{
                 "@class":"NumberInstance",

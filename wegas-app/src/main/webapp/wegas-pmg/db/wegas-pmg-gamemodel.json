@@ -20,7 +20,6 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "currentPhase",
-            "editorLabel": "currentPhase",
             "label": "Current phase",
             "minValue": 0,
             "maxValue": 4,
@@ -34,7 +33,6 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "managementApproval",
-            "editorLabel": "managementApproval",
             "label": "managementApproval",
             "minValue": 0,
             "maxValue": 200,
@@ -48,7 +46,6 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "userApproval",
-            "editorLabel": "userApproval",
             "label": "userApproval",
             "minValue": 0,
             "maxValue": 200,
@@ -78,7 +75,6 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "qualityImpacts",
-            "editorLabel": "Quality impacts",
             "label": "Quality impacts",
             "minValue": 0,
             "maxValue": 200,
@@ -92,7 +88,6 @@
         }, {
             "@class": "ListDescriptor",
             "name": "timeCards",
-            "editorLabel": "time cards",
             "label": "time cards",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -104,7 +99,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "cardsPhase1",
-                    "editorLabel": "Cards phase 1",
                     "label": "Cards phase 1",
                     "minValue": 0,
                     "maxValue": 15,
@@ -118,7 +112,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "cardsPhase2",
-                    "editorLabel": "Cards phase 2",
                     "label": "Cards phase 2",
                     "minValue": 0,
                     "maxValue": 7,
@@ -132,7 +125,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "cardsPhase3",
-                    "editorLabel": "Cards phase 3",
                     "label": "Cards phase 3",
                     "minValue": 0,
                     "maxValue": 10,
@@ -146,7 +138,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "cardsPhase4",
-                    "editorLabel": "Cards phase 4",
                     "label": "Cards phase 4",
                     "minValue": 0,
                     "maxValue": 5,
@@ -163,7 +154,6 @@
             "@class": "ListDescriptor",
             "name": "pageUtilities",
             "label": "page utilities",
-            "editorLabel": "page utilities",
             "defaultInstance": {
                 "@class": "ListInstance"
             },
@@ -173,7 +163,6 @@
             "items": [{
                     "@class": "NumberDescriptor",
                     "name": "costs",
-                    "editorLabel": "costs",
                     "label": "costs",
                     "minValue": 0,
                     "maxValue": 200,
@@ -226,7 +215,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "quality",
-                    "editorLabel": "quality",
                     "label": "quality",
                     "minValue": 0,
                     "maxValue": 200,
@@ -240,7 +228,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "delay",
-                    "editorLabel": "delay",
                     "label": "delay",
                     "minValue": 0,
                     "maxValue": 200,
@@ -278,7 +265,6 @@
         }, {
             "@class": "ListDescriptor",
             "name": "currentPeriod",
-            "editorLabel": "currentPeriod",
             "label": "Current period",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -290,7 +276,6 @@
                 {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase1",
-                    "editorLabel": "periodPhase1",
                     "label": "periodPhase1",
                     "minValue": 1,
                     "maxValue": 1,
@@ -304,7 +289,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase2",
-                    "editorLabel": "periodPhase2",
                     "label": "periodPhase2",
                     "minValue": 1,
                     "maxValue": 1,
@@ -318,7 +302,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase3",
-                    "editorLabel": "periodPhase3",
                     "label": "periodPhase3",
                     "minValue": 1,
                     "maxValue": 10,
@@ -332,7 +315,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "periodPhase1_4",
-                    "editorLabel": "periodPhase1_4",
                     "label": "periodPhase1_4",
                     "minValue": 1,
                     "maxValue": 1,
@@ -348,7 +330,6 @@
         }, {
             "@class": "ListDescriptor",
             "name": "employees",
-            "editorLabel": "employees",
             "label": "employees",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -372,7 +353,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Marcel",
-                            "editorLabel": "Marcel",
                             "label": "Marcel",
                             "description": "Description de Marcel",
                             "properties": {
@@ -399,7 +379,6 @@
                         }, {
                             "@class": "ResourceDescriptor",
                             "name": "Beatrice",
-                            "editorLabel": "Beatrice",
                             "label": "Beatrice",
                             "description": "Description de Béatrice",
                             "properties": {
@@ -441,7 +420,6 @@
                         {
                             "@class": "ResourceDescriptor",
                             "name": "Claude",
-                            "editorLabel": "Claude",
                             "label": "Claude",
                             "description": "Description de Claude",
                             "properties": {
@@ -469,7 +447,6 @@
                         }, {
                             "@class": "ResourceDescriptor",
                             "name": "Michael",
-                            "editorLabel": "Michael",
                             "label": "Michael",
                             "description": "Description de Michael",
                             "properties": {
@@ -497,7 +474,6 @@
                         }, {
                             "@class": "ResourceDescriptor",
                             "name": "Lucie",
-                            "editorLabel": "Lucie",
                             "label": "Lucie",
                             "description": "Description de Lucie",
                             "properties": {
@@ -577,7 +553,6 @@
         }, {
             "@class": "ListDescriptor",
             "name": "tasks",
-            "editorLabel": "tasks",
             "label": "tasks",
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -588,7 +563,6 @@
             "items": [{
                     "@class": "TaskDescriptor",
                     "name": "User-Interface Modeling",
-                    "editorLabel": "User-Interface Modeling",
                     "label": "User-Interface Modeling",
                     "index": 1,
                     "description": "description tâche 1",
@@ -640,7 +614,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Web design",
-                    "editorLabel": "Web design",
                     "label": "Web design",
                     "index": 2,
                     "description": "description tâche 2",
@@ -685,7 +658,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "Developpement",
-                    "editorLabel": "Developper",
                     "label": "Developper",
                     "index": 3,
                     "description": "description tâche 3",
@@ -730,7 +702,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task4",
-                    "editorLabel": "task4",
                     "label": "task4",
                     "index": 3,
                     "description": "description tâche 3",
@@ -775,7 +746,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task5",
-                    "editorLabel": "task5",
                     "label": "task5",
                     "index": 3,
                     "description": "description tâche 3",
@@ -820,7 +790,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task6",
-                    "editorLabel": "task6",
                     "label": "task6",
                     "index": 3,
                     "description": "description tâche 3",
@@ -865,7 +834,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task7",
-                    "editorLabel": "task7",
                     "label": "task7",
                     "index": 3,
                     "description": "description tâche 3",
@@ -910,7 +878,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task8",
-                    "editorLabel": "task8",
                     "label": "task8",
                     "index": 3,
                     "description": "description tâche 3",
@@ -955,7 +922,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task9",
-                    "editorLabel": "task9",
                     "label": "task9",
                     "index": 3,
                     "description": "description tâche 3",
@@ -1000,7 +966,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task10",
-                    "editorLabel": "task10",
                     "label": "task10",
                     "index": 3,
                     "description": "description tâche 3",
@@ -1045,7 +1010,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task11",
-                    "editorLabel": "task11",
                     "label": "task11",
                     "index": 3,
                     "description": "description tâche 3",
@@ -1090,7 +1054,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task12",
-                    "editorLabel": "task12",
                     "label": "task12",
                     "index": 3,
                     "description": "description tâche 3",
@@ -1135,7 +1098,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task13",
-                    "editorLabel": "task13",
                     "label": "task13",
                     "index": 3,
                     "description": "description tâche 3",
@@ -1180,7 +1142,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task14",
-                    "editorLabel": "task14",
                     "label": "task14",
                     "index": 3,
                     "description": "description tâche 3",
@@ -1225,7 +1186,6 @@
                 }, {
                     "@class": "TaskDescriptor",
                     "name": "task15",
-                    "editorLabel": "task15",
                     "label": "task15",
                     "index": 3,
                     "description": "description tâche 3",
@@ -1272,7 +1232,6 @@
         }, {
             "@class": "ListDescriptor",
             "name": "questions",
-            "editorLabel": "questions",
             "label": "questions",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -1307,7 +1266,6 @@
                                 {
                                     "@class": "QuestionDescriptor",
                                     "name": "Comment faire cela?",
-                                    "editorLabel": "Comment faire cela?",
                                     "label": "Comment faire cela?",
                                     "defaultInstance": {
                                         "@class": "QuestionInstance"
@@ -1319,7 +1277,6 @@
                                         {
                                             "@class": "ChoiceDescriptor",
                                             "name": "Phase1Reponse1",
-                                            "editorLabel": "a) Reponse 1",
                                             "label": "a) Reponse 1",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance"
@@ -1341,7 +1298,6 @@
                         }, {
                             "@class": "ListDescriptor",
                             "name": "Questions period 2",
-                            "editorLabel": "Questions period 2",
                             "label": "Questions period 2",
                             "defaultInstance": {
                                 "@class": "NumberInstance"
@@ -1353,7 +1309,6 @@
                                 {
                                     "@class": "QuestionDescriptor",
                                     "name": "Sample question phase 2?",
-                                    "editorLabel": "Sample question phase 2?",
                                     "label": "Sample question phase 2?",
                                     "defaultInstance": {
                                         "@class": "QuestionInstance"
@@ -1365,7 +1320,6 @@
                                         {
                                             "@class": "ChoiceDescriptor",
                                             "name": "Phase2Reponse1",
-                                            "editorLabel": "a) Reponse 1",
                                             "label": "a) Reponse 1",
                                             "defaultInstance": {
                                                 "@class": "ChoiceInstance"
@@ -1391,7 +1345,6 @@
         }, {
             "@class": "ListDescriptor",
             "name": "actions",
-            "editorLabel": "actions",
             "label": "actions",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -1404,7 +1357,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "Actions phase 1",
-                    "editorLabel": "Actions phase 1",
                     "label": "Actions phase 1",
                     "defaultInstance": {
                         "@class": "NumberInstance"
@@ -1416,7 +1368,6 @@
                         {
                             "@class": "QuestionDescriptor",
                             "name": "Effectuer action 1 phase 1",
-                            "editorLabel": "Effectuer action 1 phase 1",
                             "label": "Effectuer action 1 phase 1",
                             "allowMultipleReplies": true,
                             "defaultInstance": {
@@ -1429,7 +1380,6 @@
                                 {
                                     "@class": "ChoiceDescriptor",
                                     "name": "Action1Reponse1",
-                                    "editorLabel": "reponse 1)",
                                     "label": "reponse 1)",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"
@@ -1451,7 +1401,6 @@
                 }, {
                     "@class": "ListDescriptor",
                     "name": "Actions phase 2",
-                    "editorLabel": "Actions phase 2",
                     "label": "Actions phase 2",
                     "defaultInstance": {
                         "@class": "NumberInstance"
@@ -1463,7 +1412,6 @@
                         {
                             "@class": "QuestionDescriptor",
                             "name": "Effectuer action 1 phase 2",
-                            "editorLabel": "Effectuer action 1 phase 2",
                             "label": "Effectuer action 1 phase 2",
                             "allowMultipleReplies": true,
                             "defaultInstance": {
@@ -1476,7 +1424,6 @@
                                 {
                                     "@class": "ChoiceDescriptor",
                                     "name": "reponse 1)",
-                                    "editorLabel": "reponse 1)",
                                     "label": "reponse 1)",
                                     "defaultInstance": {
                                         "@class": "ChoiceInstance"

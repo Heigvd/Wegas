@@ -295,8 +295,8 @@ function findLastStepCorrespondingActivity(employeeInst, taskDesc, currentPeriod
     var i, activity, occurence = null;
     for (i = 0; i < employeeInst.getActivities().size(); i++) {
         activity = employeeInst.getActivities().get(i);
-        if (activity.getTaskDescriptor() === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity) 
-                && currentPeriod - Math.floor(currentPeriod) !== 0 //if it s not a new period (current step !== 0) 
+        if (activity.getTaskDescriptor() === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity)
+                && currentPeriod - Math.floor(currentPeriod) !== 0 //if it s not a new period (current step !== 0)
                 && parseFloat(activity.getTime()) === getFloat(currentPeriod - 0.1)) { //if activity was used the last step
             occurence = activity;
             break;
@@ -334,7 +334,7 @@ function getAssignables(assignments) {
     for (i = 0; i < assignments.size(); i++) {
         work = null;
         taskDesc = assignments.get(i).getTaskDescriptor();
-        if (parseInt(taskDesc.getInstance(self).getProperty('completeness')) < 100 && getPredecessorFactor(taskDesc) >= 0.2) { //if the task isn t terminated and average of predecessors advancement is upper than 20% 
+        if (parseInt(taskDesc.getInstance(self).getProperty('completeness')) < 100 && getPredecessorFactor(taskDesc) >= 0.2) { //if the task isn t terminated and average of predecessors advancement is upper than 20%
             assignables.push(assignments.get(i));
         }
     }
@@ -348,7 +348,7 @@ function checkAssignments(assignments, currentStep) {
         return [];
     }
     employeeInst = assignments.get(0).getResourceInstance();
-    employeeName = employeeInst.getDescriptor().getLabel();
+    employeeName = employeeInst.getDescriptor().getTitle();
     employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
     nextTasks = getAssignables(employeeInst.getAssignments());
     for (i = 0; i < assignments.size(); i++) {
@@ -356,19 +356,19 @@ function checkAssignments(assignments, currentStep) {
         taskInst = taskDesc.getInstance();
         if (parseFloat(taskInst.getProperty('completeness')) >= 100) {
             if (nextTasks[0]) {
-                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
-                        'La tâche ' + taskDesc.getLabel() + ' est terminée, je passe à la tâche ' + nextTasks[0].getTaskDescriptor().getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getTitle(),
+                        'La tâche ' + taskDesc.getTitle() + ' est terminée, je passe à la tâche ' + nextTasks[0].getTaskDescriptor().getTitle() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             } else {
-                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
-                        'La tâche ' + taskDesc.getLabel() + ' est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getTitle(),
+                        'La tâche ' + taskDesc.getTitle() + ' est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             }
             assignments.remove(i);
             break;
         } else if (getPredecessorFactor(taskDesc) <= 0.2) {
-            sendMessage(getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
-                    'Je suis sensé travailler sur la tâche ' + taskDesc.getLabel() + ' mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+            sendMessage(getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getTitle(),
+                    'Je suis sensé travailler sur la tâche ' + taskDesc.getTitle() + ' mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
             assignments.remove(i);
             break;
@@ -399,7 +399,7 @@ function getPredecessorFactor(taskDesc) {
 function selectFirstUncompletedWork(requirements, reqByWorks) {
     var work, firstUncompletedWork;
     if (!reqByWorks) {
-        reqByWorks = getRequirementsByWork(requirements); // get requirements merged by kind of work. 
+        reqByWorks = getRequirementsByWork(requirements); // get requirements merged by kind of work.
     }
     for (work in reqByWorks) {
         if (reqByWorks[work].completeness < reqByWorks[work].maxLimit) { //check if the maximum limite from all requirements of the current kind of work is smaller than the completeness of the current kind of work
@@ -552,7 +552,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
 
     //calculate learnFactor
     if (parseInt(taskInst.getProperty('completeness')) > 15) {
-        stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor 
+        stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor
     }
 
     //calculate bonusRatio
@@ -734,7 +734,7 @@ function checkEnd(allCurrentActivities, currentStep) {
         taskDesc = allCurrentActivities[i].getTaskDescriptor();
         taskInst = taskDesc.getInstance(self);
         employeeInst = allCurrentActivities[i].getResourceInstance();
-        employeeName = employeeInst.getDescriptor().getLabel();
+        employeeName = employeeInst.getDescriptor().getTitle();
         employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
         if (currentStep === steps - 1) {
             checkAssignments(employeeInst.getAssignments(), currentStep);
@@ -742,8 +742,8 @@ function checkEnd(allCurrentActivities, currentStep) {
             reqByWorks = getRequirementsByWork(taskInst.getRequirements());
             nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks);
             if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {
-                sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',
-                        'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. Je passe à ' + nextWork + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getTitle() + ' en partie terminée',
+                        'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getTitle() + '. Je passe à ' + nextWork + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             }
         }

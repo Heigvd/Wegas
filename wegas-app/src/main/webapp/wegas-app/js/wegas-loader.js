@@ -36,7 +36,8 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/wegas-app-min.js',
                     requires: [
                         'wegas-helper', 'wegas-entity', 'wegas-datasource',
-                        'wegas-pageloader', 'wegas-button'
+                        'wegas-pageloader', 'wegas-button',
+                        "event-key"
                                 // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
                 },
