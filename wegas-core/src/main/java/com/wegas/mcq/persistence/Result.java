@@ -75,7 +75,7 @@ public class Result extends AbstractEntity {
     /**
      * This link is here so the reference is updated on remove.
      */
-    @OneToMany(mappedBy = "currentResult")
+    @OneToMany(mappedBy = "currentResult", cascade = CascadeType.MERGE)
     @XmlTransient
     private List<ChoiceInstance> choiceInstances;
     /**
@@ -112,13 +112,18 @@ public class Result extends AbstractEntity {
         this.setFiles(other.getFiles());
     }
 
-    //@PreRemove
-    //private void preRemove() {
-    //   for (ChoiceInstance c : this.getLinkedChoiceInstances()) {
-    //       c.setCurrentResponse(null);
-    //   }
-    //   this.getChoiceDescriptor().propagateCurrentResult();
-    //}
+//    @PreRemove
+//    private void preRemove() {                                                  // When a response is destroyed
+//
+//        for (ChoiceInstance c : this.getChoiceInstances()) {                    // remove it from all the instance it is the current result
+//            c.setCurrentResult(null);
+//            c.setCurrentResultId(null);
+//        }
+//        while (!this.getChoiceInstances().isEmpty()) {
+//            this.getChoiceInstances().remove(0);
+//        }
+//    }
+
     @Override
     public Long getId() {
         return this.id;

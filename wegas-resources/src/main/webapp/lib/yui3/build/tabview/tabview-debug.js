@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -60,9 +60,8 @@ var DOT = '.',
         this.get('contentBox').focusManager.refresh();
     },
 
-    _initAria: function() {
-        var contentBox = this.get('contentBox'),
-            tablist = contentBox.one(Y.TabviewBase._queries.tabviewList);
+    _initAria: function(contentBox) {
+        var tablist = contentBox.one(Y.TabviewBase._queries.tabviewList);
 
         if (tablist) {
             tablist.setAttrs({
@@ -95,6 +94,7 @@ var DOT = '.',
         this._renderPanelBox(contentBox);
         this._childrenContainer = this.get('listNode');
         this._renderTabs(contentBox);
+        this._initAria(contentBox);
     },
 
     _setDefSelection: function() {
@@ -430,7 +430,7 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
 });
 
 
-}, '3.11.0', {
+}, '3.12.0', {
     "requires": [
         "widget",
         "widget-parent",
