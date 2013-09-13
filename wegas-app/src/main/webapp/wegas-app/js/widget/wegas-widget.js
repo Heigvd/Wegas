@@ -529,6 +529,7 @@ YUI.add("wegas-widget", function(Y) {
                     try {
                         val.evaluated = ds.cache.findById(Y.Wegas.Facade.VariableDescriptor.script.localEval(val.expr));
                     } catch (e) {
+                        Y.log("Unable to read expression: " + val.expr, "error", "Wegas.Widget");
                         val.evaluated = null;
                     }
 
