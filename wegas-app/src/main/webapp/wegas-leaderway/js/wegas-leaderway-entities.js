@@ -650,7 +650,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         type: STRING,
                         label: "Key",
                         scriptType: STRING
-
                     }]
             },
             getStringInstanceProperty: {

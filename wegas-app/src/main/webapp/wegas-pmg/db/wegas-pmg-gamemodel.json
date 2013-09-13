@@ -59,7 +59,6 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "projectFixedCosts",
-            "editorLabel": "Project FixedCosts",
             "label": "Project FixedCosts",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -176,7 +175,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "actualCost",
-                    "editorLabel": "actualCost",
                     "label": "actualCost",
                     "minValue": 0,
                     "defaultInstance": {
@@ -189,7 +187,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "planedValue",
-                    "editorLabel": "planedValue",
                     "label": "planedValue",
                     "minValue": 0,
                     "defaultInstance": {
@@ -202,7 +199,6 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "earnedValue",
-                    "editorLabel": "earnedValue",
                     "label": "earnedValue",
                     "minValue": 0,
                     "defaultInstance": {
@@ -341,7 +337,6 @@
                 {
                     "@class": "ListDescriptor",
                     "name": "consultantIT",
-                    "editorLabel": "consultantIT",
                     "label": "consultantIT",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -408,7 +403,6 @@
                 }, {
                     "@class": "ListDescriptor",
                     "name": "commercial",
-                    "editorLabel": "commercial",
                     "label": "commercial",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -503,7 +497,6 @@
                 }, {
                     "@class": "ListDescriptor",
                     "name": "informaticienHardware",
-                    "editorLabel": "informaticienHardware",
                     "label": "informaticienHardware",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -515,7 +508,6 @@
                 }, {
                     "@class": "ListDescriptor",
                     "name": "informaticienLogiciel",
-                    "editorLabel": "informaticienLogiciel",
                     "label": "informaticienLogiciel",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -527,7 +519,6 @@
                 }, {
                     "@class": "ListDescriptor",
                     "name": "monteur",
-                    "editorLabel": "monteur",
                     "label": "monteur",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -539,7 +530,6 @@
                 }, {
                     "@class": "ListDescriptor",
                     "name": "webDesigner",
-                    "editorLabel": "webDesigner",
                     "label": "webDesigner",
                     "defaultInstance": {
                         "@class": "ListInstance"
@@ -1456,7 +1446,7 @@
     "clientScriptLibrary": {
         "default": {
             "@class": "GameModelContent",
-            "content": "Y.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({type:\"AddEntityChildButton\",label:\"Resource\",targetClass:\"ResourceDescriptor\"}, {type:\"AddEntityChildButton\",label:\"Task\",targetClass:\"TaskDescriptor\"});"
+            "content": "Y.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({type:\"AddEntityChildButton\",label:\"Resource\",targetClass:\"ResourceDescriptor\"}, {type:\"AddEntityChildButton\",label:\"Task\",targetClass:\"TaskDescriptor\"});\nY.Wegas.persistence.TaskDescriptor.METHODS.getNumberInstanceProperty = {\n                label: \"Get number instance's property\",\n                returns: \"number\",\n                arguments: [{\n                        type: \"hidden\",\n                        value: \"self\"\n                    }, {\n                        label: \"Key\",\n                        scriptType: \"string\",\n                        type: \"select\",\n                        choices: [{\n                                value: \"fixedCosts\"\n                            }, {\n                                value: \"wages\"\n                            },{\n                                value: \"bac\"\n                            },{\n                                value: \"unworkedHoursCosts\"\n                            },{\n                                value: \"predecessorsDependances\"\n                            },{\n                                value: \"quality\"\n                            },{\n                                value: \"completeness\"\n                            }]\n                    }]\n            }\nY.Wegas.persistence.ResourceDescriptor.METHODS.getNumberInstanceProperty = {\n                label: \"Get number instance's property\",\n                returns: \"number\",\n                arguments: [{\n                        type: \"hidden\",\n                        value: \"self\"\n                    }, {\n                        label: \"Key\",\n                        scriptType: \"string\",\n                        type: \"select\",\n                        choices: [{\n                                value: \"activityRate\"\n                            }, {\n                                value: \"wage\"\n                            }]\n                    }]\n            }"
         }
     }
 
