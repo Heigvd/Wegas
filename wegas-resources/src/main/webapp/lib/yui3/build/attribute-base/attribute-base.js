@@ -1,5 +1,5 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -114,4 +114,4 @@ YUI.add('attribute-base', function (Y, NAME) {
     Y.Attribute = Attribute;
 
 
-}, '3.11.0', {"requires": ["attribute-core", "attribute-observable", "attribute-extras"]});
+}, '3.12.0', {"requires": ["attribute-core", "attribute-observable", "attribute-extras"]});

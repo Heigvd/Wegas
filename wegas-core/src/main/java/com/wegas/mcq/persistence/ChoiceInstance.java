@@ -9,7 +9,6 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
@@ -39,7 +38,7 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "result_id", insertable = false, updatable = false)
     //@JsonBackReference
     @XmlTransient
@@ -57,13 +56,26 @@ public class ChoiceInstance extends VariableInstance {
     @Transient
     private int currentResultIndex;
 
+    @JsonIgnore
+    public Result getResult() {
+        if (this.currentResult != null) {
+            return this.currentResult;
+        } else {
+            try {
+                return ((ChoiceDescriptor) this.getDescriptor()).getResults().get(0);
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                //return null;
+                throw new WegasException("No result found for choice \"" + this.getDescriptor().getLabel() + "\"", ex);
+            }
+        }
+    }
+
     /**
      *
      * @return
      */
     public Long getCurrentResultId() {
         return this.currentResultId;
-        // return this.getCurrentResult().getId();
     }
 
     /**
@@ -174,19 +186,6 @@ public class ChoiceInstance extends VariableInstance {
     @JsonIgnore
     public Result getCurrentResult() {
         return this.currentResult;
-    }
-
-    @JsonIgnore
-    public Result getResult() {
-        if (this.currentResult != null) {
-            return this.currentResult;
-        } else {
-            try {
-                return ((ChoiceDescriptor) this.getDescriptor()).getResults().get(0);
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                throw new WegasException("No result found for choice \"" + this.getDescriptor().getLabel() + "\"", ex);
-            }
-        }
     }
 
     /**

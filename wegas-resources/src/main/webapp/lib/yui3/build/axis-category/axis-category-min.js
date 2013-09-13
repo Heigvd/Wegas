@@ -1,8 +1,8 @@
 /*
-YUI 3.11.0 (build d549e5c)
+YUI 3.12.0 (build 8655935)
 Copyright 2013 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
 
-YUI.add("axis-category",function(e,t){e.CategoryAxis=e.Base.create("categoryAxis",e.Axis,[e.CategoryImpl],{getMinimumValue:function(){var e=this.get("data"),t=e[0];return t},getMaximumValue:function(){var e=this.get("data"),t=e.length-1,n=e[t];return n},_getLabelByIndex:function(e){var t,n=this.get("data");return t=n[e],t},_getDataFromLabelValues:function(t,n,r,i,s){var o=[],u=[],a,f=(i-r*2)/(this.getTotalMajorUnits()-1),l=this.get("data"),c,h,p=n.length,d,v,m,g,y;s==="vertical"?(d="x",v="y"):(d="y",v="x"),m=t[d];for(h=0;h<p;h+=1)a=n[h],c=e.Array.indexOf(l,a),e.Lang.isNumber(c)&&c>-1&&(y=c?c*f:0,g={},g[d]=m,g[v]=y+r,o.push(g),u.push(a));return{points:o,values:u}}})},"3.11.0",{requires:["axis","axis-category-base"]});
+YUI.add("axis-category",function(e,t){var n=e.Lang;e.CategoryAxis=e.Base.create("categoryAxis",e.Axis,[e.CategoryImpl],{getMinimumValue:function(){var e=this.get("data"),t=e[0];return t},getMaximumValue:function(){var e=this.get("data"),t=e.length-1,n=e[t];return n},_getLabelByIndex:function(e){var t,n=this.get("data");return t=n[e],t},_getLabelData:function(t,r,i,s,o,u,a,f,l){var c,h,p=[],d=[],v,m,g=this.get("data"),y=u;l=l||g;for(h=0;h<f;h+=1)c=l[h],m=e.Array.indexOf(g,c),n.isNumber(m)&&m>-1&&(v={},v[r]=t,v[i]=this._getCoordFromValue(s,o,a,m,y),p.push(v),d.push(c));return{points:p,values:d}}})},"3.12.0",{requires:["axis","axis-category-base"]});

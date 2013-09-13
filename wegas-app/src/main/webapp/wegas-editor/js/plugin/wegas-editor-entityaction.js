@@ -205,10 +205,10 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         NewEntityAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(NewEntityAction, EditEntityAction, {
-        showAddForm: function(entity, parentData) {
+        showAddForm: function(entity) {
             var dataSource = this.get("dataSource");
             EditEntityAction.showEditForm(entity, function(newVal) {
-                dataSource.cache.post(newVal, (parentData) ? parentData.toObject() : parentData, {
+                dataSource.cache.post(newVal, null, {
                     success: function(e) {
                         EditEntityAction.hideEditFormOverlay();
                         EditEntityAction.showUpdateForm(e.response.entity, dataSource);
@@ -222,10 +222,10 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             }, null, this.get("formCfg"));
         },
         execute: function() {
-            Wegas.Editable.useAndRevive({// Load target class dependencies
-                "@class": this.get("targetClass")
+            Wegas.Editable.useAndRevive({
+                "@class": this.get("targetClass")                               // Load target class dependencies
             }, Y.bind(function(entity) {
-                this.showAddForm(entity, null); // and display the edition form
+                this.showAddForm(entity);                                       // and display the edition form
             }, this));
         }
     }, {
@@ -343,6 +343,35 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         AddEntityChildAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(AddEntityChildAction, NewEntityAction, {
+        showAddForm: function(entity, parentData) {
+            var dataSource = this.get("dataSource");
+
+            EditEntityAction.showEditForm(entity, function(newVal) {
+                //@Hack since the server return the parent list,
+                // and we have no way to identify the newly created descriptor
+                // we need to look for the one that was not there before
+                var idBack = [];
+                Y.Array.each(parentData.get("items"), function(e) {
+                    idBack.push(e.get("id"));
+                });
+                dataSource.cache.post(newVal, parentData.toObject(), {
+                    success: function(e) {
+                        EditEntityAction.hideEditFormOverlay();
+
+                        var newDescriptor = Y.Array.find(e.response.entity.get("items"), function(e) {
+                            return !idBack.contains(e.get("id"))
+                        })
+
+                        EditEntityAction.showUpdateForm(newDescriptor, dataSource);
+                        EditEntityAction.showFormMessage("success", "Item has been added");
+                    },
+                    failure: function(e) {
+                        EditEntityAction.hideEditFormOverlay();
+                        EditEntityAction.form.defaultFailureHandler(e);
+                    }
+                });
+            }, null, this.get("formCfg"));
+        },
         execute: function() {
             Wegas.Editable.useAndRevive({// Load target class dependencies
                 "@class": this.get("targetClass")
