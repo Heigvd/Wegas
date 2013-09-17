@@ -48,19 +48,19 @@ public class WRequirement extends AbstractEntity implements Serializable {
     /*
      * 
      */
-    private Integer completeness;
+    private Double completeness;
     /*
      * 
      */
-    private Integer quality;
+    private Double quality;
 
     public WRequirement() {
         this.limit = 0;
         this.work = "";
         this.level = 0;
         this.quantity = 0L;
-        this.completeness = 0;
-        this.quality = 0;
+        this.completeness = 0.0D;
+        this.quality = 0.0D;
     }
 
     @Override
@@ -148,28 +148,28 @@ public class WRequirement extends AbstractEntity implements Serializable {
     /**
      * @return the completeness
      */
-    public Integer getCompleteness() {
+    public Double getCompleteness() {
         return completeness;
     }
 
     /**
      * @param completeness the completeness to set
      */
-    public void setCompleteness(Integer completeness) {
+    public void setCompleteness(Double completeness) {
         this.completeness = completeness;
     }
 
     /**
      * @return the quality
      */
-    public Integer getQuality() {
+    public Double getQuality() {
         return quality;
     }
 
     /**
      * @param quality the quality to set
      */
-    public void setQuality(Integer quality) {
+    public void setQuality(Double quality) {
         this.quality = quality;
     }
 }

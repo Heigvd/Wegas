@@ -1,5 +1,5 @@
 importPackage(javax.naming);
-var gm = self.getGameModel(), testMode = false;
+var gm = self.getGameModel(), testMode = true;
 steps = 10, minTaskDuration = 0.1;
 
 function nextPeriod() {
@@ -419,7 +419,7 @@ function selectRequirement(taskInst, employeeInst, workAs, reqByWorks) {
     }
     for (i = 0; i < requirements.size(); i++) {
         req = requirements.get(i);
-        if (req.getWork() == workAs && req.getCompleteness() < (reqByWorks[workAs].maxLimit * totalOfPersonneInTask / reqByWorks[workAs].totalOfEmployees)) {
+        if (req.getWork() == workAs && parseFloat(req.getCompleteness()) < (reqByWorks[workAs].maxLimit * totalOfPersonneInTask / reqByWorks[workAs].totalOfEmployees)) {
             if (Math.abs(deltaLevel) > level - parseInt(req.getLevel())) {
                 deltaLevel = level - parseInt(req.getLevel());
                 selectedReq = req;
@@ -455,7 +455,7 @@ function getRequirementsByWork(requirements) {
         //keep the summe of personns needed for each kind of work needed
         totalOfEmployees += parseInt(req.getQuantity());
         //is needed for next calcul
-        needsCompletion += (parseInt(req.getCompleteness()) * parseInt(req.getQuantity()));
+        needsCompletion += (parseFloat(req.getCompleteness()) * parseInt(req.getQuantity()));
     }
     for (work in works) {
         //keep the summe of personns needed for each kind of work needed
@@ -470,11 +470,11 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     var i, taskDesc, taskInst, employeeDesc, employeeInst, activityRate, sameNeedActivity,
             affectedEmployeesDesc = [], requirements, stepAdvance = 1, sumActivityRate = 0,
             employeesMotivationXActivityRate = 0, deltaLevel, workAs, selectedReq,
-            employeesMotivationFactor, employeesSkillsetXActivityRate = 0, predecessorsAdvance = 1,
+            employeesMotivationFactor, employeesSkillsetXActivityRate = 0,
             employeeSkillsetFactor, activityCoefficientXActivityRate = 0, otherWorkFactor = 1,
             correctedRessources, reqByWorks, numberOfEmployeeOnNeedOnNewTask = 0,
             needProgress, motivationXActivityRate = 0, skillsetXActivityRate = 0, level,
-            averageSkillsetQuality, stepQuality;
+            averageSkillsetQuality, stepQuality = 0;
 
     taskDesc = activityAsNeeds.getTaskDescriptor();
     taskInst = taskDesc.getInstance(self);
@@ -533,7 +533,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         if (affectedEmployeesDesc.length <= reqByWorks[workAs].totalOfEmployees) {
             correctedRessources = reqByWorks[workAs].totalOfEmployees + parseFloat(taskDesc.getProperty('coordinationRatioInf')) * (affectedEmployeesDesc.length - reqByWorks[workAs].totalOfEmployees);
             if (correctedRessources / affectedEmployeesDesc.length < 0.2) {
-                correctedRessources = 0.2 * affectedEmployeesDesc.length;
+                correctedRessources = affectedEmployeesDesc.length / 5;
             }
         } else {
             correctedRessources = reqByWorks[workAs].totalOfEmployees + parseFloat(taskDesc.getProperty('coordinationRatioSup')) * (affectedEmployeesDesc.length - reqByWorks[workAs].totalOfEmployees);
@@ -564,25 +564,24 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     stepAdvance *= 100;
 
     //calculate new needCompleteness
-    needProgress = Math.round(parseInt(selectedReq.getCompleteness()) + stepAdvance);
-
+    needProgress = parseFloat(selectedReq.getCompleteness()) + stepAdvance;
     //calculate stepQuality
     if (sumActivityRate !== 0) {
         stepQuality = 1 + 0.03 * ((motivationXActivityRate / sumActivityRate) - 7); //Motivation quality
         averageSkillsetQuality = (skillsetXActivityRate / sumActivityRate);
-        if (averageSkillsetQuality >= selectedReq.getLevel()) {
-            stepQuality += 1 + 0.02 * (averageSkillsetQuality - selectedReq.getLevel()); //skillset (level) quality
+        if (averageSkillsetQuality >= parseInt(selectedReq.getLevel())) {
+            stepQuality += 1 + 0.02 * (averageSkillsetQuality - parseInt(selectedReq.getLevel())); //skillset (level) quality
         } else {
-            stepQuality += 1 + 0.03 * (averageSkillsetQuality - selectedReq.getLevel()); //skillset (level) quality
+            stepQuality += 1 + 0.03 * (averageSkillsetQuality - parseInt(selectedReq.getLevel())); //skillset (level) quality
         }
     }
     stepQuality = (stepQuality / 2) * 100; //step Quality
     if (needProgress > 0) {
-        selectedReq.setQuality((parseInt(selectedReq.getQuality()) * parseInt(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);
+        selectedReq.setQuality((parseFloat(selectedReq.getQuality()) * parseFloat(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    taskInst.setProperty("wage", parseInt(taskInst.getProperty("wage")) + (parseInt(activityAsNeeds.getResourceInstance().getProperty("wage")) / steps));
+    taskInst.setProperty("wages", (parseInt(taskInst.getProperty("wages")) + (parseInt(activityAsNeeds.getResourceInstance().getProperty("wage")) / steps)));
 
     if (testMode) {
         println('sameNeedActivity.length : ' + sameNeedActivity.length);
@@ -605,11 +604,12 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         println('randomFactor (not same value as used !) : ' + getRandomFactorFromTask(taskDesc));
         println('learnFactor : ' + (1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length)));
         println('bonusRatio : ' + parseFloat(taskDesc.getProperty('bonusRatio')));
-        println('predecessorFactor : ' + Math.pow((predecessorsAdvance / taskDesc.getPredecessors().size()) / 100, parseInt(taskInst.getProperty('predecessorsDependances')))); //predecessor factor);
+        println('predecessorFactor : ' + getPredecessorFactor(taskDesc)); //predecessor factor);
+        println('wages : ' + (parseInt(taskInst.getProperty("wages")) + (parseInt(activityAsNeeds.getResourceInstance().getProperty("wage")) / steps))); //predecessor factor);
         println('stepAdvance : ' + stepAdvance);
-        println('need completeness : ' + parseInt(selectedReq.getCompleteness()));
+        println('need completeness : ' + parseFloat(selectedReq.getCompleteness()));
         println('needProgress : ' + needProgress);
-        println('StepQuality : ' + ((parseInt(selectedReq.getQuality()) * parseInt(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress));
+        println('StepQuality : ' + (parseFloat(selectedReq.getQuality()) * parseFloat(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);
     }
 
     //set need progress (after calcuateQuality) and return it
@@ -664,8 +664,8 @@ function calculateTaskQuality(taskDesc) {
     var i, req, needQualityXNeedProgress = 0, needProgress = 0;
     for (i = 0; i < taskDesc.getInstance(self).getRequirements().size(); i++) {
         req = taskDesc.getInstance(self).getRequirements().get(i);
-        needQualityXNeedProgress += (parseInt(req.getQuality()) * parseInt(req.getCompleteness()));
-        needProgress += parseInt(req.getCompleteness());
+        needQualityXNeedProgress += (parseFloat(req.getQuality()) * parseFloat(req.getCompleteness()));
+        needProgress += parseFloat(req.getCompleteness());
     }
     return Math.round((needQualityXNeedProgress / needProgress));
 }
@@ -817,57 +817,57 @@ function sendMessage(subject, content, from) {
 }
 
 // Functions for addArtosPredecessor
-function addArtosPredecessor(){
+function addArtosPredecessor() {
     var listPredName = [];
     // ChoixEnvironnementDéveloppement predecessor
     listPredName.push("ChoixEnvironnementDéveloppement", "AnalyseExistant", "AnalyseBesoins");
     addPredecessor(VariableDescriptorFacade.findByName(gm, 'DossierSpécifications').getName(), listPredName);
-    
+
     // ModélisationDonnées predecessor
     listPredName = [];
     listPredName.push("DossierSpécifications", "PrototypeUtilisateur");
     addPredecessor(VariableDescriptorFacade.findByName(gm, "ModélisationDonnées").getName(), listPredName);
-    
+
     // ModélisationTraitements predecessor
     listPredName = [];
     listPredName.push("DossierSpécifications", "PrototypeUtilisateur");
     addPredecessor(VariableDescriptorFacade.findByName(gm, "ModélisationTraitements").getName(), listPredName);
-    
+
     // ModélisationIHM predecessor
     listPredName = [];
     listPredName.push("DossierSpécifications", "PrototypeUtilisateur");
     addPredecessor(VariableDescriptorFacade.findByName(gm, "ModélisationIHM").getName(), listPredName);
-    
+
     // ProgrammationBD predecessor
     listPredName = [];
     listPredName.push("ModélisationDonnées");
     addPredecessor(VariableDescriptorFacade.findByName(gm, "ProgrammationBD").getName(), listPredName);
-    
+
     // ProgrammationTraitements predecessor
     listPredName = [];
     listPredName.push("ModélisationDonnées", "ModélisationTraitements");
     addPredecessor(VariableDescriptorFacade.findByName(gm, "ProgrammationTraitements").getName(), listPredName);
-    
+
     // ProgrammationIHM predecessor
     listPredName = [];
     listPredName.push("ModélisationIHM");
     addPredecessor(VariableDescriptorFacade.findByName(gm, "ProgrammationIHM").getName(), listPredName);
-    
+
     // PromotionSystème predecessor
     listPredName = [];
     listPredName.push("DossierSpécifications");
     addPredecessor(VariableDescriptorFacade.findByName(gm, "PromotionSystème").getName(), listPredName);
-    
+
     // Tests predecessor
     listPredName = [];
     listPredName.push("ProgrammationBD", "ProgrammationTraitements", "ProgrammationIHM", "CorrectionModélisationTraitements", "CorrectionProgrammationTraitements");
     addPredecessor(VariableDescriptorFacade.findByName(gm, "Tests").getName(), listPredName);
-    
+
     // ImplantationMachine predecessor
     listPredName = [];
     listPredName.push("ProgrammationBD", "ProgrammationTraitements", "ProgrammationIHM");
     addPredecessor(VariableDescriptorFacade.findByName(gm, "ImplantationMachine").getName(), listPredName);
-    
+
     // PrototypeUtilisateur predecessor
     listPredName = [];
     listPredName.push("ChoixEnvironnementDéveloppement", "AnalyseExistant", "AnalyseBesoins");
@@ -875,16 +875,16 @@ function addArtosPredecessor(){
 }
 
 // Function for add taskPredecessor
-function addPredecessor(descName, listPredName){
+function addPredecessor(descName, listPredName) {
     var i, ii, iii, taskDescList = VariableDescriptorFacade.findByName(gm, 'tasks'),
             taskDesc;
-    
-    for (i=0; i<taskDescList.items.size(); i++){
+
+    for (i = 0; i < taskDescList.items.size(); i++) {
         taskDesc = taskDescList.items.get(i);
-        if(taskDesc.getName() == descName){
-            for (ii=0; ii<listPredName.length; ii++){
-                for (iii=0; iii<taskDescList.items.size(); iii++){
-                    if (listPredName[ii] == taskDescList.items.get(iii).getName()){
+        if (taskDesc.getName() == descName) {
+            for (ii = 0; ii < listPredName.length; ii++) {
+                for (iii = 0; iii < taskDescList.items.size(); iii++) {
+                    if (listPredName[ii] == taskDescList.items.get(iii).getName()) {
                         taskDesc.getPredecessors().add(taskDescList.items.get(iii));
                         break;
                     }
