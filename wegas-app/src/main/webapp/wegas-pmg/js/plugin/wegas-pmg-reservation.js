@@ -104,11 +104,9 @@ YUI.add('wegas-pmg-reservation', function(Y) {
         ATTRS: {
             type: {
                 value: "occupations",
+                choices: ['occupations', 'activities'],
                 _inputex: {
-                    _type: "select",
-                    label: "Type",
-                    value: "occupations",
-                    choices: [{value: 'occupations'}, {value: 'activities'}]
+                    value: "occupations"
                 }
             }
         },

@@ -14,73 +14,62 @@ YUI.add("wegas-pmg-datatable", function(Y) {
 
     var CONTENTBOX = "contentBox", Datatable;
 
-    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Wegas.DataTable, [Y.Wegas.Widget, Y.Wegas.Editable], {
+    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         handlers: null,
         datatable: null,
         data: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
-            var i, ct = this.get("columnsCfg"), columnTitles = new Array();
+            var i, ct = this.get("columnsCfg");
             this.handlers = {};
             this.data = [];
 
             for (i = 0; i < ct.length; i++) {                                         //construct Datatable's columns
-
                 Y.mix(ct[i], {
                     sortable: true,
                     allowHTML: true
                 });
             }
 
-            this.datatable = new Y.DataTable({//Using simple database
+            this.datatable = new Y.DataTable({                                  //Using simple database
                 columns: ct
             });
         },
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
-            if (!this.datatable)
-                return;
-            this.datatable.render(cb);
+            this.datatable.render(this.get(CONTENTBOX));
         },
         bindUI: function() {
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.updateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         syncUI: function() {
-            this.data = [];
-            if (this.datatable === null || this.get("variables") === null)
-                return;
             this.datatable.set("data", []);
-            var data = this.getData();
-            this.datatable.addRows(data);
+            this.datatable.addRows(this.getData());
         },
         destructor: function() {
-            var k;
-            for (k in this.handlers) {
-                this.handlers[k].detach();
-            }
+            this.updateHandler.detach();
             this.datatable.destroy();
         },
         //*** Private Methods ***/
         getData: function() {
-            var i, oneRowDatas, variables = this.get('variable.evaluated'), items, data = [];
-            if (variables) {
-                items = variables.get('items');
-            } else {
-                this.showMessage("error", "No variable found");
-            }
-            if (!variables || !variables instanceof Y.Wegas.persistence.ListDescriptor) {
-                this.showMessage("error", "Variable is not a ListDescriptor");
-                return;
-            }
+            var oneRowDatas,
+                    variables = this.get('variable.evaluated'),
+                    data = [];
 
-            for (i = 0; i < items.length; i++) {
-                if (items[i].getInstance().get("active") !== false){
-                    var oneRowDatas = items[i].toJSON();
-                    oneRowDatas.descriptor = items[i];
-                    oneRowDatas.instance = items[i].getInstance().toJSON();
+            if (!variables) {
+                this.showMessage("error", "Could not find variable");
+                return [];
+            } else if (!variables instanceof Y.Wegas.persistence.ListDescriptor) {
+                this.showMessage("error", "Variable is not a ListDescriptor");
+                return [];
+            }
+            Y.Array.each(variables.get("items"), function(item) {
+                if (item.getInstance().get("active") !== false) {
+                    var oneRowDatas = item.toJSON();
+                    oneRowDatas.descriptor = item;
+                    oneRowDatas.instance = item.getInstance().toJSON();
                     data.push(oneRowDatas);
                 }
-            }
+            });
             return data;
         }
     }, {
@@ -156,10 +145,8 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         "template": function(o) {
             return function(o) {
                 var data = "";
-                Y.use('template', function(Y) {
-                    var micro = new Y.Template();
-                    data = micro.render('<%= this.' + o.column.field + ' %>', o.data);
-                });
+                var micro = new Y.Template();
+                data = micro.render('<%= this.' + o.column.field + ' %>', o.data);
                 if (!data)
                     data = " - ";
                 return data;
@@ -168,10 +155,8 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         "object": function() {
             return function(o) {
                 var data = "";
-                Y.use('template', function(Y) {
-                    var micro = new Y.Template();
-                    data = micro.render('<% for(var i in this.' + o.column.field + '){%> <%= this.' + o.column.field + '[i]%> <%} %>', o.data);
-                });
+                var micro = new Y.Template();
+                data = micro.render('<% for(var i in this.' + o.column.field + '){%> <%= this.' + o.column.field + '[i]%> <%} %>', o.data);
                 if (!data)
                     data = " - ";
                 return data;
@@ -180,4 +165,4 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     });
 
     Y.namespace("Wegas").PmgDatatable = Datatable;
-}); 
+});

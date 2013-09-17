@@ -88,12 +88,15 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                     predecessors = taskDesc.get("predecessors");
 
                     for (i = 0; i < predecessors.length; i++) {
-                        predecessorId = predecessors[i].get("id")
+                        predecessorId = predecessors[i].get("id");
+                        if (!this.taskTable[predecessorId]){
+                            continue;
+                        }
                         // verifie si le prédecesseur possede le debut pert
                         if (this.taskTable[predecessorId].startPert) {
                             // defini la durée du prédecesseur
                             predecessorDuration = this.taskTable[predecessorId].startPert + this.taskTable[predecessorId].timeSolde;
-                            // verifie si la durée du prédecesseur et la plus grande    
+                            // verifie si la durée du prédecesseur et la plus grande
                             if (predecessorDuration > maxPert) {
                                 maxPert = predecessorDuration;
                             }
@@ -134,12 +137,12 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
             if (time < this.get("host").scheduleDT.currentPeriod()) {
                 return;
             }
-            if (start - parseInt(start) === 0 && end - parseInt(end) === 0){
+            if (start - parseInt(start) === 0 && end - parseInt(end) === 0) {
                 end--;
             }
             if (time === parseInt(end) || time === parseInt(start) && parseInt(start) === parseInt(end)) {
                 decimal = end - parseInt(end);
-                if (decimal === 0){
+                if (decimal === 0) {
                     this.addColor(cell, "fill100");
                 } else if (decimal > 0 && decimal <= 0.3) {
                     this.addColor(cell, "fill0to25");
@@ -150,7 +153,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                 }
             } else if (time === parseInt(start)) {
                 decimal = start - parseInt(start);
-                if (decimal === 0){
+                if (decimal === 0) {
                     this.addColor(cell, "fill100");
                 } else if (decimal > 0 && decimal <= 0.3) {
                     this.addColor(cell, "fill25to100");
@@ -167,8 +170,6 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
             cell.innerHTML = cell.innerHTML + "<span class='progress " + cssClass + "'></span>";
         }
     }, {
-        ATTRS: {
-        },
         NS: "plannificationprogresscolor",
         NAME: "PlannificationProgressColor"
     });

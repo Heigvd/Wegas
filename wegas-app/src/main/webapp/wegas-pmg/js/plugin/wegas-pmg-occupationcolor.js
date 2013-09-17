@@ -28,13 +28,10 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
          * @private
          */
         initializer: function() {
-            this.get("host").onceAfter("render", function() {
-                this.findCell();
-
-                this.afterHostMethod("syncUI", this.findCell);
-
-                this.get("host").datatable.after("sort", this.findCell, this);
-            }, this);
+            Y.log("initializer", "info", "Wegas.OccupationColor");
+            this.onceAfterHostEvent("render", this.findCell);
+            this.afterHostMethod("syncUI", this.findCell);
+            this.get("host").datatable.after("sort", this.findCell, this);
         },
         findCell: function() {
             var i, ii, iii, vd, dt = this.get("host").datatable,
@@ -49,7 +46,7 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                     for (iii = 0; iii < dt.get('columns').length; iii++) {
                         if (dt.get('columns')[iii].time === abstractAssignement[ii].get("time") && dt.get('columns')[iii].time >= this.get("host").scheduleDT.currentPeriod()) { //Affiche les occupations
                             this.addColor(dt.getRow(i).getDOMNode().cells[iii], abstractAssignement[ii].get("editable"));
-                        } else if (dt.get('columns')[iii].time === abstractAssignement[ii].get("time") && !abstractAssignement[ii].get("editable")){
+                        } else if (dt.get('columns')[iii].time === abstractAssignement[ii].get("time") && !abstractAssignement[ii].get("editable")) {
                             this.addColor(dt.getRow(i).getDOMNode().cells[iii], abstractAssignement[ii].get("editable"));
                         }
                     }
@@ -86,8 +83,6 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
         destructor: function() {
         }
     }, {
-        ATTRS: {
-        },
         NS: "occupationcolor",
         NAME: "OccupationColor"
     });
