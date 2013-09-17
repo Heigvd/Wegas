@@ -563,9 +563,7 @@
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0.17,
-                        "randomDurationSup": 0.26
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -579,7 +577,9 @@
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1200
+                            "bac": 1200,
+                            "randomDurationInf": 0.17,
+                            "randomDurationSup": 0.26
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -608,15 +608,12 @@
                     "index": 2,
                     "description": "description tâche 2",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -624,13 +621,16 @@
                         "duration": 1,
                         "plannification": [1],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 0
+                            "bac": 0,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -652,15 +652,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -668,13 +665,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -696,15 +696,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -712,13 +709,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -740,15 +740,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -756,13 +753,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -784,15 +784,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -800,13 +797,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -828,15 +828,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -844,13 +841,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -872,15 +872,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -888,13 +885,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -916,15 +916,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -932,13 +929,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -960,15 +960,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -976,13 +973,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -1004,15 +1004,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1020,13 +1017,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -1048,15 +1048,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1064,13 +1061,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -1092,15 +1092,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1108,13 +1105,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -1136,15 +1136,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1152,13 +1149,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",
@@ -1180,15 +1180,12 @@
                     "index": 3,
                     "description": "description tâche 3",
                     "properties": {
-                        "bonusRatio": 1,
                         "competenceRatioInf": 0,
                         "competenceRatioSup": 0,
                         "coordinationRatioInf": 0,
                         "coordinationRatioSup": 0,
                         "progressionOfNeeds": 0,
-                        "takeInHandDuration": 0,
-                        "randomDurationInf": 0,
-                        "randomDurationSup": 0
+                        "takeInHandDuration": 0
                     },
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -1196,13 +1193,16 @@
                         "duration": 3,
                         "plannification": [1, 2, 3],
                         "properties": {
+                            "bonusRatio": 1,
                             "fixedCosts": 1500,
                             "predecessorsDependances": 1000,
                             "completeness": 0,
                             "unworkedHoursCosts": 0,
                             "wages": 0,
                             "quality": 0,
-                            "bac": 1500
+                            "bac": 1500,
+                            "randomDurationInf": 0,
+                            "randomDurationSup": 0
                         },
                         "requirements": [{
                                 "@class": "WRequirement",

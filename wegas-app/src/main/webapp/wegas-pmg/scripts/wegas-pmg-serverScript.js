@@ -348,7 +348,7 @@ function checkAssignments(assignments, currentStep) {
         return [];
     }
     employeeInst = assignments.get(0).getResourceInstance();
-    employeeName = employeeInst.getDescriptor().getTitle();
+    employeeName = employeeInst.getDescriptor().getLabel();
     employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
     nextTasks = getAssignables(employeeInst.getAssignments());
     for (i = 0; i < assignments.size(); i++) {
@@ -356,19 +356,19 @@ function checkAssignments(assignments, currentStep) {
         taskInst = taskDesc.getInstance();
         if (parseFloat(taskInst.getProperty('completeness')) >= 100) {
             if (nextTasks[0]) {
-                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getTitle(),
-                        'La tâche ' + taskDesc.getTitle() + ' est terminée, je passe à la tâche ' + nextTasks[0].getTaskDescriptor().getTitle() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
+                        'La tâche ' + taskDesc.getLabel() + ' est terminée, je passe à la tâche ' + nextTasks[0].getTaskDescriptor().getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             } else {
-                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getTitle(),
-                        'La tâche ' + taskDesc.getTitle() + ' est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
+                        'La tâche ' + taskDesc.getLabel() + ' est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             }
             assignments.remove(i);
             break;
         } else if (getPredecessorFactor(taskDesc) <= 0.2) {
-            sendMessage(getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getTitle(),
-                    'Je suis sensé travailler sur la tâche ' + taskDesc.getTitle() + ' mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+            sendMessage(getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
+                    'Je suis sensé travailler sur la tâche ' + taskDesc.getLabel() + ' mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
             assignments.remove(i);
             break;
@@ -548,7 +548,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     stepAdvance *= otherWorkFactor;
 
     //calculate randomFactor
-    stepAdvance *= getRandomFactorFromTask(taskDesc);
+    stepAdvance *= getRandomFactorFromTask(taskInst);
 
     //calculate learnFactor
     if (parseInt(taskInst.getProperty('completeness')) > 15) {
@@ -556,7 +556,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     }
 
     //calculate bonusRatio
-    stepAdvance *= (parseFloat(taskDesc.getProperty('bonusRatio')));
+    stepAdvance *= (parseFloat(taskInst.getProperty('bonusRatio')));
 
     //calculate predecessorFactor
     stepAdvance *= getPredecessorFactor(taskDesc); //predecessor factor
@@ -581,7 +581,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    taskInst.setProperty("wages", (parseInt(taskInst.getProperty("wages")) + (parseInt(activityAsNeeds.getResourceInstance().getProperty("wage")) / steps)));
+    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + (parseInt(activityAsNeeds.getResourceInstance().getProperty('wage')) / steps)));
 
     if (testMode) {
         println('sameNeedActivity.length : ' + sameNeedActivity.length);
@@ -601,11 +601,11 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         println('baseAdvance : ' + 1 / (steps * (parseInt(taskDesc.getInstance(self).getDuration()))));
         println('numberOfRessourcesFactor : ' + correctedRessources / reqByWorks[workAs].totalOfEmployees);
         println('otherWorkFactor : ' + otherWorkFactor);
-        println('randomFactor (not same value as used !) : ' + getRandomFactorFromTask(taskDesc));
+        println('randomFactor (not same value as used !) : ' + getRandomFactorFromTask(taskInst));
         println('learnFactor : ' + (1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length)));
-        println('bonusRatio : ' + parseFloat(taskDesc.getProperty('bonusRatio')));
+        println('bonusRatio : ' + parseFloat(taskInst.getProperty('bonusRatio')));
         println('predecessorFactor : ' + getPredecessorFactor(taskDesc)); //predecessor factor);
-        println('wages : ' + (parseInt(taskInst.getProperty("wages")) + (parseInt(activityAsNeeds.getResourceInstance().getProperty("wage")) / steps))); //predecessor factor);
+        println('wages : ' + (parseInt(taskInst.getProperty('wages')) + (parseInt(activityAsNeeds.getResourceInstance().getProperty('wage')) / steps))); //predecessor factor);
         println('stepAdvance : ' + stepAdvance);
         println('need completeness : ' + parseFloat(selectedReq.getCompleteness()));
         println('needProgress : ' + needProgress);
@@ -617,11 +617,11 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     return  needProgress;
 }
 
-function getRandomFactorFromTask(taskDesc) {
+function getRandomFactorFromTask(taskInst) {
     var rn = Math.floor(Math.random() * 100), //number 0 to 100 (0 inclusive, 100 exclusive);
-            randomDurationSup = parseFloat(taskDesc.getProperty('randomDurationSup')),
-            randomDurationInf = parseFloat(taskDesc.getProperty('randomDurationInf')),
-            duration = parseInt(taskDesc.getInstance(self).getDuration()), delta,
+            randomDurationSup = parseFloat(taskInst.getProperty('randomDurationSup')),
+            randomDurationInf = parseFloat(taskInst.getProperty('randomDurationInf')),
+            duration = parseInt(taskInst.getInstance(self).getDuration()), delta,
             randomFactor, x = Math.random();
 
     switch (rn) {
@@ -734,7 +734,7 @@ function checkEnd(allCurrentActivities, currentStep) {
         taskDesc = allCurrentActivities[i].getTaskDescriptor();
         taskInst = taskDesc.getInstance(self);
         employeeInst = allCurrentActivities[i].getResourceInstance();
-        employeeName = employeeInst.getDescriptor().getTitle();
+        employeeName = employeeInst.getDescriptor().getLabel();
         employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
         if (currentStep === steps - 1) {
             checkAssignments(employeeInst.getAssignments(), currentStep);
@@ -742,8 +742,8 @@ function checkEnd(allCurrentActivities, currentStep) {
             reqByWorks = getRequirementsByWork(taskInst.getRequirements());
             nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks);
             if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {
-                sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getTitle() + ' en partie terminée',
-                        'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getTitle() + '. Je passe à ' + nextWork + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',
+                        'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. Je passe à ' + nextWork + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             }
         }
@@ -820,58 +820,58 @@ function sendMessage(subject, content, from) {
 function addArtosPredecessor() {
     var listPredName = [];
     // ChoixEnvironnementDéveloppement predecessor
-    listPredName.push("ChoixEnvironnementDéveloppement", "AnalyseExistant", "AnalyseBesoins");
+    listPredName.push('ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins');
     addPredecessor(VariableDescriptorFacade.findByName(gm, 'DossierSpécifications').getName(), listPredName);
 
     // ModélisationDonnées predecessor
     listPredName = [];
-    listPredName.push("DossierSpécifications", "PrototypeUtilisateur");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "ModélisationDonnées").getName(), listPredName);
+    listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ModélisationDonnées').getName(), listPredName);
 
     // ModélisationTraitements predecessor
     listPredName = [];
-    listPredName.push("DossierSpécifications", "PrototypeUtilisateur");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "ModélisationTraitements").getName(), listPredName);
+    listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ModélisationTraitements').getName(), listPredName);
 
     // ModélisationIHM predecessor
     listPredName = [];
-    listPredName.push("DossierSpécifications", "PrototypeUtilisateur");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "ModélisationIHM").getName(), listPredName);
+    listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ModélisationIHM').getName(), listPredName);
 
     // ProgrammationBD predecessor
     listPredName = [];
-    listPredName.push("ModélisationDonnées");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "ProgrammationBD").getName(), listPredName);
+    listPredName.push('ModélisationDonnées');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ProgrammationBD').getName(), listPredName);
 
     // ProgrammationTraitements predecessor
     listPredName = [];
-    listPredName.push("ModélisationDonnées", "ModélisationTraitements");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "ProgrammationTraitements").getName(), listPredName);
+    listPredName.push('ModélisationDonnées', 'ModélisationTraitements');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ProgrammationTraitements').getName(), listPredName);
 
     // ProgrammationIHM predecessor
     listPredName = [];
-    listPredName.push("ModélisationIHM");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "ProgrammationIHM").getName(), listPredName);
+    listPredName.push('ModélisationIHM');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ProgrammationIHM').getName(), listPredName);
 
     // PromotionSystème predecessor
     listPredName = [];
-    listPredName.push("DossierSpécifications");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "PromotionSystème").getName(), listPredName);
+    listPredName.push('DossierSpécifications');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'PromotionSystème').getName(), listPredName);
 
     // Tests predecessor
     listPredName = [];
-    listPredName.push("ProgrammationBD", "ProgrammationTraitements", "ProgrammationIHM", "CorrectionModélisationTraitements", "CorrectionProgrammationTraitements");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "Tests").getName(), listPredName);
+    listPredName.push('ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM', 'CorrectionModélisationTraitements', 'CorrectionProgrammationTraitements');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'Tests').getName(), listPredName);
 
     // ImplantationMachine predecessor
     listPredName = [];
-    listPredName.push("ProgrammationBD", "ProgrammationTraitements", "ProgrammationIHM");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "ImplantationMachine").getName(), listPredName);
+    listPredName.push('ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ImplantationMachine').getName(), listPredName);
 
     // PrototypeUtilisateur predecessor
     listPredName = [];
-    listPredName.push("ChoixEnvironnementDéveloppement", "AnalyseExistant", "AnalyseBesoins");
-    addPredecessor(VariableDescriptorFacade.findByName(gm, "PrototypeUtilisateur").getName(), listPredName);
+    listPredName.push('ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins');
+    addPredecessor(VariableDescriptorFacade.findByName(gm, 'PrototypeUtilisateur').getName(), listPredName);
 }
 
 // Function for add taskPredecessor
