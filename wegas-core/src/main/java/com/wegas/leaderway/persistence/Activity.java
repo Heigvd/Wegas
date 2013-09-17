@@ -42,7 +42,7 @@ public class Activity extends AbstractAssignement {
      *
      */
     @Column(name = "wcompletion")
-    private Integer completion;
+    private Double completion;
     /**
      *
      */
@@ -78,7 +78,7 @@ public class Activity extends AbstractAssignement {
      */
     public Activity() {
         this.time = 0.0D;
-        this.completion = 0;
+        this.completion = 0.0D;
         this.description = "";
         this.requirement = null;
     }
@@ -90,7 +90,7 @@ public class Activity extends AbstractAssignement {
     public Activity(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
         this.time = 0D;
-        this.completion = 0;
+        this.completion = 0.0D;
         this.description = "";
         this.requirement = null;
     }
@@ -194,14 +194,14 @@ public class Activity extends AbstractAssignement {
     /**
      * @return the completion
      */
-    public Integer getCompletion() {
+    public Double getCompletion() {
         return completion;
     }
 
     /**
      * @param completion the completion to set
      */
-    public void setCompletion(Integer completion) {
+    public void setCompletion(Double completion) {
         this.completion = completion;
     }
 
