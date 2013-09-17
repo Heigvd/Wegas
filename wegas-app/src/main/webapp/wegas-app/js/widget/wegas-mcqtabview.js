@@ -282,7 +282,11 @@ YUI.add('wegas-mcqtabview', function(Y) {
             return occurrence;
         },
         getEditorLabel: function() {
-            return this.get("variable.evaluated").getEditorLabel();
+            var variable = this.get("variable.evaluated");
+            if (variable) {
+                return variable.getEditorLabel();
+            }
+            return null;
         },
         /**
          * @function

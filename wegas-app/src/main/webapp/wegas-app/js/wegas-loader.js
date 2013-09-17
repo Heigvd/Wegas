@@ -493,7 +493,7 @@ YUI().use(function(Y) {
                 'wegas-inputex-url': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-url-min.js',
                     requires: ['inputex-url', 'panel', 'wegas-fileexplorer'],
-                    ix_provides: 'wegasurl'
+                    ix_provides: ['wegasurl', 'wegasimageurl']
                 },
                 'wegas-inputex-ace': {
                     path: 'wegas-editor/js/inputex/wegas-inputex-ace-min.js',
@@ -729,7 +729,7 @@ YUI().use(function(Y) {
                 'wegas-pmg-datatable': {
                     path: 'wegas-pmg/js/wegas-pmg-datatable-min.js',
                     /*requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],*/ //Using Treeble
-                    requires: ['wegas-datatable', 'datatable', 'datatable-mutable'], //Using simple datatable
+                    requires: ['wegas-datatable', 'datatable', 'datatable-mutable', "template"], //Using simple datatable
                     ws_provides: "PmgDatatable"
                 },
                 'wegas-pmg-slidepanel': {

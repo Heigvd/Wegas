@@ -143,7 +143,11 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                     setContent(Math.round(value / this.MAXVAL * 100) + "%");
         },
         getEditorLabel: function() {
-            return this.get("variable.evaluated").getEditorLabel();
+            var variable = this.get("variable.evaluated");
+            if (variable) {
+                return variable.getEditorLabel();
+            }
+            return null;
         },
         /**
          * @function

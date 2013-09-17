@@ -104,7 +104,10 @@ YUI.add('wegas-app', function(Y) {
                 if (!req) {
                     return;
                 }
-                var exception = req.responseText.substring(req.responseText.indexOf('"exception'), req.responseText.length);
+                var exception = req.responseText ?
+                        req.responseText.substring(req.responseText.indexOf('"exception'), req.responseText.length)
+                        : "Unknown io exception";
+                        
                 exception = exception.split(",");
                 if (req.status === 400 && exception[0] === '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
                         exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {

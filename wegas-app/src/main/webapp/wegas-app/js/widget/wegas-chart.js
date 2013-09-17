@@ -15,10 +15,10 @@ YUI.add('wegas-chart', function(Y) {
             Chart = Y.Base.create("wegas-chart", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         renderUI: function() {
             this.handlers = [];
-            var cb = this.get(CONTENTBOX);
-            cb.setContent(
-                    '<div style="width:' + this.checkType(this.get("chartWidth")) + '; height:' + this.checkType(this.get("chartHeight")) + ';" class="chart"></div>'
-                    );
+            this.get(CONTENTBOX).setStyles({
+                width: this.checkType(this.get("chartWidth")),
+                height: this.checkType(this.get("chartHeight"))
+            });
         },
         bindUI: function() {
             this.handlers.push(
@@ -40,25 +40,25 @@ YUI.add('wegas-chart', function(Y) {
                 else
                     vd.label = variable[i].name;
                 this.historyRequest(vd);
-
             }
         },
         destructor: function() {
-            if (this.chart)
+            if (this.chart) {
                 this.chart.destroy();
+            }
             for (var i = 0; i < this.handlers.length; i = i + 1) {
                 this.handlers[i].detach();
             }
+            Y.Wegas.DataSource.abort(this.historyRequestId);
         },
         historyRequest: function(vd) {
-            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(vd.getInstance(), "Extended", {
+            this.historyRequestId = Y.Wegas.Facade.VariableDescriptor.cache.getWithView(vd.getInstance(), "Extended", {
                 on: {
                     success: Y.bind(function(r) {
                         var a = Y.JSON.parse(r.data.responseText);
                         a.entities[0].label = vd.label;
                         this.vdList.splice(vd.position, 0, a.entities[0]);
                         if (this.vdList.length === this.get("variables").length) {
-                            this.clear(this.get(CONTENTBOX));
                             this.createChart();
                         }
                     }, this),
@@ -74,16 +74,15 @@ YUI.add('wegas-chart', function(Y) {
          * @ Param NumberDescriptor numberDescriptor, the source of chart's values
          */
         createChart: function() {
-            if (this.chart)
+            if (this.chart) {
                 this.chart.destroy();
+            }
             if (this.vdList.length < 1)
                 return;
             var i, cb = this.get(CONTENTBOX),
                     seriesCollection = [],
                     rawSeries = [],
                     obj;
-            if (!cb._node)
-                return;
 
             for (i = 0; i < this.vdList.length; i++) {
                 obj = {
@@ -96,7 +95,7 @@ YUI.add('wegas-chart', function(Y) {
             this.chart = new Y.Chart({
                 type: this.get("chartType"),
                 seriesCollection: seriesCollection,
-//                categoryType:"time",                                          Start sur l'axe mais l'axe devient time
+                // categoryType:"time",                                         // Start sur l'axe mais l'axe devient time
                 axes: {
                     values: {
                         minimum: this.findMinValue(),
@@ -114,7 +113,7 @@ YUI.add('wegas-chart', function(Y) {
                 horizontalGridlines: this.get("horizontalGridlines"),
                 verticalGridlines: this.get("verticalGridlines")
             });
-            this.chart.render(cb._node.childNodes[0]);
+            this.chart.render(cb);
         },
         findMinValue: function() {
             if (!this.get("minValue")) {
@@ -184,11 +183,6 @@ YUI.add('wegas-chart', function(Y) {
                 return msg;
             }
         },
-        clear: function(cb) {
-            this.chart = null;
-            if (cb.one('.chart'))
-                cb.one('.chart').setHTML();
-        },
         checkType: function(value) {
             value = value.trim();
             if (value.substr(-2) !== "px" && value.substr(-2) !== "pt" && value.substr(-2) !== "em" && value.substr(-1) !== "%" && value.substr(-2) !== "ex") {
@@ -218,45 +212,44 @@ YUI.add('wegas-chart', function(Y) {
                 }
             },
             chartType: {
+                type: "string",
                 value: "combo",
+                choices: ['combo', 'line'],
                 _inputex: {
-                    _type: "select",
-                    value: "bottom",
                     label: "Chart type",
-                    choices: [{value: 'combo'}, {value: 'line'}],
                     index: 0
                 }
             },
             minValue: {
+                optional: true,
                 _inputex: {
                     _type: "integer",
                     label: "Min. value",
                     index: 2,
-                    negative: true,
-                    required: false
+                    negative: true
                 }
             },
             maxValue: {
+                optional: true,
                 _inputex: {
                     _type: "integer",
                     label: "Max. value",
                     index: 3,
-                    negative: true,
-                    required: false
+                    negative: true
                 }
             },
             chartWidth: {
                 value: "250px",
+                type: "string",
                 _inputex: {
-                    _type: "string",
                     label: "Width",
                     index: 5
                 }
             },
             chartHeight: {
                 value: "200px",
+                type: "string",
                 _inputex: {
-                    _type: "string",
                     label: "Height",
                     index: 6
                 }
@@ -271,27 +264,26 @@ YUI.add('wegas-chart', function(Y) {
             },
             horizontalGridlines: {
                 value: true,
+                type: "boolean",
                 _inputex: {
-                    _type: "boolean",
                     label: "Horizontal Gridlines",
                     index: 8
                 }
             },
             verticalGridlines: {
                 value: true,
+                type: "boolean",
                 _inputex: {
-                    _type: "boolean",
                     label: "Vertical Gridlines",
                     index: 9
                 }
             },
             legendPosition: {
                 value: "bottom",
+                type: "string",
+                choices: ['bottom', 'left', 'right', 'top'],
                 _inputex: {
-                    _type: "select",
                     value: "bottom",
-                    label: "Legend position",
-                    choices: [{value: 'bottom'}, {value: 'left'}, {value: 'right'}, {value: 'top'}],
                     index: 7
                 }
             }
