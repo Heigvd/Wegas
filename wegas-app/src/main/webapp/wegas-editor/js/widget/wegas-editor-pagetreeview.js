@@ -43,7 +43,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 this.showOverlay();
                 Y.soon(Y.bind(function(id) {
                     this.get("pageLoader").set("pageId", id);
-                }, this, [pageId]));
+                }, this, pageId));
             }, this);
             this.on("*:newPage", function(e) {
                 DATASOURCE.createPage(PageTreeview.DEFAULT_NEWPAGE, Y.bind(function(page, id) {
