@@ -40,6 +40,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         },
         bindUI: function() {
             var bindChangePage = Y.bind(function(pageId) {
+                if (parseInt(this.get("pageLoader").get("pageId"), 10) === parseInt(pageId, 10)) {
+                    return;
+                }
                 this.showOverlay();
                 Y.soon(Y.bind(function(id) {
                     this.get("pageLoader").set("pageId", id);
@@ -220,9 +223,17 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     node.item(0).expand(false);
                 }
                 node.set("selected", 2);
+                for (i in twState) {
+                    if (twState.hasOwnProperty(i)) {
+// don't care about first level.
+                        delete twState[i].expanded;
+                    }
+                }
+                this.treeView.applyState(twState);
                 this.hideOverlay();
             };
             this.showOverlay();
+
             this.treeView.removeAll().each(function() {
                 Y.soon(Y.bind(this.destroy, this));
             });
@@ -269,13 +280,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     }
                 }
             }
-            for (i in twState) {
-                if (twState.hasOwnProperty(i)) {
-// don't care about first level.
-                    delete twState[i].expanded;
-                }
-            }
-            this.treeView.applyState(twState);
             if (!pageFound) { //no page is selected
                 this.hideOverlay();
             }
