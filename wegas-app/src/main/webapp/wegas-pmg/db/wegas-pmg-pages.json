@@ -287,6 +287,13 @@
                                 "disabled": false,
                                 "label": "",
                                 "plugins": [{
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": {
+                                                "expr": "actions.items[currentPhase.value].descriptorId"
+                                            }
+                                        }
+                                    }, {
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 6,
