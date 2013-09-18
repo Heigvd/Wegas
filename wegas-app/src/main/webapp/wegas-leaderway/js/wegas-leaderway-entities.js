@@ -11,7 +11,6 @@
  */
 YUI.add('wegas-leaderway-entities', function(Y) {
     "use strict";
-
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
             SELF = "self", BOOLEAN = "boolean", NUMBER = "number", SELECT = "select",
             OBJECT = "object", HTML = "html", VALUE = "value", HASHLIST = "hashlist",
@@ -23,7 +22,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             _type: HIDDEN
         }
     };
-
     /**
      * ResourceDescriptor mapper
      */
@@ -99,6 +97,14 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         type: STRING,
                         _inputex: {
                             label: "Default confiance"
+                        }
+                    },
+                    confidenceHistory: {
+                        type: ARRAY,
+                        optional: true,
+                        _inputex: {
+                            value: [],
+                            _type: HIDDEN
                         }
                     },
                     properties: {
@@ -278,7 +284,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         type: STRING,
                         label: "Key",
                         scriptType: STRING
-                            }, {
+                    }, {
                         type: STRING,
                         label: "Value",
                         scriptType: STRING
@@ -394,7 +400,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             }
         }
     });
-
     /**
      * ResourceInstance mapper
      */
@@ -479,7 +484,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             }
         }
     });
-
     /**
      * TaskDescriptor mapper
      */
@@ -498,7 +502,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                     }
                 }
             }, this);
-
             return data;
         }
     }, {
@@ -750,7 +753,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             }
         }
     });
-
     /**
      * TaskInstance mapper
      */
@@ -817,7 +819,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             }
         }
     });
-
     /**
      * Requirements mapper
      */
@@ -846,7 +847,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             }
         }
     });
-
     /**
      * Activity mapper
      */
@@ -872,7 +872,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             }
         }
     });
-
     /**
      * Occupation mapper
      */
@@ -892,7 +891,6 @@ YUI.add('wegas-leaderway-entities', function(Y) {
             }
         }
     });
-
     /**
      * Assignement mapper
      */
