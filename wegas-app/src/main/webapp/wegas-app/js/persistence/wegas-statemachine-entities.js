@@ -322,16 +322,30 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     Y.Wegas.persistence.Transition = Y.Base.create("Transition", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
-                value: "Transition"
+                value: "Transition",
+                _inputex: {
+                    _type: HIDDEN
+                }
             },
             triggerCondition: {
-                value: null
+                _inputex: {
+                    _type: SCRIPT,
+                    label: 'Condition',
+                    expects: "condition"
+                }
             },
             preStateImpact: {
-                value: null
+                value: null,
+                _inputex: {
+                    _type: SCRIPT,
+                    label: 'Transition impact'
+                }
             },
             nextStateId: {
-                value: null
+                value: null,
+                _inputex: {
+                    _type: HIDDEN
+                }
             }
         }
     });
