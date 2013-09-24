@@ -161,10 +161,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
 
     //Methods for impacts
     /**
-     * 
+     *
      * @param p
      * @param key
-     * @return 
+     * @return
      */
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getInstance(p).getProperty(key);
@@ -181,7 +181,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      * @param p
      * @param key
-     * @return 
+     * @return
      */
     public String getStringInstanceProperty(Player p, String key) {
         return this.getInstance(p).getProperty(key);
@@ -212,7 +212,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @param p
      * @param value
      */
-    public Integer getDuration(Player p) {
+    public double getDuration(Player p) {
         return this.getInstance(p).getDuration();
     }
 
@@ -221,7 +221,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @param p
      * @param value
      */
-    public void setDuration(Player p, Integer value) {
+    public void setDuration(Player p, double value) {
         this.getInstance(p).setDuration(value);
     }
 
@@ -230,9 +230,59 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @param p
      * @param value
      */
-    public void addAtDuration(Player p, Integer value) {
+    public void addAtDuration(Player p, double value) {
         TaskInstance instance = this.getInstance(p);
         instance.setDuration(instance.getDuration() + value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param id
+     * @param variable
+     * @return
+     */
+    public double getRequirementVariable(Player p, Long id, String variable) {
+        WRequirement requirement = this.getRequirementById(p, id);
+        double value = Double.NaN;
+        if (requirement != null) {
+            value = requirement.getVariableValue(variable);
+        }
+        return value;
+    }
+
+    /**
+     *
+     * @param p
+     * @param id
+     * @return
+     */
+    public WRequirement getRequirementById(Player p, Long id) {
+        return this.getInstance(p).getRequirementById(id);
+    }
+
+    /**
+     * 
+     * @param p
+     * @param id
+     * @param variable
+     * @param value 
+     */
+    public void setRequirementVariable(Player p, Long id, String variable, double value) {
+        WRequirement requirement = this.getRequirementById(p, id);
+        if (requirement != null) {
+            requirement.setVariableValue(variable, value);
+        }
+    }
+    
+    /**
+     * 
+     */
+    public void addAtRequirementVariable(Player p, Long id, String variable, double value) {
+        WRequirement requirement = this.getRequirementById(p, id);
+        if (requirement != null) {
+            requirement.addAtVariableValue(variable, value);
+        }
     }
 
     /**
@@ -249,7 +299,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @param p
      * @param value
      */
-    public void setActive(Player p, Boolean value) {
+    public void setActive(Player p, boolean value) {
         TaskInstance instance = this.getInstance(p);
         instance.setActive(value);
     }

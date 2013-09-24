@@ -30,11 +30,11 @@ public class TaskInstance extends VariableInstance {
     /**
      *
      */
-    private Boolean active = true;
+    private boolean active = true;
     /**
      *
      */
-    private Integer duration;
+    private double duration;
     /**
      *
      */
@@ -66,10 +66,10 @@ public class TaskInstance extends VariableInstance {
         this.requirements.clear();
         for (WRequirement req : other.getRequirements()) {
             //if (req.getId() != null) { //don't like modification
-                WRequirement r = new WRequirement();
-                r.merge(req);
-                this.requirements.add(r);
-            }
+            WRequirement r = new WRequirement();
+            r.merge(req);
+            this.requirements.add(r);
+        }
         //}
         this.plannification.clear();
         this.plannification.addAll(other.getPlannification());
@@ -78,28 +78,28 @@ public class TaskInstance extends VariableInstance {
     /**
      * @return the active
      */
-    public Boolean getActive() {
+    public boolean getActive() {
         return this.active;
     }
 
     /**
      * @param active the active to set
      */
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
     }
 
     /**
      * @return the duration
      */
-    public Integer getDuration() {
+    public double getDuration() {
         return duration;
     }
 
     /**
      * @param duration the duration to set
      */
-    public void setDuration(Integer duration) {
+    public void setDuration(double duration) {
         this.duration = duration;
     }
 
@@ -179,5 +179,21 @@ public class TaskInstance extends VariableInstance {
      */
     public void setPlannification(List<Integer> plannification) {
         this.plannification = plannification;
+    }
+
+    /**
+     * 
+     * @param id
+     * @return 
+     */
+    public WRequirement getRequirementById(Long id) {
+        WRequirement requirement = null;
+        for (WRequirement req : this.getRequirements()) {
+            if (req.getId().longValue() == id.longValue()) {
+                requirement = req;
+                break;
+            }
+        }
+        return requirement;
     }
 }

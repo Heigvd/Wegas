@@ -172,4 +172,54 @@ public class WRequirement extends AbstractEntity implements Serializable {
     public void setQuality(Double quality) {
         this.quality = quality;
     }
+
+    /**
+     * 
+     * @param variable
+     * @return 
+     */
+    public double getVariableValue(String variable) {
+        Double value = Double.NaN;
+        switch (variable) {
+            case "quality":
+                value = this.getQuality();
+                break;
+            case "quantity":
+                value = this.getQuantity().doubleValue();
+                break;
+        }
+        return value;
+    }
+
+    /**
+     * 
+     * @param variable
+     * @param value 
+     */
+    public void setVariableValue(String variable, double value) {
+        switch (variable) {
+            case "level":
+                this.setLevel(((Long) Math.round(value)).intValue());
+                break;
+            case "quantity":
+                this.setQuantity(Math.round(value));
+                break;
+        }
+    }
+
+    /**
+     * 
+     * @param variable
+     * @param value 
+     */
+    public void addAtVariableValue(String variable, double value) {
+        switch (variable) {
+            case "level":
+                this.setLevel(this.getLevel() + ((Long) Math.round(value)).intValue());
+                break;
+            case "quantity":
+                this.setQuantity(this.getQuantity() + Math.round(value));
+                break;
+        }
+    }
 }
