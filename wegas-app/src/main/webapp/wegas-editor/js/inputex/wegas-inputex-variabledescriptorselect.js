@@ -613,19 +613,36 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          * @param {Object} options Options object as passed to the constructor
          */
         setOptions: function(options) {
-            var i, results = options.entity ? options.entity.get("results") :
-                    Y.Plugin.EditEntityAction.currentEntity.get("results");
+            var i, results;
+            if (options.scope !== "instance") {
+                results = options.entity ? options.entity.get(options.field) :
+                        Y.Plugin.EditEntityAction.currentEntity.get(options.field);
+            } else {
+                results = options.entity ? options.entity.getInstance().get(options.field) :
+                        Y.Plugin.EditEntityAction.currentEntity.getInstance().get(options.field);
+            }
             options.choices = [];
 
             for (i = 0; i < results.length; i = i + 1) {
                 options.choices.push({
                     value: results[i].get(options.returnAttr || "name"),
-                    label: results[i].getEditorLabel()
+                    label: results[i].getEditorLabel() || this.optionNameToString(results[i], options)
                 });
             }
 
             EntityArrayFieldSelect.superclass.setOptions.call(this, options);
             this.options.entity = options.entity;
+        },
+        optionNameToString: function(result, options) {
+            var i, string = [], separator = (options.name) ? options.name.separator || "," : ",";
+            if (!options.name || !options.name.values || options.name.values.length <= 0) {
+                string.push("undefined");
+            } else {
+                for (i = 0; i < options.name.values.length; i++) {
+                    string.push(result.get(options.name.values[i]));
+                }
+            }
+            return string.join(separator);
         }
     });
     inputEx.registerType("entityarrayfieldselect", EntityArrayFieldSelect);     // Register this class as "list" type
