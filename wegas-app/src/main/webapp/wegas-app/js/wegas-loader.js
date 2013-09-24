@@ -371,6 +371,11 @@ YUI().use(function(Y) {
                     requires: ['stylesheet'],
                     ws_provides: 'CSSLoader'
                 },
+                'wegas-slideshow': {
+                    path: "wegas-app/js/plugin/wegas-slideshow-min.js",
+                    requires: ["plugin", "wegas-editable"],
+                    ws_provides: "SlideShow"
+                },
                 "wegas-cssstyles": {
                     path: 'wegas-app/js/plugin/wegas-cssstyles-min.js',
                     ws_provides: 'CSSStyles'
