@@ -77,6 +77,62 @@ Y.Wegas.persistence.TaskDescriptor.METHODS.setInstanceProperty = {
         }]
 };
 
+Y.Wegas.persistence.TaskDescriptor.METHODS.addAtRequirementVariable = {
+    label: "Add at requirements",
+    arguments: [{
+            type: "hidden",
+            value: "self"
+        }, {
+            type: "entityarrayfieldselect",
+            returnAttr: "id",
+            scope: "instance",
+            field: "requirements",
+            name: {
+                values: ["quantity", "work", "level"],
+                separator: " - "
+            }
+        }, {
+            label: "Key",
+            scriptType: "string",
+            type: "select",
+            choices: [{
+                    value: "quantity"
+                }, {
+                    value: "level"
+                }]
+        }, {
+            type: "string",
+            label: "Value",
+            scriptType: "string"
+        }]
+};
+
+Y.Wegas.persistence.TaskDescriptor.METHODS.setRequirementVariable = {
+    label: "set requirements",
+    arguments: [{
+            type: "hidden",
+            value: "self"
+        }, {
+            type: "entityarrayfieldselect",
+            returnAttr: "id",
+            scope: "instance",
+            field: "requirements"
+        }, {
+            label: "Key",
+            scriptType: "string",
+            type: "select",
+            choices: [{
+                    value: "quantity"
+                }, {
+                    value: "level"
+                }]
+        }, {
+            type: "string",
+            label: "Value",
+            scriptType: "string"
+        }]
+};
+
 Y.Wegas.persistence.ResourceDescriptor.METHODS = {
     getMoral: {
         label: "Get moral",

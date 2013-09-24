@@ -50,7 +50,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    private Boolean active = true;
+    private boolean active = true;
     /**
      *
      */
@@ -64,7 +64,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    private Integer moral;
+    private int moral;
     /**
      *
      */
@@ -75,7 +75,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    private Integer confidence;
+    private int confidence;
     /**
      *
      */
