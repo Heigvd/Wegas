@@ -267,6 +267,21 @@ YUI.add("wegas-container", function(Y) {
                                     ]
                                 }, {
                                     type: "Button",
+                                    label: "SlideShow",
+                                    plugins: [{
+                                            fn: "AddChildWidgetAction",
+                                            cfg: {
+                                                "childCfg": {
+                                                    "type": "ChoiceList",
+                                                    plugins: [{
+                                                            fn: "SlideShow"
+                                                        }]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }, {
+                                    type: "Button",
                                     label: "Page display",
                                     plugins: [{
                                             fn: "AddChildWidgetAction",

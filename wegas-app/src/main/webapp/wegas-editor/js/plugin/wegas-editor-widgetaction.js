@@ -105,12 +105,12 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     };
     Y.extend(AddChildWidgetAction, WidgetAction, {
         execute: function() {
-            Wegas.Editable.use({type: this.get("childCfg.type")}, Y.bind(function() { // Load target widget dependencies
-                var newWidget = new Y.Wegas.Widget.create(this.get("childCfg"));
+            Wegas.Editable.use(this.get("childCfg"), Y.bind(function() { // Load target widget dependencies
+                var newWidget = Y.Wegas.Widget.create(this.get("childCfg"));
 
                 Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
                     Plugin.EditEntityAction.showEditFormOverlay();
-                    var targetWidget = this.get("widget"), widget = new Y.Wegas.Widget.create(val);
+                    var targetWidget = this.get("widget"), widget = Y.Wegas.Widget.create(val);
                     targetWidget.add(widget);
 
                     this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), Y.bind(function() {
