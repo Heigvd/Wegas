@@ -73,7 +73,7 @@ function completeRealizationPeriod() {
 }
 
 /**
- * Calculate planedValue, earnedValue, actualCost, projectCompleteness, save
+ * Calculate planedValue, earnedValue, actualCost, projectCompleteness, cpi, spi, save
  *  history for variable the same variable and for costs, delay and quality.
  *  call function updateGauges();
  */
@@ -86,6 +86,8 @@ function setWeekliesVariables() {
             planedValue = VariableDescriptorFacade.findByName(gm, 'planedValue'),
             earnedValue = VariableDescriptorFacade.findByName(gm, 'earnedValue'),
             actualCost = VariableDescriptorFacade.findByName(gm, 'actualCost'),
+            cpi = VariableDescriptorFacade.findByName(gm, 'cpi'),
+            spi = VariableDescriptorFacade.findByName(gm, 'spi'),
             projectFixCosts = VariableDescriptorFacade.findByName(gm, 'projectFixedCosts'),
             projectCompleteness = VariableDescriptorFacade.findByName(gm, 'projectCompleteness');
     for (i = 0; i < tasks.items.size(); i++) {
@@ -108,6 +110,11 @@ function setWeekliesVariables() {
     //ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
     actualCost.getInstance(self).setValue(ac + parseInt(projectFixCosts.getInstance(self).getValue()));
 
+    //cpi = ev / ac * 100
+    cpi.getInstance(self).setValue((ev / ac * 100));
+    //spi = ev / pv * 100
+    spi.getInstance(self).setValue((ev / pv * 100));
+    
     updateGauges();
 
     costs.getInstance(self).saveHistory();
@@ -1106,7 +1113,7 @@ function addArtosPredecessor() {
  * Function to add taskPredecessor
  * @param {type} descName
  * @param {type} listPredName
- */ 
+ */
 function addPredecessor(descName, listPredName) {
     var i, ii, iii, taskDescList = VariableDescriptorFacade.findByName(gm, 'tasks'),
             taskDesc;
