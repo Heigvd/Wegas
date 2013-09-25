@@ -430,11 +430,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }, this));
             }
             this.get(CONTENT_BOX).delegate("click", function(e) {
-                if (this.get("entity").get("onEnterEvent")) {
-                    Y.Plugin.EditEntityAction.showEditForm(this.get("entity").get("onEnterEvent"), Y.bind(this.setOnEnterEvent, this));
-                } else {
-                    Y.Plugin.EditEntityAction.showEditForm(new Y.Wegas.persistence.Script(), Y.bind(this.setOnEnterEvent, this));
-                }
+                Y.Plugin.EditEntityAction.showEditForm(this.get("entity"), Y.bind(this.setEntity, this));
             }, ".state-edit", this);
             this.on("wegas-transition:destroy", function(e) {
                 var index = this.transitionsTarget.indexOf(e.target);
@@ -463,9 +459,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }));
             }
         },
-        setOnEnterEvent: function(entity) {
-            entity = entity instanceof Y.Wegas.persistence.Script ? entity : Y.Wegas.Editable.reviver(entity);
-            this.get("entity").set("onEnterEvent", entity);
+        setEntity: function(entity) {
+            var e;
+            e = Y.Wegas.Editable.reviver(entity);
+            this.get("entity").set("onEnterEvent", e.get("onEnterEvent")); // Only change onEnterEvent
             Y.Plugin.EditEntityAction.hideEditFormOverlay();
         },
         addTransition: function(target) {
