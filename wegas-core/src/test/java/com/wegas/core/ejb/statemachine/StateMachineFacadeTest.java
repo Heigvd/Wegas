@@ -7,14 +7,25 @@
  */
 package com.wegas.core.ejb.statemachine;
 
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.*;
+import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.persistence.variable.statemachine.State;
+import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
+import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
+import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -125,5 +136,67 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         // Clean up
         vdf.remove(number.getId());
         vdf.remove(trigger.getId());
+    }
+
+    /**
+     * Test () ->+1 (+5) ->+2 (+10)
+     *
+     * @throws NamingException
+     */
+    @Test
+    public void testPassingTransitions() throws NamingException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final GameModelFacade gmf = lookupBy(GameModelFacade.class);
+        Integer INITIALVALUE = 0;
+        NumberDescriptor number = new NumberDescriptor();
+        number.setName("testnumber");
+        number.setDefaultInstance(new NumberInstance(INITIALVALUE));
+        number.setScope(new PlayerScope());
+        vdf.create(gameModel.getId(), number);
+
+        StateMachineDescriptor sm = new StateMachineDescriptor();
+        StateMachineInstance smi = new StateMachineInstance();
+        smi.setCurrentStateId(1L);
+        sm.setDefaultInstance(smi);
+        sm.setScope(new PlayerScope());
+        sm.setName("testSM");
+        State state0 = new State();
+        State state1 = new State();
+        state1.setOnEnterEvent(new Script("testnumber.value += 5"));
+        State state2 = new State();
+        state2.setOnEnterEvent(new Script("testnumber.value += 10"));
+        HashMap<Long, State> states = new HashMap<>();
+        states.put(1L, state0);
+        states.put(2L, state1);
+        states.put(3L, state2);
+        sm.setStates(states);
+        Transition t1 = new Transition();
+        t1.setPreStateImpact(new Script("testnumber.value +=1"));
+        Transition t2 = new Transition();
+        t2.setPreStateImpact(new Script("testnumber.value +=2"));
+        List<Transition> at1 = new ArrayList<>();
+        at1.add(t1);
+        List<Transition> at2 = new ArrayList<>();
+        at2.add(t2);
+        t1.setNextStateId(2L);
+        t2.setNextStateId(3L);
+        state0.setTransitions(at1);
+        state1.setTransitions(at2);
+        vdf.create(gameModel.getId(), sm);
+        gmf.reset(gameModel.getId());
+        //Test for all players.
+        for(Game g : gameModel.getGames()){
+            for(Team t : g.getTeams()){
+                for(Player p : t.getPlayers()){
+                    assertEquals(INITIALVALUE + 1 + 5 + 2 + 10, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
+                    assertEquals(3L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
+                }
+            }
+        }
+        
+        // Clean up
+        vdf.remove(number.getId());
+        vdf.remove(sm.getId());
     }
 }

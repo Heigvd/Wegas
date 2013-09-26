@@ -27,7 +27,7 @@ public class DebugGame extends Game {
         this.addTeam(t);
         Team t2 = new Team("Team 2");                                           // Add a default team
         t.addPlayer(new Player("Marc"));
-        t.addPlayer(new Player("Peter"));
+        t.addPlayer(new Player("Fred"));
         this.addTeam(t);
     }
 }
