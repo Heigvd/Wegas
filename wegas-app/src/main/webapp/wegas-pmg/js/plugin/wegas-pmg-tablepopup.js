@@ -34,10 +34,10 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                 width: this.get("width"),
                 points: ["tl", "tr"]
             });
-            this.get("host").onceAfter("render", function() {
+            this.onceAfterHostEvent("render", function() {
                 this.bind();
                 this.afterHostMethod("syncUI", this.bind);
-            }, this);
+            });
         },
         bind: function() {
             var i, record, dt = this.get("host").datatable, field, descriptor;
@@ -106,7 +106,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
             },
             field: {
                 type: "string",
-                value: "description",
+                value: "description"
             },
             column: {
                 value: 1,

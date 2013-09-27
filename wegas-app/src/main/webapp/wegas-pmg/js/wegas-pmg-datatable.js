@@ -15,14 +15,9 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     var CONTENTBOX = "contentBox", Datatable;
 
     Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        handlers: null,
-        datatable: null,
-        data: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             var i, ct = this.get("columnsCfg");
-            this.handlers = {};
-            this.data = [];
 
             for (i = 0; i < ct.length; i++) {                                         //construct Datatable's columns
                 Y.mix(ct[i], {
@@ -31,17 +26,19 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 });
             }
 
-            this.datatable = new Y.DataTable({                                  //Using simple database
+            this.datatable = new Y.DataTable({//Using simple database
                 columns: ct
             });
         },
         renderUI: function() {
+            Y.log("renderUI()", "info", "Wegas.PMGDatatable");
             this.datatable.render(this.get(CONTENTBOX));
         },
         bindUI: function() {
             this.updateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         syncUI: function() {
+            Y.log("syncUI()", "info", "Wegas.PMGDatatable");
             this.datatable.set("data", []);
             this.datatable.addRows(this.getData());
         },
@@ -64,7 +61,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             }
             Y.Array.each(variables.get("items"), function(item) {
                 if (item.getInstance().get("active") !== false) {
-                    var oneRowDatas = item.toJSON();
+                    oneRowDatas = item.toJSON();
                     oneRowDatas.descriptor = item;
                     oneRowDatas.instance = item.getInstance().toJSON();
                     data.push(oneRowDatas);
@@ -81,8 +78,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
-                    _type: "variableselect",
-                    label: "variable"
+                    _type: "variableselect"
                 }
             },
             columnsCfg: {
@@ -113,7 +109,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
 //                if (!data)
 //                    data = " - ";
 //                return data;
-//            }
+//            };
 //        },
         "requieredRessources": function(o) {
             return function(o) {
@@ -126,7 +122,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                     data = data + "</p>";
                 }
                 return data;
-            }
+            };
         },
         "assignedRessources": function(o) {
             return function(o) {
@@ -140,7 +136,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 if (!data)
                     data = " - ";
                 return data;
-            }
+            };
         },
         "template": function(o) {
             return function(o) {
@@ -150,7 +146,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 if (!data)
                     data = " - ";
                 return data;
-            }
+            };
         },
         "object": function() {
             return function(o) {
@@ -160,7 +156,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 if (!data)
                     data = " - ";
                 return data;
-            }
+            };
         }
     });
 

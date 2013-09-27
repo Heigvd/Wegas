@@ -29,18 +29,21 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
          */
         initializer: function() {
             Y.log("initializer", "info", "Wegas.OccupationColor");
-            this.onceAfterHostEvent("render", this.findCell);
-            this.afterHostMethod("syncUI", this.findCell);
-            this.get("host").datatable.after("sort", this.findCell, this);
+            this.onceAfterHostEvent("render", function() {
+                this.sync();
+                this.afterHostMethod("syncUI", this.sync);
+            });
+            this.get("host").datatable.after("sort", this.sync, this);
         },
-        findCell: function() {
+        sync: function() {
+            Y.log("sync()", "info", "Wegas.OccupationColor");
             var i, ii, iii, vd, dt = this.get("host").datatable,
                     abstractAssignement;
 
             this.addEngagementDelay();
 
             for (i = 0; i < dt.data._items.length; i++) {
-                vd = Y.Wegas.Facade.VariableDescriptor.cache.find("id", dt.data._items[i].get("id"));
+                vd = Wegas.Facade.VariableDescriptor.cache.find("id", dt.data._items[i].get("id"));
                 abstractAssignement = vd.getInstance().get("occupations");
                 for (ii = 0; ii < abstractAssignement.length; ii++) {
                     for (iii = 0; iii < dt.get('columns').length; iii++) {
@@ -74,13 +77,6 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                     }
                 }
             }
-        },
-        /**
-         * Destructor methods.
-         * @function
-         * @private
-         */
-        destructor: function() {
         }
     }, {
         NS: "occupationcolor",

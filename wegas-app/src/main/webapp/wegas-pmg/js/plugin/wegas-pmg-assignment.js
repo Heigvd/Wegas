@@ -40,12 +40,12 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             });
             this.sortable = [];
 
-            this.get(HOST).onceAfter("render", function() {
+            this.onceAfterHostEvent("render", function() {
                 this.addAssignmentColumn();
                 this.sync();
                 this.bind();
                 this.get("host").datatable.after("sort", this.sync, this);
-            }, this);
+            });
         },
         bind: function() {
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.sync, this);
@@ -69,7 +69,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                     this.menuDetails.show();
                     this.getTaskDescription(e.target.get("data").assignement.taskDescriptor);
                 }, this);
-                timer.start();                
+                timer.start();
             }, this);
 
             this.handlers.hideMenu = this.menu.on("visibleChange", function(e) {                 // When the menu is hidden, hide the details panel

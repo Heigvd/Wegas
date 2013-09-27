@@ -28,13 +28,13 @@ YUI.add('wegas-pmg-plannificationcolor', function(Y) {
          * @private
          */
         initializer: function() {
-            this.get("host").onceAfter("render", function() {
+            this.onceAfterHostEvent("render", function() {
                 this.findCell();
 
                 this.afterHostMethod("syncUI", this.findCell);
 
                 this.get("host").datatable.after("sort", this.findCell, this);
-            }, this);
+            });
         },
         findCell: function() {
             var i, ii, iii, vd, dt = this.get("host").datatable,
