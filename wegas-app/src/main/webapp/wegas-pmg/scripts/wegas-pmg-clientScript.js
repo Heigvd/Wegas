@@ -213,26 +213,6 @@ Y.Wegas.persistence.ResourceDescriptor.METHODS = {
                     }]
             }]
     },
-    setInstanceProperty: {
-        label: "Set instance's property",
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }, {
-                label: KEY,
-                scriptType: STRING,
-                type: SELECT,
-                choices: [{
-                        value: "activityRate"
-                    }, {
-                        value: "wage"
-                    }]
-            }, {
-                type: STRING,
-                label: VALUE,
-                scriptType: STRING
-            }]
-    },
     addAtInstanceProperty: {
         label: "Add at instance's property",
         arguments: [{
@@ -253,6 +233,108 @@ Y.Wegas.persistence.ResourceDescriptor.METHODS = {
                 scriptType: STRING
             }]
     },
+    setInstanceProperty: {
+        label: "Set instance's property",
+        arguments: [{
+                type: HIDDEN,
+                value: SELF
+            }, {
+                label: KEY,
+                scriptType: STRING,
+                type: SELECT,
+                choices: [{
+                        value: "activityRate"
+                    }, {
+                        value: "wage"
+                    }]
+            }, {
+                type: STRING,
+                label: VALUE,
+                scriptType: STRING
+            }]
+    },
+    getSkillset: {
+        label: "Get skillset",
+        returns: NUMBER,
+        arguments: [{
+                type: HIDDEN,
+                value: SELF
+            }, {
+                label: KEY,
+                scriptType: STRING,
+                type: SELECT,
+                choices: [ {
+                        value: "Commercial"
+                    }, {
+                        value: "Consultant IT"
+                    }, {
+                        value: "Informaticien Hardware"
+                    }, {
+                        value: "Informaticien Logiciel"
+                    }, {
+                        value: "Monteur"
+                    }, {
+                        value: "Web Designer"
+                    }]
+            }]
+    },
+    addAtSkillset: {
+        label: "Add at skillset",
+        arguments: [{
+                type: HIDDEN,
+                value: SELF
+            }, {
+                label: KEY,
+                scriptType: STRING,
+                type: SELECT,
+                choices: [ {
+                        value: "Commercial"
+                    }, {
+                        value: "Consultant IT"
+                    }, {
+                        value: "Informaticien Hardware"
+                    }, {
+                        value: "Informaticien Logiciel"
+                    }, {
+                        value: "Monteur"
+                    }, {
+                        value: "Web Designer"
+                    }]
+            }, {
+                type: STRING,
+                label: VALUE,
+                scriptType: STRING
+            }]
+    },
+    setSkillset: {
+        label: "Set skillset",
+        arguments: [{
+                type: HIDDEN,
+                value: SELF
+            }, {
+                label: KEY,
+                scriptType: STRING,
+                type: SELECT,
+                choices: [ {
+                        value: "Commercial"
+                    }, {
+                        value: "Consultant IT"
+                    }, {
+                        value: "Informaticien Hardware"
+                    }, {
+                        value: "Informaticien Logiciel"
+                    }, {
+                        value: "Monteur"
+                    }, {
+                        value: "Web Designer"
+                    }]
+            }, {
+                type: STRING,
+                label: VALUE,
+                scriptType: STRING
+            }]
+    },
+            
     getActive: {
         label: "Is active",
         returns: BOOLEAN,

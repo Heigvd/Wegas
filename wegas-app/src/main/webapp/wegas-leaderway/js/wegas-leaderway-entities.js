@@ -258,6 +258,22 @@ YUI.add('wegas-leaderway-entities', function(Y) {
 
                     }]
             },
+            addAtInstanceProperty: {
+                label: "Add at instance's property",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
             setInstanceProperty: {
                 label: "Set instance's property",
                 arguments: [{
@@ -275,8 +291,9 @@ YUI.add('wegas-leaderway-entities', function(Y) {
 
                     }]
             },
-            addAtInstanceProperty: {
-                label: "Add at instance's property",
+            getSkillset: {
+                label: "Get skillset",
+                returns: NUMBER,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -284,6 +301,35 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                         type: STRING,
                         label: "Key",
                         scriptType: STRING
+
+                    }]
+            },
+            addAtSkillset: {
+                label: "Add at skillset",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+                    }, {
+                        type: STRING,
+                        label: "Value",
+                        scriptType: STRING
+
+                    }]
+            },
+            setSkillset: {
+                label: "Set skillset",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "Key",
+                        scriptType: STRING
+
                     }, {
                         type: STRING,
                         label: "Value",
