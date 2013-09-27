@@ -41,6 +41,7 @@ public class AbstractEJBTest {
     protected static Player player;
     protected static Team team2;
     protected static Player player2;
+    protected static Player player21;
     // *** Constants *** //
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
@@ -80,7 +81,9 @@ public class AbstractEJBTest {
         team2.setName("test-team2");                                            // a second team and a player
         game.addTeam(team2);
         player2 = new Player("Player2");
+        player21 = new Player("Player21");
         team2.addPlayer(player2);
+        team2.addPlayer(player21);
 
         gameModelFacade.create(gameModel);                                      // Commit the game model
     }

@@ -12,7 +12,7 @@ import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.ActiveResponse;
 import com.wegas.core.rest.util.Views;
-import com.wegas.leaderway.persistence.DialogueState;
+import com.wegas.resourceManagement.persistence.DialogueState;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;

@@ -140,7 +140,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             this.gauge.set(value);                                              // set actual value
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").
-                    setContent(Math.round(value / this.MAXVAL * 100) + "%");
+                    setContent(Math.round(value / this.MAXVAL * this.get("percentMaxValue")) + "%");
         },
         getEditorLabel: function() {
             var variable = this.get("variable.evaluated");
@@ -199,6 +199,15 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 validator: Y.Lang.isString,
                 _inputex: {
                     label: "Label"
+                }
+            },
+            percentMaxValue: {
+                type: "number",
+                optional: true,
+                validator: Y.Lang.isNumber,
+                value: 100,
+                _inputex: {
+                    label: "Percent max value"
                 }
             },
             /**

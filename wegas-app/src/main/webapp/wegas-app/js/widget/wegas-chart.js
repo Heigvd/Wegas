@@ -63,7 +63,11 @@ YUI.add('wegas-chart', function(Y) {
                         }
                     }, this),
                     failure: function(r) {
-                        Y.error("Error by loading history data");
+                        if (r.serverResponse.status === 0) {
+                            Y.log("Abort history query", "info", "Y.Wegas.Chart");
+                        } else {
+                            Y.error("Error by loading history data");
+                        }
                     }
                 }
             });
