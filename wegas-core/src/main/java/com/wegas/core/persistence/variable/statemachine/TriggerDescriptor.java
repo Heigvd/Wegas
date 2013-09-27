@@ -29,7 +29,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @XmlType(name = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
-    private Boolean oneShot;
+    private Boolean oneShot = true;
     @Transient
     @JsonView(Views.EditorExtendedI.class)
     private Script triggerEvent;
