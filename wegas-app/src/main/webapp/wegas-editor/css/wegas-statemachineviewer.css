@@ -31,7 +31,8 @@
 .yui3-wegas-state:hover, .jsPlumb_dragged{
     z-index:7;
 }
-.yui3-wegas-state-text{
+.yui3-wegas-state-text,
+.yui3-wegas-script-script{
     width: 100%;
     height: 100%;
     display:block;
@@ -112,16 +113,6 @@
     display:block;
     margin: 2px;
 }
-yui3-wegas-script-content{
-    margin: 10px;
-}
-.yui3-wegas-script-script{
-    max-height: 20em;
-    max-width:400px;
-    overflow: hidden;
-    width: 100px;
-}
-
 .yui3-wegas-script-language{
     display:none;
     border:1px solid orangered;

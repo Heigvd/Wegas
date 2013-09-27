@@ -301,7 +301,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: null
             },
             onEnterEvent: {
-                value: null
+                value: null,
+                _inputex: {
+                    _type: "script"
+                }
             },
             transitions: {
                 value: []
