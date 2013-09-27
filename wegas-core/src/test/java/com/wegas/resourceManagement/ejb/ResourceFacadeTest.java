@@ -5,19 +5,20 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.leaderway.ejb;
+package com.wegas.resourceManagement.ejb;
 
+import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.core.ejb.AbstractEJBTest;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.leaderway.persistence.Assignment;
-import com.wegas.leaderway.persistence.ResourceDescriptor;
-import com.wegas.leaderway.persistence.ResourceInstance;
-import com.wegas.leaderway.persistence.TaskDescriptor;
-import com.wegas.leaderway.persistence.TaskInstance;
-import com.wegas.leaderway.persistence.WRequirement;
+import com.wegas.resourceManagement.persistence.Assignment;
+import com.wegas.resourceManagement.persistence.ResourceDescriptor;
+import com.wegas.resourceManagement.persistence.ResourceInstance;
+import com.wegas.resourceManagement.persistence.TaskDescriptor;
+import com.wegas.resourceManagement.persistence.TaskInstance;
+import com.wegas.resourceManagement.persistence.WRequirement;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;

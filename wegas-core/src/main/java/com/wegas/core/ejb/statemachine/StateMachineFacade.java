@@ -23,7 +23,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.leaderway.persistence.DialogueTransition;
+import com.wegas.resourceManagement.persistence.DialogueTransition;
 import java.io.Serializable;
 import java.util.*;
 import javax.ejb.EJB;

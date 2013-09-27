@@ -1,4 +1,4 @@
-package com.wegas.leaderway.persistence;
+package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.Serializable;

@@ -849,8 +849,8 @@ YUI().use(function(Y) {
                     lang: ["fr"]
                 },
                 /**Leaderway**/
-                'wegas-leaderway-entities': {
-                    path: 'wegas-leaderway/js/wegas-leaderway-entities.js',
+                'wegas-resourceManagement-entities': {
+                    path: 'wegas-resourceManagement/js/wegas-resourceManagement-entities.js',
                     requires: ['wegas-entity'],
                     ws_provides: ['ResourceDescriptor', 'TaskDescriptor']
                 },
