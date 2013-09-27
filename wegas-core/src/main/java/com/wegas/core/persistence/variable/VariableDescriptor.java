@@ -80,7 +80,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    @JsonView(Views.EditorI.class)
+//    @JsonView(Views.EditorI.class)
     @Column(name = "editorLabel")
     private String title;
     /**
