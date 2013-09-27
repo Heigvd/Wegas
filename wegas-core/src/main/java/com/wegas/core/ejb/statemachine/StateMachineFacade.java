@@ -23,7 +23,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.leaderway.persistence.DialogueTransition;
+import com.wegas.resourceManagement.persistence.DialogueTransition;
 import java.io.Serializable;
 import java.util.*;
 import javax.ejb.EJB;
@@ -95,11 +95,7 @@ public class StateMachineFacade implements Serializable {
     }
 
     private void runForPlayer(Player player) {
-        List<VariableDescriptor> descriptors = variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
-        List<StateMachineDescriptor> statemachines = new ArrayList<>();
-        for (VariableDescriptor desc : descriptors) {
-            statemachines.add((StateMachineDescriptor) desc);
-        }
+        List<StateMachineDescriptor> statemachines = variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
         List<Transition> passed = new ArrayList<>();
         Integer steps = this.doSteps(player, passed, statemachines, 0);
         logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
@@ -148,8 +144,8 @@ public class StateMachineFacade implements Serializable {
          */
         Map<StateMachineInstance, Player> statemachinesPlayerMap = new HashMap<>();
         GameModel gamemodel = ((Player) playerTransitions.keySet().toArray()[0]).getGameModel();
-        List<VariableDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel, StateMachineDescriptor.class);
-        for (VariableDescriptor stateMachineDescriptor : stateMachineDescriptors) {
+        List<StateMachineDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel, StateMachineDescriptor.class);
+        for (StateMachineDescriptor stateMachineDescriptor : stateMachineDescriptors) {
             for (Player p : playerTransitions.keySet()) {
                 statemachinesPlayerMap.put((StateMachineInstance) stateMachineDescriptor.getInstance(p), p); //won't duplicate (HashMap) if players share same instance
             }
@@ -219,6 +215,8 @@ public class StateMachineFacade implements Serializable {
             }
         }
         if (transitionPassed) {
+            /*@DIRTY, @TODO : find something else : Runing scripts overrides previous state change Only for first Player (resetEvent). */
+            variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
             preImpacts.addAll(impacts);
             try {
                 requestManager.setPlayer(player);

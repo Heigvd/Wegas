@@ -34,10 +34,9 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                 width: this.get("width"),
                 points: ["tl", "tr"]
             });
-            this.onceAfterHostEvent("render", function() {
-                this.bind();
-                this.afterHostMethod("syncUI", this.bind);
-            });
+            this.onceAfterHostEvent("render", this.bind);
+            this.afterHostMethod("syncUI", this.bind);
+            this.get("host").datatable.after("sort", this.bind, this);
         },
         bind: function() {
             var i, record, dt = this.get("host").datatable, field, descriptor;
@@ -55,7 +54,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                     if (descriptor.get(field)) {
                         this.display(descriptor.get(field));
                     } else {
-                        this.request(descriptor); // todo change.
+                        this.request(descriptor);
                     }
                 }, this));
 
@@ -85,7 +84,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
         },
         display: function(value) {
             this.menuDetails.show();
-            this.menuDetails.get("contentBox").setHTML('<div style="padding:5px 10px"><i>' + value + '</i></div>');
+            this.menuDetails.get("contentBox").setHTML('<div style="padding:5px 10px"><p>' + value + '</p></div>');
         },
         /**
          * Destructor methods.

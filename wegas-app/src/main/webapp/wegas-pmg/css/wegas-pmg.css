@@ -640,3 +640,10 @@ h2{
     margin-left: 48px;
     margin-top: 15px;
 }
+
+/*----------------------------- Table popup ----------------------------------*/
+.popupTitel {
+    margin-bottom: 3px;
+    font-weight: bold;
+    font-size: 9pt;
+}

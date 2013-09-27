@@ -28,7 +28,7 @@ YUI.add('wegas-choicelist', function(Y) {
             });
         },
         syncUI: function() {
-            this.constructor.superclass.syncUI.apply(this);
+            List.superclass.syncUI.apply(this);
             this.set("element", this.get("element"));
         },
         getActiveElement: function() {
@@ -37,6 +37,7 @@ YUI.add('wegas-choicelist', function(Y) {
 
     }, {
         EDITORNAME: "Choice List",
+        CSS_PREFIX: "wegas-choicelist",
         /**
          * @lends Y.Wegas.ChoiceList
          */

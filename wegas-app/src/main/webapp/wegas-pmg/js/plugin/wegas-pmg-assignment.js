@@ -188,20 +188,31 @@ YUI.add('wegas-pmg-assignment', function(Y) {
         },
         getTaskDescription: function(taskDescriptor) {
             if (taskDescriptor.get("description")) {
-                this.menuDetails.get(CONTENTBOX).setHTML('<div style="padding:5px 10px"><i>' + taskDescriptor.get("description") + '</i></div>');
+                this.descriptionToDisplay(taskDescriptor, taskDescriptor.get("description"));
                 return;
             }
             Y.Wegas.Facade.VariableDescriptor.cache.getWithView(taskDescriptor, "Extended", {// Retrieve the object from the server in Export view
                 on: Y.Wegas.superbind({
                     success: function(e) {
                         taskDescriptor.set("description", e.response.entity.get("description"));
-                        this.menuDetails.get(CONTENTBOX).setHTML('<div style="padding:5px 10px"><i>' + e.response.entity.get("description") + '</i></div>');
+                        this.descriptionToDisplay(taskDescriptor, e.response.entity.get("description"));
                     },
                     failure: function(e) {
                         this.menuDetails.get(CONTENTBOX).setHTML('<div style="padding:5px 10px"><i>Error loading description</i></div>');
                     }
                 }, this)
             });
+        },
+        descriptionToDisplay: function(descriptor, fieldValue){
+            var dataToDisplay, i, requirements;
+            dataToDisplay = '<div class="field" style="padding:5px 10px"><p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
+                requirements = descriptor.getInstance().get("requirements");
+                for (i=0; i<requirements.length; i++){
+                    dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " + requirements[i].get("work")
+                            + " " + requirements[i].get("level");
+                }
+                dataToDisplay = dataToDisplay + "</div>";
+                this.menuDetails.get(CONTENTBOX).setHTML(dataToDisplay);
         },
         syncSortable: function() {
             var i, node, dt = this.get(HOST).datatable, assignments,
