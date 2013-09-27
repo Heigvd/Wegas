@@ -21,7 +21,7 @@ Y.Wegas.persistence.TaskDescriptor.METHODS.getNumberInstanceProperty = {
                 }]
         }]
 };
-Y.Wegas.persistence.TaskDescriptor.METHODS.addAtInstanceProperty = {
+Y.Wegas.persistence.TaskDescriptor.METHODS.addNumberAtInstanceProperty = {
     label: "Add at instance's property",
     arguments: [{
             type: HIDDEN,

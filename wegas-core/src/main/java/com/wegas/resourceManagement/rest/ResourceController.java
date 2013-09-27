@@ -5,12 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.leaderway.rest;
+package com.wegas.resourceManagement.rest;
 
-import com.wegas.leaderway.ejb.ResourceFacade;
-import com.wegas.leaderway.persistence.AbstractAssignement;
-import com.wegas.leaderway.persistence.ResourceInstance;
-import com.wegas.leaderway.persistence.TaskInstance;
+import com.wegas.resourceManagement.ejb.ResourceFacade;
+import com.wegas.resourceManagement.persistence.AbstractAssignement;
+import com.wegas.resourceManagement.persistence.ResourceInstance;
+import com.wegas.resourceManagement.persistence.TaskInstance;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;

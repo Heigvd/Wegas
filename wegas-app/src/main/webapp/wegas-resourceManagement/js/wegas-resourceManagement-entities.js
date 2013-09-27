@@ -730,7 +730,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
 
                     }]
             },
-            addAtInstanceProperty: {
+            addNumberAtInstanceProperty: {
                 label: "Add at instance's property",
                 arguments: [{
                         type: HIDDEN,
