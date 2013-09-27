@@ -323,7 +323,7 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      * @param variableDescriptorClass the filtering class
      * @return All specified classes and subclasses belonging to the game model.
      */
-    public List<VariableDescriptor> findByClass(final GameModel gamemodel, final Class variableDescriptorClass) {
+    public <T extends VariableDescriptor> List<T> findByClass(final GameModel gamemodel, final Class<T> variableDescriptorClass) {
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();

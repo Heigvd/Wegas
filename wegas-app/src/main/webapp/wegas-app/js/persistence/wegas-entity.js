@@ -1493,6 +1493,9 @@ YUI.add('wegas-entity', function(Y) {
             content: {
                 type: STRING,
                 format: TEXT,
+                _inputex: {
+                    _type: "script"
+                },
                 setter: function(v) {
                     this._result = null;
                     return v;

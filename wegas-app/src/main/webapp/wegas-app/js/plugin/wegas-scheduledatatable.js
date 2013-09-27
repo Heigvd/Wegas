@@ -11,7 +11,6 @@
  */
 YUI.add('wegas-scheduledatatable', function(Y) {
     "use strict";
-
     /**
      *  @class Add column to datatable
      *  @name Y.Plugin.scheduleDT
@@ -28,14 +27,18 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @private
          */
         initializer: function() {
-            this.handlers = {};
-            this.get("host").onceAfter("render", function() {
-                this.set("columnToAdd", this.get("columnToAdd"));
-            }, this);
+            this.handlers = [];
+//            this.after("columnToAddChange", function(e) {
+//                this.setColumn(e.newVal, e.prevVal);
+//            })
+//            this.get("host").onceAfter("render", function() {
+//                this.set("columnToAdd", this.get("columnToAdd"));
+//            }, this);
 
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", function() {
-                this.set("columnToAdd", this.get("columnToAdd"));
-            }, this);
+            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", function() {
+                this.setTime(this.get("columnToAdd"));
+//                this.set("columnToAdd", this.get("columnToAdd"));
+            }, this));
         },
         /**
          * @function
@@ -43,29 +46,64 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @description setValue of column
          */
         setColumn: function(newval, preval) {
-            var i;
-            if (preval) {
-                for (i = 1; i <= preval; i++) {
-                    this.get("host").datatable.removeColumn(i);
+            var diff = newval - (preval ? preval : 0),
+                    table = this.get("host").datatable,
+                    bindedCP = Y.bind(this.currentPeriod, this),
+                    formatter = function(o) {
+                if (bindedCP() < o.column.time) {
+                    o.className = "futur";
+                } else if (bindedCP() === o.column.time) {
+                    o.className = "present";
+                } else {
+                    o.className = "past";
+                }
+                return "";
+
+            };
+            while (diff) {
+                if (diff > 0) {
+                    table.addColumn({key: (newval - diff + 1).toString(), time: (newval - diff + 1), formatter: formatter});
+                    diff -= 1;
+                } else {
+                    table.removeColumn(newval - diff);
+                    diff += 1;
                 }
             }
-            if (newval) {
-                var table = this.get("host").datatable, i;
-                for (i = 1; i <= newval; i++) {
-                    if (i === this.currentPeriod()) {
-                        table.addColumn({key: i.toString(), className: "schedulColumn present", time: i});
-                    } else if (i < this.currentPeriod()) {
-                        table.addColumn({key: i.toString(), className: "schedulColumn past", time: i});
-                    } else {
-                        table.addColumn({key: i.toString(), className: "schedulColumn futur", time: i});
-                    }
-
+            this.setTime(newval);
+//            if (preval) {
+//                for (i = 1; i <= preval; i++) {
+//                    this.get("host").datatable.removeColumn(i);
+//                }
+//            }
+//            if (newval) {
+//                var table = this.get("host").datatable, i;
+//                for (i = 1; i <= newval; i++) {
+//                    if (i === this.currentPeriod()) {
+//                        table.addColumn({key: i.toString(), className: "schedulColumn present", time: i});
+//                    } else if (i < this.currentPeriod()) {
+//                        table.addColumn({key: i.toString(), className: "schedulColumn past", time: i});
+//                    } else {
+//                        table.addColumn({key: i.toString(), className: "schedulColumn futur", time: i});
+//                    }
+//
+//                }
+//            }
+        },
+        setTime: function(length) {
+            var i, table = this.get("host").datatable;
+            for (i = 1; i < length; i += 1) {
+                if (this.currentPeriod() === i) {
+                    table.modifyColumn(i.toString(), {className: "schedulColumn present"});
+                } else if (this.currentPeriod() < i) {
+                    table.modifyColumn(i.toString(), {className: "schedulColumn futur"});
+                } else {
+                    table.modifyColumn(i.toString(), {className: "schedulColumn past"});
                 }
             }
         },
         currentPeriod: function() {
             var variable = this.get('variable.evaluated');
-            if (!variable){
+            if (!variable) {
                 this.get("host").showMessage("error", "No variable found");
                 return;
             }
@@ -77,9 +115,10 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @private
          */
         destructor: function() {
-            var k;
-            for (k in this.handlers) {
-                this.handlers[k].detach();
+            this.set("columnToAdd", 0);
+            for (var i = 0; i < this.handlers.length; i += 1) {
+                this.handlers[i].detach();
+                delete this.handlers[i];
             }
         }
     }, {
@@ -89,6 +128,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     this.setColumn(val, this.get("columnToAdd"));
                     return val;
                 },
+                lazyAdd: false,
                 _inputex: {
                     _type: "integer",
                     label: "No of column"

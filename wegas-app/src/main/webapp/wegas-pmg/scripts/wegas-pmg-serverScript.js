@@ -1,10 +1,19 @@
+//Global variable for easy use
 importPackage(javax.naming);
 var gm = self.getGameModel(), testMode = true;
 steps = 10, minTaskDuration = 0.1;
 
+/**
+ * Call all necessary method to pass a period and calculate all variable.
+ * set phase (if period egal max period) and set period.
+ * if enter in phase 2, change pageGantt and pageTask then call function setWeekliesVariables
+ * to calculate values like gauges and EV, AC, ...
+ * if period is passed in phase realisation, calculate task progress (call
+ *  function completeRealizationPeriod) and check the end of the project (if true, pass to phase 4).
+ */
 function nextPeriod() {
     var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, 'currentPhase'),
-            ganttPage, taskPage;
+            ganttPage, taskPage, phases;
     phases = VariableDescriptorFacade.findByName(gm, 'currentPeriod');
     if (time.period === parseInt(phases.items.get(time.phase).getMaxValue())) { // if end of phase
         phases.items.get(time.phase).getInstance(self).setValue(1);
@@ -29,6 +38,10 @@ function nextPeriod() {
     }
 }
 
+/**
+ * Check if all active task is complete (Completeness > 100).
+ * @returns {Boolean} true if the project is ended
+ */
 function checkEndOfProject() {
     var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'), isTheEnd = true;
     for (i = 0; i < tasks.items.size(); i++) {
@@ -41,6 +54,10 @@ function checkEndOfProject() {
     return isTheEnd;
 }
 
+/**
+ * Divide period in steps (see global variable).
+ * Call function calculTasksProgress at each step.
+ */
 function completeRealizationPeriod() {
     var i;
     if (testMode) {
@@ -55,28 +72,49 @@ function completeRealizationPeriod() {
     }
 }
 
+/**
+ * Calculate planedValue, earnedValue, actualCost, projectCompleteness, cpi, spi, save
+ *  history for variable the same variable and for costs, delay and quality.
+ *  call function updateGauges();
+ */
 function setWeekliesVariables() {
-    var i, taskInst, ev = 0, pv = 0, ac = 0, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
+    var i, taskInst, ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0,
+            tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
             costs = VariableDescriptorFacade.findByName(gm, 'costs'),
             delay = VariableDescriptorFacade.findByName(gm, 'delay'),
             quality = VariableDescriptorFacade.findByName(gm, 'quality'),
             planedValue = VariableDescriptorFacade.findByName(gm, 'planedValue'),
             earnedValue = VariableDescriptorFacade.findByName(gm, 'earnedValue'),
             actualCost = VariableDescriptorFacade.findByName(gm, 'actualCost'),
-            projectFixCosts = VariableDescriptorFacade.findByName(gm, 'projectFixedCosts');
+            cpi = VariableDescriptorFacade.findByName(gm, 'cpi'),
+            spi = VariableDescriptorFacade.findByName(gm, 'spi'),
+            projectFixCosts = VariableDescriptorFacade.findByName(gm, 'projectFixedCosts'),
+            projectCompleteness = VariableDescriptorFacade.findByName(gm, 'projectCompleteness');
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
+        sumProjectCompleteness += parseFloat(taskInst.getProperty('completeness'));
         if (isTrue(taskInst.getActive())) {
-            ev += parseInt(taskInst.getProperty('bac')) * (getPlannifiedCompleteness(taskInst) / 100);
             pv += parseInt(taskInst.getProperty('bac')) * (parseInt(taskInst.getProperty('completeness')) / 100);
-            ac += parseInt(taskInst.getProperty('wages')) + (parseInt(taskInst.getProperty('completeness')) / 100) * parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts') + parseInt(projectFixCosts.getInstance(self).getValue()));
+            ev += parseInt(taskInst.getProperty('bac')) * (getPlannifiedCompleteness(taskInst) / 100);
+            ac += parseInt(taskInst.getProperty('wages')) + (parseInt(taskInst.getProperty('completeness')) / 100) * parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts'));
         }
     }
 
-    planedValue.getInstance(self).setValue(pv);
-    earnedValue.getInstance(self).setValue(ev);
-    actualCost.getInstance(self).setValue(ac);
+    //sum of all task's completeness
+    projectCompleteness.getInstance(self).setValue(sumProjectCompleteness);
 
+    //pv = for each task, sum -> bac * task completeness / 100
+    planedValue.getInstance(self).setValue(pv);
+    //ev = for each task, sum -> bac * planified task completeness / 100
+    earnedValue.getInstance(self).setValue(ev);
+    //ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
+    actualCost.getInstance(self).setValue(ac + parseInt(projectFixCosts.getInstance(self).getValue()));
+
+    //cpi = ev / ac * 100
+    cpi.getInstance(self).setValue((ev / ac * 100));
+    //spi = ev / pv * 100
+    spi.getInstance(self).setValue((ev / pv * 100));
+    
     updateGauges();
 
     costs.getInstance(self).saveHistory();
@@ -87,6 +125,9 @@ function setWeekliesVariables() {
     actualCost.getInstance(self).saveHistory();
 }
 
+/**
+ * Set gauge value (and restrict them between their bounds (max and min values))
+ */
 function updateGauges() {
     var i, j, taskInst, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
             costs = VariableDescriptorFacade.findByName(gm, 'costs'),
@@ -98,6 +139,7 @@ function updateGauges() {
             tasksQuality = 0, nomberOfBeganTasks = 0, tasksScale = 0, nomberOfEmployeeRequired,
             costsJaugeValue, qualityJaugeValue, delayJaugeValue, qualityJaugeValue = 0;
 
+    //Calculate task quality and task scale
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
         if (isTrue(taskInst.getActive())) {//if task is active
@@ -114,7 +156,7 @@ function updateGauges() {
         }
     }
 
-    //costs
+    //costs = EV / AC * 100
     if (parseInt(planedValue.getInstance(self).getValue()) > 0) {
         costsJaugeValue = Math.round((parseInt(earnedValue.getInstance(self).getValue()) / parseInt(actualCost.getInstance(self).getValue())) * 100);
     }
@@ -122,14 +164,14 @@ function updateGauges() {
     costsJaugeValue = (costsJaugeValue < parseInt(costs.getMaxValue())) ? costsJaugeValue : parseInt(costs.getMaxValue());
     costs.getInstance(self).setValue(costsJaugeValue);
 
-    //delay
+    //delay = EV / PV * 100
     delayJaugeValue = Math.round(parseInt((earnedValue.getInstance(self).getValue()) / parseInt(planedValue.getInstance(self).getValue())) * 100);
     delayJaugeValue = (delayJaugeValue > parseInt(delay.getMinValue())) ? delayJaugeValue : parseInt(delay.getMinValue());
     delayJaugeValue = (delayJaugeValue < parseInt(delay.getMaxValue())) ? delayJaugeValue : parseInt(delay.getMaxValue());
     delay.getInstance(self).setValue(delayJaugeValue);
 
     //quality
-    //with weighting of task's scale
+    //with weighting of task's scale = sum each task -> task quality / task scale
     if (tasksScale > 0) {
         qualityJaugeValue = (tasksQuality / tasksScale);
     }
@@ -144,10 +186,16 @@ function updateGauges() {
     quality.getInstance(self).setValue(qualityJaugeValue);
 }
 
+/**
+ * calculate how many percent is completed based on current period and planified
+ *  length of the task.
+ * @param {TaskInstance} taskInst
+ * @returns {Number} number between 0 and 100 (both including)
+ */
 function getPlannifiedCompleteness(taskInst) {
     var i, planif = taskInst.getPlannification(), planifArray = [],
             time = getCurrentInGameTime(), pastPeriods = 0;
-    for (i = 0; i < planif.size(); i++) {
+    for (i = 0; i < planif.size(); i++) { //transform list to array to use function ''indexOf''
         planifArray.push(parseInt(planif.get(i)));
     }
     for (i = 0; i <= time.period; i++) {
@@ -158,6 +206,14 @@ function getPlannifiedCompleteness(taskInst) {
     return (planifArray.length > 0) ? (pastPeriods / planifArray.length) * 100 : 0;
 }
 
+/**
+ * return the delay based on the difference (in percent) between
+ *  plannifiedcompleteness and real completeness (completeness / planifiedCompleteness * 100)
+ * if given task isn't started then delay = completeness + 100
+ * planified completeness is based on function ''getPlannifiedCompleteness''
+ * @param {taskDescriptor} taskDesc
+ * @returns {Number} delay between 0 and 100
+ */
 function getCurrentTaskDelay(taskDesc) {
     var planif, delay = 0, planif = taskDesc.getInstance(self).getPlannification(),
             completeness = parseInt(taskDesc.getInstance(self).getProperty('completeness')),
@@ -167,21 +223,33 @@ function getCurrentTaskDelay(taskDesc) {
             delay = completeness + 100;
         }
         else {
-            delay = (100 / planifiedCompleteness) * completeness;
+            delay = completeness / planifiedCompleteness * 100;
         }
     }
     return delay;
 }
 
+/**
+ * Call fonction to creat activities (createActivities) then get each
+ *  activities (but only one per task's requirement). for each activities,
+ *   Call the function to calculate the progression of each requirement
+ *   (calculateProgressOfNeed).
+ *   Then, calculate and set the quality and the completeness for each tasks
+ *   Then, check the end of a requirement inactivities (function ''checkEnd'');
+ * @param {Number} currentStep
+ */
 function calculTasksProgress(currentStep) {
     var i, work, activitiesAsNeeds, oneTaskPerActivity, allCurrentActivities,
             taskProgress, allCurrentActivities,
             requirementsByWork, taskInst;
+    //create activities
     allCurrentActivities = createActivities(currentStep);
+    //get one unique requirement by activities and calculate its progression
     activitiesAsNeeds = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);
     for (i = 0; i < activitiesAsNeeds.length; i++) { //for each need
         calculateProgressOfNeed(activitiesAsNeeds[i], allCurrentActivities);
     }
+    //get each modified task and calculate is new quality and completeness
     oneTaskPerActivity = getUniqueTasksInActivities(activitiesAsNeeds);
     for (i = 0; i < oneTaskPerActivity.length; i++) {
         taskProgress = 0;
@@ -197,6 +265,12 @@ function calculTasksProgress(currentStep) {
     checkEnd(allCurrentActivities, currentStep);
 }
 
+/**
+ * Sort an Array of activities to keep only one occurence of task Descriptor
+ * in each activities. So in the returned list, two activities can't have the same task.
+ * @param {Array} activities  an Array of Activity
+ * @returns {Array of activities}
+ */
 function getUniqueTasksInActivities(activities) {
     var i, j, oneTaskPerActivity = [], wasAdded;
     if (activities.length > 0) {
@@ -217,6 +291,12 @@ function getUniqueTasksInActivities(activities) {
     return oneTaskPerActivity;
 }
 
+/**
+ * Sort an Array of activities to keep only one occurence of requirement
+ * in each activities. So in the returned list, two activities can't have the same requirement.
+ * @param {Array} activities  an Array of Activity
+ * @returns {Array} an Array of Activity
+ */
 function getActivitiesWithEmployeeOnDifferentNeeds(activities) {
     var i, j, activitiesAsNeeds = [], wasAdded;
     if (activities.length > 0) {
@@ -239,6 +319,12 @@ function getActivitiesWithEmployeeOnDifferentNeeds(activities) {
     return activitiesAsNeeds;
 }
 
+/**
+ * Sort the given array to keep only activities with employee on the same requirement
+ * @param {Array} activities an Array of Activity
+ * @param {Activity} activity
+ * @returns {Array} an Array of Activity
+ */
 function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
     var i, employeeInst, selectedReq, sortedActivities = [], selectedReqI;
     employeeInst = activity.getResourceInstance();
@@ -254,6 +340,13 @@ function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
     return sortedActivities;
 }
 
+/**
+ * Create activities for each reserved (having an occupation at this time) employees having a valid assignement.
+ * if a corresponding activity exist in the past, get it, else create activity
+ *  and adjust its value.
+ * @param {Number} currentStep
+ * @returns {Array} an Array of Activity
+ */
 function createActivities(currentStep) {
     var i, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, 'employees')),
             employeeDesc, employeeInst, activity, activities = [], assignables,
@@ -282,6 +375,13 @@ function createActivities(currentStep) {
     return activities;
 }
 
+/**
+ * Check and return the most adapted requirement in the task of the activity,
+ *  for the employee in the activity. Use function (''selectRequirement'') to
+ *   choose the requirement.
+ * @param {Activity} activity
+ * @returns {WRequirement} the selected (most adapted) requierement
+ */
 function selectRequirementFromActivity(activity) {
     var selectedReq, workAs, taskInst, reqByWorks;
     taskInst = activity.getTaskDescriptor().getInstance(self);
@@ -291,6 +391,14 @@ function selectRequirementFromActivity(activity) {
     return selectedReq;
 }
 
+/**
+ * Research and return an activity having the same task, the same employee and
+ *  worked on at the last step.
+ * @param {ResourceInstance} employeeInst
+ * @param {TaskDescriptor} taskDesc
+ * @param {Number} currentPeriod
+ * @returns {Activity} activity
+ */
 function findLastStepCorrespondingActivity(employeeInst, taskDesc, currentPeriod) {
     var i, activity, occurence = null;
     for (i = 0; i < employeeInst.getActivities().size(); i++) {
@@ -305,6 +413,14 @@ function findLastStepCorrespondingActivity(employeeInst, taskDesc, currentPeriod
     return occurence;
 }
 
+/**
+ * Research and return an activity having the same task, the same employee and
+ *  worked on in previous period or step.
+ * @param {ResourceInstance} employeeInst
+ * @param {TaskDescriptor} taskDesc
+ * @param {Number} currentPeriod
+ * @returns {Activity} activity
+ */
 function haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) {
     var i, activity, occurence = false;
     for (i = 0; i < employeeInst.getActivities().size(); i++) {
@@ -318,6 +434,12 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) 
     return occurence;
 }
 
+/**
+ * Check if the given resource have an occupation where time correspond to the current time.
+ * If its true, the employee is reserved (and the function return true)
+ * @param {RessourceInstance} employeeInst
+ * @returns {Boolean} is reserved
+ */
 function isReservedToWork(employeeInst) {
     var i, occupations = employeeInst.getOccupations(),
             time = getCurrentInGameTime(), reservedToWork = false;
@@ -329,6 +451,14 @@ function isReservedToWork(employeeInst) {
     return reservedToWork;
 }
 
+/**
+ *  Return the given list but without the invalide Assignments.
+ *  An valid assignment is one where its bound task completion is < 100 and
+ *  where a employee can progress decently without problem of predecessor
+ *   ( see function ''getPredecessorFactor'');
+ * @param {Array} assignments an Array of Assignment
+ * @returns {Array} an Array of Assignment
+ */
 function getAssignables(assignments) {
     var i, taskDesc, assignables = [], work;
     for (i = 0; i < assignments.size(); i++) {
@@ -341,6 +471,14 @@ function getAssignables(assignments) {
     return assignables;
 }
 
+/**
+ * For each activity, send different message if a task is completed or if the
+ *  employee can't work on a task because a predecessor is not enough advanced.
+ *  Return the next avalaible assignements.
+ * @param {Array} assignments An Array of Assignment
+ * @param {Number} currentStep
+ * @returns {Array} An Array of Assignment
+ */
 function checkAssignments(assignments, currentStep) {
     var i, taskDesc, employeeInst, employeeName,
             employeeJob, taskInst, nextTasks;
@@ -377,6 +515,12 @@ function checkAssignments(assignments, currentStep) {
     return nextTasks;
 }
 
+/**
+ * Get a number which determinate if a task can be already worked or if
+ * its predecessors is not enough advanced. 
+ * @param {TaskDescriptor} taskDesc
+ * @returns {Number} number between 0 and 1.
+ */
 function getPredecessorFactor(taskDesc) {
     var i, predecessorsAdvancements, predecessors, average, numberOfPredecessors;
     predecessorsAdvancements = 0;
@@ -396,6 +540,13 @@ function getPredecessorFactor(taskDesc) {
     return Math.pow(average / 100, parseInt(taskDesc.getInstance(self).getProperty('predecessorsDependances')));
 }
 
+/**
+ * Return th first uncomplete kind of work in the given list requirements.
+ * An uncomplete requirement is one where its completeness is smaller than its maxLimit.
+ * @param {List} requirements List of WRequirements
+ * @param {Object} reqByWorks object returned by function ''getRequirementsByWork'', can be null
+ * @returns {String} work
+ */
 function selectFirstUncompletedWork(requirements, reqByWorks) {
     var work, firstUncompletedWork;
     if (!reqByWorks) {
@@ -410,6 +561,17 @@ function selectFirstUncompletedWork(requirements, reqByWorks) {
     return firstUncompletedWork;
 }
 
+/**
+ * Select the most appropriate requirement for a employee.
+ * the requirement must be the same type of work than the given parameter
+ *  'work as' and must be match with this condition : req.completeness < max limit of req in this kind of job * employee on this task / total of employee of req in this kind of job
+ * If several requirement match, select the one which have least difference between its level and the level of the given employee
+ * * @param {TaskInstance} taskInst
+ * @param {EmployeeInstance} employeeInst
+ * @param {String} workAs string which define current work type of the given employee (can be different than his job)
+ * @param {Object} reqByWorks object returned by function ''getRequirementsByWork''
+ * @returns {WRequirement} the selected requirement
+ */
 function selectRequirement(taskInst, employeeInst, workAs, reqByWorks) {
     var i, requirements = taskInst.getRequirements(), req, selectedReq = null,
             totalOfPersonneInTask = 0, deltaLevel = 1000,
@@ -429,6 +591,16 @@ function selectRequirement(taskInst, employeeInst, workAs, reqByWorks) {
     return selectedReq;
 }
 
+/**
+ * Return an object which requirements are gathered by work.
+ * this object contains (by work) :
+ * - maxLimit, the bigger limit found on this requirement job
+ * - typesOfLevels, an Array of all found levels on this requirement job
+ * - totalOfEmployees, the sum of all employees required on this requirement job.
+ * - completeness the sum of each (completeness * quantity of required employees) divided by the total of employee on this requirement job.
+ * @param {WRequirement} requirements
+ * @returns {Object} works
+ */
 function getRequirementsByWork(requirements) {
     var i, req, works = {}, work, needsCompletion = 0, totalOfEmployees = 0;
     for (i = 0; i < requirements.size(); i++) {
@@ -466,6 +638,13 @@ function getRequirementsByWork(requirements) {
     return works;
 }
 
+/**
+ * Calculate the progression and the quality of each worked requirement at this step.
+ * Return the progression of the requirement.
+ * @param {Activity} activityAsNeeds an Activity
+ * @param {Array} allCurrentActivities an Array of Activity
+ * @returns {Number} a number between 0 and 100
+ */
 function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     var i, taskDesc, taskInst, employeeDesc, employeeInst, activityRate, sameNeedActivity,
             affectedEmployeesDesc = [], requirements, stepAdvance = 1, sumActivityRate = 0,
@@ -555,8 +734,11 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor
     }
 
-    //calculate bonusRatio
+    //calculate tasks bonusRatio
     stepAdvance *= (parseFloat(taskInst.getProperty('bonusRatio')));
+
+    //calculate project bonusRatio
+    stepAdvance *= parseFloat(VariableDescriptorFacade.findByName(gm, 'bonusRatio').getInstance(self).getValue());
 
     //calculate predecessorFactor
     stepAdvance *= getPredecessorFactor(taskDesc); //predecessor factor
@@ -603,7 +785,8 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         println('otherWorkFactor : ' + otherWorkFactor);
         println('randomFactor (not same value as used !) : ' + getRandomFactorFromTask(taskInst));
         println('learnFactor : ' + (1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length)));
-        println('bonusRatio : ' + parseFloat(taskInst.getProperty('bonusRatio')));
+        println('taskbonusRatio : ' + parseFloat(taskInst.getProperty('bonusRatio')));
+        println('projectBonusRatio : ' + parseFloat(VariableDescriptorFacade.findByName(gm, 'bonusRatio').getInstance(self).getValue()));
         println('predecessorFactor : ' + getPredecessorFactor(taskDesc)); //predecessor factor);
         println('wages : ' + (parseInt(taskInst.getProperty('wages')) + (parseInt(activityAsNeeds.getResourceInstance().getProperty('wage')) / steps))); //predecessor factor);
         println('stepAdvance : ' + stepAdvance);
@@ -617,11 +800,17 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     return  needProgress;
 }
 
+/**
+ * Return a random factor based on properties 'randomDurationSup' and 'randomDurationInf'
+ * of the given task.
+ * @param {TaskInstance} taskInst
+ * @returns {Number} a factor between 0 and 2
+ */
 function getRandomFactorFromTask(taskInst) {
     var rn = Math.floor(Math.random() * 100), //number 0 to 100 (0 inclusive, 100 exclusive);
             randomDurationSup = parseFloat(taskInst.getProperty('randomDurationSup')),
             randomDurationInf = parseFloat(taskInst.getProperty('randomDurationInf')),
-            duration = parseInt(taskInst.getInstance(self).getDuration()), delta,
+            duration = parseInt(taskInst.getDuration()), delta,
             randomFactor, x = Math.random();
 
     switch (rn) {
@@ -660,6 +849,12 @@ function getRandomFactorFromTask(taskInst) {
     return getFloat((duration / randomFactor), 2);
 }
 
+/**
+ * Calculate the current quality of the task based on the average of the quality
+ *  in each bound requirement and weighted by the progression of its cmpleteness. 
+ * @param {TaskDescriptor} taskDesc
+ * @returns {Number} a number btween 0 and 200
+ */
 function calculateTaskQuality(taskDesc) {
     var i, req, needQualityXNeedProgress = 0, needProgress = 0;
     for (i = 0; i < taskDesc.getInstance(self).getRequirements().size(); i++) {
@@ -670,7 +865,11 @@ function calculateTaskQuality(taskDesc) {
     return Math.round((needQualityXNeedProgress / needProgress));
 }
 
-
+/**
+ * Debbug function to create automatically some occupations and assignements in
+ *  some employees. 
+ * @returns {String}
+ */
 function tempInit() {
     var occupation, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, 'employees')),
             listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');
@@ -695,6 +894,10 @@ function tempInit() {
     return 'is initialized';
 }
 
+/**
+ * Return an object containing values of current period and current phase. 
+ * @returns {Object} object current time -> {period: x, phase: y}
+ */
 function getCurrentInGameTime() {
     var inGameTime = {phase: null, period: null},
     phases = VariableDescriptorFacade.findByName(gm, 'currentPeriod');
@@ -705,15 +908,34 @@ function getCurrentInGameTime() {
     return inGameTime;
 }
 
+/**
+ * return true if arg == boolean true or string 'true'
+ * @param {String or Boolean} arg
+ * @returns {Boolean} state
+ */
 function isTrue(arg) {
     return (arg == true || arg == 'true') ? true : false;
 }
 
+/**
+ * return a float with a length = to the given "numberOfDigit"
+ * @param {Number} number
+ * @param {Number} numberOfDigit
+ * @returns {Number}
+ */
 function getFloat(number, numberOfDigit) {
     numberOfDigit = Math.pow(10, (numberOfDigit > 1) ? numberOfDigit : 1);
     return Math.round(number * numberOfDigit) / numberOfDigit;
 }
 
+/**
+ * Transform a wegas List in an array.
+ * If the wegas list contain other wegas list (and contain other wegas list, etc),
+ *  put each other list at the same level in the returned one level (flat) Array.
+ * @param {List} list
+ * @param {List} finalList
+ * @returns {Array} the given finalList, in an Array object
+ */
 function flattenList(list, finalList) {
     var i, el;
     finalList = (finalList) ? finalList : [];
@@ -727,6 +949,13 @@ function flattenList(list, finalList) {
     }
     return finalList;
 }
+
+/**
+ * Check the end of a task or of a requirement and send corresponding messages.
+ * if it's the last step, call function ''checkAssignments'' to send other kind of messages.
+ * @param {Array} allCurrentActivities, an Array of Activity
+ * @param {Number} currentStep
+ */
 function checkEnd(allCurrentActivities, currentStep) {
     var i, employeeInst, taskInst, taskDesc, employeeName, employeeJob,
             nextWork, reqByWorks;
@@ -747,10 +976,14 @@ function checkEnd(allCurrentActivities, currentStep) {
                         employeeName);
             }
         }
-
     }
 }
 
+/**
+ * Return a name for each step.
+ * @param {Number} step
+ * @returns {String} the name of the step
+ */
 function getStepName(step) {
     var name;
     switch (step) {
@@ -911,7 +1144,11 @@ function addArtosPredecessor() {
     addPredecessor(VariableDescriptorFacade.findByName(gm, 'PrototypeUtilisateur').getName(), listPredName);
 }
 
-// Function for add taskPredecessor
+/**
+ * Function to add taskPredecessor
+ * @param {type} descName
+ * @param {type} listPredName
+ */
 function addPredecessor(descName, listPredName) {
     var i, ii, iii, taskDescList = VariableDescriptorFacade.findByName(gm, 'tasks'),
             taskDesc;

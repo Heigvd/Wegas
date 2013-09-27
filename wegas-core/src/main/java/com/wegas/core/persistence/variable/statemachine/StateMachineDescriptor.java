@@ -10,7 +10,7 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.leaderway.persistence.DialogueDescriptor;
+import com.wegas.resourceManagement.persistence.DialogueDescriptor;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.persistence.*;
