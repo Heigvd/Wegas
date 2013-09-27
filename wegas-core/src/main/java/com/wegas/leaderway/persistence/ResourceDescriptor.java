@@ -146,12 +146,12 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     public void setMoral(Player p, Integer value) {
         this.getInstance(p).setMoral(value);
     }
-    
+
     /**
-     * 
+     *
      * @param p
      * @param key
-     * @return 
+     * @return
      */
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getInstance(p).getProperty(key);
@@ -165,10 +165,10 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     }
 
     /**
-     * 
+     *
      * @param p
      * @param key
-     * @return 
+     * @return
      */
     public String getStringInstanceProperty(Player p, String key) {
         return this.getInstance(p).getProperty(key);
@@ -183,7 +183,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     public void setInstanceProperty(Player p, String key, String value) {
         this.getInstance(p).setProperty(key, value);
     }
-    
+
     /**
      *
      * @param p
@@ -194,7 +194,44 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
         this.getInstance(p).setProperty(key, "" + (Float.parseFloat(this.getInstance(p).getProperty(key)) + value));
     }
 
-    public void addOccupation(Player p, Double time , Boolean editable, String description) {
+    /**
+     *
+     * @param p
+     * @param key
+     * @return
+     */
+    public long getSkillset(Player p, String key) {
+        return this.getInstance(p).getSkillset(key);
+    }
+
+    /**
+     *
+     * @param p
+     * @param key
+     * @param value
+     */
+    public void addAtSkillset(Player p, String key, long value) {
+        this.getInstance(p).setSkillset(key, this.getSkillset(p, key) + value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param key
+     * @param value
+     */
+    public void setSkillset(Player p, String key, long value) {
+        this.getInstance(p).setSkillset(key, value);
+    }
+
+    /**
+     *
+     * @param p
+     * @param time
+     * @param editable
+     * @param description
+     */
+    public void addOccupation(Player p, Double time, Boolean editable, String description) {
         ResourceInstance instance = this.getInstance(p);
         Occupation occupation = new Occupation();
         occupation.setDescription(description);
@@ -203,6 +240,11 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
         instance.addOccupation(occupation);
     }
 
+    /**
+     *
+     * @param p
+     * @param time
+     */
     public void removeOccupationsAtTime(Player p, Double time) {
         ResourceInstance instance = this.getInstance(p);
         List<Occupation> toRemove = new ArrayList<>();
