@@ -213,8 +213,8 @@ Y.Wegas.persistence.ResourceDescriptor.METHODS = {
                     }]
             }]
     },
-    addAtInstanceProperty: {
-        label: "Add at instance's property",
+    addNumberAtInstanceProperty: {
+        label: "Add number at instance's property",
         arguments: [{
                 type: HIDDEN,
                 value: SELF
