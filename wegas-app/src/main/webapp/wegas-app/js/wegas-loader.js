@@ -850,7 +850,7 @@ YUI().use(function(Y) {
                 },
                 /**Leaderway**/
                 'wegas-resourceManagement-entities': {
-                    path: 'wegas-resourceManagement/js/wegas-resourceManagement-entities.js',
+                    path: 'wegas-resourceManagement/js/wegas-resourceManagement-entities-min.js',
                     requires: ['wegas-entity'],
                     ws_provides: ['ResourceDescriptor', 'TaskDescriptor']
                 },

@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-leaderway-entities', function(Y) {
+YUI.add('wegas-resourceManagement-entities', function(Y) {
     "use strict";
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
             SELF = "self", BOOLEAN = "boolean", NUMBER = "number", SELECT = "select",
@@ -258,8 +258,8 @@ YUI.add('wegas-leaderway-entities', function(Y) {
 
                     }]
             },
-            addAtInstanceProperty: {
-                label: "Add at instance's property",
+            addNumberAtInstanceProperty: {
+                label: "Add Number at instance's property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -731,7 +731,7 @@ YUI.add('wegas-leaderway-entities', function(Y) {
                     }]
             },
             addNumberAtInstanceProperty: {
-                label: "Add at instance's property",
+                label: "Add number at instance's property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
