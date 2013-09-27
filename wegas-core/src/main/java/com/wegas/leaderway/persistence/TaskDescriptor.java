@@ -203,8 +203,12 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @param key
      * @param value
      */
-    public void addAtInstanceProperty(Player p, String key, String value) {
-        this.getInstance(p).setProperty(key, "" + (Float.parseFloat(this.getInstance(p).getProperty(key)) + value));
+    public void addNumberAtInstanceProperty(Player p, String key, String value) {
+        try {
+            this.getInstance(p).setProperty(key, "" + (Float.parseFloat(this.getInstance(p).getProperty(key)) + Float.parseFloat(value)));
+        } catch (NumberFormatException e) {
+            // do nothing...
+        }
     }
 
     /**
@@ -262,11 +266,11 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     /**
-     * 
+     *
      * @param p
      * @param id
      * @param variable
-     * @param value 
+     * @param value
      */
     public void setRequirementVariable(Player p, Long id, String variable, double value) {
         WRequirement requirement = this.getRequirementById(p, id);
@@ -274,9 +278,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
             requirement.setVariableValue(variable, value);
         }
     }
-    
+
     /**
-     * 
+     *
      */
     public void addAtRequirementVariable(Player p, Long id, String variable, double value) {
         WRequirement requirement = this.getRequirementById(p, id);
