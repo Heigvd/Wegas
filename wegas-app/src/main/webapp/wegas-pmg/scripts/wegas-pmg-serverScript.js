@@ -816,6 +816,43 @@ function sendMessage(subject, content, from) {
     }
 }
 
+/**
+ * Check if a ressource work on the project
+ * @param String name, the name from ressource to check
+ * @return true if work on project
+ */
+function workOnProject(name){
+    var employee = VariableDescriptorFacade.findByName(gm, name), instance, i, activity,
+        activityNotFinish = false, taskInstance, hasOccupation = false, occupation, 
+        currentPeriode = VariableDescriptorFacade.findByName(gm, "periodPhase3").getInstance().value;
+    
+    //Check if has a not finished activity
+    instance = employee.getInstance();
+    for (i=0; i<instance.getActivities().size(); i++){
+        activity = instance.getActivities().get(i);
+        taskInstance = activity.getTaskDescriptor().getInstance(self);
+        if (parseInt(taskInstance.getProperties().get("completeness"))<100){
+            activityNotFinish = true;
+            break;
+        }
+    }
+    
+    // Check if has an occupation for the futur
+    for (i=0; i<instance.getOccupations().size(); i++){
+        occupation = instance.getOccupations().get(i);
+        if (occupation.getTime() >= currentPeriode ){
+            hasOccupation = true;
+            break;
+        }
+    }
+    
+    if (activityNotFinish && hasOccupation){
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // Functions for addArtosPredecessor
 function addArtosPredecessor() {
     var listPredName = [];
@@ -893,5 +930,37 @@ function addPredecessor(descName, listPredName) {
             break;
         }
     }
+}
+
+// Functions for addArtosOccupation
+function addArtosOccupation() {
+    addOccupation("Gaelle", 6);
+    addOccupation("Gaelle", 7);
+    
+    addOccupation("Murielle", 4);
+    addOccupation("Murielle", 5);
+    
+    addOccupation("Kurt", 4);
+    
+    addOccupation("Diane", 2);
+    
+    addOccupation("Luc", 11);
+    addOccupation("Luc", 12);
+    
+    addOccupation("André", 10);
+    addOccupation("Luc", 11);
+    
+    addOccupation("Pierre", 6);
+    
+    addOccupation("Yvonne", 6);
+    
+    addOccupation("Quentin", 9);
+    
+    addOccupation("Karim", 3);
+}
+
+function addOccupation(name, periode) {
+    employee = VariableDescriptorFacade.findByName(gm, name),
+    employee.addOccupation(self, periode, false, "");
 }
 
