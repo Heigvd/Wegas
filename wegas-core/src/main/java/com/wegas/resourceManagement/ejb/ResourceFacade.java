@@ -5,18 +5,18 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.leaderway.ejb;
+package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.leaderway.persistence.AbstractAssignement;
-import com.wegas.leaderway.persistence.Activity;
-import com.wegas.leaderway.persistence.Assignment;
-import com.wegas.leaderway.persistence.Occupation;
-import com.wegas.leaderway.persistence.ResourceInstance;
-import com.wegas.leaderway.persistence.TaskDescriptor;
-import com.wegas.leaderway.persistence.TaskInstance;
-import com.wegas.leaderway.persistence.WRequirement;
+import com.wegas.resourceManagement.persistence.AbstractAssignement;
+import com.wegas.resourceManagement.persistence.Activity;
+import com.wegas.resourceManagement.persistence.Assignment;
+import com.wegas.resourceManagement.persistence.Occupation;
+import com.wegas.resourceManagement.persistence.ResourceInstance;
+import com.wegas.resourceManagement.persistence.TaskDescriptor;
+import com.wegas.resourceManagement.persistence.TaskInstance;
+import com.wegas.resourceManagement.persistence.WRequirement;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
