@@ -9,8 +9,8 @@ package com.wegas.core.jcr.page;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -48,10 +48,10 @@ public class Pages implements Serializable {
      */
     public Map<String, String> getIndex() throws RepositoryException {
         if (!this.connector.exist(this.gameModelId)) {
-            return new HashMap<>();
+            return new TreeMap<>();
         }
         NodeIterator it = this.connector.listChildren(this.gameModelId);
-        Map<String, String> ret = new HashMap<>();
+        Map<String, String> ret = new TreeMap<>();
         Node n;
         String name;
         while (it.hasNext()) {
@@ -72,10 +72,10 @@ public class Pages implements Serializable {
      */
     public Map<String, JsonNode> getPages() throws RepositoryException {
         if (!this.connector.exist(this.gameModelId)) {
-            return new HashMap<>();
+            return new TreeMap<>();
         }
         NodeIterator it = this.connector.listChildren(this.gameModelId);
-        Map<String, JsonNode> ret = new HashMap<>();
+        Map<String, JsonNode> ret = new TreeMap<>();
         while (it.hasNext()) {
             Node n = (Node) it.next();
             try {

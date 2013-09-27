@@ -246,7 +246,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         _inputex: {
                             _type: "entityarrayfieldselect",
                             label: "Default result",
-                            returnAttr: "id"
+                            returnAttr: "id",
+                            field: "results"
                         }
                     }
                 }
@@ -311,7 +312,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         value: SELF
                     }, {
                         type: "entityarrayfieldselect",
-                        returnAttr: "id"
+                        returnAttr: "id",
+                        field: "results"
                     }]
             },
             activate: {

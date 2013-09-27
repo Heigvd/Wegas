@@ -371,6 +371,11 @@ YUI().use(function(Y) {
                     requires: ['stylesheet'],
                     ws_provides: 'CSSLoader'
                 },
+                'wegas-slideshow': {
+                    path: "wegas-app/js/plugin/wegas-slideshow-min.js",
+                    requires: ["plugin", "wegas-editable"],
+                    ws_provides: "SlideShow"
+                },
                 "wegas-cssstyles": {
                     path: 'wegas-app/js/plugin/wegas-cssstyles-min.js',
                     ws_provides: 'CSSStyles'
@@ -682,8 +687,8 @@ YUI().use(function(Y) {
                 'wegas-statemachineviewer': {
                     path: 'wegas-editor/js/widget/wegas-statemachineviewer-min.js',
                     requires: ['dd-constrain', 'wegas-datasource',
-                        'wegas-statemachineviewercss', 'jsplumb-yui-all', 'button',
-                        'wegas-statemachine-entities'],
+                        'wegas-statemachineviewercss', 'jsplumb-yui', 'button',
+                        'wegas-statemachine-entities', 'event-mousewheel'],
                     ws_provides: 'StateMachineViewer'
                 },
                 'wegas-statemachineviewercss': {
@@ -844,8 +849,8 @@ YUI().use(function(Y) {
                     lang: ["fr"]
                 },
                 /**Leaderway**/
-                'wegas-leaderway-entities': {
-                    path: 'wegas-leaderway/js/wegas-leaderway-entities.js',
+                'wegas-resourceManagement-entities': {
+                    path: 'wegas-resourceManagement/js/wegas-resourceManagement-entities.js',
                     requires: ['wegas-entity'],
                     ws_provides: ['ResourceDescriptor', 'TaskDescriptor']
                 },
@@ -943,37 +948,8 @@ YUI().use(function(Y) {
             base: "./lib/",
             root: "/lib/",
             modules: {
-                /* jsPlumb */
-                jsplumb: {
-                    path: 'jsPlumb/jsPlumb-1.3.10-RC1.js',
-                    requires: ['jsplumb-utils', 'dd']
-                },
-                'jsplumb-utils': {
-                    path: 'jsPlumb/jsPlumb-util-1.3.10-RC1.js',
-                    requires: []
-                },
-                'jsplumb-svg': {
-                    path: 'jsPlumb/jsPlumb-renderers-svg-1.3.10-RC1.js',
-                    requires: ['jsplumb']
-                },
-                'jsplumb-defaults': {
-                    path: 'jsPlumb/jsPlumb-defaults-1.3.10-RC1.js',
-                    requires: ['jsplumb']
-                },
-                'jsplumb-statemachine': {
-                    path: 'jsPlumb/jsPlumb-connectors-statemachine-1.3.10-RC1.js',
-                    requires: ['jsplumb', 'jsbezier']
-                },
                 'jsplumb-yui': {
-                    path: 'jsPlumb/yui.jsPlumb-1.3.10-RC1.js',
-                    requires: ['jsplumb']
-                },
-                'jsplumb-yui-all': {
-                    path: 'jsPlumb/yui.jsPlumb-1.3.15-all-min.js',
-                    requires: ["node", "dd", "anim"/*, "node-event-simulate"*/]
-                },
-                jsbezier: {
-                    path: 'jsPlumb/jsBezier-0.3-min.js'
+                    path: 'jsPlumb/yui.jsPlumb-1.5.3.js'
                 },
                 esprima: {
                     path: 'esprima/esprima-min.js'
