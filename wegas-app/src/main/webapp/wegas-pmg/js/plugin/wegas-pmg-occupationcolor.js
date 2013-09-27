@@ -31,7 +31,7 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
             Y.log("initializer", "info", "Wegas.OccupationColor");
             this.onceAfterHostEvent("render", this.findCell);
             this.afterHostMethod("syncUI", this.findCell);
-            this.get("host").datatable.after("sort", this.findCell, this);
+            this._handles.push(this.get("host").datatable.after("sort", this.findCell, this));
         },
         findCell: function() {
             var i, ii, iii, vd, dt = this.get("host").datatable,
