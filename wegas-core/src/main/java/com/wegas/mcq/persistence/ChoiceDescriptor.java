@@ -124,12 +124,26 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     /**
-     *
+     * @deprecacted Using setCurrentResult(Player player, String resultName) in scripts so it works after an exportation
      * @param player
      * @param resultId
      */
     public void setCurrentResult(Player player, Long resultId) {
         this.getInstance(player).setCurrentResultId(resultId);
+    }
+
+    /**
+     *
+     * @param player
+     * @param resultId
+     */
+    public void setCurrentResult(Player player, String resultName) {
+        for (Result r : this.getResults()) {
+            if (r.getName().equals(resultName)) {
+                this.getInstance(player).setCurrentResultId(r.getId());
+                return;
+            }
+        }
     }
 
     /**
