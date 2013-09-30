@@ -302,3 +302,14 @@ body {
     width: 100%;
     height:100%;
 }
+
+/* Join game/team styles */
+.yui3-tabview .wegas-joingame {
+    padding-top: 1em;
+}
+.yui3-tabview .wegas-joingame .inputEx-label{
+    width: 12em;
+}
+.yui3-tabview .wegas-joingame button {
+    margin-left: 12.4em;
+}
