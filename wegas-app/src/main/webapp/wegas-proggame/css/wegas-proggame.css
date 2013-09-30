@@ -278,9 +278,6 @@
 .wegas-inputex-proggamemap .inputEx-ListField-childContainer .inputEx-ListField-childContainer >div {
     display: inline-block;
 }
-.wegas-inputex-proggamemap .inputEx-ListField-subFieldEl {
-    margin: 0;
-}
 .add-col ,.add-row{
     cursor:pointer;
 }
