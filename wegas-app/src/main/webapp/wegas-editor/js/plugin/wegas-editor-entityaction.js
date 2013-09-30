@@ -359,8 +359,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         EditEntityAction.hideEditFormOverlay();
 
                         var newDescriptor = Y.Array.find(e.response.entity.get("items"), function(e) {
-                            return !idBack.contains(e.get("id"))
-                        })
+                            return idBack.indexOf(e.get("id")) == -1;
+                        });
 
                         EditEntityAction.showUpdateForm(newDescriptor, dataSource);
                         EditEntityAction.showFormMessage("success", "Item has been added");

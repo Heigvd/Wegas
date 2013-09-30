@@ -332,6 +332,7 @@
                             }, {
                                 "type": "Button",
                                 "cssClass": "inbox",
+                                "setToReadAfter": 0,
                                 "disabled": false,
                                 "label": "",
                                 "plugins": [
