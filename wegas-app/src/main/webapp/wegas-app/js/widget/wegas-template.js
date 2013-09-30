@@ -52,6 +52,7 @@ YUI.add("wegas-template", function(Y) {
             this.set("variable", this.get("variable"));
         },
         syncUI: function() {
+            Y.log("syncUI()", "log", "Wegas.Template");
             var hashCode, template = this.get("custom"),
                     data = this.computeData();
             if ((!template || template === "") && this.TEMPLATES[this.get("template")]) {

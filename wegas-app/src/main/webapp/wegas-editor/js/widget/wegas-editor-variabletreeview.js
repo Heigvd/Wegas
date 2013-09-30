@@ -109,7 +109,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 label: text,
                                 collapsed: collapsed,
                                 selected: selected,
-                                children: this.genTreeViewElements(el.get("items")),
+                                children: (!collapsed) ? this.genTreeViewElements(el.get("items")) : [],
                                 data: {
                                     entity: el
                                 },
@@ -298,5 +298,60 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         }
     });
     Y.namespace('Wegas').VariableTreeView = VariableTreeView;
+
+    /**
+     * @class When a descriptor node is toggled, expand it
+     * @constructor
+     */
+    Y.Plugin.EditorTVNodeLoader = Y.Base.create("admin-action", Y.Plugin.Base, [], {
+        expandedIds: {},
+        lastOpenedNode: null,
+        initializer: function() {
+            this.afterHostEvent("render", function() {
+                this.get("host").treeView.before("*:nodeExpanded",
+                        this.fillsLeaf, this);                                  //if treeleaf is empty, load elements from sever
+            });
+
+            //this.afterHostMethod("syncUI", function () {
+            //    var i, doExpand = function (e) {
+            //        for (i = 0; i < e.size(); i += 1) {
+            //            if (!e.item(i).get("collapsed")) {
+            //                this.fillsLeaf(e.item(i));
+            //                doExpand.call(this, e.item(i));
+            //            }
+            //        }
+            //    };
+            //
+            //    doExpand.call(this, this.get(HOST).treeView);         // Recursively walk treeview to reload expanded nodes
+            //});
+        },
+        fillsLeaf: function(e) {
+            var node = e.node,
+                    entity = node.get("data.entity"),
+                    id = entity.get(ID);
+
+            if (entity instanceof Wegas.persistence.ListDescriptor) {
+                if (node.size() > 1) {
+                    return;
+                }
+                node.add(this.get("host").genTreeViewElements(entity.get("items")));
+            } else if (entity instanceof Wegas.persistence.VariableDescriptor
+                    && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
+
+                if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
+                    return;
+                }
+                node.removeAll();
+                node.set("loading", true);
+
+                Wegas.Facade.VariableDescriptor.sendRequest({
+                    request: "/" + id + "?view=Editor"
+                });
+            }
+        }
+    }, {
+        NS: "EditorTVNodeLoader",
+        NAME: "EditorTVNodeLoader"
+    });
 
 });
