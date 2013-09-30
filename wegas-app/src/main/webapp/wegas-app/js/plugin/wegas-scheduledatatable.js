@@ -27,7 +27,6 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @private
          */
         initializer: function() {
-            this.handlers = [];
 //            this.after("columnToAddChange", function(e) {
 //                this.setColumn(e.newVal, e.prevVal);
 //            })
@@ -35,10 +34,11 @@ YUI.add('wegas-scheduledatatable', function(Y) {
 //                this.set("columnToAdd", this.get("columnToAdd"));
 //            }, this);
 
-            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", function() {
-                this.setTime(this.get("columnToAdd"));
-//                this.set("columnToAdd", this.get("columnToAdd"));
-            }, this));
+            this.updateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", function() {
+                Y.log("sync()", "log", "Wegas.ScheduleDT");
+                this.setPeriod(this.currentPeriod());
+                //this.set("columnToAdd", this.get("columnToAdd"));
+            }, this);
         },
         /**
          * @function
@@ -58,7 +58,6 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     o.className = "past";
                 }
                 return "";
-
             };
             while (diff) {
                 if (diff > 0) {
@@ -70,36 +69,32 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                 }
             }
             this.setTime(newval);
-//            if (preval) {
-//                for (i = 1; i <= preval; i++) {
-//                    this.get("host").datatable.removeColumn(i);
-//                }
-//            }
-//            if (newval) {
-//                var table = this.get("host").datatable, i;
-//                for (i = 1; i <= newval; i++) {
-//                    if (i === this.currentPeriod()) {
-//                        table.addColumn({key: i.toString(), className: "schedulColumn present", time: i});
-//                    } else if (i < this.currentPeriod()) {
-//                        table.addColumn({key: i.toString(), className: "schedulColumn past", time: i});
-//                    } else {
-//                        table.addColumn({key: i.toString(), className: "schedulColumn futur", time: i});
-//                    }
-//
-//                }
-//            }
         },
         setTime: function(length) {
-            var i, table = this.get("host").datatable;
+            var i, table = this.get("host").datatable,
+                    currentPeriod = this.currentPeriod();
             for (i = 1; i < length; i += 1) {
-                if (this.currentPeriod() === i) {
+                if (currentPeriod === i) {
                     table.modifyColumn(i.toString(), {className: "schedulColumn present"});
-                } else if (this.currentPeriod() < i) {
+                } else if (currentPeriod < i) {
                     table.modifyColumn(i.toString(), {className: "schedulColumn futur"});
                 } else {
                     table.modifyColumn(i.toString(), {className: "schedulColumn past"});
                 }
             }
+            this.lastPeriod = currentPeriod;
+        },
+        setPeriod: function(period) {
+            var i, table = this.get("host").datatable,
+                    currentPeriod = this.currentPeriod();
+            table.modifyColumn(period.toString(), {className: "schedulColumn present"});
+            for (i = this.lastPeriod; i < period; i++) {
+                table.modifyColumn(i.toString(), {className: "schedulColumn past"});
+            }
+            for (i = this.lastPeriod; i > period; i--) {
+                table.modifyColumn(i.toString(), {className: "schedulColumn futur"});
+            }
+            this.lastPeriod = currentPeriod;
         },
         currentPeriod: function() {
             var variable = this.get('variable.evaluated');
@@ -109,6 +104,9 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             }
             return variable.getInstance().get("value");
         },
+        getCell: function(rowIndex, time) {
+            return this.get("host").datatable.getCell([rowIndex, this.get("host").get("columnsCfg").length + time]);
+        },
         /**
          * Destructor methods.
          * @function
@@ -116,10 +114,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          */
         destructor: function() {
             this.set("columnToAdd", 0);
-            for (var i = 0; i < this.handlers.length; i += 1) {
-                this.handlers[i].detach();
-                delete this.handlers[i];
-            }
+            this.updateHandler.detach();
         }
     }, {
         ATTRS: {
@@ -142,7 +137,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                 }
             }
         },
-        NS: "scheduleDT",
+        NS: "schedule",
         NAME: "ScheduleDT"
     });
     Y.namespace("Plugin").ScheduleDT = ScheduleDT;
