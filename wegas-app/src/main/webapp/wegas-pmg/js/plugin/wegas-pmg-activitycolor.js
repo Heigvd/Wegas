@@ -21,11 +21,9 @@ YUI.add('wegas-pmg-activitycolor', function(Y) {
     var Wegas = Y.Wegas,
             ActivityColor = Y.Base.create("wegas-pmg-activitycolor", Y.Plugin.OccupationColor, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.ActivityColor */
-        sync: function () {
-            //@fixme
-        },
-        findCell: function() {
-            var i, ii, iii, dt = this.get("host").datatable,
+
+        sync: function() {
+            var i, ii, iii, vd, dt = this.get("host").datatable,
                     abstractAssignement;
 
             for (i = 0; i < dt.data.size(); i++) {
