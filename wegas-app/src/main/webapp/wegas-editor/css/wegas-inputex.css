@@ -17,6 +17,11 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;
 }
 
+.yui3-skin-sam div.inputEx-ListField-subFieldEl  {
+    margin: 0;
+    float:none;
+}
+
 .wegas-formwhite-space div.inputEx-label   {
     white-space: normal;
 }
