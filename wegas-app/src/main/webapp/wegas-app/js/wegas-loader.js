@@ -521,7 +521,7 @@ YUI().use(function(Y) {
                     ws_provides: 'RolePermissionList'
                 },
                 'wegas-inputex-gamemodelselect': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-gamemodelselect-min.js',
+                    path: 'wegas-lobby/js/wegas-inputex-gamemodelselect-min.js',
                     requires: ['inputex-select'],
                     ix_provides: 'gamemodelselect'
                 },
