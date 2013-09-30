@@ -253,7 +253,7 @@ YUI().use(function(Y) {
                     ws_provides: "LoginWidget"
                 },
                 'wegas-logincss': {
-                    path: 'wegas-app/css/wegas-login-min.css',
+                    path: 'wegas-lobby/css/wegas-login-min.css',
                     type: 'css'
                 },
                 'wegas-jointeam': {
@@ -460,7 +460,8 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
                         'wegas-inputex-variabledescriptorselect',
                         'wegas-button', 'inputex-jsonschema', 'inputex-list',
-                        'wegas-inputex-url', "wegas-inputex-rte", // for mail attachements in script
+                        'wegas-inputex-url',
+                        "wegas-inputex-rte", // for mail attachements in script
                         'esprima'],
                     ix_provides: ['script']
                 },
@@ -521,7 +522,7 @@ YUI().use(function(Y) {
                     ws_provides: 'RolePermissionList'
                 },
                 'wegas-inputex-gamemodelselect': {
-                    path: 'wegas-editor/js/inputex/wegas-inputex-gamemodelselect-min.js',
+                    path: 'wegas-lobby/js/wegas-inputex-gamemodelselect-min.js',
                     requires: ['inputex-select'],
                     ix_provides: 'gamemodelselect'
                 },
