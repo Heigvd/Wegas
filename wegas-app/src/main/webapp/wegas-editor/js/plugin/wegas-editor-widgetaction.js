@@ -167,22 +167,20 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     Plugin.DeleteWidgetAction = DeleteWidgetAction;
     /**
      * @class
-     * @name Y.Plugin.DeleteContainerWidgetAction
+     * @name Y.Plugin.DeleteLayoutWidgetAction
      * @extends Y.Plugin.WidgetAction
      * @constructor
      */
-    Plugin.DeleteContainerWidgetAction = function() {
-        DeleteWidgetAction.superclass.constructor.apply(this, arguments);
+    Plugin.DeleteLayoutWidgetAction = function() {
+        DeleteLayoutWidgetAction.superclass.constructor.apply(this, arguments);
     };
-    Y.extend(Plugin.DeleteContainerWidgetAction, WidgetAction, {
+    Y.extend(Plugin.DeleteLayoutWidgetAction, WidgetAction, {
         execute: function() {
             var targetWidget = this.get("widget"),
                     root = targetWidget.get("root");
             if (targetWidget.size() > 0) {
                 alert("Please delete content first");
             } else if (confirm("Are your sure your want to delete this widget and all of its content ?")) {
-
-
                 if (root !== targetWidget) {
                     targetWidget.destroy();
                 } else if (targetWidget.item && targetWidget.item(0)) { // @TODO: Panic mode, to change
@@ -193,8 +191,8 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             }
         }
     }, {
-        NS: "DeleteContainerWidgetAction",
-        NAME: "DeleteContainerWidgetAction"
+        NS: "DeleteLayoutWidgetAction",
+        NAME: "DeleteLayoutWidgetAction"
     });
 
 });
