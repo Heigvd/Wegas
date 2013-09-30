@@ -179,7 +179,7 @@
                                     "type": "OpenTabButton",
                                     "label": "Impact game",
                                     "wchildren": [{
-                                            "type": "ImpactGame",
+                                            "type": "WysiwygConsole",
                                             "cssClass": "wegas-console",
                                             "plugins": [{
                                                     "fn": "WidgetToolbar",

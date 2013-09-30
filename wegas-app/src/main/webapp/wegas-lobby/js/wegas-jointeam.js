@@ -107,7 +107,7 @@ YUI.add('wegas-jointeam', function(Y) {
                                 this.sendJoinTeamRequest(e.response.entity.get("id"));
                             }, this),
                             failure: Y.bind(function(e) {
-                                this.showMessage("error", e.response.results.message || "Error creating team", 4000);
+                                this.showMessage("error", e.response.results.message || "Error creating team");
                             }, this)
                         }
                     });
@@ -166,7 +166,7 @@ YUI.add('wegas-jointeam', function(Y) {
                         }
                     }, this),
                     failure: Y.bind(function(e) {
-                        this.showMessage("error", e.response.results.message || "Invalid token", 4000);
+                        this.showMessage("error", e.response.results.message || "Invalid token");
                     }, this)
                 }
             });

@@ -10,11 +10,11 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
 */
 
-YUI.add('wegas-impactgame', function (Y) {
+YUI.add('wegas-console-wysiwyg', function (Y) {
     var CONTENTBOX = 'contentBox',
-    ImpactGame;
+    WysiwygConsole;
 
-    ImpactGame = Y.Base.create("wegas-impactgame", Y.Wegas.Console, [Y.WidgetChild,  Y.Wegas.Widget], {
+    WysiwygConsole = Y.Base.create("wegas-console-wysiwyg", Y.Wegas.Console, [Y.WidgetChild,  Y.Wegas.Widget], {
 
         renderUI: function () {
             this.plug(Y.Plugin.WidgetToolbar);
@@ -50,5 +50,5 @@ YUI.add('wegas-impactgame', function (Y) {
         }
     });
 
-    Y.namespace('Wegas').ImpactGame = ImpactGame;
+    Y.namespace('Wegas').WysiwygConsole = WysiwygConsole;
 });

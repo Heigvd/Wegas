@@ -139,7 +139,7 @@ YUI.add('wegas-joingame', function(Y) {
                         }
                     }, this),
                     failure: Y.bind(function(e) {
-                        this.showMessage("error", e.response.results.message || "Invalid token", 4000);
+                        this.showMessage("error", e.response.results.message || "Invalid token");
                     }, this)
                 }
             });
