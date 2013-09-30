@@ -54,7 +54,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     '@class': "Script",
                     language: "JavaScript",
                     content: ct
-                };
+                }
             } else {
                 return inputEx.WysiwygScript.superclass.getValue.apply(this, arguments);
             }
@@ -200,14 +200,17 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     return [vdSelect];
 
                 case "LogicalExpression":
+                    if (expression.operator === "&&") {
+                        return this.generateExpression(expression.left).
+                                concat(this.generateExpression(expression.right));
+                    }
+                    break;
                     //return [{
                     //    type: "inputlist",
                     //    fields: this.generateExpression(expression.left).concat(this.generateExpression(expression.right),
                     //    useButtons: true,
                     //    addType: "variabledescriptorcondition"
                     //}]
-                    return this.generateExpression(expression.left).
-                            concat(this.generateExpression(expression.right));
 
                 case "CallExpression":
                     switch (expression.callee.object.type) {
