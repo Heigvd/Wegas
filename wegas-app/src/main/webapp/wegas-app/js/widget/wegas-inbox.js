@@ -236,21 +236,23 @@ YUI.add('wegas-inbox', function(Y) {
                 this.msg = e.newVal.msg;
 
                 if (e.newVal.msg.get("unread")) {                               // If the message is currently unread,
-                    this.timer = Y.later(50, this, function(msg, tab) {            // Send a request to mark it as read
-                        Y.log("Sending message read update", "info", "InboxDisplay");
-                        msg.set("unread", false);
-                        this.readRequestTid = this.dataSource.sendRequest({
-                            request: "/Inbox/Message/Read/" + msg.get("id"),
-                            cfg: {
-                                method: "PUT"
-                            },
-                            on: {
-                                success: Y.bind(function(tab) {
-                                    tab.get("contentBox").one(".unread").removeClass("unread").addClass("read");
-                                }, this, tab)
-                            }
-                        });
-                    }, [e.newVal.msg, e.newVal]);
+                    this.timer = Y.later(this.get("setToReadAfter") * 1000, this,
+                            function(msg, tab) {                                // Send a request to mark it as read
+                                Y.log("Sending message read update", "info", "InboxDisplay");
+                                msg.set("unread", false);
+                                tab.get("contentBox").one(".unread").removeClass("unread").addClass("read");
+                                this.readRequestTid = this.dataSource.sendRequest({
+                                    request: "/Inbox/Message/Read/" + msg.get("id"),
+                                    cfg: {
+                                        method: "PUT"
+                                    },
+                                    on: {
+                                        success: Y.bind(function(tab) {
+                                            //tab.get("contentBox").one(".unread").removeClass("unread").addClass("read");
+                                        }, this, tab)
+                                    }
+                                });
+                            }, [e.newVal.msg, e.newVal]);
                 }
             }
         },
@@ -288,6 +290,13 @@ YUI.add('wegas-inbox', function(Y) {
                     _type: "variableselect",
                     label: "variable",
                     classFilter: ["InboxDescriptor"]
+                }
+            },
+            setToReadAfter: {
+                value: 0.05,
+                type: "number",
+                _inputex: {
+                    label: "Set to read after (s.)"
                 }
             }
         }
