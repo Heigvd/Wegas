@@ -355,7 +355,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         return;
                     }, this),
                     failure: Y.bind(function(e) {
-                        this.showMessage("error", e.response.results.message || "Email/password combination not found", 4000);
+                        this.showMessage("error", e.response.results.message || "Email/password combination not found", 6000);
                     }, this)
                 }
             });
@@ -373,7 +373,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         return;
                     }, this),
                     failure: Y.bind(function(e) {
-                        this.showMessage("error", e.response.results.message || "Guest login failed", 4000);
+                        this.showMessage("error", e.response.results.message || "Guest login failed", 6000);
                     }, this)
                 }
             });
@@ -394,12 +394,12 @@ YUI.add('wegas-loginwidget', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(data, e) {
-                        this.showMessage("success", "User created, you can now use it to login", 4000);
+                        this.showMessage("success", "User created, you can now use it to login", 6000);
                         //this.set("mode", "login");
                         this.login(data.email, data.password, false);
                     }, this, data),
                     failure: Y.bind(function(e) {
-                        this.showMessage("error", e.response.results.message || "Error creating user", 4000);
+                        this.showMessage("error", e.response.results.message || "Error creating user");
                     }, this)
                 }
             });
