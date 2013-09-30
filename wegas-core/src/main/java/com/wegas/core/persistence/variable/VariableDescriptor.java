@@ -80,13 +80,14 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-//    @JsonView(Views.EditorI.class)
+    @JsonView(Views.EditorI.class)
+    private String label;
+    /**
+     * Title displayed in the for the player, should be removed from variable descriptor and placed
+     * in the required entities (MCQQuestionDrescriptor, TriggerDescriptor, aso)
+     */
     @Column(name = "editorLabel")
     private String title;
-    /**
-     *
-     */
-    private String label;
     /**
      *
      */
