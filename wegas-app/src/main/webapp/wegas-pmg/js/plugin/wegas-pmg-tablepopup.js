@@ -105,7 +105,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
             },
             field: {
                 type: "string",
-                value: "description",
+                value: "description"
             },
             column: {
                 value: 1,

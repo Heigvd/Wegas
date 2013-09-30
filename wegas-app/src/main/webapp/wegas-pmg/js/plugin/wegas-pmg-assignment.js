@@ -36,12 +36,12 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.handlers = {};
             this.sortable = [];
 
-            this.get(HOST).onceAfter("render", function() {
+            this.onceAfterHostEvent("render", function() {
                 this.addAssignmentColumn();
                 this.sync();
                 this.bind();
                 this.get("host").datatable.after("sort", this.sync, this);
-            }, this);
+            });
         },
         bind: function() {
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.sync, this);

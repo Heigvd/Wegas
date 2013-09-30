@@ -255,6 +255,7 @@ h2{
 }
 
 .vertical-menu .help, .vertical-menu .help:hover{
+    display:none;
     border-width:0;
     background:none;
     background-image: url(../../wegas-pmg/images/help.png);

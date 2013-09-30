@@ -29,11 +29,11 @@ YUI.add('wegas-pmg-bac', function(Y) {
          */
         initializer: function() {
             this.fields = [];
-            this.get("host").onceAfter("render", function() {
+            this.onceAfterHostEvent("render", function() {
                 this.addBacColumn();
                 this.addInputField();
                 this.afterHostMethod("syncUI", this.addInputField);
-            }, this);
+            });
         },
         addBacColumn: function() {
             this.get("host").datatable.addColumn({

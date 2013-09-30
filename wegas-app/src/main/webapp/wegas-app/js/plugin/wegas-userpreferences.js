@@ -53,7 +53,7 @@ YUI.add("wegas-userpreferences", function(Y) {
                         this.hideOverlay();
                     }, host),
                     failure: Y.bind(function(e) {
-                        this.showMessage("error", e.response.results.message || "Error updating user", 4000);
+                        this.showMessage("error", e.response.results.message || "Error updating user");
                         this.hideOverlay();
                     }, host)
                 }

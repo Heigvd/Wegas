@@ -1,10 +1,10 @@
-.wegas-popup{
+.wegas-panel{
     position:absolute;
     /*max-width: 100%;*/
     max-width: 500px;
     max-height: 100%;
 }
-.wegas-popup-content {
+.wegas-panel-content {
     text-align: center;
     margin: 10px;
     background: rgba(110, 110, 110, 0.8);
@@ -15,37 +15,37 @@
     padding: 1em 1em 0.2em 1em;
     position: relative;
 }
-.wegas-popup-content .yui3-widget-bd{
+.wegas-panel-content .yui3-widget-bd{
     text-align: center;
     overflow: auto;
 }
-.wegas-popup-content .yui3-widget-ft{
+.wegas-panel-content .yui3-widget-ft{
     padding-top: 10px;
     text-align: right;
 }
-.wegas-popup-content .yui3-widget-ft button{
+.wegas-panel-content .yui3-widget-ft button{
     background-color: rgba(160, 160, 160, 0.8);
     color: white;
 
 }
-.wegas-popup-content .yui3-widget-bd .icon{
+.wegas-panel-content .yui3-widget-bd .icon{
     background-repeat: no-repeat;
     min-height: 48px;
     padding-left: 48px;
 }
-.wegas-popup-content .yui3-widget-bd .icon-error{
+.wegas-panel-content .yui3-widget-bd .icon-error{
     background-image: url(../images/wegas-icon-error-48.png)
 }
-.wegas-popup-content .yui3-widget-bd .icon-success{
+.wegas-panel-content .yui3-widget-bd .icon-success{
     background-image: url(../images/wegas-icon-success-48.png)
 }
-.wegas-popup-content .yui3-widget-bd .icon-info{
+.wegas-panel-content .yui3-widget-bd .icon-info{
     background-image: url(../images/wegas-icon-info-48.png)
 }
-.wegas-popup-content .yui3-widget-bd .icon-warn{
+.wegas-panel-content .yui3-widget-bd .icon-warn{
     background-image: url(../images/wegas-icon-warning-48.png)
 }
-.wegas-popup-hidden {
+.wegas-panel-hidden {
     display: none;
 }
 

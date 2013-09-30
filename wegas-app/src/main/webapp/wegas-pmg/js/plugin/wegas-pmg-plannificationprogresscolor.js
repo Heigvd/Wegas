@@ -23,13 +23,13 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
         /** @lends Y.Plugin.PlannificationProgressColor */
         initializer: function() {
             //this.taskTable;
-            this.get("host").onceAfter("render", function() {
+            this.onceAfterHostEvent("render", function() {
                 this.sync();
 
                 this.afterHostMethod("syncUI", this.sync);
 
                 this.get("host").datatable.after("sort", this.sync, this);
-            }, this);
+            });
         },
         sync: function() {
             this.taskTable = {};

@@ -10,9 +10,9 @@
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-YUI.add('wegas-popup-content', function(Y) {
+YUI.add('wegas-panel', function(Y) {
     "use strict";
-    Y.namespace("Wegas").PopupContent = Y.Base.create("wegas-popup-content",
+    Y.namespace("Wegas").Panel = Y.Base.create("wegas-panel",
             Y.Widget,
             [Y.WidgetParent,
                 Y.WidgetPosition,
@@ -29,7 +29,7 @@ YUI.add('wegas-popup-content', function(Y) {
             Y.later(1000, this, this.destroy);
         }
     }, {
-        CSS_PREFIX: "wegas-popup",
+        CSS_PREFIX: "wegas-panel",
         ATTRS: {
             align: {"transient": true},
             alignOn: {"transient": true},
