@@ -44,6 +44,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             this.updateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         syncUI: function() {
+            Y.log("syncUI()", "log", "Wegas.Datatable");
             this.datatable.set("data", this.getData());
             // this.datatable.addRows(this.getData());
         },
@@ -65,7 +66,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 return [];
             }
             Y.Array.each(variables.get("items"), function(item) {
-                if (item.getInstance().get("active") !== false) {
+                if (item.getInstance().get("active")) {
                     oneRowDatas = item.toJSON();
                     oneRowDatas.descriptor = item;
                     oneRowDatas.instance = item.getInstance().toJSON();

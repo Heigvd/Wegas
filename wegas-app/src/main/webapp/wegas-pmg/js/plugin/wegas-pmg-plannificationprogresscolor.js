@@ -83,7 +83,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                         continue;
                     }
 
-                    maxPert = this.get("host").scheduleDT.currentPeriod();
+                    maxPert = this.get("host").schedule.currentPeriod();
                     allPredDefine = true;
                     predecessors = taskDesc.get("predecessors");
 
@@ -134,7 +134,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
         },
         findCssClass: function(time, start, end, cell) {
             var decimal;
-            if (time < this.get("host").scheduleDT.currentPeriod()) {
+            if (time < this.get("host").schedule.currentPeriod()) {
                 return;
             }
             if (start - parseInt(start) === 0 && end - parseInt(end) === 0) {

@@ -35,6 +35,7 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             }, this);
         },
         findCell: function() {
+            Y.log("sync()", "log", "Wegas.PlannificationActivityColor");
             var i, ii, iii, dt = this.get("host").datatable,
                     taskActivities = this.taskActivitiesToAdd();
 

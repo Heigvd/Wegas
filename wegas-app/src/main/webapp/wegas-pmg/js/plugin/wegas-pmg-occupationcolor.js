@@ -37,30 +37,29 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
         },
         sync: function() {
             Y.log("sync()", "info", "Wegas.OccupationColor");
-            var i, ii, iii, vd, dt = this.get("host").datatable,
+            var i, ii, time,
+                    host = this.get("host"),
+                    dt = host.datatable,
                     abstractAssignement;
 
             this.addEngagementDelay();
 
-            for (i = 0; i < dt.data._items.length; i++) {
-                vd = Wegas.Facade.VariableDescriptor.cache.find("id", dt.data._items[i].get("id"));
-                abstractAssignement = vd.getInstance().get("occupations");
+            for (i = 0; i < dt.data.size(); i++) {
+                abstractAssignement = dt.data.item(i).get("descriptor").getInstance().get("occupations");
                 for (ii = 0; ii < abstractAssignement.length; ii++) {
-                    for (iii = 0; iii < dt.get('columns').length; iii++) {
-                        if (dt.get('columns')[iii].time === abstractAssignement[ii].get("time") && dt.get('columns')[iii].time >= this.get("host").scheduleDT.currentPeriod()) { //Affiche les occupations
-                            this.addColor(dt.getRow(i).getDOMNode().cells[iii], abstractAssignement[ii].get("editable"));
-                        } else if (dt.get('columns')[iii].time === abstractAssignement[ii].get("time") && !abstractAssignement[ii].get("editable")) {
-                            this.addColor(dt.getRow(i).getDOMNode().cells[iii], abstractAssignement[ii].get("editable"));
-                        }
+                    time = abstractAssignement[ii].get("time");
+                    if (time >= host.schedule.currentPeriod()
+                            || !abstractAssignement[ii].get("editable")) {  //Affiche les occupations
+                        this.addColor(host.schedule.getCell(i, time), abstractAssignement[ii].get("editable"));
                     }
                 }
             }
         },
         addColor: function(cell, editable) {
             if (editable) {
-                cell.innerHTML = "<span class='editable'></span>";
+                cell.setContent("<span class='editable'></span>");
             } else {
-                cell.innerHTML = "<span class='notEditable'></span>";
+                cell.setContent("<span class='notEditable'></span>");
             }
         },
         addEngagementDelay: function() {

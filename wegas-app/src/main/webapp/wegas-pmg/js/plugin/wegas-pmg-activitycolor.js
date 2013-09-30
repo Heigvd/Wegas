@@ -21,17 +21,18 @@ YUI.add('wegas-pmg-activitycolor', function(Y) {
     var Wegas = Y.Wegas,
             ActivityColor = Y.Base.create("wegas-pmg-activitycolor", Y.Plugin.OccupationColor, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.ActivityColor */
-
+        sync: function () {
+            //@fixme
+        },
         findCell: function() {
-            var i, ii, iii, vd, dt = this.get("host").datatable,
+            var i, ii, iii, dt = this.get("host").datatable,
                     abstractAssignement;
 
-            for (i = 0; i < dt.data._items.length; i++) {
-                vd = Y.Wegas.Facade.VariableDescriptor.cache.find("id", dt.data._items[i].get("id"));
-                abstractAssignement = vd.getInstance().get("activities");
+            for (i = 0; i < dt.data.size(); i++) {
+                abstractAssignement = dt.data.item(i).get("descriptor").getInstance().get("activities");
                 for (ii = 0; ii < abstractAssignement.length; ii++) {
                     for (iii = 0; iii < dt.get('columns').length; iii++) {
-                        if (dt.get('columns')[iii].time === parseInt(abstractAssignement[ii].get("time")) && dt.get('columns')[iii].time < this.get("host").scheduleDT.currentPeriod()) { //Affiche les occupations
+                        if (dt.get('columns')[iii].time === parseInt(abstractAssignement[ii].get("time")) && dt.get('columns')[iii].time < this.get("host").schedule.currentPeriod()) { //Affiche les occupations
                             this.addColor(dt.getRow(i).getDOMNode().cells[iii], abstractAssignement[ii].get("editable") === null ? "true" : abstractAssignement[ii].get("editable"));
                         }
                     }

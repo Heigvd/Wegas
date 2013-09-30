@@ -37,23 +37,20 @@ YUI.add('wegas-pmg-plannificationcolor', function(Y) {
             });
         },
         findCell: function() {
-            var i, ii, iii, vd, dt = this.get("host").datatable,
+            Y.log("findCell()", "log", "Wegas.Plannificationcolor");
+            var i, ii, host = this.get("host"),
+                    dt = host.datatable,
                     plannification;
 
-            for (i = 0; i < dt.data._items.length; i++) {
-                vd = Y.Wegas.Facade.VariableDescriptor.cache.find("id", dt.data._items[i].get("id"));
-                plannification = vd.getInstance().get("plannification");
+            for (i = 0; i < dt.data.size(); i++) {
+                plannification = dt.data.item(i).get("descriptor").getInstance().get("plannification");
                 for (ii = 0; ii < plannification.length; ii++) {
-                    for (iii = 0; iii < dt.get('columns').length; iii++) {
-                        if (dt.get('columns')[iii].time === plannification[ii]) {
-                            this.addColor(dt.getRow(i).getDOMNode().cells[iii]);
-                        }
-                    }
+                    this.addColor(host.schedule.getCell(i, plannification [ii] - 1));
                 }
             }
         },
         addColor: function(cell) {
-            cell.innerHTML = cell.innerHTML + "<span class='editable plannification'></span>";
+            cell.append("<span class='editable plannification'></span>");
         }
     }, {
         ATTRS: {
