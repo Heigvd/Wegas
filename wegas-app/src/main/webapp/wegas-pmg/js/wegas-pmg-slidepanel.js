@@ -14,7 +14,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
 
     var CONTENTBOX = "contentBox", SlidePanel;
 
-    SlidePanel = Y.Base.create("wegas-pmg-slidepanel", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Container], {
+    SlidePanel = Y.Base.create("wegas-pmg-slidepanel", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Layout], {
         handlers: null,
         list: null,
         animation: null,
@@ -25,13 +25,13 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX), node, titelNode, bb = this.get("boundingBox");
             titelNode = Y.Node.create("<div class='slidepanel-title' style='position:relative;'><h2>" + this.get('title') + "</h2></div>");
-            
+
             bb.insertBefore(titelNode, cb);
             bb.append("<div class='slidepanel-cleaner' style='position:relative; z-index:-1;'></div>");
 
             cb.setStyle("position", "absolute");
             cb.setStyle("width", "100%");
-            
+
             if (this.get("animation")) {
                 this.animation = cb.plug(Y.Plugin.NodeFX, {//slide animation
                     from: {
@@ -67,10 +67,10 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             if (this.get('animation')) {
                 this.handlers.anim = bb.one(".slidepanel-title").on('click', function(e) {
                     e.preventDefault();
-                  
-                    this.animation.fx.set('reverse', !this.animation.fx.get('reverse')); // toggle reverse 
+
+                    this.animation.fx.set('reverse', !this.animation.fx.get('reverse')); // toggle reverse
                     this.animation.fx.run();
-                    this.cleaner.fx.set('reverse', !this.cleaner.fx.get('reverse')); // toggle reverse 
+                    this.cleaner.fx.set('reverse', !this.cleaner.fx.get('reverse')); // toggle reverse
                     this.cleaner.fx.run();
                 }, this);
             }

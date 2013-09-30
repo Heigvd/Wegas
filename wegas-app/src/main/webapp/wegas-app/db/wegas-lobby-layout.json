@@ -1,6 +1,6 @@
 {
     "id": 2003,
-    "type": "Layout",
+    "type": "ResizableLayout",
     "top": {
         "children": [{
                 "type": "Text",

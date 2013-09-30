@@ -138,14 +138,14 @@ YUI().use(function(Y) {
                 'wegas-layout-choicelistcss': {
                     path: "wegas-app/css/wegas-layout-choicelist-min.css"
                 },
-                'wegas-layout-reizable': {
-                    path: 'wegas-app/js/widget/wegas-layout-reizable-min.js',
+                'wegas-layout-resizable': {
+                    path: 'wegas-app/js/widget/wegas-layout-resizable-min.js',
                     requires: ['wegas-widget', 'widget-stdmod', 'event-resize',
                         'anim-easing', 'resize', 'wegas-layout-resizablecss'],
-                    ws_provides: 'Layout'
+                    ws_provides: 'ResizableLayout'
                 },
-                'wegas-layout-reizablecss': {
-                    path: 'wegas-app/css/wegas-layout-reizable-min.css',
+                'wegas-layout-resizablecss': {
+                    path: 'wegas-app/css/wegas-layout-resizable.css',
                     type: 'css'
                 },
 
@@ -893,7 +893,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-flexitests-controller': {
                     path: "wegas-flexitests/js/wegas-flexitests-controller-min.js",
-                    requires: ["wegas-absolutelayout", "timers"],
+                    requires: ["wegas-layout-absolute", "timers"],
                     ws_provides: ["FlexitestsController", "FlexiResponse"]
                 },
                 'wegas-flexitests-mcqdisplay': {

@@ -9,10 +9,9 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-layout', function(Y) {
+YUI.add('wegas-layout-resizable', function(Y) {
     "use strict";
 
-    var Layout;
     /**
      * @name Y.Wegas.Layout
      * @extends Y.Widget
@@ -21,7 +20,7 @@ YUI.add('wegas-layout', function(Y) {
      * @constructor
      * @description Show/hide a page with a slid (tween) effect
      */
-    Layout = Y.Base.create("wegas-layout", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
+    var ResizableLayout = Y.Base.create("wegas-layout-resizable", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
         CONTENT_TEMPLATE: '<div>'
                 + '<div class="wegas-layout-hd"></div>'
                 + '<div class="wegas-layout-bd"><div>'
@@ -286,5 +285,5 @@ YUI.add('wegas-layout', function(Y) {
         }
     });
 
-    Y.namespace('Wegas').Layout = Layout;
+    Y.namespace('Wegas').ResizableLayout = ResizableLayout;
 });
