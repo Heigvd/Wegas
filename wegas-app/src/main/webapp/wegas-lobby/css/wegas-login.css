@@ -40,7 +40,7 @@
 
 .logo{
     margin: -5px 0 0 -17px;
-    background-image: url('../images/wegas-logo_white.png');
+    background-image: url('../../wegas-app/images/wegas-logo_white.png');
     height:60px;
     width:140px;
 }
@@ -219,13 +219,13 @@ input[type="text"] {
 }
 
 .footer .heigvd{
-    background-image: url('../images/heigvd-logo.png');
+    background-image: url('../../wegas-app/images/heigvd-logo.png');
     height:54px;
     width:146px;
 }
 
 .footer .albasim{
-    background-image: url('../images/albasim-logo.png');
+    background-image: url('../../wegas-app/images/albasim-logo.png');
     height:54px;
     width:48px;
     float:right;
