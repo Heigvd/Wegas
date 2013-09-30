@@ -253,7 +253,7 @@ YUI().use(function(Y) {
                     ws_provides: "LoginWidget"
                 },
                 'wegas-logincss': {
-                    path: 'wegas-app/css/wegas-login-min.css',
+                    path: 'wegas-lobby/css/wegas-login-min.css',
                     type: 'css'
                 },
                 'wegas-jointeam': {
