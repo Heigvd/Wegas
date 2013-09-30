@@ -460,7 +460,8 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', 'wegas-inputex-list', 'wegas-inputex-script',
                         'wegas-inputex-variabledescriptorselect',
                         'wegas-button', 'inputex-jsonschema', 'inputex-list',
-                        'wegas-inputex-url', "wegas-inputex-rte", // for mail attachements in script
+                        'wegas-inputex-url',
+                        "wegas-inputex-rte", // for mail attachements in script
                         'esprima'],
                     ix_provides: ['script']
                 },
