@@ -211,7 +211,7 @@ h2{
     right: 0;
     bottom:0;
     width: 60px;
-    background-color: #7A7A7A;
+    background-color: #FFFFFF;
 }
 
 .vertical-menu div button{
@@ -265,6 +265,7 @@ h2{
     bottom:0;
     left:0;
     right:0;
+    display:none;
 }
 
 .unread-count .value{

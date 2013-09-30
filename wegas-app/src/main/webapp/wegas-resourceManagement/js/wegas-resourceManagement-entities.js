@@ -258,8 +258,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
 
                     }]
             },
-            addAtInstanceProperty: {
-                label: "Add at instance's property",
+            addNumberAtInstanceProperty: {
+                label: "Add Number at instance's property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -731,7 +731,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             addNumberAtInstanceProperty: {
-                label: "Add at instance's property",
+                label: "Add number at instance's property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF

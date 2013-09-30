@@ -1,6 +1,7 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +10,7 @@ import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -25,6 +27,7 @@ public class WRequirement extends AbstractEntity implements Serializable {
     @Id
     @Column(name = "wrequirement_id")
     @GeneratedValue
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *
@@ -174,9 +177,9 @@ public class WRequirement extends AbstractEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param variable
-     * @return 
+     * @return
      */
     public double getVariableValue(String variable) {
         Double value = Double.NaN;
@@ -192,9 +195,9 @@ public class WRequirement extends AbstractEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param variable
-     * @param value 
+     * @param value
      */
     public void setVariableValue(String variable, double value) {
         switch (variable) {
@@ -208,9 +211,9 @@ public class WRequirement extends AbstractEntity implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param variable
-     * @param value 
+     * @param value
      */
     public void addAtVariableValue(String variable, double value) {
         switch (variable) {
