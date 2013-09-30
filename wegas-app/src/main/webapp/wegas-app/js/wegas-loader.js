@@ -820,21 +820,21 @@ YUI().use(function(Y) {
                 },
                 /** Resource Management **/
                 'wegas-nodeformatter': {
-                    path: 'wegas-resourceManagement/js/wegas-nodeformatter-min.js',
+                    path: 'wegas-resourcemanagement/js/wegas-nodeformatter-min.js',
                     ws_provides: "NodeFormatter"
                 },
                 'wegas-itemselector': {
-                    path: 'wegas-resourceManagement/js/wegas-itemselector-min.js',
+                    path: 'wegas-resourcemanagement/js/wegas-itemselector-min.js',
                     requires: ['wegas-nodeformatter', 'scrollview', 'wegas-widgetmenu'],
                     ws_provides: "ItemSelector"
                 },
                 'wegas-resourcemanagement-entities': {
-                    path: 'wegas-resourceManagement/js/wegas-resourceManagement-entities-min.js',
+                    path: 'wegas-resourcemanagement/js/wegas-resourceManagement-entities-min.js',
                     requires: ['wegas-entity'],
                     ws_provides: ['ResourceDescriptor', 'TaskDescriptor']
                 },
                 "wegas-inputex-var-autocomplete": {
-                    path: 'wegas-resourceManagement/wegas-inputex-var-autocomplete-min.js',
+                    path: 'wegas-resourcemanagement/wegas-inputex-var-autocomplete-min.js',
                     requires: ['inputex-string'],
                     ix_provides: 'wegasvarautocomplete'
                 },
