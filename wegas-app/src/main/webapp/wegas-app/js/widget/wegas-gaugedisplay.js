@@ -178,15 +178,6 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          * </ul>
          */
         ATTRS: {
-            percentMaxValue: {
-                type: "number",
-                optional: true,
-                validator: Y.Lang.isNumber,
-                value: 100,
-                _inputex: {
-                    label: "Percent max value"
-                }
-            },
             /**
              * The target variable, returned either based on the name attribute,
              * and if absent by evaluating the expr attribute.
@@ -208,6 +199,15 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 validator: Y.Lang.isString,
                 _inputex: {
                     label: "Label"
+                }
+            },
+            percentMaxValue: {
+                type: "number",
+                optional: true,
+                validator: Y.Lang.isNumber,
+                value: 100,
+                _inputex: {
+                    label: "Percent max value"
                 }
             },
             /**
