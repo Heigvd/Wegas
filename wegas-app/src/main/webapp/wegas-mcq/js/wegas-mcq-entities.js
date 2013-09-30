@@ -312,8 +312,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         value: SELF
                     }, {
                         type: "entityarrayfieldselect",
-                        returnAttr: "id",
-                        field: "results"
+                        returnAttr: "name",
+                        field: "results",
+                        scriptType: STRING
                     }]
             },
             activate: {

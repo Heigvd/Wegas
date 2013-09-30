@@ -102,7 +102,7 @@ YUI().use(function(Y) {
                     ws_provides: "QuestionDescriptor"
                 },
                 'wegas-content-entities': {
-                    path: 'wegas-app/js/persistence/wegas-content-entities.js',
+                    path: 'wegas-app/js/persistence/wegas-content-entities-min.js',
                     requires: ['wegas-entity']
                 },
                 /**
@@ -122,7 +122,7 @@ YUI().use(function(Y) {
                     requires: ["wegas-widget", "timers"]
                 },
                 'wegas-panel': {
-                    path: 'wegas-app/js/widget/wegas-panel-min.js',
+                    path: 'wegas-app/js/util/wegas-panel-min.js',
                     ws_provides: 'Panel',
                     requires: ["wegas-panelcss", "widget-buttons",
                         "widget-modality", "widget-position",
@@ -173,7 +173,7 @@ YUI().use(function(Y) {
                     ws_provides: 'Layout'
                 },
                 'wegas-layoutcss': {
-                    path: 'wegas-app/css/wegas-layout.css',
+                    path: 'wegas-app/css/wegas-layout-min.css',
                     type: 'css'
                 },
                 'wegas-list': {
@@ -201,7 +201,7 @@ YUI().use(function(Y) {
                     ws_provides: 'TabView'
                 },
                 'wegas-tabviewcss': {
-                    path: 'wegas-app/css/wegas-tabview.css',
+                    path: 'wegas-app/css/wegas-tabview-min.css',
                     type: "css"
                 },
                 'wegas-variabledisplay': {
@@ -406,7 +406,7 @@ YUI().use(function(Y) {
                     requires: ['inputex'/*, 'wegas-inputexcss'*/]
                 },
                 'wegas-inputexcss': {
-                    path: 'wegas-editor/css/wegas-inputex-.css',
+                    path: 'wegas-editor/css/wegas-inputex-min.css',
                     type: 'css'
                 },
                 "wegas-inputex-object": {
@@ -510,7 +510,7 @@ YUI().use(function(Y) {
                     ws_provides: 'TreeViewFilter'
                 },
                 'treeview-sortable': {
-                    path: 'wegas-editor/js/util/treeview-sortable.js',
+                    path: 'wegas-editor/js/util/treeview-sortable-min.js',
                     requires: ['plugin', 'sortable', 'sortable-scroll'],
                     ws_provides: 'TreeViewSortable'
                 },
@@ -670,7 +670,7 @@ YUI().use(function(Y) {
                     ws_provides: "MCQTabView"
                 },
                 'wegas-mcqtabviewcss': {
-                    path: 'wegas-mcq/css/wegas-mcqtabview.css',
+                    path: 'wegas-mcq/css/wegas-mcqtabview-min.css',
                     type: 'css'
                 },
                 'wegas-editor-pagetreeview': {
@@ -829,7 +829,7 @@ YUI().use(function(Y) {
                     ws_provides: "ItemSelector"
                 },
                 'wegas-resourcemanagement-entities': {
-                    path: 'wegas-resourcemanagement/js/wegas-resourcemanagement-entities.js',
+                    path: 'wegas-resourcemanagement/js/wegas-resourcemanagement-entities-min.js',
                     requires: ['wegas-entity'],
                     ws_provides: ['ResourceDescriptor', 'TaskDescriptor']
                 },
@@ -912,17 +912,20 @@ YUI().use(function(Y) {
                 //}
                 /* Teaching */
                 'wegas-teaching-arrow': {
-                    path: "wegas-teaching/js/wegas-teaching-arrow.js",
-                    ws_provides: "TeachingArrow"
+                    path: "wegas-teaching/js/wegas-teaching-arrow-min.js",
+                    ws_provides: "TeachingArrow",
+                    requires: ["graphics"]
                 },
                 'wegas-teaching-rectangle': {
-                    path: "wegas-teaching/js/wegas-teaching-rectangle.js",
+                    path: "wegas-teaching/js/wegas-teaching-rectangle-min.js",
                     ws_provides: "TeachingRectangle"
                 },
                 'wegas-teaching-main': {
                     path: "wegas-teaching/js/wegas-teaching-main.js",
                     ws_provides: "TeachingMain",
-                    requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle", "editor", "gallery-yui-tooltip", "dd-plugin", "autocomplete", "autocomplete-highlighters", "autocomplete-filters"]
+                    requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle",
+                        "editor", "gallery-yui-tooltip", "dd-plugin", "autocomplete",
+                        "autocomplete-highlighters", "autocomplete-filters"]
                 }
             }
         },
@@ -961,9 +964,9 @@ YUI().use(function(Y) {
                     path: 'crafty/crafty-min.js'
                 },
                 ace: {
-//charset: 'utf-8',
-//path: "ace/src-min-noconflict/ace.js"
                     fullpath: "http://ajaxorg.github.io/ace-builds/src/ace.js"
+                            //charset: 'utf-8',
+                            //path: "ace/src-min-noconflict/ace.js"
                             //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
 
                 },
