@@ -829,7 +829,7 @@ YUI().use(function(Y) {
                     ws_provides: "ItemSelector"
                 },
                 'wegas-resourcemanagement-entities': {
-                    path: 'wegas-resourcemanagement/js/wegas-resourceManagement-entities-min.js',
+                    path: 'wegas-resourcemanagement/js/wegas-resourcemanagement-entities-min.js',
                     requires: ['wegas-entity'],
                     ws_provides: ['ResourceDescriptor', 'TaskDescriptor']
                 },
