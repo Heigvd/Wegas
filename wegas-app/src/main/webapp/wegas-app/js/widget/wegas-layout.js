@@ -10,33 +10,33 @@
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-YUI.add("wegas-container", function(Y) {
+YUI.add("wegas-layout", function(Y) {
     "use strict";
     /**
      * @extends Y.Wegas.Widget
      * @constructor
      * @returns {undefined}
      */
-    function Container() {
+    function Layout() {
         Y.Wegas.Widget.apply(this, arguments);
         /*Check for Y.WidgetParent*/
         if (!this._add) {
-            Y.log("Extension 'Y.WidgetParent' must be defined before Y.Wegas.Container in " + this.constructor.NAME,
-                    "error", "Y.Wegas.Container");
+            Y.log("Extension 'Y.WidgetParent' must be defined before Y.Wegas.Layout in " + this.constructor.NAME,
+                    "error", "Y.Wegas.Layout");
         }
         /*Check for Y.Wegas.Editable*/
         if (!this.toJSON) {
-            Y.log("Extension 'Y.Wegas.Editable' must be defined before Y.Wegas.Container in " + this.constructor.NAME,
-                    "error", "Y.Wegas.Container");
+            Y.log("Extension 'Y.Wegas.Editable' must be defined before Y.Wegas.Layout in " + this.constructor.NAME,
+                    "error", "Y.Wegas.Layout");
         }
         this.onceAfter("render", function() {
-            this.get("boundingBox").addClass("wegas-container");
+            this.get("boundingBox").addClass("wegas-layout");
         });
     }
     /* Copy prototype , extension -> no proto chain copy // 'extends' */
-    Y.mix(Container.prototype, Y.Wegas.Widget.prototype);
+    Y.mix(Layout.prototype, Y.Wegas.Widget.prototype);
     /* And override it */
-    Y.mix(Container.prototype, {
+    Y.mix(Layout.prototype, {
         /**
          * @function
          * @public
@@ -56,7 +56,7 @@ YUI.add("wegas-container", function(Y) {
             return;
         }
     }, true);
-    Y.mix(Container, {
+    Y.mix(Layout, {
         ATTRS: Y.mix({
             defaultChildType: {
                 value: "Text",
@@ -220,7 +220,7 @@ YUI.add("wegas-container", function(Y) {
                                     ]
                                 }, {
                                     type: "Button",
-                                    label: "Containers",
+                                    label: "Layouts",
                                     cssClass: "wegas-advanced-feature",
                                     plugins: [{
                                             "fn": "WidgetMenu",
@@ -300,7 +300,7 @@ YUI.add("wegas-container", function(Y) {
                 label: "Delete",
                 cssClass: "editor-exploreGameModel-button",
                 plugins: [{
-                        fn: "DeleteContainerWidgetAction"
+                        fn: "DeleteLayoutWidgetAction"
                     }
                 ]
             }],
@@ -308,5 +308,5 @@ YUI.add("wegas-container", function(Y) {
             aggregate: ["EDITMENU"]
         }
     });
-    Y.namespace("Wegas").Container = Container;
+    Y.namespace("Wegas").Layout = Layout;
 });
