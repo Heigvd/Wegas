@@ -48,7 +48,9 @@ YUI.add('wegas-scheduledatatable', function(Y) {
         setColumn: function(newval, preval) {
             var diff = newval - (preval ? preval : 0),
                     table = this.get("host").datatable,
+                    period = this.currentPeriod(),
                     bindedCP = Y.bind(this.currentPeriod, this),
+                    classTime,
                     formatter = function(o) {
                 if (bindedCP() < o.column.time) {
                     o.className = "futur";
@@ -62,43 +64,36 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             };
             while (diff) {
                 if (diff > 0) {
-                    table.addColumn({key: (newval - diff + 1).toString(), time: (newval - diff + 1), formatter: formatter});
+                    if ((newval - diff + 1) === period) {
+                        classTime = "present";
+                    } else if ((newval - diff + 1) > period) {
+                        classTime = "futur";
+                    } else {
+                        classTime = "past";
+                    }
+                    table.addColumn({key: (newval - diff + 1).toString(), time: (newval - diff + 1), className: "schedulColumn " + classTime, formatter: formatter});
                     diff -= 1;
                 } else {
                     table.removeColumn(newval - diff);
                     diff += 1;
                 }
             }
-            this.setTime(newval);
-//            if (preval) {
-//                for (i = 1; i <= preval; i++) {
-//                    this.get("host").datatable.removeColumn(i);
-//                }
-//            }
-//            if (newval) {
-//                var table = this.get("host").datatable, i;
-//                for (i = 1; i <= newval; i++) {
-//                    if (i === this.currentPeriod()) {
-//                        table.addColumn({key: i.toString(), className: "schedulColumn present", time: i});
-//                    } else if (i < this.currentPeriod()) {
-//                        table.addColumn({key: i.toString(), className: "schedulColumn past", time: i});
-//                    } else {
-//                        table.addColumn({key: i.toString(), className: "schedulColumn futur", time: i});
-//                    }
-//
-//                }
-//            }
+            this.setTime();
+
         },
-        setTime: function(length) {
-            var i, table = this.get("host").datatable;
-            for (i = 1; i < length; i += 1) {
-                if (this.currentPeriod() === i) {
-                    table.modifyColumn(i.toString(), {className: "schedulColumn present"});
-                } else if (this.currentPeriod() < i) {
-                    table.modifyColumn(i.toString(), {className: "schedulColumn futur"});
-                } else {
-                    table.modifyColumn(i.toString(), {className: "schedulColumn past"});
-                }
+        setTime: function() {
+            var i, table = this.get("host").datatable, period = this.currentPeriod();
+            if (table.head) {
+                table.head.theadNode.all(".schedulColumn").each(function(item, index) {
+                    item.removeClass("present futur past");
+                    if (period === index + 1) {
+                        item.addClass("present");
+                    } else if (period < index + 1) {
+                        item.addClass("futur");
+                    } else {
+                        item.addClass("past");
+                    }
+                }, this);
             }
         },
         currentPeriod: function() {
@@ -115,7 +110,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @private
          */
         destructor: function() {
-            this.set("columnToAdd", 0);
+           // this.set("columnToAdd", 0);
             for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
                 delete this.handlers[i];
