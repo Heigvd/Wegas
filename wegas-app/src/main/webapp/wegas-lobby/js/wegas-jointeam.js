@@ -136,7 +136,7 @@ YUI.add('wegas-jointeam', function(Y) {
                 request: "/JoinTeam/" + teamId,
                 on: {
                     success: Y.bind(function() {
-                        this.showMessage("success", "Game joined", 4000);
+                        this.showMessage("success", "Game joined");
                         this.get("contentBox").empty();
 
                         Y.fire("gameJoined", {gameId: this.get("entity").get("id")});
