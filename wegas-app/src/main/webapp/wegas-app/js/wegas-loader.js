@@ -665,7 +665,7 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/css/wegas-statemachineviewer-min.css'
                 },
                 'wegas-mcqtabview': {
-                    path: 'wegas-mcq/jswegas-mcqtabview-min.js',
+                    path: 'wegas-mcq/js/wegas-mcqtabview-min.js',
                     requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcqtabviewcss'],
                     ws_provides: "MCQTabView"
                 },
