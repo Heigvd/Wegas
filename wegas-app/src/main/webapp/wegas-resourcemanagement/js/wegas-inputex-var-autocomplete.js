@@ -17,17 +17,17 @@ YUI.add("wegas-inputex-var-autocomplete", function(Y) {
     var inputEx = Y.inputEx;
 
 
-    Y.namespace("inputEx.Wegas").varAutoComplete = function(options) {
-        inputEx.Wegas.varAutoComplete.superclass.constructor.call(this, options);
+    Y.namespace("inputEx.Wegas").VarAutoComplete = function(options) {
+        inputEx.Wegas.VarAutoComplete.superclass.constructor.call(this, options);
     };
 
-    Y.extend(inputEx.Wegas.varAutoComplete, inputEx.StringField, {
+    Y.extend(inputEx.Wegas.VarAutoComplete, inputEx.StringField, {
         /**
-         * 
+         *
          */
         variables: null,
         /**
-         * 
+         *
          * @param {type} options
          * @returns {undefined}
          */
@@ -47,5 +47,5 @@ YUI.add("wegas-inputex-var-autocomplete", function(Y) {
         }
     });
 
-    inputEx.registerType("wegasvarautocomplete", inputEx.Wegas.varAutoComplete);                   // Register this class as "wegasvarautocomplete" type
+    inputEx.registerType("wegasvarautocomplete", inputEx.Wegas.VarAutoComplete);// Register this class as "wegasvarautocomplete" type
 });
