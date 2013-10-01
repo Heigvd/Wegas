@@ -292,13 +292,6 @@
                                 "disabled": false,
                                 "label": "",
                                 "plugins": [{
-                                        "fn": "UnreadCount",
-                                        "cfg": {
-                                            "variable": {
-                                                "expr": "actions.items[currentPhase.value].descriptorId"
-                                            }
-                                        }
-                                    }, {
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 6,
@@ -1055,6 +1048,7 @@
                 "content": "<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
             }, {
                 "type": "MCQTabView",
+                "showUnanswered": false,
                 "variable": {
                     "expr": "actions.items[currentPhase.value].descriptorId"
 
