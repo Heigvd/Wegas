@@ -201,25 +201,28 @@ YUI.add('wegas-pageloader', function(Y) {
                         return val;
                     }
                     this.currentPageId = val;
+                    Y.log("Getting page", "log", "Wegas.PageLoader");
                     Y.Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {
                         if (!widgetCfg) {
                             return val;
                         }
                         if (this.get("widget")) {
+                            Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
                             this.get("widget").destroy(); // @fixme we should remove the widget instead of destroying it
                             this.set("widget", null);
                         }
                         this.set("widgetCfg", widgetCfg);
                         this.get(CONTENTBOX).empty();
                         this.showOverlay();
-                        Y.soon(Y.bind(function(cfg) {                        //let the overlay appear during rendering
-                            Y.Wegas.Widget.use(cfg, Y.bind(function() {    // Load the subwidget dependencies
+                        Y.soon(Y.bind(function(cfg) {                           //let the overlay appear during rendering
+                            Y.Wegas.Widget.use(cfg, Y.bind(function() {         // Load the subwidget dependencies
                                 try {
-                                    var widget = Y.Wegas.Widget.create(cfg); // Render the subwidget
+                                    Y.log("Rendering new widget", "log", "Wegas.PageLoader");
+                                    var widget = Y.Wegas.Widget.create(cfg);    // Render the subwidget
                                     widget.render(this.get(CONTENTBOX));
                                     widget['@pageId'] = cfg['@pageId'];
                                     this.set("widget", widget);
-                                    widget.addTarget(this); // Event on the loaded widget will be forwarded
+                                    widget.addTarget(this);                     // Event on the loaded widget will be forwarded
                                 } catch (e) {
                                     this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
                                     Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
@@ -229,7 +232,7 @@ YUI.add('wegas-pageloader', function(Y) {
                                 }
                             }, this));
 
-                        },this, widgetCfg));
+                        }, this, widgetCfg));
 
                     }, this));
                     return val;

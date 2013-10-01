@@ -11,15 +11,15 @@
  */
 YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
-    var CONTENTBOX = 'contentBox',
-            GRIDSIZE = 32;
+
+    var ProgGameDisplay, GRIDSIZE = 32;
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
      *
      */
-    var ProgGameDisplay = Y.Base.create("wegas-proggame-display", Y.Widget, [], {
-        CONTENT_TEMPLATE: '<div><div class="object-layer"></div></div>',
+    ProgGameDisplay = Y.Base.create("wegas-proggame-display", Y.Widget, [], {
+        CONTENT_TEMPLATE: '<div><div class="object-layer"></div><div id="cr-stage"></div></div>',
         renderMethod: null,
         gridH: null,
         gridW: null,
@@ -33,9 +33,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
         },
         renderUI: function() {
-            var i, j,
-                    craftyNode = Y.Node.create("<div id='cr-stage'></div>");
-            this.get(CONTENTBOX).append(craftyNode);
+            var i, j;
 
             Crafty.init(GRIDSIZE * this.gridW, GRIDSIZE * this.gridH);
             if (Crafty.support.canvas) {
@@ -223,8 +221,9 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
 
             //Entities
-            var object, pos;
-            var makeEntity = function(cfg) {
+            var object, pos, template,
+                    objects = this.get('objects'),
+                    makeEntity = function(cfg) {
                 Crafty.c(cfg.id, {
                     init: function() {
                         this.cfg = cfg;
@@ -240,7 +239,6 @@ YUI.add('wegas-proggame-display', function(Y) {
                     }
                 });
             };
-            var objects = this.get('objects'), template;
             for (i = 0; i < objects.length; i++) {
                 template = Y.Array.find(ProgGameDisplay.OBJECTTEMPLATES, function(item) {
                     return item.id === objects[i].id;
