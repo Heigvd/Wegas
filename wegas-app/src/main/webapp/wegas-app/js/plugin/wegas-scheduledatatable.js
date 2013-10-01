@@ -51,11 +51,11 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     bindedCP = Y.bind(this.currentPeriod, this),
                     formatter = function(o) {
                 if (bindedCP() < o.column.time) {
-                    o.className = "futur";
+                    o.className = "schedulColumn futur";
                 } else if (bindedCP() === o.column.time) {
-                    o.className = "present";
+                    o.className = "schedulColumn present";
                 } else {
-                    o.className = "past";
+                    o.className = "schedulColumn past";
                 }
                 return "";
 

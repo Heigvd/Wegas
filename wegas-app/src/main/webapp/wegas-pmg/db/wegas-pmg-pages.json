@@ -98,7 +98,7 @@
                                         "cfg": {
                                             "condition": {
                                                 "@class": "Script",
-                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
                                                 "language": "JavaScript"
                                             }
                                         }
@@ -118,7 +118,7 @@
                                         "cfg": {
                                             "condition": {
                                                 "@class": "Script",
-                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
                                                 "language": "JavaScript"
                                             }
                                         }
@@ -138,7 +138,7 @@
                                         "cfg": {
                                             "condition": {
                                                 "@class": "Script",
-                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
                                                 "language": "JavaScript"
                                             }
                                         }
@@ -479,7 +479,7 @@
                         "type": "Chart",
                         "verticalGridlines": true,
                         "variables": [{
-                                "name": "actualCost",
+                                "name": "costs",
                                 "label": "Costs"
                             }, {
                                 "name": "delay",
@@ -652,9 +652,9 @@
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
-                                "label": "Ratio",
+                                "label": "Rate",
                                 "formatter": "template",
-                                "field": "instance.properties.ratio",
+                                "field": "instance.properties.activityRate",
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
@@ -722,9 +722,9 @@
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
-                                "label": "Ratio",
+                                "label": "Rate",
                                 "formatter": "template",
-                                "field": "instance.properties.ratio",
+                                "field": "instance.properties.activityRate",
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
@@ -792,9 +792,9 @@
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
-                                "label": "Ratio",
+                                "label": "Rate",
                                 "formatter": "template",
-                                "field": "instance.properties.ratio",
+                                "field": "instance.properties.activityRate",
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
@@ -862,9 +862,9 @@
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
-                                "label": "Ratio",
+                                "label": "Rate",
                                 "formatter": "template",
-                                "field": "instance.properties.ratio",
+                                "field": "instance.properties.activityRate",
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
@@ -932,9 +932,9 @@
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
-                                "label": "Ratio",
+                                "label": "Rate",
                                 "formatter": "template",
-                                "field": "instance.properties.ratio",
+                                "field": "instance.properties.activityRate",
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
@@ -1002,9 +1002,9 @@
                                 "sortable": false
                             }, {
                                 "allowHTML": true,
-                                "label": "Ratio",
+                                "label": "Rate",
                                 "formatter": "template",
-                                "field": "instance.properties.ratio",
+                                "field": "instance.properties.activityRate",
                                 "sortable": false
                             }, {
                                 "allowHTML": true,

@@ -78,7 +78,7 @@ function completeRealizationPeriod() {
  *  call function updateGauges();
  */
 function setWeekliesVariables() {
-    var i, taskInst, ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0,
+    var i, taskInst, ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, active=0, nbCompleteTasks,
             tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
             costs = VariableDescriptorFacade.findByName(gm, 'costs'),
             delay = VariableDescriptorFacade.findByName(gm, 'delay'),
@@ -97,11 +97,14 @@ function setWeekliesVariables() {
             pv += parseInt(taskInst.getProperty('bac')) * (parseInt(taskInst.getProperty('completeness')) / 100);
             ev += parseInt(taskInst.getProperty('bac')) * (getPlannifiedCompleteness(taskInst) / 100);
             ac += parseInt(taskInst.getProperty('wages')) + (parseInt(taskInst.getProperty('completeness')) / 100) * parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts'));
+            active += 1;
         }
     }
 
-    //sum of all task's completeness
-    projectCompleteness.getInstance(self).setValue(sumProjectCompleteness);
+    //sum of all task's completeness in %
+    nbCompleteTasks = projectCompleteness.getInstance(self).getValue() * active / (active * 100);
+    projectCompleteness.getInstance(self).setValue(nbCompleteTasks * 100 / active);
+//    projectCompleteness.getInstance(self).setValue(sumProjectCompleteness);
 
     //pv = for each task, sum -> bac * task completeness / 100
     planedValue.getInstance(self).setValue(pv);
@@ -1185,7 +1188,7 @@ function addArtosOccupation() {
     addOccupation("Luc", 12);
     
     addOccupation("André", 10);
-    addOccupation("Luc", 11);
+    addOccupation("André", 11);
     
     addOccupation("Pierre", 6);
     
