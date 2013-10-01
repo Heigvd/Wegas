@@ -60,9 +60,10 @@ YUI.add('wegas-jointeam', function(Y) {
             }
             if (choices.length === 0) {
                 choices.push({
-                    label: "-- No team --",
+                    label: "<em>empty</em>",
                     value: null
                 });
+                this.joinTeamButton.set("disabled", true);
             }
 
             this.teamsField = new Y.inputEx.SelectField({
@@ -120,7 +121,7 @@ YUI.add('wegas-jointeam', function(Y) {
                         }
                     });
                 } else {
-                    this.showMessage("error", "Enter a valid team team");
+                    this.showMessage("error", "Enter a valid team name");
                 }
             }, this);
         },
