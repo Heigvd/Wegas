@@ -105,6 +105,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/persistence/wegas-content-entities-min.js',
                     requires: ['wegas-entity']
                 },
+                'wegas-object-entities': {
+                    path: 'wegas-app/js/persistence/wegas-object-entities-min.js',
+                    requires: ['wegas-entity'],
+                    ws_provides: 'ObjectDescriptor'
+                },
                 /**
                  * Widgets
                  */
@@ -782,11 +787,6 @@ YUI().use(function(Y) {
                     path: 'wegas-monopoly/js/wegas-monopoly-display-min.js',
                     requires: ['wegas-monopoly-display'],
                     ws_provides: "Monopolydisplay"
-                },
-                'wegas-monopoly-entities': {
-                    path: 'wegas-monopoly/js/wegas-monopoly-entities-min.js',
-                    requires: ['wegas-entity'],
-                    ws_provides: ['ObjectDescriptor']
                 },
                 /**CEP**/
                 'wegas-cep-folder': {

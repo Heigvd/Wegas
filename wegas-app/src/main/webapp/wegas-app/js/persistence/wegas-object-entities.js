@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-monopoly-entities', function(Y) {
+YUI.add('wegas-object-entities', function(Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", NAME = "name",
