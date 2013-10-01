@@ -671,12 +671,12 @@ YUI().use(function(Y) {
                 'wegas-statemachineviewercss': {
                     path: 'wegas-editor/css/wegas-statemachineviewer-min.css'
                 },
-                'wegas-mcqtabview': {
+                'wegas-mcq-tabview': {
                     path: 'wegas-mcq/js/wegas-mcqtabview-min.js',
-                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcqtabviewcss'],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcq-tabviewcss'],
                     ws_provides: "MCQTabView"
                 },
-                'wegas-mcqtabviewcss': {
+                'wegas-mcq-tabviewcss': {
                     path: 'wegas-mcq/css/wegas-mcqtabview-min.css',
                     type: 'css'
                 },
