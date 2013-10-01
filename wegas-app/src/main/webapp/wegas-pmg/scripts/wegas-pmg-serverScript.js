@@ -79,6 +79,7 @@ function completeRealizationPeriod() {
  */
 function setWeekliesVariables() {
     var i, taskInst, ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, active=0, nbCompleteTasks,
+            managementApproval, userApproval,
             tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
             costs = VariableDescriptorFacade.findByName(gm, 'costs'),
             delay = VariableDescriptorFacade.findByName(gm, 'delay'),
@@ -90,6 +91,8 @@ function setWeekliesVariables() {
             spi = VariableDescriptorFacade.findByName(gm, 'spi'),
             projectFixCosts = VariableDescriptorFacade.findByName(gm, 'projectFixedCosts'),
             projectCompleteness = VariableDescriptorFacade.findByName(gm, 'projectCompleteness');
+            managementApproval = VariableDescriptorFacade.findByName(gm, 'managementApproval');
+            userApproval = VariableDescriptorFacade.findByName(gm, 'userApproval');
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
         sumProjectCompleteness += parseFloat(taskInst.getProperty('completeness'));
@@ -102,7 +105,7 @@ function setWeekliesVariables() {
     }
 
     //sum of all task's completeness in %
-    nbCompleteTasks = projectCompleteness.getInstance(self).getValue() * active / (active * 100);
+    nbCompleteTasks = sumProjectCompleteness * active / (active * 100);
     projectCompleteness.getInstance(self).setValue(nbCompleteTasks * 100 / active);
 //    projectCompleteness.getInstance(self).setValue(sumProjectCompleteness);
 
@@ -126,6 +129,8 @@ function setWeekliesVariables() {
     planedValue.getInstance(self).saveHistory();
     earnedValue.getInstance(self).saveHistory();
     actualCost.getInstance(self).saveHistory();
+    managementApproval.getInstance(self).saveHistory();
+    userApproval.getInstance(self).saveHistory();
 }
 
 /**
