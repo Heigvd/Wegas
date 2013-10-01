@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Cyril Junod cyril.junod at gmail.com
  */
-YUI.add('wegas-choicelist', function(Y) {
+YUI.add('wegas-layout-choicelist', function(Y) {
     "use strict";
 
     /**
@@ -20,7 +20,7 @@ YUI.add('wegas-choicelist', function(Y) {
      * @description class to serialize widgets
      */
     var List = Y.Base.create("wegas-choicelist", Y.Wegas.List,
-            [Y.Wegas.Editable, Y.Wegas.Container], {
+            [Y.Wegas.Editable, Y.Wegas.Layout], {
         /** @lends Y.Wegas.ChoiceList# */
         bindUI: function() {
             this.after("addChild", function() {
