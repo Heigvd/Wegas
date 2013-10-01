@@ -36,8 +36,9 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.handlers = {};
             this.sortable = [];
 
+            this.addAssignmentColumn();
+            
             this.onceAfterHostEvent("render", function() {
-                this.addAssignmentColumn();
                 this.sync();
                 this.bind();
             });
@@ -266,6 +267,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             });
         },
         destructor: function() {
+            Y.log("destructor()", "log", "Wegas.Assignment");
             var k, i;
             for (k in this.handlers) {
                 if (this.handlers.hasOwnProperty(k)) {

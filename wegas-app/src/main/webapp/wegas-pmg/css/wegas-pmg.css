@@ -442,8 +442,8 @@ h2{
     border-bottom:1px solid #ADADAE;
 }
 
-/*---------------------------- SchedulColumn -------------------------------- */
-.yui3-datatable-table .yui3-datatable-data .schedulColumn {
+/*---------------------------- schedulecolumn -------------------------------- */
+.yui3-datatable-table .yui3-datatable-data .schedulecolumn {
     padding: 0 0 0 0;
 }
 

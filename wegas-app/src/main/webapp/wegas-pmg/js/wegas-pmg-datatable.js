@@ -49,6 +49,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             // this.datatable.addRows(this.getData());
         },
         destructor: function() {
+            Y.log("destructor()", "log", "Wegas.Datatable");
             this.updateHandler.detach();
             this.datatable.destroy();
         },

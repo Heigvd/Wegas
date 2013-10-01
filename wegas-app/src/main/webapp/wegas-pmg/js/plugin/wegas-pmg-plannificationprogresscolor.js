@@ -89,7 +89,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
 
                     for (i = 0; i < predecessors.length; i++) {
                         predecessorId = predecessors[i].get("id");
-                        if (!this.taskTable[predecessorId]){
+                        if (!this.taskTable[predecessorId]) {
                             continue;
                         }
                         // verifie si le prédecesseur possede le debut pert
@@ -116,15 +116,16 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
             }
         },
         findCell: function() {
-            var taskId, taskDesc, dt = this.get("host").datatable, i, ii, cell;
+            var taskId, taskDesc, host = this.get("host"),
+                    dt = this.get("host").datatable, i, ii, cell;
 
-            for (i = 0; i < dt.data._items.length; i++) {
+            for (i = 0; i < dt.data.size(); i++) {
                 for (taskId in this.taskTable) {
                     taskDesc = this.taskTable[taskId];
                     if (dt.getRecord(i).get("id") === taskDesc.get("id")) {
-                        for (ii = 0; ii < dt.get('columns').length; ii++) {
-                            cell = dt.getRow(i).getDOMNode().cells[ii];
-                            this.findCssClass(dt.get('columns')[ii].time, taskDesc.startMax, taskDesc.end, cell);
+                        for (ii = 1; ii <= host.schedule.get("columnToAdd"); ii++) {
+                            cell = host.schedule.getCell(i, ii);
+                            this.findCssClass(ii, taskDesc.startMax, taskDesc.end, cell);
                         }
                         break;
                     }
@@ -167,7 +168,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
             }
         },
         addColor: function(cell, cssClass) {
-            cell.innerHTML = cell.innerHTML + "<span class='progress " + cssClass + "'></span>";
+            cell.append("<span class='progress " + cssClass + "'></span>");
         }
     }, {
         NS: "plannificationprogresscolor",

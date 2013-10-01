@@ -49,7 +49,7 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                 for (ii = 0; ii < abstractAssignement.length; ii++) {
                     time = abstractAssignement[ii].get("time");
                     if (time >= host.schedule.currentPeriod()
-                            || !abstractAssignement[ii].get("editable")) {  //Affiche les occupations
+                            || !abstractAssignement[ii].get("editable")) {      //Affiche les occupations
                         this.addColor(host.schedule.getCell(i, time), abstractAssignement[ii].get("editable"));
                     }
                 }
@@ -63,17 +63,14 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
             }
         },
         addEngagementDelay: function() {
-            var dt = this.get("host").datatable;
-            for (var i = 0; i < dt.data._items.length; i++) {
-                if (dt.data._items[i].get("properties").engagementDelay !== 0) {
-                    for (var iii = 0; iii < dt.get('columns').length; iii++) {
-                        for (var iiii = 0; iiii < dt.data._items[i].get("properties").engagementDelay; iiii++) {
-                            if (this.get("host").scheduleDT.currentPeriod() === dt.get('columns')[iii].time) {
-                                dt.getRow(i).getDOMNode().cells[iii + iiii].innerHTML = "<span class='engagementDelay'></span>";
-                                dt.getRow(i).getDOMNode().cells[iii + iiii].className = "yui3-datatable-col-2 schedulColumn delay yui3-datatable-cell";
-                            }
-                        }
-                    }
+            var i, ii, cell, host = this.get("host"),
+                    dt = host.datatable,
+                    currentPeriod = host.schedule.currentPeriod();
+            for (i = 0; i < dt.data.size(); i++) {
+                for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii++) {
+                    cell = host.schedule.getCell(i, currentPeriod + ii);
+                    cell.setContent("<span class='engagementDelay'></span>");
+                    cell.getDOMNode().className = "yui3-datatable-col-2 schedulecolumn delay yui3-datatable-cell";
                 }
             }
         }

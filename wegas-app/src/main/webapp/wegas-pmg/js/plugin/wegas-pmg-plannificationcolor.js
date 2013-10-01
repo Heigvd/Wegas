@@ -45,7 +45,7 @@ YUI.add('wegas-pmg-plannificationcolor', function(Y) {
             for (i = 0; i < dt.data.size(); i++) {
                 plannification = dt.data.item(i).get("descriptor").getInstance().get("plannification");
                 for (ii = 0; ii < plannification.length; ii++) {
-                    this.addColor(host.schedule.getCell(i, plannification [ii] - 1));
+                    this.addColor(host.schedule.getCell(i, plannification [ii]));
                 }
             }
         },
