@@ -74,10 +74,10 @@ YUI.add('wegas-jointeam', function(Y) {
 
             cb.append("<br /><br /><center>OR</center><br />");
 
-            // Render team creation
-            this.createTeamField = new Y.inputEx.StringField({
+
+            this.createTeamField = new Y.inputEx.StringField({                  // Render team creation
                 parentEl: cb,
-                label: "Create a new one",
+                label: "Create your own",
                 typeInvite: ""
             });
             this.createButton.render(cb);
