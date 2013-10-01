@@ -18,7 +18,6 @@ YUI.add('wegas-chat', function(Y) {
             this.field = null;
             this.send = null;
         },
-
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
 

@@ -139,6 +139,7 @@ function updateGauges() {
             planedValue = VariableDescriptorFacade.findByName(gm, 'planedValue'),
             earnedValue = VariableDescriptorFacade.findByName(gm, 'earnedValue'),
             actualCost = VariableDescriptorFacade.findByName(gm, 'actualCost'),
+            qualityImpacts = VariableDescriptorFacade.findByName(gm, 'qualityImpacts'),
             tasksQuality = 0, nomberOfBeganTasks = 0, tasksScale = 0, nomberOfEmployeeRequired,
             costsJaugeValue, qualityJaugeValue, delayJaugeValue, qualityJaugeValue = 0;
 
@@ -182,8 +183,7 @@ function updateGauges() {
 //    if (nomberOfBeganTasks > 0) {
 //        qualityJaugeValue = tasksQuality / nomberOfBeganTasks;
 //    }
-    qualityJaugeValue += parseInt(qualityImpacts.value) / 2;
-    println(qualityJaugeValue);
+    qualityJaugeValue += parseInt(qualityImpacts.getInstance(self).getValue()) / 2;
     qualityJaugeValue = (qualityJaugeValue > parseInt(quality.getMinValue())) ? qualityJaugeValue : parseInt(quality.getMinValue());
     qualityJaugeValue = (qualityJaugeValue < parseInt(quality.getMaxValue())) ? qualityJaugeValue : parseInt(quality.getMaxValue());
     quality.getInstance(self).setValue(qualityJaugeValue);
@@ -766,7 +766,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + (parseInt(activityAsNeeds.getResourceInstance().getProperty('wage')) / steps)));
+    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activityAsNeeds.getResourceInstance().getProperty('wage'))) / steps)));
 
     if (testMode) {
         println('sameNeedActivity.length : ' + sameNeedActivity.length);

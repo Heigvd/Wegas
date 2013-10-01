@@ -10,7 +10,7 @@
  */
 
 /* Wegas Layout Widget Styles */
-.yui3-skin-sam .wegas-layout {
+.yui3-skin-sam .wegas-layout-resizable {
     background-color: #072644;
     /*overflow: hidden;*/
 }
@@ -49,6 +49,6 @@
     width: 320px;
     right: 0;
 }
-.yui3-skin-sam .wegas-layout .yui3-resize-handle {
+.yui3-skin-sam .wegas-layout-resizable .yui3-resize-handle {
     background: #072644;
 }

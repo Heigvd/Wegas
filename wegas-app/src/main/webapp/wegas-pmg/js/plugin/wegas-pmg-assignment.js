@@ -36,11 +36,11 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.handlers = {};
             this.sortable = [];
 
+            this.addAssignmentColumn();
+            
             this.onceAfterHostEvent("render", function() {
-                this.addAssignmentColumn();
                 this.sync();
                 this.bind();
-                this.get("host").datatable.after("sort", this.sync, this);
             });
         },
         bind: function() {
@@ -68,6 +68,8 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                     }
                 });
             }, '.task .remove', this);
+
+            this.get("host").datatable.after("sort", this.sync, this);
         },
         /**
          * Destructor methods.
@@ -75,6 +77,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
          * @private
          */
         sync: function() {
+            Y.log("sync()", "log", "Wegas.Assignment");
             this.addButtonsAssignment();
             this.syncSortable();
         },
@@ -264,6 +267,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             });
         },
         destructor: function() {
+            Y.log("destructor()", "log", "Wegas.Assignment");
             var k, i;
             for (k in this.handlers) {
                 if (this.handlers.hasOwnProperty(k)) {
