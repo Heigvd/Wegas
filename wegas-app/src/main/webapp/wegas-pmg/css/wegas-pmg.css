@@ -358,9 +358,6 @@ h2{
 .wegas-mcqtabview  input {
     float: right;
 }
-.wegas-mcqtabview .replies {
-    padding-bottom: 5px;
-}
 .wegas-mcqtabview .reply {
     margin: 3px 8px 0px;
 }

@@ -1,4 +1,4 @@
-/* 
+/*
 */
 .wegas-mcqtabview {
     line-height: normal;
@@ -39,7 +39,7 @@
     float: right;
 }
 .wegas-mcqtabview .replies {
-    padding-bottom: 5px;
+    padding: 10px 0;
 }
 .wegas-mcqtabview .reply {
     margin: 3px 8px 0px;
@@ -50,6 +50,9 @@
 .wegas-mcqtabview .reply content {
     /*font-weight: bold;*/
     margin-bottom:5px;
+}
+.wegas-mcqtabview .replyDiv {
+    border-bottom: 1px solid lightgray;
 }
 .wegas-mcqtabview .numberOfReplies{
     float:right;
