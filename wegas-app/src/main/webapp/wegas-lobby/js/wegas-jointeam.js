@@ -60,24 +60,26 @@ YUI.add('wegas-jointeam', function(Y) {
             }
             if (choices.length === 0) {
                 choices.push({
-                    label: "-- No team --",
-                    value: ""
+                    label: "<em>empty</em>",
+                    value: null
                 });
+                this.joinTeamButton.set("disabled", true);
             }
 
             this.teamsField = new Y.inputEx.SelectField({
-                required: "true",
                 parentEl: cb,
                 choices: choices,
-                label: "Select the team you want to join"
+                label: "Join an existing team"
             });
             this.joinTeamButton.render(cb);
 
-            // Render team creation
-            this.createTeamField = new Y.inputEx.StringField({
-                required: "true",
+            cb.append("<br /><br /><center>OR</center><br />");
+
+
+            this.createTeamField = new Y.inputEx.StringField({                  // Render team creation
                 parentEl: cb,
-                label: "OR Create a new team:"
+                label: "Create your own",
+                typeInvite: ""
             });
             this.createButton.render(cb);
         },
@@ -90,29 +92,36 @@ YUI.add('wegas-jointeam', function(Y) {
         bindUI: function() {
 
             this.joinTeamButton.on("click", function(e) {                       // Join an existing team
-                if (this.teamsField.validate()) {
-                    this.sendJoinTeamRequest(this.teamsField.getValue());
+                var value = this.teamsField.getValue();
+                if (this.teamsField.validate() && value) {
+                    this.sendJoinTeamRequest(value);
+                } else {
+                    this.showMessage("error", "Select a valid team");
                 }
             }, this);
 
             this.createButton.on("click", function(e) {                         // Create a new team
-                if (this.createTeamField.validate()) {
+                var name = this.createTeamField.getValue();
+                if (name !== "") {
+                    this.showOverlay();
                     Y.Wegas.Facade.Game.sendRequest({
-                        request: "/" + this.get("entity").get("id") + "/CreateTeam/" + this.createTeamField.getValue(),
+                        request: "/" + this.get("entity").get("id") + "/CreateTeam/" + name,
                         cfg: {
                             method: "POST"
                         },
                         on: {
                             success: Y.bind(function(e) {
+                                this.hideOverlay();
                                 this.sendJoinTeamRequest(e.response.entity.get("id"));
                             }, this),
                             failure: Y.bind(function(e) {
+                                this.hideOverlay();
                                 this.showMessage("error", e.response.results.message || "Error creating team");
                             }, this)
                         }
                     });
                 } else {
-                    this.showMessage("Enter a valid team team");
+                    this.showMessage("error", "Enter a valid team name");
                 }
             }, this);
         },
@@ -132,6 +141,7 @@ YUI.add('wegas-jointeam', function(Y) {
          * @description User rest request: rest/GameModel/1/Game/{gameModelID}/JoinTeam/{teamID}
          */
         sendJoinTeamRequest: function(teamId) {
+            this.showOverlay();
             Y.Wegas.Facade.Game.sendRequest({
                 request: "/JoinTeam/" + teamId,
                 on: {
@@ -146,8 +156,10 @@ YUI.add('wegas-jointeam', function(Y) {
                             parent.remove();
                             parent.destroy();
                         }
+                        this.hideOverlay();
                     }, this),
                     failure: Y.bind(function(e) {
+                        this.hideOverlay();
                         this.showMessage("error", "Error joining team");
                     }, this)
                 }

@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-mcqtabview', function(Y) {
+YUI.add('wegas-mcq-tabview', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
@@ -143,16 +143,23 @@ YUI.add('wegas-mcqtabview', function(Y) {
                         && cQuestionInstance.get("active")) {                    // If current question is active
 
                     if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
-                        choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                        cReplyLabel = choiceDescriptor.get("title") || choiceDescriptor.get("label" || "undefined");
-                        cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel.substr(0, 15) + "..." : cReplyLabel;
+                        if (cQuestion.get("allowMultipleReplies")) {
+                            cReplyLabel = cQuestionInstance.get("replies").length + "x";
+                        } else {
+                            choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
+                            cReplyLabel = choiceDescriptor.get("title") || choiceDescriptor.get("label" || "undefined");
+                            cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel.substr(0, 15) + "..." : cReplyLabel;
+                        }
                     }
 
                     tab = new Y.Tab({
                         label: '<div class="'
-                                + (cQuestionInstance.get("replies").length === 0 ? "unread" : "")
+                                + ((this.get("showUnanswered") && cQuestionInstance.get("replies").length === 0) ? "unread" : "")
                                 + '"><div class="label">' + (cQuestion.get("title") || cQuestion.get("label") || "undefined") + '</div>'
-                                + '<div class="status">' + (cReplyLabel || this.jsTranslator.getRB().Unanswered) + '</div></div>',
+                                + '<div class="status">'
+                                + (cReplyLabel
+                                || ((!cQuestion.get("allowMultipleReplies")) ? this.jsTranslator.getRB().Unanswered : this.jsTranslator.getRB().NotDone))
+                                + '</div></div>',
                         content: "<div class=\"wegas-loading-div\"><div>"
                     });
                     tab.loaded = false;
@@ -198,7 +205,7 @@ YUI.add('wegas-mcqtabview', function(Y) {
          * @param {type} tab
          */
         renderTab: function(tab, extendedQuestion) {
-            var j, ret, firstChild, cChoices, choiceDescriptor, reply,
+            var j, ret, firstChild, cChoices, choiceDescriptor, reply, title,
                     cQuestion = tab.cQuestion,
                     cQuestionInstance = cQuestion.getInstance(),
                     firstChild = "first-child",
@@ -229,11 +236,12 @@ YUI.add('wegas-mcqtabview', function(Y) {
                                 numberOfReplies = '<span class="numberOfReplies">' + numberOfReplies + '<span class="symbole">x</span></span>';
                             }
                         }
-
                         ret.push('<div class="reply ', firstChild, ' ', isReplied, '">',
                                 '<div class="name">', cChoices[j].get("title") || cQuestion.get("label"), '</div>',
                                 //'<div class="content">', cChoices[j].get("description"), '</div>',
-                                '<div class="content">', extendedQuestion.get("items")[j].get("description"), '</div>',
+                                '<div class="content">',
+                                extendedQuestion.get("items")[j].get("description"),
+                                '</div>',
                                 numberOfReplies,
                                 '<input type="submit" id="', cChoices[j].get("id"), '" value="Submit"></input>',
                                 '<div style="clear:both"></div>',
@@ -249,9 +257,12 @@ YUI.add('wegas-mcqtabview', function(Y) {
                 for (j = 0; j < cQuestionInstance.get("replies").length; j += 1) {
                     reply = cQuestionInstance.get("replies")[j];
                     choiceDescriptor = reply.getChoiceDescriptor();
-                    ret.push('<div class="replyDiv"><div class="reply"><div class="name">', choiceDescriptor.get("title") || choiceDescriptor.get("label"), '</div>',
-                            //'<div>', choiceDescriptor.get("description"), '</div>',
-                            '<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
+                    title = choiceDescriptor.get("title") || choiceDescriptor.get("label");
+                    ret.push('<div class="replyDiv"><div class="reply"><div class="name">', title, '</div>',
+                            '<div>',
+                            (!cQuestion.get("allowMultipleReplies") || !title) ? extendedQuestion.find(choiceDescriptor.get("id")).get("description") : "",
+                            '</div>',
+                            //'<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
                             '<div style="clear:both"></div></div>');
 
                     if (reply.get("result").get("answer")) {
@@ -328,6 +339,10 @@ YUI.add('wegas-mcqtabview', function(Y) {
                 _inputex: {
                     _type: "variableselect"
                 }
+            },
+            showUnanswered: {
+                type: "boolean",
+                value: true
             }
         }
     });

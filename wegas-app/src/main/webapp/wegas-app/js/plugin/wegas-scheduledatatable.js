@@ -53,11 +53,11 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     classTime,
                     formatter = function(o) {
                 if (bindedCP() < o.column.time) {
-                    o.className = "schedulColumn futur";
+                    o.className = "futur";
                 } else if (bindedCP() === o.column.time) {
-                    o.className = "schedulColumn present";
+                    o.className = "present";
                 } else {
-                    o.className = "schedulColumn past";
+                    o.className = "past";
                 }
                 return "";
             };
@@ -85,7 +85,9 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             var table = this.get("host").datatable, period = this.currentPeriod();
             if (table.head) {
                 table.head.theadNode.all(".schedulecolumn").each(function(item, index) {
-                    item.removeClass("present futur past");
+                    item.removeClass("present");
+                    item.removeClass("futur");
+                    item.removeClass("past");
                     if (period === index + 1) {
                         item.addClass("present");
                     } else if (period < index + 1) {

@@ -91,7 +91,8 @@ body h6{
 
 /* Y.Wegas.Widget extension styles */
 .wegas-loading {
-    position: relative;
+    /*position: relative;*/
+    height: 100%;
 }
 .wegas-loading-overlay {
     background: rgba(255, 255, 255, 0.8) url(../images/loading.gif) center center no-repeat;
