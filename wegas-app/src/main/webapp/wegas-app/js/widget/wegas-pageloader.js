@@ -73,9 +73,9 @@ YUI.add('wegas-pageloader', function(Y) {
 
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", onUpdate, this));
             this.on("*:exception", function(e) {
-                var test;
+                var test = e.message.match(/ConstraintViolationException: (.*) is out of bound/);
                 e.halt(true);
-                if (test = e.message.match(/ConstraintViolationException: (.*) is out of bound/)) {
+                if (test) {
                     this.showMessage("error", "Insufficient " + test[1] + ".");
                 } else {
                     this.showMessage("error", e.message);
@@ -211,7 +211,7 @@ YUI.add('wegas-pageloader', function(Y) {
                             this.get("widget").destroy(); // @fixme we should remove the widget instead of destroying it
                             this.set("widget", null);
                         }
-                        this.set("widgetCfg", widgetCfg);
+                        this._state.add("widgetCfg", "value", widgetCfg); //@HACK : avoid some heavy computing, bypass setter's prevVal clone. !!! Warn, no events
                         this.get(CONTENTBOX).empty();
                         this.showOverlay();
                         Y.soon(Y.bind(function(cfg) {                           //let the overlay appear during rendering
