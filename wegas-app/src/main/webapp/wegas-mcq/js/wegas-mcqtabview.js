@@ -143,16 +143,23 @@ YUI.add('wegas-mcqtabview', function(Y) {
                         && cQuestionInstance.get("active")) {                    // If current question is active
 
                     if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
-                        choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                        cReplyLabel = choiceDescriptor.get("title") || choiceDescriptor.get("label" || "undefined");
-                        cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel.substr(0, 15) + "..." : cReplyLabel;
+                        if (cQuestion.get("allowMultipleReplies")) {
+                            cReplyLabel = cQuestionInstance.get("replies").length + "x";
+                        } else {
+                            choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
+                            cReplyLabel = choiceDescriptor.get("title") || choiceDescriptor.get("label" || "undefined");
+                            cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel.substr(0, 15) + "..." : cReplyLabel;
+                        }
                     }
 
                     tab = new Y.Tab({
                         label: '<div class="'
-                                + (cQuestionInstance.get("replies").length === 0 ? "unread" : "")
+                                + ((this.get("showUnanswered") && cQuestionInstance.get("replies").length === 0) ? "unread" : "")
                                 + '"><div class="label">' + (cQuestion.get("title") || cQuestion.get("label") || "undefined") + '</div>'
-                                + '<div class="status">' + (cReplyLabel || this.jsTranslator.getRB().Unanswered) + '</div></div>',
+                                + '<div class="status">'
+                                + (cReplyLabel
+                                || ((!cQuestion.get("allowMultipleReplies")) ? this.jsTranslator.getRB().Unanswered : this.jsTranslator.getRB().NotDone))
+                                + '</div></div>',
                         content: "<div class=\"wegas-loading-div\"><div>"
                     });
                     tab.loaded = false;
@@ -328,6 +335,10 @@ YUI.add('wegas-mcqtabview', function(Y) {
                 _inputex: {
                     _type: "variableselect"
                 }
+            },
+            showUnanswered: {
+                type: "boolean",
+                value: true
             }
         }
     });
