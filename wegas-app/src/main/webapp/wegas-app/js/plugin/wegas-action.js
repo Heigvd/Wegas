@@ -148,9 +148,9 @@ YUI.add('wegas-action', function(Y) {
             targetPageLoader.set("pageId", this.subpage());
             this.get(HOST).set("selected", 1);
         },
-        subpage: function () {
-            if (!this.get("subpageId")){
-                if (this.get("subpageVariable.evaluated")){
+        subpage: function() {
+            if (!this.get("subpageId")) {
+                if (this.get("subpageVariable.evaluated")) {
                     return this.get("subpageVariable.evaluated").getInstance().get("value");
                 }
             }
@@ -200,11 +200,8 @@ YUI.add('wegas-action', function(Y) {
     };
     Y.extend(ExecuteScriptAction, Action, {
         execute: function() {
-            var host = this.get(HOST), overlayGuest, guest = host.get("root");
-            if (guest.showOverlay && guest.hideOverlay) {
-                overlayGuest = guest;
-                overlayGuest.showOverlay();
-            }
+            var host = this.get(HOST);
+            host.showOverlay();
 
             Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Wegas.app.get('currentPlayer'),
@@ -213,15 +210,11 @@ YUI.add('wegas-action', function(Y) {
                     data: Y.JSON.stringify(this.get("onClick"))
                 },
                 on: {
-                    success: function(r) {
-                        if (overlayGuest) {
-                            overlayGuest.hideOverlay();
-                        }
+                    success: function() {
+                        host.hideOverlay();
                     },
                     failure: function(r) {
-                        if (overlayGuest) {
-                            overlayGuest.hideOverlay();
-                        }
+                        host.hideOverlay();
                         Y.bind(host.defaultExceptionHandler, host, r);
                     }
                 }
