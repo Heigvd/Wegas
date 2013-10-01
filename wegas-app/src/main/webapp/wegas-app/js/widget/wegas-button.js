@@ -111,30 +111,6 @@ YUI.add("wegas-button", function(Y) {
             },
             cssClass: {
                 value: null
-            },
-            plugins: {
-                "transient": false,
-                _inputex: {
-                    _type: "pluginlist",
-                    index: 10,
-                    items: [{
-                            type: "Button",
-                            label: "Tooltip",
-                            data: "Tooltip"
-                        }, {
-                            type: "Button",
-                            label: "On click",
-                            data: "ExecuteScriptAction"
-                        }, {
-                            type: "Button",
-                            label: "Open page",
-                            data: "OpenPageAction"
-                        }, {
-                            type: "Button",
-                            label: "Styles",
-                            data: "CSSStyles"
-                        }]
-                }
             }
         }
     });

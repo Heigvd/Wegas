@@ -29,11 +29,11 @@ YUI.add('wegas-pmg-bac', function(Y) {
          */
         initializer: function() {
             this.fields = [];
-            this.get("host").onceAfter("render", function() {
+            this.onceAfterHostEvent("render", function() {
                 this.addBacColumn();
                 this.addInputField();
                 this.afterHostMethod("syncUI", this.addInputField);
-            }, this);
+            });
         },
         addBacColumn: function() {
             this.get("host").datatable.addColumn({
@@ -45,7 +45,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
             var i, ii, dt = this.get("host").datatable, cell, field, taskDesc;
 
             for (i = 0; i < dt.data._items.length; i++) {
-                taskDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("id", dt.data._items[i].get("id"));
+                taskDesc = dt.data.item(i).get("descriptor");
                 for (ii = 0; ii < dt.get('columns').length; ii++) {
                     if (dt.get('columns')[ii]._id === "bac") {
                         cell = dt.getRow(i).getDOMNode().cells[ii];

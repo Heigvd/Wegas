@@ -79,7 +79,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
             this.treeView.removeAll();
             cb.all(".wegas-smallmessage").remove();
-            
+
             if (treeNodes.length === 0) {
                 cb.append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
                 return;
@@ -457,57 +457,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
     }, {
         NS: "RememberExpandedTreeView",
         NAME: "RememberExpandedTreeView"
-    });
-
-    /**
-     * @class When a descriptor node is toggled, expand it
-     * @constructor
-     */
-    Y.Plugin.EditorTVNodeLoader = Y.Base.create("admin-action", Y.Plugin.Base, [], {
-        expandedIds: {},
-        lastOpenedNode: null,
-        initializer: function() {
-            this.afterHostEvent(RENDER, function() {
-                this.get(HOST).treeView.before("*:nodeExpanded",
-                        this.fillsLeaf, this);                                  //if treeleaf is empty, load elements from sever
-            });
-
-            //this.afterHostMethod("syncUI", function () {
-            //    var i, doExpand = function (e) {
-            //        for (i = 0; i < e.size(); i += 1) {
-            //            if (!e.item(i).get("collapsed")) {
-            //                this.fillsLeaf(e.item(i));
-            //                doExpand.call(this, e.item(i));
-            //            }
-            //        }
-            //    };
-            //
-            //    doExpand.call(this, this.get(HOST).treeView);         // Recursively walk treeview to reload expanded nodes
-            //});
-        },
-        fillsLeaf: function(e) {
-            var node = e.node,
-                    id = node.get("data").entity.get(ID),
-                    entity = node.get("data").entity;
-
-            if (entity instanceof Wegas.persistence.VariableDescriptor
-                    && !(entity instanceof Wegas.persistence.ListDescriptor)      // @hack
-                    && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
-
-                if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
-                    return;
-                }
-                node.removeAll();
-                node.set("loading", true);
-
-                Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/" + id + "?view=Editor"
-                });
-            }
-        }
-    }, {
-        NS: "EditorTVNodeLoader",
-        NAME: "EditorTVNodeLoader"
     });
 
     /**

@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-list', function(Y) {
+YUI.add('wegas-layout-list', function(Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
@@ -17,14 +17,14 @@ YUI.add('wegas-list', function(Y) {
             List;
 
     /**
-     * @name Y.Wegas.ItemSelector
+     * @name Y.Wegas.List
      * @extends Y.Widget
-     * @borrows Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Container
+     * @borrows Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Layout
      * @class class to serialize widgets
      * @constructor
      * @description class to serialize widgets
      */
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Container], {
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Layout], {
         /** @lends Y.Wegas.List# */
 
         // *** Private fields *** //

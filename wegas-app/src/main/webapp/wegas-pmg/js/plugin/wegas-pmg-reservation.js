@@ -28,17 +28,13 @@ YUI.add('wegas-pmg-reservation', function(Y) {
          * @private
          */
         initializer: function() {
-            var dt, id, columnsCfg;
+            this.get("host").datatable.delegate("click", function(e, a) {
+                var dt = this.get("host").datatable,
+                        id = dt.getRecord(e.target).get("id"),
+                        columnsCfg = dt.get('columns')[dt.getCell(e.target).get("cellIndex")];
 
-            this.get("host").onceAfter("render", function() {
-                this.get("host").datatable.delegate("click", function(e, a) {
-                    dt = this.get("host").datatable;
-                    id = dt.getRecord(e.target).get("id");
-                    columnsCfg = dt.get('columns')[dt.getCell(e.target).get("cellIndex")];
-
-                    this.checkCache(id, columnsCfg.time);
-                }, "tbody .present, tbody .futur", this);
-            }, this);
+                this.checkCache(id, columnsCfg.time);
+            }, "tbody .present, tbody .futur", this);
         },
         checkCache: function(descriptorId, periode) {
             var vd = Y.Wegas.Facade.VariableDescriptor.cache.find("id", descriptorId),

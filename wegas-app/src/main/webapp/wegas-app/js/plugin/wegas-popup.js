@@ -6,6 +6,7 @@
  * Licensed under the MIT License
  */
 /**
+ * @DEPRECATED Only used in old version of the programming game.
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */

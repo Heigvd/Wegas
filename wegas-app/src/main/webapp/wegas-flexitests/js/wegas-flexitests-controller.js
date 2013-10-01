@@ -12,7 +12,7 @@
  */
 YUI.add("wegas-flexitests-controller", function(Y) {
     "use strict";
-    Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [Y.Wegas.Editable, Y.Wegas.Container], {
+    Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [Y.Wegas.Editable, Y.Wegas.Layout], {
         BOUNDING_TEMPLATE: "<div><div class='flexi-mask'></div></div>",
         /**
          * Lifecycle method

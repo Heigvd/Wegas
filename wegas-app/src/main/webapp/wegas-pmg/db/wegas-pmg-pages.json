@@ -332,6 +332,7 @@
                             }, {
                                 "type": "Button",
                                 "cssClass": "inbox",
+                                "setToReadAfter": 0,
                                 "disabled": false,
                                 "label": "",
                                 "plugins": [
@@ -421,9 +422,9 @@
                 "animation": false,
                 "children": [
                     {
-                        "chartHeight": "200px",
+                        "height": "200px",
                         "chartType": "combo",
-                        "chartWidth": "90%",
+                        "width": "90%",
                         "horizontalGridlines": true,
                         "legendPosition": "bottom",
                         "type": "Chart",
@@ -447,9 +448,9 @@
                 "animation": false,
                 "children": [
                     {
-                        "chartHeight": "200px",
+                        "height": "200px",
                         "chartType": "combo",
-                        "chartWidth": "90%",
+                        "width": "90%",
                         "horizontalGridlines": true,
                         "legendPosition": "bottom",
                         "type": "Chart",
@@ -470,9 +471,9 @@
                 "animation": false,
                 "children": [
                     {
-                        "chartHeight": "200px",
+                        "height": "200px",
                         "chartType": "combo",
-                        "chartWidth": "90%",
+                        "width": "90%",
                         "horizontalGridlines": true,
                         "legendPosition": "bottom",
                         "type": "Chart",
@@ -1120,8 +1121,8 @@
                 "children": [
                     {
                         "type": "Chart",
-                        "chartWidth": "90%",
-                        "chartHeight": "400px",
+                        "width": "90%",
+                        "height": "400px",
                         "chartType": "combo",
                         "horizontalGridlines": true,
                         "legendPosition": "bottom",

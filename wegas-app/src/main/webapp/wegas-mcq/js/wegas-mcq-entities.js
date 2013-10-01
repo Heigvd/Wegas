@@ -39,7 +39,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             title: {
                 type: STRING,
-                optional: true
+                optional: true,
+                _inputex: {
+                    index: -1
+                }
             },
             allowMultipleReplies: {
                 value: false,
@@ -211,7 +214,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             title: {
                 type: STRING,
-                optional: true
+                optional: true,
+                _inputex: {
+                    index: -1
+                }
             },
             description: {
                 type: STRING,
@@ -312,8 +318,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         value: SELF
                     }, {
                         type: "entityarrayfieldselect",
-                        returnAttr: "id",
-                        field: "results"
+                        returnAttr: "name",
+                        field: "results",
+                        scriptType: STRING
                     }]
             },
             activate: {
