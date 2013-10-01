@@ -128,7 +128,7 @@ YUI.add('wegas-pageloader', function(Y) {
         getEditorLabel: function() {
             return this.get("pageLoaderId");
         },
-// *** Private Methods ***/
+        // *** Private Methods ***/
         /**
          * @function
          * @private
@@ -206,33 +206,33 @@ YUI.add('wegas-pageloader', function(Y) {
                         if (!widgetCfg) {
                             return val;
                         }
+                        this.showOverlay();
+
+                        //Y.soon(Y.bind(function(widgetCfg) {
                         if (this.get("widget")) {
                             Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
-                            this.get("widget").destroy(); // @fixme we should remove the widget instead of destroying it
+                            this.get("widget").destroy();                       // @fixme we should remove the widget instead of destroying it
                             this.set("widget", null);
                         }
                         this._state.add("widgetCfg", "value", widgetCfg); //@HACK : avoid some heavy computing, bypass setter's prevVal clone. !!! Warn, no events
-                        this.get(CONTENTBOX).empty();
-                        this.showOverlay();
-                        Y.soon(Y.bind(function(cfg) {                           //let the overlay appear during rendering
-                            Y.Wegas.Widget.use(cfg, Y.bind(function() {         // Load the subwidget dependencies
-                                try {
-                                    Y.log("Rendering new widget", "log", "Wegas.PageLoader");
-                                    var widget = Y.Wegas.Widget.create(cfg);    // Render the subwidget
-                                    widget.render(this.get(CONTENTBOX));
-                                    widget['@pageId'] = cfg['@pageId'];
-                                    this.set("widget", widget);
-                                    widget.addTarget(this);                     // Event on the loaded widget will be forwarded
-                                } catch (e) {
-                                    this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
-                                    Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
-                                } finally {
-                                    this.hideOverlay();
-                                    this.fire("contentUpdated");
-                                }
-                            }, this));
-
-                        }, this, widgetCfg));
+                        this.get(CONTENTBOX).empty();                           //let the overlay appear during rendering
+                        Y.Wegas.Widget.use(widgetCfg, Y.bind(function() {       // Load the subwidget dependencies
+                            try {
+                                Y.log("Rendering new widget", "log", "Wegas.PageLoader");
+                                var widget = Y.Wegas.Widget.create(widgetCfg);  // Render the subwidget
+                                widget.render(this.get(CONTENTBOX));
+                                widget['@pageId'] = widgetCfg['@pageId'];
+                                this.set("widget", widget);
+                                widget.addTarget(this);                         // Event on the loaded widget will be forwarded
+                            } catch (e) {
+                                this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
+                                Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
+                            } finally {
+                                this.hideOverlay();
+                                this.fire("contentUpdated");
+                            }
+                        }, this));
+                        //}, this, widgetCfg));
 
                     }, this));
                     return val;

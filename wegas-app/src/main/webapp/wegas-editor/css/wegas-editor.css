@@ -304,12 +304,15 @@ body {
 }
 
 /* Join game/team styles */
-.yui3-tabview .wegas-joingame {
+.yui3-tabview .wegas-joingame,
+.yui3-tabview .wegas-jointeam {
     padding-top: 1em;
 }
-.yui3-tabview .wegas-joingame .inputEx-label{
+.yui3-tabview .wegas-joingame .inputEx-label,
+.yui3-tabview .wegas-jointeam .inputEx-label{
     width: 12em;
 }
-.yui3-tabview .wegas-joingame button {
+.yui3-tabview .wegas-joingame button,
+.yui3-tabview .wegas-jointeam button {
     margin-left: 12.4em;
 }
