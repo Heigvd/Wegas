@@ -25,7 +25,7 @@ import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.messaging.persistence.InboxInstance;
-import com.wegas.mononpoly.persistence.ObjectInstance;
+import com.wegas.core.persistence.variable.primitive.ObjectInstance;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
