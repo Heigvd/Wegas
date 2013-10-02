@@ -214,7 +214,6 @@ YUI.add('wegas-pageloader', function(Y) {
                             this.get("widget").destroy();                       // @fixme we should remove the widget instead of destroying it
                             this.set("widget", null);
                         }
-                        this._state.add("widgetCfg", "value", widgetCfg); //@HACK : avoid some heavy computing, bypass setter's prevVal clone. !!! Warn, no events
                         this.get(CONTENTBOX).empty();                           //let the overlay appear during rendering
                         Y.Wegas.Widget.use(widgetCfg, Y.bind(function() {       // Load the subwidget dependencies
                             try {
@@ -225,6 +224,7 @@ YUI.add('wegas-pageloader', function(Y) {
                                 this.set("widget", widget);
                                 widget.addTarget(this);                         // Event on the loaded widget will be forwarded
                             } catch (e) {
+                                this._state.add("widgetCfg", "value", widgetCfg); //@HACK : avoid some heavy computing, bypass setter!!! Warn, no events
                                 this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
                                 Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
                             } finally {
