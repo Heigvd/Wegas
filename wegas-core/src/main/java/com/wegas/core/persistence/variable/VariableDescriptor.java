@@ -25,7 +25,7 @@ import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.messaging.persistence.InboxDescriptor;
-import com.wegas.mononpoly.persistence.ObjectDescriptor;
+import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;

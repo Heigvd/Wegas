@@ -89,11 +89,11 @@ tbody .past .activity {
     opacity:  1;
 }
 
-.body .yui3-datatable-cell.schedulColumn{
+.body .yui3-datatable-cell.schedulecolumn{
     border-left: 1px solid #ADADAE;
 }
 
-.yui3-datatable-columns .schedulColumn.present{
+.yui3-datatable-columns .schedulecolumn.present{
     background-image: url(../../wegas-pmg/images/next.png), url(../../wegas-pmg/images/h2.png);
     background-repeat: no-repeat, repeat-x;
     background-position: left, center;

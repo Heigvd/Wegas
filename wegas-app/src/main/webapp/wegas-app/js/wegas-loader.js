@@ -105,6 +105,11 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/persistence/wegas-content-entities-min.js',
                     requires: ['wegas-entity']
                 },
+                'wegas-object-entities': {
+                    path: 'wegas-app/js/persistence/wegas-object-entities-min.js',
+                    requires: ['wegas-entity'],
+                    ws_provides: 'ObjectDescriptor'
+                },
                 /**
                  * Widgets
                  */
@@ -112,10 +117,43 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-widget-min.js',
                     requires: ['widget', 'widget-child', 'widget-parent', 'wegas-editable']
                 },
-                'wegas-container': {
-                    path: 'wegas-app/js/widget/wegas-container-min.js',
+                'wegas-layout': {
+                    path: 'wegas-app/js/widget/wegas-layout-min.js',
                     requires: ['wegas-widget', 'widget-parent']
                 },
+                'wegas-layout-list': {
+                    path: 'wegas-app/js/widget/wegas-layout-list-min.js',
+                    requires: ['wegas-layout'],
+                    ws_provides: 'List'
+                },
+                'wegas-layout-absolute': {
+                    path: 'wegas-app/js/widget/wegas-layout-absolute-min.js',
+                    requires: ["wegas-layout-absolutecss", "wegas-cssposition",
+                        "wegas-csssize", "wegas-layout"],
+                    ws_provides: ['AbsoluteLayout', "Position"]
+                },
+                'wegas-layout-absolutecss': {
+                    path: 'wegas-app/css/wegas-layout-absolutecss-min.css'
+                },
+                'wegas-layout-choicelist': {
+                    path: "wegas-app/js/widget/wegas-layout-choicelist-min.js",
+                    requires: ["wegas-layout-list", "wegas-layout-choicelistcss"],
+                    ws_provides: "ChoiceList"
+                },
+                'wegas-layout-choicelistcss': {
+                    path: "wegas-app/css/wegas-layout-choicelist-min.css"
+                },
+                'wegas-layout-resizable': {
+                    path: 'wegas-app/js/widget/wegas-layout-resizable-min.js',
+                    requires: ['wegas-widget', 'widget-stdmod', 'event-resize',
+                        'anim-easing', 'resize', 'wegas-layout-resizablecss'],
+                    ws_provides: 'ResizableLayout'
+                },
+                'wegas-layout-resizablecss': {
+                    path: 'wegas-app/css/wegas-layout-resizable.css',
+                    type: 'css'
+                },
+
                 'wegas-pageloader': {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
                     ws_provides: 'PageLoader',
@@ -166,21 +204,6 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-langselector-min.js',
                     ws_provides: 'LangSelector'
                 },
-                'wegas-layout': {
-                    path: 'wegas-app/js/widget/wegas-layout-min.js',
-                    requires: ['wegas-widget', 'widget-stdmod', 'event-resize',
-                        'anim-easing', 'resize', 'wegas-layoutcss'],
-                    ws_provides: 'Layout'
-                },
-                'wegas-layoutcss': {
-                    path: 'wegas-app/css/wegas-layout-min.css',
-                    type: 'css'
-                },
-                'wegas-list': {
-                    path: 'wegas-app/js/widget/wegas-list-min.js',
-                    requires: ['wegas-container'],
-                    ws_provides: 'List'
-                },
                 'wegas-text': {
                     path: 'wegas-app/js/widget/wegas-text-min.js',
                     ws_provides: "Text",
@@ -212,15 +235,6 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/widget/wegas-gaugedisplay-min.js',
                     requires: ["gauge", "wegas-templatecss"],
                     ws_provides: 'GaugeDisplay'
-                },
-                'wegas-absolutelayout': {
-                    path: 'wegas-app/js/widget/wegas-absolutelayout-min.js',
-                    requires: ["wegas-absolutelayoutcss", "wegas-cssposition",
-                        "wegas-csssize", "wegas-container"],
-                    ws_provides: ['AbsoluteLayout', "Position"]
-                },
-                'wegas-absolutelayoutcss': {
-                    path: 'wegas-app/css/wegas-absolutelayout-min.css'
                 },
                 'wegas-inbox': {
                     path: 'wegas-app/js/widget/wegas-inbox-min.js',
@@ -296,14 +310,6 @@ YUI().use(function(Y) {
                     path: 'wegas-app/js/util/jstranslator/wegas-jstranslator-min.js',
                     pkg: 'wegas-app/js/util/jstranslator',
                     lang: ["fr"]
-                },
-                'wegas-choicelist': {
-                    path: "wegas-app/js/widget/wegas-choicelist-min.js",
-                    requires: ["wegas-list", "wegas-choicelistcss"],
-                    ws_provides: "ChoiceList"
-                },
-                'wegas-choicelistcss': {
-                    path: "wegas-app/css/wegas-choicelist-min.css"
                 },
                 /** Plugins **/
                 'wegas-userpreferences': {
@@ -665,12 +671,12 @@ YUI().use(function(Y) {
                 'wegas-statemachineviewercss': {
                     path: 'wegas-editor/css/wegas-statemachineviewer-min.css'
                 },
-                'wegas-mcqtabview': {
+                'wegas-mcq-tabview': {
                     path: 'wegas-mcq/js/wegas-mcqtabview-min.js',
-                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcqtabviewcss'],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcq-tabviewcss'],
                     ws_provides: "MCQTabView"
                 },
-                'wegas-mcqtabviewcss': {
+                'wegas-mcq-tabviewcss': {
                     path: 'wegas-mcq/css/wegas-mcqtabview-min.css',
                     type: 'css'
                 },
@@ -782,11 +788,6 @@ YUI().use(function(Y) {
                     requires: ['wegas-monopoly-display'],
                     ws_provides: "Monopolydisplay"
                 },
-                'wegas-monopoly-entities': {
-                    path: 'wegas-monopoly/js/wegas-monopoly-entities-min.js',
-                    requires: ['wegas-entity'],
-                    ws_provides: ['ObjectDescriptor']
-                },
                 /**CEP**/
                 'wegas-cep-folder': {
                     path: 'wegas-cep/js/wegas-cep-folder-min.js',
@@ -892,7 +893,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-flexitests-controller': {
                     path: "wegas-flexitests/js/wegas-flexitests-controller-min.js",
-                    requires: ["wegas-absolutelayout", "timers"],
+                    requires: ["wegas-layout-absolute", "timers"],
                     ws_provides: ["FlexitestsController", "FlexiResponse"]
                 },
                 'wegas-flexitests-mcqdisplay': {

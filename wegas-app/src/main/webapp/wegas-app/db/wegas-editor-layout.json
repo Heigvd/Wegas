@@ -1,5 +1,5 @@
 {
-    "type": "Layout",
+    "type": "ResizableLayout",
     "top": {
         "height": 25,
         "scroll": null,

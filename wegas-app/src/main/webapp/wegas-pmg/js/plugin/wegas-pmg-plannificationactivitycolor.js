@@ -35,18 +35,14 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             }, this);
         },
         findCell: function() {
-            var i, ii, iii, dt = this.get("host").datatable,
+            Y.log("sync()", "log", "Wegas.PlannificationActivityColor");
+            var i, ii, host = this.get("host"), dt = host.datatable,
                     taskActivities = this.taskActivitiesToAdd();
 
-            for (i = 0; i < dt.data._items.length; i++) {
+            for (i = 0; i < dt.data.size(); i++) {
                 for (ii = 0; ii < taskActivities.length; ii++) {
                     if (taskActivities[ii].get("taskDescriptorId") === dt.getRecord(i).get("id")) {
-                        for (iii = 0; iii < dt.get('columns').length; iii++) {
-                            if (dt.get('columns')[iii].time === parseInt(taskActivities[ii].get("time"))) {
-                                this.addColor(dt.getRow(i).getDOMNode().cells[iii]);
-                                break;
-                            }
-                        }
+                       this.addColor(host.schedule.getCell(i, parseInt(taskActivities[ii].get("time"))));
                     }
                 }
             }
@@ -66,8 +62,8 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
                 for (ii = 0; ii < work.length; ii++) {
                     activities = work[ii].getInstance().get("activities");
                     for (iii = 0; iii < activities.length; iii++) {
-                        for (taskIndex = 0; taskIndex < dt.data._items.length; taskIndex++) {
-                            if (dt.data._items[taskIndex].get("id") === activities[iii].get("taskDescriptorId")) {
+                        for (taskIndex = 0; taskIndex < dt.data.size(); taskIndex++) {
+                            if (dt.data.item(taskIndex).get("id") === activities[iii].get("taskDescriptorId")) {
                                 taskActivities.push(activities[iii]);
                             }
                         }
@@ -103,7 +99,7 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             return activitiesToAdd;
         },
         addColor: function(cell) {
-            cell.innerHTML = cell.innerHTML + "<span class='editable activity'></span>";
+            cell.append("<span class='editable activity'></span>");
         }
     }, {
         ATTRS: {

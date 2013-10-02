@@ -33,6 +33,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
                 this.addBacColumn();
                 this.addInputField();
                 this.afterHostMethod("syncUI", this.addInputField);
+                this.onKeyUpEvent();
             });
         },
         addBacColumn: function() {
@@ -45,35 +46,43 @@ YUI.add('wegas-pmg-bac', function(Y) {
             var i, ii, dt = this.get("host").datatable, cell, field, taskDesc;
 
             for (i = 0; i < dt.data._items.length; i++) {
-                taskDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("id", dt.data._items[i].get("id"));
+                taskDesc = dt.data.item(i).get("descriptor");
                 for (ii = 0; ii < dt.get('columns').length; ii++) {
                     if (dt.get('columns')[ii]._id === "bac") {
                         cell = dt.getRow(i).getDOMNode().cells[ii];
-                        field = new Y.inputEx.Wegas.BACField({value: taskDesc.getInstance().get("properties").bac, parentEl: cell, required: true});
+                        field = new Y.inputEx.StringField({value: taskDesc.getInstance().get("properties").bac, parentEl: cell, required: true, className: "bacField"});
                         field.taskDescId = taskDesc.get("id");
                         this.fields.push(field);
-                        this.onKeyUpEvent();
+
                     }
                 }
             }
         },
         onKeyUpEvent: function() {
-            var i, taskDesc, properties;
+            var i, dt = this.get("host").datatable;
+            this.get("host").datatable.delegate("keyup", function(e) {
+                this.timer;
 
-            for (i = 0; i < this.fields.length; i++) {
-                this.fields[i].on("keyup", Y.bind(function(e) {
-                    taskDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("id", e.taskDescId);
-                    properties = taskDesc.getInstance().get("properties");
-                    if (this.isValidField(e.getValue())) {
-                        properties.bac = e.getValue();
-                        taskDesc.getInstance().set("properties", properties);
-                        this.request(taskDesc);
-                    } else {
-                        e.setValue(properties.bac);
+                if (this.timer) {
+                    this.timer.cancel();
+                }
+
+                this.timer = Y.later(1000, this, function() {
+                    if (e.charCode !== 9) {
+                        if (this.isValidField(e.target.get("value"))) {
+                            for (i = 0; i < dt.data.size(); i += 1) {
+                                if (dt.getRow(i).contains(e.target)) {
+                                    dt.getRecord(i).get("instance").properties.bac = e.target.get("value");
+                                    this.request(dt.getRecord(i));
+                                }
+                            }
+                        } else {
+                            e.setValue(dt.getRecord(i).get("instance").properties.bac);
+                        }
                     }
+                });
 
-                }, this));
-            }
+            }, ".bacField input", this);
         },
         isValidField: function(value) {
             if (value === "") {
@@ -88,12 +97,12 @@ YUI.add('wegas-pmg-bac', function(Y) {
         },
         request: function(taskDescriptor) {
             Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/" + taskDescriptor.get("id") + "/VariableInstance/" + taskDescriptor.getInstance().get("id"),
+                request: "/" + taskDescriptor.get("id") + "/VariableInstance/" + taskDescriptor.get("instance").id,
                 cfg: {
                     method: "PUT",
-                    updateCache: false,
-//                    updateEvent: false,
-                    data: taskDescriptor.getInstance()
+//                    updateCache: false,
+                    updateEvent: false,
+                    data: JSON.stringify(taskDescriptor.get("instance"))
                 }
             });
         }
@@ -111,27 +120,4 @@ YUI.add('wegas-pmg-bac', function(Y) {
         NAME: "Bac"
     });
     Y.namespace("Plugin").Bac = Bac;
-
-    // extends inputEx.StringField for overide onKeyUp function.
-    Y.namespace("inputEx.Wegas").BACField = function(options) {
-        Y.inputEx.Wegas.BACField.superclass.constructor.call(this, options);
-    };
-
-    Y.extend(Y.inputEx.Wegas.BACField, Y.inputEx.StringField, {
-        onKeyUp: function(e) {
-            this.timer;
-
-            if (this.timer) {
-                this.timer.cancel();
-            }
-
-            this.timer = Y.later(1000, this, function() {
-                if (e.charCode !== 9) {
-                    this.fire("keyup", this);
-                }
-            });
-
-
-        }
-    });
 });
