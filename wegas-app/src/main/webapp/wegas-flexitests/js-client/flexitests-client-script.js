@@ -11,7 +11,7 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 /*global Y */
-Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-choicelist"], function(Z) {
+Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout-choicelist"], function(Z) {
     "use strict";
     Y.Wegas.FlexitestsController.EDITMENU = [{
             type: "Button",

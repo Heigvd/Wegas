@@ -10,7 +10,6 @@ YUI.add('wegas-progressbar', function(Y) {
     var ProgressBar,
             BOUNDING_BOX = "boundingBox",
             CONTENT_BOX = "contentBox";
-
     ProgressBar = Y.Base.create("wegas-progressbar", Y.Widget, [], {
         labelNode: null,
         valueNode: null,
@@ -19,13 +18,14 @@ YUI.add('wegas-progressbar', function(Y) {
             this.valueNode = Y.Node.create("<div></div>");
         },
         renderUI: function() {
-            var bbStyle = this.get(BOUNDING_BOX).getDOMNode().style;
-            bbStyle.border = "1px solid " + this.get("color");
-            bbStyle.borderRadius = "5px";
-            bbStyle.display = "inline-block";
-            bbStyle.textAlign = "center";
-            bbStyle.fontSize = this.get("height");
-            bbStyle.position = "relative";
+            this.get(BOUNDING_BOX).setStyles({
+                border: "1px solid " + this.get("color"),
+                borderRadius: "5px",
+                display: "inline-block",
+                textAlign: "center",
+                fontSize: this.get("height"),
+                position: "relative",
+                whiteSpace: "nowrap"});
             this.labelNode.setStyles({
                 "backgroundColor": "transparent",
                 "position": "absolute",
@@ -34,7 +34,11 @@ YUI.add('wegas-progressbar', function(Y) {
                 "width": "100%"
             });
             this.get(BOUNDING_BOX).append(this.labelNode);
-
+        },
+        bindUI: function() {
+            this.after("percentChange", function() {
+                this.set("label", this.get("label"));
+            });
         },
         syncUI: function() {
             this.set("percent", this.get("percent"));
@@ -47,10 +51,7 @@ YUI.add('wegas-progressbar', function(Y) {
                 value: 100,
                 setter: function(v) {
                     v = (+v).toFixed(1);
-                    if (this.get(CONTENT_BOX).getDOMNode()) {
-                        this.get(CONTENT_BOX).getDOMNode().style.width = v + "%";
-                        this.set("label", this.get("label"));
-                    }
+                    this.get(CONTENT_BOX).setStyle("width", v + "%");
                     return v;
                 }
             },
@@ -58,8 +59,7 @@ YUI.add('wegas-progressbar', function(Y) {
                 value: "lightblue",
                 validator: Y.Lang.isString,
                 setter: function(v) {
-                    this.get(CONTENT_BOX).getDOMNode().style.backgroundColor = v;
-                    this.get(BOUNDING_BOX).getDOMNode().style.borderColor = v;
+                    this.get(CONTENT_BOX).setStyles({backgroundColor: v, borderColor: v});
                     return v;
                 }
             },
