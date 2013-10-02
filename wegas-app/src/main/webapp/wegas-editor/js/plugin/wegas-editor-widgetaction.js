@@ -172,7 +172,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
      * @constructor
      */
     Plugin.DeleteLayoutWidgetAction = function() {
-        DeleteLayoutWidgetAction.superclass.constructor.apply(this, arguments);
+        Plugin.DeleteLayoutWidgetAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(Plugin.DeleteLayoutWidgetAction, WidgetAction, {
         execute: function() {
