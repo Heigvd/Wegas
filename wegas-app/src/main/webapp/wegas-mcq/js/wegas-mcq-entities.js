@@ -456,6 +456,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             }
         },
+        EDITORNAME: "Choice",
         EDITMENU: [{
                 type: "EditEntityButton"
             }, {

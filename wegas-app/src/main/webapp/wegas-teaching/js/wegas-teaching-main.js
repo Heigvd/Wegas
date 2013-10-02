@@ -119,8 +119,8 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
             cb.append("<div id='layer' style='width:100%;height:620px;'></div>");
-            cb.append("<div id='arrowEditor'><div class='yui3-widget-bd' style='padding:8px;'><p>Description</p><input id='arrowCurrentText' /><p><button id='btnArrowNormal'>Normal</button><button id='btnArrowInverse'>Inverse</button><button id='btnArrowDouble'>Double</button><button id='btnArrowNone'>Aucun</button></p><button id='btnSaveArrow'>Sauvegarder</button></div></div>");
-            cb.append("<div id='rectangleEditor'><div class='yui3-widget-bd' style='padding:8px;'><p>Contenu:</p><div id='editor'></div><button id='btnSaveRectangle'>Sauvegarder</button></div></div>");
+            cb.append("<div id='arrowEditor'><div class='yui3-widget-bd' style='padding:8px;'><input id='arrowCurrentText' /><p><button id='btnArrowNormal'>Normal</button><button id='btnArrowInverse'>Inverse</button><button id='btnArrowDouble'>Double</button><button id='btnArrowNone'>Aucun</button></p><button id='btnSaveArrow'>Sauvegarder</button></div></div>");
+            cb.append("<div id='rectangleEditor'><div class='yui3-widget-bd' style='padding:8px;'><div id='editor'></div><button id='btnSaveRectangle'>Sauvegarder</button></div></div>");
             cb.append("<div id='rectangle0' class='invisible'></div>");
             cb.append("<div id='rectangle1' class='invisible'></div>");
             cb.append("<div id='rectangle2' class='invisible'></div>");

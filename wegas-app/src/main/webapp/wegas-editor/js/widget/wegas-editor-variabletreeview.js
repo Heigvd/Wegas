@@ -69,6 +69,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     elClass = el.get(CLASS);
                     collapsed = !this.isNodeExpanded(el);
                     selected = (this.currentSelection === el.get(ID)) ? 2 : 0;
+                    text = el.getType().replace("Descriptor", "") + ': ' + el.getEditorLabel();
 
                     switch (elClass) {
                         case 'StringDescriptor':
@@ -81,7 +82,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         case 'ObjectDescriptor':
                         case 'ResourceDescriptor':
                         case 'DialogueDescriptor':
-                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
                             var els = this.genScopeTreeViewElements(el);
                             ret.push({
                                 type: 'TreeNode',
@@ -102,8 +102,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             break;
 
                         case 'ListDescriptor':
-                            //text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
-                            text = "Folder" + ': ' + el.getEditorLabel();
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
@@ -119,7 +117,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             break;
 
                         case 'QuestionDescriptor':
-                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
@@ -136,7 +133,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             break;
 
                         case 'ChoiceDescriptor':
-                            text = el.get(CLASS).replace("Descriptor", "") + ': ' + el.getEditorLabel();
                             children = [];
 
                             for (l = 0; l < el.get("results").length; l += 1) {
@@ -169,7 +165,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             break;
 
                         case 'SingleResultChoiceDescriptor':
-                            text = 'Choice: ' + el.getEditorLabel();
                             ret.push({
                                 type: 'TreeLeaf',
                                 label: text,

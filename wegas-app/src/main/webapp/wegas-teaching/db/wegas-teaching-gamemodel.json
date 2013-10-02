@@ -24,7 +24,7 @@
             "label": "Rectangle 1",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Définition 1, cliquez pour l'éditer"
+                "value": "Cliquez pour éditer la définition"
             },
             "scope": {
                 "@class": "TeamScope"
@@ -36,7 +36,7 @@
             "label": "Rectangle 2",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Définition 2, cliquez pour l'éditer"
+                "value": "Cliquez pour éditer la définition"
             },
             "scope": {
                 "@class": "TeamScope"
@@ -48,7 +48,7 @@
             "label": "Rectangle 3",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Définition 3, cliquez pour l'éditer"
+                "value": "Cliquez pour éditer la définition"
             },
             "scope": {
                 "@class": "TeamScope"
@@ -60,7 +60,7 @@
             "label": "Rectangle 4",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Définition 4, cliquez pour l'éditer"
+                "value": "Cliquez pour éditer la définition"
             },
             "scope": {
                 "@class": "TeamScope"
@@ -72,7 +72,7 @@
             "label": "Rectangle 5",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Définition 5, cliquez pour l'éditer"
+                "value": "Cliquez pour éditer la définition"
             },
             "scope": {
                 "@class": "TeamScope"
@@ -84,7 +84,7 @@
             "label": "Rectangle 6",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Définition 6, cliquez pour l'éditer"
+                "value": "Cliquez pour éditer la définition"
             },
             "scope": {
                 "@class": "TeamScope"
@@ -96,7 +96,7 @@
             "label": "Rectangle 7",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Définition 7, cliquez pour l'éditer"
+                "value": "Cliquez pour éditer la définition"
             },
             "scope": {
                 "@class": "TeamScope"
@@ -108,7 +108,7 @@
             "label": "Rectangle 8",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Définition 8, cliquez pour l'éditer"
+                "value": "Cliquez pour éditer la définition"
             },
             "scope": {
                 "@class": "TeamScope"
@@ -120,7 +120,7 @@
             "label": "Rectangle 9",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Définition 9, cliquez pour l'éditer"
+                "value": "Cliquez pour éditer la définition"
             },
             "scope": {
                 "@class": "TeamScope"
@@ -133,7 +133,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 1"
                 }
             },
@@ -148,7 +148,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 2"
                 }
             },
@@ -163,7 +163,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 3"
                 }
             },
@@ -178,7 +178,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 4"
                 }
             },
@@ -193,7 +193,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 5"
                 }
             },
@@ -208,7 +208,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 6"
                 }
             },
@@ -223,7 +223,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 7"
                 }
             },
@@ -238,7 +238,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 8"
                 }
             },
@@ -253,7 +253,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 9"
                 }
             },
@@ -268,7 +268,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 10"
                 }
             },
@@ -283,7 +283,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 11"
                 }
             },
@@ -298,7 +298,7 @@
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 1,
+                    "value": 0,
                     "text": "Lien 12"
                 }
             },

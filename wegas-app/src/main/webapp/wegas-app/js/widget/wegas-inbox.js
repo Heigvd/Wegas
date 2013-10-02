@@ -79,8 +79,10 @@ YUI.add('wegas-inbox', function(Y) {
          * @description Render the TabView widget in the content box.
          */
         renderUI: function() {
-            this.tabView.render(this.get(CONTENTBOX));
+            var cb = this.get(CONTENTBOX);
+            this.tabView.render(cb);
             this.tabView.get("boundingBox").addClass("horizontal-tabview");
+            cb.append("<div style='clear:both'></div>");
         },
         /**
          * @function
