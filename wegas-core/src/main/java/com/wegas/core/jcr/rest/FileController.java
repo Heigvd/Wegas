@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -224,6 +225,7 @@ public class FileController {
             } else if (dir instanceof DirectoryDescriptor) {
                 List<AbstractContentDescriptor> ret = ((DirectoryDescriptor) dir).list();
                 connector.save();
+                Collections.sort(ret, new ContentComparator());
                 return ret;
             }
         } catch (LoginException ex) {
@@ -407,7 +409,7 @@ public class FileController {
                 try {
                     descriptor.delete(recursive);
                 } catch (ItemExistsException e) {
-                    return Response.notModified(e.getMessage()).build();
+                    throw new WegasException(absolutePath + " is not empty, preventing removal");
                 }
                 connector.save();
                 return descriptor;

@@ -133,7 +133,7 @@ YUI().use(function(Y) {
                     ws_provides: ['AbsoluteLayout', "Position"]
                 },
                 'wegas-layout-absolutecss': {
-                    path: 'wegas-app/css/wegas-layout-absolutecss-min.css'
+                    path: 'wegas-app/css/wegas-layout-absolute-min.css'
                 },
                 'wegas-layout-choicelist': {
                     path: "wegas-app/js/widget/wegas-layout-choicelist-min.js",
