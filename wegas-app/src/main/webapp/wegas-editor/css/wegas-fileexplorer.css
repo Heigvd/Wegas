@@ -89,6 +89,9 @@
 }
 
 /* treeview + wegas-menu hack */
+.wegas-fileexplorer .wegas-toolbar .wegas-menu{
+    display:inline;
+}
 .wegas-fileexplorer-content > .yui3-treenode > .yui3-treenode-content-header .wegas-menu-itemlist-horizontal > ul{
     margin-right:0;
     right:0;
