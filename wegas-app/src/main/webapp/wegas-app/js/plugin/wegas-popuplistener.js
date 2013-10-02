@@ -27,9 +27,7 @@ YUI.add('wegas-popuplistener', function(Y) {
                         {
                             name: 'proceed',
                             label: 'OK',
-                            action: function() {
-                                this.exit();
-                            }
+                            action: "exit"
                         }
                     ]
                 },

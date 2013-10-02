@@ -53,8 +53,6 @@ YUI.add('wegas-pmg-plannificationcolor', function(Y) {
             cell.append("<span class='editable plannification'></span>");
         }
     }, {
-        ATTRS: {
-        },
         NS: "plannificationcolor",
         NAME: "Plannificationcolor"
     });
