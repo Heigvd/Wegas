@@ -20,8 +20,7 @@ YUI.add('wegas-entity', function(Y) {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
         _inputex: {
-            _type: HIDDEN,
-            //wrapperClassName: 'wegas-advanced-feature'
+            _type: HIDDEN
         }
     }, Wegas = Y.namespace("Wegas"), Entity;
 
@@ -55,12 +54,19 @@ YUI.add('wegas-entity', function(Y) {
             destroyed: {
                 "transient": true
             },
-            id: Y.mix(IDATTRDEF, {
+            id: {
+                type: STRING,
+                optional: true,                                                 // The id is optional for entites that have not been persisted
                 writeOnce: "initOnly",
                 setter: function(val) {
                     return val * 1;
+                },
+                _inputex: {
+                    wrapperClassName: 'wegas-advanced-feature',
+                    index: -2,
+                    disable: true
                 }
-            }),
+            },
             '@class': {
                 value: "null",
                 writeOnce: "initOnly",
@@ -142,6 +148,7 @@ YUI.add('wegas-entity', function(Y) {
      * GameModel mapper
      */
     Wegas.persistence.GameModel = Y.Base.create("GameModel", Wegas.persistence.Entity, [], {}, {
+        EDITORNAME: "Game Model",
         ATTRS: {
             name: {
                 type: STRING
@@ -1237,6 +1244,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             }
         },
+        EDITORNAME: "Folder",
         EDITMENU: [{
                 type: "EditEntityButton"
             }, {
