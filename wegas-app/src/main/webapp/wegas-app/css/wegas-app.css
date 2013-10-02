@@ -343,3 +343,13 @@ font{
     padding:7px;
     margin-left:2px;
 }
+/* Tinymce styles*/
+/* Need to revert yui 3 base styles so lists are display correctly */
+#tinymce ul,
+.wegas-inbox .yui3-tab-panel ul,
+.wegas-mcqtabview .yui3-tab-panel ul,
+.wegas-text-content ul {
+    list-style-type: disc;
+    padding: 0 2em;
+    margin: 0.1em 0em;
+}
