@@ -109,6 +109,7 @@ YUI.add('wegas-joingame', function(Y) {
          * Call rest request for join the game : rest/GameModel/1/Game/{gameModelID}/JoinGame/{token}
          */
         sendTokenJoinGame: function(token) {
+            this.showOverlay();
             Y.Wegas.Facade.Game.sendRequest({
                 request: "/JoinGame/" + token,
                 on: {
@@ -120,25 +121,30 @@ YUI.add('wegas-joingame', function(Y) {
                                 request: "/JoinTeam/" + e.response.entity.get("id"),
                                 on: {
                                     success: Y.bind(function() {
+                                        this.hideOverlay();
                                         this.showMessage("success", "Team joined, it has been added to your games", 10000);
                                         Y.fire("gameJoined", {
                                             gameId: e.response.entity.get("gameId")
                                         });
                                     }, this),
                                     failure: Y.bind(function(e) {
+                                        this.hideOverlay();
                                         this.showMessage("error", "Error joining team");
                                     }, this)
                                 }
                             });
                         } else {
+                            this.hideOverlay();
                             cb.empty();
                             this.teamWidget = new Y.Wegas.JoinTeam({// otherwise the player can choose or create its team
                                 entity: e.response.entity
                             });
+                            this.teamWidget.addTarget(this);
                             this.teamWidget.render(cb);
                         }
                     }, this),
                     failure: Y.bind(function(e) {
+                        this.hideOverlay();
                         this.showMessage("error", e.response.results.message || "Invalid token");
                     }, this)
                 }

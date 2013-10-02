@@ -14,7 +14,7 @@
 .wegas-pageeditor-designmode .wegas-pageloader-content{
     position: relative;
 }
-.wegas-pageeditor-layoutmode .wegas-container,
+.wegas-pageeditor-layoutmode .wegas-layout,
 .wegas-pageeditor-layoutmode .wegas-pageloader{
     padding: 10px;
     padding-top: 20px !important;

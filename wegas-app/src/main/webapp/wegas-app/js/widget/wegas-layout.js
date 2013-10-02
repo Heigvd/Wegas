@@ -5,286 +5,308 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
- * @fileoverview
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @fileOverview
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
-YUI.add('wegas-layout', function(Y) {
+YUI.add("wegas-layout", function(Y) {
     "use strict";
-
-    var Layout;
     /**
-     * @name Y.Wegas.Layout
-     * @extends Y.Widget
-     * @borrows Y.Wegas.Widget, Y.WidgetChild, Y.WidgetStdMod
-     * @class class to show/hide a page with a slid effect
+     * @extends Y.Wegas.Widget
      * @constructor
-     * @description Show/hide a page with a slid (tween) effect
+     * @returns {undefined}
      */
-    Layout = Y.Base.create("wegas-layout", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
-        CONTENT_TEMPLATE: '<div>'
-                + '<div class="wegas-layout-hd"></div>'
-                + '<div class="wegas-layout-bd"><div>'
-                + '<div class="wegas-layout-left"></div>'
-                + '<div class="wegas-layout-center"></div>'
-                + '<div class="wegas-layout-right"></div>'
-                + '</div></div>'
-                + '<div class="wegas-layout-ft"></div>'
-                + '</div>',
-        /** @lends Y.Wegas.Layout# */
-
-        // *** Private fields *** //
-        /**
-         * Reference to Y.Resize left object of the panel
-         */
-        resizeLeft: null,
-        /**
-         * Reference to Y.Resize right object of the panel
-         */
-        resizeRight: null,
-        // *** Lifecycle Methods *** //
-        /**
-         * @function
-         * @private
-         * @description Set variables with initials values.
-         */
-        initializer: function() {
-            this.handlers = [];
-        },
-        /**
-         * @function
-         * @private
-         * @description call function "renderPosition" for 4
-         *  position (top, left, center and right).
-         *  Call function "_syncUIStdMod";
-         */
-        renderUI: function() {
-            this.renderPosition('top');
-            this.renderPosition('left');
-            this.renderPosition('center');
-            this.renderPosition('right');
-            //this.renderPosition('bottom');
-
-//            this._syncUIStdMod();
-        },
-        /**
-         * @function
-         * @private
-         * @description bind function to events.
-         * When window is resized, do sync.
-         * When dom is ready, do sync.
-         */
-        bindUI: function() {
-            Y.on("windowresize", Y.bind(this.syncUI, this));                    // Sync the layout whenever the windows is resized
-            //this.get("boundingBox").on("resize", this._syncUIStdMod, this);
-            Y.on('domready', this.syncUI, this);
-        },
-        /**
-         * @function
-         * @private
-         * @description call functions "syncCenterNode" and "_syncUIStdMod";
-         */
-        syncUI: function() {
-            this.syncCenterNode();
-        },
-        /**
-         * @function
-         * @private
-         * @description Detach all functions created by this widget.
-         */
-        destructor: function() {
-            if (this.resizeLeft) {
-                this.resizeLeft.destroy();
-            }
-            if (this.resizeRight) {
-                this.resizeRight.destroy();
-            }
-            for (var i in this.handlers) {
-                this.handlers[i].detach();
-            }
-        },
-        // ** Private Methods ** //
-        /**
-         * @function
-         * @private
-         * @param position
-         * @return target (node) or null
-         * @description return a node corresponding to the given position (top,
-         * bottom, center, right or left).
-         */
-        getPositionNode: function(position) {
-            var cb = this.get("contentBox");
-            switch (position) {
-                case "top" :
-                    return cb.one(".wegas-layout-hd");
-                case "bottom" :
-                    return cb.one(".wegas-layout-ft");
-                case "left" :
-                    return cb.one(".wegas-layout-left");
-                case "center" :
-                    return cb.one(".wegas-layout-center");
-                case "right" :
-                    return cb.one(".wegas-layout-right");
-            }
-        },
-        /**
-         * @function
-         * @private
-         * @param position
-         * @description do a slide (tween) animation to hide the panel
-         */
-        hidePosition: function(position) {
-            var anim = new Y.Anim({
-                node: this.getPositionNode(position),
-                to: {
-                    width: "0px"
-                },
-                easing: 'easeIn',
-                duration: 0.6
-            });
-            anim.on('tween', this.syncCenterNode, this);
-            anim.on('end', this.syncCenterNode, this);
-            anim.run();
-        },
-        /**
-         * @function
-         * @private
-         * @param position
-         * @description do a slide (tween) animation to show the panel
-         */
-        showPosition: function(position) {
-            var anim,
-                    target = this.getPositionNode(position);
-
-            if (target.getStyle("width") === "0px") {                       // Only display if hidden
-                anim = new Y.Anim({
-                    node: this.getPositionNode(position),
-                    to: {
-                        width: "350px"
-                    },
-                    easing: 'easeOut',
-                    duration: 0.6
-                });
-                anim.on('tween', this.syncCenterNode, this);
-                //anim.on('end ', this.syncCenterNode, this );
-                anim.run();
-            }
-        },
-        /**
-         * @function
-         * @private
-         * @param position
-         * @description
-         */
-        renderPosition: function(position) {
-            var i, cWidget,
-                    target = this.getPositionNode(position),
-                    positionCfg = this.get(position);
-
-
-            if (positionCfg) {                                                  // If there is a provided configuration
-                if (position === "left") {
-                    this.resizeLeft = new Y.Resize({
-                        node: target,
-                        handles: 'r'
-                    });
-                    this.resizeLeft.on("resize", this.syncCenterNode, this);
-                    this.resizeLeft.on("end", this.syncCenterNode, this);
-
-
-                } else if (position === "right") {
-                    this.resizeRight = new Y.Resize({
-                        node: target,
-                        handles: 'l'
-                    });
-                    this.resizeRight.on("resize", this.syncCenterNode, this);
-                    this.resizeRight.on("end", this.syncCenterNode, this);
-
-                    target.setStyle("width", 0);
-                }
-
-                for (i = 0; i < positionCfg.children.length; i = i + 1) {      // ender the children
-                    cWidget = Y.Wegas.Widget.create(positionCfg.children[i]);
-                    // cWidget.after("render", this.syncUI, this );
-                    cWidget.render(target);
-                }
-            } else {
-                target.setStyle("width", "0");
-            }
-        },
-        /**
-         * @function
-         * @private
-         * @description refresh the style of the center node
-         */
-        syncCenterNode: function() {
-            var cb = this.get("contentBox"),
-                    leftNode = cb.one(".wegas-layout-left"),
-                    rightNode = cb.one(".wegas-layout-right");
-
-            leftNode.setStyles({
-                right: "auto",
-                left: "0px"
-            });
-            cb.one(".wegas-layout-center").setStyles({
-                "left": leftNode.getStyle("width"),
-                "right": rightNode.getStyle("width")
-            });
-            rightNode.setStyles({
-                right: "0px",
-                left: "auto"
-            });
-            Y.Wegas.app.fire("layout:resize");
+    function Layout() {
+        Y.Wegas.Widget.apply(this, arguments);
+        /*Check for Y.WidgetParent*/
+        if (!this._add) {
+            Y.log("Extension 'Y.WidgetParent' must be defined before Y.Wegas.Layout in " + this.constructor.NAME,
+                    "error", "Y.Wegas.Layout");
         }
-
-    }, {
+        /*Check for Y.Wegas.Editable*/
+        if (!this.toJSON) {
+            Y.log("Extension 'Y.Wegas.Editable' must be defined before Y.Wegas.Layout in " + this.constructor.NAME,
+                    "error", "Y.Wegas.Layout");
+        }
+        this.onceAfter("render", function() {
+            this.get("boundingBox").addClass("wegas-layout");
+        });
+    }
+    /* Copy prototype , extension -> no proto chain copy // 'extends' */
+    Y.mix(Layout.prototype, Y.Wegas.Widget.prototype);
+    /* And override it */
+    Y.mix(Layout.prototype, {
         /**
-         * @lends Y.Wegas.Layout#
+         * @function
+         * @public
+         * @return object
+         * @description Children serialization
          */
-
-        /**
-         * @field
-         * @static
-         * @description
-         * <p><strong>Attributes</strong></p>
-         * <ul>
-         *    <li>left: configuration and childrens of the left section.</li>
-         *    <li>right: configuration and childrens of the right section.</li>
-         *    <li>top: configuration and childrens of the top section.</li>
-         *    <li>bottom: configuration and childrens of the bottom section.</li>
-         *    <li>center: configuration and childrens of the center section.</li>
-         *    <li>headerContent:  Reset default value to force display by default.</li>
-         *    <li>footerContent: Reset default value to force display by default.</li>
-         *    <li>bodyContent: Reset default value to force display by default.</li>
-         *    <li>height: height of the section.</li>
-         * </ul>
-         */
-        ATTRS: {
-            left: {},
-            /**
-             * Configuration and childrens of the left section.
-             */
-            right: {},
-            /**
-             * Configuration and childrens of the right section.
-             */
-            top: {},
-            /**
-             * Configuration and childrens of the top section.
-             */
-            bottom: {},
-            /**
-             * Configuration and childrens of the bottom section.
-             */
-            center: {},
-            /**
-             * Height of the section.
-             */
-            height: {
-                value: "100%"
+        toObject: function() {
+            var i, object, children = [], args = Array.prototype.slice.call(arguments);
+            object = Y.Wegas.Editable.prototype.toObject.apply(this, args);
+            for (i = 0; i < this.size(); i = i + 1) {
+                children.push(this.item(i).toObject(args));
             }
+            object.children = children;
+            return object;
+        },
+        getEditorLabel: function() {
+            return;
+        }
+    }, true);
+    Y.mix(Layout, {
+        ATTRS: Y.mix({
+            defaultChildType: {
+                value: "Text",
+                "transient": true
+            },
+            children: {
+                "transient": true
+            },
+            root: {
+                "transient": true
+            },
+            parent: {
+                "transient": true
+            }
+        }, Y.Wegas.Widget.ATTRS),
+        EDITMENU: [{
+                type: "Button",
+                label: "Edit",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        fn: "EditWidgetAction"
+                    }
+                ]
+            }, {
+                type: "Button",
+                label: "Add",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        "fn": "WidgetMenu",
+                        "cfg": {
+                            "menuCfg": {
+                                points: ["tl", "tr"]
+                            },
+                            "event": "mouseenter",
+                            "children": [{
+                                    "fn": "WidgetMenu",
+                                    "label": "Element",
+                                    plugins: [{
+                                            "fn": "WidgetMenu",
+                                            "cfg": {
+                                                "menuCfg": {
+                                                    points: ["tl", "tr"]
+                                                },
+                                                "event": "mouseenter",
+                                                "children": [{
+                                                        type: "Button",
+                                                        label: "Box",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Box"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Text",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Text"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Image",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Image"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Button",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Button"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Form",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Form"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }]
+                                            }
+                                        }
+                                    ]}, {
+                                    "fn": "WidgetMenu",
+                                    "label": "Variable display",
+                                    plugins: [{
+                                            "fn": "WidgetMenu",
+                                            "cfg": {
+                                                "menuCfg": {
+                                                    points: ["tl", "tr"]
+                                                },
+                                                "event": "mouseenter",
+                                                "children": [{
+                                                        type: "Button",
+                                                        label: "Template",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Template"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Gauge",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "GaugeDisplay"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Question list",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "MCQTabView"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Inbox",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "InboxDisplay"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Chart",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "Chart"
+                                                                }
+                                                            }]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }, {
+                                    type: "Button",
+                                    label: "Layouts",
+                                    cssClass: "wegas-advanced-feature",
+                                    plugins: [{
+                                            "fn": "WidgetMenu",
+                                            "cfg": {
+                                                "menuCfg": {
+                                                    points: ["tl", "tr"]
+                                                },
+                                                "event": "mouseenter",
+                                                "children": [{
+                                                        type: "Button",
+                                                        label: "List",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "List"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Choice list",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "ChoiceList"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }, {
+                                                        type: "Button",
+                                                        label: "Absolute layout",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    "childType": "AbsoluteLayout"
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }, {
+                                    type: "Button",
+                                    label: "SlideShow",
+                                    plugins: [{
+                                            fn: "AddChildWidgetAction",
+                                            cfg: {
+                                                "childCfg": {
+                                                    "type": "ChoiceList",
+                                                    plugins: [{
+                                                            fn: "SlideShow"
+                                                        }]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }, {
+                                    type: "Button",
+                                    label: "Page display",
+                                    plugins: [{
+                                            fn: "AddChildWidgetAction",
+                                            cfg: {
+                                                "childType": "PageLoader"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }, {
+                type: "Button",
+                label: "Delete",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        fn: "DeleteLayoutWidgetAction"
+                    }
+                ]
+            }],
+        _buildCfg: {
+            aggregate: ["EDITMENU"]
         }
     });
-
-    Y.namespace('Wegas').Layout = Layout;
+    Y.namespace("Wegas").Layout = Layout;
 });
