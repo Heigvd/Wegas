@@ -145,6 +145,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 EditEntityAction.tab.add(EditEntityAction.form);
             }
 
+            var prefix = (entity.get("id")) ? "Edit " : "New ";
+            EditEntityAction.tab.set("label", prefix + entity.getType().replace("Descriptor", ""));
             EditEntityAction.tab.set("selected", 2);
             EditEntityAction.form.set("values", entity.toObject());
             EditEntityAction.form.set("cfg", (formCfg) ? formCfg : entity.getFormCfg());

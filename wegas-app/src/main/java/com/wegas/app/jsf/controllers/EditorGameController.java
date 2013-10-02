@@ -12,6 +12,7 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
@@ -106,7 +107,12 @@ public class EditorGameController extends AbstractGameController {
                     currentPlayer = playerFacade.findByGameId(this.gameId);     // Select any player in that game
 
                 } catch (NoResultException e2) {
-                    errorController.dispatch("Game " + gameFacade.find(this.gameId).getName() + " has no players.");
+                    Game g = gameFacade.find(this.gameId);
+                    if (g != null) {
+                        errorController.dispatch("Game " + g.getName() + " has no players.");
+                    } else {
+                        errorController.dispatch("This game could not be found.");
+                    }
 
                 }
             }

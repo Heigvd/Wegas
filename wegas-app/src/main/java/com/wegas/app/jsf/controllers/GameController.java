@@ -76,7 +76,7 @@ public class GameController extends AbstractGameController {
         }
 
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            errorController.dispatch("The game you are looking for could not be found, maybe it has been deleted.");
+            errorController.dispatch("The game you are looking for could not be found.");
 
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
                 && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {

@@ -153,7 +153,6 @@ YUI().use(function(Y) {
                     path: 'wegas-app/css/wegas-layout-resizable.css',
                     type: 'css'
                 },
-
                 'wegas-pageloader': {
                     path: 'wegas-app/js/widget/wegas-pageloader-min.js',
                     ws_provides: 'PageLoader',
@@ -260,29 +259,8 @@ YUI().use(function(Y) {
                     path: 'wegas-app/css/form-min.css',
                     type: "css"
                 },
-                'wegas-loginwidget': {
-                    path: 'wegas-lobby/js/wegas-loginwidget-min.js',
-                    requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
-                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button', 'wegas-logincss'],
-                    ws_provides: "LoginWidget"
-                },
-                'wegas-logincss': {
-                    path: 'wegas-lobby/css/wegas-login-min.css',
-                    type: 'css'
-                },
-                'wegas-jointeam': {
-                    path: 'wegas-lobby/js/wegas-jointeam-min.js',
-                    requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
-                        'wegas-editor-action', 'inputex-select', 'inputex-string'],
-                    ws_provides: "JoinTeam"
-                },
-                'wegas-joingame': {
-                    path: 'wegas-lobby/js/wegas-joingame-min.js',
-                    requires: ['wegas-jointeam'],
-                    ws_provides: "JoinGame"
-                },
-                'wegas-panelwidget': {
-                    path: 'wegas-app/js/widget/wegas-panelwidget-min.js',
+                'wegas-layout-widget': {
+                    path: 'wegas-app/js/widget/wegas-layout-panel-min.js',
                     requires: ['panel'],
                     ws_provides: "PanelWidget"
                 },
@@ -404,7 +382,9 @@ YUI().use(function(Y) {
                     requires: ["plugin"],
                     ws_provides: ["DatatableCSV"]
                 },
-                /** Inputex Fields **/
+                /**
+                 * Inputex Fields
+                 */
                 'wegas-inputex': {
                     path: 'wegas-editor/css/wegas-inputex-min.css',
                     type: 'css',
@@ -537,18 +517,45 @@ YUI().use(function(Y) {
                     requires: ['inputex-select'],
                     ix_provides: 'roleselect'
                 },
-                /** Editor **/
+                'wegas-jointeam': {
+                    path: 'wegas-lobby/js/wegas-jointeam-min.js',
+                    requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
+                        'wegas-editor-action', 'inputex-select', 'inputex-string'],
+                    ws_provides: "JoinTeam"
+                },
+                'wegas-joingame': {
+                    path: 'wegas-lobby/js/wegas-joingame-min.js',
+                    requires: ['wegas-jointeam'],
+                    ws_provides: "JoinGame"
+                },
+                'wegas-loginwidget': {
+                    path: 'wegas-lobby/js/wegas-loginwidget-min.js',
+                    requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
+                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button', 'wegas-logincss'],
+                    ws_provides: "LoginWidget"
+                },
+                'wegas-logincss': {
+                    path: 'wegas-lobby/css/wegas-login-min.css',
+                    type: 'css'
+                },
+                'wegas-sharerole': {
+                    path: 'wegas-lobby/js/widget/wegas-sharerole-min.js',
+                    requires: ['inputex-select', 'inputex-list', "inputex-checkbox"],
+                    ws_provides: "ShareRole"
+                },
+                'wegas-shareuser': {
+                    path: 'wegas-lobby/js/wegas-shareuser-min.js',
+                    requires: ['inputex-list', "inputex-checkbox", "inputex-autocomplete", 'autocomplete-highlighters',
+                        'inputex-hidden', 'wegas-inputex-markup'],
+                    ws_provides: "ShareUser"
+                },
+                /**
+                 * Editor
+                 */
                 'wegas-editorcss': {
                     path: 'wegas-editor/css/wegas-editor-min.css',
                     type: 'css'
                 },
-                'gallery-colorpickercss': {
-                    path: 'wegas-editor/css/gallery-colorpicker-min.css',
-                    type: 'css'
-                },
-                /**
-                 *  Editor's Widgets
-                 */
                 'wegas-editor-action': {
                     path: 'wegas-editor/js/plugin/wegas-editor-action-min.js',
                     requires: ['wegas-action'],
@@ -671,6 +678,18 @@ YUI().use(function(Y) {
                 'wegas-statemachineviewercss': {
                     path: 'wegas-editor/css/wegas-statemachineviewer-min.css'
                 },
+                'wegas-editor-pagetreeview': {
+                    path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
+                    requires: ['wegas-datasource', "timers"],
+                    ws_provides: "PageTreeview"
+                },
+                'gallery-colorpickercss': {
+                    path: 'wegas-editor/css/gallery-colorpicker-min.css',
+                    type: 'css'
+                },
+                /*
+                 * MCQ
+                 */
                 'wegas-mcq-tabview': {
                     path: 'wegas-mcq/js/wegas-mcqtabview-min.js',
                     requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcq-tabviewcss'],
@@ -679,22 +698,6 @@ YUI().use(function(Y) {
                 'wegas-mcq-tabviewcss': {
                     path: 'wegas-mcq/css/wegas-mcqtabview-min.css',
                     type: 'css'
-                },
-                'wegas-editor-pagetreeview': {
-                    path: 'wegas-editor/js/widget/wegas-editor-pagetreeview-min.js',
-                    requires: ['wegas-datasource', "timers"],
-                    ws_provides: "PageTreeview"
-                },
-                'wegas-sharerole': {
-                    path: 'wegas-lobby/js/widget/wegas-sharerole-min.js',
-                    requires: ['inputex-select', 'inputex-list', "inputex-checkbox"],
-                    ws_provides: "ShareRole"
-                },
-                'wegas-shareuser': {
-                    path: 'wegas-lobby/js/wegas-shareuser-min.js',
-                    requires: ['inputex-list', "inputex-checkbox", "inputex-autocomplete", 'autocomplete-highlighters',
-                        'inputex-hidden', 'wegas-inputex-markup'],
-                    ws_provides: "ShareUser"
                 },
                 /**
                  * Project Management Game

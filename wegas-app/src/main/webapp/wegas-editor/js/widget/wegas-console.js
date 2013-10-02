@@ -32,6 +32,7 @@ YUI.add('wegas-console', function(Y) {
             this.runButton();
         },
         executeScript: function(scriptEntity) {
+            this.showOverlay();
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
@@ -40,10 +41,12 @@ YUI.add('wegas-console', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
+                        this.hideOverlay();
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: '
                                 + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
                     }, this),
                     failure: Y.bind(function(e) {
+                        this.hideOverlay();
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: '
                                 + e.response.results.message + "</div>");
                     }, this)

@@ -521,23 +521,4 @@ YUI.add('wegas-editor-treeview', function(Y) {
         }
     });
 
-    /**
-     * Not yet in usese
-     */
-    var SortableTreeview = Y.Base.create("wegas-sortabletreeview", Y.Plugin.Base, [], {
-        initializer: function() {
-            this.afterHostEvent(RENDER, function() {
-                //this.sortable = new Y.Sortable({
-                //    container: this.get("contentBox"),
-                //    nodes: 'li',
-                //    opacity: '.2'
-                //});
-            });
-        }
-    }, {
-        NS: "treeviewmenu",
-        NAME: "treeviewmenu"
-    });
-    Y.namespace("Plugin").SortableTreeview = SortableTreeview;
-
 });
