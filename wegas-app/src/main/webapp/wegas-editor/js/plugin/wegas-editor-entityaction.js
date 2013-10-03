@@ -80,10 +80,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     }, {
         NS: "editentity",
         NAME: "EditEntityAction",
-        STATUS: {
-            "NEW": 1,
-            "EDITING": 2
-        },
         ATTRS: {
             formCfg: {
             }
@@ -107,14 +103,15 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     EditEntityAction.cancelCallback = null;
                 }
             }
+
             EditEntityAction.callback = callback;
             EditEntityAction.currentEntity = entity;
             EditEntityAction.cancelCallback = cancelCallback;
+            
             if (!EditEntityAction.tab) {                                        // First make sure the edit tab exists
                 EditEntityAction.tab = Wegas.TabView.createTab("Edit", '#rightTabView');
                 //EditEntityAction.tab = Wegas.TabView.createTab("Edit", '#centerTabView');
                 EditEntityAction.form = new Wegas.Form();
-                this.status = EditEntityAction.STATUS.NEW;
                 EditEntityAction.form.on("submit", function(e) {
                     this.form.showOverlay();
                     this.callback(e.value, this.currentEntity);
@@ -130,27 +127,16 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     //Wegas.app.widget.hidePosition("right");                   // Hide the right layout
                 }, EditEntityAction);
                 EditEntityAction.form.before("updated", function(e) {
-                    switch (this.status) {
-                        case EditEntityAction.STATUS.NEW:
-                            EditEntityAction.form.toolbar.emptyMessage();
-                            this.status = EditEntityAction.STATUS.EDITING;
-                            break;
-                        case EditEntityAction.STATUS.EDITING:
-                            EditEntityAction.form.toolbar.setStatusMessage("*");
-                            break;
-                        default:
-                            EditEntityAction.form.toolbar.emptyMessage();
-                    }
-                }, this);
+                    EditEntityAction.form.toolbar.setStatusMessage("*");
+                });
                 EditEntityAction.tab.add(EditEntityAction.form);
             }
 
-            var prefix = (entity.get("id")) ? "Edit " : "New ";
+            var prefix = (entity.get("id")) ? "Edit " : "New ";                 // No id -> new entity
             EditEntityAction.tab.set("label", prefix + entity.getType().replace("Descriptor", ""));
             EditEntityAction.tab.set("selected", 2);
             EditEntityAction.form.set("values", entity.toObject());
             EditEntityAction.form.set("cfg", (formCfg) ? formCfg : entity.getFormCfg());
-            this.status = EditEntityAction.STATUS.NEW;
         },
         /**
          *

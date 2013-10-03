@@ -140,7 +140,7 @@ YUI.add('wegas-form', function(Y) {
                 value: {
                     setter: function(val) {
                         if (this.get("form")) {
-                            this.form.setValue(val);
+                            this.form.setValue(val, false);
                         }
                         return val;
                     }
