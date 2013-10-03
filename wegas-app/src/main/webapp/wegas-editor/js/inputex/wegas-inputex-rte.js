@@ -47,13 +47,14 @@ YUI.add("wegas-inputex-rte", function(Y) {
             if (!RTEField.init) {
                 RTEField.init = true;
                 tinyMCE.init({
-                    content_css: ["http://yui.yahooapis.com/combo?3.12.0/build/cssreset/cssreset-min.css&amp;3.12.0/build/cssfonts/cssfonts-min.css&amp;3.12.0/build/cssgrids/cssgrids-min.css", "../../wegas-app/css/wegas-app.css"],
+                    content_css: ["http://yui.yahooapis.com/combo?3.12.0/build/cssreset/cssreset-min.css&amp;3.12.0/build/cssfonts/cssfonts-min.css&amp;3.12.0/build/cssgrids/cssgrids-min.css",
+                        "../../wegas-app/css/wegas-app.css"],
                     mode: "none", // "none", "textares"
                     theme: "advanced", // "simple", "advanced"
-                    plugins: "autolink,autoresize,style,table," +
+                    plugins: "autolink,autoresize,style,table,lists," +
                             "advimage,advlink,iespell,inlinepopups,media," +
                             "contextmenu",
-                    theme_advanced_buttons1: "bold,italic,styleselect,link,image,media,|,cleanup,code",
+                    theme_advanced_buttons1: "bold,italic,bullist,styleselect,link,image,media,|,cleanup,code",
                     theme_advanced_toolbar_location: "top",
                     theme_advanced_toolbar_align: "left",
                     theme_advanced_statusbar_location: "none", // top, bottom, none
@@ -75,39 +76,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         }, {
                             title: 'Normal',
                             inline: 'span'
-                        }
-                        //{
-                        //    title : 'Bold text',
-                        //    inline : 'b'
-                        //},{
-                        //    title : 'Red text',
-                        //    inline : 'span',
-                        //    styles : {
-                        //        color : '#ff0000'
-                        //    }
-                        //},{
-                        //    title : 'Red header',
-                        //    block : 'h1',
-                        //    styles : {
-                        //        color : '#ff0000'
-                        //    }
-                        //},{
-                        //    title : 'Example 1',
-                        //    inline : 'span',
-                        //    classes : 'example1'
-                        //},{
-                        //    title : 'Example 2',
-                        //    inline : 'span',
-                        //    classes : 'example2'
-                        //},{
-                        //    title : 'Table styles'
-                        //},{
-                        //    title : 'Table row 1',
-                        //    selector : 'tr',
-                        //    classes : 'tablerow1'
-                        //}
-
-                    ]
+                        }]
 
                             //content_css : "css/content.css",                              // Example content CSS (should be your site CSS)
                             // template_external_list_url : "lists/template_list.js",   // Drop lists for link/image/media/template dialogs

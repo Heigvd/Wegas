@@ -43,7 +43,7 @@ YUI.add('wegas-jointeam', function(Y) {
                 label: "Join team"
             });
             this.createButton = new Y.Button({
-                label: "Create team"
+                label: "Join new team"
             });
 
             if (gameModel && gameModel.get("properties")["freeForAll"]) {       // For free for all games
