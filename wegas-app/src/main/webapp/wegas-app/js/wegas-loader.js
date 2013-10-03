@@ -738,7 +738,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-pmg-assignment": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-assignment-min.js',
-                    requires: ['sortable', 'wegas-pmgwidget-css', 'wegas-widgetmenu'],
+                    requires: ['sortable', 'wegas-pmgwidget-css', 'wegas-widgetmenu', 'event-hover'],
                     ws_provides: 'Assignment'
                 },
                 "wegas-pmg-planification": {
