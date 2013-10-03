@@ -122,7 +122,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 label: text,
                                 collapsed: collapsed,
                                 selected: selected,
-                                children: this.genTreeViewElements(el.get("items")),
+                                children: (!collapsed) ? this.genTreeViewElements(el.get("items")) : [],
                                 data: {
                                     entity: el
                                 },
