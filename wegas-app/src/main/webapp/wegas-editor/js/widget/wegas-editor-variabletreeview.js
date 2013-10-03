@@ -326,7 +326,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     id = entity.get(ID);
 
             if (entity instanceof Wegas.persistence.ListDescriptor) {
-                if (node.size() > 1) {
+                if (node.size() > 0) {
                     return;
                 }
                 node.add(this.get("host").genTreeViewElements(entity.get("items")));
