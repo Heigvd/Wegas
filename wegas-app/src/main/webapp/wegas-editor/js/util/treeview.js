@@ -324,7 +324,7 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         toggleTree: function() {
-            this.get(BOUNDING_BOX).toggleClass(classNames.collapsed);
+            this.set("collapsed", !this.get("collapsed"));
             if (this.get(BOUNDING_BOX).hasClass(classNames.collapsed)) {
                 this.fire('nodeCollapsed', {
                     node: this
@@ -435,11 +435,11 @@ YUI.add('treeview', function(Y) {
                 value: true,
                 validator: Y.Lang.isBoolean,
                 setter: function(v) {
-                        if (v) {
-                            this.get(BOUNDING_BOX).addClass(classNames.collapsed);
-                        } else {
-                            this.get(BOUNDING_BOX).removeClass(classNames.collapsed);
-                        }
+                    if (v) {
+                        this.get(BOUNDING_BOX).addClass(classNames.collapsed);
+                    } else {
+                        this.get(BOUNDING_BOX).removeClass(classNames.collapsed);
+                    }
                     return v;
                 }
             },
