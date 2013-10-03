@@ -163,7 +163,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 taskExist = false;
                 taskDesc = items[i];
                 taskExist = Y.Array.find(assignments, taskExistence);
-                if (!taskExist) {
+                if (!taskExist && taskDesc.getInstance().get("active")) {
                     no = taskDesc.get("index");
                     label = (taskDesc.get("title") || taskDesc.get("name") || "undefined");
                     array.push({
