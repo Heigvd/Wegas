@@ -37,7 +37,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.sortable = [];
 
             this.addAssignmentColumn();
-            
+
             this.onceAfterHostEvent("render", function() {
                 this.sync();
                 this.bind();
@@ -50,13 +50,9 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 this.createMenu(e, true);
             }, '.yui3-datatable-data .assignment .assign', this);
             this.handlers.showDelete = this.get(HOST).datatable.delegate('hover', function(e) {
-                if (e.target.getDOMNode().childNodes[0]) {
-                    e.target.getDOMNode().childNodes[0].className = "remove show";
-                }
+                e.currentTarget.all(".remove").show();
             }, function(e) {
-                if (e.target.getDOMNode().childNodes[0]) {
-                    e.target.getDOMNode().childNodes[0].className = "remove hide";
-                }
+                e.currentTarget.all(".remove").hide();
             }, '.tasks .task', this);
 
             this.handlers.remove = this.get(HOST).datatable.delegate('click', function(e) {
@@ -236,7 +232,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 node = "<div class='tasks'>";
                 for (iAssign = 0; iAssign < assignments.length; iAssign += 1) {
                     taskDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("id", assignments[iAssign].get("taskDescriptorId"));
-                    node = node + "<em class='task' assignmentid=" + assignments[iAssign].get("id") + "><span class='remove hide'></span><span>" + taskDesc.get("index") + "</span></em>";
+                    node = node + "<em class='task' assignmentid=" + assignments[iAssign].get("id") + "><span class='remove' style='display:none'></span><span>" + taskDesc.get("index") + "</span></em>";
                 }
                 node = node + "</div>";
                 assignementCell = dt.getCell([iResource, this.get("columnPosition")]);
