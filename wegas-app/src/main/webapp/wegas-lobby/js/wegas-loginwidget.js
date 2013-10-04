@@ -41,10 +41,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 </div>\n\
                 <div class='content'>\n\
                     <div class='main left'>\n\
-                        <h1>Welcome to Wegas</h1>\n\
-                        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games. No programming skills is required, you can create your own scenario or adapt an existing one by adding elements from other simulations. Advanced users can even create their own serious game from A to Z!</p>\n\
-                        <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='254px' width='633px'/></div>\n\
-                    </div>\n\
+                      </div>\n\
                     <div class='main right signup-zone'>\n\
                         <h1 class='title'>Create an account</h1>\n\
                         <div class='signup'></div>\n\
@@ -132,6 +129,16 @@ YUI.add('wegas-loginwidget', function(Y) {
                 this.redirect();
             }
 
+            if (Y.Wegas.Helper.getURLParameter("redirect").indexOf("token") > -1) {
+                cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>You need to log in or create an account to see this game.");
+            } else {
+                cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>\n\
+                        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games.\n\
+                         No programming skills is required, you can create your own scenario or adapt an existing one by \n\
+                        adding elements from other simulations. Advanced users can even create their own serious game from A\n\
+                         to Z!</p>\n\
+                        <div class='preview'><img src='../images/wegas-preview.jpg' alt='preview' height='254px' width='633px'/></div>\n");
+            }
             //create and append login form
             this.loginForm = new Y.inputEx.Group({
                 fields: [{
