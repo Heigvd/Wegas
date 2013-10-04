@@ -17,7 +17,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
         object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
         requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= this[i].get("level") %></span></p><%}%>'),
-        assignedRessource: micro.compile('<% for(var i = 0; i < this.length; i+=1){ for (var j in this[i].ressourceInstance.get("skillsets")){%> <p><%= j %> <%= this[i].ressourceInstance.get("skillsets")[j]%></p><% }} %>')
+        assignedRessource: micro.compile('<% for(var i = 0; i < this.length; i+=1){ for (var j in this[i].ressourceInstance.get("skillsets")){%> <p><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= this[i].ressourceInstance.get("skillsets")[j]%>)</p><% }} %>')
     };
 
     Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
