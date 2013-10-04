@@ -515,6 +515,13 @@
                         "sortable": false
                     }, {
                         "allowHTML": true,
+                        "label": "Realised %",
+                        "width": "7%",
+                        "formatter": "template",
+                        "field": "instance.properties.completeness",
+                        "sortable": false
+                    }, {
+                        "allowHTML": true,
                         "label": "Fixed costs",
                         "formatter": "template",
                         "field": "instance.properties.fixedCosts",
@@ -530,12 +537,6 @@
                         "label": "Quality",
                         "formatter": "template",
                         "field": "instance.properties.quality",
-                        "sortable": false
-                    }, {
-                        "allowHTML": true,
-                        "label": "Realised %",
-                        "formatter": "template",
-                        "field": "instance.properties.completeness",
                         "sortable": false
                     }, {
                         "allowHTML": true,
@@ -1157,6 +1158,13 @@
                         "key": "label",
                         "label": "Name",
                         "sortable": true
+                    }, {
+                        "allowHTML": true,
+                        "label": "Realised %",
+                        "width": "7%",
+                        "formatter": "template",
+                        "field": "instance.properties.completeness",
+                        "sortable": false
                     }],
                 "plugins": [{
                         "fn": "ScheduleDT",
@@ -1212,6 +1220,13 @@
                         "sortable": false
                     }, {
                         "allowHTML": true,
+                        "label": "Realised %",
+                        "width": "7%",
+                        "formatter": "template",
+                        "field": "instance.properties.completeness",
+                        "sortable": false
+                    }, {
+                        "allowHTML": true,
                         "label": "Fixed costs",
                         "formatter": "template",
                         "field": "instance.properties.fixedCosts",
@@ -1233,12 +1248,6 @@
                         "label": "Quality",
                         "formatter": "template",
                         "field": "instance.properties.quality",
-                        "sortable": false
-                    }, {
-                        "allowHTML": true,
-                        "label": "Realised %",
-                        "formatter": "template",
-                        "field": "instance.properties.completeness",
                         "sortable": false
                     }, {
                         "allowHTML": true,

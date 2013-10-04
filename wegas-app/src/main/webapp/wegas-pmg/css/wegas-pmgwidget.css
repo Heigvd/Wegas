@@ -151,7 +151,7 @@ tbody .past .activity {
     cursor: move;
 }
 
-.tasks .task .remove.show {
+.tasks .task .remove {
     display: block;
     height: 16px;
     width: 16px;
