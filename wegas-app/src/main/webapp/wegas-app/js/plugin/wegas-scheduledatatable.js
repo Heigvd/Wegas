@@ -71,7 +71,12 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     } else {
                         classTime = "past";
                     }
-                    table.addColumn({key: (newval - diff + 1).toString(), time: (newval - diff + 1), className: "schedulecolumn " + classTime, formatter: formatter});
+                    table.addColumn({
+                        key: (newval - diff + 1).toString(),
+                        time: (newval - diff + 1),
+                        className: "schedulecolumn " + classTime,
+                        formatter: formatter
+                    });
                     diff -= 1;
                 } else {
                     table.removeColumn(newval - diff);

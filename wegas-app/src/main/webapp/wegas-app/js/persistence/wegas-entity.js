@@ -1306,7 +1306,7 @@ YUI.add('wegas-entity', function(Y) {
     });
 
 
-    Wegas.persistence.InboxDescriptor = Y.Base.create("", Wegas.persistence.VariableDescriptor, [], {
+    Wegas.persistence.InboxDescriptor = Y.Base.create("InboxDescriptor", Wegas.persistence.VariableDescriptor, [], {
         isEmpty: function(playerId) {
             playerId = playerId instanceof Y.Wegas.persistence.Player ? playerId.get("id") : playerId;
             return this.getInstance(playerId).get("messages").length < 1;
