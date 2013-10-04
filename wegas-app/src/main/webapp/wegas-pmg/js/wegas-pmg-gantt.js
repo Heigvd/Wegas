@@ -251,7 +251,7 @@ YUI.add("wegas-pmg-gantt", function(Y) {
             periodsDesc: {
                 getter: function() {
                     return Y.Wegas.Facade.VariableDescriptor.cache.findById(
-                            Y.Wegas.Facade.VariableDescriptor.script.scopedEval(this.get("periods")));
+                            Y.Wegas.Facade.VariableDescriptor.script.localEval(this.get("periods")));
                 }
             }
         }
