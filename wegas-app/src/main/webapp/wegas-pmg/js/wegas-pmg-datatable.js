@@ -124,25 +124,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     Y.namespace("Wegas").PmgDatatable = Datatable;
 
     Y.mix(Y.DataTable.BodyView.Formatters, {
-//        "instance": function(o) {
-//            return function(o) {
-//                return o.data.instance[o.column.field];
-//            }
-//        },
-//        "map": function(o) {
-//            return function(o) {
-//                var i, names = o.column.key.split("."),
-//                    data = o.data;
-//                for (var i = 0; i < names.length; i += 1) {
-//                    data = data[names[i]];
-//                }
-//
-//                if (!data)
-//                    data = " - ";
-//                return data;
-//            };
-//        },
-        "requieredRessources": function(o) {
+        requieredRessources: function(o) {
             return function(o) {
                 return TEMPLATES.requiredRessource(o.data.instance.requirements);
             };
@@ -168,7 +150,21 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 return data;
             };
         },
+        rounded: function() {
+            return function(o) {
+                return Math.round(+o.value);
+            };
+        },
         object: function() {
+            return function(o) {
+                var i, ret = [];
+                for (i in o.value) {
+                    ret.push(o.value[i]);
+                }
+                return ret.join("");
+            };
+        },
+        "object-old": function() {
             return function(o) {
                 var data = "";
                 o.data._field = o.column.field;
@@ -178,16 +174,25 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 }
                 return data;
             };
-        },
-        "object2": function() {
-            return function(o) {
-                var i, ret = [];
-                for (i in o.value) {
-                    ret.push(o.value[i]);
-                }
-                return ret.join("");
-            }
         }
+//        "instance": function(o) {
+//            return function(o) {
+//                return o.data.instance[o.column.field];
+//            }
+//        },
+//        "map": function(o) {
+//            return function(o) {
+//                var i, names = o.column.key.split("."),
+//                    data = o.data;
+//                for (var i = 0; i < names.length; i += 1) {
+//                    data = data[names[i]];
+//                }
+//
+//                if (!data)
+//                    data = " - ";
+//                return data;
+//            };
+//        }
     });
 
     //var PMGDatatableModel = Y.Base.create('pmgdatatablemodel', Y.Model, [], {
@@ -295,7 +300,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                     content = col.emptyCellValue || '';
                 }
             } else {
-                content = data[col.key] || col.emptyCellValue || '';
+                content = model.get(col.key) || col.emptyCellValue || '';
             }
 
             cell.setHTML(col.allowHTML ? content : Y.Escape.html(content));

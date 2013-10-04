@@ -480,7 +480,9 @@
                     }, {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
-                        "key": "instance.properties.fixedCosts"
+                        "key": "instance.properties.fixedCosts",
+                        "className": "right",
+                        "formatter": "rounded"
                     }, {
                         "name": "Wages",
                         "label": "Wages",
@@ -1096,6 +1098,8 @@
                     }, {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
+                        "formatter": "rounded",
+                        "className": "right",
                         "key": "instance.properties.fixedCosts"
                     }, {
                         "label": "BAC",
