@@ -539,7 +539,7 @@ YUI().use(function(Y) {
                     type: 'css'
                 },
                 'wegas-sharerole': {
-                    path: 'wegas-lobby/js/widget/wegas-sharerole-min.js',
+                    path: 'wegas-lobby/js/wegas-sharerole-min.js',
                     requires: ['inputex-select', 'inputex-list', "inputex-checkbox"],
                     ws_provides: "ShareRole"
                 },

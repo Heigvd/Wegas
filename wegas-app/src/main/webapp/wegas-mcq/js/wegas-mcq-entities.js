@@ -51,6 +51,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     label: 'Allow multiple replies'
                 }
             },
+            description: {
+                type: STRING,
+                format: HTML,
+                optional: true
+            },
             defaultInstance: {
                 properties: {
                     "@class": {
@@ -69,11 +74,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         }
                     }
                 }
-            },
-            description: {
-                type: STRING,
-                format: HTML,
-                optional: true
             },
             pictures: {
                 optional: true,
@@ -450,6 +450,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 _inputex: {
                     label: null,
+                    index: 2,
                     listAddLabel: " ",
                     listRemoveLabel: " ",
                     wrapperClassName: "inputEx-fieldWrapper-nomargin"
