@@ -249,14 +249,9 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             }
         },
         setPosition: function(e) {
-            var node = e.currentTarget.get("currentNode").getDOMNode(), i;
-            for (i = 0; i < node.parentElement.childNodes.length; i += 1) {
-                if (node.parentElement.childNodes[i] === node) {
-                    break;
-                }
-            }
+            var node = e.currentTarget.get("currentNode"), i = node.get("parentNode").get("children").indexOf(node);
             Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/ResourceDescriptor/MoveAssignment/" + node.getAttribute("assignmentid") + "/" + (i + 1),
+                request: "/ResourceDescriptor/MoveAssignment/" + node.getAttribute("assignmentid") + "/" + i,
                 cfg: {
                     method: "POST"
                 }
