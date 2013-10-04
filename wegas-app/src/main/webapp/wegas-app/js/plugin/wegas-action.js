@@ -210,13 +210,8 @@ YUI.add('wegas-action', function(Y) {
                     data: Y.JSON.stringify(this.get("onClick"))
                 },
                 on: {
-                    success: function() {
-                        host.hideOverlay();
-                    },
-                    failure: function(r) {
-                        host.hideOverlay();
-                        Y.bind(host.defaultExceptionHandler, host, r);
-                    }
+                    success: Y.bind(host.hideOverlay, host),
+                    failure: Y.bind(host.defaultFailureHandler, host)
                 }
             });
         }

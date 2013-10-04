@@ -84,7 +84,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.showOverlay();
                 this.dataSource.sendRequest({
                     request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
-                            + "/Player/" + Y.Wegas.app.get('currentPlayer')
+                            + "/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    on: {
+                        failure: Y.bind(this.defaultFailureHandler, this)
+                    }
+
                 });
             }, "input[type=submit]", this);
 
@@ -125,10 +129,10 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.tabView.selectChild(lastSelection);
             }
 
-            this.hideOverlay();
             if (this.gallery) {
                 this.gallery.syncUI();
             }
+            this.hideOverlay();
         },
         addQuestions: function(questions) {
 
