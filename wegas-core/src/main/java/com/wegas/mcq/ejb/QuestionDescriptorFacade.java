@@ -96,7 +96,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         if (!questionDescriptor.getAllowMultipleReplies() && !questionInstance.getReplies().isEmpty()) {
             throw new WegasException("A choice already exists for that question");
         }
-        
+
         Reply reply = new Reply();
 
         reply.setStartTime(startTime);
@@ -138,7 +138,12 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
 
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) throws ScriptException {
         Reply reply = this.selectChoice(choiceId, playerFacade.find(playerId), Long.valueOf(0));
-        this.validateReply(playerId, reply.getId());
+        try {
+            this.validateReply(playerId, reply.getId());
+        } catch (ScriptException e) {
+            this.cancelReply(playerId, reply.getId());
+            throw e;
+        }
         return reply;
     }
 
