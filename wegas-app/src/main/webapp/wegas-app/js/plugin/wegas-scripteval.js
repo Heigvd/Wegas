@@ -36,26 +36,27 @@ YUI.add('wegas-scripteval', function(Y) {
             this.publish("failure");
         },
         /**
-         *  the id should be generated and returned  by the function, not passed as a
-         *  a parameter
+         *  A localEval with server fallback.
          *
          *  @param script The script to evaluate
-         *  @param id The transaction id
-         *  @param cb A callback object, containing success, failure and scope objects
+         *  @param cb A callback object, containing success, failure function or just a function as success callback. First parameter passed will be result
          */
-        scopedEval: function(script, id, cb) {
+        eval: function(script, cb) {
             var result, url;
-
+            if (cb instanceof Function) {
+                cb = {
+                    success: cb
+                };
+            }
             try {
                 result = this.localEval(script);
-                this.fire("evaluated", result, id);
-                if (cb && cb.success) {
-                    cb.success.call(cb.scope || this, result);
+                this.fire("evaluated", result);
+                if (cb && cb.success instanceof Function) {
+                    cb.success(result);
                 }
-                return result;
             } catch (error) {
                 url = Y.Wegas.Facade.VariableDescriptor.get("source") + "/Script/Run/" + Y.Wegas.app.get('currentPlayer');
-                return Y.io(url, {
+                Y.io(url, {
                     headers: {
                         'Content-Type': 'application/json; charset=iso-8859-1',
                         'Managed-Mode': 'false'
@@ -69,15 +70,21 @@ YUI.add('wegas-scripteval', function(Y) {
                     }),
                     on: {
                         success: Y.bind(function(id, req_id, response) {
-                            this.fire("evaluated", Y.JSON.parse(response.responseText), id);
-                        }, this, id),
-                        failure: Y.bind(function(id, req_id, response) {
-                            try {
-                                this.fire("failure", Y.JSON.parse(response.responseText), id);
-                            } catch (e) {
-                                this.fire("failure", null, id);
+                            if (cb && cb.success instanceof Function) {
+                                cb.success(Y.JSON.parse(response.responseText));
                             }
-                        }, this, id)
+                        }, this),
+                        failure: Y.bind(function(id, req_id, response) {
+                            var result;
+                            try {
+                                result = Y.JSON.parse(response.responseText);
+                            } catch (e) {
+                                result = null;
+                            }
+                            if (cb && cb.failure instanceof Function) {
+                                cb.failure(result);
+                            }
+                        }, this)
                     }
                 });
             }
@@ -85,6 +92,7 @@ YUI.add('wegas-scripteval', function(Y) {
         /**
          * Tries to evaluate the script locally, using variables cache
          * @param {String} script The script to eval localy
+         * @return {Any} value locally evaluated
          */
         localEval: function(script) {
             /*jslint evil: true */
