@@ -35,6 +35,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
                 this.afterHostMethod("syncUI", this.addInputField);
                 this.onKeyUpEvent();
             });
+            this.get("host").datatable.after("sort", this.addInputField, this);
         },
         addBacColumn: function() {
             this.get("host").datatable.addColumn({

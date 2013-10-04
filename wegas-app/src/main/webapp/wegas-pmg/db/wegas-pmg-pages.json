@@ -3,13 +3,11 @@
         "type": "List",
         "direction": "vertical",
         "cssClass": "layout",
-        "children": [
-            {
+        "children": [{
                 "type": "List",
                 "direction": "horizontal",
                 "cssClass": "header",
-                "children": [
-                    {
+                "children": [{
                         "type": "List",
                         "direction": "horizontal",
                         "cssClass": "time",
@@ -47,10 +45,8 @@
                                             },
                                             "targetEvent": "click"
                                         }
-                                    }
-                                ]
-                            }
-                        ]
+                                    }]
+                            }]
                     }, {
                         "type": "List",
                         "direction": "horizontal",
@@ -76,8 +72,7 @@
                                 "cfg": {
                                     "percentColors": [[0.0, "#CD5757"], [0.5, "#DDD546"], [1.0, "#51DC74"]]
                                 }
-                            }
-                        ]
+                            }]
                     }, {
                         "type": "List",
                         "direction": "horizontal",
@@ -143,8 +138,7 @@
                                             }
                                         }
                                     }]
-                            }
-                        ]
+                            }]
                     }, {
                         "cssClass": "pmg-timevariable",
                         "type": "Template",
@@ -154,8 +148,7 @@
                             "expr": "timeCards.items[currentPhase.value].descriptorId"
                         },
                         "template": "box"
-                    }
-                ]
+                    }]
             }, {
                 "type": "List",
                 "direction": "horizontal",
@@ -173,8 +166,7 @@
                                     "targetPageLoaderId": "maindisplayarea",
                                     "targetEvent": "click"
                                 }
-                            }
-                        ]
+                            }]
                     }, {
                         "type": "Button",
                         "label": "Tasks",
@@ -196,8 +188,7 @@
                                         "language": "JavaScript"
                                     }
                                 }
-                            }
-                        ]
+                            }]
                     }, {
                         "type": "Button",
                         "label": "Gantt",
@@ -219,8 +210,7 @@
                                         "language": "JavaScript"
                                     }
                                 }
-                            }
-                        ]
+                            }]
                     }, {
                         "type": "Button",
                         "label": "Resources",
@@ -242,8 +232,7 @@
                                         "language": "JavaScript"
                                     }
                                 }
-                            }
-                        ]
+                            }]
                     }, {
                         "type": "Button",
                         "label": "EVM",
@@ -265,8 +254,7 @@
                                         "language": "JavaScript"
                                     }
                                 }
-                            }
-                        ]
+                            }]
                     }, {
                         "cssClass": "menu-loginbutton",
                         "disabled": false,
@@ -274,19 +262,16 @@
                         "preferencePageId": 1000,
                         "targetPageLoader": "maindisplayarea",
                         "type": "LoginButton"
-                    }
-                ]
+                    }]
             }, {
                 "type": "List",
                 "direction": "vertical",
                 "cssClass": "main",
-                "children": [
-                    {
+                "children": [{
                         "type": "List",
                         "direction": "vertical",
                         "cssClass": "vertical-menu",
-                        "children": [
-                            {
+                        "children": [{
                                 "type": "Button",
                                 "cssClass": "actions",
                                 "disabled": false,
@@ -298,15 +283,13 @@
                                             "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
-                                    }
-                                ]
+                                    }]
                             }, {
                                 "type": "Button",
                                 "cssClass": "questions",
                                 "disabled": false,
                                 "label": "",
-                                "plugins": [
-                                    {
+                                "plugins": [{
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
@@ -320,16 +303,14 @@
                                             "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
-                                    }
-                                ]
+                                    }]
                             }, {
                                 "type": "Button",
                                 "cssClass": "inbox",
                                 "setToReadAfter": 0,
                                 "disabled": false,
                                 "label": "",
-                                "plugins": [
-                                    {
+                                "plugins": [{
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
@@ -343,49 +324,41 @@
                                             "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
-                                    }
-                                ]
+                                    }]
                             }, {
                                 "type": "Button",
                                 "cssClass": "history",
                                 "disabled": false,
                                 "label": "",
-                                "plugins": [
-                                    {
+                                "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 9,
                                             "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
-                                    }
-                                ]
+                                    }]
                             }, {
                                 "type": "Button",
                                 "cssClass": "help",
                                 "disabled": false,
                                 "label": "",
-                                "plugins": [
-                                    {
+                                "plugins": [{
                                         "fn": "OpenPageAction",
                                         "cfg": {
                                             "subpageId": 10,
                                             "targetEvent": "click",
                                             "targetPageLoaderId": "maindisplayarea"
                                         }
-                                    }
-                                ]
-                            }
-                        ]
+                                    }]
+                            }]
                     }, {
                         "type": "PageLoader",
                         "pageLoaderId": "maindisplayarea",
                         "cssClass": "body",
                         "defaultPageId": 2
-                    }
-                ]
-            }
-        ]
+                    }]
+            }]
     },
     "2": {
         "cssClass": "project-page",
@@ -397,8 +370,7 @@
                 "title": "Finances",
                 "cssClass": "finances",
                 "animation": false,
-                "children": [
-                    {
+                "children": [{
                         "type": "Template",
                         "data": {},
                         "template": "text",
@@ -406,15 +378,13 @@
                         "variable": {
                             "name": "tasks"
                         }
-                    }
-                ]
+                    }]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "EVM",
                 "cssClass": "evm",
                 "animation": false,
-                "children": [
-                    {
+                "children": [{
                         "height": "200px",
                         "chartType": "combo",
                         "width": "90%",
@@ -432,15 +402,13 @@
                                 "name": "earnedValue",
                                 "label": "EV (Earned Value)"
                             }]
-                    }
-                ]
+                    }]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Indicators History: Management and Users",
                 "cssClass": "indicators-management",
                 "animation": false,
-                "children": [
-                    {
+                "children": [{
                         "height": "200px",
                         "chartType": "combo",
                         "width": "90%",
@@ -455,8 +423,7 @@
                                 "name": "userApproval",
                                 "label": "Users"
                             }]
-                    }
-                ]
+                    }]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Indicators History: Quality, Costs, and Shedule",
@@ -481,10 +448,8 @@
                                 "name": "quality",
                                 "label": "Quality"
                             }]
-                    }
-                ]
-            }
-        ]
+                    }]
+            }]
     },
     "3": {
         "cssClass": "task-plannification-page",
@@ -498,48 +463,33 @@
                 },
                 "defaultSort": null,
                 "columnsCfg": [{
-                        "allowHTML": true,
                         "key": "index",
-                        "label": "No",
-                        "sortable": true
+                        "label": "No"
                     }, {
-                        "allowHTML": true,
                         "key": "label",
-                        "label": "Name",
-                        "sortable": true
+                        "label": "Name"
                     }, {
-                        "allowHTML": true,
                         "label": "Estimated duration",
-                        "formatter": "template",
-                        "field": "instance.duration",
-                        "sortable": false
+                        "name": "Estimatedduration",
+                        "key": "instance.duration"
                     }, {
-                        "allowHTML": true,
                         "label": "Realised %",
+                        "name": "Realised",
                         "width": "7%",
-                        "formatter": "template",
-                        "field": "instance.properties.completeness",
-                        "sortable": false
+                        "key": "instance.properties.completeness"
                     }, {
-                        "allowHTML": true,
                         "label": "Fixed costs",
-                        "formatter": "template",
-                        "field": "instance.properties.fixedCosts",
-                        "sortable": false
+                        "name": "Fixedcosts",
+                        "key": "instance.properties.fixedCosts"
                     }, {
-                        "allowHTML": true,
+                        "name": "Wages",
                         "label": "Wages",
-                        "formatter": "template",
-                        "field": "instance.properties.wages",
-                        "sortable": false
+                        "key": "instance.properties.wages"
                     }, {
-                        "allowHTML": true,
+                        "name": "Quality",
                         "label": "Quality",
-                        "formatter": "template",
-                        "field": "instance.properties.quality",
-                        "sortable": false
+                        "key": "instance.properties.quality"
                     }, {
-                        "allowHTML": true,
                         "key": "requirements",
                         "label": "Ressources",
                         "formatter": "requieredRessources",
@@ -563,8 +513,7 @@
                             "column": 1
                         }
                     }]
-            }
-        ]
+            }]
     },
     "4": {
         "cssClass": "gantt-plannification-page",
@@ -578,15 +527,11 @@
                 },
                 "defaultSort": null,
                 "columnsCfg": [{
-                        "allowHTML": true,
                         "key": "index",
-                        "label": "No",
-                        "sortable": true
+                        "label": "No"
                     }, {
-                        "allowHTML": true,
                         "key": "label",
-                        "label": "Name",
-                        "sortable": true
+                        "label": "Name"
                     }],
                 "plugins": [{
                         "fn": "ScheduleDT",
@@ -608,8 +553,7 @@
                             "column": 1
                         }
                     }]
-            }
-        ]
+            }]
     },
     "5": {
         "cssClass": "resources-page",
@@ -628,34 +572,26 @@
                             "name": "commercial"
                         },
                         "columnsCfg": [{
-                                "allowHTML": true,
                                 "key": "label",
-                                "label": "Name",
-                                "sortable": true
+                                "label": "Name"
                             }, {
-                                "allowHTML": true,
+                                "name": "grade",
                                 "label": "Grade",
                                 "formatter": "object",
-                                "field": "instance.skillsets",
-                                "sortable": false
+                                "sortFn": "objectsort",
+                                "key": "instance.skillsets"
                             }, {
-                                "allowHTML": true,
+                                "name": "Wage",
                                 "label": "Wage",
-                                "formatter": "template",
-                                "field": "instance.properties.wage",
-                                "sortable": false
+                                "key": "instance.properties.wage"
                             }, {
-                                "allowHTML": true,
+                                "name": "Rate",
                                 "label": "Rate",
-                                "formatter": "template",
-                                "field": "instance.properties.activityRate",
-                                "sortable": false
+                                "key": "instance.properties.activityRate"
                             }, {
-                                "allowHTML": true,
+                                "name": "Motiv",
                                 "label": "Motiv.",
-                                "formatter": "template",
-                                "field": "instance.moral",
-                                "sortable": false
+                                "key": "instance.moral"
                             }],
                         "defaultSort": null,
                         "plugins": [{
@@ -684,8 +620,7 @@
                             }, {
                                 "fn": "ActivityColor"
                             }]
-                    }
-                ]
+                    }]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Consultant IT",
@@ -698,34 +633,26 @@
                             "name": "consultantIT"
                         },
                         "columnsCfg": [{
-                                "allowHTML": true,
                                 "key": "label",
-                                "label": "Name",
-                                "sortable": true
+                                "label": "Name"
                             }, {
-                                "allowHTML": true,
+                                "name": "grade",
                                 "label": "Grade",
                                 "formatter": "object",
-                                "field": "instance.skillsets",
-                                "sortable": false
+                                "sortFn": "objectsort",
+                                "key": "instance.skillsets"
                             }, {
-                                "allowHTML": true,
+                                "name": "Wage",
                                 "label": "Wage",
-                                "formatter": "template",
-                                "field": "instance.properties.wage",
-                                "sortable": false
+                                "key": "instance.properties.wage"
                             }, {
-                                "allowHTML": true,
+                                "name": "Rate",
                                 "label": "Rate",
-                                "formatter": "template",
-                                "field": "instance.properties.activityRate",
-                                "sortable": false
+                                "key": "instance.properties.activityRate"
                             }, {
-                                "allowHTML": true,
+                                "name": "Motiv",
                                 "label": "Motiv.",
-                                "formatter": "template",
-                                "field": "instance.moral",
-                                "sortable": false
+                                "key": "instance.moral"
                             }],
                         "defaultSort": null,
                         "plugins": [{
@@ -754,8 +681,7 @@
                             }, {
                                 "fn": "ActivityColor"
                             }]
-                    }
-                ]
+                    }]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Informaticien Hardware",
@@ -768,34 +694,26 @@
                             "name": "informaticienHardware"
                         },
                         "columnsCfg": [{
-                                "allowHTML": true,
                                 "key": "label",
-                                "label": "Name",
-                                "sortable": true
+                                "label": "Name"
                             }, {
-                                "allowHTML": true,
+                                "name": "grade",
                                 "label": "Grade",
                                 "formatter": "object",
-                                "field": "instance.skillsets",
-                                "sortable": false
+                                "sortFn": "objectsort",
+                                "key": "instance.skillsets"
                             }, {
-                                "allowHTML": true,
+                                "name": "Wage",
                                 "label": "Wage",
-                                "formatter": "template",
-                                "field": "instance.properties.wage",
-                                "sortable": false
+                                "key": "instance.properties.wage"
                             }, {
-                                "allowHTML": true,
+                                "name": "Rate",
                                 "label": "Rate",
-                                "formatter": "template",
-                                "field": "instance.properties.activityRate",
-                                "sortable": false
+                                "key": "instance.properties.activityRate"
                             }, {
-                                "allowHTML": true,
+                                "name": "Motiv",
                                 "label": "Motiv.",
-                                "formatter": "template",
-                                "field": "instance.moral",
-                                "sortable": false
+                                "key": "instance.moral"
                             }],
                         "defaultSort": null,
                         "plugins": [{
@@ -824,8 +742,7 @@
                             }, {
                                 "fn": "ActivityColor"
                             }]
-                    }
-                ]
+                    }]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Informaticien Lociciel",
@@ -838,34 +755,26 @@
                             "name": "informaticienLogiciel"
                         },
                         "columnsCfg": [{
-                                "allowHTML": true,
                                 "key": "label",
-                                "label": "Name",
-                                "sortable": true
+                                "label": "Name"
                             }, {
-                                "allowHTML": true,
+                                "name": "grade",
                                 "label": "Grade",
                                 "formatter": "object",
-                                "field": "instance.skillsets",
-                                "sortable": false
+                                "sortFn": "objectsort",
+                                "key": "instance.skillsets"
                             }, {
-                                "allowHTML": true,
+                                "name": "Wage",
                                 "label": "Wage",
-                                "formatter": "template",
-                                "field": "instance.properties.wage",
-                                "sortable": false
+                                "key": "instance.properties.wage"
                             }, {
-                                "allowHTML": true,
+                                "name": "Rate",
                                 "label": "Rate",
-                                "formatter": "template",
-                                "field": "instance.properties.activityRate",
-                                "sortable": false
+                                "key": "instance.properties.activityRate"
                             }, {
-                                "allowHTML": true,
+                                "name": "Motiv",
                                 "label": "Motiv.",
-                                "formatter": "template",
-                                "field": "instance.moral",
-                                "sortable": false
+                                "key": "instance.moral"
                             }],
                         "defaultSort": null,
                         "plugins": [{
@@ -894,8 +803,7 @@
                             }, {
                                 "fn": "ActivityColor"
                             }]
-                    }
-                ]
+                    }]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Monteur",
@@ -908,34 +816,26 @@
                             "name": "monteur"
                         },
                         "columnsCfg": [{
-                                "allowHTML": true,
                                 "key": "label",
-                                "label": "Name",
-                                "sortable": true
+                                "label": "Name"
                             }, {
-                                "allowHTML": true,
+                                "name": "grade",
                                 "label": "Grade",
                                 "formatter": "object",
-                                "field": "instance.skillsets",
-                                "sortable": false
+                                "sortFn": "objectsort",
+                                "key": "instance.skillsets"
                             }, {
-                                "allowHTML": true,
+                                "name": "Wage",
                                 "label": "Wage",
-                                "formatter": "template",
-                                "field": "instance.properties.wage",
-                                "sortable": false
+                                "key": "instance.properties.wage"
                             }, {
-                                "allowHTML": true,
+                                "name": "Rate",
                                 "label": "Rate",
-                                "formatter": "template",
-                                "field": "instance.properties.activityRate",
-                                "sortable": false
+                                "key": "instance.properties.activityRate"
                             }, {
-                                "allowHTML": true,
+                                "name": "Motiv",
                                 "label": "Motiv.",
-                                "formatter": "template",
-                                "field": "instance.moral",
-                                "sortable": false
+                                "key": "instance.moral"
                             }],
                         "defaultSort": null,
                         "plugins": [{
@@ -964,8 +864,7 @@
                             }, {
                                 "fn": "ActivityColor"
                             }]
-                    }
-                ]
+                    }]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Web Designer",
@@ -978,34 +877,26 @@
                             "name": "webDesigner"
                         },
                         "columnsCfg": [{
-                                "allowHTML": true,
                                 "key": "label",
-                                "label": "Name",
-                                "sortable": true
+                                "label": "Name"
                             }, {
-                                "allowHTML": true,
+                                "name": "grade",
                                 "label": "Grade",
                                 "formatter": "object",
-                                "field": "instance.skillsets",
-                                "sortable": false
+                                "sortFn": "objectsort",
+                                "key": "instance.skillsets"
                             }, {
-                                "allowHTML": true,
+                                "name": "Wage",
                                 "label": "Wage",
-                                "formatter": "template",
-                                "field": "instance.properties.wage",
-                                "sortable": false
+                                "key": "instance.properties.wage"
                             }, {
-                                "allowHTML": true,
+                                "name": "Rate",
                                 "label": "Rate",
-                                "formatter": "template",
-                                "field": "instance.properties.activityRate",
-                                "sortable": false
+                                "key": "instance.properties.activityRate"
                             }, {
-                                "allowHTML": true,
+                                "name": "Motiv",
                                 "label": "Motiv.",
-                                "formatter": "template",
-                                "field": "instance.moral",
-                                "sortable": false
+                                "key": "instance.moral"
                             }],
                         "defaultSort": null,
                         "plugins": [{
@@ -1034,10 +925,8 @@
                             }, {
                                 "fn": "ActivityColor"
                             }]
-                    }
-                ]
-            }
-        ]
+                    }]
+            }]
     },
     "6": {
         "cssClass": "actions-page",
@@ -1054,8 +943,7 @@
                     "expr": "actions.items[currentPhase.value].descriptorId"
 
                 }
-            }
-        ]
+            }]
     },
     "7": {
         "cssClass": "questions-page",
@@ -1070,8 +958,7 @@
                 "variable": {
                     "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
                 }
-            }
-        ]
+            }]
     },
     "8": {
         "cssClass": "inbox-page",
@@ -1086,8 +973,7 @@
                 "variable": {
                     "name": "inbox"
                 }
-            }
-        ]
+            }]
     },
     "9": {
         "cssClass": "history-page",
@@ -1102,8 +988,7 @@
                 "variable": {
                     "name": "inbox"
                 }
-            }
-        ]
+            }]
     }, "10": {
         "cssClass": "evm-page",
         "direction": "vertical",
@@ -1132,10 +1017,8 @@
                                 "name": "earnedValue",
                                 "label": "EV (Earned Value)"
                             }]
-                    }
-                ]
-            }
-        ]
+                    }]
+            }]
     },
     "11": {
         "cssClass": "gantt-execution-page",
@@ -1149,22 +1032,16 @@
                 },
                 "defaultSort": null,
                 "columnsCfg": [{
-                        "allowHTML": true,
                         "key": "index",
-                        "label": "No",
-                        "sortable": true
+                        "label": "No"
                     }, {
-                        "allowHTML": true,
                         "key": "label",
-                        "label": "Name",
-                        "sortable": true
+                        "label": "Name"
                     }, {
-                        "allowHTML": true,
                         "label": "Realised %",
+                        "name": "Realized",
                         "width": "7%",
-                        "formatter": "template",
-                        "field": "instance.properties.completeness",
-                        "sortable": false
+                        "key": "instance.properties.completeness"
                     }],
                 "plugins": [{
                         "fn": "ScheduleDT",
@@ -1188,8 +1065,7 @@
                             "column": 1
                         }
                     }]
-            }
-        ]
+            }]
     },
     "12": {
         "cssClass": "task-execution-page",
@@ -1203,60 +1079,43 @@
                 },
                 "defaultSort": null,
                 "columnsCfg": [{
-                        "allowHTML": true,
                         "key": "index",
-                        "label": "No",
-                        "sortable": true
+                        "label": "No"
                     }, {
-                        "allowHTML": true,
                         "key": "label",
-                        "label": "Name",
-                        "sortable": true
+                        "label": "Name"
                     }, {
-                        "allowHTML": true,
                         "label": "Estimated duration",
-                        "formatter": "template",
-                        "field": "instance.duration",
-                        "sortable": false
+                        "name": "Estimatedduration",
+                        "key": "instance.duration"
                     }, {
-                        "allowHTML": true,
                         "label": "Realised %",
+                        "name": "Realised",
                         "width": "7%",
-                        "formatter": "template",
-                        "field": "instance.properties.completeness",
-                        "sortable": false
+                        "key": "instance.properties.completeness"
                     }, {
-                        "allowHTML": true,
                         "label": "Fixed costs",
-                        "formatter": "template",
-                        "field": "instance.properties.fixedCosts",
-                        "sortable": false
+                        "name": "Fixedcosts",
+                        "key": "instance.properties.fixedCosts"
                     }, {
-                        "allowHTML": true,
                         "label": "BAC",
-                        "formatter": "template",
-                        "field": "instance.properties.bac",
-                        "sortable": false
+                        "name": "bac",
+                        "key": "instance.properties.bac"
                     }, {
-                        "allowHTML": true,
                         "label": "Wages",
-                        "formatter": "template",
-                        "field": "instance.properties.wages",
-                        "sortable": false
+                        "name": "Wages",
+                        "key": "instance.properties.wages"
                     }, {
-                        "allowHTML": true,
                         "label": "Quality",
+                        "name": "Quality",
                         "formatter": "template",
-                        "field": "instance.properties.quality",
-                        "sortable": false
+                        "key": "instance.properties.quality"
                     }, {
-                        "allowHTML": true,
                         "key": "requirements",
                         "label": "Ressources",
                         "formatter": "requieredRessources",
                         "sortable": false
                     }, {
-                        "allowHTML": true,
                         "label": "Assigned resources",
                         "formatter": "assignedRessources",
                         "sortable": false
@@ -1269,8 +1128,7 @@
                             "column": 1
                         }
                     }]
-            }
-        ]
+            }]
     },
     "13": {
         "type": "PageLoader",
