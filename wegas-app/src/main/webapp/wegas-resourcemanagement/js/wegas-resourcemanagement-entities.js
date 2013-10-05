@@ -542,8 +542,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 for (i = 0; i < assignments.length; i++) {
                     dict = {};
                     if (assignments[i].get('taskDescriptorId') === this.get("id")) {
-                        dict["taskDescriptor"] = this;
-                        dict["ressourceInstance"] = employee.getInstance();
+                        dict.taskDescriptor = this;
+                        dict.ressourceInstance = employee.getInstance();
+                        dict.ressourceDescriptor = employee;
                         data.push(dict);
                     }
                 }

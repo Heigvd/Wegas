@@ -56,7 +56,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             id: {
                 type: STRING,
-                optional: true,                                                 // The id is optional for entites that have not been persisted
+                optional: true, // The id is optional for entites that have not been persisted
                 writeOnce: "initOnly",
                 setter: function(val) {
                     return val * 1;
@@ -1306,7 +1306,7 @@ YUI.add('wegas-entity', function(Y) {
     });
 
 
-    Wegas.persistence.InboxDescriptor = Y.Base.create("", Wegas.persistence.VariableDescriptor, [], {
+    Wegas.persistence.InboxDescriptor = Y.Base.create("InboxDescriptor", Wegas.persistence.VariableDescriptor, [], {
         isEmpty: function(playerId) {
             playerId = playerId instanceof Y.Wegas.persistence.Player ? playerId.get("id") : playerId;
             return this.getInstance(playerId).get("messages").length < 1;
@@ -1428,43 +1428,26 @@ YUI.add('wegas-entity', function(Y) {
          * evaluated event contains response. true or false. False if script error.
          */
         localEval: function() {
-            if (Wegas.Facade.VariableDescriptor.script.scopedEval) {
+            if (Wegas.Facade.VariableDescriptor.script.eval) {
                 if (this._result) {
                     this.fire("evaluated", this._result);
                     return;
                 }
-                if (!this._eHandler) {
-                    this._eHandler = Wegas.Facade.VariableDescriptor.script.on("ScriptEval:evaluated", function(e, o, id) {
-
-                        if (this._yuid !== id) {
-                            return;
-                        }
-                        e.halt(true);
-                        if (o === true) {
-                            this._result = true;
-                        } else {
-                            this._result = false;
-                        }
-                        this._inProgress = false;
-                        this.fire("evaluated", this._result);
-                    }, this);
-                }
-                if (!this._fHandler) {
-                    this._fHandler = Wegas.Facade.VariableDescriptor.script.on("ScriptEval:failure", function(e, o, id) {
-
-                        if (this._yuid !== id) {
-                            return;
-                        }
-                        e.halt(true);
-                        this._inProgress = false;
-                        this.fire("evaluated", false);
-
-                    }, this);
-                }
-
                 if (!this._inProgress) {
                     this._inProgress = true;
-                    Wegas.Facade.VariableDescriptor.script.scopedEval(this.get("content"), this._yuid);
+                    Wegas.Facade.VariableDescriptor.script.eval(this.get("content"), {success: Y.bind(function(result) {
+                            if (result === true) {
+                                this._result = true;
+                            } else {
+                                this._result = false;
+                            }
+                            this._inProgress = false;
+                            this.fire("evaluated", this._result);
+                        }, this), failure: Y.bind(function(result) {
+                            this._result = false;
+                            this._inProgress = false;
+                            this.fire("evaluated", false);
+                        }, this)});
                 } else {
                     Y.log("evaluation in progress");
                 }
@@ -1472,10 +1455,6 @@ YUI.add('wegas-entity', function(Y) {
         },
         isEmpty: function() {
             return (this.content === null || this.content === "");
-        },
-        destructor: function() {
-            this._fHandler.detach();
-            this._eHandler.detach();
         }
     }, {
         ATTRS: {

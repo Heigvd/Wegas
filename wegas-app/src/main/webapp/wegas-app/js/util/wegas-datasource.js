@@ -711,7 +711,7 @@ YUI.add('wegas-datasource', function(Y) {
                 request = "/" + entity.get("id") + "/Move/" + parentEntity.get("id") + "/" + index;
             } else {                                                            // Dropped at root level
                 entity.parentDescriptor = null;
-                request = "/" + entity.get("id") + "/Move/" + index
+                request = "/" + entity.get("id") + "/Move/" + index;
             }
             host.sendRequest({
                 request: request,
@@ -729,10 +729,8 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 }
             });
-            this.find
-
             // Now a hack to order cache and not need a full db refresh
-//            Y.Wegas.Facade.VariableDescriptor
+            // Y.Wegas.Facade.VariableDescriptor
         }
     });
 

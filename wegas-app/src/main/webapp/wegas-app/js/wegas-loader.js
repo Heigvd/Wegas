@@ -539,7 +539,7 @@ YUI().use(function(Y) {
                     type: 'css'
                 },
                 'wegas-sharerole': {
-                    path: 'wegas-lobby/js/widget/wegas-sharerole-min.js',
+                    path: 'wegas-lobby/js/wegas-sharerole-min.js',
                     requires: ['inputex-select', 'inputex-list', "inputex-checkbox"],
                     ws_provides: "ShareRole"
                 },
@@ -738,7 +738,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-pmg-assignment": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-assignment-min.js',
-                    requires: ['sortable', 'wegas-pmgwidget-css', 'wegas-widgetmenu'],
+                    requires: ['sortable', 'wegas-pmgwidget-css', 'wegas-widgetmenu', 'event-hover'],
                     ws_provides: 'Assignment'
                 },
                 "wegas-pmg-planification": {
