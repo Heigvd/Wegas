@@ -34,11 +34,12 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         execute: function() {
             if (confirm("This will restart every game depending on this model. Are you sure?")) {
-                this.get("host").showOverlay();
+                var host =  this.get("host");
+                host.showOverlay();
                 Wegas.Facade.VariableDescriptor.sendRequest({
                     request: '/Reset/',
                     on: {
-                        response: Y.bind(this.hideOverlay, this)
+                        failure: Y.bind(host.defaultFailureHandler, host)
                     }
                 });
             }

@@ -86,9 +86,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
 
                         this.get(CONTENTBOX).one(".roleBox img").hide();
                     }, this),
-                    failure: Y.bind(function (e) {
-                        this.fire("exception", e.response.results);
-                    }, this)
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         },

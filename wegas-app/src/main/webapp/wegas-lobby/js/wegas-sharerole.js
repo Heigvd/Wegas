@@ -78,6 +78,7 @@ YUI.add('wegas-sharerole', function(Y) {
             this.visibility.destroy();
         },
         loading: function() {
+            this.showOverlay();
             Y.Wegas.Facade.User.sendRequest({
                 request: "/FindPermissionByInstance/" + this.targetEntityId,
                 on: {
@@ -96,10 +97,9 @@ YUI.add('wegas-sharerole', function(Y) {
                                 }, this);
                             }
                         }, this);
+                        this.hideOverlay();
                     }, this),
-                    failure: Y.bind(function(e) {
-                        this.fire("exception", e.response.results);
-                    }, this)
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         },

@@ -37,7 +37,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.sortable = [];
 
             this.addAssignmentColumn();
-            
+
             this.onceAfterHostEvent("render", function() {
                 this.sync();
                 this.bind();
@@ -50,13 +50,9 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 this.createMenu(e, true);
             }, '.yui3-datatable-data .assignment .assign', this);
             this.handlers.showDelete = this.get(HOST).datatable.delegate('hover', function(e) {
-                if (e.target.getDOMNode().childNodes[0]) {
-                    e.target.getDOMNode().childNodes[0].className = "remove show";
-                }
+                e.currentTarget.all(".remove").show();
             }, function(e) {
-                if (e.target.getDOMNode().childNodes[0]) {
-                    e.target.getDOMNode().childNodes[0].className = "remove hide";
-                }
+                e.currentTarget.all(".remove").hide();
             }, '.tasks .task', this);
 
             this.handlers.remove = this.get(HOST).datatable.delegate('click', function(e) {
@@ -165,7 +161,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 taskExist = Y.Array.find(assignments, taskExistence);
                 if (!taskExist && taskDesc.getInstance().get("active")) {
                     no = taskDesc.get("index");
-                    label = (taskDesc.get("title") || taskDesc.get("name") || "undefined");
+                    label = (taskDesc.get("title") || taskDesc.get("label") || taskDesc.get("name") || "undefined");
                     array.push({
                         type: "Button",
                         label: no + ". " + label,
@@ -236,7 +232,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 node = "<div class='tasks'>";
                 for (iAssign = 0; iAssign < assignments.length; iAssign += 1) {
                     taskDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("id", assignments[iAssign].get("taskDescriptorId"));
-                    node = node + "<em class='task' assignmentid=" + assignments[iAssign].get("id") + "><span class='remove hide'></span><span>" + taskDesc.get("index") + "</span></em>";
+                    node = node + "<em class='task' assignmentid=" + assignments[iAssign].get("id") + "><span class='remove' style='display:none'></span><span>" + taskDesc.get("index") + "</span></em>";
                 }
                 node = node + "</div>";
                 assignementCell = dt.getCell([iResource, this.get("columnPosition")]);
@@ -253,14 +249,9 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             }
         },
         setPosition: function(e) {
-            var node = e.currentTarget.get("currentNode").getDOMNode(), i;
-            for (i = 0; i < node.parentElement.childNodes.length; i += 1) {
-                if (node.parentElement.childNodes[i] === node) {
-                    break;
-                }
-            }
+            var node = e.currentTarget.get("currentNode"), i = node.get("parentNode").get("children").indexOf(node);
             Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/ResourceDescriptor/MoveAssignment/" + node.getAttribute("assignmentid") + "/" + (i + 1),
+                request: "/ResourceDescriptor/MoveAssignment/" + node.getAttribute("assignmentid") + "/" + i,
                 cfg: {
                     method: "POST"
                 }

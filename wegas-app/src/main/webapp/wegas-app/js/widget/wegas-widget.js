@@ -32,10 +32,7 @@ YUI.add("wegas-widget", function(Y) {
                 || this.constructor.NAME.toLowerCase();                         // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
 
-        this.publish("exception", {// Add custom event
-            emitFacade: true
-        });
-        this.publish("showOverlay", {
+        this.publish("showOverlay", {// Add custom event
             emitFacade: true
         });
         this.publish("hideOverlay", {
@@ -52,13 +49,16 @@ YUI.add("wegas-widget", function(Y) {
         /**
          * @function
          * @private
-         * @description function to fire an exception (event 'exception').
          */
-        defaultExceptionHandler: function(e) {
-            this.fire("exception", e.response.results);
-        },
         defaultFailureHandler: function(e) {
-            this.showMessage("error", e.response.message || e.response.results.message || "Error during request.");
+            this.hideOverlay();
+            var error = e.response.message || e.response.results.message || "Error during request.",
+                    test = error.match(/ConstraintViolationException: (.*) is out of bound/);
+            if (test) {
+                this.showMessageBis("error", "You don't have enough " + test[1] + ".");
+            } else {
+                this.showMessageBis("error", error);
+            }
             // e.halt(true);
         },
         /**

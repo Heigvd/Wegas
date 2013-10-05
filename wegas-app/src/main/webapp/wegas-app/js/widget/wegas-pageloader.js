@@ -72,15 +72,6 @@ YUI.add('wegas-pageloader', function(Y) {
 //            }, this));
 
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", onUpdate, this));
-            this.on("*:exception", function(e) {
-                var test = e.message.match(/ConstraintViolationException: (.*) is out of bound/);
-                e.halt(true);
-                if (test) {
-                    this.showMessage("error", "Insufficient " + test[1] + ".");
-                } else {
-                    this.showMessage("error", e.message);
-                }
-            });
         },
         /**
          * @function

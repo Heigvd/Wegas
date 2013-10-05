@@ -187,6 +187,7 @@ YUI.add('treeview', function(Y) {
          */
         initializer: function() {
             this.eventInstances = {};
+            this._childStore = [];
             this.publish("toggleClick", {
                 bubbles: false,
                 broadcast: false,
@@ -285,6 +286,29 @@ YUI.add('treeview', function(Y) {
             this.get(BOUNDING_BOX).on("click", function(e) {
                 e.stopPropagation();
             });
+            this.before("collapsedChange", function(e) {
+                if (!e.newVal && e.target === this) {
+                    while (this._childStore.length) {
+                        Y.WidgetParent.prototype._add.apply(this, this._childStore.shift());
+                    }
+                }
+            });
+            this.after("collapsedChange", function(e) {
+                if (e.target !== this) {
+                    return;
+                }
+                if (e.newVal) {
+                    if (e.fireEvent) {
+                        this.fire("nodeCollapsed", {node: e.target});
+                    }
+                    this.get(BOUNDING_BOX).addClass(classNames.collapsed);
+                } else {
+                    if (e.fireEvent) {
+                        this.fire("nodeExpanded", {node: e.target});
+                    }
+                    this.get(BOUNDING_BOX).removeClass(classNames.collapsed);
+                }
+            });
         },
         /**
          * Lifecycle method, sync attributes
@@ -324,16 +348,7 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         toggleTree: function() {
-            this.get(BOUNDING_BOX).toggleClass(classNames.collapsed);
-            if (this.get(BOUNDING_BOX).hasClass(classNames.collapsed)) {
-                this.fire('nodeCollapsed', {
-                    node: this
-                });
-            } else {
-                this.fire('nodeExpanded', {
-                    node: this
-                });
-            }
+            this.set("collapsed", !this.get("collapsed"), {fireEvent: true});
         },
         /**
          * Expand the treeNode
@@ -343,13 +358,7 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         expand: function(fireEvent) {
-            this.set("collapsed", false);
-            fireEvent = (fireEvent === undefined) ? true : fireEvent;
-            if (fireEvent) {
-                this.fire('nodeExpanded', {
-                    node: this
-                });
-            }
+            this.set("collapsed", false, {fireEvent: (fireEvent === undefined) ? true : fireEvent});
         },
         /**
          * Collapse the treeNode
@@ -359,13 +368,7 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         collapse: function(fireEvent) {
-            this.set("collapsed", true);
-            fireEvent = (fireEvent === undefined) ? true : fireEvent;
-            if (fireEvent) {
-                this.fire('nodeCollapsed', {
-                    node: this
-                });
-            }
+            this.set("collapsed", true, {fireEvent: (fireEvent === undefined) ? true : fireEvent});
         },
         /**
          * Expand all subtree
@@ -373,11 +376,11 @@ YUI.add('treeview', function(Y) {
          * @function
          * @returns {undefined}
          */
-        expandAll: function() {
-            this.expand(false);
+        expandAll: function(fireEvent) {
+            this.expand(fireEvent);
             this.each(function(item) {
                 if (item.expandAll) {
-                    item.expandAll();
+                    item.expandAll(fireEvent);
                 }
             });
         },
@@ -387,11 +390,11 @@ YUI.add('treeview', function(Y) {
          * @function
          * @returns {undefined}
          */
-        collapseAll: function() {
-            this.collapse(false);
+        collapseAll: function(fireEvent) {
+            this.collapse(fireEvent);
             this.each(function(item) {
                 if (item.collapseAll) {
-                    item.collapseAll();
+                    item.collapseAll(fireEvents);
                 }
             });
         },
@@ -413,6 +416,21 @@ YUI.add('treeview', function(Y) {
          */
         destroyChild: function(item) {
             item.destroy();
+        },
+        /**
+         * @private
+         * @override Y.WidgetParent.prototype._add
+         * @param {type} child
+         * @param {type} index
+         * @return {Array} description
+         */
+        _add: function(child, index) {
+            if (this.get("collapsed")) {
+                this._childStore.push([child, index]);
+                return null;
+            } else {
+                return Y.WidgetParent.prototype._add.call(this, child, index);
+            }
         }
     }, {
         /** @lends Y.TreeNode */
@@ -433,15 +451,7 @@ YUI.add('treeview', function(Y) {
             },
             collapsed: {
                 value: true,
-                validator: Y.Lang.isBoolean,
-                setter: function(v) {
-                        if (v) {
-                            this.get(BOUNDING_BOX).addClass(classNames.collapsed);
-                        } else {
-                            this.get(BOUNDING_BOX).removeClass(classNames.collapsed);
-                        }
-                    return v;
-                }
+                validator: Y.Lang.isBoolean
             },
             tabIndex: {
                 value: 1
