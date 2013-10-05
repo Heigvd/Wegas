@@ -512,11 +512,12 @@ function checkAssignments(assignments, currentStep) {
             }
             assignments.remove(i);
             break;
-        } else if (getPredecessorFactor(taskDesc) <= 0.2) {
+        } else if (i===0 && getPredecessorFactor(taskDesc) <= 0.2) {
             sendMessage(getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
                     'Je suis sensé travailler sur la tâche ' + taskDesc.getLabel() + ' mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
             assignments.remove(i);
+            //TODO add unworked hours
             break;
         }
     }
@@ -1208,4 +1209,3 @@ function addOccupation(name, periode) {
     employee = VariableDescriptorFacade.findByName(gm, name),
     employee.addOccupation(self, periode, false, "");
 }
-

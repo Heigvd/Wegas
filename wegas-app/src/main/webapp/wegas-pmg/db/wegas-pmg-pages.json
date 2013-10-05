@@ -1110,9 +1110,8 @@
                         "name": "Wages",
                         "key": "instance.properties.wages"
                     }, {
-                        "label": "Quality",
                         "name": "Quality",
-                        "formatter": "template",
+                        "label": "Quality",
                         "key": "instance.properties.quality"
                     }, {
                         "key": "requirements",
