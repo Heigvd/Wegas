@@ -646,3 +646,13 @@ h2{
     font-weight: bold;
     font-size: 9pt;
 }
+
+/* User voice popup */
+#uvTab {
+    border-bottom: 1px solid #FFF !important;
+    border-radius: 4px 4px 4px 4px !important;
+    right: 192px !important;
+    top: -3px !important;
+    bottom: auto !important;
+    left: auto !important;
+}
