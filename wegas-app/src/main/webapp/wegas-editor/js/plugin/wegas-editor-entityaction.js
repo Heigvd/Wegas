@@ -107,13 +107,14 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             EditEntityAction.callback = callback;
             EditEntityAction.currentEntity = entity;
             EditEntityAction.cancelCallback = cancelCallback;
-            
+
             if (!EditEntityAction.tab) {                                        // First make sure the edit tab exists
                 EditEntityAction.tab = Wegas.TabView.createTab("Edit", '#rightTabView');
                 //EditEntityAction.tab = Wegas.TabView.createTab("Edit", '#centerTabView');
                 EditEntityAction.form = new Wegas.Form();
                 EditEntityAction.form.on("submit", function(e) {
                     this.form.showOverlay();
+                    //EditEntityAction.form.saveButton.set("disabled", true);
                     this.callback(e.value, this.currentEntity);
                 }, EditEntityAction);
                 EditEntityAction.form.on("cancel", function() {
@@ -128,11 +129,14 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 }, EditEntityAction);
                 EditEntityAction.form.before("updated", function(e) {
                     EditEntityAction.form.toolbar.setStatusMessage("*");
+                    EditEntityAction.form.saveButton.set("disabled", false);
                 });
                 EditEntityAction.tab.add(EditEntityAction.form);
             }
 
             var prefix = (entity.get("id")) ? "Edit " : "New ";                 // No id -> new entity
+            EditEntityAction.form.toolbar.setStatusMessage("");
+            EditEntityAction.form.saveButton.set("disabled", false);
             EditEntityAction.tab.set("label", prefix + entity.getType().replace("Descriptor", ""));
             EditEntityAction.tab.set("selected", 2);
             EditEntityAction.form.set("values", entity.toObject());
@@ -174,10 +178,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         EditEntityAction.showFormMessage("success", "Item has been updated");
                         EditEntityAction.hideEditFormOverlay();
                     },
-                    failure: function(e) {
-                        EditEntityAction.hideEditFormOverlay();
-                        EditEntityAction.form.defaultFailureHandler(e);
-                    }
+                    failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                 });
             });
         }
@@ -202,10 +203,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         EditEntityAction.showUpdateForm(e.response.entity, dataSource);
                         EditEntityAction.showFormMessage("success", "Item has been added");
                     },
-                    failure: function(e) {
-                        EditEntityAction.hideEditFormOverlay();
-                        EditEntityAction.form.defaultFailureHandler(e);
-                    }
+                    failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                 });
             }, null, this.get("formCfg"));
         },
@@ -260,10 +258,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                                 EditEntityAction.hideEditFormOverlay();
                                 EditEntityAction.showFormMessage("success", "Item has been updated");
                             },
-                            failure: function(e) {
-                                EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.form.defaultFailureHandler(e);
-                            }
+                            failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                         });
                     });
                     break;
@@ -280,10 +275,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                                 EditEntityAction.showFormMessage("success", "Item has been added");
                                 EditEntityAction.hideFormFields();
                             },
-                            failure: function(e) {
-                                EditEntityAction.hideEditFormOverlay();
-                                EditEntityAction.form.defaultFailureHandler(e);
-                            }
+                            failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                         });
                     }, this));
                     break;
@@ -353,10 +345,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         EditEntityAction.showUpdateForm(newDescriptor, dataSource);
                         EditEntityAction.showFormMessage("success", "Item has been added");
                     },
-                    failure: function(e) {
-                        EditEntityAction.hideEditFormOverlay();
-                        EditEntityAction.form.defaultFailureHandler(e);
-                    }
+                    failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                 });
             }, null, this.get("formCfg"));
         },
