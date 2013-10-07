@@ -19,7 +19,7 @@ YUI.add('wegas-blockrightclick', function(Y) {
      *  @constructor
      */
     var Wegas = Y.Wegas,
-        BlockRightclick = Y.Base.create("wegas-blockrightclick", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+            BlockRightclick = Y.Base.create("wegas-blockrightclick", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.BlockRightclick */
 
         /**
@@ -35,8 +35,7 @@ YUI.add('wegas-blockrightclick', function(Y) {
         ATTRS: {
             targetNode: {
                 value: "boundingBox",
-                type: "string",
-                "transient": true
+                type: "string"
             }
         },
         NS: "BlockRightclick",
