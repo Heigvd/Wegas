@@ -119,6 +119,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.addQuestions(questions.get("items"));
             }
 
+            if (this.gallery) {
+                this.gallery.syncUI();
+            }
+            this.hideOverlay();
+
             if (this.tabView.isEmpty()) {
                 this.tabView.add(new Y.Tab({
                     label: "",
@@ -126,13 +131,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 }));
                 this.tabView.selectChild(0);
             } else {
+                if (lastSelection >= this.tabView.size()) {                     // Can occur when questions list has changed during event
+                    lastSelection = 0;
+                }
                 this.tabView.selectChild(lastSelection);
             }
-
-            if (this.gallery) {
-                this.gallery.syncUI();
-            }
-            this.hideOverlay();
         },
         addQuestions: function(questions) {
 
