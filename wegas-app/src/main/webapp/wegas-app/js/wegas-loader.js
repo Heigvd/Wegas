@@ -300,7 +300,7 @@ YUI().use(function(Y) {
                     requires: ['plugin']
                 },
                 'wegas-popup': {
-                    path: 'wegas-app/js/plugin/wegas-popup-min.js',
+                    path: 'wegas-proggame/js/wegas-popup-min.js',
                     ws_provides: ["Popup"]
                 },
                 'wegas-tooltip': {
