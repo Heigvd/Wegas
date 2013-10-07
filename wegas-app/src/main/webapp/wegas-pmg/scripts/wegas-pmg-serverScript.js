@@ -507,7 +507,7 @@ function checkAssignments(assignments, currentStep) {
                         employeeName);
             } else {
                 sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
-                        'La tâche ' + taskDesc.getLabel() + ' est terminée, je retourne à mon activitié traditionnelle. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                        'La tâche "' + taskDesc.getLabel() + '" est terminée. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             }
             assignments.remove(i);
@@ -772,7 +772,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activityAsNeeds.getResourceInstance().getProperty('wage'))) / steps)));
+    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activityAsNeeds.getResourceInstance().getProperty('wage'))/4) / steps)));
 
     if (testMode) {
         println('sameNeedActivity.length : ' + sameNeedActivity.length);
