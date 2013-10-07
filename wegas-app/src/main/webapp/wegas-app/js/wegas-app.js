@@ -91,29 +91,43 @@ YUI.add('wegas-app', function(Y) {
             });
 
             Y.on("io:failure", function(tId, req, e) {                          // Add a global io failure listener
-                var msg = "Error sending request : " + e.target.get("source") + e.request;
+                //if (!req) {
+                //    return;
+                //}
+                var msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source") + e.request
+                        + ", " + e.cfg.data + ": ";
                 try {
-                    msg += "\n Server reply " + Y.JSON.stringify(Y.JSON.parse(req.response), null, "\t");
+                    var r = Y.JSON.parse(req.responseText);
+                    msg += "\n Server reply " + Y.JSON.stringify(r, null, "\t");
+
+                    if (r.exception === "org.apache.shiro.authz.UnauthenticatedException") {
+                        //Y.io(this.get("base") + "/User/LoggedIn");
+                        var panel = new Y.Wegas.Panel({
+                            content: "<div class='icon icon-info'>You have been logged out.</div>",
+                            modal: true,
+                            centered: true,
+                            buttons: {
+                                footer: [{
+                                        label: 'Click here to reconnect',
+                                        action: function() {
+                                            Y.config.win.location.reload();
+                                            //Y.config.win.location.href = Y.config.win.location.href + "#";
+                                        }
+                                    }]
+                            }
+                        });
+                        panel.render();
+                        e.preventDefault();
+                        return;
+                    } else if (r.exception === "org.apache.shiro.authz.UnauthorizedException") {
+                        // @todo Do something?
+                    }
                 } catch (e) {                                                   // JSON PARSE ERROR
-                    msg += "\n Server reply " + req.response;
+                    msg += "\n Server reply " + req.responseText;
                 }
                 Y.log(msg, "error");
                 if (window.Muscula) {                                           // Send an event to muscula
                     window.Muscula.errors.push(new Error(msg));
-                }
-                if (!req) {
-                    return;
-                }
-                var exception = req.responseText ?
-                        req.responseText.substring(req.responseText.indexOf('"exception'), req.responseText.length)
-                        : "Unknown io exception";
-                        
-                exception = exception.split(",");
-                if (req.status === 400 && exception[0] === '"exception":"org.apache.shiro.authz.UnauthorizedException"' ||
-                        exception[0] === '"exception":"org.apache.shiro.authz.UnauthenticatedException"') {
-                    // Y.config.win.location.href = Y.Wegas.app.get("base") + 'wegas-app/view/login.html';   //Redirect to login
-                    // alert("You have been logged out or does not have permissions");
-                    Y.log("You have been logged out or does not have permissions");
                 }
             }, this);
 

@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-panelwidget', function(Y) {
+YUI.add('wegas-layout-panel', function(Y) {
     "use strict";
 
     /**

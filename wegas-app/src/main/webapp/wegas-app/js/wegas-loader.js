@@ -259,7 +259,7 @@ YUI().use(function(Y) {
                     path: 'wegas-app/css/form-min.css',
                     type: "css"
                 },
-                'wegas-layout-widget': {
+                'wegas-layout-panel': {
                     path: 'wegas-app/js/widget/wegas-layout-panel-min.js',
                     requires: ['panel'],
                     ws_provides: "PanelWidget"

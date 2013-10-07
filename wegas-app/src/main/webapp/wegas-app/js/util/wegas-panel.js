@@ -69,12 +69,8 @@ YUI.add('wegas-panel', function(Y) {
             maskNode: {"transient": true},
             modal: {
                 value: false,
-                type: "boolean",
-                _inputex: {
-                    label: "Modal"
-                }
+                type: "boolean"
             },
-            visible: {value: false},
             shim: {"transient": true},
             x: {"transient": true},
             xy: {"transient": true},

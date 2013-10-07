@@ -7,12 +7,9 @@
  */
 package com.wegas.core.security.rest;
 
-import com.wegas.core.Helper;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.guest.GuestJpaAccount;
-import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
@@ -30,6 +27,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 
@@ -96,7 +94,9 @@ public class UserController {
     @GET
     @Path("AutoComplete/{value}")
     public List<Map> getAutoComplete(@PathParam("value") String value) {
-        SecurityUtils.getSubject().isAuthenticated();
+        if (!SecurityUtils.getSubject().isRemembered()) {
+            throw new UnauthorizedException();
+        }
         return userFacade.findAccountByValue(value);
     }
 
@@ -186,6 +186,12 @@ public class UserController {
     @Path("GuestLogin")
     public void guestLogin() {
         userFacade.guestLogin();
+    }
+
+    @GET
+    @Path("LoggedIn")
+    public boolean isLoggedIn() {
+        return SecurityUtils.getSubject().isRemembered();
     }
 
     /**

@@ -69,7 +69,6 @@ YUI.add('wegas-popuplistener', function(Y) {
             event = stringToObject(event);
             event = Y.mix(this.DEFAULT_CONFIG(), event, true, null, 0, false);
             instance = new Y.Wegas.Panel(event).render(this.get("host").get(this.get("targetAttr")));
-            instance.show();
             if (event.timeout) {
                 setTimeout(function() {
                     instance && instance.exit();
