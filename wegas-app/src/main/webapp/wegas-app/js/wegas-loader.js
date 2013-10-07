@@ -360,10 +360,6 @@ YUI().use(function(Y) {
                     requires: ['wegas-cssstyles'],
                     ws_provides: ['CSSBackground', 'CSSText', 'CSSPosition', 'CSSSize']
                 },
-                "wegas-scheduledatatable": {
-                    path: 'wegas-app/js/plugin/wegas-scheduledatatable-min.js',
-                    ws_provides: 'ScheduleDT'
-                },
                 "wegas-conditionaldisable": {
                     path: 'wegas-app/js/plugin/wegas-conditionaldisable-min.js',
                     ws_provides: 'ConditionalDisable'
@@ -842,6 +838,10 @@ YUI().use(function(Y) {
                     path: 'wegas-resourcemanagement/wegas-inputex-var-autocomplete-min.js',
                     requires: ['inputex-string'],
                     ix_provides: 'wegasvarautocomplete'
+                },
+                "wegas-scheduledatatable": {
+                    path: 'wegas-resourcemanagement/js/wegas-scheduledatatable-min.js',
+                    ws_provides: 'ScheduleDT'
                 },
                 /* Leaderway */
                 'wegas-leaderway': {
