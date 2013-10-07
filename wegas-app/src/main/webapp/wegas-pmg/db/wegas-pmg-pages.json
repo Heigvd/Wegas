@@ -954,7 +954,7 @@
         "children": [
             {
                 "type": "Text",
-                "content": "<div class='title'><h2>Questions to be made during this week</h2></div><div class='title'><h2>Details</h2></div>"
+                "content": "<div class='title'><h2>Questions to answer this week</h2></div><div class='title'><h2>Details</h2></div>"
             }, {
                 "type": "MCQTabView",
                 "variable": {
@@ -1110,9 +1110,8 @@
                         "name": "Wages",
                         "key": "instance.properties.wages"
                     }, {
-                        "label": "Quality",
                         "name": "Quality",
-                        "formatter": "template",
+                        "label": "Quality",
                         "key": "instance.properties.quality"
                     }, {
                         "key": "requirements",
