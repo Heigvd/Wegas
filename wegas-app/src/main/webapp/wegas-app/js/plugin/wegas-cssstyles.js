@@ -52,9 +52,9 @@ YUI.add('wegas-cssstyles', function(Y) {
         initializer: function() {
             this.styleList = [];
             if (this.get("host") instanceof Y.Widget) {
-                this.get("host").onceAfter("render", function() {
+                this.onceAfterHostEvent("render", function() {
                     this.setValue(this.get("styles"));
-                }, this);
+                });
             } else if (this.get("host") instanceof Y.Node) {
                 this.setValue(this.get("styles"));
             } else {
@@ -105,7 +105,7 @@ YUI.add('wegas-cssstyles', function(Y) {
             }
         },
         /**
-         * 
+         *
          * @private
          * @param {type} key Style to edit
          * @param {type} value Style's value

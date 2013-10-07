@@ -7,40 +7,13 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('datatable-csv', function(Y) {
     "use strict";
-    var arraysToCSV, download, DatatableCSV, imgTest = new Image();
-    /**
-     * Convert array of arrays to CSV
-     * @private
-     * @param {Array} arrays array containing arrays [[], []]
-     * @returns {String} CSV string
-     */
-    arraysToCSV = function(arrays) {
-        return Y.Array.map(arrays, function(i) {
-            return i.join(DatatableCSV.FIELD_DELIMITER);
-        }).join(DatatableCSV.RECORD_DELIMITER);
-    };
-    /**
-     * Send data to server to download it.
-     * @function
-     * @private
-     * @param {String} contentType file's content-type
-     * @param {String} name file's name
-     * @param {String} data file's content
-     * @returns {undefined}
-     */
-    download = function(contentType, name, data) {
-        var url = Y.Wegas.app.get("base") + "rest/Download/" + name,
-                form = Y.Node.create('<form enctype="multipart/form-data" method="post" action="' + url + '" ><input type="hidden" name="data"><input type="hidden" name="ctype"></form>');
-        form.one("input[name=data]").getDOMNode().value = data;
-        form.one("input[name=ctype]").getDOMNode().value = contentType;
-        form.submit();
-        form.destroy();
-    };
+    var DatatableCSV, imgTest = new Image();
+
     /**
      * Plugin to export datatable as CSV.
      * @constructor
@@ -62,20 +35,21 @@ YUI.add('datatable-csv', function(Y) {
                 DatatableCSV.dataToWindow(this._toCSV());
             }, this);
             this.get("host").get("boundingBox").one(".datatable-csv-file").on("click", function() {
-                var csv = this._toCSV(), node = this.get("host").get("boundingBox").one(".datatable-csv-file"),
+                var csv = this._toCSV(),
+                        //node = this.get("host").get("boundingBox").one(".datatable-csv-file"),
                         gm_name = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("name"),
                         game_name = Y.Wegas.Facade.Game.cache.getCurrentGame().get("name"),
                         name = gm_name + "-" + game_name + "-" + Y.Lang.now() + ".csv";
-                download("text/csv", name, csv);
-                //Disabled due to IE allowing limited data URI
-//                if (DatatableCSV.DATA_URI_SUPPORT) {
-//                    node.setAttribute("href", "data:text/csv;header=true," + encodeURIComponent(csv));
-//                    node.setAttribute("download", name);
-//                } else {
-//                    //FALLBACK : get a real browser
-//                    download("text/csv", name, csv);
-//                }
 
+                DatatableCSV.download("text/csv", name, csv);
+                //Disabled due to IE allowing limited data URI
+                //if (DatatableCSV.DATA_URI_SUPPORT) {
+                //    node.setAttribute("href", "data:text/csv;header=true," + encodeURIComponent(csv));
+                //    node.setAttribute("download", name);
+                //} else {
+                //    //FALLBACK : get a real browser
+                //    download("text/csv", name, csv);
+                //}
             }, this);
         },
         /**
@@ -100,7 +74,7 @@ YUI.add('datatable-csv', function(Y) {
                 records.push(fields);
 
             }
-            return arraysToCSV(records);
+            return this.arraysToCSV(records);
 
         },
         /**
@@ -151,8 +125,38 @@ YUI.add('datatable-csv', function(Y) {
                 selection.addRange(range);
             }
         },
+        /**
+         * Convert array of arrays to CSV
+         * @private
+         * @param {Array} arrays array containing arrays [[], []]
+         * @returns {String} CSV string
+         */
+        arraysToCSV: function(arrays) {
+            return Y.Array.map(arrays, function(i) {
+                return i.join(DatatableCSV.FIELD_DELIMITER);
+            }).join(DatatableCSV.RECORD_DELIMITER);
+        },
+        /**
+         * Send data to server to download it.
+         * @function
+         * @private
+         * @param {String} contentType file's content-type
+         * @param {String} name file's name
+         * @param {String} data file's content
+         * @returns {undefined}
+         */
+        download: function(contentType, name, data) {
+            var url = Y.Wegas.app.get("base") + "rest/Download/" + name,
+                    form = Y.Node.create('<form enctype="multipart/form-data" method="post" action="' + url + '" ><input type="hidden" name="data"><input type="hidden" name="ctype"></form>');
+            form.one("input[name=data]").getDOMNode().value = data;
+            form.one("input[name=ctype]").getDOMNode().value = contentType;
+            form.submit();
+            form.destroy();
+        },
         DATA_URI_SUPPORT: undefined
     });
+    Y.namespace("Wegas").DatatableCSV = DatatableCSV;
+
     imgTest.onload = imgTest.onerror = function() {
         if (imgTest.width === 1 && imgTest.height === 1) {
             DatatableCSV.DATA_URI_SUPPORT = true;
@@ -162,6 +166,5 @@ YUI.add('datatable-csv', function(Y) {
         imgTest = null;
     };
     imgTest.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-    Y.namespace("Wegas").DatatableCSV = DatatableCSV;
 
 });

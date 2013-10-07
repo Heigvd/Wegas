@@ -17,10 +17,10 @@ YUI.add('wegas-conditionaldisable', function(Y) {
         handlers: null,
         initializer: function() {
             this.handlers = [];
-            this.get("host").onceAfter("render", function() {
+            this.onceAfterHostEvent("render", function() {
                 this.conditionEval();
                 this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.conditionEval, this));
-            }, this);
+            });
         },
         destructor: function() {
             var i;
