@@ -94,7 +94,7 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
 
         QuestionInstance questionInstance = (QuestionInstance) questionDescriptor.getInstance(player);
         if (!questionDescriptor.getAllowMultipleReplies() && !questionInstance.getReplies().isEmpty()) {
-            throw new WegasException("A choice already exists for that question");
+            throw new WegasException("You have already answered this question");
         }
 
         Reply reply = new Reply();
