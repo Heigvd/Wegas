@@ -401,6 +401,21 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             this.editor = new Y.EditorBase({
                 content: '<p>Test</p>'
             });
+            this.editor.plug(Y.Plugin.ITSAToolbar, {
+                btnEmail: false, 
+                btnFontfamily: false, 
+                btnHeader: false, 
+                btnFontsize: false, 
+                btnHyperlink: false, 
+                btnMarkcolor: false, 
+                btnTextcolor: false, 
+                grpAlign: false, 
+                grpIndent: false, 
+                grpLists: false, 
+                grpSubsuper: false, 
+                grpUndoredo: false,
+                btnSize: 3
+            });
             this.editor.render('#editor');
         },
         
