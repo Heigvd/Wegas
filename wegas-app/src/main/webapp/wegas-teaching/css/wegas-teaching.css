@@ -100,6 +100,7 @@ svg {
 /* ! contentBox */
 
 .yui3-tooltip-content {
+	cursor: pointer;
 	position: relative;
 	max-width: 220px;
 	_width: 220px; /* IE6 */
