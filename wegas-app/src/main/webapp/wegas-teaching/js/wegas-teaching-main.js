@@ -110,22 +110,56 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             };
             var node = Y.Node(arrow.get('node'));
             node.on('click', handleClick, this, this);
-            node.setAttribute("tooltip", arrowInstance.get("properties").text);
             
+            this.createButton(x1, y1, id, orientation, handleClick);
+            this.createLabel(x1, y1, id, text, orientation, handleClick);
+            
+            return arrow;
+        },
+                
+        createButton: function(x1, y1, id, orientation, handleClick) {
             // Button to edit arrow
             var button = Y.one("#btnArrow" + (id-1));
             button.setStyle('position', 'absolute');
+            
+            // Apply styles (difference between vertical and horizontal arrow)
             if (orientation == this.ORIENTATION_VERTICAL) {
                 button.setStyle('left', x1 - 60);
                 button.setStyle('top', y1 + 26);
+                
             }
             else { // horizontal
                 button.setStyle('left', x1 + 16);
                 button.setStyle('top', y1 - 40);
+                
             }
             button.on('click', handleClick, this, this);
+        },
+                
+        createLabel: function(x1, y1, id, text, orientation, handleClick) {
+            var label = Y.one("#lblArrow" + (id-1));
+            label.setStyle('position', 'absolute');
+            var child = label.one('*');
+            var content = child.one('*');
+            content.setHTML(text);
             
-            return arrow;
+            if (orientation == this.ORIENTATION_VERTICAL) {
+                label.setStyle('left', x1 + 25);
+                label.setStyle('top', y1 + 25);
+                child.addClass('yui3-tooltip-align-right');
+                child.setStyle('width', '70px');
+                child.setStyle('height', '30px');
+            }
+            else { // horizontal
+                label.setStyle('left', x1 + 13);
+                label.setStyle('top', y1 + 25);
+                child.addClass('yui3-tooltip-align-bottom');
+                child.setStyle('width', '60px');
+                child.setStyle('height', '30px');
+            }
+            label.on('click', handleClick, this, this);
+            
+            return content;
         },
         
         createRectangle: function(x, y, id, cb) {
@@ -174,6 +208,18 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             cb.append("<button id='btnArrow9' class='yui3-button'>Éditer</button>");
             cb.append("<button id='btnArrow10' class='yui3-button'>Éditer</button>");
             cb.append("<button id='btnArrow11' class='yui3-button'>Éditer</button>");
+            cb.append("<div id='lblArrow0' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow1' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow2' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow3' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow4' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow5' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow6' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow7' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow8' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow9' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow10' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow11' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
             
             this.graphic = new Y.Graphic({render: "#layer", autoDraw: true});
             /* Create and add 12 arrows */
@@ -199,10 +245,9 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             this.rectangle7 = this.createRectangle(3, 530, 6, cb);
             this.rectangle8 = this.createRectangle(280, 530, 7, cb);
             this.rectangle9 = this.createRectangle(555, 530, 8, cb);
-            
+            /* Init editors */
             this.initArrowEditor();
             this.initRectangleEditor();
-            new Y.Tooltip().render();
         },
         
         bindUI: function() {
@@ -316,9 +361,11 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             this.btnArrowNone.on('click', onNoneClick, this, this);
             
             var onSaveClick = function(e, parent) {
+                var text = parent.getArrowEditorText();
                 parent.currentArrow.setType(parent.getArrowEditorType());
-                parent.currentArrow.setText(parent.getArrowEditorText());
+                parent.currentArrow.setText(text);
                 parent.saveCurrentArrow();
+                Y.one("#lblArrow" + (parent.currentArrow.get('id') - 1)).one('*').one('*').setHTML(text);
                 parent.arrowEditor.hide();
             };
             var btnSaveArrow = new Y.Button({
