@@ -772,7 +772,7 @@
                                 {
                                     "allowHTML": true,
                                     "label": "Grade",
-                                    "formatter": "object",
+                                    "formatter": "skillLevel",
                                     "field": "instance.skillsets",
                                     "sortable": false
                                 },
@@ -855,7 +855,7 @@
                                 {
                                     "allowHTML": true,
                                     "label": "Grade",
-                                    "formatter": "object",
+                                    "formatter": "skillLevel",
                                     "field": "instance.skillsets",
                                     "sortable": false
                                 },
@@ -938,7 +938,7 @@
                                 {
                                     "allowHTML": true,
                                     "label": "Grade",
-                                    "formatter": "object",
+                                    "formatter": "skillLevel",
                                     "field": "instance.skillsets",
                                     "sortable": false
                                 },
@@ -1021,7 +1021,7 @@
                                 {
                                     "allowHTML": true,
                                     "label": "Grade",
-                                    "formatter": "object",
+                                    "formatter": "skillLevel",
                                     "field": "instance.skillsets",
                                     "sortable": false
                                 },
@@ -1104,7 +1104,7 @@
                                 {
                                     "allowHTML": true,
                                     "label": "Grade",
-                                    "formatter": "object",
+                                    "formatter": "skillLevel",
                                     "field": "instance.skillsets",
                                     "sortable": false
                                 },
@@ -1187,7 +1187,7 @@
                                 {
                                     "allowHTML": true,
                                     "label": "Grade",
-                                    "formatter": "object",
+                                    "formatter": "skillLevel",
                                     "field": "instance.skillsets",
                                     "sortable": false
                                 },
