@@ -929,7 +929,7 @@ YUI().use(function(Y) {
                     path: "wegas-teaching/js/wegas-teaching-main.js",
                     ws_provides: "TeachingMain",
                     requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle",
-                        "editor", "dd-plugin", "autocomplete",
+                        "editor", "dd-plugin", "autocomplete", "gallery-itsatoolbar",
                         "autocomplete-highlighters", "autocomplete-filters"]
                 }
             }
