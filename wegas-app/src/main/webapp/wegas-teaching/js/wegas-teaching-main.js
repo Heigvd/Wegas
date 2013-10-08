@@ -89,8 +89,9 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             var arrowInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "fleche" + id).getInstance();
             var val = arrowInstance.get("properties").value;
             var text = arrowInstance.get("properties").text;
-            
             var color = this.getColorByVal(val);
+            var orientation = x1 == x2; // true = 1: vertical (else horizontal)            
+            
             var arrow = this.graphic.addShape({
                 type: Y.TeachingArrow,
                 stroke: {
@@ -102,7 +103,7 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                 id: id,
                 val: val,
                 text: text,
-                orientation: x1 == x2 // true = 1: vertical (else horizontal)
+                orientation: orientation
             });
             var handleClick = function(e, parent) {
                 parent.showArrowEditor(arrow);
@@ -110,6 +111,20 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             var node = Y.Node(arrow.get('node'));
             node.on('click', handleClick, this, this);
             node.setAttribute("tooltip", arrowInstance.get("properties").text);
+            
+            // Button to edit arrow
+            var button = Y.one("#btnArrow" + (id-1));
+            button.setStyle('position', 'absolute');
+            if (orientation == this.ORIENTATION_VERTICAL) {
+                button.setStyle('left', x1 - 60);
+                button.setStyle('top', y1 + 26);
+            }
+            else { // horizontal
+                button.setStyle('left', x1 + 16);
+                button.setStyle('top', y1 - 40);
+            }
+            button.on('click', handleClick, this, this);
+            
             return arrow;
         },
         
@@ -147,6 +162,18 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             cb.append("<div id='rectangle6' class='invisible'></div>");
             cb.append("<div id='rectangle7' class='invisible'></div>");
             cb.append("<div id='rectangle8' class='invisible'></div>");
+            cb.append("<button id='btnArrow0' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow1' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow2' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow3' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow4' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow5' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow6' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow7' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow8' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow9' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow10' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow11' class='yui3-button'>Éditer</button>");
             
             this.graphic = new Y.Graphic({render: "#layer", autoDraw: true});
             /* Create and add 12 arrows */
