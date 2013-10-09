@@ -103,7 +103,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
                     method: "PUT",
 //                    updateCache: false,
                     updateEvent: false,
-                    data: JSON.stringify(taskDescriptor.get("instance"))
+                    data: Y.JSON.stringify(taskDescriptor.get("instance"))
                 }
             });
         }
