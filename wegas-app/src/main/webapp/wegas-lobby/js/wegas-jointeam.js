@@ -60,7 +60,7 @@ YUI.add('wegas-jointeam', function(Y) {
             }
             if (choices.length === 0) {
                 choices.push({
-                    label: "<em>empty</em>",
+                    label: "no teams created yet",
                     value: null
                 });
                 this.joinTeamButton.set("disabled", true);
