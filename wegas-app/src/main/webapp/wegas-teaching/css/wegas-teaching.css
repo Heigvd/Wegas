@@ -49,6 +49,46 @@ svg {
     height: 0px;
 }
 
+.icon {
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 32px;
+    vertical-align: middle;
+    width: 32px;
+}
+
+.horizontal-normal {
+    background-image: url("../../wegas-teaching/images/horizontal-normal.png");
+}
+
+.horizontal-inverse {
+    background-image: url("../../wegas-teaching/images/horizontal-inverse.png");
+}
+
+.horizontal-double {
+    background-image: url("../../wegas-teaching/images/horizontal-double.png");
+}
+
+.horizontal-none {
+    background-image: url("../../wegas-teaching/images/horizontal-none.png");
+}
+
+.vertical-normal {
+    background-image: url("../../wegas-teaching/images/vertical-normal.png");
+}
+
+.vertical-inverse {
+    background-image: url("../../wegas-teaching/images/vertical-inverse.png");
+}
+
+.vertical-double {
+    background-image: url("../../wegas-teaching/images/vertical-double.png");
+}
+
+.vertical-none {
+    background-image: url("../../wegas-teaching/images/vertical-none.png");
+}
+
 /* YUI Tooltip CSS by Josh Lizarraga http://freshcutsd.com/yui-tooltip/ */
 
 /* ! General */
@@ -60,6 +100,7 @@ svg {
 /* ! contentBox */
 
 .yui3-tooltip-content {
+	cursor: pointer;
 	position: relative;
 	max-width: 220px;
 	_width: 220px; /* IE6 */
