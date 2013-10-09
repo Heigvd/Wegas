@@ -124,7 +124,6 @@ public class RequestFacade {
     public void commit() {
         em.flush();
         if (this.getUpdatedInstances().size() > 0) {
-
             if (this.getPlayer() != null) {
                 // RequestManager.PlayerAction action = new RequestManager.PlayerAction();
                 //action.setPlayer(this.getPlayer());

@@ -85,6 +85,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.dataSource.sendRequest({
                     request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
                             + "/Player/" + Y.Wegas.app.get('currentPlayer'),
+                    cfg: {
+                        method: "POST"
+                    },
                     on: {
                         failure: Y.bind(this.defaultFailureHandler, this)
                     }
