@@ -175,3 +175,42 @@ tbody .past .activity {
     overflow:hidden;
     width:100%;
 }
+
+/* legends */
+.pmg-legend{
+    border: thin solid #ADADAE;
+    margin: 0 5px;
+    padding: 1px 0;
+}
+.pmg-legend > div{
+    font-style: italic;
+    color: #ADADAE;
+    width: 20%;
+    display: inline-block;
+    *display:inline;
+    *zoom:1;
+}
+.pmg-legend > div > div{
+    width: 2em;
+    height: 1em;
+    display: inline-block;
+    *display: inline;
+    *zoom:1;
+    margin-right: 1em;
+}
+.pmg-legend .engagementDelay {
+    background-image:url(../../wegas-pmg/images/hatching.png);
+    background-repeat: repeat;
+}
+.pmg-legend .editable{
+    background-color: #3399FF;
+}
+.pmg-legend .fill100{
+    background-color: rgba(51, 153, 255, 0.3);
+}
+.pmg-legend .notEditable{
+    background-color: #FF0000;
+}
+.pmg-legend .planification{
+    background-color: rgba(135, 135, 135, 0.3);
+}
