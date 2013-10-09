@@ -324,28 +324,20 @@ YUI.add('wegas-editable', function(Y) {
          *  @return Y.Wegas.Widget the resulting entity
          */
         revive: function(data) {
-            var walk = function(o, key) {
-                var k, v, value = o[key];
-                if (value && typeof value === "object") {
+            var walk = function(value) {
+                var k, v;
+                if (Lang.isObject(value)) {
                     for (k in value) {
                         if (value.hasOwnProperty(k)) {
-                            v = walk(value, k);
-                            if (!Lang.isUndefined(v)) {
-                                value[k] = v;
-                            }
+                            value[k] = walk(value[k]);
                         }
                     }
-                    if (!Lang.isUndefined(value["@class"]) || !Lang.isUndefined(value.type)) {
-                        return Editable.reviver(value);
-                    }
+                    return Editable.reviver(value);
+                } else {
+                    return value;                                               // Return raw original object
                 }
-                return value;                                      // If no value was returned before, return raw original object
             };
-
-            //return typeof reviver === 'function' ? walk({'':data},'') : data;
-            return walk({
-                '': data
-            }, '');
+            return walk(data);
         },
         /**
          *  Takes an js object and lookup the corresponding entity in the
@@ -357,16 +349,12 @@ YUI.add('wegas-editable', function(Y) {
          *  @return {Y.Wegas.Widget} the resulting entity
          */
         reviver: function(o) {
-            var classDef = Y.Wegas.persistence.DefaultEntity;
-
             if (o["@class"]) {
-                classDef = Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.DefaultEntity;
-
+                return new (Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.DefaultEntity)(o);
             } else if (o.type) {
-                classDef = Y.Wegas.persistence[o.type] || Y.Wegas.persistence.WidgetEntity;
-
+                return new (Y.Wegas.persistence[o.type] || Y.Wegas.persistence.WidgetEntity)(o);
             }
-            return new classDef(o);
+            return o;
         },
         /**
          *
