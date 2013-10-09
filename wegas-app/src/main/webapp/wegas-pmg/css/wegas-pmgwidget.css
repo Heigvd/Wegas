@@ -166,7 +166,10 @@ tbody .past .activity {
     background-image: url(../../wegas-pmg/images/remove.png);
     cursor: pointer;
 }
-
+/* bac plugin */
+.yui3-datatable-table input.invalid{
+    border-color: #E43737;
+}
 /* --------------- SlidePanel css ------------------------------------*/
 .wegas-pmg-slidepanel .wegas-pmg-slidepanel-content{
     overflow:hidden;

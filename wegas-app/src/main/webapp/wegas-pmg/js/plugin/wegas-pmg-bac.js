@@ -28,7 +28,6 @@ YUI.add('wegas-pmg-bac', function(Y) {
          * @private
          */
         initializer: function() {
-            this.fields = [];
             this.onceAfterHostEvent("render", function() {
                 this.addBacColumn();
                 this.addInputField();
@@ -44,54 +43,38 @@ YUI.add('wegas-pmg-bac', function(Y) {
             }, this.get("columnPosition"));
         },
         addInputField: function() {
-            var i, ii, dt = this.get("host").datatable, cell, field, taskDesc;
+            var i, dt = this.get("host").datatable, cell, field, taskDesc;
 
             for (i = 0; i < dt.data._items.length; i++) {
                 taskDesc = dt.data.item(i).get("descriptor");
-                for (ii = 0; ii < dt.get('columns').length; ii++) {
-                    if (dt.get('columns')[ii]._id === "bac") {
-                        cell = dt.getRow(i).getDOMNode().cells[ii];
-                        field = new Y.inputEx.StringField({value: taskDesc.getInstance().get("properties").bac, parentEl: cell, required: true, className: "bacField"});
-                        field.taskDescId = taskDesc.get("id");
-                        this.fields.push(field);
-
-                    }
-                }
+                cell = dt.getCell([i, this.get("columnPosition")]);
+                field = Y.Node.create("<input class='bacField'></input>");
+                field.set("value", taskDesc.getInstance().get("properties").bac);
+                cell.append(field);
             }
         },
         onKeyUpEvent: function() {
-            var i, dt = this.get("host").datatable;
-            this.get("host").datatable.delegate("keyup", function(e) {
-                this.timer;
-
-                if (this.timer) {
-                    this.timer.cancel();
-                }
-
-                this.timer = Y.later(1000, this, function() {
-                    if (e.charCode !== 9) {
-                        if (this.isValidField(e.target.get("value"))) {
-                            for (i = 0; i < dt.data.size(); i += 1) {
-                                if (dt.getRow(i).contains(e.target)) {
-                                    dt.getRecord(i).get("instance").properties.bac = e.target.get("value");
-                                    this.request(dt.getRecord(i));
-                                }
-                            }
-                        } else {
-                            e.setValue(dt.getRecord(i).get("instance").properties.bac);
-                        }
+            var dt = this.get("host").datatable;
+            this.changeHandle = this.get("host").datatable.delegate("change", function(e) {
+                var record = dt.getRecord(e.target), val = e.target.get("value").trim();
+                val = (val === "") ? "0" : val; //empty is 0
+                e.target.removeClass("invalid");
+                if (this.isValidField(val)) {
+                    val = parseInt(val, 10) + ""; // Remove leading 0 : binary number
+                    e.target.set("value", val);
+                    if (record && record.get("instance").properties.bac + "" !== val) {
+                        record.get("instance").properties.bac = val;
+                        this.request(record);
                     }
-                });
-
-            }, ".bacField input", this);
+                } else {
+                    e.target.addClass("invalid");
+                }
+            }, ".bacField", this);
         },
         isValidField: function(value) {
-            if (value === "") {
-                this.get("host").showMessage("error", "Bac field cannot be null");
-                return false;
-            }
-            else if (!parseInt(value)) {
-                this.get("host").showMessage("error", "Value is not a number");
+            var regexp = /^[+]?\d+$/; //positive number
+            if (!regexp.test(value)) {
+                this.get("host").showMessage("error", "\"" + value + "\" is not a positive integer");
                 return false;
             }
             return true;
@@ -103,9 +86,13 @@ YUI.add('wegas-pmg-bac', function(Y) {
                     method: "PUT",
 //                    updateCache: false,
                     updateEvent: false,
-                    data: JSON.stringify(taskDescriptor.get("instance"))
+                    data: Y.JSON.stringify(taskDescriptor.get("instance"))
                 }
             });
+        },
+        destructor: function() {
+            this.changeHandle.detach();
+            this.get("host").datatable.removeColumn("bac");                     /* Time consuming */
         }
     }, {
         ATTRS: {

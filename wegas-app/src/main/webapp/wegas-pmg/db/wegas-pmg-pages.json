@@ -579,7 +579,7 @@
                             }, {
                                 "name": "grade",
                                 "label": "Grade",
-                                "formatter": "object",
+                                "formatter": "skillLevel",
                                 "sortFn": "objectsort",
                                 "key": "instance.skillsets"
                             }, {
@@ -640,7 +640,7 @@
                             }, {
                                 "name": "grade",
                                 "label": "Grade",
-                                "formatter": "object",
+                                "formatter": "skillLevel",
                                 "sortFn": "objectsort",
                                 "key": "instance.skillsets"
                             }, {
@@ -701,7 +701,7 @@
                             }, {
                                 "name": "grade",
                                 "label": "Grade",
-                                "formatter": "object",
+                                "formatter": "skillLevel",
                                 "sortFn": "objectsort",
                                 "key": "instance.skillsets"
                             }, {
@@ -762,7 +762,7 @@
                             }, {
                                 "name": "grade",
                                 "label": "Grade",
-                                "formatter": "object",
+                                "formatter": "skillLevel",
                                 "sortFn": "objectsort",
                                 "key": "instance.skillsets"
                             }, {
@@ -823,7 +823,7 @@
                             }, {
                                 "name": "grade",
                                 "label": "Grade",
-                                "formatter": "object",
+                                "formatter": "skillLevel",
                                 "sortFn": "objectsort",
                                 "key": "instance.skillsets"
                             }, {
@@ -884,7 +884,7 @@
                             }, {
                                 "name": "grade",
                                 "label": "Grade",
-                                "formatter": "object",
+                                "formatter": "skillLevel",
                                 "sortFn": "objectsort",
                                 "key": "instance.skillsets"
                             }, {
