@@ -758,7 +758,6 @@ YUI().use(function(Y) {
                 },
                 "wegas-pmg-bac": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-bac-min.js',
-                    requires: ['inputex-string'],
                     ws_provides: 'Bac'
                 },
                 "wegas-pmg-tablepopup": {
