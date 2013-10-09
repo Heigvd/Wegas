@@ -93,7 +93,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }, "input[type=submit]", this);
 
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
-
         },
         /**
          * @function
