@@ -7,6 +7,7 @@
  */
 package com.wegas.core.jcr.page;
 
+import com.wegas.core.AlphanumericComparator;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class Pages implements Serializable {
             return new TreeMap<>();
         }
         NodeIterator it = this.connector.listChildren(this.gameModelId);
-        Map<String, String> ret = new TreeMap<>();
+        Map<String, String> ret = new TreeMap<>(new AlphanumericComparator<String>());
         Node n;
         String name;
         while (it.hasNext()) {
@@ -75,7 +76,7 @@ public class Pages implements Serializable {
             return new TreeMap<>();
         }
         NodeIterator it = this.connector.listChildren(this.gameModelId);
-        Map<String, JsonNode> ret = new TreeMap<>();
+        Map<String, JsonNode> ret = new TreeMap<>(new AlphanumericComparator<String>());
         while (it.hasNext()) {
             Node n = (Node) it.next();
             try {
