@@ -25,6 +25,9 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
         ARROW_NORMAL: 1,
         ARROW_INVERSE: 2,
         ARROW_DOUBLE: 3,
+        // Orientation const
+        ORIENTATION_HORIZONTAL: 0,
+        ORIENTATION_VERTICAL: 1,
         // Ref on selected arrow
         currentArrow: null,
         // Rectangles (persistent data)
@@ -63,6 +66,19 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             this.currentArrow = arrow;
             this.setArrowEditorButtons(arrow.get('val'));
             document.getElementById('arrowCurrentText').value = arrow.get('text');
+            // Set correct image (vertical or horizontal)
+            if (arrow.get('orientation') == this.ORIENTATION_HORIZONTAL) {
+                this.btnArrowNormal.set('label', '<span class="icon horizontal-normal"></span>');
+                this.btnArrowInverse.set('label', '<span class="icon horizontal-inverse"></span>');
+                this.btnArrowDouble.set('label', '<span class="icon horizontal-double"></span>');
+                this.btnArrowNone.set('label', '<span class="icon horizontal-none"></span>');
+            }
+            else { // vertical
+                this.btnArrowNormal.set('label', '<span class="icon vertical-normal"></span>');
+                this.btnArrowInverse.set('label', '<span class="icon vertical-inverse"></span>');
+                this.btnArrowDouble.set('label', '<span class="icon vertical-double"></span>');
+                this.btnArrowNone.set('label', '<span class="icon vertical-none"></span>');
+            }
             this.arrowEditor.show();
             Y.one('#arrowCurrentText').focus();
         },
@@ -73,8 +89,9 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             var arrowInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "fleche" + id).getInstance();
             var val = arrowInstance.get("properties").value;
             var text = arrowInstance.get("properties").text;
-            
             var color = this.getColorByVal(val);
+            var orientation = x1 == x2; // true = 1: vertical (else horizontal)            
+            
             var arrow = this.graphic.addShape({
                 type: Y.TeachingArrow,
                 stroke: {
@@ -85,15 +102,64 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                 tgt: [x2, y2],
                 id: id,
                 val: val,
-                text: text
+                text: text,
+                orientation: orientation
             });
             var handleClick = function(e, parent) {
                 parent.showArrowEditor(arrow);
             };
             var node = Y.Node(arrow.get('node'));
             node.on('click', handleClick, this, this);
-            node.setAttribute("tooltip", arrowInstance.get("properties").text);
+            
+            this.createButton(x1, y1, id, orientation, handleClick);
+            this.createLabel(x1, y1, id, text, orientation, handleClick);
+            
             return arrow;
+        },
+                
+        createButton: function(x1, y1, id, orientation, handleClick) {
+            // Button to edit arrow
+            var button = Y.one("#btnArrow" + (id-1));
+            button.setStyle('position', 'absolute');
+            
+            // Apply styles (difference between vertical and horizontal arrow)
+            if (orientation == this.ORIENTATION_VERTICAL) {
+                button.setStyle('left', x1 - 60);
+                button.setStyle('top', y1 + 26);
+                
+            }
+            else { // horizontal
+                button.setStyle('left', x1 + 16);
+                button.setStyle('top', y1 - 40);
+                
+            }
+            button.on('click', handleClick, this, this);
+        },
+                
+        createLabel: function(x1, y1, id, text, orientation, handleClick) {
+            var label = Y.one("#lblArrow" + (id-1));
+            label.setStyle('position', 'absolute');
+            var child = label.one('*');
+            var content = child.one('*');
+            content.setHTML(text);
+            
+            if (orientation == this.ORIENTATION_VERTICAL) {
+                label.setStyle('left', x1 + 25);
+                label.setStyle('top', y1 + 25);
+                child.addClass('yui3-tooltip-align-right');
+                child.setStyle('width', '70px');
+                child.setStyle('height', '30px');
+            }
+            else { // horizontal
+                label.setStyle('left', x1 + 13);
+                label.setStyle('top', y1 + 25);
+                child.addClass('yui3-tooltip-align-bottom');
+                child.setStyle('width', '60px');
+                child.setStyle('height', '30px');
+            }
+            label.on('click', handleClick, this, this);
+            
+            return content;
         },
         
         createRectangle: function(x, y, id, cb) {
@@ -119,7 +185,7 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
             cb.append("<div id='layer' style='width:100%;height:620px;'></div>");
-            cb.append("<div id='arrowEditor'><div class='yui3-widget-bd' style='padding:8px;'><input id='arrowCurrentText' /><p><button id='btnArrowNormal'>Normal</button><button id='btnArrowInverse'>Inverse</button><button id='btnArrowDouble'>Double</button><button id='btnArrowNone'>Aucun</button></p><button id='btnSaveArrow'>Sauvegarder</button></div></div>");
+            cb.append("<div id='arrowEditor'><div class='yui3-widget-bd' style='padding:8px;'><input id='arrowCurrentText' /><p><button id='btnArrowNormal'></button><button id='btnArrowInverse'></button><button id='btnArrowDouble'></button><button id='btnArrowNone'></button></p><button id='btnSaveArrow'>Sauvegarder</button></div></div>");
             cb.append("<div id='rectangleEditor'><div class='yui3-widget-bd' style='padding:8px;'><div id='editor'></div><button id='btnSaveRectangle'>Sauvegarder</button></div></div>");
             cb.append("<div id='rectangle0' class='invisible'></div>");
             cb.append("<div id='rectangle1' class='invisible'></div>");
@@ -130,6 +196,30 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             cb.append("<div id='rectangle6' class='invisible'></div>");
             cb.append("<div id='rectangle7' class='invisible'></div>");
             cb.append("<div id='rectangle8' class='invisible'></div>");
+            cb.append("<button id='btnArrow0' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow1' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow2' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow3' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow4' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow5' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow6' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow7' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow8' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow9' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow10' class='yui3-button'>Éditer</button>");
+            cb.append("<button id='btnArrow11' class='yui3-button'>Éditer</button>");
+            cb.append("<div id='lblArrow0' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow1' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow2' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow3' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow4' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow5' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow6' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow7' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow8' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow9' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow10' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+            cb.append("<div id='lblArrow11' class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
             
             this.graphic = new Y.Graphic({render: "#layer", autoDraw: true});
             /* Create and add 12 arrows */
@@ -155,10 +245,9 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             this.rectangle7 = this.createRectangle(3, 530, 6, cb);
             this.rectangle8 = this.createRectangle(280, 530, 7, cb);
             this.rectangle9 = this.createRectangle(555, 530, 8, cb);
-            
+            /* Init editors */
             this.initArrowEditor();
             this.initRectangleEditor();
-            new Y.Tooltip().render();
         },
         
         bindUI: function() {
@@ -239,7 +328,8 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                 parent.setArrowEditorButtons(parent.ARROW_NORMAL);
             };
             this.btnArrowNormal = new Y.ToggleButton({
-               srcNode: '#btnArrowNormal'
+               srcNode: '#btnArrowNormal',
+               label: '<span class="icon horizontal-normal"></span>'
             }).render();
             this.btnArrowNormal.on('click', onNormalClick, this, this);
             
@@ -247,7 +337,8 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                 parent.setArrowEditorButtons(parent.ARROW_INVERSE);
             };
             this.btnArrowInverse = new Y.ToggleButton({
-                srcNode: '#btnArrowInverse'
+                srcNode: '#btnArrowInverse',
+                label: '<span class="icon horizontal-inverse"></span>'
             }).render();
             this.btnArrowInverse.on('click', onInverseClick, this, this);
             
@@ -255,7 +346,8 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                 parent.setArrowEditorButtons(parent.ARROW_DOUBLE);
             };
             this.btnArrowDouble = new Y.ToggleButton({
-                srcNode: '#btnArrowDouble'
+                srcNode: '#btnArrowDouble',
+                label: '<span class="icon horizontal-double"></span>'
             }).render();
             this.btnArrowDouble.on('click', onDoubleClick, this, this);
             
@@ -263,14 +355,17 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                 parent.setArrowEditorButtons(parent.ARROW_NONE);
             };
             this.btnArrowNone = new Y.ToggleButton({
-                srcNode: '#btnArrowNone'
+                srcNode: '#btnArrowNone',
+                label: '<span class="icon horizontal-none"></span>'
             }).render();
             this.btnArrowNone.on('click', onNoneClick, this, this);
             
             var onSaveClick = function(e, parent) {
+                var text = parent.getArrowEditorText();
                 parent.currentArrow.setType(parent.getArrowEditorType());
-                parent.currentArrow.setText(parent.getArrowEditorText());
+                parent.currentArrow.setText(text);
                 parent.saveCurrentArrow();
+                Y.one("#lblArrow" + (parent.currentArrow.get('id') - 1)).one('*').one('*').setHTML(text);
                 parent.arrowEditor.hide();
             };
             var btnSaveArrow = new Y.Button({
@@ -305,6 +400,21 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
             
             this.editor = new Y.EditorBase({
                 content: '<p>Test</p>'
+            });
+            this.editor.plug(Y.Plugin.ITSAToolbar, {
+                btnEmail: false, 
+                btnFontfamily: false, 
+                btnHeader: false, 
+                btnFontsize: false, 
+                btnHyperlink: false, 
+                btnMarkcolor: false, 
+                btnTextcolor: false, 
+                grpAlign: false, 
+                grpIndent: false, 
+                grpLists: false, 
+                grpSubsuper: false, 
+                grpUndoredo: false,
+                btnSize: 3
             });
             this.editor.render('#editor');
         },
