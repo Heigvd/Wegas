@@ -54,7 +54,7 @@ public class QuestionController {
      * @throws ScriptException
      * @throws WegasException
      */
-    @GET
+    @POST
     @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response selectChoice(
             @PathParam("playerId") Long playerId,
@@ -107,7 +107,9 @@ public class QuestionController {
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
         Reply reply = questionDescriptorFacade.selectChoice(choiceId, playerId, startTime);
+
         requestFacade.commit();
+
         return reply.getQuestionInstance();
     }
 

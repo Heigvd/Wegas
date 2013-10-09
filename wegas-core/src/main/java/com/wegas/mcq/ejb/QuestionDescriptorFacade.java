@@ -19,10 +19,15 @@ import com.wegas.mcq.persistence.*;
 import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Observes;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +53,8 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     @EJB
     private ScriptFacade scriptManager;
+    @EJB
+    QuestionSingleton questionSingleton;
 
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
         logger.debug("Received DescriptorRevivedEvent event");
@@ -79,6 +86,12 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         return oldEntity;
     }
 
+    public int findReplyCount(Long instanceId) {
+        final Query query = em.createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
+        query.setParameter("id", instanceId);
+        return ((Number) query.getSingleResult()).intValue();
+    }
+
     /**
      *
      * @param choiceId
@@ -87,22 +100,38 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      * @return
      * @throws WegasException
      */
+//    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // Require new transaction
+//    @TransactionManagement(TransactionManagementType.BEAN)
+//    @Lock(LockType.WRITE)
+//    public Reply createReply(Long choiceId, Player player, Long startTime) throws WegasException {
+//        ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
+//
+//        QuestionDescriptor questionDescriptor = choice.getQuestion();
+//        QuestionInstance questionInstance = questionDescriptor.getInstance(player);
+//
+//        System.out.println("Test222 " + questionInstance.getReplies().size()
+//                + "*" + questionInstance.getId()
+//                + "*" + this.findReplyCount(questionInstance.getId())
+//                + "*" + questionInstance.getReplies().size());
+//        if (!questionDescriptor.getAllowMultipleReplies()
+//                && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
+//            //if (!questionDescriptor.getAllowMultipleReplies()
+//            //&& !questionInstance.getReplies().isEmpty()) {                    // Does not work when sending 2 requests at once
+//            throw new WegasException("You have already answered this question");
+//        }
+//
+//        Reply reply = new Reply();
+//        reply.setStartTime(startTime);
+//        reply.setResult(choice.getInstance(player).getResult());
+//        questionInstance.addReply(reply);
+////        em.persist(reply);
+//        em.flush();
+//        em.refresh(reply);
+//        return reply;
+//    }
+
     public Reply selectChoice(Long choiceId, Player player, Long startTime) throws WegasException {
-        ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
-
-        QuestionDescriptor questionDescriptor = choice.getQuestion();
-
-        QuestionInstance questionInstance = (QuestionInstance) questionDescriptor.getInstance(player);
-        if (!questionDescriptor.getAllowMultipleReplies() && !questionInstance.getReplies().isEmpty()) {
-            throw new WegasException("You have already answered this question");
-        }
-
-        Reply reply = new Reply();
-
-        reply.setStartTime(startTime);
-        reply.setResult(choice.getInstance(player).getResult());
-        questionInstance.addReply(reply);
-
+        Reply reply = questionSingleton.createReply(choiceId, player, startTime);
 
         HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Throw an event
         arguments.put("selectedReply", reply);
@@ -113,9 +142,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         } catch (ScriptException e) {
             // GOTCHA no eventManager is instantiated
         }
-
-        em.flush();
-        em.refresh(reply);
 
         return reply;
     }

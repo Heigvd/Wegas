@@ -42,7 +42,7 @@ public class ChoiceInstance extends VariableInstance {
     @JoinColumn(name = "result_id", insertable = false, updatable = false)
     //@JsonBackReference
     @XmlTransient
-//    @JsonDeserialize(using = JsonDeserializer.None.class)
+    //@JsonDeserialize(using = JsonDeserializer.None.class)
     private Result currentResult;
     /**
      *
