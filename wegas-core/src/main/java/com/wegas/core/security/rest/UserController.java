@@ -94,7 +94,7 @@ public class UserController {
     @GET
     @Path("AutoComplete/{value}")
     public List<Map> getAutoComplete(@PathParam("value") String value) {
-        if (!SecurityUtils.getSubject().isRemembered()) {
+        if (!SecurityUtils.getSubject().isRemembered() || !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
         return userFacade.findAccountByValue(value);
@@ -191,7 +191,7 @@ public class UserController {
     @GET
     @Path("LoggedIn")
     public boolean isLoggedIn() {
-        return SecurityUtils.getSubject().isRemembered();
+        return SecurityUtils.getSubject().isRemembered() || SecurityUtils.getSubject().isAuthenticated();
     }
 
     /**
