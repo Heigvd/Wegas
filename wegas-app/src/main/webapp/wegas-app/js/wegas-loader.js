@@ -62,7 +62,7 @@ YUI().use(function(Y) {
                 'wegas-scripteval': {
                     path: 'wegas-app/js/plugin/wegas-scripteval-min.js',
                     requires: ['plugin'],
-                    ws_provides: ['ScriptEval']
+                    ws_provides: 'ScriptEval'
                 },
                 'wegas-websocketlistener': {
                     path: 'wegas-app/js/util/wegas-websocketlistener-min.js',
@@ -96,11 +96,6 @@ YUI().use(function(Y) {
                     requires: ['wegas-entity'],
                     ws_provides: ["DialogueDescriptor", "TriggerDescriptor", "FSMDescriptor"]
                 },
-                'wegas-mcq-entities': {
-                    path: 'wegas-mcq/js/wegas-mcq-entities-min.js',
-                    requires: ['wegas-entity'],
-                    ws_provides: "QuestionDescriptor"
-                },
                 'wegas-content-entities': {
                     path: 'wegas-app/js/persistence/wegas-content-entities-min.js',
                     requires: ['wegas-entity']
@@ -120,6 +115,11 @@ YUI().use(function(Y) {
                 'wegas-layout': {
                     path: 'wegas-app/js/widget/wegas-layout-min.js',
                     requires: ['wegas-widget', 'widget-parent']
+                },
+                'wegas-layout-panel': {
+                    path: 'wegas-app/js/widget/wegas-layout-panel-min.js',
+                    requires: ['panel'],
+                    ws_provides: "PanelWidget"
                 },
                 'wegas-layout-list': {
                     path: 'wegas-app/js/widget/wegas-layout-list-min.js',
@@ -258,11 +258,6 @@ YUI().use(function(Y) {
                 formcss: {
                     path: 'wegas-app/css/form-min.css',
                     type: "css"
-                },
-                'wegas-layout-panel': {
-                    path: 'wegas-app/js/widget/wegas-layout-panel-min.js',
-                    requires: ['panel'],
-                    ws_provides: "PanelWidget"
                 },
                 'wegas-imageloader': {
                     path: 'wegas-app/js/util/wegas-imageloader-min.js',
@@ -686,13 +681,18 @@ YUI().use(function(Y) {
                 /*
                  * MCQ
                  */
+                'wegas-mcq-entities': {
+                    path: 'wegas-mcq/js/wegas-mcq-entities-min.js',
+                    requires: ['wegas-entity'],
+                    ws_provides: "QuestionDescriptor"
+                },
                 'wegas-mcq-tabview': {
-                    path: 'wegas-mcq/js/wegas-mcqtabview-min.js',
+                    path: 'wegas-mcq/js/wegas-mcq-tabview-min.js',
                     requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcq-tabviewcss'],
                     ws_provides: "MCQTabView"
                 },
                 'wegas-mcq-tabviewcss': {
-                    path: 'wegas-mcq/css/wegas-mcqtabview-min.css',
+                    path: 'wegas-mcq/css/wegas-mcq-tabview-min.css',
                     type: 'css'
                 },
                 /**

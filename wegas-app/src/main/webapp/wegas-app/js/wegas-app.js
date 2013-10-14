@@ -123,7 +123,7 @@ YUI.add('wegas-app', function(Y) {
                         // @todo Do something?
                     }
                 } catch (e) {                                                   // JSON PARSE ERROR
-                    msg += "\n Server reply " + req.responseText;
+                    msg += "\n Server reply " + (req && req.responseText);
                 }
                 Y.log(msg, "error");
                 if (window.Muscula) {                                           // Send an event to muscula
