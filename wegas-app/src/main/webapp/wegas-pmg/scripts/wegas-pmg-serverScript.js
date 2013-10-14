@@ -23,6 +23,7 @@ function nextPeriod() {
             ganttPage.getInstance(self).setValue(11);
             taskPage = VariableDescriptorFacade.findByName(gm, 'taskPage');
             taskPage.getInstance(self).setValue(12);
+            setWeekliesVariables();
         }
     } else if (time.phase === 2) { //if current phase is the 'realisation' phase
         completeRealizationPeriod();
@@ -73,12 +74,41 @@ function completeRealizationPeriod() {
 }
 
 /**
+ * This function calculate the planned value at a given time
+ * @param {Integer} periods
+ * @returns {Long} Planned value
+ */
+function calculatePlanedValue(periods) {
+    var i, ii, iii, taskInst, pv = 0, plannification, period,
+            tasks = VariableDescriptorFacade.findByName(gm, 'tasks');
+
+    for (i = 0; i < periods; i++) {
+        for (ii = 0; ii < tasks.items.size(); ii++) {
+            taskInst = tasks.items.get(ii).getInstance(self);
+            if (isTrue(taskInst.getActive())) {
+                if (taskInst.getPlannification().size() === 0 && i === 0) {
+                    pv += parseInt(taskInst.getProperty('bac'));
+                }
+                for (iii = 0; iii < taskInst.getPlannification().size(); iii++) {
+                    plannification = parseInt(taskInst.getPlannification().get(iii));
+                    period = i + 1;
+                    if (plannification === period) {
+                        pv += parseInt(taskInst.getProperty('bac')) / taskInst.getPlannification().size();
+                    }
+                }
+            }
+        }
+    }
+    return pv;
+}
+
+/**
  * Calculate planedValue, earnedValue, actualCost, projectCompleteness, cpi, spi, save
  *  history for variable the same variable and for costs, delay and quality.
  *  call function updateGauges();
  */
 function setWeekliesVariables() {
-    var i, taskInst, ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, active=0, nbCompleteTasks,
+    var i, taskInst, ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, active = 0, nbCompleteTasks,
             managementApproval, userApproval,
             tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
             costs = VariableDescriptorFacade.findByName(gm, 'costs'),
@@ -89,17 +119,20 @@ function setWeekliesVariables() {
             actualCost = VariableDescriptorFacade.findByName(gm, 'actualCost'),
             cpi = VariableDescriptorFacade.findByName(gm, 'cpi'),
             spi = VariableDescriptorFacade.findByName(gm, 'spi'),
-            projectFixCosts = VariableDescriptorFacade.findByName(gm, 'projectFixedCosts'),
+//            projectFixCosts = VariableDescriptorFacade.findByName(gm, 'projectFixedCosts'),
             projectCompleteness = VariableDescriptorFacade.findByName(gm, 'projectCompleteness');
-            managementApproval = VariableDescriptorFacade.findByName(gm, 'managementApproval');
-            userApproval = VariableDescriptorFacade.findByName(gm, 'userApproval');
+    managementApproval = VariableDescriptorFacade.findByName(gm, 'managementApproval');
+    userApproval = VariableDescriptorFacade.findByName(gm, 'userApproval');
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
         sumProjectCompleteness += parseFloat(taskInst.getProperty('completeness'));
         if (isTrue(taskInst.getActive())) {
-            pv += parseInt(taskInst.getProperty('bac')) * (parseInt(taskInst.getProperty('completeness')) / 100);
-            ev += parseInt(taskInst.getProperty('bac')) * (getPlannifiedCompleteness(taskInst) / 100);
-            ac += parseInt(taskInst.getProperty('wages')) + (parseInt(taskInst.getProperty('completeness')) / 100) * parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts'));
+            ev += parseInt(taskInst.getProperty('bac')) * (parseInt(taskInst.getProperty('completeness')) / 100);
+//            pv += parseInt(taskInst.getProperty('bac')) * (getPlannifiedCompleteness(taskInst) / 100);
+//            ac += parseInt(taskInst.getProperty('wages')) + (parseInt(taskInst.getProperty('completeness')) / 100) * parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts'));
+            if (parseInt(taskInst.getProperty('completeness')) > 0) {
+                ac += parseInt(taskInst.getProperty('wages')) + parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts'));
+            }
             active += 1;
         }
     }
@@ -109,18 +142,19 @@ function setWeekliesVariables() {
     projectCompleteness.getInstance(self).setValue(nbCompleteTasks * 100 / active);
 //    projectCompleteness.getInstance(self).setValue(sumProjectCompleteness);
 
-    //pv = for each task, sum -> bac * task completeness / 100
-    planedValue.getInstance(self).setValue(pv);
+    //pv = for each task, sum -> bac * task completeness / 100                 
+    planedValue.getInstance(self).setValue(calculatePlanedValue(getCurrentInGameTime().period - 1));
     //ev = for each task, sum -> bac * planified task completeness / 100
     earnedValue.getInstance(self).setValue(ev);
     //ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
-    actualCost.getInstance(self).setValue(ac + parseInt(projectFixCosts.getInstance(self).getValue()));
+//    actualCost.getInstance(self).setValue(ac + parseInt(projectFixCosts.getInstance(self).getValue()));
+    actualCost.getInstance(self).setValue(ac);
 
     //cpi = ev / ac * 100
     cpi.getInstance(self).setValue((ev / ac * 100));
     //spi = ev / pv * 100
     spi.getInstance(self).setValue((ev / pv * 100));
-    
+
     updateGauges();
 
     costs.getInstance(self).saveHistory();
@@ -148,19 +182,21 @@ function updateGauges() {
             tasksQuality = 0, nomberOfBeganTasks = 0, tasksScale = 0, nomberOfEmployeeRequired,
             costsJaugeValue, qualityJaugeValue, delayJaugeValue, qualityJaugeValue = 0;
 
-    //Calculate task quality and task scale
+    //Calculate task quality and task scale                                     @to check change quality calcul
     for (i = 0; i < tasks.items.size(); i++) {
         taskInst = tasks.items.get(i).getInstance(self);
         if (isTrue(taskInst.getActive())) {//if task is active
+            nomberOfBeganTasks += 1;
+            nomberOfEmployeeRequired = 0;
+            for (j = 0; j < taskInst.getRequirements().size(); j++) {
+                nomberOfEmployeeRequired += parseInt(taskInst.getRequirements().get(j).getQuantity());
+            }
+            tasksScale += parseInt(taskInst.getDuration()) * nomberOfEmployeeRequired;
             if (parseInt(taskInst.getProperty('completeness')) > 0) { //...and started
-                //tasksQuality += parseInt(taskInst.getProperty('quality'));
-                nomberOfBeganTasks += 1;
-                nomberOfEmployeeRequired = 0;
-                for (j = 0; j < taskInst.getRequirements().size(); j++) {
-                    nomberOfEmployeeRequired += parseInt(taskInst.getRequirements().get(j).getQuantity());
-                }
-                tasksScale += parseInt(taskInst.getDuration()) * nomberOfEmployeeRequired;
-                tasksQuality = parseInt(taskInst.getProperty('quality')) * parseInt(taskInst.getDuration()) * nomberOfEmployeeRequired;
+                //TO check
+                tasksQuality += parseInt(taskInst.getProperty('quality')) * parseInt(taskInst.getDuration()) * nomberOfEmployeeRequired;
+            } else {
+                tasksQuality += (100 + parseInt(taskInst.getProperty('quality'))) * parseInt(taskInst.getDuration()) * nomberOfEmployeeRequired;
             }
         }
     }
@@ -174,7 +210,7 @@ function updateGauges() {
     costs.getInstance(self).setValue(costsJaugeValue);
 
     //delay = EV / PV * 100
-    delayJaugeValue = Math.round(parseInt((earnedValue.getInstance(self).getValue()) / parseInt(planedValue.getInstance(self).getValue())) * 100);
+    delayJaugeValue = Math.round((parseInt(earnedValue.getInstance(self).getValue()) / parseInt(planedValue.getInstance(self).getValue())) * 100);
     delayJaugeValue = (delayJaugeValue > parseInt(delay.getMinValue())) ? delayJaugeValue : parseInt(delay.getMinValue());
     delayJaugeValue = (delayJaugeValue < parseInt(delay.getMaxValue())) ? delayJaugeValue : parseInt(delay.getMaxValue());
     delay.getInstance(self).setValue(delayJaugeValue);
@@ -379,8 +415,25 @@ function createActivities(currentStep) {
                 activities.push(activity);
             }
         }
+        removeAssignmentsFromCompleteTasks(employeeInst);
     }
     return activities;
+}
+
+/**
+ * When the task is complete remove all assignment from this task.
+ * @param {ResourceInstance} employeeInst
+ */
+function removeAssignmentsFromCompleteTasks(employeeInst) {
+    var assignment, i, taskInst;
+
+    for (i = 0; i < employeeInst.getAssignments().size(); i++) {
+        assignment = employeeInst.getAssignments().get(i);
+        taskInst = assignment.getTaskDescriptor().getInstance(self);
+        if (taskInst.getProperty('completeness') >= 100) {
+            employeeInst.getAssignments().remove(i);
+        }
+    }
 }
 
 /**
@@ -512,7 +565,7 @@ function checkAssignments(assignments, currentStep) {
             }
             assignments.remove(i);
             break;
-        } else if (i===0 && getPredecessorFactor(taskDesc) <= 0.2) {
+        } else if (i === 0 && getPredecessorFactor(taskDesc) <= 0.2) {
             sendMessage(getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
                     'Je suis sensé travailler sur la tâche ' + taskDesc.getLabel() + ' mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
@@ -735,8 +788,8 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     }
     stepAdvance *= otherWorkFactor;
 
-    //calculate randomFactor
-    stepAdvance *= getRandomFactorFromTask(taskInst);
+    //calculate randomFactor                                                    @fixme seems not to work correctly
+//    stepAdvance *= getRandomFactorFromTask(taskInst);
 
     //calculate learnFactor
     if (parseInt(taskInst.getProperty('completeness')) > 15) {
@@ -772,7 +825,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activityAsNeeds.getResourceInstance().getProperty('wage'))/4) / steps)));
+    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activityAsNeeds.getResourceInstance().getProperty('wage')) / 4) / steps)));
 
     if (testMode) {
         println('sameNeedActivity.length : ' + sameNeedActivity.length);
@@ -1063,32 +1116,32 @@ function sendMessage(subject, content, from) {
  * @param String name, the name from ressource to check
  * @return true if work on project
  */
-function workOnProject(name){
+function workOnProject(name) {
     var employee = VariableDescriptorFacade.findByName(gm, name), instance, i, activity,
-        activityNotFinish = false, taskInstance, hasOccupation = false, occupation, 
-        currentPeriode = VariableDescriptorFacade.findByName(gm, "periodPhase3").getInstance().value;
-    
+            activityNotFinish = false, taskInstance, hasOccupation = false, occupation,
+            currentPeriode = VariableDescriptorFacade.findByName(gm, "periodPhase3").getInstance().value;
+
     //Check if has a not finished activity
     instance = employee.getInstance();
-    for (i=0; i<instance.getActivities().size(); i++){
+    for (i = 0; i < instance.getActivities().size(); i++) {
         activity = instance.getActivities().get(i);
         taskInstance = activity.getTaskDescriptor().getInstance(self);
-        if (parseInt(taskInstance.getProperties().get("completeness"))<100){
+        if (parseInt(taskInstance.getProperties().get("completeness")) < 100) {
             activityNotFinish = true;
             break;
         }
     }
-    
+
     // Check if has an occupation for the futur
-    for (i=0; i<instance.getOccupations().size(); i++){
+    for (i = 0; i < instance.getOccupations().size(); i++) {
         occupation = instance.getOccupations().get(i);
-        if (occupation.getTime() >= currentPeriode ){
+        if (occupation.getTime() >= currentPeriode) {
             hasOccupation = true;
             break;
         }
     }
-    
-    if (activityNotFinish && hasOccupation){
+
+    if (activityNotFinish && hasOccupation) {
         return true;
     } else {
         return false;
@@ -1182,30 +1235,30 @@ function addPredecessor(descName, listPredName) {
 function addArtosOccupation() {
     addOccupation("Gaelle", 6);
     addOccupation("Gaelle", 7);
-    
+
     addOccupation("Murielle", 4);
     addOccupation("Murielle", 5);
-    
+
     addOccupation("Kurt", 4);
-    
+
     addOccupation("Diane", 2);
-    
+
     addOccupation("Luc", 11);
     addOccupation("Luc", 12);
-    
+
     addOccupation("André", 10);
     addOccupation("André", 11);
-    
+
     addOccupation("Pierre", 6);
-    
+
     addOccupation("Yvonne", 6);
-    
+
     addOccupation("Quentin", 9);
-    
+
     addOccupation("Karim", 3);
 }
 
 function addOccupation(name, periode) {
     employee = VariableDescriptorFacade.findByName(gm, name),
-    employee.addOccupation(self, periode, false, "");
+            employee.addOccupation(self, periode, false, "");
 }

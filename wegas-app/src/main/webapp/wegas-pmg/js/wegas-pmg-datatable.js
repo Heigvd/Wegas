@@ -11,21 +11,18 @@
  */
 YUI.add("wegas-pmg-datatable", function(Y) {
     "use strict";
-
     var CONTENTBOX = "contentBox", Datatable, micro = new Y.Template(),
+            JUNIOR = "Junior", SENIOR = "Senior", EXPERT = "Expert",
             TEMPLATES = {
         template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
         object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
-        requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= this[i].get("level") %></span></p><%}%>'),
-        assignedRessource: micro.compile('<% for(var i = 0; i < this.length; i+=1){ for (var j in this[i].ressourceInstance.get("skillsets")){%> <p><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= this[i].ressourceInstance.get("skillsets")[j]%>)</p><% }} %>')
+        requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].get("level")] %></span></p><%}%>'),
+        assignedRessource: micro.compile('<% for(var i = 0; i < this.length; i+=1){ for (var j in this[i].ressourceInstance.get("skillsets")){%> <p><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
     };
-
     Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        // *** Lifecycle Methods *** //
+// *** Lifecycle Methods *** //
         initializer: function() {
             var i, ct = this.get("columnsCfg");
-
-
             for (i = 0; i < ct.length; i += 1) {                                //construct Datatable's columns
                 Y.mix(ct[i], {
                     sortable: true,
@@ -66,7 +63,6 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             var oneRowDatas,
                     variables = this.get('variable.evaluated'),
                     data = [];
-
             if (!variables) {
                 this.showMessage("error", "Could not find variable");
                 return [];
@@ -85,6 +81,17 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             return data;
         }
     }, {
+        TEXTUAL_SKILL_LEVEL: {
+            1: JUNIOR,
+            2: JUNIOR,
+            3: JUNIOR,
+            4: SENIOR,
+            5: SENIOR,
+            6: SENIOR,
+            7: EXPERT,
+            8: EXPERT,
+            9: EXPERT
+        },
         ATTRS: {
             /**
              * The target variable, returned either based on the variableName attribute,
@@ -111,7 +118,6 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 return function(a, b, dir) {
                     var aa = Y.Object.values(a.get(col.key))[0] || '',
                             bb = Y.Object.values(b.get(col.key))[0] || '';
-
                     if (typeof(aa) === "string" && typeof(bb) === "string") {// Not case sensitive
                         aa = aa.toLowerCase();
                         bb = bb.toLowerCase();
@@ -160,6 +166,15 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 var i, ret = [];
                 for (i in o.value) {
                     ret.push(o.value[i]);
+                }
+                return ret.join("");
+            };
+        },
+        skillLevel: function() {
+            return function(o) {
+                var i, ret = [];
+                for (i in o.value) {
+                    ret.push(Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[o.value[i]]);
                 }
                 return ret.join("");
             };
@@ -218,12 +233,10 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                     i, len, col, token, value, formatterData;
             for (i = 0, len = columns.length; i < len; ++i) {
                 col = columns[i];
-                value = (col.key) ? model.get(col.key) : null;                                     // @modified
+                value = (col.key) ? model.get(col.key) : null; // @modified
                 //value = data[col.key];
                 token = col._id || col.key;
-
                 values[token + '-className'] = '';
-
                 if (col._formatterFn) {
                     formatterData = {
                         value: value,
@@ -234,7 +247,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                         rowClass: '',
                         rowIndex: index
                     };
-                    value = col._formatterFn.call(host, formatterData);// Formatters can either return a value
+                    value = col._formatterFn.call(host, formatterData); // Formatters can either return a value
                     if (value === undefined) {// or update the value property of the data obj passed
                         value = formatterData.value;
                     }
@@ -248,8 +261,8 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                     values[token] = col.allowHTML ? value : Y.Escape.html(value);
                 }
             }
-            values.rowClass = values.rowClass.replace(/\s+/g, ' ');// replace consecutive whitespace with a single space
-            return Y.Lang.sub(this._rowTemplate, values);// @modified
+            values.rowClass = values.rowClass.replace(/\s+/g, ' '); // replace consecutive whitespace with a single space
+            return Y.Lang.sub(this._rowTemplate, values); // @modified
         },
         refreshCell: function(cell, model, col) {
             var content,
@@ -259,7 +272,6 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             cell = this.getCell(cell);
             model || (model = this.getRecord(cell));
             col || (col = this.getColumn(cell));
-
             if (col.nodeFormatter) {
                 formatterData = {
                     cell: cell.one('.' + this.getClassName('liner')) || cell,
@@ -291,7 +303,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                         rowClass: '',
                         rowIndex: this._getRowIndex(cell.ancestor('tr'))
                     };
-                    content = formatterFn.call(this.get('host'), formatterData);// Formatters can either return a value ...
+                    content = formatterFn.call(this.get('host'), formatterData); // Formatters can either return a value ...
                     if (content === undefined) {// ... or update the value property of the data obj passed
                         content = formatterData.value;
                     }

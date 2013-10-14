@@ -210,7 +210,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             requirements = descriptor.getInstance().get("requirements");
             for (i = 0; i < requirements.length; i += 1) {
                 dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " + requirements[i].get("work")
-                        + " " + requirements[i].get("level");
+                        + " " + Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
             }
             dataToDisplay = dataToDisplay + "</div>";
             this.menuDetails.get(CONTENTBOX).setHTML(dataToDisplay);

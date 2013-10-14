@@ -758,7 +758,6 @@ YUI().use(function(Y) {
                 },
                 "wegas-pmg-bac": {
                     path: 'wegas-pmg/js/plugin/wegas-pmg-bac-min.js',
-                    requires: ['inputex-string'],
                     ws_provides: 'Bac'
                 },
                 "wegas-pmg-tablepopup": {
@@ -929,7 +928,7 @@ YUI().use(function(Y) {
                     path: "wegas-teaching/js/wegas-teaching-main.js",
                     ws_provides: "TeachingMain",
                     requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle",
-                        "editor", "gallery-yui-tooltip", "dd-plugin", "autocomplete",
+                        "editor", "dd-plugin", "autocomplete", "gallery-itsatoolbar",
                         "autocomplete-highlighters", "autocomplete-filters"]
                 }
             }
