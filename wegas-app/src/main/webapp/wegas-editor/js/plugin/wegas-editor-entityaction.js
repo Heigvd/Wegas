@@ -338,9 +338,13 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     success: function(e) {
                         EditEntityAction.hideEditFormOverlay();
 
-                        var newDescriptor = Y.Array.find(e.response.entity.get("items"), function(e) {
-                            return idBack.indexOf(e.get("id")) == -1;
-                        });
+                        var newDescriptor = e.response.entity;
+                        if (newDescriptor instanceof Y.Wegas.persistence.VariableDescriptor
+                                && newDescriptor.get("items")) {                // If the parent list of the edited item was returned,
+                            newDescriptor = Y.Array.find(newDescriptor.get("items"), function(e) {// need to look up for the edited entity
+                                return idBack.indexOf(e.get("id")) === -1;
+                            });
+                        }
 
                         EditEntityAction.showUpdateForm(newDescriptor, dataSource);
                         EditEntityAction.showFormMessage("success", "Item has been added");
