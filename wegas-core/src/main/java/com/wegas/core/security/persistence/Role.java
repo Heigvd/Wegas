@@ -10,6 +10,7 @@ package com.wegas.core.security.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.*;
 
@@ -134,7 +135,7 @@ public class Role extends AbstractEntity {
      */
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
-        for (Permission p: this.permissions) {
+        for (Permission p : this.permissions) {
             p.setRole(this);
         }
     }
@@ -153,7 +154,18 @@ public class Role extends AbstractEntity {
     }
 
     public boolean removePermission(String permission) {
-        return this.permissions.remove(new Permission(permission));
+        Permission perm = new Permission(permission);
+        Permission currPerm;
+        boolean returnVal = false;
+        Iterator<Permission> it = this.permissions.iterator();
+        while (it.hasNext()) {
+            currPerm = it.next();
+            if (currPerm.equals(perm)) {
+                it.remove();
+                returnVal = true;
+            }
+        }
+        return returnVal;
     }
 
     @Override
