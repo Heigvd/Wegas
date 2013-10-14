@@ -9,6 +9,7 @@ package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.event.DescriptorRevivedEvent;
 import com.wegas.resourceManagement.persistence.AbstractAssignement;
 import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
@@ -20,8 +21,11 @@ import com.wegas.resourceManagement.persistence.WRequirement;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,6 +35,7 @@ import javax.persistence.PersistenceContext;
 @LocalBean
 public class ResourceFacade {
 
+    static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
     /**
      *
      */
@@ -92,17 +97,19 @@ public class ResourceFacade {
         return this.createActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
                 (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
     }
+
     /**
-     * 
+     *
      * @param resourceInstance
      * @param editable
-     * @return 
+     * @return
      */
     public Occupation addOccupation(ResourceInstance resourceInstance, Boolean editable) {
         Occupation occupation = this.addOccupation(resourceInstance);
         occupation.setEditable(editable);
         return occupation;
     }
+
     /**
      *
      * @param resourceInstance
@@ -112,7 +119,8 @@ public class ResourceFacade {
         Occupation occupation = resourceInstance.addOccupation();
         return occupation;
     }
-     /**
+
+    /**
      *
      * @param resourceInstance
      * @param taskInstance
@@ -133,7 +141,7 @@ public class ResourceFacade {
         assignement.getResourceInstance().getAssignments().add(index, assignement);
         return assignement.getResourceInstance();
     }
-    
+
     public ResourceInstance removeAssignment(final Long assignementId) {
         final Assignment assignement = this.em.find(Assignment.class, assignementId);
         assignement.getResourceInstance().getAssignments().remove(assignement);
@@ -141,32 +149,32 @@ public class ResourceFacade {
     }
 
     /**
-     * 
+     *
      * @param requirement
      * @param taskInstanceId
-     * @return 
+     * @return
      */
     public TaskInstance addRequierement(WRequirement requirement, Long taskInstanceId) {
         TaskInstance ti = (TaskInstance) variableInstanceFacade.find(taskInstanceId);
         ti.getRequirements().add(requirement);
         return ti;
     }
-    
+
     public ResourceInstance addAbstractAssignement(Long resourceInstanceId, AbstractAssignement abstractAssignement) {
-        ResourceInstance res = (ResourceInstance)variableInstanceFacade.find(resourceInstanceId);
+        ResourceInstance res = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
         if (abstractAssignement instanceof Occupation) {
-            Occupation o = (Occupation)abstractAssignement;
+            Occupation o = (Occupation) abstractAssignement;
             res.addOccupation(o);
         } else if (abstractAssignement instanceof Assignment) {
-            Assignment a = (Assignment)abstractAssignement;
+            Assignment a = (Assignment) abstractAssignement;
             res.addAssignement(a);
         } else {
-            Activity a = (Activity)abstractAssignement;
+            Activity a = (Activity) abstractAssignement;
             res.addActivity(a);
         }
         return res;
     }
-    
+
     public void removeAbstractAssignement(Long abstractAssignementId, String type) {
         switch (type) {
             case "occupations":
@@ -182,32 +190,43 @@ public class ResourceFacade {
                 em.remove(ac);
         }
     }
-    
-    public Occupation findOccupation(Long id){
+
+    public Occupation findOccupation(Long id) {
         return em.find(Occupation.class, id);
     }
-    
+
     public Activity findActivity(Long id) {
         return em.find(Activity.class, id);
     }
-    
-    public Assignment findAssignment(Long id){
+
+    public Assignment findAssignment(Long id) {
         return em.find(Assignment.class, id);
     }
-    
-    public TaskInstance findTaskInstance(Long id){
+
+    public TaskInstance findTaskInstance(Long id) {
         return em.find(TaskInstance.class, id);
     }
-    
+
     public TaskInstance addTaskPlannification(Long taskInstanceId, Integer periode) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().add(periode);
         return ti;
     }
-    
+
     public TaskInstance removePlannification(Long taskInstanceId, Integer periode) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().remove(periode);
         return ti;
+    }
+
+    public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
+        logger.debug("Received DescriptorRevivedEvent event");
+
+        if (event.getEntity() instanceof TaskDescriptor) {
+            TaskDescriptor task = (TaskDescriptor) event.getEntity();
+            for (String predecessorName : task.getImportedPredecessors()) {
+                task.addPredecessor((TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName));
+            }
+        }
     }
 }

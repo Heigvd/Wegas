@@ -7,11 +7,11 @@
  */
 package com.wegas.resourceManagement.ejb;
 
-import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.core.ejb.AbstractEJBTest;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.resourceManagement.persistence.Assignment;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
@@ -19,13 +19,15 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
+import java.util.ArrayList;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>, Benjamin Gerber <ger.benjamin@gmail.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>, Benjamin Gerber
+ * <ger.benjamin@gmail.com>
  */
 public class ResourceFacadeTest extends AbstractEJBTest {
 
@@ -206,7 +208,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.remove(res.getId());
         vdf.remove(task.getId());
     }
-    
+
     /**
      * Test of addOccupation method, of class ResourceFacade.
      */
@@ -320,6 +322,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.remove(task2.getId());
         vdf.remove(task3.getId());
     }
+
     /**
      * Test of requirements methods, of class resourceInstance
      */
@@ -350,8 +353,44 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         //test on work variable because if it match, requierements work.
         assertEquals(((TaskInstance) vif.find(task.getInstance(player).getId())).getRequirements().get(0).getWork(),
                 requirement.getWork());
-                
+
         // Clean
         vdf.remove(task.getId());
+    }
+
+    @Test
+    public void testDuplicateTaskDescriptor() throws Exception {
+
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("My task");
+        task.setDefaultInstance(new TaskInstance());
+        task.setScope(new TeamScope());
+        vdf.create(gameModel.getId(), task);
+
+        // Create a second task
+        TaskDescriptor task2 = new TaskDescriptor();
+        task2.setLabel("My task2");
+        TaskInstance taskInstance = new TaskInstance();
+        ArrayList<WRequirement> requirements = new ArrayList<>();
+        requirements.add(new WRequirement("engineer"));
+        taskInstance.setRequirements(requirements);
+        task2.setDefaultInstance(taskInstance);
+        task2.addPredecessor(task);
+        task2.setScope(new TeamScope());
+        vdf.create(gameModel.getId(), task2);
+        assertEquals("engineer", ((TaskInstance) task2.getDefaultInstance()).getRequirements().get(0).getWork());
+
+        // and duplicate it
+        VariableDescriptor duplicate = (TaskDescriptor) vdf.duplicate(task2.getId());
+        assertEquals("engineer", ((TaskInstance) duplicate.getDefaultInstance()).getRequirements().get(0).getWork());
+        assertEquals("My task", ((TaskDescriptor) duplicate).getPredecessor(0).getLabel());
+
+        // Clean
+        vdf.remove(task.getId());
+        vdf.remove(task2.getId());
     }
 }

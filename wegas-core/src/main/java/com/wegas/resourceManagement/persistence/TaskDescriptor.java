@@ -16,12 +16,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PreDestroy;
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -53,7 +58,25 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      */
     @ManyToMany
+    @JoinTable(
+            joinColumns = {
+        @JoinColumn(name = "taskdescriptor_variabledescriptor_id")},
+            inverseJoinColumns = {
+        @JoinColumn(name = "predecessors_variabledescriptor_id")})              // prevent change in the db
+    @JsonView(Views.IndexI.class)
     private List<TaskDescriptor> predecessors = new ArrayList<>();
+    /*
+     *
+     */
+    @ManyToMany(mappedBy = "predecessors")
+    @JsonIgnore
+    private List<TaskDescriptor> dependencies = new ArrayList<>();
+    /**
+     *
+     */
+    @Transient
+    @JsonView(Views.Export.class)
+    private List<String> exportedPredecessors = new ArrayList<>();
 
     /**
      * /**
@@ -69,6 +92,13 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         this.predecessors = ListUtils.mergeLists(this.predecessors, other.getPredecessors());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        for (TaskDescriptor t : this.dependencies) {
+            t.predecessors.remove(this);
+        }
     }
 
     /**
@@ -125,6 +155,13 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void setPredecessor(Integer index, TaskDescriptor taskDescriptor) {
         this.predecessors.set(index, taskDescriptor);
+    }
+
+    /**
+     * @param predecessors the predecessors to set
+     */
+    public void addPredecessor(final TaskDescriptor taskDescriptor) {
+        this.predecessors.add(taskDescriptor);
     }
 
     /**
@@ -322,5 +359,28 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void desactivate(Player p) {
         this.setActive(p, false);
+    }
+
+    /**
+     * @return the exportedPredecessors
+     */
+    public List<String> getExportedPredecessors() {
+        List<String> names = new ArrayList<>();
+        for (TaskDescriptor t : this.getPredecessors()) {
+            names.add(t.getName());
+        }
+        return names;
+    }
+
+    @JsonIgnore
+    public List<String> getImportedPredecessors() {
+        return this.exportedPredecessors;
+    }
+
+    /**
+     * @param exportedPredecessors the exportedPredecessors to set
+     */
+    public void setExportedPredecessors(List<String> exportedPredecessors) {
+        this.exportedPredecessors = exportedPredecessors;
     }
 }
