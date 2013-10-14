@@ -40,26 +40,35 @@ public class WRequirement extends AbstractEntity implements Serializable {
     @Column(name = "wwork")
     private String work;
     /*
-     * 
+     *
      */
     @Column(name = "wlevel")
     private Integer level;
     /*
-     * 
+     *
      */
     private Long quantity;
     /*
-     * 
+     *
      */
     private Double completeness;
     /*
-     * 
+     *
      */
     private Double quality;
 
     public WRequirement() {
         this.limit = 0;
         this.work = "";
+        this.level = 0;
+        this.quantity = 0L;
+        this.completeness = 0.0D;
+        this.quality = 0.0D;
+    }
+
+    public WRequirement(String work) {
+        this.limit = 0;
+        this.work = work;
         this.level = 0;
         this.quantity = 0L;
         this.completeness = 0.0D;
