@@ -311,6 +311,15 @@ YUI.add( "wegas-teaching-arrow", function ( Y ) {
         text: {
             type: "String",
             value: "Unknown"
+        },
+        /**
+         * @attribute orientation
+         * 0: horizontal
+         * 1: vertical
+         */
+        orientation: {
+            type: "Integer",
+            value: 0
         }
      });
 }, '0.0.1', {"requires": ["graphics"], "skinnable": true});
