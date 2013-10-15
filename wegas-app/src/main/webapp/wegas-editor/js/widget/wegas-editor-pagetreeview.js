@@ -20,12 +20,14 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             this.treeView = new Y.TreeView({
                 render: this.get(CONTENT_BOX)
             });
-            this.treeView.plug(Y.Plugin.TreeViewSortable, {
-                nodeGroups: [{
-                        nodeClass: "widget-node",
-                        parentNode: ".container-node"
-                    }]
-            });
+            if (DATASOURCE.editable) {
+                this.treeView.plug(Y.Plugin.TreeViewSortable, {
+                    nodeGroups: [{
+                            nodeClass: "widget-node",
+                            parentNode: ".container-node"
+                        }]
+                });
+            }
             this.toolbar.add(new Y.Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                 on: {
@@ -53,16 +55,18 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     bindChangePage(id);
                 }, this));
             });
-            this.treeView.sortable.on("sort", function(e) {
+            if (DATASOURCE.editable) {
+                this.treeView.sortable.on("sort", function(e) {
 
-                if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
-                    e.preventDefault();
-                    this.getIndex();
-                } else if (e.dropWidget.get("data.widget")) {
-                    e.dropWidget.get("data.widget").add(e.dragWidget.get("data.widget"), e.index);
-                    DATASOURCE.patch(e.dropWidget.get("data.widget").get("root").toObject());
-                }
-            }, this);
+                    if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
+                        e.preventDefault();
+                        this.getIndex();
+                    } else if (e.dropWidget.get("data.widget")) {
+                        e.dropWidget.get("data.widget").add(e.dragWidget.get("data.widget"), e.index);
+                        DATASOURCE.patch(e.dropWidget.get("data.widget").get("root").toObject());
+                    }
+                }, this);
+            }
             this.treeView.on("treenode:click", function(e) {
                 var node = e.node;
                 if (!node.get("data")) {
@@ -73,9 +77,11 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     // node.get("rightWidget").menu.getMenu().item(0).fire("click");// Fire 1st menu item action on page click
                 } else if (node.get("data.widget")) {
                     node.get("data.widget").get(BOUNDING_BOX).scrollIntoView();
-                    node.get("rightWidget").simulate("click");
-                    node.get("rightWidget").menu.getMenu().item(0).fire("click");
-                    node.get("rightWidget").menu.menu.hide();
+                    if (DATASOURCE.editable) {
+                        node.get("rightWidget").simulate("click");
+                        node.get("rightWidget").menu.getMenu().item(0).fire("click");
+                        node.get("rightWidget").menu.menu.hide();
+                    }
                 }
             }, this);
             this.treeView.on("treeleaf:click", function(e) {
@@ -85,9 +91,11 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }
                 if (node.get("data.widget")) {
                     node.get("data.widget").get(BOUNDING_BOX).scrollIntoView();
-                    node.get("rightWidget").simulate("click");
-                    node.get("rightWidget").menu.getMenu().item(0).fire("click");
-                    node.get("rightWidget").menu.menu.hide();
+                    if (DATASOURCE.editable) {
+                        node.get("rightWidget").simulate("click");
+                        node.get("rightWidget").menu.getMenu().item(0).fire("click");
+                        node.get("rightWidget").menu.menu.hide();
+                    }
                 }
             }, this);
             this.treeView.on("treenode:nodeExpanded", function(e) {
@@ -107,7 +115,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }
                 if (node.get("data.widget")) {
                     if (this.get("pageLoader").pageeditor) {
-                        this.get("pageLoader").pageeditor.showOverlay(node.get("data.widget"));
+                        this.get("pageLoader").pageeditor.showOverlay(node.get("data.widget"), true);
                     } else {
                         node.get("data.widget").get(BOUNDING_BOX).addClass("wegas-focused-widget");
                     }
@@ -169,7 +177,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             if (widget.each && !(widget instanceof Y.Wegas.PageLoader)) {
                 treeNode = new Y.TreeNode({
                     label: widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
-                    rightWidget: button,
+                    rightWidget: DATASOURCE.editable ? button : null,
                     data: {
                         widget: widget
                     },
@@ -182,7 +190,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             } else {
                 treeNode = new Y.TreeLeaf({
                     label: widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
-                    rightWidget: button,
+                    rightWidget: DATASOURCE.editable ? button : null,
                     data: {
                         widget: widget
                     },
@@ -272,7 +280,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                             }],
                         event: "click"
                     });
-                    node.set("rightWidget", button);
+                    if (DATASOURCE.editable) {
+                        node.set("rightWidget", button);
+                    }
                     if (+i === +page) { //current page
                         pageFound = true;
                         node.set("collapsed", false);
