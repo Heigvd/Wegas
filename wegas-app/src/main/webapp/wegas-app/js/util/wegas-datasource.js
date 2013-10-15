@@ -1005,7 +1005,11 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         initializer: function(cfg) {
+            var endsWith = function(str, suffix) {
+                return str.indexOf(suffix, str.length - suffix.length) !== -1;
+            };
             this.get(HOST).data = {};
+            this.editable = endsWith(this.get("host").get("source"), "/");
             this.pageQuery = {};
             this.doBefore("_defResponseFn", this.beforeResponse, this);
             /* Publishing */
