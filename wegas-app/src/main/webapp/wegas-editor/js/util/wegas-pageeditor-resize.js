@@ -38,17 +38,22 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 Y.error("PageEditorResize is an extension for PageEditor.");
             }
             this._resizeNode = Y.Node.create("<div class='pageeditor-resizenode'></div>");
+            this._iconResizeNode = Y.Node.create("<div class='pageeditor-resizenode-icon'></div>");
             this._resizeNode.setStyles({
                 top: 0,
                 left: 0
             });
             this.overlayMask.append(this._resizeNode);
             this._resizeNode.hide();
+            this._iconResizeNode.hide();
+            this.highlightOverlay.get(CONTENTBOX).append(this._iconResizeNode);
             this.highlightOverlay.after("visibleChange", function(e) {
                 if (e.newVal && this.overlayWidget && this.overlayWidget.CSSSize) {
                     this._resizeNode.show();
+                    this._iconResizeNode.show();
                 } else {
                     this._resizeNode.hide();
+                    this._iconResizeNode.hide();
                 }
             }, this);
 
@@ -123,6 +128,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             this._resizeNode.detachAll();
             this._resize.destroy();
             this._resizeNode.destroy(true);
+            this._iconResizeNode.destroy(true);
         }
 
     };
