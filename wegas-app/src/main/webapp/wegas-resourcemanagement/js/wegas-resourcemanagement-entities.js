@@ -816,6 +816,17 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             requirements: {
                 type: ARRAY,
+                setter: function(v) {
+                    v.sort(function(a, b) {
+                        if (a.get("work") === b.get("work")) {
+                            return a.get("level") < b.get("level") ?
+                                    -1 : a.get("level") > b.get("level") ?
+                                    1 : 0;
+                        }
+                        return a.get("work") < b.get("work") ? -1 : 1;
+                    });
+                    return v;
+                },
                 _inputex: {
                     label: "requirements",
                     _type: LIST,
