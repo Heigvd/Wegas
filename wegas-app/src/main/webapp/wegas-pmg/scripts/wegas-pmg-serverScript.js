@@ -23,8 +23,8 @@ function nextPeriod() {
             ganttPage.getInstance(self).setValue(11);
             taskPage = VariableDescriptorFacade.findByName(gm, 'taskPage');
             taskPage.getInstance(self).setValue(12);
-            setWeekliesVariables();
         }
+        setWeekliesVariables();
     } else if (time.phase === 2) { //if current phase is the 'realisation' phase
         completeRealizationPeriod();
         if (checkEndOfProject()) { //if the project ended
@@ -36,6 +36,7 @@ function nextPeriod() {
         setWeekliesVariables();
     } else {
         phases.items.get(time.phase).getInstance(self).setValue(time.period + 1);
+        setWeekliesVariables();
     }
 }
 
@@ -142,7 +143,7 @@ function setWeekliesVariables() {
     projectCompleteness.getInstance(self).setValue(nbCompleteTasks * 100 / active);
 //    projectCompleteness.getInstance(self).setValue(sumProjectCompleteness);
 
-    //pv = for each task, sum -> bac * task completeness / 100                 
+    //pv = for each task, sum -> bac * task completeness / 100
     planedValue.getInstance(self).setValue(calculatePlanedValue(getCurrentInGameTime().period - 1));
     //ev = for each task, sum -> bac * planified task completeness / 100
     earnedValue.getInstance(self).setValue(ev);
@@ -579,7 +580,7 @@ function checkAssignments(assignments, currentStep) {
 
 /**
  * Get a number which determinate if a task can be already worked or if
- * its predecessors is not enough advanced. 
+ * its predecessors is not enough advanced.
  * @param {TaskDescriptor} taskDesc
  * @returns {Number} number between 0 and 1.
  */
@@ -913,7 +914,7 @@ function getRandomFactorFromTask(taskInst) {
 
 /**
  * Calculate the current quality of the task based on the average of the quality
- *  in each bound requirement and weighted by the progression of its cmpleteness. 
+ *  in each bound requirement and weighted by the progression of its cmpleteness.
  * @param {TaskDescriptor} taskDesc
  * @returns {Number} a number btween 0 and 200
  */
@@ -929,7 +930,7 @@ function calculateTaskQuality(taskDesc) {
 
 /**
  * Debbug function to create automatically some occupations and assignements in
- *  some employees. 
+ *  some employees.
  * @returns {String}
  */
 function tempInit() {
@@ -957,7 +958,7 @@ function tempInit() {
 }
 
 /**
- * Return an object containing values of current period and current phase. 
+ * Return an object containing values of current period and current phase.
  * @returns {Object} object current time -> {period: x, phase: y}
  */
 function getCurrentInGameTime() {
