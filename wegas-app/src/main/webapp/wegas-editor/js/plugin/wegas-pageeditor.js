@@ -6,7 +6,8 @@
  * Licensed under the MIT License
  */
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>, 
+ * Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-pageeditor', function(Y) {
     "use strict";
@@ -38,13 +39,18 @@ YUI.add('wegas-pageeditor', function(Y) {
     Y.extend(PageEditor, Y.Plugin.Base, {
         // *** Lifecycle methods *** //
         initializer: function() {
-            this.afterHostEvent("render", this.render);
             this.handlers = [];
             this.fixedHandlers = [];
+            if (!Y.Wegas.Facade.Page.cache.editable) {
+                Y.later(100, this, function(o, plug) {
+                    o.unplug(plug);
+                }, [this.get("host"), this.constructor]);
+            } else {
+                this.afterHostEvent("render", this.render);
+            }
         },
         render: function() {
             var el, host = this.get('host');
-
             if (host.toolbar) {
                 el = host.toolbar.get('header');
                 this.designButton = new Y.ToggleButton({
@@ -127,10 +133,12 @@ YUI.add('wegas-pageeditor', function(Y) {
             }));
             this.anim = new Y.Anim({
                 node: this.highlightOverlay.get(BOUNDINGBOX),
-                duration: 0.15
+                duration: 1
             });
-            this.fixedHandlers.push(this.get("host").get(CONTENTBOX).after("mouseout", function() {
-                this.hideOverlay();
+            this.fixedHandlers.push(this.get("host").get(CONTENTBOX).after("mouseout", function(e) {
+                if (!inRegion(e.currentTarget, [e.clientX, e.clientY])) {
+                    this.hideOverlay();
+                }
             }, this));
             this.fixedHandlers.push(this.get("host").get(CONTENTBOX).scrollInfo.on("*:scroll", function(e) {
                 this.overlayMask.setStyles({top: e.scrollTop, left: e.scrollLeft});
@@ -265,31 +273,33 @@ YUI.add('wegas-pageeditor', function(Y) {
             if (this.runTimeout) {
                 this.runTimeout.cancel();
             }
+            bb.setXY(targetNode.getXY());
+//            bb.one(".overlay-label").setContent(widget.getType());
+            bb.setStyles({
+                width: targetNode.getDOMNode().offsetWidth,
+                height: targetNode.getDOMNode().offsetHeight,
+                opacity: 0
+            });
             if (!immediate) {
 
-                this.runTimeout = Y.later(100, this, function() {
+                this.runTimeout = Y.later(500, this, function() {
                     try {
-                        this.highlightOverlay.get(CONTENTBOX).one(".overlay-label").setContent(widget.getType());
+
                         this.anim.set("from", {
-                            xy: bb.getXY(),
-                            width: bb.getDOMNode().offsetWidth,
-                            height: bb.getDOMNode().offsetHeight
+                            opacity: 0
                         });
                         this.anim.set("to", {
-                            xy: targetNode.getXY(),
-                            width: targetNode.getDOMNode().offsetWidth,
-                            height: targetNode.getDOMNode().offsetHeight
+                            opacity: 1
                         });
                         this.anim.run();
                     } catch (e) {
                     }
                 });
             } else {
-                this.highlightOverlay.get(BOUNDINGBOX).setXY(targetNode.getXY());
-                this.highlightOverlay.get(BOUNDINGBOX).setStyles({
-                    width: widget.get(BOUNDINGBOX).getDOMNode().offsetWidth,
-                    height: widget.get(BOUNDINGBOX).getDOMNode().offsetHeight
+                this.runTimeout = Y.later(100, this, function() {
+                    bb.setStyle("opacity", 1);
                 });
+
             }
         },
         hideOverlay: function() {
@@ -298,9 +308,11 @@ YUI.add('wegas-pageeditor', function(Y) {
         },
         destructor: function() {
             var i;
+            if (!Y.Wegas.Facade.Page.cache.editable) {
+                return;
+            }
             this.hideOverlay();
             this.detach();
-            this.anim.destroy();
             this.overlayMask.destroy(true);
             this.highlightOverlay.destroy(true);
             for (i = 0; i < this.fixedHandlers.length; i += 1) {
