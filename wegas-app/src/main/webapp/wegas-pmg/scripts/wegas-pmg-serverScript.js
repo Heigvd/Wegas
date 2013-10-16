@@ -521,13 +521,28 @@ function isReservedToWork(employeeInst) {
  * @param {Array} assignments an Array of Assignment
  * @returns {Array} an Array of Assignment
  */
-function getAssignables(assignments) {
-    var i, taskDesc, assignables = [], work;
+function getAssignables(assignments, currentStep) {
+    var i, ii, taskDesc, assignables = [], work, exist;
     for (i = 0; i < assignments.size(); i++) {
         work = null;
+        exist = false;
         taskDesc = assignments.get(i).getTaskDescriptor();
         if (parseInt(taskDesc.getInstance(self).getProperty('completeness')) < 100 && getPredecessorFactor(taskDesc) >= 0.2) { //if the task isn t terminated and average of predecessors advancement is upper than 20%
-            assignables.push(assignments.get(i));
+            for (ii = 0; ii < taskDesc.getInstance(self).getRequirements().size(); ii++) {
+                if (assignments.get(i).getResourceInstance().getSkillsets().keySet().toArray()[0].toString() == taskDesc.getInstance(self).getRequirements().get(ii).getWork().toString()) {   
+                    exist = true;
+                    assignables.push(assignments.get(i));
+                    break;
+                }
+            }
+            if (!exist) {
+                sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
+                        'Je suis censé travailler sur la tâche "' + taskDesc.getLabel() + '" mais je ne suis pas qualifié pour ce travail. <br/> Salutations <br/>' + assignments.get(i).getResourceInstance().getDescriptor().getLabel() + '<br/> ' + assignments.get(i).getResourceInstance().getSkillsets().keySet().toArray()[0],
+                        assignments.get(i).getResourceInstance().getDescriptor().getLabel());
+                assignments.remove(i);
+                //TODO add unworked hours
+            }
+            
         }
     }
     return assignables;
@@ -543,32 +558,33 @@ function getAssignables(assignments) {
  */
 function checkAssignments(assignments, currentStep) {
     var i, taskDesc, employeeInst, employeeName,
-            employeeJob, taskInst, nextTasks;
+            employeeJob, taskInst, nextTasks, exist;
     if (assignments.size() <= 0) {
         return [];
     }
     employeeInst = assignments.get(0).getResourceInstance();
     employeeName = employeeInst.getDescriptor().getLabel();
     employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
-    nextTasks = getAssignables(employeeInst.getAssignments());
+    nextTasks = getAssignables(employeeInst.getAssignments(), currentStep);
     for (i = 0; i < assignments.size(); i++) {
+        exist = false;
         taskDesc = assignments.get(i).getTaskDescriptor();
         taskInst = taskDesc.getInstance();
         if (parseFloat(taskInst.getProperty('completeness')) >= 100) {
             if (nextTasks[0]) {
-                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
-                        'La tâche ' + taskDesc.getLabel() + ' est terminée, je passe à la tâche ' + nextTasks[0].getTaskDescriptor().getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
+                        'La tâche "' + taskDesc.getLabel() + '" est terminée, je passe à la tâche ' + nextTasks[0].getTaskDescriptor().getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             } else {
-                sendMessage(getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
+                sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
                         'La tâche "' + taskDesc.getLabel() + '" est terminée. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             }
             assignments.remove(i);
             break;
         } else if (i === 0 && getPredecessorFactor(taskDesc) <= 0.2) {
-            sendMessage(getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
-                    'Je suis sensé travailler sur la tâche ' + taskDesc.getLabel() + ' mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+            sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
+                    'Je suis sensé travailler sur la tâche "' + taskDesc.getLabel() + '" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
             assignments.remove(i);
             //TODO add unworked hours
