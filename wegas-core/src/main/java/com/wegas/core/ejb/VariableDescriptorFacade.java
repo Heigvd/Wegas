@@ -55,6 +55,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
      */
     @EJB
     private GameModelFacade gameModelFacade;
+    @Inject
+    private Event<DescriptorRevivedEvent> descriptorRevivedEvent;
 
     /**
      *
@@ -103,8 +105,6 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         this.revive(entity);
         return list;
     }
-    @Inject
-    private Event<DescriptorRevivedEvent> descriptorRevivedEvent;
 
     /**
      *
@@ -115,9 +115,13 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         descriptorRevivedEvent.fire(new DescriptorRevivedEvent(entity));
 
         if (entity instanceof DescriptorListI) {
-            for (Object vd : ((DescriptorListI) entity).getItems()) {
-                this.revive((VariableDescriptor) vd);
-            }
+            this.reviveItems((DescriptorListI) entity);
+        }
+    }
+
+    public void reviveItems(DescriptorListI entity) {
+        for (Object vd : ((DescriptorListI) entity).getItems()) {
+            this.revive((VariableDescriptor) vd);
         }
     }
 
