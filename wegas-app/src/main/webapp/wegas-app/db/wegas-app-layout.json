@@ -6,6 +6,9 @@
             "fn": "Injector"
         }, {
             "fn": "PopupListener",
-            "showServerMessages": true
+            "cfg": {
+                "showServerMessages": true
+            }
+            
         }]
 }
