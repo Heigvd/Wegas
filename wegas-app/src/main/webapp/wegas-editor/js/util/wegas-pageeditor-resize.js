@@ -33,10 +33,11 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
          * @returns {undefined}
          */
         _initResize: function() {
-
+            var bindedFixedOverlay;
             if (!this.highlightOverlay) {
                 Y.error("PageEditorResize is an extension for PageEditor.");
             }
+            bindedFixedOverlay = Y.bind(this.fixedOverlay, this);
             this._resizeNode = Y.Node.create("<div class='pageeditor-resizenode'></div>");
             this._iconResizeNode = Y.Node.create("<div class='pageeditor-resizenode-icon'></div>");
             this._resizeNode.setStyles({
@@ -45,18 +46,14 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             });
             this.overlayMask.append(this._resizeNode);
             this._resizeNode.hide();
-            this._iconResizeNode.hide();
-            this.highlightOverlay.get(CONTENTBOX).append(this._iconResizeNode);
+            this.shownOverlay.get(CONTENTBOX).append(this._iconResizeNode);
             this.highlightOverlay.after("visibleChange", function(e) {
                 if (e.newVal && this.overlayWidget && this.overlayWidget.CSSSize) {
                     this._resizeNode.show();
-                    this._iconResizeNode.show();
                 } else {
                     this._resizeNode.hide();
-                    this._iconResizeNode.hide();
                 }
             }, this);
-
             this._resize = new Y.DD.Drag({
                 node: this._resizeNode
             });
@@ -88,6 +85,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                     width: bb.getComputedStyle(WIDTH),
                     height: bb.getComputedStyle(HEIGHT)
                 });
+                bindedFixedOverlay(Y.Widget.getByNode(bb));
             });
             this._resize.on("drag:end", function(e) {
                 var bb = this._resize._widget, widget = Y.Widget.getByNode(bb);
@@ -98,9 +96,10 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                     }
                 });
                 this._resize._widget = null;
-                this.showOverlay(widget, true);
+                this.fixedOverlay(widget);
                 this.saveCurrentPage();
                 this.bind();
+                this._syncWidgetEdition();
             }, this);
         },
         /**
@@ -115,7 +114,6 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 23;
                 this._resizeNode.setXY(pos);
             }
-
         },
         /**
          * self destructor called after PageEditor's destructor
@@ -132,6 +130,5 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
         }
 
     };
-
     Y.namespace("Wegas").PageEditorResize = PageEditorResize;
 });
