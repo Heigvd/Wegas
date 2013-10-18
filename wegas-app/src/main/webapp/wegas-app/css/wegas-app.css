@@ -59,19 +59,20 @@ body h6{
 }
 
 /* YUI3 Button Widget styles redefinition */
-.yui3-skin-sam .yui3-button {
+.yui3-button {
     vertical-align: top;
     padding: .1em 0.6em .1em;
     min-height: 24px;
     background-color:white;
+    margin: 0;
 }
-.yui3-skin-sam .yui3-button-primary, .yui3-skin-sam .yui3-button-selected {
+.yui3-button-primary,  .yui3-button-selected {
     background-color: #6D6D6D;
 }
-.yui3-skin-sam .yui3-button > * {
+.yui3-button > * {
     vertical-align: top;
 }
-.yui3-skin-sam .yui3-button .wegas-icon {
+.yui3-button .wegas-icon {
     margin: -2px 2px 0 0;
 }
 
