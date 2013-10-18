@@ -67,6 +67,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             if (this.get('animation')) {
                 this.handlers.anim = bb.one(".slidepanel-title").on('click', function(e) {
                     e.preventDefault();
+                    this.get("boundingBox").toggleClass("wegas-slidepanel-toggled");
 
                     this.animation.fx.set('reverse', !this.animation.fx.get('reverse')); // toggle reverse
                     this.animation.fx.run();
@@ -95,18 +96,18 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
         ATTRS: {
             title: {
                 value: "unnamed",
+                type: "String",
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 },
                 _inputex: {
-                    _type: "string",
                     label: "Titel"
                 }
             },
             animation: {
+                type: "Boolean",
                 value: true,
                 _inputex: {
-                    _type: "boolean",
                     label: "Animation"
                 }
             }

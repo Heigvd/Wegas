@@ -2,170 +2,138 @@
 body {
     /*font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;*/
 }
-.header{
-    position:absolute;
-    top:0px;
-    right:0;
-    left:0;
-    background-image: url(../../wegas-pmg/images/header.png);
-    background-repeat: repeat-x;
-    background-color:#353B41;
-    color:white;
+.layout {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-    font-size: 9pt;
-    height:80px;
-    padding:5px;
-    min-width:970px;
+    background: #282828;
+    min-width:1025px;
 }
+.layout * {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+.pmg-nextweek {
+    color: white;
+    font-weight: bolder;
+    background-image: none;
+}
+.pmg-nextweek:hover {
+    color: white;
+    font-weight: bolder;  background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
 
-.header .pmg-breadcrumb span{
+}
+.pmg-breadcrumb span{
     display:block;
     width:90px;
     height:18px;
     padding:2px 0 1px 0;
-    margin-right:2px;
-    border: solid 1px #7D7D7D;
+    margin-right:3px;
     background-color: white;
     color:black;
     float:left;
     text-align: center;
-}
 
-.header .pmg-breadcrumb .previous{
+    font-size: 9pt;
+}
+.pmg-breadcrumb .previous{
     background-color:#BBBBBB;
 }
-
-.header .pmg-breadcrumb .current{
-    background-color:#66CC00;
+.pmg-breadcrumb .current{
+    background-color: #0981A9;
+    color: white
 }
-
-.header .pmg-period{
-    clear:both;
+.pmg-period{
+    font-size: 9pt;
 }
-
-.header .wegas-template-valuebox label{
+.wegas-template-valuebox label{
     display:none;
 }
-
-.header .pmg-period .wegas-template-valuebox-unit{
-    width:18px;
-    height:17px;
+.pmg-period .wegas-template-valuebox-unit{
+    width:20px;
+    height:16px;
     float:left;
-    padding-top: 3px;
-    margin: 10px 1px 0 0;
-    border: solid 1px #7D7D7D;
+    margin: 0px 2px 0 0;
     color:black;
+    border:none;
     background-color: white;
     text-align: center;
+    padding-top: 1px;
 }
-
-.header .pmg-period .wegas-template-valuebox-previous{
+.pmg-period .wegas-template-valuebox-previous{
     background-color:#BBBBBB;
 }
-
-.header .pmg-period .wegas-template-valuebox-selected{
-    background-image: url(../../wegas-pmg/images/next.png);
-    background-repeat: no-repeat;
-    background-position: center;
+.pmg-period .wegas-template-valuebox-selected{
+    /*background-image: url(../../wegas-pmg/images/next.png);*/
+    /*background-repeat: no-repeat;*/
+    /*background-position: center;*/
+    background: #0981A9;
+    color: white;
 }
-
-.header button{
-    float:left;
-    width:15px;
-    padding:2px;
-    height:23px;
-    margin-top: 10px;
+.wegas-gauge {
+    color: white;
+    font-size: 9pt;
 }
-
-.header .wegas-gauge-content{
-    margin-right: -20px
-}
-
-.header .project-gauges{
-    margin-left:30px;
-}
-
-.header .pmg-timevariable{
-    float:right;
-    display:block;
+.pmg-timevariable{
     width:100px;
-    margin-right: 10px;
+    color: white;
+    font-size: 9pt;
 }
 
-.header .pmg-timevariable .wegas-template-box-unit{
-    width:5px;
-    height:10px;
-    margin: 2px 1px 0 0;
-    background-color: #FFFF00;
-    border: solid 1px #7D7D7D;
+.pmg-timevariable .wegas-template-box-unit{
+    width:7px;
+    height:12px;
+    margin: 2px 2px 0 0;
+    /*background-color: #FFFF00;*/
+    background: #0981A9;
+    border: none;
     float:left;
+    /*    background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+        background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+        background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+        background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);*/
+
 }
 
-.header .pmg-timevariable .wegas-template-box-value{
-    float:left;
-}
 
 /*-----------------------------horizontal-menu--------------------------------*/
 .layout .horizontal-menu{
-    position:absolute;
-    top:90px;
-    right:0;
-    left:0;
-    background-image: url(../../wegas-pmg/images/nav_horizontal.png);
-    background-repeat: repeat-x;
     background-color:#ADADAE;
     height:30px;
-    margin:0px;
     min-width:970px;
 }
 
-.layout .horizontal-menu button{
+.layout .horizontal-menu button {
     background-repeat: repeat-x;
     background-color:#ADADAE;
     height:30px;
-    width:120px;
+    min-width:120px;
     background:none;
     border-radius:0px;
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     box-shadow: none;
     border-style:solid;
-    border-color:black;
-    border-width:0 1px 1px 0;
-    padding: 0 20px 0 10px;
+    border-color:lightgray;
+    border-width:0 1px 0 0;
+    padding: 0 10px;
     text-align:left;
     font-size: 1.1em;
 }
 
-.horizontal-menu button:hover{
-    border-width:0 1px 0 0;
-    padding-bottom:1px;
-    background:none;
+.horizontal-menu button:hover {
     background-color:#DDDDDD;
 }
 
-.layout .horizontal-menu .yui3-button-selected{
-    border-width:0 1px 0 0;
-    padding-bottom:1px;
-    background:none;
+.yui3-skin-sam .layout .yui3-button-selected {
     background-color:white;
     color:black;
 }
 
 .layout .horizontal-menu .wegas-login{
-    border: medium none currentColor;
     float: right;
-    margin-right: 2px;
-    overflow: hidden;
-    padding: 0px 20px 0px 0px;
-    text-overflow: ellipsis;
-    max-width:50%;
-    text-align:right;
-}
-
-.horizontal-menu .wegas-login:hover{
-    border:none;
-    background:none;
+    padding: 0px 21px 0 10px;
+    border-left: 1px solid lightgray;
 }
 
 .layout .horizontal-menu .yui3-button-disabled {
@@ -187,25 +155,20 @@ body {
     top: 120px;
     /*min-width: 970px;*/
 }
-
 .title{
-    background-image: url(../../wegas-pmg/images/h2.png);
-    background-repeat: repeat-x;
-    background-color: white;
+    /*background-image: url(../../wegas-pmg/images/h2.png);*/
+    /*background-repeat: repeat-x;*/
+    /*background-color: white;*/
     height:26px;
     width:50%;
     float:left;
 }
-
 h2{
     padding:3px 0 5px 5px;
     font-weight: bold;
-    border:solid 1px black;
-    border-width: 0 0 1px 0;
-    font-size: 1.2em
+    font-size: 1.2em;
+    color: #0981A9;
 }
-
-
 /*------------------------------vertical-menu---------------------------------*/
 .vertical-menu{
     float: right;
@@ -214,47 +177,41 @@ h2{
     right: 0;
     bottom:0;
     width: 60px;
-    background-color: #FFFFFF;
+    background:#ADADAE;
 }
 
 .vertical-menu div button{
     width:60px;
     height:60px;
     padding:0;
-    margin-top:-3px;
+    background:#ADADAE;
+    /*margin-top:-3px;*/
     float:none;
     clear:both;
-    background:none;
     border-radius:0px;
     box-shadow: none;
-    border-style:solid;
-    border-color:black;
-    border-width:0 0 1px 1px;
-}
-
-.vertical-menu .actions, .vertical-menu .actions:hover{
-    background-image: url(../../wegas-pmg/images/available_action.png), url(../../wegas-pmg/images/nav_vertical.png);
+    background-repeat: no-repeat;
     background-position: center;
-    background-repeat: no-repeat, repeat-x;
-    margin-top:0px;
+    border-bottom: 1px solid lightgray
 }
+.vertical-menu div button:first-child {
+    border-top: 1px solid lightgray
 
-.vertical-menu .questions, .vertical-menu .questions:hover{
-    background-image: url(../../wegas-pmg/images/question.png), url(../../wegas-pmg/images/nav_vertical.png);
-    background-position: center;
-    background-repeat: no-repeat, repeat-x;
 }
-
-.vertical-menu .inbox, .vertical-menu .inbox:hover{
-    background-image: url(../../wegas-pmg/images/messages.png), url(../../wegas-pmg/images/nav_vertical.png);
-    background-position: center;
-    background-repeat: no-repeat, repeat-x;
+.vertical-menu div button:hover {
+    background-color:#DDDDDD;
 }
-
-.vertical-menu .history, .vertical-menu .history:hover{
-    background-image: url(../../wegas-pmg/images/clock.png), url(../../wegas-pmg/images/nav_vertical.png);
-    background-position: center;
-    background-repeat: no-repeat, repeat-x;
+.vertical-menu .actions{
+    background-image: url(../../wegas-pmg/images/businessmen.png);
+}
+.vertical-menu .questions {
+    background-image: url(../../wegas-pmg/images/checklist-icon-2.png);
+}
+.vertical-menu .inbox {
+    background-image: url(../../wegas-pmg/images/messages.png);
+}
+.vertical-menu .history {
+    background-image: url(../../wegas-pmg/images/clock.png);
 }
 
 .vertical-menu .help, .vertical-menu .help:hover{
@@ -271,11 +228,25 @@ h2{
     display:none;
 }
 
+.unread-count {
+    /*line-height:1em;*/
+    position:relative;
+}
 .unread-count .value{
-    background-image: url(../../wegas-pmg/images/unread-count.png);
-    background-position: center;
-    background-repeat: no-repeat;
-    padding:20px;
+    position:absolute;
+    top:-29px;
+    left:-3px;
+    background-color: #0981A9;
+    box-shadow: 1px 0px 1px white;
+    font-size: 9pt;
+    padding: 4px 9px 6px 6px;
+    border-bottom-right-radius: 16px;
+    background-image: none;
+    /*    background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+        background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+        background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+        background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    */
     color:white;
 }
 
@@ -325,7 +296,7 @@ h2{
     line-height: normal;
 }
 
-.main .wegas-mcqtabview-content .content{
+.body .wegas-mcqtabview-content .content{
     margin-top: 0px;
 }
 
@@ -343,7 +314,7 @@ h2{
 
 .wegas-mcqtabview .title {
     font-weight: bold;
-    padding: 0 0 4px;
+    padding: 0 6px 4px;
     border-bottom: 1px solid lightgray;
     font-size: 13px;
     width:100%;
@@ -418,13 +389,15 @@ h2{
 
 .body .yui3-datatable table{
     width:100%;
-    border-width: 0px 1px 1px;
+    border: none;
     font-size: 0.9em;
 }
 
 .body .yui3-datatable-columns th{
-    background-image: url(../../wegas-pmg/images/h2.png);
-    background-repeat: repeat-x;
+    background: none;
+    color: #0981A9;
+    border-bottom: 2px solid #0981A9;
+    /*background-repeat: repeat-x;*/
 }
 
 .body .yui3-datatable-cell,
@@ -443,10 +416,14 @@ h2{
     background-color: #f1f1f1;
 }
 .body .yui3-datatable-cell{
-    border-bottom:1px solid #ADADAE;
+    border-color: lightgray;
+    border-bottom:1px solid lightgray;
 }
 
 /*---------------------------- schedulecolumn -------------------------------- */
+.yui3-datatable-table th.schedulecolumn {
+    text-align: center;
+}
 .yui3-datatable-table .yui3-datatable-data .schedulecolumn {
     padding: 0 0 0 0;
 }
@@ -547,12 +524,11 @@ h2{
 
 .resources-page .slidepanel-title,
 .project-page .slidepanel-title{
-    background-image: url(../../wegas-pmg/images/h2.png);
-    background-repeat: repeat-x;
-    background-color: white;
+    /*background-image: url(../../wegas-pmg/images/h2.png);*/
+    /*background-repeat: repeat-x;*/
+    /*background-color: white;*/
     height:27px;
     width:100%;
-    padding-bottom: 1px;
 }
 
 /*---------------------------- project-page ---------------------------------*/
@@ -560,16 +536,20 @@ h2{
     position:relative;
     float: left;
     width: 50%;
-    height: 260px;
-}
+    height: 250px;
 
+}
+.project-page h2 {
+    padding-top: 21px;
+    padding-left: 16px;
+}
 .project-page .wegas-chart {
     margin-left: 24px;
     margin-top: 15px;
 }
 
 .project-page .finances .wegas-pmg-slidepanel-content {
-    margin-top: 35px;
+    margin-top: 15px;
     margin-left: 30px;
 }
 
@@ -596,6 +576,18 @@ h2{
     margin-right: 280px;
 }
 
+/*---------------------------- Resources page ---------------------*/
+.resources-page .wegas-pmg-slidepanel {
+    border-bottom: 1px solid lightgray;
+}
+.resources-page .slidepanel-title{
+    background: url(../../wegas-app/images/wegas-icon-toggle.gif) no-repeat 7px -38px;
+    padding-left: 16px;
+    cursor:pointer;
+}
+.resources-page .wegas-slidepanel-toggled .slidepanel-title{
+    background: url(../../wegas-app/images/wegas-icon-toggle.gif) no-repeat 7px 2px;
+}
 /*---------------------------- Cursor pointer ---------------------*/
 .gantt-plannification-page tbody .present, .gantt-plannification-page tbody .futur,
 .resources-page tbody .present, .resources-page tbody .futur, .assignment span,
@@ -634,9 +626,9 @@ h2{
 }
 
 .evm-page .slidepanel-title{
-    background-image: url(../../wegas-pmg/images/h2.png);
-    background-repeat: repeat-x;
-    background-color: white;
+    /*background-image: url(../../wegas-pmg/images/h2.png);*/
+    /*background-repeat: repeat-x;*/
+    /*background-color: white;*/
     height:26px;
     width:100%;
     padding-bottom: 1px;

@@ -1,246 +1,314 @@
 {
     "1": {
-        "type": "List",
-        "direction": "vertical",
+        "type": "AbsoluteLayout",
         "cssClass": "layout",
         "children": [{
-                "type": "List",
-                "direction": "horizontal",
-                "cssClass": "header",
-                "children": [
-                    {
-                        "type": "List",
-                        "direction": "horizontal",
-                        "cssClass": "time",
-                        "children": [
-                            {
-                                "type": "PmgBreadcrumb",
-                                "locations": [
-                                    "Initiation", 
-                                    "Planning", 
-                                    "Execution", 
-                                    "Closing"
-                                ],
-                                "variable": "currentPhase"
-                            }, 
-                            {
-                                "type": "Template",
-                                "cssClass": "pmg-period",
-                                "template": "valuebox",
-                                "custom": "",
-                                "data": {
-                                },
-                                "variable": {
-                                    "expr": "currentPeriod.items[currentPhase.value].descriptorId"
-                                }
-                            }, 
-                            {
-                                "type": "Button",
-                                "label": ">",
-                                "disabled": false,
-                                "plugins": [
-                                    {
-                                        "fn": "ExecuteScriptAction",
-                                        "cfg": {
-                                            "onClick": {
-                                                "@class": "Script",
-                                                "language": "JavaScript",
-                                                "content": "nextPeriod()"
-                                            },
-                                            "targetEvent": "click"
-                                        }
-                                    }
-                                ]
+                "type": "Image",
+                "url": " http://localhost:8080/Wegas/wegas-pmg/images/pmg-logo-1.png",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "20px",
+                                "left": "7px"
                             }
-                        ]
-                    }, 
-                    {
-                        "type": "List",
-                        "direction": "horizontal",
-                        "cssClass": "customers-gauges",
-                        "children": [
-                            {
-                                "type": "GaugeDisplay",
-                                "label": "Direction",
-                                "percentMaxValue": 200,
-                                "variable": {
-                                    "name": "managementApproval"
-                                },
-                                "cfg": {
-                                    "percentColors": [
-                                        [
-                                            0.0, 
-                                            "#CD5757"
-                                        ], 
-                                        [
-                                            0.5, 
-                                            "#DDD546"
-                                        ], 
-                                        [
-                                            1.0, 
-                                            "#51DC74"
-                                        ]
-                                    ]
-                                }
-                            }, 
-                            {
-                                "type": "GaugeDisplay",
-                                "label": "User",
-                                "percentMaxValue": 200,
-                                "variable": {
-                                    "name": "userApproval"
-                                },
-                                "cfg": {
-                                    "percentColors": [
-                                        [
-                                            0.0, 
-                                            "#CD5757"
-                                        ], 
-                                        [
-                                            0.5, 
-                                            "#DDD546"
-                                        ], 
-                                        [
-                                            1.0, 
-                                            "#51DC74"
-                                        ]
-                                    ]
-                                }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "height": "53px"
                             }
-                        ]
-                    }, 
-                    {
-                        "type": "List",
-                        "direction": "horizontal",
-                        "cssClass": "project-gauges",
-                        "children": [
-                            {
-                                "type": "GaugeDisplay",
-                                "label": "Quality",
-                                "percentMaxValue": 200,
-                                "variable": {
-                                    "name": "quality"
-                                },
-                                "cfg": {
-                                    "percentColors": [
-                                        [
-                                            0.0, 
-                                            "#CD5757"
-                                        ], 
-                                        [
-                                            0.5, 
-                                            "#DDD546"
-                                        ], 
-                                        [
-                                            1.0, 
-                                            "#51DC74"
-                                        ]
-                                    ]
-                                },
-                                "plugins": [
-                                    {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
-                                                "language": "JavaScript"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }, 
-                            {
-                                "type": "GaugeDisplay",
-                                "label": "Costs",
-                                "percentMaxValue": 200,
-                                "variable": {
-                                    "name": "costs"
-                                },
-                                "cfg": {
-                                    "percentColors": [
-                                        [
-                                            0.0, 
-                                            "#CD5757"
-                                        ], 
-                                        [
-                                            0.5, 
-                                            "#DDD546"
-                                        ], 
-                                        [
-                                            1.0, 
-                                            "#51DC74"
-                                        ]
-                                    ]
-                                },
-                                "plugins": [
-                                    {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
-                                                "language": "JavaScript"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }, 
-                            {
-                                "type": "GaugeDisplay",
-                                "label": "Delay",
-                                "percentMaxValue": 200,
-                                "variable": {
-                                    "name": "delay"
-                                },
-                                "cfg": {
-                                    "percentColors": [
-                                        [
-                                            0.0, 
-                                            "#CD5757"
-                                        ], 
-                                        [
-                                            0.5, 
-                                            "#DDD546"
-                                        ], 
-                                        [
-                                            1.0, 
-                                            "#51DC74"
-                                        ]
-                                    ]
-                                },
-                                "plugins": [
-                                    {
-                                        "fn": "ConditionalDisable",
-                                        "cfg": {
-                                            "condition": {
-                                                "@class": "Script",
-                                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
-                                                "language": "JavaScript"
-                                            }
-                                        }
-                                    }
-                                ]
+                        }
+                    }, {
+                        "fn": "Tooltip",
+                        "cfg": {
+                            "content": "Artos Inc. - Project Management Game"
+                        }
+                    }]
+            }, {
+                "type": "PmgBreadcrumb",
+                "locations": [
+                    "Initiation",
+                    "Planning",
+                    "Execution",
+                    "Closing"
+                ],
+                "variable": "currentPhase",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "25px",
+                                "left": "72px"
                             }
-                        ]
-                    }, 
-                    {
-                        "cssClass": "pmg-timevariable",
-                        "type": "Template",
-                        "custom": "",
-                        "data": {
-                        },
-                        "variable": {
-                            "expr": "timeCards.items[currentPhase.value].descriptorId"
-                        },
-                        "template": "box"
-                    }
-                ]
-            }, 
+                        }
+                    }, {
+                        "fn": "Tooltip",
+                        "cfg": {
+                            "content": "The current phase of your project"
+                        }
+                    }]
+            }, {
+                "type": "Template",
+                "cssClass": "pmg-period",
+                "template": "valuebox",
+                "custom": "",
+                "data": {},
+                "variable": {
+                    "expr": "currentPeriod.items[currentPhase.value].descriptorId"
+                },
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "50px",
+                                "left": "72px"
+                            }
+                        }
+                    }, {
+                        "fn": "Tooltip",
+                        "cfg": {
+                            "content": "The current week of your project"
+                        }
+                    }]
+            }, {
+                "type": "Button",
+                "label": "Pass week",
+                "cssClass": "pmg-nextweek",
+                "disabled": false,
+                "tooltip": "Advance to next week",
+                "plugins": [{
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "nextPeriod()"
+                            },
+                            "targetEvent": "click"
+                        }
+                    }, {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "23px",
+                                "left": "445px"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "height": "46px"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSBackground",
+                        "cfg": {
+                            "styles": {
+                                "backgroundColor": "#0981A9"
+                            }
+                        }
+                    }]
+            }, {
+                "type": "GaugeDisplay",
+                "label": "Direction",
+                "percentMaxValue": 200,
+                "variable": {
+                    "name": "managementApproval"
+                },
+                "cfg": {
+                    "percentColors": [
+                        [0.0, "#CD5757"],
+                        [0.5, "#DDD546"],
+                        [1.0, "#51DC74"]
+                    ]
+                },
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "4px",
+                                "left": "550px"
+                            }
+                        }
+                    }]
+            }, {
+                "type": "GaugeDisplay",
+                "label": "User",
+                "percentMaxValue": 200,
+                "variable": {
+                    "name": "userApproval"
+                },
+                "cfg": {
+                    "percentColors": [
+                        [0.0, "#CD5757"],
+                        [0.5, "#DDD546"],
+                        [1.0, "#51DC74"]
+                    ]
+                },
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "4px",
+                                "left": "616px"
+                            }
+                        }
+                    }]
+            },
             {
+                "type": "GaugeDisplay",
+                "label": "Quality",
+                "percentMaxValue": 200,
+                "variable": {
+                    "name": "quality"
+                },
+                "cfg": {
+                    "percentColors": [
+                        [0.0, "#CD5757"],
+                        [0.5, "#DDD546"],
+                        [1.0, "#51DC74"]
+                    ]
+                },
+                "plugins": [{
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                "language": "JavaScript"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "4px",
+                                "left": "719px"
+                            }
+                        }
+                    }]
+            },
+            {
+                "type": "GaugeDisplay",
+                "label": "Costs",
+                "percentMaxValue": 200,
+                "variable": {
+                    "name": "costs"
+                },
+                "cfg": {
+                    "percentColors": [
+                        [
+                            0.0,
+                            "#CD5757"
+                        ],
+                        [
+                            0.5,
+                            "#DDD546"
+                        ],
+                        [
+                            1.0,
+                            "#51DC74"
+                        ]
+                    ]
+                },
+                "plugins": [{
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                "language": "JavaScript"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "4px",
+                                "left": "784px"
+                            }
+                        }
+                    }]
+            }, {
+                "type": "GaugeDisplay",
+                "label": "Delay",
+                "percentMaxValue": 200,
+                "variable": {
+                    "name": "delay"
+                },
+                "cfg": {
+                    "percentColors": [
+                        [0.0, "#CD5757"],
+                        [0.5, "#DDD546"],
+                        [1.0, "#51DC74"]
+                    ]
+                },
+                "plugins": [{
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                "language": "JavaScript"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "4px",
+                                "left": "852px"
+                            }
+                        }
+                    }]
+            },
+            {
+                "cssClass": "pmg-timevariable",
+                "type": "Template",
+                "custom": "",
+                "data": {},
+                "variable": {
+                    "expr": "timeCards.items[currentPhase.value].descriptorId"
+                },
+                "template": "box",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "10px",
+                                "right": "10px"
+                            }
+                        }
+                    }]
+            }, {
                 "type": "List",
                 "direction": "horizontal",
                 "cssClass": "horizontal-menu",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "90px",
+                                "left": "0",
+                                "right": "0"
+                            }
+                        }
+                    }],
                 "children": [
                     {
                         "type": "Button",
@@ -256,7 +324,7 @@
                                 }
                             }
                         ]
-                    }, 
+                    },
                     {
                         "type": "Button",
                         "label": "Tasks",
@@ -269,7 +337,7 @@
                                     "targetPageLoaderId": "maindisplayarea",
                                     "targetEvent": "click"
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ConditionalDisable",
                                 "cfg": {
@@ -281,7 +349,7 @@
                                 }
                             }
                         ]
-                    }, 
+                    },
                     {
                         "type": "Button",
                         "label": "Gantt",
@@ -294,7 +362,7 @@
                                     "targetPageLoaderId": "maindisplayarea",
                                     "targetEvent": "click"
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ConditionalDisable",
                                 "cfg": {
@@ -306,7 +374,7 @@
                                 }
                             }
                         ]
-                    }, 
+                    },
                     {
                         "type": "Button",
                         "label": "Resources",
@@ -319,7 +387,7 @@
                                     "targetEvent": "click",
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ConditionalDisable",
                                 "cfg": {
@@ -331,7 +399,7 @@
                                 }
                             }
                         ]
-                    }, 
+                    },
                     {
                         "type": "Button",
                         "label": "EVM",
@@ -344,7 +412,7 @@
                                     "targetEvent": "click",
                                     "targetPageLoaderId": "maindisplayarea"
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ConditionalDisable",
                                 "cfg": {
@@ -356,7 +424,7 @@
                                 }
                             }
                         ]
-                    }, 
+                    },
                     {
                         "cssClass": "menu-loginbutton",
                         "disabled": false,
@@ -366,123 +434,147 @@
                         "type": "LoginButton"
                     }
                 ]
-            }, 
-            {
+            }, {
                 "type": "List",
                 "direction": "vertical",
-                "cssClass": "main",
+                "cssClass": "vertical-menu",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "120px",
+                                "right": "0px",
+                                "bottom": "0px"
+                            }
+                        }
+                    }],
                 "children": [
                     {
-                        "type": "List",
-                        "direction": "vertical",
-                        "cssClass": "vertical-menu",
-                        "children": [
+                        "type": "Button",
+                        "cssClass": "actions",
+                        "disabled": false,
+                        "label": "",
+                        "tooltip": "Actions",
+                        "plugins": [
                             {
-                                "type": "Button",
-                                "cssClass": "actions",
-                                "disabled": false,
-                                "label": "",
-                                "plugins": [
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "subpageId": 6,
-                                            "targetEvent": "click",
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }
-                                ]
-                            }, 
-                            {
-                                "type": "Button",
-                                "cssClass": "questions",
-                                "disabled": false,
-                                "label": "",
-                                "plugins": [
-                                    {
-                                        "fn": "UnreadCount",
-                                        "cfg": {
-                                            "variable": {
-                                                "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
-                                            }
-                                        }
-                                    }, 
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "subpageId": 7,
-                                            "targetEvent": "click",
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }
-                                ]
-                            }, 
-                            {
-                                "type": "Button",
-                                "cssClass": "inbox",
-                                "setToReadAfter": 0,
-                                "disabled": false,
-                                "label": "",
-                                "plugins": [
-                                    {
-                                        "fn": "UnreadCount",
-                                        "cfg": {
-                                            "variable": {
-                                                "name": "inbox"
-                                            }
-                                        }
-                                    }, 
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "subpageId": 8,
-                                            "targetEvent": "click",
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }
-                                ]
-                            }, 
-                            {
-                                "type": "Button",
-                                "cssClass": "history",
-                                "disabled": false,
-                                "label": "",
-                                "plugins": [
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "subpageId": 9,
-                                            "targetEvent": "click",
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }
-                                ]
-                            }, 
-                            {
-                                "type": "Button",
-                                "cssClass": "help",
-                                "disabled": false,
-                                "label": "",
-                                "plugins": [
-                                    {
-                                        "fn": "OpenPageAction",
-                                        "cfg": {
-                                            "subpageId": 10,
-                                            "targetEvent": "click",
-                                            "targetPageLoaderId": "maindisplayarea"
-                                        }
-                                    }
-                                ]
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 6,
+                                    "targetEvent": "click",
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
                             }
                         ]
-                    }, 
+                    },
                     {
-                        "type": "PageLoader",
-                        "pageLoaderId": "maindisplayarea",
-                        "cssClass": "body",
-                        "defaultPageId": 2
+                        "type": "Button",
+                        "cssClass": "questions",
+                        "disabled": false,
+                        "label": "",
+                        "tooltip": "Questions",
+                        "plugins": [
+                            {
+                                "fn": "UnreadCount",
+                                "cfg": {
+                                    "variable": {
+                                        "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 7,
+                                    "targetEvent": "click",
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Button",
+                        "cssClass": "inbox",
+                        "setToReadAfter": 0,
+                        "tooltip": "Mailbox",
+                        "disabled": false,
+                        "label": "",
+                        "plugins": [
+                            {
+                                "fn": "UnreadCount",
+                                "cfg": {
+                                    "variable": {
+                                        "name": "inbox"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 8,
+                                    "targetEvent": "click",
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Button",
+                        "cssClass": "history",
+                        "disabled": false,
+                        "label": "",
+                        "tooltip": "History",
+                        "plugins": [
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 9,
+                                    "targetEvent": "click",
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }
+                        ]
+                    }, {
+                        "type": "Button",
+                        "cssClass": "help",
+                        "disabled": false,
+                        "label": "",
+                        "plugins": [
+                            {
+                                "fn": "OpenPageAction",
+                                "cfg": {
+                                    "subpageId": 10,
+                                    "targetEvent": "click",
+                                    "targetPageLoaderId": "maindisplayarea"
+                                }
+                            }
+                        ]
                     }
                 ]
+            }, {
+                "type": "PageLoader",
+                "pageLoaderId": "maindisplayarea",
+                "cssClass": "body",
+                "defaultPageId": 2,
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "120px",
+                                "bottom": "0px",
+                                "right": "59px",
+                                "left": "0px"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSBackground",
+                        "cfg": {
+                            "styles": {
+                                "backgroundColor": "#ffffff"
+                            }
+                        }
+                    }]
             }
         ]
     },
@@ -508,7 +600,7 @@
                         }
                     }
                 ]
-            }, 
+            },
             {
                 "type": "PmgSlidePanel",
                 "title": "EVM",
@@ -527,11 +619,11 @@
                             {
                                 "name": "actualCost",
                                 "label": "AC (Actual Cost)"
-                            }, 
+                            },
                             {
                                 "name": "planedValue",
                                 "label": "PV (Planed Value)"
-                            }, 
+                            },
                             {
                                 "name": "earnedValue",
                                 "label": "EV (Earned Value)"
@@ -539,7 +631,7 @@
                         ]
                     }
                 ]
-            }, 
+            },
             {
                 "type": "PmgSlidePanel",
                 "title": "Indicators History: Management and Users",
@@ -558,7 +650,7 @@
                             {
                                 "name": "managementApproval",
                                 "label": "Management"
-                            }, 
+                            },
                             {
                                 "name": "userApproval",
                                 "label": "Users"
@@ -566,7 +658,7 @@
                         ]
                     }
                 ]
-            }, 
+            },
             {
                 "type": "PmgSlidePanel",
                 "title": "Indicators History: Quality, Costs, and Shedule",
@@ -585,11 +677,11 @@
                             {
                                 "name": "costs",
                                 "label": "Costs"
-                            }, 
+                            },
                             {
                                 "name": "delay",
                                 "label": "Shedule"
-                            }, 
+                            },
                             {
                                 "name": "quality",
                                 "label": "Quality"
@@ -615,45 +707,45 @@
                     {
                         "key": "index",
                         "label": "No"
-                    }, 
+                    },
                     {
                         "key": "label",
                         "label": "Name"
-                    }, 
+                    },
                     {
                         "label": "Estimated duration",
                         "name": "Estimatedduration",
                         "key": "instance.duration"
-                    }, 
+                    },
                     {
                         "label": "Realised %",
                         "name": "Realised",
                         "width": "7%",
                         "key": "instance.properties.completeness"
-                    }, 
+                    },
                     {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
                         "key": "instance.properties.fixedCosts",
                         "className": "right",
                         "formatter": "rounded"
-                    }, 
+                    },
                     {
                         "name": "Wages",
                         "label": "Wages",
                         "key": "instance.properties.wages"
-                    }, 
+                    },
                     {
                         "name": "Quality",
                         "label": "Quality",
                         "key": "instance.properties.quality"
-                    }, 
+                    },
                     {
                         "key": "requirements",
                         "label": "Ressources",
                         "formatter": "requieredRessources",
                         "sortable": false
-                    }, 
+                    },
                     {
                         "allowHTML": true,
                         "label": "Assigned resources",
@@ -667,7 +759,7 @@
                         "cfg": {
                             "columnPosition": 4
                         }
-                    }, 
+                    },
                     {
                         "fn": "Tablepopup",
                         "cfg": {
@@ -696,17 +788,17 @@
                                 "name": "periodPhase3"
                             }
                         }
-                    }, 
+                    },
                     {
                         "fn": "Planification",
                         "cfg": {
                         }
-                    }, 
+                    },
                     {
                         "fn": "Plannificationcolor",
                         "cfg": {
                         }
-                    }, 
+                    },
                     {
                         "fn": "Tablepopup",
                         "cfg": {
@@ -725,7 +817,7 @@
                         "label": "No",
                         "sortable": true,
                         "allowHTML": true
-                    }, 
+                    },
                     {
                         "key": "label",
                         "label": "Name",
@@ -759,7 +851,7 @@
                                         "name": "periodPhase3"
                                     }
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Assignment",
                                 "cfg": {
@@ -768,17 +860,17 @@
                                     },
                                     "columnPosition": 5
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Reservation",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "OccupationColor",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ActivityColor",
                                 "cfg": {
@@ -794,7 +886,7 @@
                                 "label": "Name",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "grade",
                                 "label": "Grade",
@@ -802,21 +894,21 @@
                                 "key": "instance.skillsets",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Wage",
                                 "label": "Wage",
                                 "key": "instance.properties.wage",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Rate",
                                 "label": "Rate",
                                 "key": "instance.properties.activityRate",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Motiv",
                                 "label": "Motiv.",
@@ -826,13 +918,13 @@
                             }
                         ],
                         "defaultSort": null
-                    }, 
+                    },
                     {
                         "type": "Text",
                         "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
                     }
                 ]
-            }, 
+            },
             {
                 "type": "PmgSlidePanel",
                 "cssClass": "animated",
@@ -850,7 +942,7 @@
                                         "name": "periodPhase3"
                                     }
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Assignment",
                                 "cfg": {
@@ -859,17 +951,17 @@
                                     },
                                     "columnPosition": 5
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Reservation",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "OccupationColor",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ActivityColor",
                                 "cfg": {
@@ -885,7 +977,7 @@
                                 "label": "Name",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "grade",
                                 "label": "Grade",
@@ -893,21 +985,21 @@
                                 "key": "instance.skillsets",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Wage",
                                 "label": "Wage",
                                 "key": "instance.properties.wage",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Rate",
                                 "label": "Rate",
                                 "key": "instance.properties.activityRate",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Motiv",
                                 "label": "Motiv.",
@@ -917,13 +1009,13 @@
                             }
                         ],
                         "defaultSort": null
-                    }, 
+                    },
                     {
                         "type": "Text",
                         "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
                     }
                 ]
-            }, 
+            },
             {
                 "type": "PmgSlidePanel",
                 "cssClass": "animated",
@@ -941,7 +1033,7 @@
                                         "name": "periodPhase3"
                                     }
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Assignment",
                                 "cfg": {
@@ -950,17 +1042,17 @@
                                     },
                                     "columnPosition": 5
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Reservation",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "OccupationColor",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ActivityColor",
                                 "cfg": {
@@ -976,7 +1068,7 @@
                                 "label": "Name",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "grade",
                                 "label": "Grade",
@@ -984,21 +1076,21 @@
                                 "key": "instance.skillsets",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Wage",
                                 "label": "Wage",
                                 "key": "instance.properties.wage",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Rate",
                                 "label": "Rate",
                                 "key": "instance.properties.activityRate",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Motiv",
                                 "label": "Motiv.",
@@ -1008,13 +1100,13 @@
                             }
                         ],
                         "defaultSort": null
-                    }, 
+                    },
                     {
                         "type": "Text",
                         "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
                     }
                 ]
-            }, 
+            },
             {
                 "type": "PmgSlidePanel",
                 "cssClass": "animated",
@@ -1032,7 +1124,7 @@
                                         "name": "periodPhase3"
                                     }
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Assignment",
                                 "cfg": {
@@ -1041,17 +1133,17 @@
                                     },
                                     "columnPosition": 5
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Reservation",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "OccupationColor",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ActivityColor",
                                 "cfg": {
@@ -1067,7 +1159,7 @@
                                 "label": "Name",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "grade",
                                 "label": "Grade",
@@ -1075,21 +1167,21 @@
                                 "key": "instance.skillsets",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Wage",
                                 "label": "Wage",
                                 "key": "instance.properties.wage",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Rate",
                                 "label": "Rate",
                                 "key": "instance.properties.activityRate",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Motiv",
                                 "label": "Motiv.",
@@ -1099,13 +1191,13 @@
                             }
                         ],
                         "defaultSort": null
-                    }, 
+                    },
                     {
                         "type": "Text",
                         "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
                     }
                 ]
-            }, 
+            },
             {
                 "type": "PmgSlidePanel",
                 "cssClass": "animated",
@@ -1123,7 +1215,7 @@
                                         "name": "periodPhase3"
                                     }
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Assignment",
                                 "cfg": {
@@ -1132,17 +1224,17 @@
                                     },
                                     "columnPosition": 5
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Reservation",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "OccupationColor",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ActivityColor",
                                 "cfg": {
@@ -1158,7 +1250,7 @@
                                 "label": "Name",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "grade",
                                 "label": "Grade",
@@ -1166,21 +1258,21 @@
                                 "key": "instance.skillsets",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Wage",
                                 "label": "Wage",
                                 "key": "instance.properties.wage",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Rate",
                                 "label": "Rate",
                                 "key": "instance.properties.activityRate",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Motiv",
                                 "label": "Motiv.",
@@ -1190,13 +1282,13 @@
                             }
                         ],
                         "defaultSort": null
-                    }, 
+                    },
                     {
                         "type": "Text",
                         "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
                     }
                 ]
-            }, 
+            },
             {
                 "type": "PmgSlidePanel",
                 "cssClass": "animated",
@@ -1214,7 +1306,7 @@
                                         "name": "periodPhase3"
                                     }
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Assignment",
                                 "cfg": {
@@ -1223,17 +1315,17 @@
                                     },
                                     "columnPosition": 5
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "Reservation",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "OccupationColor",
                                 "cfg": {
                                 }
-                            }, 
+                            },
                             {
                                 "fn": "ActivityColor",
                                 "cfg": {
@@ -1249,7 +1341,7 @@
                                 "label": "Name",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "grade",
                                 "label": "Grade",
@@ -1257,21 +1349,21 @@
                                 "key": "instance.skillsets",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Wage",
                                 "label": "Wage",
                                 "key": "instance.properties.wage",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Rate",
                                 "label": "Rate",
                                 "key": "instance.properties.activityRate",
                                 "sortable": true,
                                 "allowHTML": true
-                            }, 
+                            },
                             {
                                 "name": "Motiv",
                                 "label": "Motiv.",
@@ -1281,7 +1373,7 @@
                             }
                         ],
                         "defaultSort": null
-                    }, 
+                    },
                     {
                         "type": "Text",
                         "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
@@ -1298,7 +1390,7 @@
             {
                 "type": "Text",
                 "content": "<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
-            }, 
+            },
             {
                 "type": "MCQTabView",
                 "showUnanswered": false,
@@ -1316,7 +1408,7 @@
             {
                 "type": "Text",
                 "content": "<div class='title'><h2>Questions to answer this week</h2></div><div class='title'><h2>Details</h2></div>"
-            }, 
+            },
             {
                 "type": "MCQTabView",
                 "variable": {
@@ -1333,7 +1425,7 @@
             {
                 "type": "Text",
                 "content": "<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Messages</h2></div>"
-            }, 
+            },
             {
                 "type": "InboxDisplay",
                 "variable": {
@@ -1350,7 +1442,7 @@
             {
                 "type": "Text",
                 "content": "<div class='title'><h2>Questions and actions history</h2></div><div class='title'><h2>Details</h2></div>"
-            }, 
+            },
             {
                 "type": "InboxDisplay",
                 "variable": {
@@ -1382,11 +1474,11 @@
                             {
                                 "name": "actualCost",
                                 "label": "AC (Actual Cost)"
-                            }, 
+                            },
                             {
                                 "name": "planedValue",
                                 "label": "PV (Planed Value)"
-                            }, 
+                            },
                             {
                                 "name": "earnedValue",
                                 "label": "EV (Earned Value)"
@@ -1413,22 +1505,22 @@
                                 "name": "periodPhase3"
                             }
                         }
-                    }, 
+                    },
                     {
                         "fn": "Plannificationcolor",
                         "cfg": {
                         }
-                    }, 
+                    },
                     {
                         "fn": "PlannificationActivityColor",
                         "cfg": {
                         }
-                    }, 
+                    },
                     {
                         "fn": "PlannificationProgressColor",
                         "cfg": {
                         }
-                    }, 
+                    },
                     {
                         "fn": "Tablepopup",
                         "cfg": {
@@ -1447,13 +1539,13 @@
                         "label": "No",
                         "sortable": true,
                         "allowHTML": true
-                    }, 
+                    },
                     {
                         "key": "label",
                         "label": "Name",
                         "sortable": true,
                         "allowHTML": true
-                    }, 
+                    },
                     {
                         "label": "Realised %",
                         "name": "Realized",
@@ -1464,7 +1556,7 @@
                     }
                 ],
                 "defaultSort": null
-            }, 
+            },
             {
                 "type": "Text",
                 "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"planification\">&nbsp;</div>\nPlanified</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nWorked</div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\nDue</div>\n</div>"
@@ -1486,50 +1578,50 @@
                     {
                         "key": "index",
                         "label": "No"
-                    }, 
+                    },
                     {
                         "key": "label",
                         "label": "Name"
-                    }, 
+                    },
                     {
                         "label": "Estimated duration",
                         "name": "Estimatedduration",
                         "key": "instance.duration"
-                    }, 
+                    },
                     {
                         "label": "Realised %",
                         "name": "Realised",
                         "width": "7%",
                         "key": "instance.properties.completeness"
-                    }, 
+                    },
                     {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
                         "formatter": "rounded",
                         "className": "right",
                         "key": "instance.properties.fixedCosts"
-                    }, 
+                    },
                     {
                         "label": "BAC",
                         "name": "bac",
                         "key": "instance.properties.bac"
-                    }, 
+                    },
                     {
                         "label": "Wages",
                         "name": "Wages",
                         "key": "instance.properties.wages"
-                    }, 
+                    },
                     {
                         "name": "Quality",
                         "label": "Quality",
                         "key": "instance.properties.quality"
-                    }, 
+                    },
                     {
                         "key": "requirements",
                         "label": "Ressources",
                         "formatter": "requieredRessources",
                         "sortable": false
-                    }, 
+                    },
                     {
                         "label": "Assigned resources",
                         "formatter": "assignedRessources",
