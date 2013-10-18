@@ -93,7 +93,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     }
 
                 });
-            }, "input[type=submit]", this);
+            }, "button.yui3-button", this);
 
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
         },
@@ -252,7 +252,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                                 extendedQuestion.get("items")[j].get("description"),
                                 '</div>',
                                 numberOfReplies,
-                                '<input type="submit" id="', cChoices[j].get("id"), '" value="Submit"></input>',
+                                '<button class="yui3-button" id="', cChoices[j].get("id"), '">Submit</button>',
                                 '<div style="clear:both"></div>',
                                 '</div>');
                         firstChild = "";
