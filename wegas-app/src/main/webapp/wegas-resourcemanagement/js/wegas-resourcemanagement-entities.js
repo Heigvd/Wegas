@@ -46,6 +46,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 _inputex: {
                     label: "Properties",
                     _type: HASHLIST,
+                    useButtons: true,
                     elementType: {
                         type: COMBINE,
                         required: true,
@@ -111,6 +112,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         _inputex: {
                             label: "Default properties",
                             _type: HASHLIST,
+                            useButtons: true,
                             elementType: {
                                 type: COMBINE,
                                 required: true,
@@ -588,6 +590,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     label: "Properties",
                     _type: HASHLIST,
                     keyField: NAME,
+                    useButtons: true,
                     valueField: VALUE,
                     elementType: {
                         type: COMBINE,
@@ -674,6 +677,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             _type: HASHLIST,
                             keyField: NAME,
                             valueField: VALUE,
+                            useButtons: true,
                             elementType: {
                                 type: COMBINE,
                                 fields: [{
