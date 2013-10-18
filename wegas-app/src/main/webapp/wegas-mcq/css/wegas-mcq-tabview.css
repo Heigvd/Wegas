@@ -35,8 +35,12 @@
     margin: 8px;
     margin-bottom: 20px;
 }
-.wegas-mcqtabview  input {
+.wegas-mcqtabview  button {
     float: right;
+    margin-right: 10px;
+}
+.wegas-mcqtabview .numberOfReplies  {
+    margin-top: 5px;
 }
 .wegas-mcqtabview .replies {
     padding: 10px 0;
