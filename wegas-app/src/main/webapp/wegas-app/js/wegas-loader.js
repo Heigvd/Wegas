@@ -177,7 +177,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-button': {
                     path: 'wegas-app/js/widget/wegas-button-min.js',
-                    requires: ['wegas-widget', 'wegas-action', 'button', 'wegas-button-css'],
+                    requires: ['wegas-widget', 'wegas-action', 'button', 'wegas-tooltip', 'wegas-button-css'],
                     ws_provides: 'Button'
                 },
                 'wegas-button-css': {
