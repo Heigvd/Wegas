@@ -303,8 +303,8 @@ YUI.add('wegas-tooltip', function(Y) {
 
             this._clearCurrentTrigger();
             this._clearTimers();
-
-            this._timers.hide = Y.later(this.get("hideDelay"), this, this._hideTooltip);
+            this._hideTooltip();
+//            this._timers.hide = Y.later(this.get("hideDelay"), this, this._hideTooltip);
         },
         /*
          * Default handler invoked for mousemove events
@@ -518,7 +518,7 @@ YUI.add('wegas-tooltip', function(Y) {
              * to display the tooltip
              */
             showDelay: {
-                value: 250
+                value: 600
             },
             /*
              * The time to wait, after the mouse leaves the trigger node,
@@ -533,7 +533,7 @@ YUI.add('wegas-tooltip', function(Y) {
              * trigger node
              */
             autoHideDelay: {
-                value: 2000
+                value: 1000000
             },
             /*
              * Override the default visibility set by the widget base class
