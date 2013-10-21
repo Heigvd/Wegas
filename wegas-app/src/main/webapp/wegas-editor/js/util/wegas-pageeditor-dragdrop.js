@@ -31,7 +31,6 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
          * @returns {undefined}
          */
         _initDD: function() {
-
             if (!this.highlightOverlay) {
                 Y.error("PageEditorDD is an extension for PageEditor.");
             }
@@ -82,6 +81,7 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                     width: node.getComputedStyle("width"),
                     height: node.getComputedStyle("height")
                 });
+                this.fixedOverlay(Y.Widget.getByNode(node));
             }, this);
             this._dd.on("drag:end", function(e) {
                 var bb = this._dd.get("dragNode"),
@@ -136,9 +136,10 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 if (widget.CSSSize) {
                     widget.CSSSize.set("styles", widget.CSSSize.get("styles"));
                 }
-                this.showOverlay(widget, true);
+                this.fixedOverlay(widget);
                 this.saveCurrentPage();
                 this.bind();
+                this._syncWidgetEdition();
             }, this);
         },
         /**

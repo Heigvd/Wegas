@@ -11,12 +11,11 @@
  */
 YUI.add('wegas-pageeditor', function(Y) {
     "use strict";
-
     var PageEditor, BOUNDINGBOX = "boundingBox",
             CONTENTBOX = "contentBox",
             Alignable = Y.Base.create("wegas-pageeditor-overlay", Y.Widget,
             [Y.WidgetPosition, Y.WidgetStack], {
-        //CONTENT_TEMPLATE: '<div><span class="wegas-icon wegas-icon-edit"></span><div>'
+//CONTENT_TEMPLATE: '<div><span class="wegas-icon wegas-icon-edit"></span><div>'
     }, {
         CSS_PREFIX: "wegas-pageeditor-overlay"
     }),
@@ -25,7 +24,6 @@ YUI.add('wegas-pageeditor', function(Y) {
         return xy[0] > region.left && xy[0] < (region.left + region.width) &&
                 xy[1] > region.top && xy[1] < (region.top + region.height);
     };
-
     /**
      *  @class
      *  @name Y.Plugin.PageEditor
@@ -35,9 +33,8 @@ YUI.add('wegas-pageeditor', function(Y) {
     PageEditor = function() {
         PageEditor.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(PageEditor, Y.Plugin.Base, {
-        // *** Lifecycle methods *** //
+// *** Lifecycle methods *** //
         initializer: function() {
             this.handlers = [];
             this.fixedHandlers = [];
@@ -69,13 +66,12 @@ YUI.add('wegas-pageeditor', function(Y) {
                         });
                         this.bind();
                         this.layoutbutton.show();
-                        this.get("host").get(CONTENTBOX).prepend(this.highlightOverlay.get(BOUNDINGBOX));
                         host.get(CONTENTBOX).prepend(this.overlayMask);
                     } else {
                         this.detach();
                         host.toolbar.setStatusMessage("");
                         this.overlayMask.remove(false);
-                        this.highlightOverlay.get(BOUNDINGBOX).remove(false);
+                        this.shownOverlay.hide();
                         this.layoutbutton.set("pressed", false);
                         this.layoutbutton.hide();
                     }
@@ -118,9 +114,19 @@ YUI.add('wegas-pageeditor', function(Y) {
                 render: true,
                 visible: false
             });
-            this.highlightOverlay.get(CONTENTBOX).append("<div class='overlay-label'></div>");
+            this.shownOverlay = new Alignable({// Init the highlighting overlay
+                zIndex: 30,
+                render: true,
+                visible: false
+            });
+            this.shownOverlay.get(BOUNDINGBOX).addClass("pageditor-shownoverlay");
             this.highlightOverlay.get(CONTENTBOX).append("<span class='wegas-editmenubutton'></span>");
+            this.shownOverlay.get(CONTENTBOX).append("<span class='wegas-editmenubutton-icon'></span>");
+            /** MASK **/
             this.overlayMask = new Y.Node.create("<div class='pageeditor-overlay-mask'></div>");
+            this.overlayMask.before("click", function(e) {
+                this.fixedOverlay(this.overlayWidget);
+            }, this);
             this.overlayMask.plug(Y.Plugin.WidgetMenu, {
                 event: ["click", "contextmenu"]
             });
@@ -131,10 +137,6 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.designButton.set("pressed", false);
                 }
             }));
-            this.anim = new Y.Anim({
-                node: this.highlightOverlay.get(BOUNDINGBOX),
-                duration: 1
-            });
             this.fixedHandlers.push(this.get("host").get(CONTENTBOX).after("mouseout", function(e) {
                 if (!inRegion(e.currentTarget, [e.clientX, e.clientY])) {
                     this.hideOverlay();
@@ -142,20 +144,37 @@ YUI.add('wegas-pageeditor', function(Y) {
             }, this));
             this.fixedHandlers.push(this.get("host").get(CONTENTBOX).scrollInfo.on("*:scroll", function(e) {
                 this.overlayMask.setStyles({top: e.scrollTop, left: e.scrollLeft});
+                this.shownOverlay.hide();
             }, this));
-
         },
         bind: function() {
             if (this.binded) {
                 return;
             }
             this.binded = true;
-
-            this.handlers.push(this.overlayMask.menu.on("menuOpen", function(e) {
-                if (!this.highlightOverlay.get("visible")) {
-                    this.overlayMask.menu.menu.hide();
+            this.handlers.push(this.overlayMask.on("mousemove", function(e) {
+                var widget, vis = this.shownOverlay.get("visible");
+                e.halt(true);
+                this.overlayMask.hide();
+                this.highlightOverlay.hide();
+                this.shownOverlay.hide();
+                widget = Y.Widget.getByNode(//Find a parent Wegas widget or self
+                        Y.Node(window.document.elementFromPoint(e.clientX, e.clientY)).ancestor(".wegas-widget", true)
+                        );
+                this.overlayMask.show();
+                if (vis) {
+                    this.shownOverlay.show();
+                }
+                if (this.get("host") === widget || widget === null) {
                     return;
                 }
+                if (widget !== this.overlayWidget) {
+                    this.showOverlay(widget);
+                } else {
+                    this.highlightOverlay.show();
+                }
+            }, this));
+            this.handlers.push(this.overlayMask.menu.on("menuOpen", function(e) {
                 this.targetWidget = this.overlayWidget;
                 this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
                     widget: this.targetWidget
@@ -168,27 +187,8 @@ YUI.add('wegas-pageeditor', function(Y) {
                         this.overlayMask.menu.getMenu().item(0).fire("click");
                     }
                 }
-            }, this));
 
-            this.handlers.push(this.overlayMask.on("mousemove", function(e) {
-                var widget;
-                e.halt(true);
-                this.overlayMask.hide();
-                this.highlightOverlay.hide();
-                widget = Y.Widget.getByNode(//Find a parent Wegas widget or self
-                        Y.Node(window.document.elementFromPoint(e.clientX, e.clientY)).ancestor(".wegas-widget", true)
-                        );
-                this.overlayMask.show();
-                if (this.get("host") === widget) {
-                    return;
-                }
-                if (this.overlayWidget !== widget) {
-                    this.showOverlay(widget);
-                } else {
-                    this.highlightOverlay.show();
-                }
             }, this));
-
         },
         processSave: function() {
             var host = this.get("host"),
@@ -196,8 +196,8 @@ YUI.add('wegas-pageeditor', function(Y) {
             try {
                 page = Y.JSON.parse(this.jsonView.getValue());
                 page["@pageId"] = this.get("host").get("pageId");
-            } catch (e) {
-                host.get(BOUNDINGBOX).get("parentNode").emitDOMMessage("error", e.toString());
+            } catch (ex) {
+                host.get(BOUNDINGBOX).get("parentNode").emitDOMMessage("error", ex.toString());
                 return;
             }
             this.sourceButton.set("pressed", false);
@@ -218,7 +218,6 @@ YUI.add('wegas-pageeditor', function(Y) {
         },
         processSource: function() {
             var host = this.get("host");
-
             if (this.sourceButton.get("pressed")) {
                 if (!this.jsonView) {
                     this.initJsonView();
@@ -265,42 +264,25 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.handlers = [];
             this.binded = false;
         },
-        showOverlay: function(widget, immediate) {
+        showOverlay: function(widget) {
             var targetNode = widget.get(BOUNDINGBOX), bb = this.highlightOverlay.get(BOUNDINGBOX);
             this.overlayWidget = widget;
-            this.anim.stop();
             this.highlightOverlay.show();
-            if (this.runTimeout) {
-                this.runTimeout.cancel();
-            }
             bb.setXY(targetNode.getXY());
-//            bb.one(".overlay-label").setContent(widget.getType());
             bb.setStyles({
                 width: targetNode.getDOMNode().offsetWidth,
-                height: targetNode.getDOMNode().offsetHeight,
-                opacity: 0
+                height: targetNode.getDOMNode().offsetHeight
             });
-            if (!immediate) {
-
-                this.runTimeout = Y.later(500, this, function() {
-                    try {
-
-                        this.anim.set("from", {
-                            opacity: 0
-                        });
-                        this.anim.set("to", {
-                            opacity: 1
-                        });
-                        this.anim.run();
-                    } catch (e) {
-                    }
-                });
-            } else {
-                this.runTimeout = Y.later(100, this, function() {
-                    bb.setStyle("opacity", 1);
-                });
-
-            }
+        },
+        fixedOverlay: function(widget) {
+            var targetNode = widget.get(BOUNDINGBOX);
+            this.shownOverlay.get(BOUNDINGBOX).setXY(targetNode.getXY());
+            this.shownOverlay.get(BOUNDINGBOX).setStyles({
+                width: targetNode.getDOMNode().offsetWidth,
+                height: targetNode.getDOMNode().offsetHeight,
+            });
+            this.shownOverlay.show();
+            this.showOverlay(widget);
         },
         hideOverlay: function() {
             this.overlayWidget = null;
@@ -315,6 +297,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.detach();
             this.overlayMask.destroy(true);
             this.highlightOverlay.destroy(true);
+            this.shownOverlay.destroy(true);
             for (i = 0; i < this.fixedHandlers.length; i += 1) {
                 this.fixedHandlers[i].detach();
             }
@@ -337,6 +320,13 @@ YUI.add('wegas-pageeditor', function(Y) {
             if (this.jsonView) {
                 this.jsonView.destroy();
             }
+        },
+        _syncWidgetEdition: function() {
+            var widget = Y.Plugin.EditEntityAction.currentEntity === this.overlayWidget ? Y.Plugin.EditEntityAction.currentEntity : null;
+            if (widget) {
+                Y.Plugin.EditEntityAction.form.set("values", widget.toObject());
+                Y.Plugin.EditEntityAction.form.syncUI();
+            }
         }
 
     }, {
@@ -344,7 +334,6 @@ YUI.add('wegas-pageeditor', function(Y) {
         NAME: "pageeditor",
         ATTRS: {}
     });
-    Y.Base.mix(PageEditor, [Y.Wegas.PageEditorDD, Y.Wegas.PageEditorResize]);   //Enable dragdrop
+    Y.Base.mix(PageEditor, [Y.Wegas.PageEditorDD, Y.Wegas.PageEditorResize]); //Enable dragdrop
     Y.namespace('Plugin').PageEditor = PageEditor;
-
 });

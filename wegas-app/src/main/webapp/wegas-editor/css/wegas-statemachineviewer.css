@@ -6,13 +6,27 @@
  * Licensed under the MIT License
 */
 
-.yui3-wegas-statemachineviewer{
-    height: 100%;
-    width: 100%
+.sm-zoom {
+    height: 3000px;
+    width: 5000px;
+    transform-origin: 0% 0%;
+    -webkit-transform-origin: 0% 0%;
+    -ms-transform-origin: 0% 0%;
 }
-.yui3-wegas-statemachineviewer-content{
+
+.wegas-statemachineviewer{
+    height: 100%;
+    width: 100%;    
+}
+
+.wegas-statemachineviewer-content{
+    cursor: url(../../wegas-editor/images/openhand.cur), crosshair;
     height: 100%;
     width: 100%;
+}
+
+.wegas-statemachineviewer-content.mousedown:hover {
+    cursor: url(../../wegas-editor/images/closedhand.cur), crosshair;
 }
 
 .yui3-wegas-state{
