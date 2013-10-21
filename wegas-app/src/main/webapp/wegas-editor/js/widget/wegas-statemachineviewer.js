@@ -21,7 +21,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
 
-        CONTENT_TEMPLATE: "<div><div class='sm-zoom'></div></div>",
+        CONTENT_TEMPLATE: "<div id='scrollable'><div class='sm-zoom'></div></div>",
         panel: null,
         header: null,
         jpLoaded: false,
@@ -29,6 +29,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         currentZoom: null,
         events: [],
         cacheDialogue: null,
+        scrollView: null,
+        sliderZoom: null,
         nodes: {},
         initializer: function() {
             this.currentZoom = 1;
@@ -80,7 +82,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 e.connection.getParameter("transition").destroy();
             });
             this.jpLoaded = true;
-            this.setZoom(1);
+            this.setZoom(1, true);
             this.fire("jsPlumbLoaded");
         },
         renderUI: function() {
@@ -96,10 +98,55 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     }
                 }
             })).set("type", "save");
+            
+            var addStateEvent = function(e, parent) {
+                parent.setZoom(1, false); // force setting default zoom to have correct position
+                parent.addState(this.scrollView.get('scrollX') + 20, this.scrollView.get('scrollY') + 50, this.stateId);
+            };
+            var btnAddState;
+            this.toolbar.add(btnAddState = new Y.Button({
+                label: "<span class=\"wegas-icon wegas-icon-add\"></span>Add state"
+            }));
+            btnAddState.on('click', addStateEvent, this, this);
+            
+            var zoomValueChange = function(e, parent) {
+                parent.setZoom(e.newVal / StateMachineViewer.FACTOR_ZOOM, true);
+            };
+            this.toolbar.add(this.sliderZoom = new Y.Slider({
+                min: StateMachineViewer.MIN_ZOOM * StateMachineViewer.FACTOR_ZOOM,
+                max: StateMachineViewer.MAX_ZOOM * StateMachineViewer.FACTOR_ZOOM,
+                value: StateMachineViewer.FACTOR_ZOOM // default zoom
+            }));
+            this.sliderZoom.on('valueChange', zoomValueChange, this, this);
+            
+            var resetZoom = function(e, parent) {
+                parent.setZoom(1, false);
+            };
+            var btnZoomValue;
+            this.toolbar.add(btnZoomValue = new Y.Button({
+                label: "<div id=\"zoomValue\">100%</div>"              
+            }));
+            btnZoomValue.on('click', resetZoom, this, this);
+            
             this.panel.setStyle("display", "none");
             this.panel.name = Y.Node.create("<input type='text' name='name' placeholder='Name'></input>");
             this.panel.scope = Y.Node.create("<select name='scope'><option value='GameScope'>GameScope</option><option value='TeamScope'>TeamScope</option><option value='PlayerScope'>PlayerScope</option></select>");
             this.renderPanel();
+            
+            this.scrollView = new Y.ScrollView({
+               srcNode: '#scrollable',
+               height: '100%',
+               width: '100%',
+               deceleration: 0
+            }).render();
+            
+            Y.one('#scrollable').on('mousedown', function() {
+                Y.one('#scrollable').addClass('mousedown');
+            });
+            Y.one('#scrollable').on('mouseup', function() {
+                Y.one('#scrollable').removeClass('mousedown');
+            });
+            
             window.jsPlumb.ready(Y.bind(this.initJsPlumb, this));
         },
         bindUI: function() {
@@ -292,21 +339,27 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         },
         zoom: function(event) {
             if (event.wheelDelta < 0) {
-                this.setZoom(this.currentZoom - 0.05);
+                this.setZoom(this.currentZoom - 0.05, false);
             } else {
-                this.setZoom(this.currentZoom + 0.05);
+                this.setZoom(this.currentZoom + 0.05, false);
             }
-            this.setZoom(this.currentZoom);
+            this.setZoom(this.currentZoom, false);
         },
-        setZoom: function(lvl) {
+        setZoom: function(lvl, isFromSliderOrInit) {
             this.currentZoom = lvl < StateMachineViewer.MIN_ZOOM ?
                     StateMachineViewer.MIN_ZOOM :
                     (lvl > StateMachineViewer.MAX_ZOOM ?
                             StateMachineViewer.MAX_ZOOM :
                             lvl);
-            this.get(CONTENT_BOX).one(".sm-zoom").setStyle("transform", "scale(" + this.currentZoom + ")");
-//            this.get(CONTENT_BOX).one(".sm-zoom").setStyle("zoom", this.currentZoom);
-            jp.setZoom(this.currentZoom, true);
+            
+            this.get(CONTENT_BOX).one(".sm-zoom").setStyle('transform', 'scale(' + this.currentZoom + ')');
+            //            this.get(CONTENT_BOX).one(".sm-zoom").setStyle("zoom", this.currentZoom);
+            jp.setZoom(this.currentZoom, false);
+            
+            Y.one("#zoomValue").setHTML(parseInt(this.currentZoom * 100) + "%");
+            if (!isFromSliderOrInit) {
+                this.sliderZoom.set("value", this.currentZoom * StateMachineViewer.FACTOR_ZOOM);
+            }
         },
         highlightCurrentState: function() {
             var sm = this.get("entity");
@@ -323,6 +376,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
     }, {
         MIN_ZOOM: 0.3,
         MAX_ZOOM: 3,
+        FACTOR_ZOOM: 1000,
         ATTRS: {
             entity: {
                 value: null,

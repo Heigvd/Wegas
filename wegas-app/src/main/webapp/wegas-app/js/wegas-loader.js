@@ -663,7 +663,8 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/js/widget/wegas-statemachineviewer-min.js',
                     requires: ['dd-constrain', 'wegas-datasource',
                         'wegas-statemachineviewercss', 'jsplumb-yui', 'button',
-                        'wegas-statemachine-entities', 'event-mousewheel'],
+                        'wegas-statemachine-entities', 'event-mousewheel',
+                        'scrollview', 'slider'],
                     ws_provides: 'StateMachineViewer'
                 },
                 'wegas-statemachineviewercss': {
