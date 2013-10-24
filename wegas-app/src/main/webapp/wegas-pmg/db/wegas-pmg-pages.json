@@ -4,7 +4,7 @@
         "cssClass": "layout",
         "children": [{
                 "type": "Image",
-                "url": " http://localhost:8080/Wegas/wegas-pmg/images/pmg-logo-1.png",
+                "url": " http://wegas.albasim.ch/wegas-pmg/images/pmg-logo-1.png",
                 "plugins": [{
                         "fn": "CSSPosition",
                         "cfg": {
