@@ -266,7 +266,12 @@
                                                                     }, {
                                                                         "type": "NewEntityButton",
                                                                         "label": "String",
-                                                                        "targetClass": "StringDescriptor"
+                                                                        "targetClass": "StringDescriptor",
+                                                                        "cssClass": "wegas-advanced-feature"
+                                                                    }, {
+                                                                        "type": "AddEntityChildButton",
+                                                                        "label": "Text",
+                                                                        "targetClass": "TextDescriptor"
                                                                     }, {
                                                                         "type": "NewEntityButton",
                                                                         "label": "Folder",
