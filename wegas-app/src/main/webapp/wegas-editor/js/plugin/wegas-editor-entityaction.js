@@ -244,16 +244,34 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     };
     Y.extend(EditEntityArrayFieldAction, EntityAction, {
         execute: function() {
+            var entity = (this.get("method").toLowerCase() === "post") ? this.get(ENTITY) : this.get("parentEntity");
+
+            if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {
+                this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
+                    on: {
+                        success: Y.bind(function(e) {
+                            this.doExecute(e.response.entity);
+                        }, this)
+                    }
+                });
+            } else {
+                this.doExecute(entity);
+            }
+        },
+        doExecute: function(descriptor) {
             var entity = this.get(ENTITY),
                     dataSource = this.get("dataSource"),
-                    parentEntity = this.get("parentEntity"),
                     newEntity, targetArray;
+
             switch (this.get("method").toString().toLowerCase()) {
                 case "put":
-                    EditEntityAction.showEditForm(entity, function(newVal) {
+                    var child = Y.Array.find(descriptor.get(this.get("attributeKey")), function(i) {
+                        return i.get("id") === entity.get("id");
+                    });
 
-                        entity.setAttrs(newVal);
-                        dataSource.cache.put(parentEntity.toObject(), {
+                    EditEntityAction.showEditForm(child, function(newVal) {
+                        child.setAttrs(newVal);
+                        dataSource.cache.put(descriptor.toObject(), {
                             success: function() {
                                 EditEntityAction.hideEditFormOverlay();
                                 EditEntityAction.showFormMessage("success", "Item has been updated");
@@ -268,8 +286,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     });
                     EditEntityAction.showEditForm(newEntity, Y.bind(function(newVal) {
                         newEntity.setAttrs(newVal);
-                        entity.get(this.get("attributeKey")).push(newEntity);
-                        dataSource.cache.put(entity.toObject(), {
+                        descriptor.get(this.get("attributeKey")).push(newEntity);
+                        dataSource.cache.put(descriptor.toObject(), {
                             success: function() {
                                 EditEntityAction.hideEditFormOverlay();
                                 EditEntityAction.showFormMessage("success", "Item has been added");
@@ -281,7 +299,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     break;
                 case "delete":
                     if (confirm("Are your sure your want to delete this item ?")) {
-                        targetArray = parentEntity.get(this.get("attributeKey"));
+                        targetArray = descriptor.get(this.get("attributeKey"));
                         Y.Array.find(targetArray, function(e, i, a) {
                             if (e.get("id") === entity.get("id")) {
                                 a.splice(i, 1);
@@ -290,7 +308,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             return false;
                         });
                         this.get("host").showOverlay();
-                        dataSource.cache.put(parentEntity.toObject());
+                        dataSource.cache.put(descriptor.toObject());
                     } else {
                         return;
                     }
