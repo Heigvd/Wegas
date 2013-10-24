@@ -156,7 +156,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                             cReplyLabel = cQuestionInstance.get("replies").length + "x";
                         } else {
                             choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                            cReplyLabel = choiceDescriptor.get("title") || choiceDescriptor.get("label" || "undefined");
+                            cReplyLabel = choiceDescriptor.get("title") || choiceDescriptor.get("label") || "undefined";
                             cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel.substr(0, 15) + "..." : cReplyLabel;
                         }
                     }
@@ -246,7 +246,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                             }
                         }
                         ret.push('<div class="reply ', firstChild, ' ', isReplied, '">',
-                                '<div class="name">', cChoices[j].get("title") || cQuestion.get("label"), '</div>',
+                                '<div class="name">', cChoices[j].get("title") || cChoices[j].get("label"), '</div>',
                                 //'<div class="content">', cChoices[j].get("description"), '</div>',
                                 '<div class="content">',
                                 extendedQuestion.get("items")[j].get("description"),
