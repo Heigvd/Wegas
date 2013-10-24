@@ -98,7 +98,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     }
                 }
             })).set("type", "save");
-            
+
             var addStateEvent = function(e, parent) {
                 parent.setZoom(1, false); // force setting default zoom to have correct position
                 parent.addState(this.scrollView.get('scrollX') + 20, this.scrollView.get('scrollY') + 50, this.stateId);
@@ -108,7 +108,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 label: "<span class=\"wegas-icon wegas-icon-add\"></span>Add state"
             }));
             btnAddState.on('click', addStateEvent, this, this);
-            
+
             var zoomValueChange = function(e, parent) {
                 parent.setZoom(e.newVal / StateMachineViewer.FACTOR_ZOOM, true);
             };
@@ -118,35 +118,35 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 value: StateMachineViewer.FACTOR_ZOOM // default zoom
             }));
             this.sliderZoom.on('valueChange', zoomValueChange, this, this);
-            
+
             var resetZoom = function(e, parent) {
                 parent.setZoom(1, false);
             };
             var btnZoomValue;
             this.toolbar.add(btnZoomValue = new Y.Button({
-                label: "<div id=\"zoomValue\">100%</div>"              
+                label: "<div id=\"zoomValue\">100%</div>"
             }));
             btnZoomValue.on('click', resetZoom, this, this);
-            
+
             this.panel.setStyle("display", "none");
             this.panel.name = Y.Node.create("<input type='text' name='name' placeholder='Name'></input>");
             this.panel.scope = Y.Node.create("<select name='scope'><option value='GameScope'>GameScope</option><option value='TeamScope'>TeamScope</option><option value='PlayerScope'>PlayerScope</option></select>");
             this.renderPanel();
-            
+
             this.scrollView = new Y.ScrollView({
-               srcNode: '#scrollable',
-               height: '100%',
-               width: '100%',
-               deceleration: 0
+                srcNode: '#scrollable',
+                height: '100%',
+                width: '100%',
+                deceleration: 0
             }).render();
-            
+
             Y.one('#scrollable').on('mousedown', function() {
                 Y.one('#scrollable').addClass('mousedown');
             });
             Y.one('#scrollable').on('mouseup', function() {
                 Y.one('#scrollable').removeClass('mousedown');
             });
-            
+
             window.jsPlumb.ready(Y.bind(this.initJsPlumb, this));
         },
         bindUI: function() {
@@ -351,11 +351,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     (lvl > StateMachineViewer.MAX_ZOOM ?
                             StateMachineViewer.MAX_ZOOM :
                             lvl);
-            
+
             this.get(CONTENT_BOX).one(".sm-zoom").setStyle('transform', 'scale(' + this.currentZoom + ')');
             //            this.get(CONTENT_BOX).one(".sm-zoom").setStyle("zoom", this.currentZoom);
             jp.setZoom(this.currentZoom, false);
-            
+
             Y.one("#zoomValue").setHTML(parseInt(this.currentZoom * 100) + "%");
             if (!isFromSliderOrInit) {
                 this.sliderZoom.set("value", this.currentZoom * StateMachineViewer.FACTOR_ZOOM);
@@ -383,6 +383,12 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 validator: function(o) {
                     return o instanceof Y.Wegas.persistence.FSMDescriptor || o === null;
                 }
+            },
+            availableStates: {
+                value: ["State"]
+            },
+            availableTransitions: {
+                value: ["Transition"]
             }
         }
     });

@@ -510,19 +510,23 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         execute: function() {
             Wegas.TabView.findTabAndLoadWidget("State machine editor", // Load and display the editor in a new tab
-                    "#centerTabView", null, {
+                    "#centerTabView", null, Y.mix(this.get("viewerCfg"), {
                 type: "StateMachineViewer",
                 plugins: [{
                         fn: "WidgetToolbar"
                     }]
-            }, Y.bind(function(entity, widget) {
+            }), Y.bind(function(entity, widget) {
                 widget.set("entity", entity);
             }, this, this.get("entity")));
         }
-
     }, {
         NS: "wegas",
-        NAME: "EditFSMAction"
+        NAME: "EditFSMAction",
+        ATTRS: {
+            viewerCfg: {
+                value: {}
+            }
+        }
     });
     Plugin.EditFSMAction = EditFSMAction;
 
