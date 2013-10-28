@@ -128,6 +128,7 @@ body {
 .yui3-skin-sam .layout .yui3-button-selected {
     background-color:white;
     color:black;
+    box-shadow: none;
 }
 
 .layout .horizontal-menu .wegas-login{
@@ -264,7 +265,7 @@ h2{
     width: 50%;
 }
 
-.yui3-skin-sam  .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
+.yui3-skin-sam .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
     display:inline-block;
     width:50%;
     float:left;

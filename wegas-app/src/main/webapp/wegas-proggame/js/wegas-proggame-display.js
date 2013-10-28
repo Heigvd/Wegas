@@ -20,11 +20,11 @@ YUI.add('wegas-proggame-display', function(Y) {
      */
     ProgGameDisplay = Y.Base.create("wegas-proggame-display", Y.Widget, [], {
         CONTENT_TEMPLATE: '<div><div class="object-layer"></div><div id="cr-stage"></div></div>',
-        renderMethod: null,
         gridH: null,
         gridW: null,
         allowNextCommand: null,
         initializer: function() {
+            this.entities = [];
             this.allowNextCommand = false;
             this.publish("commandExecuted", {});
             if (this.get('map')) {
@@ -36,6 +36,137 @@ YUI.add('wegas-proggame-display', function(Y) {
             var i, j;
 
             Crafty.init(GRIDSIZE * this.gridW, GRIDSIZE * this.gridH);
+
+            Crafty.refWidget = this;
+            this.initCrafty();
+
+            Crafty.background('rgb(110,110,110)');
+
+            var i, j, cfg, pos, entity,
+                    objects = this.get('objects'),
+                    map = this.get('map');
+
+            for (i = 0; i < this.gridH; i += 1) {                               // Add map tiles
+                for (j = 0; j < this.gridW; j += 1) {
+                    cfg = map[i][j];
+                    if (cfg) {
+                        Crafty.e('Tile, ' + (cfg.sprite || "TerrainSprite"))
+                                .sprite(cfg.x, cfg.y)
+                                .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
+                    }
+                }
+            }
+
+            for (i = 0; i < objects.length; i++) {                              // Add map objects
+                cfg = objects[i];
+
+                entity = Crafty.e(cfg.components)
+                        .attr(cfg.attrs);                                       // Instantiate an entity
+
+                pos = this.getRealXYPos([cfg.x, cfg.y]);                        // Place it on the map
+
+                entity.attr('x', pos[0]);
+                entity.attr('y', pos[1]);
+                if (entity.execMove) {                                          // Allows to turn the player to the right direction
+                    entity.execMove(cfg.direction, pos[0], pos[1]);
+                }
+                this.entities[cfg.id] = entity;                                 // Save a reference so we can look up for instances
+            }
+        },
+        bindUI: function() {
+            Crafty.bind('commandExecuted', function() {
+                if (Crafty.refWidget.allowNextCommand) {
+                    Crafty.refWidget.allowNextCommand = false;
+                    Crafty.refWidget.fire('commandExecuted');
+                }
+            });
+        },
+        destructor: function() {
+            var k, components = Crafty("*");
+            for (k in components) {
+                if (components[k].destroy) {
+                    components[k].destroy();
+                }
+            }
+            Crafty.unbind('dieEnded');
+            Crafty.unbind('moveEnded');
+            Crafty.unbind('commandExecuted');
+        },
+        getEntity: function(id) {
+            return this.entities[id];
+        },
+        execute: function(command) {
+            var object, entity, pos, i;
+
+            switch (command.type) {
+                case "resetLevel":
+                    for (i = 0; i < command.objects.length; i++) {
+                        object = command.objects[i];
+                        pos = this.getRealXYPos([object.x, object.y]);
+                        entity = this.getEntity(object.id);
+                        entity.attr('x', pos[0]).attr('y', pos[1]);
+                        if (entity.execMove) {
+                            entity.execMove(object.direction, pos[0], pos[1]);
+                        }
+                    }
+                    this.fire("commandExecuted");
+                    break;
+                case "move":
+                    object = command.object;
+                    this.set("objects", object);// @fixme why?
+                    entity = this.getEntity(object.id);
+                    pos = this.getRealXYPos([object.x, object.y]);
+                    this.allowNextCommand = true;
+                    if (entity && entity.execMove) {
+                        entity.execMove(object.direction, pos[0], pos[1], 2);
+                    } else {
+                        this.fire('commandExecuted');
+                    }
+                    break;
+                case "fire":
+                    entity = this.getEntity(command.object.id);
+                    switch (object.direction) {
+                        case 1:
+                            pos = this.getRealXYPos([object.x, object.y + object.range]);
+                            break;
+                        case 2:
+                            pos = this.getRealXYPos([object.x + object.range, object.y]);
+                            break;
+                        case 3:
+                            pos = this.getRealXYPos([object.x, object.y - object.range]);
+                            break;
+                        case 4:
+                            pos = this.getRealXYPos([object.x - object.range, object.y]);
+                            break;
+                    }
+                    this.allowNextCommand = true;
+                    if (entity && entity.execFire) {
+                        entity.execFire(object.direction, pos[0], pos[1], 7);
+                    } else {
+                        this.fire('commandExecuted');
+                    }
+                    break;
+                case "die":
+                    entity = this.getEntity(command.object.id);
+                    this.allowNextCommand = true;
+                    if (entity && entity.execDie) {
+                        entity.execDie();
+                    } else {
+                        this.fire('commandExecuted');
+                    }
+                    break;
+            }
+        },
+        getRealXYPos: function(position) {
+            var pos = [];
+            if (!position || typeof position[0] !== 'number' || typeof position[1] !== 'number') {
+                return pos;
+            }
+            pos.push(position[0] * GRIDSIZE); //x
+            pos.push((this.gridH - position[1] - 1) * GRIDSIZE); //y
+            return pos;
+        },
+        initCrafty: function() {
             if (Crafty.support.canvas) {
                 Crafty.canvas.init();
                 this.renderMethod = 'Canvas';
@@ -43,40 +174,21 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this.renderMethod = 'DOM';
             }
 
-            Crafty.refWidget = this;
-
-            Crafty.bind('commandExecuted', function() {
-                if (Crafty.refWidget.allowNextCommand) {
-                    Crafty.refWidget.allowNextCommand = false;
-                    Crafty.refWidget.fire('commandExecuted');
-                }
-            });
-
-            Crafty.background('rgb(110,110,110)');
-            //sprites (temporary, need to create dynamically)
             Crafty.sprite(24, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/characters.png', {
-                characters: [0, 0]
+                CharacterSprite: [0, 0]
             });
             Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/lightning.png', {
-                lightning: [0, 0]
+                LightningSprite: [0, 0]
             });
             Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/terrain.png', {
-                terrain: [0, 0]
+                TerrainSprite: [0, 0]
             });
+
             //move function
-            Crafty.c('move4Direction', {//require Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
+            Crafty.c('move4Direction', {//requires Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
                 tweenEnd: null,
                 init: function() {
-                    var i, sprites = this.cfg.sprites;
-                    this.requires("Tween, SpriteAnimation");
-                    for (i = 0; i < sprites.length; i++) {
-                        if (sprites[i].name === 'moveUp'
-                                || sprites[i].name === 'moveRight'
-                                || sprites[i].name === 'moveDown'
-                                || sprites[i].name === 'moveLeft') {
-                            this.animate(sprites[i].name, sprites[i].x, sprites[i].y, sprites[i].toX);
-                        }
-                    }
+                    this.requires("Tween");
                     this.tweenEnd = []; //Tween x and y. Thus, the tween end when this variable contain x and y.
                     this.bind('TweenEnd', function(e) {
                         this.tweenEnd.push(e);
@@ -88,23 +200,9 @@ YUI.add('wegas-proggame-display', function(Y) {
                     }, this);
                 },
                 execMove: function(direction, toX, toY, speed) {
-                    var animDir, time, dist;
-                    switch (direction) {
-                        case 1:
-                            animDir = 'moveUp';
-                            break;
-                        case 2:
-                            animDir = 'moveRight';
-                            break;
-                        case 3:
-                            animDir = 'moveDown';
-                            break;
-                        case 4:
-                            animDir = 'moveLeft';
-                            break;
-                        default:
-                            return;
-                    }
+                    var time, dist,
+                            animDir = this.dir2anim(direction);
+
                     if (!this.isPlaying(animDir)) {
                         this.stop();
                         this.animate(animDir, 10, -1);
@@ -114,7 +212,23 @@ YUI.add('wegas-proggame-display', function(Y) {
                     time = Math.round(((dist / GRIDSIZE) * (100 / speed))) + 1; //+1 because if time = 0, time = infinite
                     this.tweenEnd.length = 0;
                     this.tween({x: toX, y: toY}, time);
-                }});
+                },
+                dir2anim: function(direction) {
+                    switch (direction) {
+                        case 1:
+                            return "moveUp";
+                        case 2:
+                            return "moveRight";
+                        case 3:
+                            return "moveDown";
+                        case 4:
+                            return "moveLeft";
+                        default:
+                            return null;
+                    }
+                }
+            });
+
             Crafty.c("shoot", {
                 shot: null,
                 init: function() {
@@ -125,38 +239,20 @@ YUI.add('wegas-proggame-display', function(Y) {
                     }, this);
                 },
                 execFire: function(dir, toX, toY, speed) {
-                    this.shot = Crafty.e('2D, lightningShot, ' + Crafty.refWidget.renderMethod);
+                    this.shot = Crafty.e('LightningShot');
                     this.shot.attr('x', this.pos()._x);
                     this.shot.attr('y', this.pos()._y);
                     this.shot.execMove(dir, toX, toY, speed);
                 }
             });
 
-            Crafty.c("lightningShot", {//temporary hard-coded
+            Crafty.c("LightningShot", {//temporary hard-coded
                 init: function() {
-                    var animations = [{
-                            name: "moveUp",
-                            x: 0,
-                            y: 6,
-                            toX: 3
-                        }, {
-                            name: "moveRight",
-                            x: 0,
-                            y: 0,
-                            toX: 3
-                        }, {
-                            name: "moveDown",
-                            x: 0,
-                            y: 2,
-                            toX: 3
-                        }, {
-                            name: "moveLeft",
-                            x: 0,
-                            y: 4,
-                            toX: 3
-                        }];
-                    this.cfg = {'sprites': animations};
-                    this.requires("lightning, Tween, SpriteAnimation, move4Direction");
+                    this.requires("2D," + Crafty.refWidget.renderMethod + ", LightningSprite, SpriteAnimation, move4Direction")
+                            .animate("moveUp", 0, 6, 3)
+                            .animate("moveRight", 0, 0, 3)
+                            .animate("moveDown", 0, 2, 3)
+                            .animate("moveLeft", 0, 4, 3);
                 }
             });
 
@@ -177,175 +273,70 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.tween({alpha: 0}, 50);
                 }
             });
-
-            /*---Crafty "render"---*/
-            //map
-            var mapObject, alea, sprite,
-                    //mapObjects = this.get('mapObjects'),
-                    map = this.get('map');
-            for (i = 0; i < this.gridH; i += 1) {
-                for (j = 0; j < this.gridW; j += 1) {
-
-                    mapObject = map[i][j];
-                    sprite = (mapObject.sprite) ? ProgGameDisplay.SPRITESHEETS[mapObject.sprite].name : "terrain";
-                    if (mapObject) {
-                        if (mapObject.x.length && mapObject.y.length && mapObject.x.length === mapObject.y.length) {
-                            alea = Math.floor(Math.random() * mapObject.x.length);
-                            Crafty.e('2D, ' + this.renderMethod + ', Color, ' + sprite)
-                                    .sprite(mapObject.x[alea], mapObject.y[alea])
-                                    .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
-                        } else {
-                            Crafty.e('2D, ' + this.renderMethod + ', Color, ' + sprite)
-                                    .sprite(mapObject.x, mapObject.y)
-                                    .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
-                        }
-                    }
-                    //mapObject = Y.Array.find(mapObjects, function(item) {
-                    //    return  map[i][j] === item.name;
-                    //});
-                    //if (mapObject) {
-                    //    var alea;
-                    //    //console.log(mapObject.x[0]);
-                    //    if (mapObject.x.length && mapObject.y.length && mapObject.x.length === mapObject.y.length) {
-                    //        alea = Math.floor(Math.random() * mapObject.x.length);
-                    //        Crafty.e('2D, ' + this.renderMethod + ', Color, ' + mapObject.spriteSheet)
-                    //                .sprite(mapObject.x[alea], mapObject.y[alea])
-                    //                .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
-                    //    } else {
-                    //        Crafty.e('2D, ' + this.renderMethod + ', Color, ' + mapObject.spriteSheet)
-                    //                .sprite(mapObject.x, mapObject.y)
-                    //                .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
+            Crafty.c("Character", {
+                init: function() {
+                    this.requires("2D," + Crafty.refWidget.renderMethod + ", CharacterSprite, SpriteAnimation, move4Direction");
+                }
+            });
+            Crafty.c("PC", {
+                init: function() {
+                    this.requires("Character")
+                            .animate("moveUp", 0, 0, 2)
+                            .animate("moveRight", 0, 1, 2)
+                            .animate("moveDown", 0, 2, 2)
+                            .animate("moveLeft", 0, 3, 2);
+                }
+            });
+            Crafty.c("NPC", {
+                init: function() {
+                    this.requires("Character")
+                            .animate("moveUp", 9, 0, 11)
+                            .animate("moveRight", 9, 1, 11)
+                            .animate("moveDown", 9, 2, 11)
+                            .animate("moveLeft", 9, 3, 11);
+                }
+            });
+            Crafty.c("Obstacle", {
+                init: function() {
+                    this.requires("2D," + Crafty.refWidget.renderMethod + ", TerrainSprite")
+                            .sprite(23, 18);
+                    //{x: 23, y: 18},
+                    //{x: 24, y: 21},
+                    //{x: 21, y: 21}
+                }
+            });
+            Crafty.c("Tile", {
+                init: function() {
+                    this.requires("2D," + Crafty.refWidget.renderMethod);
+                }
+            });
+            Crafty.c("GrassTile", {
+                init: function() {
+                    this.requires("Tile, TerrainSprite")
+                            .sprite(21, 5);
+                    //    {
+                    //        "name": "g",
+                    //        "x": [21, 22, 21],
+                    //        "y": [5, 5, 11]
+                    //    }, {
+                    //        "name": "e",
+                    //        "x": 17,
+                    //        "y": 5
+                    //    }, {
+                    //        "name": "w",
+                    //        "x": 21,
+                    //        "y": 17
                     //    }
-                    //}
                 }
-            }
-
-            //Entities
-            var object, pos, template,
-                    objects = this.get('objects'),
-                    makeEntity = function(cfg) {
-                Crafty.c(cfg.id, {
-                    init: function() {
-                        this.cfg = cfg;
-                        if (cfg.spriteSheet) {
-                            this.requires(cfg.spriteSheet);
-                            if (cfg.sprites) {
-                                this.sprite(cfg.sprites[0].x, cfg.sprites[0].y);
-                            }
-                        }
-                        if (cfg.aptitudes) {
-                            this.requires(cfg.aptitudes);
-                        }
-                    }
-                });
-            };
-            for (i = 0; i < objects.length; i++) {
-                template = Y.Array.find(ProgGameDisplay.OBJECTTEMPLATES, function(item) {
-                    return item.id === objects[i].id;
-                });
-                object = Y.mix(objects[i], template || {});
-                makeEntity(object);
-                pos = this.getRealXYPos([object.x, object.y]);
-                Crafty.e('2D, ' + this.renderMethod + ', ' + object.id);
-                Crafty(object.id).attr('x', pos[0]);
-                Crafty(object.id).attr('y', pos[1]);
-                if (Crafty(object.id).execMove) {
-                    Crafty(object.id).execMove(object.direction, pos[0], pos[1]);
-                }
-            }
-        },
-        destructor: function() {
-            var k;
-            for (k in Crafty("*")) {
-                if (Crafty("*")[k].destroy) {
-                    Crafty("*")[k].destroy();
-                }
-            }
-            Crafty.unbind('dieEnded');
-            Crafty.unbind('moveEnded');
-            Crafty.unbind('commandExecuted');
-        },
-        execute: function(command) {
-            var object, entity, dir, pos, i;
-            switch (command.type) {
-                case "resetLevel":
-                    for (i = 0; i < command.objects.length; i++) {
-                        object = command.objects[i];
-                        pos = this.getRealXYPos([object.x, object.y]);
-                        Crafty(object.id).attr('x', pos[0]);
-                        Crafty(object.id).attr('y', pos[1]);
-                        if (Crafty(object.id).execMove) {
-                            Crafty(object.id).execMove(object.direction, pos[0], pos[1]);
-                        }
-                    }
-                    this.fire("commandExecuted");
-                    break;
-                case "move":
-                    object = command.object;
-                    this.set("objects", object);
-                    entity = object.id;
-                    dir = object.direction;
-                    pos = this.getRealXYPos([object.x, object.y]);
-                    this.allowNextCommand = true;
-                    if (entity && Crafty(entity) && Crafty(entity).execMove) {
-                        Crafty(entity).execMove(dir, pos[0], pos[1], 2);
-                    } else {
-                        this.fire('commandExecuted');
-                    }
-                    break;
-                case "fire":
-                    object = command.object;
-                    entity = object.id;
-                    dir = object.direction;
-                    switch (dir) {
-                        case 1:
-                            pos = this.getRealXYPos([object.x, object.y + object.range]);
-                            break;
-                        case 2:
-                            pos = this.getRealXYPos([object.x + object.range, object.y]);
-                            break;
-                        case 3:
-                            pos = this.getRealXYPos([object.x, object.y - object.range]);
-                            break;
-                        case 4:
-                            pos = this.getRealXYPos([object.x - object.range, object.y]);
-                            break;
-                    }
-                    this.allowNextCommand = true;
-                    if (entity && Crafty(entity) && Crafty(entity).execFire) {
-                        Crafty(entity).execFire(dir, pos[0], pos[1], 7);
-                    } else {
-                        this.fire('commandExecuted');
-                    }
-                    break;
-                case "die":
-                    object = command.object;
-                    entity = object.id;
-                    this.allowNextCommand = true;
-                    if (entity && Crafty(entity) && Crafty(entity).execDie) {
-                        Crafty(entity).execDie();
-                    } else {
-                        this.fire('commandExecuted');
-                    }
-                    break;
-            }
-        },
-        getRealXYPos: function(position) {
-            var pos = [];
-            if (!position || typeof position[0] !== 'number' || typeof position[1] !== 'number') {
-                return pos;
-            }
-            pos.push(position[0] * GRIDSIZE); //x
-            pos.push((this.gridH - position[1] - 1) * GRIDSIZE); //y
-            return pos;
+            });
         }
-
     }, {
         ATTRS: {
             map: {
                 validator: Y.Lang.isArray
             },
             objects: {
+                value: []
             }
         },
         SPRITESHEETS: {
@@ -366,29 +357,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 life: 100,
                 actions: 20,
                 range: 3,
-                spriteSheet: "characters",
-                aptitudes: "move4Direction, shoot, die",
-                sprites: [{
-                        name: "moveUp",
-                        x: 0,
-                        y: 0,
-                        toX: 2
-                    }, {
-                        name: "moveRight",
-                        x: 0,
-                        y: 1,
-                        toX: 2
-                    }, {
-                        name: "moveDown",
-                        x: 0,
-                        y: 2,
-                        toX: 2
-                    }, {
-                        name: "moveLeft",
-                        x: 0,
-                        y: 3,
-                        toX: 2
-                    }]
+                components: "PlayableCharacter"
             }, {
                 direction: 4,
                 id: "Enemy",
@@ -399,71 +368,18 @@ YUI.add('wegas-proggame-display', function(Y) {
                 actions: 0,
                 range: 2,
                 collides: false,
-                spriteSheet: "characters",
-                aptitudes: "move4Direction, shoot, die",
-                sprites: [{
-                        name: "moveUp",
-                        x: 9,
-                        y: 0,
-                        toX: 11
-                    }, {
-                        name: "moveRight",
-                        x: 9,
-                        y: 1,
-                        toX: 11
-                    }, {
-                        name: "moveDown",
-                        x: 9,
-                        y: 2,
-                        toX: 11
-                    }, {
-                        name: "moveLeft",
-                        x: 9,
-                        y: 3,
-                        toX: 11
-                    }]
+                components: "NotPlayableCharacter"
             }, {
                 id: "Bloc1",
                 type: "other",
-                spriteSheet: "terrain",
-                sprites: [{
-                        x: 23,
-                        y: 18
-                    }]
+                components: "Obstacle"
             }, {
                 id: "Bloc2",
-                type: "other",
-                spriteSheet: "terrain",
-                sprites: [{
-                        x: 24,
-                        y: 21
-                    }]
+                type: "other"
             }, {
                 id: "Bloc3",
-                type: "other",
-                spriteSheet: "terrain",
-                sprites: [{
-                        x: 21,
-                        y: 21
-                    }]
-            }],
-        mapObjects: [{
-                "name": "g",
-                "spriteSheet": "terrain",
-                "x": [21, 22, 21],
-                "y": [5, 5, 11]
-            }, {
-                "name": "e",
-                "spriteSheet": "terrain",
-                "x": 17,
-                "y": 5
-            }, {
-                "name": "w",
-                "spriteSheet": "terrain",
-                "x": 21,
-                "y": 17
-            },
-        ]
+                type: "other"
+            }]
     });
 
     Y.namespace('Wegas').ProgGameDisplay = ProgGameDisplay;

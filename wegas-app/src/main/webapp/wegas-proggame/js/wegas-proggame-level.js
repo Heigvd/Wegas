@@ -226,33 +226,32 @@ YUI.add('wegas-proggame-level', function(Y) {
         syncFrontUI: function() {
             var cb = this.get(CONTENTBOX);
 
-            function updateUI(object, el) {
-                var i, acc = [];
-                if (!Y.Lang.isUndefined(object.life)) {
-                    acc.push("Life<div class=\"life\"><span style=\"width:" + object.life + "%;\" ></span></div>");
-                }
-                if (!Y.Lang.isUndefined(object.actions)) {
-                    acc.push("Actions<div class=\"actions\">");
-                    for (i = 0; i < object.actions; i += 1) {
-                        acc.push("<span></span>");
-                    }
-                    acc.push("</div>");
-                }
-                el.setHTML(acc.join(""));
-                if (acc.length === 0) {
-                    el.hide();
-                } else {
-                    el.show();
-                }
-            }
             if (this.findObject("Player")) {
-                updateUI.call(this, this.findObject("Player"), cb.one(".player-ui"));
+                this.updateUI(this.findObject("Player"), cb.one(".player-ui"));
             }
             if (this.findObject("Enemy")) {
-                updateUI.call(this, this.findObject("Enemy"), cb.one(".enemy-ui"));
+                this.updateUI(this.findObject("Enemy"), cb.one(".enemy-ui"));
+            }
+        },
+        updateUI: function(object, el) {
+            var i, acc = [];
+            if (!Y.Lang.isUndefined(object.life)) {
+                acc.push("Life<div class=\"life\"><span style=\"width:" + object.life + "%;\" ></span></div>");
+            }
+            if (!Y.Lang.isUndefined(object.actions)) {
+                acc.push("Actions<div class=\"actions\">");
+                for (i = 0; i < object.actions; i += 1) {
+                    acc.push("<span></span>");
+                }
+                acc.push("</div>");
+            }
+            el.setHTML(acc.join(""));
+            if (acc.length === 0) {
+                el.hide();
+            } else {
+                el.show();
             }
         }
-
     }, {
         ATTRS: {
             label: {

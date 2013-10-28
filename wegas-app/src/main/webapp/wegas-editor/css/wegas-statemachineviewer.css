@@ -74,6 +74,11 @@
     border-radius: 10px;
 }
 
+.transition-toolbox {
+    width: 40px;
+    height: 20px;
+}
+
 .yui3-wegas-state:hover .state-toolbox{
     display:inline-block;
 }
@@ -112,13 +117,23 @@
     background-repeat: no-repeat;
 }
 .transition-edit{
-    position:absolute;
+    /*position:absolute;*/
     display:inline-block;
     width:18px;
     height:24px;
     background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -943px;
     background-repeat: no-repeat;
+    cursor: pointer;
+}
+.transition-delete {
+    display:inline-block;
+    width: 49%;
+    height: 100%;
+    background:url(../../wegas-app/images/wegas-app-sprite.png);
+    background-position: 0px -772px;
+    background-repeat: no-repeat;
+    cursor: pointer;
 }
 .droppable-state{
     box-shadow: 0px 0px 20px #009933;
