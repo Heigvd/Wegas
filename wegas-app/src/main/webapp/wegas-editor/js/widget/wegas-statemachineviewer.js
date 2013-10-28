@@ -79,6 +79,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     }
                 }
                 e.connection.getParameter("transition").destroy();
+                e.connection.getParameter("transition").source.get("parent").processMenu("save");
             });
             this.jpLoaded = true;
             this.setZoom(1, true);
@@ -106,6 +107,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             btnAddState.on('click', function(e) {
                 this.setZoom(1, false); // force setting default zoom to have correct position
                 this.addState(parseInt(Y.one('#scrollable')._node.clientWidth / 2 + this.scrollView.get('scrollX')), parseInt(Y.one('#scrollable')._node.clientHeight / 2 + this.scrollView.get('scrollY')), this.stateId);
+                this.processMenu("save");
             }, this);
 
             this.toolbar.add(this.sliderZoom = new Y.Slider({
@@ -299,7 +301,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             var entity,
                     DEFAULTCB = {
                 success: Y.bind(function(e) {
-                    this.showMessage("success", "States successfully saved", 1500);
+                    //this.showMessage("success", "States successfully saved", 1500);
                     this.hideOverlay();
                 }, this),
                 failure: Y.bind(function(e) {
@@ -510,6 +512,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     y: parseInt(Y.one(e.target.el).getStyle("top"))
                 }));
             }
+            this.get("parent").processMenu("save");
         },
         setEntity: function(entity) {
             var e;
@@ -526,6 +529,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 entity: tr
             })).item(0).connect();
             this.get("entity").get("transitions").push(tr);
+            this.get("parent").processMenu("save");
         },
         deleteSelf: function() {
             while (this.transitionsTarget.length > 0) {
@@ -533,6 +537,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }
             this.fire("userRemove");
             this.destroy();
+            this.get("parent").processMenu("save");
         },
         makeAllOutgoingTransitions: function() {
             var i, transitions = this.get("entity").get("transitions");
@@ -658,7 +663,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
 //                    entity: this.get("entity").get("triggerCondition")
 //                }));
             }
-            this.get(CONTENT_BOX).append("<div class='transition-toolbox'><div class='transition-edit'></div><!--<div class='transition-delete'></div>--></div>");
+            this.get(CONTENT_BOX).append("<div class='transition-toolbox'><div class='transition-edit'></div><div class='transition-delete'></div></div>");
         },
         bindUI: function() {
             this.get(BOUNDING_BOX).on("click", function(e) {
@@ -680,12 +685,17 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.get(CONTENT_BOX).delegate("click", function(e) {
                 Y.Plugin.EditEntityAction.showEditForm(this.get("entity"), Y.bind(this.setEntity, this));
             }, ".transition-edit", this);
-            /*this.get(CONTENT_BOX).delegate("click", function(e) {
-                Y.log(this.target);
-                //Y.log(this.get("parent").get("entity").get("transitions")[this.get("entity").get("id").toString()]);
-                //delete this.get("parent").get("transitions")[this.get("entity").get("id").toString()];
-                //this.destroy();
-            }, ".transition-delete", this);*/
+            this.get(CONTENT_BOX).delegate("click", function(e) {
+                var i, transitions = this.get("parent").get("entity").get("transitions");
+                for (i in transitions) {
+                    if (transitions[i] === this.get("entity")) {
+                        transitions.splice(i, 1);
+                    }
+                }
+                this.get("parent").get("parent").processMenu("save");
+                this.disconnect();
+                this.destroy();
+            }, ".transition-delete", this);
 
         },
         connect: function() {
