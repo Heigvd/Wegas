@@ -112,7 +112,7 @@
             }],
         "objects": [{
                 "id": "Player",
-                "components": "PC",
+                "components": "PlayableCharacter",
                 "direction": 2,
                 "x": 0,
                 "y": 2,
@@ -120,7 +120,7 @@
             }, {
                 "id": "Enemy",
                 "direction": 4,
-                "components": "NPC",
+                "components": "NotPlayableCharacter",
                 "x": 4,
                 "y": 2,
                 "actions": 0,
@@ -162,7 +162,7 @@
             }],
         "objects": [{
                 "id": "Player",
-                "components": "PC",
+                "components": "NotPlayableCharacter",
                 "direction": 2,
                 "x": 1,
                 "y": 4,
@@ -175,6 +175,18 @@
                 "y": 4,
                 "actions": 0,
                 "collides": false
+            }, {
+                "id": "Bloc1",
+                "x": 3,
+                "y": 3
+            }, {
+                "id": "Bloc2",
+                "x": 3,
+                "y": 4
+            }, {
+                "id": "Bloc3",
+                "x": 3,
+                "y": 5
             }],
         "plugins": [{
                 "fn": "Popup",
