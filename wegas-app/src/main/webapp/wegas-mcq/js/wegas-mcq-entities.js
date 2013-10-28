@@ -557,7 +557,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: BUTTON,
                 label: "Edit",
                 plugins: [{
-                        fn: "EditEntityArrayFieldAction"
+                        fn: "EditEntityArrayFieldAction",
+                        cfg: {
+                            attributeKey: "results"
+                        }
                     }]
             }, {
                 type: BUTTON,

@@ -80,7 +80,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         super.create(entity);
 
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
-        entity.propagateDefaultInstance(true);                                  // Propagate default instances
+        this.reset(entity);                                                     // Reset the game model
 
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Duplicate:gm" + entity.getId());
@@ -185,11 +185,13 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
      * @param gameModelId
      */
     public void reset(final Long gameModelId) {
-        final GameModel gm = this.find(gameModelId);
-        gm.propagateDefaultInstance(true);
+        this.reset(this.find(gameModelId));
+    }
+
+    private void reset(final GameModel gameModel) {
+        gameModel.propagateDefaultInstance(true);                               // Propagate default instances
         em.flush();
-        em.refresh(gm);
-        //requestFacade.commit();
-        resetEvent.fire(new ResetEvent(gm));
+        em.refresh(gameModel);
+        resetEvent.fire(new ResetEvent(gameModel));                             // Send an reset event (for the state machine and other)
     }
 }

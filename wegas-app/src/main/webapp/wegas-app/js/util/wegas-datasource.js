@@ -574,6 +574,11 @@ YUI.add('wegas-datasource', function(Y) {
                 for (i = 0; i < entities.length; i += 1) {  // Update the cache with the entites contained in the reply
                     this.updated = this.updateCache(POST, entities[i]) || this.updated;
                 }
+
+                if (e.cfg.updateEvent !== false && this.updated) {
+                    this.get(HOST).fire("update", e);
+                    this.updated = false;
+                }
             });
 
             this.on("CustomEvent", function(e) {
@@ -721,7 +726,7 @@ YUI.add('wegas-datasource', function(Y) {
                     }, this),
                     failure: function(tId, e) {
                         //@todo Reset the whole treeview
-                        //.log("Error moving item", "error");
+                        Y.log("Error moving item", "error");
                     }
                 }
             });

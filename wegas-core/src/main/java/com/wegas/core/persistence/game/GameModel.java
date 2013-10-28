@@ -41,7 +41,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
 
     public enum PROPERTY {
-
         websocket,
         freeForAll
     }
@@ -142,6 +141,21 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public GameModel(String name) {
         this.name = name;
+    }
+
+    @JsonCreator
+    public GameModel(@JsonProperty("pages") JsonNode pageMap) throws RepositoryException {
+        Map<String, JsonNode> map = new HashMap<>();
+        if (pageMap == null) {
+            return;
+        }
+        String curKey;
+        Iterator<String> iterator = pageMap.getFieldNames();
+        while (iterator.hasNext()) {
+            curKey = iterator.next();
+            map.put(curKey, pageMap.get(curKey));
+        }
+        this.setPages(map);
     }
 
 //    public GameModel getParentGameModel() {
@@ -486,20 +500,5 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             }
         }
 
-    }
-
-    @JsonCreator
-    public GameModel(@JsonProperty("pages") JsonNode pageMap) throws RepositoryException {
-        Map<String, JsonNode> map = new HashMap<>();
-        if (pageMap == null) {
-            return;
-        }
-        String curKey;
-        Iterator<String> iterator = pageMap.getFieldNames();
-        while (iterator.hasNext()) {
-            curKey = iterator.next();
-            map.put(curKey, pageMap.get(curKey));
-        }
-        this.setPages(map);
     }
 }

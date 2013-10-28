@@ -19,7 +19,6 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;

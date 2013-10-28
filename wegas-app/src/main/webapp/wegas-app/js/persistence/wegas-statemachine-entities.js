@@ -490,7 +490,27 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             "@class": {
                 value: "DialogueDescriptor"
             }
-        }
+        },
+        EDITMENU: [{
+                type: "EditEntityButton",
+                plugins: [{
+                        fn: "EditFSMAction",
+                        cfg: {
+                            viewerCfg: {
+                                availableStates: ["State", "DialogueState"],
+                                availableTransitions: ["Transition", "DialogueTransition"]
+                            }
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "Duplicate",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
+                type: "DeleteEntityButton"
+            }]
     });
     /**
      * DialogueTransition Entity
