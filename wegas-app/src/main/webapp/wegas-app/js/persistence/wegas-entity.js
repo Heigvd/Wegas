@@ -1264,7 +1264,12 @@ YUI.add('wegas-entity', function(Y) {
                                 }, {
                                     "type": "AddEntityChildButton",
                                     "label": "String",
-                                    "targetClass": "StringDescriptor"
+                                    "targetClass": "StringDescriptor",
+                                    cssClass: "wegas-advanced-feature",
+                                }, {
+                                    "type": "AddEntityChildButton",
+                                    "label": "Text",
+                                    "targetClass": "TextDescriptor"
                                 }, {
                                     "type": "AddEntityChildButton",
                                     "label": "Folder",

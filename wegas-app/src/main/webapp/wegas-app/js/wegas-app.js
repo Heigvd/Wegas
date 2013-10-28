@@ -86,18 +86,18 @@ YUI.add('wegas-app', function(Y) {
             Y.io.header("Accept-Language", Y.config.lang);                      // Set the language for all requests
             Y.JSON.useNativeParse = true;                                       // @todo Shall we use browser native parser ?
 
-            this.on("render", function() {                                     // Remove loading overlay on render
+            this.on("render", function() {                                      // Remove loading overlay on render
                 Y.one("body").removeClass("wegas-loading-overlay");
             });
 
-            Y.on("io:failure", function(tId, req, e) {                          // Add a global io failure listener
+            Y.on("io:failure", function(tId, e) {                               // Add a global io failure listener
                 //if (!req) {
                 //    return;
                 //}
                 var msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source") + e.request
                         + ", " + e.cfg.data + ": ";
                 try {
-                    var r = Y.JSON.parse(req.responseText);
+                    var r = Y.JSON.parse(e.responseText);
                     msg += "\n Server reply " + Y.JSON.stringify(r, null, "\t");
 
                     if (r.exception === "org.apache.shiro.authz.UnauthenticatedException") {
@@ -123,7 +123,7 @@ YUI.add('wegas-app', function(Y) {
                         // @todo Do something?
                     }
                 } catch (e) {                                                   // JSON PARSE ERROR
-                    msg += "\n Server reply " + (req && req.responseText);
+                    msg += "\n Server reply " + (e && e.responseText);
                 }
                 Y.log(msg, "error");
                 if (window.Muscula) {                                           // Send an event to muscula
