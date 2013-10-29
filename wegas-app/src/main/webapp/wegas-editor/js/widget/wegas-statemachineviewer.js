@@ -30,11 +30,16 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         cacheDialogue: null,
         scrollView: null,
         sliderZoom: null,
+        btnAdd: null,
+        btnZoomValue: null,
+        options: null,
         nodes: {},
         initializer: function() {
             this.currentZoom = 1;
             this.stateId = 1;
             this.events = [];
+            this.options = {};
+            this.options.states = [];
             this.jpLoaded = false;
             // Waiting for jsPlumb
             this.publish("jsPlumbLoaded", {
@@ -86,8 +91,6 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.fire("jsPlumbLoaded");
         },
         renderUI: function() {
-            var btnAddState, btnZoomValue;
-    
             this.panel = this.toolbar.get("panel");
             this.header = this.toolbar.get("header");
             this._childrenContainer = this.get(CONTENT_BOX).one(".sm-zoom");
@@ -100,31 +103,20 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     }
                 }
             })).set("type", "save");*/
-
-            this.toolbar.add(btnAddState = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-add\"></span>Add state"
+            
+            this.toolbar.add(this.btnAdd = new Y.Button({
+                label: "<span class=\"wegas-icon wegas-icon-add\"></span>Add"
             }));
-            btnAddState.on('click', function(e) {
-                this.setZoom(1, false); // force setting default zoom to have correct position
-                this.addState(parseInt(Y.one('#scrollable')._node.clientWidth / 2 + this.scrollView.get('scrollX')), parseInt(Y.one('#scrollable')._node.clientHeight / 2 + this.scrollView.get('scrollY')), this.stateId);
-                this.processMenu("save");
-            }, this);
-
+            
             this.toolbar.add(this.sliderZoom = new Y.Slider({
                 min: StateMachineViewer.MIN_ZOOM * StateMachineViewer.FACTOR_ZOOM,
                 max: StateMachineViewer.MAX_ZOOM * StateMachineViewer.FACTOR_ZOOM,
                 value: StateMachineViewer.FACTOR_ZOOM // default zoom
             }));
-            this.sliderZoom.on('valueChange', function(e) {
-                this.setZoom(e.newVal / StateMachineViewer.FACTOR_ZOOM, true);
-            }, this);
 
-            this.toolbar.add(btnZoomValue = new Y.Button({
+            this.toolbar.add(this.btnZoomValue = new Y.Button({
                 label: "<div id=\"zoomValue\">100%</div>"
             }));
-            btnZoomValue.on('click', function(e) {
-                this.setZoom(1, false);
-            }, this);
 
             this.panel.setStyle("display", "none");
             this.panel.name = Y.Node.create("<input type='text' name='name' placeholder='Name'></input>");
@@ -141,7 +133,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             window.jsPlumb.ready(Y.bind(this.initJsPlumb, this));
         },
         bindUI: function() {
-            var that = this;
+            var key, that = this;
             this.on("rebuild", function(e) {
                 e.halt(true);
                 this.showOverlay();
@@ -168,13 +160,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 Y.one('#scrollable').removeClass('mousedown');
             });
             
-            this.get(CONTENT_BOX).on("dblclick", function(e) {
+            /*this.get(CONTENT_BOX).on("dblclick", function(e) {
                 e.halt(true);
                 //TODO : something with Zoom
                 if (e.target === this.get(CONTENT_BOX) && this.get("entity")) {
                     this.addState(e.clientX - this.get(CONTENT_BOX).getX() - 30, e.clientY - this.get(CONTENT_BOX).getY() - 30, this.stateId);
                 }
-            }, this);
+            }, this);*/
 
             this.after("entityChange", function(e) {
                 this.fire("rebuild");
@@ -195,6 +187,27 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.panel.scope.on("change", function(e) {
                 this.get("entity").set("scope", new Y.Wegas.persistence[e.target.getDOMNode().value]());
             }, this);
+            
+            for (key in this.get("availableStates")) {
+                this.options.states.push({
+                    type: "Button",
+                    label: this.get("availableStates")[key],
+                    on: {
+                        click: Y.bind(this.addStateType, this, this.get("availableStates")[key])
+                    }
+                });
+            }
+            this.btnAdd.plug(Y.Plugin.WidgetMenu, {
+                children: this.options.states
+            });
+            
+            this.sliderZoom.on('valueChange', function(e) {
+                this.setZoom(e.newVal / StateMachineViewer.FACTOR_ZOOM, true);
+            }, this);
+            
+            this.btnZoomValue.on('click', function(e) {
+                this.setZoom(1, false);
+            }, this);
         },
         syncUI: function() {
             this.highlightCurrentState();
@@ -211,6 +224,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             jp.unbind();
             this.scrollView.destroy();
             this.sliderZoom.destroy();
+            this.btnAdd.destroy();
+            this.btnZoomValue.destroy();
         },
         loader: function() {
             var i, tmp;
@@ -264,6 +279,18 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.syncUI();
             return true;
 
+        },
+        addStateType: function(type) {
+            var x, y, entity = type === "State" ? new Y.Wegas.persistence.State() : new Y.Wegas.persistence.DialogueState();
+            x = parseInt(Y.one('#scrollable')._node.clientWidth / 2 + this.scrollView.get('scrollX'));
+            y = parseInt(Y.one('#scrollable')._node.clientHeight / 2 + this.scrollView.get('scrollY'));
+            entity.set("editorPosition", new Y.Wegas.persistence.Coordinate({
+                x: x,
+                y: y
+            }));
+            this.setZoom(1, false); // force setting default zoom to have correct position
+            this.addState(x, y, this.stateId, entity);
+            this.processMenu("save");
         },
         addState: function(x, y, id, entity) {
             if (!this.jpLoaded) {
