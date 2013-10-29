@@ -67,7 +67,6 @@
     font-weight: bold;
     letter-spacing: normal;
     position: absolute;
-    overflow: hidden;
     line-height: normal;
     color: white;
     font-family: sans-serif;
@@ -144,17 +143,17 @@
 /*RESIZE*/
 .pageeditor-resizenode{
     position:absolute;
-    width:24px;
-    height:24px;
+    width:12px;
+    height:12px;
     cursor: nwse-resize;
 }
 .pageeditor-resizenode-icon{
-    background: url(../../wegas-editor/images/resize_icon.png) no-repeat right bottom;
+    background: url(../../wegas-editor/images/resize_node.png) no-repeat right bottom;
     position:absolute;
-    width:24px;
-    height:24px;
-    right: 0;
-    bottom: 0;
+    width: 12px;
+    height: 12px;
+    right: -1px;
+    bottom: -1px;
 }
 
 /*special rules*/
