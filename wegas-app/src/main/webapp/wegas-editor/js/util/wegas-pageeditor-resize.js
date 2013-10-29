@@ -45,7 +45,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 top: 0,
                 left: 0
             });
-            this.overlayMask.append(this._resizeNode);
+            this.highlightOverlay.get(CONTENTBOX).append(this._resizeNode);
             this._resizeNode.hide();
             this.shownOverlay.get(CONTENTBOX).append(this._iconResizeNode);
             this.highlightOverlay.after("visibleChange", function(e) {
@@ -111,8 +111,8 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
         _alignResize: function() {
             var bb = this.shownOverlay.get(BOUNDINGBOX), pos = bb.getXY();
             if (pos) {  //widget not destroyed
-                pos[0] = pos[0] + bb.getDOMNode().offsetWidth - 11;
-                pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 11;
+                pos[0] = pos[0] + bb.getDOMNode().offsetWidth - 12;
+                pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 12;
                 this._resizeNode.setXY(pos);
             }
         },
