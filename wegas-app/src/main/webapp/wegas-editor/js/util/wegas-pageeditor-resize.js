@@ -111,8 +111,8 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
         _alignResize: function() {
             var bb = this.shownOverlay.get(BOUNDINGBOX), pos = bb.getXY();
             if (pos) {  //widget not destroyed
-                pos[0] = pos[0] + bb.getDOMNode().offsetWidth - 23;
-                pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 23;
+                pos[0] = pos[0] + bb.getDOMNode().offsetWidth - 11;
+                pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 11;
                 this._resizeNode.setXY(pos);
             }
         },
