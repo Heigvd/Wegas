@@ -124,12 +124,13 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.shownOverlay.get(CONTENTBOX).append("<span class='wegas-editmenubutton-icon'></span>");
             /** MASK **/
             this.overlayMask = new Y.Node.create("<div class='pageeditor-overlay-mask'></div>");
-            this.overlayMask.before("click", function(e) {
-                this.fixedOverlay(this.overlayWidget);
-            }, this);
+
             this.overlayMask.plug(Y.Plugin.WidgetMenu, {
                 event: ["click", "contextmenu"]
             });
+            this.overlayMask.menu.after("menuOpen", function(e) {
+                this.fixedOverlay(this.overlayWidget);
+            }, this);
             this.overlayMask.menu.getMenu().set("preventOverlap", false);
             host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
             this.fixedHandlers.push(this.doBefore("pageIdChange", function(e) {
@@ -175,13 +176,24 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }
             }, this));
             this.handlers.push(this.overlayMask.menu.on("menuOpen", function(e) {
-                this.targetWidget = this.overlayWidget;
-                this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
-                    widget: this.targetWidget
-                }));
-                if (inRegion(this.highlightOverlay.get(CONTENTBOX).one(".wegas-editmenubutton"), [e.domEvent.clientX, e.domEvent.clientY]) || e.domEvent.type === "contextmenu") { /* Clicked editmenu */
+                if (inRegion(this.shownOverlay.get(CONTENTBOX).one(".wegas-editmenubutton-icon"), [e.domEvent.clientX, e.domEvent.clientY])) { /* Clicked editmenu */
+                    this.targetWidget = this.shownOverlay._widget;
+                    this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
+                        widget: this.targetWidget
+                    }));
+                    this.overlayMask.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
+                    e.halt(true);
+                } else if (e.domEvent.type === "contextmenu") {
+                    this.targetWidget = this.overlayWidget;
+                    this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
+                        widget: this.targetWidget
+                    }));
                     this.overlayMask.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                 } else {                                                        /* Clicked widget*/
+                    this.targetWidget = this.overlayWidget;
+                    this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
+                        widget: this.targetWidget
+                    }));
                     this.overlayMask.menu.menu.hide();
                     if (this.overlayMask.menu.getMenu().size() > 0) {
                         this.overlayMask.menu.getMenu().item(0).fire("click");
@@ -282,6 +294,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 height: targetNode.getDOMNode().offsetHeight,
             });
             this.shownOverlay.show();
+            this.shownOverlay._widget = widget;
             this.showOverlay(widget);
         },
         hideOverlay: function() {
