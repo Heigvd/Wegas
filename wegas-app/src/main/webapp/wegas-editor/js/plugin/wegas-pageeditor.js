@@ -132,7 +132,8 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.fixedOverlay(this.overlayWidget);
             }, this);
             this.overlayMask.menu.getMenu().set("preventOverlap", false);
-            host.get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
+            this.overlayMask.append(this.shownOverlay.get(BOUNDINGBOX));
+            this.overlayMask.append(this.highlightOverlay.get(BOUNDINGBOX));
             this.fixedHandlers.push(this.doBefore("pageIdChange", function(e) {
                 if (this.get("host") === e.target) {
                     this.designButton.set("pressed", false);
@@ -143,9 +144,11 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.hideOverlay();
                 }
             }, this));
+
+            this.get("host").get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
             this.fixedHandlers.push(this.get("host").get(CONTENTBOX).scrollInfo.on("*:scroll", function(e) {
                 this.overlayMask.setStyles({top: e.scrollTop, left: e.scrollLeft});
-                this.shownOverlay.hide();
+                this.fixedOverlay(this.shownOverlay._widget);
             }, this));
         },
         bind: function() {
@@ -188,6 +191,9 @@ YUI.add('wegas-pageeditor', function(Y) {
                     this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
                         widget: this.targetWidget
                     }));
+                    if (this.overlayMask.menu.getMenu().size() > 0) {
+                        this.overlayMask.menu.getMenu().item(0).fire("click");
+                    }
                     this.overlayMask.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                 } else {                                                        /* Clicked widget*/
                     this.targetWidget = this.overlayWidget;
@@ -291,7 +297,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.shownOverlay.get(BOUNDINGBOX).setXY(targetNode.getXY());
             this.shownOverlay.get(BOUNDINGBOX).setStyles({
                 width: targetNode.getDOMNode().offsetWidth,
-                height: targetNode.getDOMNode().offsetHeight,
+                height: targetNode.getDOMNode().offsetHeight
             });
             this.shownOverlay.show();
             this.shownOverlay._widget = widget;

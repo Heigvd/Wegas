@@ -39,7 +39,7 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 top: 0,
                 left: 0
             });
-            this.overlayMask.append(this._ddNode);
+            this.highlightOverlay.get(CONTENTBOX).append(this._ddNode);
             this._ddNode.hide();
             this.highlightOverlay.after("visibleChange", function(e) {
                 if (e.newVal && this.overlayWidget && this.overlayWidget.CSSPosition) {
