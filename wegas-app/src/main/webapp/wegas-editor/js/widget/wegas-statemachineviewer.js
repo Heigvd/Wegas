@@ -127,7 +127,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 srcNode: '#scrollable',
                 height: '100%',
                 width: '100%',
-                deceleration: 0
+                deceleration: 0,
+                axis: 'xy'
             }).render();
 
             window.jsPlumb.ready(Y.bind(this.initJsPlumb, this));
@@ -381,6 +382,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             //            this.get(CONTENT_BOX).one(".sm-zoom").setStyle("zoom", this.currentZoom);
             jp.setZoom(this.currentZoom, false);
 
+            this.scrollView.syncUI(); // resize scrollview
             Y.one("#zoomValue").setHTML(parseInt(this.currentZoom * 100) + "%");
             if (!isFromSliderOrInit) {
                 this.sliderZoom.set("value", this.currentZoom * StateMachineViewer.FACTOR_ZOOM);
