@@ -154,10 +154,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.processMenu("save");
             });
             
-            Y.one('#scrollable').on('mousedown', function() {
+            this.get(CONTENT_BOX).on('mousedown', function() {
                 Y.one('#scrollable').addClass('mousedown');
             });
-            Y.one('#scrollable').on('mouseup', function() {
+            this.get(CONTENT_BOX).on('mouseup', function() {
                 Y.one('#scrollable').removeClass('mousedown');
             });
             
@@ -173,10 +173,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.fire("rebuild");
             });
             this.get(CONTENT_BOX).on("mousewheel", Y.bind(function(e) {
-                if (e.altKey) {
+                //if (e.altKey) {
                     e.halt(true);
                     this.zoom(e);
-                }
+                //}
             }, this));
             this.on("wegas-state:userRemove", function(e) {
                 delete this.get("entity").get("states")[e.target.get("sid").toString()];
