@@ -21,7 +21,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
 
-        CONTENT_TEMPLATE: "<div id='scrollable'><div class='sm-zoom'></div></div>",
+        CONTENT_TEMPLATE: "<div><div class='scrollable'><div class='sm-zoom'></div></div></div>",
         panel: null,
         header: null,
         jpLoaded: false,
@@ -115,7 +115,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }));
 
             this.toolbar.add(this.btnZoomValue = new Y.Button({
-                label: "<div id=\"zoomValue\">100%</div>"
+                label: "100%"
             }));
 
             this.panel.setStyle("display", "none");
@@ -124,7 +124,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.renderPanel();
 
             this.scrollView = new Y.ScrollView({
-                srcNode: '#scrollable',
+                srcNode: '.scrollable',
                 height: '100%',
                 width: '100%',
                 deceleration: 0,
@@ -155,11 +155,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             });
             
             this.get(CONTENT_BOX).on('mousedown', function() {
-                Y.one('#scrollable').addClass('mousedown');
-            });
+                this.get(CONTENT_BOX).one('.scrollable').addClass('mousedown');
+            }, this);
             this.get(CONTENT_BOX).on('mouseup', function() {
-                Y.one('#scrollable').removeClass('mousedown');
-            });
+                this.get(CONTENT_BOX).one('.scrollable').removeClass('mousedown');
+            }, this);
             
             /*this.get(CONTENT_BOX).on("dblclick", function(e) {
                 e.halt(true);
@@ -283,8 +283,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         },
         addStateType: function(type) {
             var x, y, entity = type === "State" ? new Y.Wegas.persistence.State() : new Y.Wegas.persistence.DialogueState();
-            x = parseInt(Y.one('#scrollable')._node.clientWidth / 2 + this.scrollView.get('scrollX'));
-            y = parseInt(Y.one('#scrollable')._node.clientHeight / 2 + this.scrollView.get('scrollY'));
+            x = parseInt(this.get(CONTENT_BOX).one('.scrollable')._node.clientWidth / 2 + this.scrollView.get('scrollX'));
+            y = parseInt(this.get(CONTENT_BOX).one('.scrollable')._node.clientHeight / 2 + this.scrollView.get('scrollY'));
             entity.set("editorPosition", new Y.Wegas.persistence.Coordinate({
                 x: x,
                 y: y
@@ -381,12 +381,12 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.get(CONTENT_BOX).one(".sm-zoom").setStyle('transform', 'scale(' + this.currentZoom + ')');
             //            this.get(CONTENT_BOX).one(".sm-zoom").setStyle("zoom", this.currentZoom);
             jp.setZoom(this.currentZoom, false);
-
-            this.scrollView.syncUI(); // resize scrollview
-            Y.one("#zoomValue").setHTML(parseInt(this.currentZoom * 100) + "%");
+            
+            this.btnZoomValue.set("label", parseInt(this.currentZoom * 100) + "%");
             if (!isFromSliderOrInit) {
                 this.sliderZoom.set("value", this.currentZoom * StateMachineViewer.FACTOR_ZOOM);
             }
+            this.scrollView.syncUI(); // resize scrollview, fixme: seems working only when first loading or complete refresh
         },
         highlightCurrentState: function() {
             var sm = this.get("entity");
@@ -440,7 +440,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             var bb = this.get(BOUNDING_BOX);
             bb.addClass(this.cssClass.state);
 
-            if (this.get("entity") instanceof Y.Wegas.persistence.DialogueState) {
+            /*if (this.get("entity") instanceof Y.Wegas.persistence.DialogueState) {
                 this.textNode = new Y.Node.create("<textarea placeholder=\"Text (Response)\">" + this.get("entity").get("text") + "</textarea>");
                 this.textNode.addClass(this.getClassName("text"));
                 this.get(CONTENT_BOX).append(this.textNode);
@@ -450,6 +450,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }));
             } else {
                 this.add(new Y.Wegas.Script({}));
+            }*/
+            if (this.get("sid")) {
+                this.sidNode = new Y.Node.create("<div>" + this.get("sid") + "</div>");
+                this.get(CONTENT_BOX).append(this.sidNode);
             }
             if (this.get("x")) {
                 bb.setStyle("left", this.get("x") + "px");
@@ -458,7 +462,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 bb.setStyle("top", this.get("y") + "px");
             }
             this.get(CONTENT_BOX).append("<div class='transition-start'/>");
-            this.get(CONTENT_BOX).append("<div class='state-toolbox'><!--<div class='state-edit'></div>--><div class='state-delete'></div></div>");
+            this.get(CONTENT_BOX).append("<div class='state-toolbox'><div class='state-initial'></div><div class='state-delete'></div></div>");
 
         },
         syncUI: function() {
@@ -469,6 +473,17 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.get(CONTENT_BOX).delegate("click", function(e) {
                 this.deleteSelf();
             }, ".state-delete", this);
+            this.get(CONTENT_BOX).delegate("click", function(e) {
+                e.halt(true);
+                                
+                this.get("parent").get("entity").setInitialStateId(this.get("sid"));
+                this.get("parent").get("boundingBox").all(".initial-state").each(function() {
+                    this.removeClass("initial-state");
+                });
+                this.set("initial", true);
+                
+                this.get("parent").processMenu("save");
+            }, ".state-initial", this);
             jp.draggable(this.get(BOUNDING_BOX), {
                 after: {
                     "end": Y.bind(this.dragEnd, this)

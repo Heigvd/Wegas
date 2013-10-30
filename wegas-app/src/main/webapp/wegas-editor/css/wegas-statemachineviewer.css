@@ -19,13 +19,13 @@
     width: 100%;    
 }
 
-.wegas-statemachineviewer-content{
+.scrollable{
     cursor: url(../../wegas-editor/images/openhand.cur), crosshair;
     height: 100%;
     width: 100%;
 }
 
-.wegas-statemachineviewer-content.mousedown:hover {
+.scrollable.mousedown:hover {
     cursor: url(../../wegas-editor/images/closedhand.cur), crosshair;
 }
 
@@ -115,6 +115,12 @@
     background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -943px;
     background-repeat: no-repeat;
+}
+.state-initial{
+    display: inline-block;
+    background:url(../images/start_flag.png);
+    width: 16px;
+    height: 16px;
 }
 .transition-edit{
     /*position:absolute;*/
