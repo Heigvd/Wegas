@@ -74,12 +74,13 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 this.bind();
             }, this);
             this._resize.on("drag:drag", function(e) {
-                var bb = this._widget;
+                var bb = this._resize._widget;
                 bb.setStyles({
                     width: parseInt(bb.getComputedStyle(WIDTH), 10) + e.info.delta[0],
                     height: parseInt(bb.getComputedStyle(HEIGHT), 10) + e.info.delta[1]
                 });
-            });
+                this.fixedOverlay(this.shownOverlay._widget);
+            }, this);
 //            this._resize.before("drag:start", function(e) {
 //                var bb = this._widget;
 //                bb.setStyles({

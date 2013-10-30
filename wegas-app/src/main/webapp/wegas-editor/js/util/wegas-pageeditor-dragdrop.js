@@ -83,6 +83,9 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 });
                 this.fixedOverlay(Y.Widget.getByNode(node));
             }, this);
+            this._dd.after("drag:drag", function(){
+                this.fixedOverlay(this.shownOverlay._widget);
+            }, this);
             this._dd.on("drag:end", function(e) {
                 var bb = this._dd.get("dragNode"),
                         widget = Y.Widget.getByNode(bb),
