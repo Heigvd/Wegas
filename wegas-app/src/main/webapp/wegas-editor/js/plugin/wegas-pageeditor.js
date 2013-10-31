@@ -300,7 +300,17 @@ YUI.add('wegas-pageeditor', function(Y) {
                 height: targetNode.getDOMNode().offsetHeight
             });
             this.shownOverlay.show();
+            if (this.shownOverlay._widget && this.shownOverlay._widget._peDHandle) {
+                this.shownOverlay._widget._peDHandle.detach();
+                delete this.shownOverlay._widget._peDHandle;
+            }
             this.shownOverlay._widget = widget;
+            widget._peDHandle = widget.onceAfter("destroy", function(e) {
+                if (e.target === this.shownOverlay._widget) {
+                    this.shownOverlay._widget = null;
+                    this.shownOverlay.hide();
+                }
+            }, this);
             this.showOverlay(widget);
         },
         hideOverlay: function() {
@@ -316,6 +326,10 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.detach();
             this.overlayMask.destroy(true);
             this.highlightOverlay.destroy(true);
+            if (this.shownOverlay._widget && this.shownOverlay._widget._peDHandle) {
+                this.shownOverlay._widget._peDHandle.detach();
+                delete this.shownOverlay._widget._peDHandle;
+            }
             this.shownOverlay.destroy(true);
             for (i = 0; i < this.fixedHandlers.length; i += 1) {
                 this.fixedHandlers[i].detach();
