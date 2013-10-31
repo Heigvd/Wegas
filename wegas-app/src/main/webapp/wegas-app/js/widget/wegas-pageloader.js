@@ -213,7 +213,6 @@ YUI.add('wegas-pageloader', function(Y) {
                                 widget.render(this.get(CONTENTBOX));
                                 widget['@pageId'] = widgetCfg['@pageId'];
                                 this.set("widget", widget);
-                                widget.addTarget(this);                         // Event on the loaded widget will be forwarded
                             } catch (e) {
                                 this._state.add("widgetCfg", "value", widgetCfg); //@HACK : avoid some heavy computing, bypass setter!!! Warn, no events
                                 this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
@@ -241,7 +240,16 @@ YUI.add('wegas-pageloader', function(Y) {
              * A widget to render in current page (transient)
              */
             widget: {
-                "transient": true
+                "transient": true,
+                setter: function(v) {
+                    if (this.get("widget")) {
+                        this.get("widget").removeTarget(this);
+                    }
+                    if (v) {
+                        v.addTarget(this);
+                    }                         // Event on the loaded widget will be forwarded
+                    return v;
+                }
             },
             widgetCfg: {
                 "transient": true,
