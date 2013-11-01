@@ -9,98 +9,75 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
-YUI.add('wegas-inputex-ace', function(Y) {
-    "use strict";
+/**
+ * @module inputex-select
+ */
+YUI.add("wegas-inputex-multipleoptions", function(Y) {
 
     var inputEx = Y.inputEx;
 
     /**
-     * Ace code editor field
+     * Create a select field
+     * @class inputEx.MultipleOptions
+     * @extends inputEx.Group
+     * @constructor
      */
-    inputEx.AceField = function(options) {
-        inputEx.AceField.superclass.constructor.call(this, options);
+    inputEx.MultipleOptions = function(options) {
+        inputEx.MultipleOptions.superclass.constructor.call(this, options);
     };
 
-    Y.extend(inputEx.AceField, inputEx.Textarea, {
-        /**
-         * Set the default values of the options
-         * @param {Object} options Options object as passed to the constructor
-         */
-        setOptions: function(options) {
-            inputEx.AceField.superclass.setOptions.call(this, options);
-
-            this.options.language = options.language || "javascript";
-            this.options.height = options.height || "150px";
-        },
-        disable: function() {
-            this.editor.setReadOnly(true);
-        },
-        enable: function() {
-            this.editor.setReadOnly(false);
-        },
-        /**
-         * Render the field using the YUI Editor widget
-         */
-        renderComponent: function() {
-            if (window.ace) {                                                   // Ace is present, run
-                this.el = Y.Node.create('<div style="">'
-                        + (this.options.value || "") + '</div>');
-                this.fieldContainer.appendChild(this.el.getDOMNode());
-
-                this.editor = ace.edit(this.el.getDOMNode());
-
-                this.session = this.editor.getSession();
-                this.session.setMode("ace/mode/" + this.options.language);
-                this.editor.setHighlightActiveLine(false);
-                this.editor.renderer.setHScrollBarAlwaysVisible(false);
-
-                Y.Wegas.app.after("layout:resize", function() {
-                    Y.once('domready', this.resize, this);
-                }, this.editor);
-
-                Y.after('windowresize', Y.bind(this.editor.resize, this.editor));
-            } else {                                                            // Fallback
-                Y.log("Unable to find Ace libraries, falling back to text field", "error", "Wegas.Inputex.Ace");
-                inputEx.AceField.superclass.renderComponent.call(this);
-            }
-            //this.session.addEventListener("tokenizerUpdate", Y.bind(function(e) {
-            //    var i, token,
-            //    tokens = this.session.getTokens(e.data.first, e.data.last);
-            //
-            //    for (i = 0; i > tokens.length; i += 1) {
-            //        token = tokens[i];                                            //identifier
-            //    }
-            //}, this));
-        },
-        /**
-         * Set the html content
-         * @param {String} value The html string
-         * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
-         */
-        setValue: function(value, sendUpdatedEvt) {
-            if (this.session) {
-                this.session.setValue(value);
-                if (sendUpdatedEvt !== false) {
-                    // fire update event
-                    this.fireUpdatedEvt();
-                }
-            } else {    // fallback
-                return inputEx.AceField.superclass.setValue.apply(this, arguments);
-            }
-        },
-        /**
-         * Get the ace content
-         * @return {String} the ace area content string
-         */
-        getValue: function() {
-            if (this.session) {
-                return this.session.getValue();
+    Y.extend(inputEx.MultipleOptions, inputEx.Group, {
+        renderField: function(fieldOptions) {
+            var field = inputEx.MultipleOptions.superclass.renderField.call(this, fieldOptions);
+            field.on("focus", function(e) {
+                this.select(e.target);
+            }, this);
+            if (this.inputs.length > 1) {
+                this.toggle(field, false);
             } else {
-                return inputEx.AceField.superclass.getValue.apply(this);
+                this.select(field);
             }
+            (new Y.Node(field.divEl)).on("click", field.el.focus, field.el);    // When a user click
+            return field;
+        },
+        select: function(field) {
+            this.selectedField = field;
+            this.toggleAll(false);
+            this.toggle(field, true);
+        },
+        getSelected: function() {
+            return this.selectedField;
+        },
+        addField: function(fieldOptions) {
+            inputEx.MultipleOptions.superclass.addField.call(this, fieldOptions);
+            if (this.inputs.length === 1) {
+                //(new Y.Node(this.fieldset)).append("<div class=\"wegas-inputex-nulti-separator\"><br /><center>OR</center><br /></div>");
+            }
+        },
+        toggleAll: function(value) {
+            var i;
+            for (i = 0; i < this.inputs.length; i += 1) {
+                this.toggle(this.inputs[i], value);
+            }
+        },
+        toggle: function(field, value) {
+            (new Y.Node(field.divEl)).toggleClass("wegas-inputex-multi-selected", value);
         }
     });
 
-    inputEx.registerType("ace", inputEx.AceField, []);                          // Register this class as "html" type
+    Y.inputEx.Field.prototype.onFocus = function(e) {
+        var el = Y.one(this.getEl());
+        el.removeClass('inputEx-empty');
+        el.addClass('inputEx-focused');
+        this.publish("focus", {
+            emitFacade: true
+        });
+        this.fire("focus");
+    };
+
+    // Register this class as "select" type
+    inputEx.registerType("multipleoptions", inputEx.MultipleOptions);
+
+}, '3.1.0', {
+    requires: ['inputex-field', 'inputex-group']
 });

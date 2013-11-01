@@ -12,8 +12,7 @@
 YUI.add('wegas-joingame', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox',
-            JoinGame;
+    var CONTENTBOX = 'contentBox', JoinGame;
 
     /**
      * @name Y.Wegas.JoinGame
@@ -58,9 +57,9 @@ YUI.add('wegas-joingame', function(Y) {
             }
 
             this.joinGameButton = new Y.Button({
-                label: "Join"
+                label: "Submit",
+                render: cb
             });
-            this.joinGameButton.render(cb);
 
             if (Y.Wegas.Helper.getURLParameter("token")) {
                 this.sendTokenJoinGame(Y.Wegas.Helper.getURLParameter("token"));
