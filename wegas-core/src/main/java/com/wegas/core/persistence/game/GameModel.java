@@ -38,9 +38,10 @@ import org.codehaus.jackson.map.annotate.JsonView;
         @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> {
-    //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
 
+    //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
     public enum PROPERTY {
+
         websocket,
         freeForAll
     }
@@ -64,6 +65,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
+    /**
+     *
+     */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
+    private String description;
     /**
      *
      */
@@ -180,6 +188,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         super.merge(n);
         GameModel other = (GameModel) n;
         //this.setParentGameModel(other.getParentGameModel());
+        this.setDescription(other.getDescription());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
     }
@@ -197,14 +206,22 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      * @return
      */
+    @JsonView(Views.IndexI.class)
+    public Boolean getCanView() {
+        return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.id);
+    }
+
+    @JsonView(Views.IndexI.class)
     public Boolean getCanEdit() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
     }
 
+    @JsonView(Views.IndexI.class)
     public Boolean getCanDuplicate() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
     }
 
+    @JsonView(Views.IndexI.class)
     public Boolean getCanInstantiate() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
     }
@@ -500,5 +517,19 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             }
         }
 
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
