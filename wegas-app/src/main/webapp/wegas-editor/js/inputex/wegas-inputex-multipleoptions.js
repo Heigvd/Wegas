@@ -23,6 +23,7 @@ YUI.add("wegas-inputex-multipleoptions", function(Y) {
      * @constructor
      */
     inputEx.MultipleOptions = function(options) {
+        options.className = options.className || "inputEx-Group wegas-inputex-multioptions";
         inputEx.MultipleOptions.superclass.constructor.call(this, options);
     };
 
