@@ -66,9 +66,11 @@ YUI.add('wegas-widgetmenu', function(Y) {
                 node.addClass("wegas-widgetmenu-hassubmenuright");
             }
         },
-        add: function(widget) {
-            var children = this.get("children");
-            children.push(widget);
+        add: function(widget, index) {
+            var children = this.get("children"),
+                    i = (typeof index === 'number') ? index : children.length,
+                    w = Y.Lang.isArray(widget) ? widget : [widget];
+            Array.prototype.splice.apply(children, [i, 0].concat(w));
             this.set("children", children);
         },
         size: function() {
@@ -120,7 +122,6 @@ YUI.add('wegas-widgetmenu', function(Y) {
             return this.menu;
         }
     }, {
-
         menuIndex: 50,
         /** @lends Y.Plugin.WidgetMenu */
 
