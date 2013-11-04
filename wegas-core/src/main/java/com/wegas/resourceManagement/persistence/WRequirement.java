@@ -168,7 +168,7 @@ public class WRequirement extends AbstractEntity implements Serializable {
      * @param completeness the completeness to set
      */
     public void setCompleteness(Double completeness) {
-        this.completeness = completeness;
+        this.completeness = completeness == null ? 0 : completeness;
     }
 
     /**
@@ -182,7 +182,7 @@ public class WRequirement extends AbstractEntity implements Serializable {
      * @param quality the quality to set
      */
     public void setQuality(Double quality) {
-        this.quality = quality;
+        this.quality = quality == null ? 0 : quality;
     }
 
     /**
