@@ -794,7 +794,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 });
             } else {
                 this.connection.setLabel({
-                    label: (this.get("entity").get("triggerCondition") ? this.get("entity").get("triggerCondition").get("content") + "<br />" + Transition.TOOLBOX : Transition.TOOLBOX),
+                    label: (this.get("entity").get("triggerCondition") ? this.get("entity").get("triggerCondition").get("content") + "<br />" + Transition.TOOLBOX : "&nbsp;" + Transition.TOOLBOX + "&nbsp;"),
                     cssClass: "transition-label"
                 });
             }
