@@ -92,7 +92,7 @@ YUI.add("wegas-layout", function(Y) {
                             },
                             "event": "mouseenter",
                             "children": [{
-                                    "fn": "WidgetMenu",
+                                    "type": "Button",
                                     "label": "Element",
                                     plugins: [{
                                             "fn": "WidgetMenu",
@@ -165,7 +165,7 @@ YUI.add("wegas-layout", function(Y) {
                                             }
                                         }
                                     ]}, {
-                                    "fn": "WidgetMenu",
+                                    "type": "Button",
                                     "label": "Variable display",
                                     plugins: [{
                                             "fn": "WidgetMenu",
