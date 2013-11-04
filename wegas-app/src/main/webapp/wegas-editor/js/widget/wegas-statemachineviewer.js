@@ -84,7 +84,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     }
                 }
                 e.connection.getParameter("transition").destroy();
-                e.connection.getParameter("transition").source.get("parent").processMenu("save");
+                e.connection.getParameter("transition").source.get("parent").save();
             });
             this.jpLoaded = true;
             this.setZoom(1, true);
@@ -150,9 +150,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.processMenu("new");
             });
 
-            this.on("button:save", function(e) {
+            /*this.on("button:save", function(e) {
                 this.processMenu("save");
-            });
+            });*/
             
             this.get(CONTENT_BOX).on('mousedown', function() {
                 this.get(CONTENT_BOX).one('.scrollable').addClass('mousedown');
@@ -291,7 +291,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }));
             this.setZoom(1, false); // force setting default zoom to have correct position
             this.addState(x, y, this.stateId, entity);
-            this.processMenu("save");
+            this.save();
         },
         addState: function(x, y, id, entity) {
             if (!this.jpLoaded) {
@@ -347,7 +347,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     entity.setInitialStateId(1); // TODO : the one specified :)
                     this.set("entity", entity);
                     break;
-                case "save":
+                /*case "save":
                     entity = this.get("entity");
                     if (entity) {
                         this.showOverlay();
@@ -358,9 +358,30 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                             Y.Wegas.Facade.VariableDescriptor.cache.post(entity, DEFAULTCB);
                         }
                     }
-                    break;
+                    break;*/
                 default:
                     Y.log("Not Implemented yet: " + type, "warn", "Y.Wegas.StateMachineViewer");
+            }
+        },
+        save: function() {
+            var entity = this.get("entity"),
+                DEFAULTCB = {
+                    success: Y.bind(function(e) {
+                        this.hideOverlay();
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this.showMessage("error", e.response.data.message);
+                        this.hideOverlay();
+                    }, this)
+                };
+            if (entity) {
+                this.showOverlay();
+                entity = JSON.parse(JSON.stringify(entity));
+                if (entity.id) {
+                    Y.Wegas.Facade.VariableDescriptor.cache.put(entity, DEFAULTCB);
+                } else {
+                    Y.Wegas.Facade.VariableDescriptor.cache.post(entity, DEFAULTCB);
+                }
             }
         },
         zoom: function(event) {
@@ -482,7 +503,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 });
                 this.set("initial", true);
                 
-                this.get("parent").processMenu("save");
+                this.get("parent").save();
             }, ".state-initial", this);
             jp.draggable(this.get(BOUNDING_BOX), {
                 after: {
@@ -556,7 +577,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     y: parseInt(Y.one(e.target.el).getStyle("top"))
                 }));
             }
-            this.get("parent").processMenu("save");
+            this.get("parent").save();
         },
         setEntity: function(entity) {
             var e;
@@ -573,7 +594,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 entity: tr
             })).item(0).connect();
             this.get("entity").get("transitions").push(tr);
-            this.get("parent").processMenu("save");
+            this.get("parent").save();
         },
         deleteSelf: function() {
             while (this.transitionsTarget.length > 0) {
@@ -581,7 +602,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }
             this.fire("userRemove");
             this.destroy();
-            this.get("parent").processMenu("save");
+            this.get("parent").save();
         },
         makeAllOutgoingTransitions: function() {
             var i, transitions = this.get("entity").get("transitions");
@@ -736,7 +757,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                         transitions.splice(i, 1);
                     }
                 }
-                this.get("parent").get("parent").processMenu("save");
+                this.get("parent").get("parent").save();
                 this.disconnect();
                 this.destroy();
             }, ".transition-delete", this);
