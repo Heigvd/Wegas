@@ -24,6 +24,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
         Y.onceAfter(this._initResize, this, "render");
         Y.after(this._alignResize, this, "showOverlay");
         Y.once(this._resizeDestruct, this, "destructor");
+        Y.after(this._setupIcon, this, "fixedOverlay");
     }
     PageEditorResize.NAME = "wegas-pageeditor-resize";
     PageEditorResize.prototype = {
@@ -44,7 +45,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 top: 0,
                 left: 0
             });
-            this.overlayMask.append(this._resizeNode);
+            this.highlightOverlay.get(CONTENTBOX).append(this._resizeNode);
             this._resizeNode.hide();
             this.shownOverlay.get(CONTENTBOX).append(this._iconResizeNode);
             this.highlightOverlay.after("visibleChange", function(e) {
@@ -67,28 +68,29 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 this.detach();
                 this._resizeNode.show();
                 this._dd.con.set("constrain", this.get("host").get("widget").get(CONTENTBOX));
-                this._resize._widget = this.overlayWidget.get(BOUNDINGBOX);
+                this._resize._widget = this.shownOverlay._widget.get(BOUNDINGBOX);
             }, this);
             this._resizeNode.after("mouseup", function(e) {
                 this.bind();
             }, this);
             this._resize.on("drag:drag", function(e) {
-                var bb = this._widget;
+                var bb = this._resize._widget;
                 bb.setStyles({
                     width: parseInt(bb.getComputedStyle(WIDTH), 10) + e.info.delta[0],
                     height: parseInt(bb.getComputedStyle(HEIGHT), 10) + e.info.delta[1]
                 });
-            });
-            this._resize.before("drag:start", function(e) {
-                var bb = this._widget;
-                bb.setStyles({
-                    width: bb.getComputedStyle(WIDTH),
-                    height: bb.getComputedStyle(HEIGHT)
-                });
-                bindedFixedOverlay(Y.Widget.getByNode(bb));
-            });
+                this.fixedOverlay(this.shownOverlay._widget);
+            }, this);
+//            this._resize.before("drag:start", function(e) {
+//                var bb = this._widget;
+//                bb.setStyles({
+//                    width: bb.getComputedStyle(WIDTH),
+//                    height: bb.getComputedStyle(HEIGHT)
+//                });
+//                bindedFixedOverlay(Y.Widget.getByNode(bb));
+//            });
             this._resize.on("drag:end", function(e) {
-                var bb = this._resize._widget, widget = Y.Widget.getByNode(bb);
+                var widget = this.shownOverlay._widget, bb = widget.get(BOUNDINGBOX);
                 widget.CSSSize.setAttrs({
                     "styles": {
                         width: bb.getComputedStyle(WIDTH),
@@ -108,11 +110,18 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
          * @returns {undefined}
          */
         _alignResize: function() {
-            var bb = this.overlayWidget.get(BOUNDINGBOX), pos = bb.getXY();
+            var bb = this.shownOverlay.get(BOUNDINGBOX), pos = bb.getXY();
             if (pos) {  //widget not destroyed
-                pos[0] = pos[0] + bb.getDOMNode().offsetWidth - 23;
-                pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 23;
+                pos[0] = pos[0] + bb.getDOMNode().offsetWidth - 12;
+                pos[1] = pos[1] + bb.getDOMNode().offsetHeight - 12;
                 this._resizeNode.setXY(pos);
+            }
+        },
+        _setupIcon: function() {
+            if (this.shownOverlay._widget.CSSSize) {
+                this._iconResizeNode.show();
+            }else{
+                this._iconResizeNode.hide();
             }
         },
         /**
@@ -122,6 +131,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
          */
         _resizeDestruct: function() {
             Y.detach(this._alignResize, this, "showOverlay");
+             Y.detach(this._setupIcon, this, "fixedOverlay");
             this._resize.detachAll();
             this._resizeNode.detachAll();
             this._resize.destroy();

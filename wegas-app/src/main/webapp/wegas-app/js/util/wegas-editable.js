@@ -47,6 +47,9 @@ YUI.add('wegas-editable', function(Y) {
                 if (attrCfgs[k] && attrCfgs[k]["transient"]) {                  // Remove any transient attribute
                     delete ret[k];
                 }
+//                if(this.constructor.ATTRS[k] && this.constructor.ATTRS[k].value === ret[k]){ /* DEFAULT VALUE REMOVAL */
+//                    delete ret[k];
+//                }
             }
             return ret;                                                         // Return a copy of this's fields.
         },

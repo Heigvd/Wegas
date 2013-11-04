@@ -121,10 +121,10 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     this.tab.remove();
                     this.tab.destroy();
                     delete this.tab;
-                    if (this.cancelCallback instanceof Function) {
+                    if (Y.Lang.isFunction(this.cancelCallback)) {
                         this.cancelCallback(this.currentEntity);
-                        delete this.cancelCallback;
                     }
+                    this.cancelCallback = this.currentEntity = this.callback = null;
                     //Wegas.app.widget.hidePosition("right");                   // Hide the right layout
                 }, EditEntityAction);
                 EditEntityAction.form.before("updated", function(e) {
@@ -140,7 +140,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             EditEntityAction.tab.set("label", prefix + entity.getType().replace("Descriptor", ""));
             EditEntityAction.tab.set("selected", 2);
             EditEntityAction.form.set("values", entity.toObject());
-            EditEntityAction.form.set("cfg", (formCfg) ? formCfg : entity.getFormCfg());
+            EditEntityAction.form.set("cfg", formCfg || entity.getFormCfg());
         },
         /**
          *

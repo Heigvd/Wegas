@@ -15,8 +15,7 @@
 .wegas-pageeditor-designmode .wegas-pageloader-content{
     position: relative;
 }
-.wegas-pageeditor-layoutmode .wegas-layout,
-.wegas-pageeditor-layoutmode .wegas-pageloader{
+.wegas-pageeditor-layoutmode .wegas-list{
     padding: 10px;
     padding-top: 20px !important;
 }
@@ -28,6 +27,7 @@
     top: 0px;
     left: 0px;
     cursor:pointer;
+    overflow: hidden;
 }
 .wegas-pageeditor-layoutmode .wegas-widget {
     background: rgba(0,0,0,0.05) !important;
@@ -60,6 +60,7 @@
 }
 .wegas-pageeditor-overlay-hidden {
     height: 0 !important;
+    overflow: hidden;
 }
 .yui3-skin-sam .wegas-pageeditor-overlay {
     font-style:normal;
@@ -67,7 +68,6 @@
     font-weight: bold;
     letter-spacing: normal;
     position: absolute;
-    overflow: hidden;
     line-height: normal;
     color: white;
     font-family: sans-serif;
@@ -82,16 +82,19 @@
     height: 100%;
 }
 .pageditor-shownoverlay{
-    background-color: rgba(0,0,0,0.1);
+    /*    background-color: rgba(0,0,0,0.1);*/
+    -moz-box-shadow: 0px 0px 1px #1C73FF, 0px 0px 1px #1C73FF inset!important;
+    -webkit-box-shadow: 0px 0px 1px #1C73FF, 0px 0px 1px #1C73FF inset!important;
+    box-shadow: 0px 0px 1px #1C73FF, 0px 0px 1px #1C73FF inset!important;
 }
 .wegas-page-editor .content-header{
     cursor: pointer;
 }
 .editor-preview .wegas-pageloader-content .highlighted{
     position: relative;
-    -moz-box-shadow: 0px 0px 3px blue !important;
-    -webkit-box-shadow: 0px 0px 3px blue !important;
-    box-shadow: 0px 0px 3px blue, 0px 0px 3px blue inset!important;
+    /*    -moz-box-shadow: 0px 0px 3px blue !important;
+        -webkit-box-shadow: 0px 0px 3px blue !important;
+        box-shadow: 0px 0px 3px blue, 0px 0px 3px blue inset!important;*/
 }
 .editor-preview .wegas-pageloader-content .highlighted:after{
     position: absolute;
@@ -144,17 +147,17 @@
 /*RESIZE*/
 .pageeditor-resizenode{
     position:absolute;
-    width:24px;
-    height:24px;
+    width:12px;
+    height:12px;
     cursor: nwse-resize;
 }
 .pageeditor-resizenode-icon{
-    background: url(../../wegas-editor/images/resize_icon.png) no-repeat right bottom;
+    background: url(../../wegas-editor/images/resize_node.png) no-repeat right bottom;
     position:absolute;
-    width:24px;
-    height:24px;
-    right: 0;
-    bottom: 0;
+    width: 12px;
+    height: 12px;
+    right: 0px;
+    bottom: 0px;
 }
 
 /*special rules*/

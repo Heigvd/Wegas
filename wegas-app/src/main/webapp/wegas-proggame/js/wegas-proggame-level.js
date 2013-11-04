@@ -288,6 +288,8 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 name: "collides",
                                 label: "collides",
                                 type: "boolean"
+                            }, {
+                                name: "components"
                             }
 //                            ,{
 //                                name: "type",
