@@ -75,8 +75,9 @@
 }
 
 .transition-toolbox {
+    display:none;
     width: 40px;
-    height: 20px;
+    height: 18px;
 }
 
 .yui3-wegas-state:hover .state-toolbox{
@@ -125,8 +126,8 @@
 .transition-edit{
     /*position:absolute;*/
     display:inline-block;
-    width:18px;
-    height:24px;
+    width: 49%;
+    height: 100%;
     background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -943px;
     background-repeat: no-repeat;
@@ -197,11 +198,14 @@
     opacity: 0.9;
     cursor:pointer;
     max-width: 120px;
-    max-height: 30px;
+    /*max-height: 30px;*/
     overflow: hidden;
 }
 .transition-label:hover{
     z-index:8;
+}
+.transition-label:hover .transition-toolbox{
+    display:inline-block;
 }
 .yui3-wegas-statemachineviewer-content .yui3-dd-dragging > *{
     display:none;
