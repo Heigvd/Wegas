@@ -742,7 +742,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     workAs = selectedReq.getWork();
     sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allCurrentActivities, activityAsNeeds);
     level = parseInt(activityAsNeeds.getResourceInstance().getSkillsets().get(activityAsNeeds.getResourceInstance().getSkillsets().keySet().toArray()[0]));
-    deltaLevel = parseInt(selectedReq.getLevel()) - level;
+    deltaLevel = level - parseInt(selectedReq.getLevel());
 
     //For each need
     for (i = 0; i < sameNeedActivity.length; i++) {
@@ -753,7 +753,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         sumActivityRate += activityRate;
         //Calculate ressource motivation factor
         employeesMotivationFactor = 1 + 0.05 * parseFloat(employeeDesc.getProperty('coef_moral')) * (parseInt(employeeDesc.getInstance(self).getMoral()) - 7);
-        //Calcul variables for needMotivationFactor
+        //Calcul variables for needMotivationFactor (numérateur de la moyenne pondérée de facteur motivation besoin)
         employeesMotivationXActivityRate += employeesMotivationFactor * activityRate;
         //Calcul variables for needSkillsetFactor
         if (deltaLevel > 0) {
@@ -764,9 +764,12 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         } else {
             employeeSkillsetFactor = 1 + 0.05 * parseFloat(taskDesc.getProperty('competenceRatioInf')) * deltaLevel;
         }
-        employeesSkillsetXActivityRate += employeeSkillsetFactor * activityRate;
-        //Calcul variable for needSkillsetFactor
+        //Calcul variables for needSkillFactor (numérateur de la moyenne pondérée facteur compétence besoin)
+        employeesSkillsetXActivityRate += employeeSkillsetFactor * activityRate; 
+        
+        //Calcul variable for needActivityFactor (numérateur de la moyenne pondérée facteur taux activité besoin)
         activityCoefficientXActivityRate += parseFloat(employeeDesc.getProperty('coef_activity')) * activityRate;
+       
         //Calcul variable for learnFactor
         if (!haveCorrespondingActivityInPast(employeeInst, taskDesc, getCurrentInGameTime().period)) {
             numberOfEmployeeOnNeedOnNewTask++;
@@ -778,9 +781,9 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
 
     //calculate needMotivationFactor, needSkillsetFactor and activityNeedRateFactor
     if (sumActivityRate !== 0) {
-        stepAdvance *= employeesMotivationXActivityRate / sumActivityRate; //needMotivationFactor
-        stepAdvance *= employeesMotivationXActivityRate / sumActivityRate; //needSkillsetFactor
-        stepAdvance *= activityCoefficientXActivityRate / sumActivityRate; //activityNeedRateFactor
+        stepAdvance *= employeesMotivationXActivityRate / sumActivityRate; //needMotivationFactor (facteur motivation besoin)
+        stepAdvance *= employeesSkillsetXActivityRate / sumActivityRate; //needSkillsetFactor (facteur compétence besoin)
+        stepAdvance *= activityCoefficientXActivityRate / (affectedEmployeesDesc.length * 100); //activityNeedRateFactor (facteur taux activité besoin)
     }
 
     // calculate baseAdvance
@@ -810,7 +813,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
 
     //calculate learnFactor
     if (parseInt(taskInst.getProperty('completeness')) > 15) {
-        stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor
+        stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskDesc.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor
     }
 
     //calculate tasks bonusRatio
@@ -823,6 +826,8 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     stepAdvance *= getPredecessorFactor(taskDesc); //predecessor factor
 
     stepAdvance *= 100;
+    
+    stepAdvance /= affectedEmployeesDesc.length;
 
     //calculate new needCompleteness
     needProgress = parseFloat(selectedReq.getCompleteness()) + stepAdvance;
@@ -872,6 +877,13 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         println('need completeness : ' + parseFloat(selectedReq.getCompleteness()));
         println('needProgress : ' + needProgress);
         println('StepQuality : ' + (parseFloat(selectedReq.getQuality()) * parseFloat(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);
+        println('facteur motivation besoin : ' + employeesMotivationXActivityRate / sumActivityRate);
+        println('facteur competence besoin : ' + employeesSkillsetXActivityRate / sumActivityRate);
+        println('nb employé affecté : ' + affectedEmployeesDesc.length);
+        println('facteur taux activité besoin : ' + activityCoefficientXActivityRate / (affectedEmployeesDesc.length * 100));
+        println('Ressource corrigée : ' + correctedRessources);
+        println('Facteur nb ressource besoin : ' + correctedRessources / reqByWorks[workAs].totalOfEmployees);
+        println('task completness : ' + taskInst.getProperty('completeness'));
     }
 
     //set need progress (after calcuateQuality) and return it
