@@ -728,7 +728,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
 //                    entity: this.get("entity").get("triggerCondition")
 //                }));
             }
-            this.get(CONTENT_BOX).append("<div class='transition-toolbox'><div class='transition-edit'></div><div class='transition-delete'></div></div>");
+            this.get(CONTENT_BOX).append(Transition.TOOLBOX);
         },
         bindUI: function() {
             this.get(BOUNDING_BOX).on("click", function(e) {
@@ -747,21 +747,6 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     this.get("entity").set("actionText", val);
                 }, this);
             }
-            this.get(CONTENT_BOX).delegate("click", function(e) {
-                Y.Plugin.EditEntityAction.showEditForm(this.get("entity"), Y.bind(this.setEntity, this));
-            }, ".transition-edit", this);
-            this.get(CONTENT_BOX).delegate("click", function(e) {
-                var i, transitions = this.get("parent").get("entity").get("transitions");
-                for (i in transitions) {
-                    if (transitions[i] === this.get("entity")) {
-                        transitions.splice(i, 1);
-                    }
-                }
-                this.get("parent").get("parent").save();
-                this.disconnect();
-                this.destroy();
-            }, ".transition-delete", this);
-
         },
         connect: function() {
             this.get(BOUNDING_BOX).appendTo(this.get("parent").get("parent").get(CONTENT_BOX).one(".sm-zoom"));
@@ -804,21 +789,31 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         createLabel: function() {
             if (this.get("entity") instanceof Y.Wegas.persistence.DialogueTransition) {
                 this.connection.setLabel({
-                    label: this.get("entity").get("actionText"),
+                    label: this.get("entity").get("actionText") + "<br />" + Transition.TOOLBOX,
                     cssClass: "transition-label"
                 });
             } else {
                 this.connection.setLabel({
-                    label: (this.get("entity").get("triggerCondition") ? this.get("entity").get("triggerCondition").get("content") : ""),
+                    label: (this.get("entity").get("triggerCondition") ? this.get("entity").get("triggerCondition").get("content") + "<br />" + Transition.TOOLBOX : Transition.TOOLBOX),
                     cssClass: "transition-label"
                 });
             }
-            this.labelNode = this.connection.getLabelOverlay();
+            this.labelNode = this.connection.getLabelOverlay();            
             if (this.labelNode) {
-                this.labelNode.bind("click", function(e) {
-                    var that = e.component.getParameter("transition");
-                    that.editor();
-                });
+                Y.one(this.labelNode.getElement()).delegate("click", function (e) {
+                    Y.Plugin.EditEntityAction.showEditForm(this.get("entity"), Y.bind(this.setEntity, this));
+                }, ".transition-edit", this);
+                Y.one(this.labelNode.getElement()).delegate("click", function (e) {
+                    var i, transitions = this.get("parent").get("entity").get("transitions");
+                    for (i in transitions) {
+                        if (transitions[i] === this.get("entity")) {
+                            transitions.splice(i, 1);
+                        }
+                    }
+                    this.get("parent").get("parent").save();
+                    this.disconnect();
+                    this.destroy();
+                }, ".transition-delete", this);
             }
             //Listen to complete connector
             //            this.events.conClick = this.connection.bind("click", function (e){
@@ -849,6 +844,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }
         }
     }, {
+        TOOLBOX: "<div class='transition-toolbox'><div class='transition-edit'></div><div class='transition-delete'></div></div>",
         ATTRS: {
             tid: {
                 value: null,
