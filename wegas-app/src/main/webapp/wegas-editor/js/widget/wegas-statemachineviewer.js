@@ -283,8 +283,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         },
         addStateType: function(type) {
             var x, y, entity = type === "State" ? new Y.Wegas.persistence.State() : new Y.Wegas.persistence.DialogueState();
-            x = parseInt(this.get(CONTENT_BOX).one('.scrollable')._node.clientWidth / 2 + this.scrollView.get('scrollX'));
-            y = parseInt(this.get(CONTENT_BOX).one('.scrollable')._node.clientHeight / 2 + this.scrollView.get('scrollY'));
+            x = parseInt(this.get(CONTENT_BOX).one('.scrollable').get('region').width / 2 + this.scrollView.get('scrollX'));
+            y = parseInt(this.get(CONTENT_BOX).one('.scrollable').get('region').height / 2 + this.scrollView.get('scrollY'));
             entity.set("editorPosition", new Y.Wegas.persistence.Coordinate({
                 x: x,
                 y: y
