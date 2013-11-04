@@ -107,7 +107,17 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "Box"
+                                                                    "childCfg": {
+                                                                        type: "Box",
+                                                                        plugins: [{
+                                                                                "fn": "CSSBackground",
+                                                                                "cfg": {
+                                                                                    "styles": {
+                                                                                        "backgroundColor": "#c8c8c8"
+                                                                                    }
+                                                                                }
+                                                                            }]
+                                                                    }
                                                                 }
                                                             }
                                                         ]
