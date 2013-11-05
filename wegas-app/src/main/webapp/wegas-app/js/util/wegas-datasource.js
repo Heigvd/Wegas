@@ -56,7 +56,10 @@ YUI.add('wegas-datasource', function(Y) {
         sendInitialRequest: function() {
             if (this.get("initialRequest") !== undefined) {                     // Use this condition to allow empty strings (e.g. ")
                 return this.sendRequest({
-                    request: this.get("initialRequest")
+                    request: this.get("initialRequest"),
+                    cfg: {
+                        initialRequest: true
+                    }
                 });
             } else {
                 return null;
@@ -91,6 +94,11 @@ YUI.add('wegas-datasource', function(Y) {
 
             Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
+
+                if (payload.cfg.initialRequest) {
+                    this.cache.clear(false);
+                }
+
                 payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
                 if (payload.serverResponse.get
                         && payload.serverResponse.get("entities")
@@ -288,14 +296,15 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        clear: function() {
+        clear: function(sendUpdateEvent) {
             var i, cache = this.getCache();
             for (i = 0; i < cache.length; i = i + 1) {
                 cache[i].destroy();
             }
             cache.length = 0;
-
-            this.get(HOST).fire("update");
+            if (sendUpdateEvent) {
+                this.get(HOST).fire("update");
+            }
         },
         /**
          *

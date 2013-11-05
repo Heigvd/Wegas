@@ -64,8 +64,12 @@ YUI.add('wegas-tabview', function(Y) {
             for (var k in this.handlers) {
                 this.handlers[k].detach();
             }
+        },
+        destroyAll: function() {
+            this.removeAll().each(function(w) {
+                w.destroy();
+            });
         }
-
     }, {
         /** @lends Y.Wegas.TabView# */
 
@@ -97,7 +101,7 @@ YUI.add('wegas-tabview', function(Y) {
          * @description create and return a tab based on a given id, the
          *  tabview reference and the configuration of the new tab.
          */
-        createTab: function(id, tabViewSelector, tabCfg) {
+        createTab: function(id, tabViewSelector, tabCfg, tabIndex) {
             if (!TabView.tabs[id]) {                                            // If the tab does not exist,
                 var tabs, tabView = Y.Widget.getByNode(tabViewSelector);        // Look for the parent
                 tabCfg = tabCfg || {};
@@ -106,11 +110,14 @@ YUI.add('wegas-tabview', function(Y) {
                     label: id,
                     id: id
                 });
-                tabs = tabView.add(tabCfg);                                     // Instantiate a new tab
+                tabs = tabView.add(tabCfg, tabIndex);                           // Instantiate a new tab
                 return tabs.item(0);
             } else {                                                            // Otherwise,
-                //TabView.tabs[id].setAttrs(tabCfg);                              // update the tab config
+                //TabView.tabs[id].setAttrs(tabCfg);                            // update the tab config
             }
+            return TabView.tabs[id];
+        },
+        findTab: function(id) {
             return TabView.tabs[id];
         },
         /**
@@ -131,7 +138,7 @@ YUI.add('wegas-tabview', function(Y) {
             });
             nTab.get("panelNode").one("div").empty();                                      // @fixme since the above method is not enough
             nTab.load(widgetCfg, fn);                                           // Load target widget
-            nTab.set("selected", 2);
+            //nTab.set("selected", 2);
             nTab.plug(Removeable);
         }
 
@@ -203,7 +210,6 @@ YUI.add('wegas-tabview', function(Y) {
     Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget, Parent, Y.WidgetChild], {
         /** @lends Y.Wegas.Tab# */
         PANEL_TEMPLATE: '<div><div class=\"panel-inner\"></div></div>',
-
         // *** Private Fields *** //
         /**
          * Array of widget items.
@@ -427,10 +433,12 @@ YUI.add('wegas-tabview', function(Y) {
          *  If "addChild" is fired by host, show tab.
          */
         initializer: function() {
-            this.onHostEvent("removeChild", function() {
-                if (this.get("host").size() === 1) {
-                    Y.Wegas.app.widget.hidePosition("right");
-                }
+            this.afterHostEvent("removeChild", function() {
+                Y.later(50, this, function() {
+                    if (this.get("host").isEmpty()) {
+                        Y.Wegas.app.widget.hidePosition("right");
+                    }
+                })
             });
             this.onHostEvent("addChild", function() {
                 if (this.get("host").isEmpty()) {

@@ -37,6 +37,8 @@ public class Player extends AbstractEntity {
      */
     @ManyToOne
     private User user;
+    @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
+    private Long userId;
     /**
      *
      */
@@ -140,6 +142,13 @@ public class Player extends AbstractEntity {
      */
     public Long getTeamId() {
         return teamId;
+    }
+
+    /**
+     * @return the teamId
+     */
+    public Long getUserId() {
+        return userId;
     }
 
     // *** Sugar *** //

@@ -90,14 +90,16 @@ YUI.add('wegas-app', function(Y) {
                 Y.one("body").removeClass("wegas-loading-overlay");
             });
 
-            Y.on("io:failure", function(tId, e) {                               // Add a global io failure listener
-                //if (!req) {
-                //    return;
-                //}
-                var msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source") + e.request
-                        + ", " + e.cfg.data + ": ";
+            Y.on("io:failure", function(tId, req, e) {                          // Add a global io failure listener
+                var msg;
                 try {
-                    var r = Y.JSON.parse(e.responseText);
+                    msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source") + e.request
+                            + ", " + e.cfg.data + ": ";
+                } catch (e) {
+                    msg = "Error sending request: ";
+                }
+                try {
+                    var r = Y.JSON.parse(req.responseText);
                     msg += "\n Server reply " + Y.JSON.stringify(r, null, "\t");
 
                     if (r.exception === "org.apache.shiro.authz.UnauthenticatedException") {
@@ -123,7 +125,7 @@ YUI.add('wegas-app', function(Y) {
                         // @todo Do something?
                     }
                 } catch (e) {                                                   // JSON PARSE ERROR
-                    msg += "\n Server reply " + (e && e.responseText);
+                    msg += "\n Server reply " + (req && req.responseText);
                 }
                 Y.log(msg, "error");
                 if (window.Muscula) {                                           // Send an event to muscula

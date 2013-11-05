@@ -62,8 +62,11 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         execute: function() {
             var entity = this.get(ENTITY);
+
+            EditEntityAction.hideEditForm();
             if (entity instanceof Y.Wegas.persistence.VariableDescriptor
                     || entity instanceof Y.Wegas.persistence.JpaAccount
+                    || entity instanceof Y.Wegas.persistence.GameModel
                     || entity instanceof Y.Wegas.persistence.VariableInstance) {// @fixme we may get extended mode for every entities,
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
@@ -108,39 +111,43 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             EditEntityAction.currentEntity = entity;
             EditEntityAction.cancelCallback = cancelCallback;
 
-            if (!EditEntityAction.tab) {                                        // First make sure the edit tab exists
-                EditEntityAction.tab = Wegas.TabView.createTab("Edit", '#rightTabView');
+            var tab = EditEntityAction.getEditionTab(),
+                    prefix = (entity.get("id")) ? "Edit " : "New ";             // No id -> new entity
+            tab.form.toolbar.setStatusMessage("");
+            tab.form.saveButton.set("disabled", false);
+            tab.set("label", prefix + entity.getType().replace("Descriptor", "").toLowerCase());
+            tab.set("selected", 2);
+            tab.form.set("values", entity.toObject());
+            tab.form.set("cfg", (formCfg) ? formCfg : entity.getFormCfg());
+        },
+        getEditionTab: function() {
+            if (!EditEntityAction.tab || EditEntityAction.tab.get("destroyed")) {// First make sure the edit tab exists
+//                Y.Widget.getByNode("#rightTabView").destroyAll();
+                EditEntityAction.tab = Wegas.TabView.createTab("Edit", '#rightTabView', {}, 0);
+                var form = new Wegas.Form();
                 //EditEntityAction.tab = Wegas.TabView.createTab("Edit", '#centerTabView');
-                EditEntityAction.form = new Wegas.Form();
-                EditEntityAction.form.on("submit", function(e) {
+                form.on("submit", function(e) {
                     this.form.showOverlay();
                     //EditEntityAction.form.saveButton.set("disabled", true);
                     this.callback(e.value, this.currentEntity);
                 }, EditEntityAction);
-                EditEntityAction.form.on("cancel", function() {
+                form.on("cancel", function() {
                     this.tab.remove();
                     this.tab.destroy();
-                    delete this.tab;
-                    if (Y.Lang.isFunction(this.cancelCallback)) {
+                    if (this.cancelCallback instanceof Function) {
                         this.cancelCallback(this.currentEntity);
                     }
                     this.cancelCallback = this.currentEntity = this.callback = null;
                     //Wegas.app.widget.hidePosition("right");                   // Hide the right layout
                 }, EditEntityAction);
-                EditEntityAction.form.before("updated", function(e) {
+                form.before("updated", function(e) {
                     EditEntityAction.form.toolbar.setStatusMessage("*");
                     EditEntityAction.form.saveButton.set("disabled", false);
                 });
-                EditEntityAction.tab.add(EditEntityAction.form);
+                EditEntityAction.tab.form = EditEntityAction.form = form;
+                EditEntityAction.tab.add(form);
             }
-
-            var prefix = (entity.get("id")) ? "Edit " : "New ";                 // No id -> new entity
-            EditEntityAction.form.toolbar.setStatusMessage("");
-            EditEntityAction.form.saveButton.set("disabled", false);
-            EditEntityAction.tab.set("label", prefix + entity.getType().replace("Descriptor", ""));
-            EditEntityAction.tab.set("selected", 2);
-            EditEntityAction.form.set("values", entity.toObject());
-            EditEntityAction.form.set("cfg", formCfg || entity.getFormCfg());
+            return EditEntityAction.tab;
         },
         /**
          *
@@ -160,6 +167,9 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         hideEditFormOverlay: function() {
             EditEntityAction.form.hideOverlay();
         },
+        hideEditForm: function() {
+            Y.Widget.getByNode("#rightTabView").destroyAll();
+        },
         /**
          *
          */
@@ -171,6 +181,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         showUpdateForm: function(entity, dataSource) {
             var dataSource = dataSource;
+
             EditEntityAction.showEditForm(entity, function(cfg) {           // Display the edit form
                 // entity.setAttrs(cfg);
                 dataSource.cache.put(cfg, {
@@ -196,6 +207,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(NewEntityAction, EditEntityAction, {
         showAddForm: function(entity) {
             var dataSource = this.get("dataSource");
+            EditEntityAction.hideEditForm();
             EditEntityAction.showEditForm(entity, function(newVal) {
                 dataSource.cache.post(newVal, null, {
                     success: function(e) {
@@ -343,7 +355,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(AddEntityChildAction, NewEntityAction, {
         showAddForm: function(entity, parentData) {
             var dataSource = this.get("dataSource");
-
+            EditEntityAction.hideEditForm();
             EditEntityAction.showEditForm(entity, function(newVal) {
                 //@Hack since the server return the parent list,
                 // and we have no way to identify the newly created descriptor
@@ -528,7 +540,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         execute: function() {
             Wegas.TabView.findTabAndLoadWidget("State machine editor", // Load and display the editor in a new tab
-                    "#centerTabView", null, Y.mix(this.get("viewerCfg"), {
+                    "#centerTabView", {selected: 2}, Y.mix(this.get("viewerCfg"), {
                 type: "StateMachineViewer",
                 plugins: [{
                         fn: "WidgetToolbar"
