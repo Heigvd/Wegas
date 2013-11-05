@@ -391,6 +391,11 @@ YUI().use(function(Y) {
                     requires: ['inputex-object'],
                     ix_provides: 'wegasobject'
                 },
+                "wegas-inputex-multipleoptions": {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-multipleoptions-min.js',
+                    requires: ['inputex-group'],
+                    ix_provides: 'multipleoptions'
+                },
                 "wegas-inputex-colorpicker": {
                     path: 'wegas-editor/js/inputex/wegas-inputex-colorpicker-min.js',
                     requires: ['inputex-field', 'overlay'],
@@ -511,8 +516,9 @@ YUI().use(function(Y) {
                 'wegas-jointeam': {
                     path: 'wegas-lobby/js/wegas-jointeam-min.js',
                     requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
-                        'wegas-editor-action', 'inputex-select', 'inputex-string'],
-                    ws_provides: "JoinTeam"
+                        'wegas-editor-action', "wegas-inputex-multipleoptions",
+                        'inputex-select', 'inputex-string', "inputex-list", "inputex-combine", "inputex-password", "inputex-email"],
+                    ws_provides: ["JoinTeam", "GameDescription"]
                 },
                 'wegas-joingame': {
                     path: 'wegas-lobby/js/wegas-joingame-min.js',
@@ -532,7 +538,7 @@ YUI().use(function(Y) {
                 'wegas-sharerole': {
                     path: 'wegas-lobby/js/wegas-sharerole-min.js',
                     requires: ['inputex-select', 'inputex-list', "inputex-checkbox"],
-                    ws_provides: "ShareRole"
+                    ws_provides: ["ShareRole", "TeamsList"]
                 },
                 'wegas-shareuser': {
                     path: 'wegas-lobby/js/wegas-shareuser-min.js',
