@@ -10,6 +10,7 @@
         <ui:define name="head">
 
             <meta name="google-translate-customization" content="#editorGameController.currentGameModel.getProperty('googleTranslateId')" />
+
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
             <style type="text/css">
                 .yui3-skin-sam .yui3-button.wegas-title,
@@ -205,7 +206,7 @@
 
 
                         try {
-                #{editorGameController.getClientScripts()}      // Display game model specific js footer
+                            #{editorGameController.getClientScripts()}          // Display game model specific js footer
                         } catch (e) {
                             Y.log("Error running footer scripts.", "error");
                         }

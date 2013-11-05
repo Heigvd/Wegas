@@ -20,18 +20,24 @@ YUI.add('wegas-sharerole', function(Y) {
          *
          */
         renderUI: function() {
-            var el = this.get(CONTENTBOX),
-                    e = this.get("entity");
+            var cb = this.get(CONTENTBOX),
+                    e = this.get("entity"),
+                    gameModel = (e instanceof Y.Wegas.persistence.Game) ?
+                    Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e;
 
-            if (e instanceof Y.Wegas.persistence.GameModel) {
-                this.targetEntityId = "gm" + e.get("id");
-            } else {
-                this.targetEntityId = "g" + e.get("id");
+
+            if (gameModel.get("properties.freeForAll") !== "true") {
+                this.set("visible", false);
             }
+
+            this.targetEntityId = (e instanceof Y.Wegas.persistence.GameModel) ? "gm" + e.get("id")
+                    : "g" + e.get("id");
+
             this.link = new Y.inputEx.StringField({
                 wrapperClassName: "inputEx-fieldWrapper wegas-link",
-                parentEl: el,
-                description: 'Using this link, player will access game directly'
+                parentEl: cb,
+                description: 'Using this link, player will access game directly',
+                value: Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token")
             });
             this.visibility = new Y.inputEx.SelectField({
                 label: 'Accessibility',
@@ -40,58 +46,51 @@ YUI.add('wegas-sharerole', function(Y) {
                     {value: 'Link', label: 'Anyone with the link can join'},
                     {value: 'Public', label: 'Everybody can join'}
                 ],
-                parentEl: el
+                parentEl: cb
             });
 
-            var url = Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token");
-            this.link.setValue(url);
-
-            this.linkVisibility(this.visibility.getValue());
-            this.loading();
-
-            Y.one(".wegas-link input").on("click", function(e) {
-                e.halt(true);
-                this.link.el.select();
-            }, this);
+            this.syncLinkVisibility();
+            this.requestPermissions();
         },
         bindUI: function() {
             this.visibility.on("updated", function(value) {
-                this.linkVisibility(value);
+                this.syncLinkVisibility(value);
                 Y.Wegas.Facade.User.cache.deleteAllRolePermissions(this.get('role'), this.targetEntityId);
                 if (value === "Public") {
-                    Y.Array.forEach(this.get('permsList'), function(permission) {
+                    Y.Array.each(this.get('permsList'), function(permission) {
                         if (permission.name === "Public") {
                             this.addPermission(permission.value);
                         }
                     }, this);
                 } else if (value === "Link") {
-                    Y.Array.forEach(this.get('permsList'), function(permission) {
+                    Y.Array.each(this.get('permsList'), function(permission) {
                         if (permission.name === "Link") {
                             this.addPermission(permission.value);
                         }
                     }, this);
                 }
             }, this);
+
+            this.get("contentBox").one(".wegas-link input").on("click", this.link.el.select, this); // Select whole link on click
         },
         destructor: function() {
             this.link.destroy();
             this.visibility.destroy();
         },
-        loading: function() {
+        requestPermissions: function() {
             this.showOverlay();
             Y.Wegas.Facade.User.sendRequest({
                 request: "/FindPermissionByInstance/" + this.targetEntityId,
                 on: {
                     success: Y.bind(function(e) {
-                        var data = e.response.results.entities;
-                        Y.Array.forEach(data, function(role) {
+                        Y.Array.each(e.response.results.entities, function(role) {
                             if (role.get('val').name === this.get('role')) {
                                 Y.Array.forEach(role.get('val').permissions, function(resultPerm) {
                                     var splitedPerm = resultPerm.split(":");
                                     Y.Array.forEach(this.get('permsList'), function(permFromList) {
                                         if (splitedPerm[0] + ":" + splitedPerm[1] === permFromList.value) {
                                             this.visibility.setValue(permFromList.name, false);
-                                            this.linkVisibility(permFromList.name);
+                                            this.syncLinkVisibility();
                                         }
                                     }, this);
                                 }, this);
@@ -103,15 +102,14 @@ YUI.add('wegas-sharerole', function(Y) {
                 }
             });
         },
-        linkVisibility: function(selectValue) {
-            if (selectValue === "Private") {
+        syncLinkVisibility: function(selectValue) {
+            if (this.visibility.getValue() === "Private") {
 //                this.link.hide();
             } else {
 //                this.link.show();
             }
         },
         addPermission: function(permission) {
-//            console.log(permission);
             Y.Wegas.Facade.User.sendRequest({
                 request: "/AddPermission/" + this.get('role') + "/" + permission + ":" + this.targetEntityId,
                 cfg: {
@@ -133,4 +131,97 @@ YUI.add('wegas-sharerole', function(Y) {
 
 
     Y.namespace('Wegas').ShareRole = ShareRole;
+
+
+    var TeamsList = Y.Base.create("wegas-teamslist", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
+        CONTENT_TEMPLATE: "<div>"
+                //+ "<div class=\"title\" >Teams</div>"
+                + "<div class=\"yui3-g\" style=\"font-weight:bold\"><div class=\"yui3-u team-name\">Name</div><div class=\"yui3-u team-token\">Token</div>"
+                + "<div class=\"yui3-u team-link\"></div></div>"
+                + "<div class=\"wegas-teams\"></div>"
+                + "<div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team token, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
+                + "</div>",
+        renderUI: function() {
+
+            if (Y.Wegas.Facade.GameModel.cache.findById(this.get("entity").get("gameModelId")).get("properties.freeForAll") === "true") {
+                //this.set("visible", false);
+                this.get("parent").set("visible", false);
+            }
+            this.plug(Y.Plugin.WidgetToolbar);
+            this.addButton = this.toolbar.add({
+                type: "Button",
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add teams"
+            });
+
+            //this.addButton = new Y.Wegas.Button({
+            //    label: "Add teams",
+            //    render: this.get(CONTENTBOX)
+            //});
+        },
+        bindUI: function() {
+            var cb = this.get("contentBox");
+
+            cb.delegate("click", function(e) {                                  // Whenever one of the link is clicked
+                e.target.select();                                              // select if fully for copy/paster
+            }, "input", this);
+
+            this.addButton.on("click", function() {                             // When the "add teams" button is clicker
+                var i, name,
+                        entity = this.get("entity"),
+                        offset = entity.get("teams").length,
+                        teams = prompt("How many teams?", 1);
+
+                this.showOverlay();
+                this.teamsAcc = [];
+                for (i = 0; i < parseInt(teams); i += 1) {                      // add the number amount of teams
+                    name = entity.get("name") + "-" + (offset + i + 1);
+                    this.teamsAcc.push({
+                        "@class": "Team",
+                        name: name,
+                        token: name
+                    });
+                }
+                this.teamsAcc.reverse();
+                this.doCreateTeam();
+            }, this);
+
+            this.facadeHandler = Y.Wegas.Facade.Game.on("update", this.syncUI, this);// Update the team list when the datasource is updated
+        },
+        syncUI: function() {
+            var game = this.get("entity"),
+                    teamsNode = this.get(CONTENTBOX).one(".wegas-teams");
+
+            teamsNode.empty();
+
+            Y.Array.each(game.get("teams"), function(t) {
+                teamsNode.append("<div class=\"yui3-g\"><div class=\"yui3-u team-name\">" + t.get("name") + "</div><div class=\"yui3-u team-token\">" + t.get("token") + "</div>"
+                        + "<div class=\"yui3-u team-link\">"
+                        //+"<input value=\"" + encodeURI(Y.Wegas.app.get("base") + "game.html?token=" + t.get("token")) + "\" />"
+                        + "</div></div>");
+            });
+            if (game.get("teams").length === 0) {
+                teamsNode.append("<em><center><br />No team created yet<br /><br /></em></center>");
+            }
+        },
+        destructor: function() {
+            this.addButton.destroy();
+            this.facadeHandler.detach();
+        },
+        doCreateTeam: function() {
+            var entity = this.get("entity"), team = this.teamsAcc.pop();
+
+            if (team) {
+                Y.Wegas.Facade.Game.cache.post(team, entity.toObject(), {
+                    success: Y.bind(this.doCreateTeam, this)
+                });
+            } else {
+                this.hideOverlay();
+            }
+        }
+    }, {
+        ATTRS: {
+            entity: {}
+        }
+    });
+    Y.namespace('Wegas').TeamsList = TeamsList;
 });

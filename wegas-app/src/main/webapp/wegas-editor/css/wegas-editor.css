@@ -19,7 +19,6 @@ body {
 .wegas-stdmode .wegas-advanced-feature,
 .wegas-stdmode .editor-administrator-button,
 .wegas-stdmode .editor-developer-button,
-.wegas-stdmode .editor-addPlayer-button,
 .wegas-stdmode .editor-playerProperties-button {
     display: none;
 }
@@ -31,9 +30,10 @@ body {
 }
 .yui3-skin-sam .wegas-layout-resizable > .wegas-layout-resizable-content > div > div > div> .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel {
     position:absolute;
-    top: 26px;
+    top: 34px;
     bottom:0px;
     width:100%;
+    overflow: auto;
 }
 .yui3-skin-sam .wegas-layout-resizable .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel {
     position:relative;
@@ -276,7 +276,7 @@ body {
 
 /* Player link menu */
 .yui3-menu-content .wegas-playerlink-buttons {
-    padding: 0.4em 0.6em .1em;
+    padding: 5px 10px;
     border-top: 1px solid lightgray;
 }
 .yui3-menu-content .wegas-playerlink-buttons input {
@@ -303,16 +303,221 @@ body {
     height:100%;
 }
 
+/* Global title definition */
+.wegas-sharerole-hidden,
+.wegas-teamslist-hidden {
+    display: none;
+}
+.wegas-gamedescription,
+.wegas-jointeam,
+.wegas-sharerole-content,
+.wegas-shareuser-content {
+    padding: 10px 10px 20px;
+}
+.wegas-teamslist-content {
+    padding: 10px 10px 20px;
+}
+
+.wegas-jointeam .title,
+.wegas-sharerole .title,
+.wegas-gamedescription .title,
+.wegas-teamslist .title {
+    font-weight: bolder;
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 5px;
+}
+.wegas-joingame button,
+.wegas-jointeam button,
+.editor-button-resume {
+    margin-left: 11.3em;
+    margin-top: 10px;
+    padding: 7px 18px;
+}
+.wegas-joingame .description {
+    padding: 10px 0 20px;
+    margin: 10px 10px 20px;
+}
+.wegas-jointeam .description,
+.wegas-teamslist .description,
+.wegas-gamedescription .description {
+    padding: 0 0 15px;
+}
+.wegas-teamslist .description {
+    font-style: italic;
+    margin:10px 0;
+    padding: 10px;
+    background: #f6f6f6;
+}
+
 /* Join game/team styles */
-.yui3-tabview .wegas-joingame,
-.yui3-tabview .wegas-jointeam {
-    padding-top: 1em;
+.yui3-tabview .wegas-joingame-content > .inputEx-fieldWrapper{
+    padding-top: 30px;
 }
-.yui3-tabview .wegas-joingame .inputEx-label,
-.yui3-tabview .wegas-jointeam .inputEx-label{
-    width: 12em;
+.wegas-joingame .inputEx-label,
+.wegas-jointeam .inputEx-label{
+    width: 11em;
 }
-.yui3-tabview .wegas-joingame button,
-.yui3-tabview .wegas-jointeam button {
-    margin-left: 12.4em;
+.wegas-jointeam .header .yui3-u {
+    width: 112px;
+    color: #505050;
+    font-style: italic;
+}
+.wegas-jointeam .header .yui3-u:first-child {
+    padding-left: 20px;
+}
+.wegas-jointeam  .inputEx-ListField >span {
+    margin: 0 !important;
+}
+.wegas-jointeam .wegas-inputex-multioptions .inputEx-fieldWrapper  {
+    /*    opacity: 0.8;
+        padding: 10px;*/
+}
+.wegas-jointeam .wegas-inputex-multioptions div.inputEx-label {
+    width: auto;
+    padding-right: 15px;
+}
+.wegas-jointeam .wegas-inputex-multioptions .wegas-inputex-multi-selected {
+    /*    box-shadow: 0 0 1px #6d6d6d;
+        background: #ededed;
+        opacity: 1;*/
+}
+.wegas-jointeam .inputEx-ListField {
+    padding: 0 0 0 20px;
+}
+.wegas-jointeam .inputEx-CombineField .inputEx-fieldWrapper {
+    padding-right: 3px;
+}
+.wegas-jointeam .inputEx-invalid > div > div >input {
+    border: 1px solid coral;
+    background: #ffDFD3;
+}
+/* Permissions */
+.role-permissions .inputEx-fieldWrapper{
+    float: left;
+    width: 91px;
+    /*margin-left: 25px;*/
+}
+
+.role-permissions .inputEx-fieldWrapper:first-child{
+    margin-left: 0px
+}
+
+.inputEx-fieldWrapper .roleBox {
+    margin-left: 25px;
+    margin-top: 5px;
+}
+
+.eachPermissions{
+    margin-left: 5px;
+}
+
+.eachPermissions:first-child{
+    margin-left: 20px;
+}
+
+.eachPermissions label{
+    margin-left: 4px;
+}
+
+.role-permissions .permissionList {
+    width: 80%;
+    margin-left: 115px;
+}
+
+/* Teams list */
+.wegas-teamslist .yui3-g {
+    padding-left: 250px;
+    font-size: 12px;
+    box-shadow: 0px 1px 0px #f1f1f1;
+}
+.wegas-teamslist .yui3-u {
+    padding-bottom: 2px;
+    padding-top: 5px;
+}
+.wegas-teamslist .team-name {
+    width: 140px;
+    margin-left: -250px;
+    padding-right: 10px;
+}
+.wegas-teamslist .team-token {
+    width: 90px;
+    padding-right: 10px;
+}
+.wegas-teamslist .team-link,
+.wegas-teamslist .team-link input {
+    width: 100%;
+}
+
+/* Share role */
+.wegas-link div,
+.wegas-link input {
+    width: 100%;
+}
+/* Share user */
+.wegas-shareuser .wegas-shareuser-content > .title {
+    font-weight: bolder;
+    border-bottom: 1px solid lightgray;
+}
+.wegas-shareuser .username-field .MarkupField-wrapper {
+    width: 175px;
+    margin-bottom: 5px;
+}
+.wegas-shareuser .inputEx-CheckBox {
+    padding:0;
+}
+.wegas-shareuser .wegas-shareuser-content .inputEx-ListField {
+    margin:0;
+}
+.wegas-shareuser .inputEx-ListField-addButton ,
+.wegas-shareuser .wegas-shareuser-content .inputEx-ListField > span {
+    display: none;
+}
+.wegas-shareuser img.inputEx-ListField-delButton {
+    margin: 0;
+}
+.wegas-shareuser .inputEx-ListField-subFieldEl {
+    margin-left: 11px;
+}
+.wegas-shareuser .inputEx-ListField,
+.wegas-shareuser .inputEx-ListField-childContainer {
+    width: 100%;
+}
+.wegas-shareuser .inputEx-ListField-childContainer:empty:after {
+    content: "No permissions added yet";
+    text-align: center;
+    font-style: italic;
+    display: block;
+    margin: 10px;
+}
+.wegas-shareuser .inputEx-ListField-childContainer > div {
+    border-bottom: 1px solid lightgray;
+    padding-top: 10px;
+}
+.wegas-shareuser .permission-group fieldset div {
+    float: left;
+    margin-left: 5px;
+}
+/*.wegas-shareuser .permission-group fieldset div:first-child {
+    margin-left: 3px;
+}*/
+.wegas-shareuser .wegas-userlist > div {
+    margin: 0;
+}
+.wegas-shareuser .wegas-adduser {
+    padding: 10px;
+    background: #f6f6f6;
+}
+.wegas-shareuser .wegas-adduser .title {
+    padding-bottom: 5px;
+}
+.wegas-shareuser .wegas-adduser .inputEx-AutoComplete {
+    width: 100%;
+}
+.wegas-shareuser .wegas-adduser input {
+    width: 98%;
+    padding: 2px;
+}
+.wegas-shareuser .wegas-button {
+    margin: 0;
+    background-color: white;
 }
