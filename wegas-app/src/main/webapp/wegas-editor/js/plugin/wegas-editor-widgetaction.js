@@ -56,35 +56,40 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
          * @private
          */
         execute: function() {
-            Plugin.EditEntityAction.showEditForm(this.get("widget"), Y.bind(function(val, e, f) {
+            Plugin.EditEntityAction.showEditForm(this.get("widget"), Y.bind(function(val, entity) {
                 Plugin.EditEntityAction.showEditFormOverlay();
-                var i, targetWidget = this.get("widget"), plugins = {}, plugin;
-                targetWidget.setAttrs(val);
+                var i, plugins = {}, plugin, cfg, oldCfg = entity.get("root").toObject();
+                entity.setAttrs(val);
                 for (i = 0; i < val.plugins.length; i += 1) {
                     plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
-                    if (!Y.Lang.isUndefined(targetWidget._plugins[plugin.NS])) { //that plugin exists on target
-                        targetWidget[plugin.NS].setAttrs(val.plugins[i].cfg);
+                    if (!Y.Lang.isUndefined(entity._plugins[plugin.NS])) { //that plugin exists on target
+                        entity[plugin.NS].setAttrs(val.plugins[i].cfg);
                         plugins[plugin.NS] = true;                              //store namespace as treated
                     } else {
-                        targetWidget.plug(plugin, val.plugins[i].cfg);
+                        entity.plug(plugin, val.plugins[i].cfg);
                         plugins[plugin.NS] = true;                              //store namespace as treated
                     }
                 }
-                for (i in targetWidget._plugins) {                                 // remove
+                for (i in entity._plugins) {                                 // remove
                     if (Y.Lang.isUndefined(plugins[i])) {                           //An inexistant namespace
-                        targetWidget.unplug(i);
+                        entity.unplug(i);
                     }
                 }
-                targetWidget.syncUI();
-                this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), Y.bind(function() {
+                cfg = entity.get("root").toObject();
+                if (Y.JSON.stringify(cfg) !== Y.JSON.stringify(oldCfg)) {
+                    this.get("dataSource").cache.patch(cfg, function() {
+                        entity.fire("AttributesChange", {attrs: val});
+                        Plugin.EditEntityAction.hideEditFormOverlay();
+                        Plugin.EditEntityAction.showFormMessage("success", "Item has been saved.");
+                    });
+                } else {
                     Plugin.EditEntityAction.hideEditFormOverlay();
-                    Plugin.EditEntityAction.showFormMessage("success", "Item has been saved.")
-                }, this));
-            }, this), Y.bind(function() {
-                if (this.get("widget") && !this.get("widget").get("destroyed")) {
-                    this.get("widget").highlight(false);
                 }
-            }, this));
+            }, this), function(entity) {
+                if (entity && !entity.get("destroyed")) {
+                    entity.highlight(false);
+                }
+            });
 
             this.get("widget").highlight(true);
         }
@@ -153,7 +158,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     };
     Y.extend(DeleteWidgetAction, WidgetAction, {
         execute: function() {
-            if (confirm("Are your sure your want to delete this widget ?")) {
+            if (confirm("Are your sure you want to delete this element ?")) {
                 var targetWidget = this.get("widget"),
                         root = targetWidget.get("root");
                 targetWidget.destroy();

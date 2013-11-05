@@ -136,8 +136,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     this.tab.destroy();
                     if (this.cancelCallback instanceof Function) {
                         this.cancelCallback(this.currentEntity);
-                        delete this.cancelCallback;
                     }
+                    this.cancelCallback = this.currentEntity = this.callback = null;
                     //Wegas.app.widget.hidePosition("right");                   // Hide the right layout
                 }, EditEntityAction);
                 form.before("updated", function(e) {

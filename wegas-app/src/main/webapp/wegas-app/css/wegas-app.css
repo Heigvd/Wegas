@@ -253,8 +253,13 @@ body h6{
     float: right;
     padding: 14px 10px 0;
 }
-body{
-    /*top: 0px !important;*/
+body, html, body > .wegas-pageloader, body > .wegas-pageloader > .wegas-pageloader-content{
+    width:100%;
+    height:100%;
+}
+body > .wegas-pageloader > .wegas-pageloader-content > div{
+    margin-left: auto;
+    margin-right: auto;
 }
 .goog-te-gadget-simple {
     border:none !important;

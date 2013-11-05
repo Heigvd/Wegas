@@ -92,7 +92,7 @@ YUI.add("wegas-layout", function(Y) {
                             },
                             "event": "mouseenter",
                             "children": [{
-                                    "fn": "WidgetMenu",
+                                    "type": "Button",
                                     "label": "Element",
                                     plugins: [{
                                             "fn": "WidgetMenu",
@@ -107,7 +107,17 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "Box"
+                                                                    "childCfg": {
+                                                                        type: "Box",
+                                                                        plugins: [{
+                                                                                "fn": "CSSBackground",
+                                                                                "cfg": {
+                                                                                    "styles": {
+                                                                                        "backgroundColor": "#c8c8c8"
+                                                                                    }
+                                                                                }
+                                                                            }]
+                                                                    }
                                                                 }
                                                             }
                                                         ]
@@ -155,7 +165,7 @@ YUI.add("wegas-layout", function(Y) {
                                             }
                                         }
                                     ]}, {
-                                    "fn": "WidgetMenu",
+                                    "type": "Button",
                                     "label": "Variable display",
                                     plugins: [{
                                             "fn": "WidgetMenu",

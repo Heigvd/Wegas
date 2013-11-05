@@ -39,7 +39,7 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 top: 0,
                 left: 0
             });
-            this.overlayMask.append(this._ddNode);
+            this.highlightOverlay.get(CONTENTBOX).append(this._ddNode);
             this._ddNode.hide();
             this.highlightOverlay.after("visibleChange", function(e) {
                 if (e.newVal && this.overlayWidget && this.overlayWidget.CSSPosition) {
@@ -82,6 +82,9 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                     height: node.getComputedStyle("height")
                 });
                 this.fixedOverlay(Y.Widget.getByNode(node));
+            }, this);
+            this._dd.after("drag:drag", function(){
+                this.fixedOverlay(this.shownOverlay._widget);
             }, this);
             this._dd.on("drag:end", function(e) {
                 var bb = this._dd.get("dragNode"),

@@ -586,7 +586,7 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/js/plugin/wegas-pageeditor-min.js',
                     ws_provides: 'PageEditor',
                     requires: ['diff_match_patch', "wegas-editor-widgetaction",
-                        "event-mouse-startstop", "node-scroll-info", "anim",
+                        "event-mouse-startstop", "node-scroll-info",
                         "wegas-pageeditor-dragdrop", 'wegas-pageeditorcss',
                         'wegas-pageeditor-resize']
                 },

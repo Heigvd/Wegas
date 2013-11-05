@@ -1110,7 +1110,7 @@
             {
                 "type": "PmgSlidePanel",
                 "cssClass": "animated",
-                "title": "Informaticien Lociciel",
+                "title": "Informaticien Logiciel",
                 "animation": true,
                 "children": [
                     {
