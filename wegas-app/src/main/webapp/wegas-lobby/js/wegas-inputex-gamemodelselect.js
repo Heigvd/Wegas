@@ -33,33 +33,26 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             options.filters = options.filters || {};
 
             for (i = 0; i < gameModels.length; i += 1) {
-
                 if (Y.Object.some(options.filters, function(value, key) {
                     return this.get(key) === value;
                 }, gameModels[i])) {                                            // If the game model does not match any filter
-                    options.choices.push({                                      // add it to available games
+                    options.choices.push({// add it to available games
                         label: gameModels[i].get("name"),
                         value: gameModels[i].get("id")
                     });
                 }
             }
             GameModelSelect.superclass.setOptions.call(this, options);
-
-            // this.options.filter = options.filter || {};
         },
         setValue: function(value, fireUpdateEvent) {
-
             if ((!value || value === "")
                     && !!Y.Wegas.GameModelTreeView.currentGameModel) {
                 value = Y.Wegas.GameModelTreeView.currentGameModel.get("id");
             }
-
             GameModelSelect.superclass.setValue.call(this, value, fireUpdateEvent);
         }
-
     });
 
     Y.inputEx.registerType("gamemodelselect", GameModelSelect);                 // Register this class
     Y.namespace("inputEx.Wegas").GameModelSelect = GameModelSelect;
-
 });
