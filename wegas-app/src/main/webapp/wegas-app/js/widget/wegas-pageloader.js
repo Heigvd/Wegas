@@ -64,12 +64,12 @@ YUI.add('wegas-pageloader', function(Y) {
                 }
             };
             //Y.Wegas.Facade.Page.after("response", this.syncUI, this);
-//            this.handlers.push(Y.Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
-//                if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
-//                    this.currentPageId = null; // @hack force update
-//                    this.syncUI();
-//                }
-//            }, this));
+            //this.handlers.push(Y.Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
+            //    if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
+            //        this.currentPageId = null; // @hack force update
+            //        this.syncUI();
+            //    }
+            //}, this));
 
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", onUpdate, this));
         },
