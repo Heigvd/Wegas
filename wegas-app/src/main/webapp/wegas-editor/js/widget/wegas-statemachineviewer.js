@@ -474,6 +474,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             } else {
                 this.add(new Y.Wegas.Script({}));
             }*/
+            this.menuNode = new Y.Node.create("<div></div>");
+            this.get(CONTENT_BOX).append(this.menuNode);
+            
             if (this.get("sid")) {
                 this.sidNode = new Y.Node.create("<div>" + this.get("sid") + "</div>");
                 this.get(CONTENT_BOX).append(this.sidNode);
@@ -576,7 +579,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     }
                 });
             }
-            this.sidNode.plug(Y.Plugin.WidgetMenu, {
+            this.menuNode.plug(Y.Plugin.WidgetMenu, {
                 children: this.options.transitions
             });
         },
@@ -617,7 +620,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             if (this.get("parent").get("availableTransitions").length > 1) {
                 target.source = this;
                 target.stateId = target.get("sid");
-                target.sidNode.menu.show(); // show menu to select transition type
+                target.menuNode.menu.show(); // show menu to select transition type
             }
             else if (this.get("parent").get("availableTransitions").length === 1) {
                 tr = this.get("parent").get("availableTransitions")[0] === "Transition" ? new Y.Wegas.persistence.Transition() : new Y.Wegas.persistence.DialogueTransition();
