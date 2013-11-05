@@ -130,17 +130,12 @@ YUI.add('wegas-shareuser', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         var data = e.response.results.entities,
-                                i, permissions, splitedPerm, newField, username;
+                                i, permissions, splitedPerm, newField;
 
                         Y.Array.forEach(data, function(account) {
                             permissions = account.get('permissions');
-                            if (account.get('firstname') !== null && account.get('lastname') !== null) {
-                                username = account.get('firstname') + " " + account.get('lastname');
-                            } else {
-                                username = account.get('email');
-                            }
                             newField = this.userList.addElement({
-                                username: username,
+                                username: account.getPublicName(),
                                 userId: account.get('id')
                             });
 
