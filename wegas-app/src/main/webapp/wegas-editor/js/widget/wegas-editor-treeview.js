@@ -50,8 +50,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
             var ds = this.get(DATASOURCE),
                     request = this.get("request");
             if (ds) {
-                ds.after("update", this.syncUI, this);                          // Listen updates on the target datasource
-                ds.after("failure", this.defaultFailureHandler, this);          // GLOBAL error message
+                this.updateHandler = ds.after("update", this.syncUI, this);                          // Listen updates on the target datasource
+                this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);          // GLOBAL error message
 
                 if (request) {
                     ds.sendRequest(request);
@@ -89,6 +89,11 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
             this.hideOverlay();
         },
+        destructor: function() {
+            this.treeView.destroy();
+            this.updateHandler.detach();
+            this.failureHandler.detach();
+        },
         // *** Private Methods *** //
         /**
          * @function
@@ -125,7 +130,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                             + Wegas.Helper.smartDate(el.get("createdTime"))
                                             + '</div>'
                                             + '<div class="yui3-u-1-4">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
-                                            + '<div class="yui3-u-1-4">' + ((gameModel.get("properties.freeForAll") === "true") ? el.get("token") : "") + '</div>'
+                                            + '<div class="yui3-u-1-4">' + (gameModel.get("properties.freeForAll") ? el.get("token") : "") + '</div>'
                                             + '<div class="yui3-u-1-4">' + gameModel.get(NAME) + '</div></div>'
                                             + '</div>',
                                     collapsed: collapsed,
@@ -147,7 +152,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                 collapsed: collapsed,
                                 selected: selected,
                                 label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                        + '<div class="yui3-u yui3-u-col1">Team' + el.get(NAME) + '</div>'
+                                        + '<div class="yui3-u yui3-u-col1">Team: ' + el.get(NAME) + '</div>'
                                         + '<div class="yui3-u yui3-u-col2 yui3-g">'
                                         + '<div class="yui3-u-1-4"></div>'
                                         + '<div class="yui3-u-1-4"></div>'
@@ -275,7 +280,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
      *
      */
     var GameModelTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
-        CONTENT_TEMPLATE: '<div class="wegas-editor-treeviewgame">'
+        CONTENT_TEMPLATE: '<div>'
                 + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
                 + '<div class="yui3-u yui3-u-col1">Name</div>'
                 + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
@@ -319,7 +324,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
      *
      */
     var CreatedGameTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
-        CONTENT_TEMPLATE: '<div class="wegas-editor-treeviewgame">'
+        CONTENT_TEMPLATE: '<div>'
                 + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd">'
                 + '<div class="yui3-u yui3-u-col1">Name</div>'
                 + '<div class="yui3-u yui3-u-col2 yui3-g">'
@@ -340,11 +345,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
             //    },
             //    autoExpand: false
             //});
-
-            //this.treeView.on("*:click", function(e) {
-            //    this.collapseAll();
-            //    e.target.expand();
-            //});
         }
     });
     Y.namespace("Wegas").CreatedGameTreeView = CreatedGameTreeView;
@@ -354,7 +354,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
      *
      */
     var JoinedGameTreeView = Y.Base.create("wegas-editor-treeview", CreatedGameTreeView, [], {
-        CONTENT_TEMPLATE: '<div class="wegas-editor-treeviewgame">'
+        CONTENT_TEMPLATE: '<div>'
                 + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
                 + '<div class="yui3-u yui3-u-col1">Name</div>'
                 + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
@@ -374,7 +374,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                         case 'Game':
                             var createdBy = el.get("createdBy"),
                                     gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
-                            
+
                             if (gameModel) {
                                 ret.push({
                                     //label: el.get(NAME),
@@ -449,6 +449,152 @@ YUI.add('wegas-editor-treeview', function(Y) {
         }
     });
     Y.namespace('Wegas').PublicGameTreeView = PublicGameTreeView;
+    /**
+     *
+     */
+    var TeamTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
+        CONTENT_TEMPLATE: '<div class="wegas-editor-treeview-team">'
+                + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 255px">'
+                + '<div class="yui3-u yui3-u-col1">Name</div>'
+                + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
+                + '<div class="yui3-u">Token</div></div>'
+                + '</div>'
+                + '<div class="treeview"></div>'
+                + "<div class=\"message\"></div><div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team token, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
+                + '</div>',
+        renderUI: function() {
+            if (Y.Wegas.Facade.GameModel.cache.findById(this.get("entity").get("gameModelId")).get("properties.freeForAll")) {
+                //this.set("visible", false);
+                this.get("parent").set("visible", false);
+            }
+
+            this.treeView = new Y.TreeView();
+            this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
+
+            this.plug(Y.Plugin.EditorTVAdminMenu, {
+                autoClick: false
+            });
+            this.plug(Y.Plugin.RememberExpandedTreeView);
+            this.plug(Y.Plugin.EditorTVToggleClick);
+            this.plug(Y.Plugin.WidgetToolbar);
+            this.addButton = this.toolbar.add({
+                type: "Button",
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add teams"
+            });
+        },
+        bindUI: function() {
+            TeamTreeView.superclass.bindUI.call(this);
+
+            this.addButton.on("click", function() {                             // When the "add teams" button is clicker
+                var i, name,
+                        entity = this.get("entity"),
+                        offset = entity.get("teams").length,
+                        teams = prompt("How many teams?", 1);
+
+                this.showOverlay();
+                this.teamsAcc = [];
+                for (i = 0; i < parseInt(teams); i += 1) {                      // add the number amount of teams
+                    name = entity.get("name") + "-" + (offset + i + 1);
+                    this.teamsAcc.push({
+                        "@class": "Team",
+                        name: name,
+                        token: name
+                    });
+                }
+                this.teamsAcc.reverse();
+                this.doCreateTeam();
+            }, this);
+        },
+        syncUI: function() {
+            Y.log("sync()", "info", "Wegas.TeamTreeView");
+
+            if (!this.get(DATASOURCE)) {
+                this.get(CONTENTBOX).append("Unable to find datasource");
+                return;
+            }
+
+            var cb = this.get(CONTENTBOX),
+                    treeNodes = this.genTreeViewElements(this.get("entity").get("teams"));
+
+            cb.one(".message").setHTML("");
+            if (treeNodes.length === 0) {
+                cb.one(".message").setHTML('<center><em><br />' + this.get("emptyMessage") + '<br /><br /></em></center');
+            }
+            this.treeView.removeAll();
+            this.treeView.add(treeNodes);
+            this.treeView.syncUI();
+
+            this.hideOverlay();
+        },
+        genTreeViewElements: function(elements) {
+            var ret = [], i, el, elClass, collapsed, selected;
+
+            for (i in elements) {
+                if (elements.hasOwnProperty(i)) {
+                    el = elements[i];
+                    elClass = el.get(CLASS);
+                    collapsed = !this.isNodeExpanded(el);
+                    selected = (this.currentSelection === el.get(ID)) ? 2 : 0;
+
+                    switch (elClass) {
+                        case 'Team':
+                            ret.push({
+                                type: 'TreeNode',
+                                collapsed: collapsed,
+                                selected: selected,
+                                label: '<div class="yui3-g wegas-editor-treeview-table" style="padding-right: 255px">'
+                                        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                        + '<div class="yui3-u yui3-u-col2 yui3-g"  style="margin-right:-250px;width:250px">'
+                                        + '<div class="yui3-u">' + el.get("token") + '</div>'
+                                        + '</div>'
+                                        + '</div>',
+                                children: this.genTreeViewElements(el.get("players")),
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-team',
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
+
+                        case 'Player':
+                            ret.push({
+                                selected: selected,
+                                data: {
+                                    entity: el.get(NAME)
+                                },
+                                iconCSS: 'wegas-icon-player',
+                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
+                    }
+                }
+            }
+            return ret;
+        },
+        doCreateTeam: function() {
+            var entity = this.get("entity"), team = this.teamsAcc.pop();
+
+            if (team) {
+                Y.Wegas.Facade.Game.cache.post(team, entity.toObject(), {
+                    success: Y.bind(this.doCreateTeam, this)
+                });
+            } else {
+                this.hideOverlay();
+            }
+        }
+    }, {
+        ATTRS: {
+            dataSource: {
+                value: "Game"
+            },
+            entity: {},
+            emptyMessage: {
+                value: "No team created yet"
+            }
+        }
+    });
+    Y.namespace('Wegas').TeamTreeView = TeamTreeView;
 
     /**
      * @class To be plugged on a an EditorTreeview, keeps track of the
@@ -539,6 +685,19 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 value: true
             }
         }
+    });
+    Y.Plugin.EditorTVToggleClick = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
+        initializer: function() {
+            this.afterHostEvent(RENDER, function() {
+                this.get(HOST).treeView.on("*:click", function(e) {
+                    //this.collapseAll();
+                    e.target.expand();
+                });
+            });
+        }
+    }, {
+        NS: "EditorTVToggleClick",
+        NAME: "EditorTVToggleClick"
     });
 
 });
