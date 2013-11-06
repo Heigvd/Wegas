@@ -49,6 +49,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
+            this.anims = {};
         },
         /**
          * @function
@@ -133,17 +134,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description do a slide (tween) animation to hide the panel
          */
         hidePosition: function(position) {
-            var anim = new Y.Anim({
-                node: this.getPositionNode(position),
-                to: {
-                    width: "0px"
-                },
-                easing: 'easeIn',
-                duration: 0.6
-            });
-            anim.on('tween', this.syncCenterNode, this);
-            anim.on('end', this.syncCenterNode, this);
-            anim.run();
+            this.getAnim(position).set("reverse", true).run();
         },
         /**
          * @function
@@ -152,22 +143,30 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description do a slide (tween) animation to show the panel
          */
         showPosition: function(position) {
-            var anim,
-                    target = this.getPositionNode(position);
+            var target = this.getPositionNode(position);
 
-            if (target.getStyle("width") === "0px") {                       // Only display if hidden
-                anim = new Y.Anim({
+            if (parseInt(target.getStyle("width"), 10) < ResizableLayout.DEFAULTWIDTH) {// Only display if hidden
+                this.getAnim(position).set("reverse", false).run();
+            }
+        },
+        getAnim: function(position) {
+            if (!this.anims[position]) {
+                var anim = new Y.Anim({
                     node: this.getPositionNode(position),
+                    from: {
+                        width: 0
+                    },
                     to: {
-                        width: "350px"
+                        width: ResizableLayout.DEFAULTWIDTH
                     },
                     easing: 'easeOut',
                     duration: 0.6
                 });
                 anim.on('tween', this.syncCenterNode, this);
-                //anim.on('end ', this.syncCenterNode, this );
-                anim.run();
+                anim.on('end', this.syncCenterNode, this);
+                this.anims[position] = anim;
             }
+            return this.anims[position];
         },
         /**
          * @function
@@ -237,6 +236,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
         }
 
     }, {
+        DEFAULTWIDTH: 350,
         /**
          * @lends Y.Wegas.Layout#
          */
