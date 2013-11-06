@@ -641,6 +641,16 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }
             this.fire("userRemove");
             this.destroy();
+            if (this.get("sid") === this.get("parent").get("entity").getInitialStateId()) {
+                var id = this.getNextStateId();
+                if (id != null) {
+                    this.get("parent").get("entity").setInitialStateId(id);
+                    this.get("parent").get("boundingBox").all(".initial-state").each(function() {
+                        this.removeClass("initial-state");
+                    });
+                    this.get("parent").nodes[id].set("initial", true);
+                }
+            }
             this.get("parent").save();
         },
         makeAllOutgoingTransitions: function() {
@@ -650,6 +660,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     entity: transitions[i]
                 })).item(0).connect();
             }
+        },
+        getNextStateId: function() {
+            var id;
+            for (id in this.get("parent").get("entity").get("states")) {
+                return id;
+            }
+            return null;
         }
     }, {
         ATTRS: {
