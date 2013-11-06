@@ -6,10 +6,11 @@
  * Licensed under the MIT License
 */
 .yui3-treeview {
-    margin:0px 5px;
-    padding:0px;
     list-style:none;
     zoom: 1;
+}
+.yui3-treeview-content {
+    padding: 3px 5px;
 }
 
 .yui3-treeview :focus{
@@ -96,11 +97,11 @@
 .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget{
     opacity:0;
-    transition: opacity 0.1s linear 0.1s;
+/*    transition: opacity 0.1s linear 0.1s;
     -o-transition: opacity 0.1s linear 0.1s;
     -moz-transition: opacity 0.1s linear 0.1s;
     -ms-transition: opacity 0.1s linear 0.1s;
-    -webkit-transition: opacity 0.1s linear 0.1s;
+    -webkit-transition: opacity 0.1s linear 0.1s;*/
 }
 .yui3-treenode-content-header:hover > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header:hover > .yui3-treeleaf-content-rightwidget
@@ -108,11 +109,11 @@
 .selected > div > .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget */
 {
     opacity:1;
-    transition: opacity 0.1s linear 0.05s;
+/*    transition: opacity 0.1s linear 0.05s;
     -o-transition: opacity 0.1s linear 0.05s;
     -moz-transition: opacity 0.1s linear 0.05s;
     -ms-transition: opacity 0.1s linear 0.05s;
-    -webkit-transition: opacity 0.1s linear 0.05s;
+    -webkit-transition: opacity 0.1s linear 0.05s;*/
 }
 
 .yui3-treenode-content-label,
@@ -140,7 +141,7 @@
 .yui3-treenode-content-header:hover,
 .yui3-treeleaf-content-header:hover{
     background-color:#F9F9F9;
-    box-shadow: 0px 0px 6px #6D6D6D;
+    box-shadow: 0px 0px 1px #6D6D6D;
 }
 .yui3-treeview-visible-right .yui3-treenode-content-rightwidget,
 .yui3-treeview-visible-right .yui3-treeleaf-content-rightwidget{
@@ -149,7 +150,7 @@
 .selected > div > .yui3-treeleaf-content-header,
 .selected > .yui3-treenode-content-header{
     background-color:#EDEDED;
-    box-shadow: 0px 0px 6px #6D6D6D;
+    box-shadow: 0px 0px 1px #6D6D6D;
     font-weight: bolder;
 }
 .yui3-treenode>ul:empty::before{

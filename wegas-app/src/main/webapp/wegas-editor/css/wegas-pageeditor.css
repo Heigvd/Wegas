@@ -228,3 +228,10 @@ body > .wegas-pageloader > .wegas-pageloader-content{
 .wegas-page-editor .wegas-icon-layout {
     background: url(../images/wegas-icon-pages.png) 0px -981px no-repeat;
 }
+
+.wegas-page-editor .page-node> ul.yui3-treenode-content{
+    margin-left:0px;
+}
+.wegas-page-editor .page-node> ul.yui3-treenode-content>li>div.content-header{
+    display:none;
+}

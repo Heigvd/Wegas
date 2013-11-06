@@ -34,7 +34,7 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         execute: function() {
             if (confirm("This will restart every game depending on this model. Are you sure?")) {
-                var host =  this.get("host");
+                var host = this.get("host");
                 host.showOverlay();
                 Wegas.Facade.VariableDescriptor.sendRequest({
                     request: '/Reset/',
@@ -67,8 +67,16 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            Wegas.TabView.findTabAndLoadWidget(this.get("host").get("label"),
-                    this.get("tabSelector"), {}, this.get("wchildren"));        // Forward plugin data to the target widget
+            var label = this.get("label") || this.get("host").get("label");
+            if (this.get("emptyTab")) {
+                //if (this.get("tabSelector") === "#rightTabView") {
+                //        && !Wegas.TabView.findTab(label)) {
+                Y.Widget.getByNode("#rightTabView").destroyAll();
+            }
+
+            Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"), {
+                selected: (this.get("emptyTab") || this.get("tabSelector") !== "#rightTabView") ? 2 : 0
+            }, this.get("wchildren"));    // Forward plugin data to the target widget
         }
 
     }, {
@@ -88,6 +96,10 @@ YUI.add('wegas-editor-action', function(Y) {
          * @static
          */
         ATTRS: {
+            label: {},
+            emptyTab: {
+                value: false
+            },
             tabSelector: {
                 value: '#centerTabView'
             },
@@ -97,6 +109,18 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     });
     Plugin.OpenTabAction = OpenTabAction;
+    /**
+     * Duplicate the plugin to allow multiple tab creation
+     * @returns {undefined}
+     */
+    Plugin.OpenTabActionSec = function() {
+        Plugin.OpenTabActionSec.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(Plugin.OpenTabActionSec, Plugin.OpenTabAction, {}, {
+        /** @lends Y.Plugin.OpenTabAction */
+        NS: "OpenTabActionSec",
+        NAME: "OpenTabActionSec"
+    });
 
     /**
      *  @name Y.Plugin.OpenGameAction
@@ -269,7 +293,7 @@ YUI.add('wegas-editor-action', function(Y) {
      */
     Linkwidget = Y.Base.create("wegas-playerlink-buttons", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         /** @lends Y.Wegas.Linkwidget# */
-
+        CONTENT_TEMPLATE: '<div><div class="playerlink-label"><p>Link</p><div></div>',
         /**
          * 1) Add a <div class="playerlink-label"><p>Player link</p><div> node fordisplay a label in the menu
          * 2) Add the inputeExStringField
@@ -278,11 +302,7 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         renderUI: function() {
-            Linkwidget.superclass.renderUI.apply(this);
             var cb = this.get(CONTENTBOX);
-
-            cb.append('<div class="playerlink-label"><p>Share link</p><div>');
-
             this.textField = new Y.inputEx.StringField({
                 parentEl: cb
             });
@@ -322,4 +342,69 @@ YUI.add('wegas-editor-action', function(Y) {
     });
     Y.namespace("Wegas").Linkwidget = Linkwidget;
 
+
+    /**
+     * Class for display the player link in menu's
+     *
+     * @name Y.Wegas.Linkwidget
+     * @extends Y.Widget
+     * @class  Allows to display the player link in a menu.
+     * the link is in a textField. For this field inputEx is used.
+     * @constructor
+     * @param Object Will be used to fill attributes field
+     */
+    var JoinOrResumeButton = Y.Base.create("button", Wegas.Button, [], {
+        /** @lends Y.Wegas.Linkwidget# */
+        renderUI: function() {
+            JoinOrResumeButton.superclass.renderUI.apply(this);
+
+            var entity = this.get("entity"),
+                    findInTeam = function(team) {
+                return Y.Array.find(team.get("players"), function(p) {
+                    return p.get("userId") === Y.Wegas.app.get("currentUser.id");
+                });
+            }, findInGame = function(game) {
+                return Y.Array.find(game.get("teams"), findInTeam);
+            };
+
+            if (entity instanceof Y.Wegas.persistence.Team) {                   // 1st case: clicked on an team
+                if (findInTeam(entity)) {
+                    this.set("label", "Resume");
+                    this.plug(Y.Plugin.OpenGameAction);
+                    return;
+                } else if (findInGame(Y.Wegas.Facade.Game.cache.findById(entity.get("gameId")))) {
+                    this.set("disabled", true);
+                    return;
+                }
+            } else if (findInGame(entity)) {
+                this.set("label", "Resume");
+                this.plug(Y.Plugin.OpenGameAction, {entity: this.get("entity")});
+                return;
+            }
+            this.plug(Y.Plugin.OpenTabAction, {
+                tabSelector: "#rightTabView",
+                emptyTab: true,
+                wchildren: [{
+                        "type": "JoinTeam",
+                        entity: this.get("entity")
+                    }]
+            });
+        }
+    }, {
+        /** @lends Y.Wegas.Linkwidget */
+
+        /**
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>entity: the gamemodel or team entity, which the link will point to.</li>
+         * </ul>
+         *
+         * @field
+         * @static
+         */
+        ATTRS: {
+            entity: {}
+        }
+    });
+    Y.namespace("Wegas").JoinOrResumeButton = JoinOrResumeButton;
 });

@@ -27,7 +27,7 @@
     background: none;
 }
 .wegas-menu-content li:hover{
-    box-shadow: 0px 0px 6px black inset;
+    box-shadow: 0px 0px 1px black inset;
     border-radius: 5px;
     z-index:10;
 }

@@ -394,7 +394,7 @@ YUI.add('treeview', function(Y) {
             this.collapse(fireEvent);
             this.each(function(item) {
                 if (item.collapseAll) {
-                    item.collapseAll(fireEvents);
+                    item.collapseAll(fireEvent);
                 }
             });
         },
