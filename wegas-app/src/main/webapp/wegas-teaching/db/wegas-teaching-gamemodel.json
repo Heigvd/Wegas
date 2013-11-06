@@ -2,20 +2,20 @@
     "@class": "GameModel",
     "name": "Teaching",
     "properties": {
-            "cssUri":"wegas-teaching/css/wegas-teaching.css",
-            "pagesUri":"wegas-teaching/db/wegas-teaching-pages.json?"
-        },
+        "cssUri": "wegas-teaching/css/wegas-teaching.css",
+        "pagesUri": "wegas-teaching/db/wegas-teaching-pages.json?"
+    },
     "childVariableDescriptors": [
         {
             "@class": "NumberDescriptor",
-            "name":"currentPage",
-            "label":"currentPage",
-            "defaultInstance":{
-                "@class":"NumberInstance",
+            "name": "currentPage",
+            "label": "currentPage",
+            "defaultInstance": {
+                "@class": "NumberInstance",
                 "value": 2
             },
-            "scope":{
-                "@class":"TeamScope"
+            "scope": {
+                "@class": "TeamScope"
             }
         },
         {
@@ -24,7 +24,7 @@
             "label": "Rectangle 1",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Cliquez pour éditer la définition"
+                "value": ""
             },
             "scope": {
                 "@class": "TeamScope"
@@ -36,7 +36,7 @@
             "label": "Rectangle 2",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Cliquez pour éditer la définition"
+                "value": ""
             },
             "scope": {
                 "@class": "TeamScope"
@@ -48,7 +48,7 @@
             "label": "Rectangle 3",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Cliquez pour éditer la définition"
+                "value": ""
             },
             "scope": {
                 "@class": "TeamScope"
@@ -60,7 +60,7 @@
             "label": "Rectangle 4",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Cliquez pour éditer la définition"
+                "value": ""
             },
             "scope": {
                 "@class": "TeamScope"
@@ -72,7 +72,7 @@
             "label": "Rectangle 5",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Cliquez pour éditer la définition"
+                "value": ""
             },
             "scope": {
                 "@class": "TeamScope"
@@ -84,7 +84,7 @@
             "label": "Rectangle 6",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Cliquez pour éditer la définition"
+                "value": ""
             },
             "scope": {
                 "@class": "TeamScope"
@@ -96,7 +96,7 @@
             "label": "Rectangle 7",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Cliquez pour éditer la définition"
+                "value": ""
             },
             "scope": {
                 "@class": "TeamScope"
@@ -108,7 +108,7 @@
             "label": "Rectangle 8",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Cliquez pour éditer la définition"
+                "value": ""
             },
             "scope": {
                 "@class": "TeamScope"
@@ -120,13 +120,12 @@
             "label": "Rectangle 9",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Cliquez pour éditer la définition"
+                "value": ""
             },
             "scope": {
                 "@class": "TeamScope"
             }
-        },
-        {
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche1",
             "label": "fleche1",
@@ -134,7 +133,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -149,7 +148,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -164,7 +163,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -179,7 +178,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -194,7 +193,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -209,7 +208,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -224,7 +223,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -239,7 +238,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -254,7 +253,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -269,7 +268,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -284,7 +283,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {
@@ -299,7 +298,7 @@
                 "@class": "ObjectInstance",
                 "properties": {
                     "value": 0,
-                    "text": "Click to edit"
+                    "text": ""
                 }
             },
             "scope": {

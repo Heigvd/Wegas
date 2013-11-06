@@ -924,19 +924,18 @@ YUI().use(function(Y) {
                 /* Teaching */
                 'wegas-teaching-arrow': {
                     path: "wegas-teaching/js/wegas-teaching-arrow-min.js",
-                    ws_provides: "TeachingArrow",
-                    requires: ["graphics"]
+                    requires: "graphics"
                 },
                 'wegas-teaching-rectangle': {
-                    path: "wegas-teaching/js/wegas-teaching-rectangle-min.js",
-                    ws_provides: "TeachingRectangle"
+                    path: "wegas-teaching/js/wegas-teaching-rectangle-min.js"
                 },
                 'wegas-teaching-main': {
                     path: "wegas-teaching/js/wegas-teaching-main.js",
                     ws_provides: "TeachingMain",
-                    requires: ["plugin", "panel", "wegas-teaching-arrow", "wegas-teaching-rectangle",
-                        "editor", "dd-plugin", "autocomplete", "gallery-itsatoolbar",
-                        "autocomplete-highlighters", "autocomplete-filters"]
+                    requires: ["plugin", "panel", "editor", "gallery-itsatoolbar",
+                        "autocomplete", "autocomplete-highlighters", "autocomplete-filters",
+                        "dd-plugin", 'dd-drop', 'dd-proxy', 'dd-constrain', "button-group",
+                        "wegas-teaching-arrow", "wegas-teaching-rectangle"]
                 }
             }
         },
