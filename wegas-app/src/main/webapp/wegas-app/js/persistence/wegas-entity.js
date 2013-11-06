@@ -171,6 +171,13 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": true
             },
             properties: {
+                getter: function(value, name) {
+                    if (Y.Lang.isString(value[name]) &&
+                            (name === "freeForAll" || name === "freeTeams")) {
+                        value[name] = (value[name] === "true") ? true : false;
+                    }
+                    return value;
+                },
                 _inputex: {
                     _type: "object",
                     useButtons: true,
@@ -180,7 +187,8 @@ YUI.add('wegas-entity', function(Y) {
             },
             description: {
                 type: STRING,
-                format: HTML
+                format: HTML,
+                optional: true
             },
             canView: {
                 "transient": true
@@ -333,7 +341,7 @@ YUI.add('wegas-entity', function(Y) {
                             label: "Teams",
                             tabSelector: '#rightTabView',
                             wchildren: [{
-                                    type: "TeamsList"
+                                    type: "TeamTreeView"
                                 }]
                         }
                     }, {
@@ -435,7 +443,7 @@ YUI.add('wegas-entity', function(Y) {
         },
         EDITMENU: [{
                 type: "EditEntityButton",
-                label: "Properties"
+                label: "Edit"
             }, {
                 type: "JoinOrResumeButton",
                 label: "Join"
