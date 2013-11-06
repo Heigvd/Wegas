@@ -4,15 +4,22 @@ YUI.add("wegas-teaching-rectangle", function(Y) {
     var CONTENTBOX = "contentBox", TeachingRectangle;
 
     TeachingRectangle = Y.Base.create("wegas-teaching-rectangle", Y.Widget, [], {
-        BOUNDING_TEMPLATE: '<div class="rectangle"></div>',
+        CONTENT_TEMPLATE: '<div><div class="label"></div><div class="description"></div></div>',
         renderUI: function() {
             this.get("boundingBox").setStyles({
                 top: this.get("y") + "px",
                 left: this.get("x") + "px"
             });
         },
+        bindUI: function() {
+            this.after("descriptionChange", this.syncUI);
+            this.after("labelChange", this.syncUI);
+        },
         syncUI: function() {
-            this.get(CONTENTBOX).setHTML(this.get('label'));
+            var cb = this.get(CONTENTBOX), description = this.get('description');
+
+            cb.one(".label").setHTML(this.get("label"));
+            cb.one(".description").setHTML((description && description.length > 0) ? description : "<em><center><br /><br /><br />Click to edit</center></em>");
         }
     }, {
         ATTRS: {
@@ -33,9 +40,9 @@ YUI.add("wegas-teaching-rectangle", function(Y) {
                 value: "150px"
             },
             label: {
-                type: "String",
-                value: "Rectangle"
+                type: "String"
             },
+            description: {},
             id: {
                 type: "Integer",
                 value: 0

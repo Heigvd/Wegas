@@ -434,7 +434,7 @@ YUI.add('wegas-tabview', function(Y) {
          */
         initializer: function() {
             this.afterHostEvent("removeChild", function() {
-                Y.later(50, this, function() {
+                Y.later(100, this, function() {
                     if (this.get("host").isEmpty()) {
                         Y.Wegas.app.widget.hidePosition("right");
                     }

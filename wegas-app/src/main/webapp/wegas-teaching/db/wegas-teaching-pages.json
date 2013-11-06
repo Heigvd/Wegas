@@ -17,7 +17,7 @@
                     }
                 ]
             },
-            {   
+            {
                 "label": "pageLoader",
                 "type": "PageLoader",
                 "pageLoaderId": "maindisplayarea",
@@ -70,11 +70,10 @@
         "direction": "vertical",
         "type": "List",
         "cssClass": "content",
-        "children": [
-            {
-                "type": "TeachingMain"
-            },
-            {
+        "children": [{
+                "type": "TeachingMain",
+                "themes": ["WBS", "User story", "Burndown chart", "Activity network", "WBS2", "User story2", "Burndown chart2", "Activity network2", "PBS2"]
+            }, {
                 "type": "List",
                 "direction": "horizontal",
                 "children": [
