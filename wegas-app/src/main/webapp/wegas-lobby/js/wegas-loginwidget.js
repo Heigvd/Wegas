@@ -126,8 +126,8 @@ YUI.add('wegas-loginwidget', function(Y) {
             cb.one(".login").append('<p class="forgot">Forgot password?</p>');
             cb.one(".logingroup .password").ancestor("div").setStyle("width", "90px");
 
-            //Create and append "sign in" from
-            this.createAccountForm = new Y.inputEx.Group({
+
+            this.createAccountForm = new Y.inputEx.Group({//                    // Create and append "sign in" from
                 fields: [{
                         name: "id",
                         type: "hidden"
@@ -185,7 +185,7 @@ YUI.add('wegas-loginwidget', function(Y) {
 
             this.signUpButton = new Y.Button({
                 label: "Sign in",
-                render: cb.one("signup")
+                render: cb.one(".signup")
             });
 
             this.guestLoginButton = new Y.Wegas.Button({
