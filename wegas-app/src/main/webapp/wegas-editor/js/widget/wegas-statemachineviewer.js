@@ -820,11 +820,18 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 connector: [loopback ? "StateMachine" : "Flowchart"]
             });
             this.addTarget(this.target);
-            this.target.transitionsTarget.push(this);
-            //this could be if we listen to click events on complete connector(ie arrow + label)
-            // this.connection.canvas.setAttribute("cursor", "pointer");
-
+            this.target.transitionsTarget.push(this);  
             this.createLabel();
+            
+            //this could be if we listen to click events on complete connector(ie arrow + label)
+            this.connection.canvas.setAttribute("cursor", "pointer");
+            this.connection.canvas.entity = this;
+            this.connection.canvas.onmouseover = function() {
+                this.entity.labelNode.canvas.getElementsByClassName("transition-toolbox")[0].setAttribute("style", "display:inline-block;");
+            };
+            this.connection.canvas.onmouseout = function() {
+                this.entity.labelNode.canvas.getElementsByClassName("transition-toolbox")[0].setAttribute("style", "display:none;");
+            };
         },
         disconnect: function(e) {
             jp.detach(this.connection, {
@@ -870,6 +877,12 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     this.disconnect();
                     this.destroy();
                 }, ".transition-delete", this);
+                this.labelNode.canvas.onmouseover = function() {
+                    this.getElementsByClassName("transition-toolbox")[0].setAttribute("style", "display:inline-block;");
+                };
+                this.labelNode.canvas.onmouseout = function() {
+                    this.getElementsByClassName("transition-toolbox")[0].setAttribute("style", "display:none;");
+                };
             }
             //Listen to complete connector
             //            this.events.conClick = this.connection.bind("click", function (e){
