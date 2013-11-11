@@ -301,7 +301,6 @@ YUI.add("wegas-teaching-main", function(Y) {
             this.editor = new Y.EditorBase({
                 content: '<p>Test</p>'
             });
-            this.editor.render(bodyNode.one("#editor"));
             this.editor.plug(Y.Plugin.ITSAToolbar, {
                 btnEmail: false,
                 btnFontfamily: false,
@@ -317,6 +316,7 @@ YUI.add("wegas-teaching-main", function(Y) {
                 grpUndoredo: false,
                 btnSize: 3
             });
+            this.editor.render(bodyNode.one("#editor"));
         },
         getColorByVal: function(val) {
             if (val == this.ARROW_NONE) {
