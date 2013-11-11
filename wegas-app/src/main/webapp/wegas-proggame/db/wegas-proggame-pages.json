@@ -58,7 +58,7 @@
                             "styles": {
                                 "position": "absolute",
                                 "top": "0px",
-                                "left": "563px"
+                                "left": "543px"
                             }
                         }
                     }, {
@@ -101,7 +101,7 @@
                             "styles": {
                                 "position": "absolute",
                                 "top": "0px",
-                                "left": "745px"
+                                "left": "728px"
                             }
                         }
                     }, {
@@ -139,7 +139,7 @@
                             "styles": {
                                 "position": "absolute",
                                 "top": "0px",
-                                "left": "901px"
+                                "left": "886px"
                             }
                         }
                     }, {
@@ -177,8 +177,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "14px",
-                                "left": "1055px"
+                                "top": "0px",
+                                "left": "1030px"
                             }
                         }
                     }, {
@@ -186,7 +186,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "height": "45px"
+                                "width": "178px",
+                                "height": "72px"
                             }
                         }
                     }, {
