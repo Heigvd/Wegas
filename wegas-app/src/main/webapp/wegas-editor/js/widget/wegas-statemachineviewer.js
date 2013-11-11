@@ -589,7 +589,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 tr.set("nextStateId", this.get("sid"));
                 this.source.add(new Y.Wegas.Transition({
                     entity: tr
-                })).item(0).connect();
+                })).item(0).connect(this.source.get("sid") === this.get("sid"));
                 this.source.get("entity").get("transitions").push(tr);
                 this.get("parent").save();
                 this.source = null;
@@ -627,7 +627,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 tr.set("nextStateId", target.get("sid"));
                 this.add(new Y.Wegas.Transition({
                     entity: tr
-                })).item(0).connect();
+                })).item(0).connect(this.get("sid") === target.get("sid"));
                 this.get("entity").get("transitions").push(tr);
                 this.get("parent").save();
             }
@@ -658,7 +658,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             for (i in transitions) {
                 this.add(new Y.Wegas.Transition({
                     entity: transitions[i]
-                })).item(0).connect();
+                })).item(0).connect(transitions[i].get("nextStateId") === this.get("sid"));
             }
         },
         getNextStateId: function() {
@@ -803,7 +803,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }, this);
             }
         },
-        connect: function() {
+        connect: function(loopback) {
             this.get(BOUNDING_BOX).appendTo(this.get("parent").get("parent").get(CONTENT_BOX).one(".sm-zoom"));
             var nextStateId = this.get("entity").get("nextStateId");
             this.source = this.get('parent');
@@ -816,7 +816,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 uniqueEndpoint: false,
                 parameters: {
                     transition: this
-                }
+                },
+                connector: [loopback ? "StateMachine" : "Flowchart"]
             });
             this.addTarget(this.target);
             this.target.transitionsTarget.push(this);
