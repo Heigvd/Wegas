@@ -79,7 +79,8 @@ YUI.add("wegas-loginbutton", function(Y) {
                     cPlayer = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
                     cTeam = Y.Wegas.Facade.Game.cache.getCurrentTeam(),
                     name = cUser.get("name") || "undefined",
-                    mainAccount = cUser.getMainAccount();
+                    mainAccount = cUser.getMainAccount(),
+                    gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
 
             if (mainAccount) {
                 name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
@@ -95,6 +96,9 @@ YUI.add("wegas-loginbutton", function(Y) {
                 }
                 if (cTeam) {
                     name = cTeam.get("name") + " : " + name;
+                }
+                if (gameModel.get("properties.freeForAll") === "true"){
+                    name = cPlayer.get("name");
                 }
             }
             this.set("label", name);
