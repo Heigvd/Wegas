@@ -9,7 +9,8 @@
                 "cfg": {
                     "styles": {
                         "position": "absolute",
-                        "width": "100%"
+                        "width": "1280px",
+                        "height": "801px"
                     }
                 }
             }],
@@ -30,7 +31,7 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "height": "53px"
+                                "height": "241px"
                             }
                         }
                     }, {
@@ -56,8 +57,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "20px",
-                                "left": "700px"
+                                "top": "0px",
+                                "left": "563px"
                             }
                         }
                     }, {
@@ -65,7 +66,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "height": "53px"
+                                "width": "178px",
+                                "height": "72px"
                             }
                         }
                     }, {
@@ -98,8 +100,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "20px",
-                                "left": "760px"
+                                "top": "0px",
+                                "left": "745px"
                             }
                         }
                     }, {
@@ -107,7 +109,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "height": "53px"
+                                "width": "148px",
+                                "height": "66px"
                             }
                         }
                     }, {
@@ -135,8 +138,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "20px",
-                                "left": "820px"
+                                "top": "0px",
+                                "left": "901px"
                             }
                         }
                     }, {
@@ -144,7 +147,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "height": "53px"
+                                "width": "138px",
+                                "height": "67px"
                             }
                         }
                     }, {
@@ -173,8 +177,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "20px",
-                                "left": "880px"
+                                "top": "14px",
+                                "left": "1055px"
                             }
                         }
                     }, {
@@ -182,7 +186,7 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "height": "53px"
+                                "height": "45px"
                             }
                         }
                     }, {
@@ -195,7 +199,7 @@
                 "type": "PageLoader",
                 "pageLoaderId": "maindisplayarea",
                 "defaultPageId": 2,
-                "cssClass": "body",
+                "cssClass": "body game-area",
                 "plugins": [{
                         "fn": "CSSPosition",
                         "cfg": {
@@ -205,13 +209,6 @@
                                 "bottom": "0px",
                                 "right": "60px",
                                 "left": "250px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSBackground",
-                        "cfg": {
-                            "styles": {
-                                "backgroundColor": "#ffffff"
                             }
                         }
                     }]
