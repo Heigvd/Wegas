@@ -1009,6 +1009,7 @@ YUI.add('wegas-entity', function(Y) {
                     id: IDATTRDEF,
                     value: {
                         type: HTML,
+                        optional: true,
                         _inputex: {
                             label: 'Default value'
                         }
@@ -1049,7 +1050,8 @@ YUI.add('wegas-entity', function(Y) {
             },
             value: {
                 type: STRING,
-                format: HTML
+                format: HTML,
+                optional: true
             }
         }
     });
