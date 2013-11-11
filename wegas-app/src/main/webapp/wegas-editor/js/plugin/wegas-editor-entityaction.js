@@ -118,7 +118,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             tab.set("label", prefix + entity.getType().replace("Descriptor", "").toLowerCase());
             tab.set("selected", 2);
             tab.form.set("values", entity.toObject());
-            tab.form.set("cfg", (formCfg) ? formCfg : entity.getFormCfg());
+            tab.form.set("cfg", formCfg || entity.getFormCfg());
         },
         getEditionTab: function() {
             if (!EditEntityAction.tab || EditEntityAction.tab.get("destroyed")) {// First make sure the edit tab exists
@@ -134,7 +134,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 form.on("cancel", function() {
                     this.tab.remove();
                     this.tab.destroy();
-                    if (this.cancelCallback instanceof Function) {
+                    if (Y.Lang.isFunction(this.cancelCallback)) {
                         this.cancelCallback(this.currentEntity);
                     }
                     this.cancelCallback = this.currentEntity = this.callback = null;
