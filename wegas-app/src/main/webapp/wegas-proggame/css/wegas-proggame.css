@@ -3,16 +3,152 @@
 .cl {
     clear:both;
 }
-.layout {
-    width:100%;
-    min-height:100%;
+.wegas-absolutelayout {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 9pt;
-
-    background:
-        url(../../wegas-proggame/images/proggame-footerbg.png) no-repeat bottom center,
-        url(../../wegas-proggame/images/clouds.jpg) repeat-x top center,
-        url(../../wegas-proggame/images/proggame-footerbg2.png) repeat-x bottom center,
-        url(../../wegas-proggame/images/bg-body.gif) repeat-x top center;
-
+    background: url(../../wegas-proggame/images/proggame-title.png) top left no-repeat,
+        url(../../wegas-proggame/images/proggame-background.jpg) top left no-repeat;
 }
+
+.battle-button, .battle-button:hover, .wegas-absolutelayout .yui3-button-disabled{
+    background: url(../../wegas-proggame/images/proggame-button-battle.png) no-repeat;
+}
+
+.battle-button:hover::before{
+    content: "";
+    position: absolute;
+    top: 21px;
+    left: 8px;
+    height: 42px;
+    width: 161px;
+    box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
+.mails-button, .mails-button:hover, .wegas-absolutelayout .yui3-button-disabled{
+    background: url(../../wegas-proggame/images/proggame-button-mails.png) no-repeat;
+}
+
+.mails-button:hover::before{
+    content: "";
+    position: absolute;
+    top: 21px;
+    left: 3px;
+    height: 42px;
+    width: 141px;
+    box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
+.history-button, .history-button:hover, .wegas-absolutelayout .yui3-button-disabled{
+    background: url(../../wegas-proggame/images/proggame-button-history.png) no-repeat;
+}
+
+.history-button:hover::before{
+    content: "";
+    position: absolute;
+    top: 21px;
+    left: 6px;
+    height: 42px;
+    width: 125px;
+    box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
+.menu-button, .wegas-absolutelayout .yui3-button-selected,
+.wegas-absolutelayout .yui3-button-disabled{
+    box-shadow: none;
+    background-color: transparent;
+    color: transparent;
+}
+
+.api {
+    width: 203px;
+    height: 241px;
+    background: url(../../wegas-proggame/images/proggame-left.png) no-repeat;
+    font-family: Verdana;
+    padding-top: 20px;
+    padding-left: 35px;
+}
+
+.api h1 {
+    font-family: Blackadder ITC;
+    margin-left: 20px;
+    margin-bottom: 6px;
+}
+
+.game-area {
+    width: 940px;
+    height: 692px;
+    background: url(../../wegas-proggame/images/proggame-right-level.png) no-repeat;
+}
+
+/* play style */
+.ui h1 {
+    font-family: Myriad Pro;
+    font-size: 12pt;
+    text-align: center;
+    margin-left: 411px;
+}
+
+.topright {
+    position: absolute;
+    top: 475px;
+    left: 696px;
+    background: url(../../wegas-proggame/images/proggame-sepa.png) no-repeat 51px 4px;
+    height: 200px;
+}
+
+.topright button {
+    width: 50px;
+    height: 50px;
+    position: relative;
+    top: 70px;
+    left: -7px;
+    background-color: transparent;
+}
+
+.topright .ai {
+    display: none;
+}
+
+.topright .debugger {
+    position: relative;
+    top: -45px;
+    left: 64px;
+    padding-left: 10px;
+    font-family: Myriad Pro;
+    font-size: 16px;
+    height: 205px;
+    overflow: auto;
+    width: 165px;
+    background: url(../../wegas-proggame/images/proggame-sepa-debugg.png) no-repeat -6px 19px;
+}
+
+.topright .debugger h1 {
+    font-family: Verdana;
+    font-size: 16px;
+    height: 29px;
+}
+
+.code {
+    position: absolute;
+    top: 472px;
+    left: 26px;
+    font-size: 5pt;
+    font-family: Verdana;
+    color:  #fefefe;
+}
+
+.wegas-proggame-level-content .code textarea {
+    width: 632px;
+    height: 156px;
+    background-color: transparent;
+    color: white;
+    font-family: Myriad Pro;
+    font-size: 12pt;
+    margin-top: 6px;
+    border: 0;
+}
+
+.wegas-proggame-level-content .code textarea:focus {
+    outline-color: transparent;
+}
+
