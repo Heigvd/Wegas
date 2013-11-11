@@ -478,6 +478,11 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', 'inputex-hidden'],
                     ix_provides: 'now'
                 },
+                'wegas-inputex-contextgroup':{
+                    path:'wegas-editor/js/inputex/wegas-inputex-contextgroup-min.js',
+                    requires:['inputex-group', 'inputex-select'],
+                    ix_provides: 'contextgroup'
+                },
                 /** Treeview **/
                 'treeview': {
                     path: 'wegas-editor/js/util/treeview-min.js',

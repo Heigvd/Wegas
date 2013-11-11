@@ -164,7 +164,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.get("host").get(CONTENTBOX).plug(Y.Plugin.ScrollInfo);
             this.fixedHandlers.push(this.get("host").get(CONTENTBOX).scrollInfo.on("*:scroll", function(e) {
                 this.overlayMask.setStyles({top: e.scrollTop, left: e.scrollLeft});
-                this.fixedOverlay(this.shownOverlay._widget);
+                if (this.shownOverlay._widget) {
+                    this.fixedOverlay(this.shownOverlay._widget);
+                }
             }, this));
         },
         bind: function() {
