@@ -204,9 +204,9 @@
 .transition-label:hover{
     z-index:8;
 }
-.transition-label:hover .transition-toolbox{
+/*.transition-label:hover .transition-toolbox{
     display:inline-block;
-}
+}*/
 .yui3-wegas-statemachineviewer-content .yui3-dd-dragging > *{
     display:none;
 }
