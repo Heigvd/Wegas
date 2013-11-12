@@ -52,6 +52,25 @@
     box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
 }
 
+.menu-loginbutton, .menu-loginbutton:hover{
+    background: url(../../wegas-proggame/images/proggame-button-empty.png) no-repeat;
+    box-shadow: none;
+    background-color: transparent;
+    padding-top: 15px;
+    font-family: Ravie;
+    font-size: 19px;
+}
+
+.menu-loginbutton:hover::before{
+    content: "";
+    position: absolute;
+    top: 21px;
+    left: 8px;
+    height: 42px;
+    width: 161px;
+    box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 .menu-button, .wegas-absolutelayout .yui3-button-selected,
 .wegas-absolutelayout .yui3-button-disabled{
     box-shadow: none;
@@ -80,12 +99,22 @@
     background: url(../../wegas-proggame/images/proggame-right-level.png) no-repeat;
 }
 
+.wegas-inbox .horizontal-tabview {
+    margin-left: 15px;
+    height: 415px;
+    overflow: auto;
+    width: 911px;
+}
+
+.wegas-inbox ul {
+    background-color: white;
+}
+
 /* play style */
 .ui h1 {
     font-family: Myriad Pro;
     font-size: 12pt;
     text-align: center;
-    margin-left: 411px;
 }
 
 .topright {
@@ -103,6 +132,14 @@
     top: 70px;
     left: -7px;
     background-color: transparent;
+    box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.75), 1px 1px 1px rgba(50, 50, 50, 0.75);
+}
+
+.topright button span{
+    display: block;
+    margin-left: -1px;
+    font-family: Verdana;
+    font-weight: bold;
 }
 
 .topright .ai {
@@ -126,6 +163,15 @@
     font-family: Verdana;
     font-size: 16px;
     height: 29px;
+}
+
+.topcenter {
+    width: 910px;
+}
+
+.topcenter .terrain {
+    margin-left: 340px;
+    margin-top: 44px;
 }
 
 .code {
@@ -206,6 +252,8 @@
     padding: 3px;
 }
 .yui3-proggame-alignable .table {
+    height: 64px;
+    overflow: hidden;
     background: url(../../wegas-proggame/images/proggame-sprite-dalles.png) no-repeat rgb(10,10,10);
 }
 
