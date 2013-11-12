@@ -51,7 +51,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         "../../wegas-app/css/wegas-app.css"],
                     mode: "none", // "none", "textares"
                     theme: "advanced", // "simple", "advanced"
-                    plugins: "autolink,autoresize,style,table,lists," +
+                    plugins: "autolink,style,table,lists," +//autoresize
                             "advimage,advlink,iespell,inlinepopups,media," +
                             "contextmenu",
                     theme_advanced_buttons1: "bold,italic,bullist,styleselect,link,image,media,|,cleanup,code",
