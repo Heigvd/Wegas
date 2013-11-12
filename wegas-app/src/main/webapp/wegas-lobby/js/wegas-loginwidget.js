@@ -106,7 +106,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         name: "password",
                         required: true,
                         type: "password",
-                        //typeInvite: "Password",                               // Does not work in inputex
+                        typeInvite: "Password", // Does not work in inputex
                         capsLockWarning: true,
                         className: "password"
                     }, {
@@ -163,7 +163,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         required: true,
                         type: "password",
                         showMsg: true,
-                        //typeInvite: "Password",                               // Does not work in inputex
+                        typeInvite: "Password", // Does not work in inputex
                         className: "password"
                     }, {
                         name: "passwordConfirm",
@@ -171,7 +171,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         required: true,
                         confirm: "password",
                         type: "password",
-                        //typeInvite: "Password confirmation",                  // Does not work in inputex
+                        typeInvite: "Password confirmation", // Does not work in inputex
                         className: "passwordc password"
                     }],
                 parentEl: cb.one(".signup"),
@@ -262,7 +262,8 @@ YUI.add('wegas-loginwidget', function(Y) {
             }, this);
 
             cb.on("key", Y.bind("fire", this.loginButton, "click"), "enter");   // Log in on "enter" key press
-            cb.one("input").focus();                                                  // Focus on log in input
+            //cb.one("input").focus();                                          // Focus on log in input
+            this.after("render", cb.one("input").focus, cb.one("input"));       // Focus on log in input
         },
         /**
          * @function
@@ -415,4 +416,47 @@ YUI.add('wegas-loginwidget', function(Y) {
         }
     });
     Y.namespace('Wegas').LoginWidget = LoginWidget;
+    /**
+     * Hack because "typeInvite" and password work bad (typeInvite is hid)
+     * Password field needs a "password" class.
+     * Change color property (in grey) when input is not focused (black else)
+     */
+    Y.inputEx.StringField.prototype.updateTypeInvite = function() {
+
+        // field not focused
+        if (!Y.one(this.divEl).hasClass("inputEx-focused")) {
+
+            // show type invite if field is empty
+            if (this.isEmpty()) {
+                Y.one(this.divEl).addClass("inputEx-typeInvite");
+                Y.one(this.divEl).one("input").setStyle("color", "#888");
+                if (this.fieldContainer.className.indexOf("password") > -1) {
+                    this.el.setAttribute("type", "");
+                }
+                this.el.value = this.options.typeInvite;
+
+                // important for setValue to work with typeInvite
+            } else {
+                if (this.fieldContainer.className.indexOf("password") > -1) {
+                    this.el.setAttribute("type", "password");
+                }
+                Y.one(this.divEl).one("input").setStyle("color", "#000");
+                Y.one(this.divEl).removeClass("inputEx-typeInvite");
+            }
+
+            // field focused : remove type invite
+        } else {
+            if (Y.one(this.divEl).hasClass("inputEx-typeInvite")) {
+                // remove text
+                this.el.value = "";
+                // remove the "empty" state and class
+                this.previousState = null;
+                if (this.fieldContainer.className.indexOf("password") > -1) {
+                    this.el.setAttribute("type", "password");
+                }
+                Y.one(this.divEl).one("input").setStyle("color", "#000");
+                Y.one(this.divEl).removeClass("inputEx-typeInvite");
+            }
+        }
+    };
 });
