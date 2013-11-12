@@ -135,6 +135,10 @@
     font-size: 5pt;
     font-family: Verdana;
     color:  #fefefe;
+    right: 277px;
+}
+.code .inputEx-Field {
+    float: none; /* Prevent inputex default to preserve width*/
 }
 
 .wegas-proggame-level-content .code textarea {
