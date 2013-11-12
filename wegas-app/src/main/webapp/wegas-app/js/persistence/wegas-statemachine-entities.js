@@ -534,6 +534,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: "DialogueTransition"
             },
             actionText: {
+                type: "string",
+                format: "html",
                 value: null,
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
@@ -601,6 +603,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: "DialogueState"
             },
             text: {
+                type: "string",
+                format: "html",
                 value: null,
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
