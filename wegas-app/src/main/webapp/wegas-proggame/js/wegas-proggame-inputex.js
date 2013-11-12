@@ -15,7 +15,7 @@ YUI.add('wegas-proggame-inputex', function(Y) {
 
     var inputEx = Y.inputEx,
             Alignable = Y.Base.create("proggame-alignable", Y.Widget,
-            [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetPositionConstrain]),
+                    [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetPositionConstrain]),
             TILESIZE = 32;
 
     /**
@@ -54,6 +54,23 @@ YUI.add('wegas-proggame-inputex', function(Y) {
             addButtonNode.get("parentNode")
                     .append("Add row")
                     .on("click", this.onAddButton, this);
+            node.delegate("mousedown", function(e) {
+                e.halt(true);
+                this._paint = {
+                    start: true,
+                    x: Math.abs(parseInt(e.target.getStyle("backgroundPositionX"), 10) / TILESIZE),
+                    y: Math.abs(parseInt(e.target.getStyle("backgroundPositionY"), 10) / TILESIZE)
+                };
+            }, ".inputex-proggametile", this);
+            node.delegate("mouseenter", function(e) {
+                e.halt(true);
+                if (this._paint && this._paint.start) {
+                    e.target.fire("newValue", this._paint);
+                }
+            }, ".inputex-proggametile", this);
+            node.delegate("mouseup", function() {
+                this._paint = {start: false};
+            }, ".inputex-proggametile", this)
         },
         onAddButton: function(e) {
             e.halt();
@@ -93,12 +110,12 @@ YUI.add('wegas-proggame-inputex', function(Y) {
         setValue: function(value, sendUpdatedEvent) {
             inputEx.ProgGameTile.superclass.setValue.call(this, value, sendUpdatedEvent);
             this.options.value = value || {x: 0, y: 0};
-            if (!value.x)
+            if (typeof value.x !== 'number')
                 return;
 
             this.node.setStyles({
-                backgroundPositionX: "-" + (value.x * TILESIZE) + "px",
-                backgroundPositionY: "-" + ((value.y) * TILESIZE) + "px"
+                backgroundPositionX: "-" + (this.options.value.x * TILESIZE) + "px",
+                backgroundPositionY: "-" + (this.options.value.y * TILESIZE) + "px"
             });
         },
         getValue: function() {
@@ -109,6 +126,9 @@ YUI.add('wegas-proggame-inputex', function(Y) {
             //this.node.setStyles({
             //      background-position:
             //});
+            this.node.on("newValue", function(e) {
+                this.setValue({x: e.x, y: e.y});
+            }, this);
             this.node.after("click", function() {
                 if (!this.alignable) {
                     var i, j;
@@ -123,7 +143,7 @@ YUI.add('wegas-proggame-inputex', function(Y) {
                     });
                     var cb = this.alignable.get("contentBox"),
                             ct = ["<div class=\"table\">"],
-                            spriteSheet = Y.Wegas.ProgGameDisplay.SPRITESHEETS["t"];
+                            spriteSheet = Y.Wegas.ProgGameDisplay.SPRITESHEETS["tile"];
 
                     for (i = 0; i < spriteSheet.height; i += 1) {
                         ct.push("<div>");
