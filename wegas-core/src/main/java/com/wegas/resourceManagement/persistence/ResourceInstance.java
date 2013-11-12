@@ -183,6 +183,22 @@ public class ResourceInstance extends VariableInstance {
         activities.add(activity);
         activity.setResourceInstance(this);
     }
+    
+    /**
+     *
+     * @param activities
+     */
+    public void removeActivity(Activity activity) {
+        if (activity.getId() == null){
+            for (int i=0; i<this.activities.size(); i++){
+                if (this.activities.get(i) == activity){
+                    this.activities.remove(i);
+                }
+            }
+        } else {
+           activities.remove(activity); 
+        }
+    }
 
     /**
      *

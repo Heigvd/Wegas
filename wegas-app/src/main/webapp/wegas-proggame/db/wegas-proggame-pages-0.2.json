@@ -1,216 +1,85 @@
 {
     "1": {
         "id": 1,
-        "type": "AbsoluteLayout",
+        "type": "List",
         "cssClass": "layout",
         "direction": "horizontal",
-        "plugins": [{
-                "fn": "CSSSize",
-                "cfg": {
-                    "styles": {
-                        "position": "absolute",
-                        "width": "1280px",
-                        "height": "801px"
-                    }
-                }
-            }],
         "children": [{
-                "type": "Text",
-                "content": "<div class=\"api\"><h1>Api</h1></div>",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "150px",
-                                "left": "20px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "height": "241px"
-                            }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
-                        }
+                "direction": "vertical",
+                "type": "List",
+                "cssClass": "menu",
+                "children": [{
+                        "type": "Text",
+                        "content": "<div class=\"inventory\"><h1>Inventory</h1><i><center style=\"padding:10px 0;\">empty</center></i></div><div class=\"api\"><h1>Api</h1></div>"
                     }]
             }, {
-                "type": "Button",
-                "disabled": false,
-                "label": "Battle!",
-                "cssClass": "menu-button battle-button",
-                "plugins": [{
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 2,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
+                "type": "List",
+                "direction": "vertical",
+                "cssClass": "body",
+                "children": [{
+                        "direction": "vertical",
+                        "type": "List",
+                        "cssClass": "banner",
+                        "children": [{
+                                "type": "Button",
+                                "disabled": false,
+                                "label": "Battle!",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 2,
+                                            "targetEvent": "click",
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            }, {
+                                "type": "Button",
+                                "disabled": false,
+                                "label": "Mails",
+                                "cssClass": "menu-button",
+                                "plugins": [{
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 6,
+                                            "targetEvent": "click",
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }, {
+                                        "fn": "UnreadCount",
+                                        "cfg": {
+                                            "variable": {
+                                                "name": "inbox"
+                                            }
+                                        }
+                                    }]
+                            }, {
+                                "type": "Button",
+                                "disabled": false,
+                                "label": "History",
+                                "disabled": true,
+                                "cssClass": "menu-button",
+                                "plugins": [
+                                    {
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 3,
+                                            "targetEvent": "click",
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }]
+                            }, {
+                                "cssClass": "menu-loginbutton",
+                                "disabled": false,
+                                "labelIsUser": false,
+                                "preferencePageId": 1000,
+                                "targetPageLoader": "maindisplayarea",
+                                "type": "LoginButton"
+                            }]
                     }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "0px",
-                                "left": "563px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "178px",
-                                "height": "72px"
-                            }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "disabled": false,
-                "label": "Mails",
-                "cssClass": "menu-button mails-button",
-                "plugins": [{
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 6,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "UnreadCount",
-                        "cfg": {
-                            "variable": {
-                                "name": "inbox"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "0px",
-                                "left": "745px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "148px",
-                                "height": "66px"
-                            }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "disabled": false,
-                "label": "History",
-                "disabled": true,
-                "cssClass": "menu-button history-button",
-                "plugins": [
-                    {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 3,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "0px",
-                                "left": "901px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "138px",
-                                "height": "67px"
-                            }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
-                        }
-                    }]
-            }, {
-                "cssClass": "menu-loginbutton",
-                "disabled": false,
-                "labelIsUser": false,
-                "preferencePageId": 1000,
-                "targetPageLoader": "maindisplayarea",
-                "type": "LoginButton",
-                "plugins": [
-                    {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 3,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "14px",
-                                "left": "1055px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "height": "45px"
-                            }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
-                        }
-                    }]
-            }, {
-                "type": "PageLoader",
-                "pageLoaderId": "maindisplayarea",
-                "defaultPageId": 2,
-                "cssClass": "body game-area",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "100px",
-                                "bottom": "0px",
-                                "right": "60px",
-                                "left": "250px"
-                            }
-                        }
+                        "type": "PageLoader",
+                        "pageLoaderId": "maindisplayarea",
+                        "defaultPageId": 2
                     }]
             }]
     },
