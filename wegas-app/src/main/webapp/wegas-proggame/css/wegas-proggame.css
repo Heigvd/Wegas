@@ -166,6 +166,15 @@
     height: 29px;
 }
 
+.topcenter {
+    width: 910px;
+}
+
+.topcenter .terrain {
+    margin-left: 340px;
+    margin-top: 44px;
+}
+
 .code {
     position: absolute;
     top: 472px;
