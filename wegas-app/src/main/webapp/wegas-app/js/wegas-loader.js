@@ -478,9 +478,9 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', 'inputex-hidden'],
                     ix_provides: 'now'
                 },
-                'wegas-inputex-contextgroup':{
-                    path:'wegas-editor/js/inputex/wegas-inputex-contextgroup-min.js',
-                    requires:['inputex-group', 'inputex-select'],
+                'wegas-inputex-contextgroup': {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-contextgroup-min.js',
+                    requires: ['inputex-group', 'inputex-select'],
                     ix_provides: 'contextgroup'
                 },
                 /** Treeview **/
@@ -984,9 +984,10 @@ YUI().use(function(Y) {
                     path: 'crafty/crafty-min.js'
                 },
                 ace: {
-                    fullpath: "http://ajaxorg.github.io/ace-builds/src/ace.js"
-                            //charset: 'utf-8',
-                            //path: "ace/src-min-noconflict/ace.js"
+                    path: "lib/ace/src-min-noconflict/ace.js"
+                            //charset: 'utf-8'
+                            //fullpath: "http://ace.c9.io/build/src-min-noconflict/ace.js",
+                            //fullpath: "http://ajaxorg.github.io/ace-builds/src/ace.js",,
                             //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
 
                 },
