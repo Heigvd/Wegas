@@ -16,7 +16,7 @@
             }],
         "children": [{
                 "type": "Text",
-                "content": "<div class=\"api\"><h1>Api</h1></div>",
+                "content": "<div class=\"objective\">",
                 "plugins": [{
                         "fn": "CSSPosition",
                         "cfg": {
@@ -34,10 +34,26 @@
                                 "height": "241px"
                             }
                         }
-                    }, {
-                        "fn": "Tooltip",
+                    }]
+            }, {
+                "type": "Text",
+                "content": "<div class=\"api\"><h1>Api</h1></div>",
+                "plugins": [{
+                        "fn": "CSSPosition",
                         "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
+                            "styles": {
+                                "position": "absolute",
+                                "top": "387px",
+                                "left": "20px"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "height": "241px"
+                            }
                         }
                     }]
             }, {
@@ -69,11 +85,6 @@
                                 "width": "178px",
                                 "height": "72px"
                             }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
                         }
                     }]
             }, {
@@ -113,11 +124,6 @@
                                 "height": "66px"
                             }
                         }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
-                        }
                     }]
             }, {
                 "type": "Button",
@@ -150,11 +156,6 @@
                                 "width": "138px",
                                 "height": "67px"
                             }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
                         }
                     }]
             }, {
@@ -189,11 +190,6 @@
                                 "width": "178px",
                                 "height": "72px"
                             }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
                         }
                     }]
             }, {
@@ -259,9 +255,10 @@
                 "collides": false
             }],
         "plugins": [{
-                "fn": "Popup",
+                "fn": "Objective",
                 "cfg": {
-                    "content": "Bienvenue dans le jeu de la programation. Vous êtes malheureusement coincé à l'intérieur du jeu, et le seul moyen de vous en sortir est de coder vos propres <i>algorightme</i> pour contrôler votre avatar.<div class=\"wegas-proggame-def\">Le mot algorithme est dérivé du nom d'un mathématicien perse qui a vécu au IXème siècle,  Mohammed al-Khwârizmî (en latin Algorismus). Il a proposé un ensemble d'opérations élémentaires à exécuter séquentiellement, pour additionner, soustraire, multiplier et diviser des nombres  décimaux. Voici donc une définition : Un algorithme consiste en la description d'un certain nombre d'opérations élémentaires selon un ordre logique permettant de résoudre un problème sur des données en un nombre fini d'étapes.</div>Pour sortir de ce niveau il faut atteindre la porte de sortie. Vous avez à disposition la fonction <i>move</i> pour l'atteindre: entre simplement le nom de la fonction, suivie de parenthèses et d'un point virgule, comme ceci:<div class=\"wegas-proggame-code\">move();</div>Puis cliquez sur RUN. Vous pouvez appeler plusieurs fois la même fonction."
+                    "fullObjective": "Bienvenue dans le jeu de la programation. Vous êtes malheureusement coincé à l'intérieur du jeu, et le seul moyen de vous en sortir est de coder vos propres <i>algorightme</i> pour contrôler votre avatar.<div class=\"wegas-proggame-def\">Le mot algorithme est dérivé du nom d'un mathématicien perse qui a vécu au IXème siècle,  Mohammed al-Khwârizmî (en latin Algorismus). Il a proposé un ensemble d'opérations élémentaires à exécuter séquentiellement, pour additionner, soustraire, multiplier et diviser des nombres  décimaux. Voici donc une définition : Un algorithme consiste en la description d'un certain nombre d'opérations élémentaires selon un ordre logique permettant de résoudre un problème sur des données en un nombre fini d'étapes.</div>Pour sortir de ce niveau il faut atteindre la porte de sortie. Vous avez à disposition la fonction <i>move</i> pour l'atteindre: entre simplement le nom de la fonction, suivie de parenthèses et d'un point virgule, comme ceci:<div class=\"wegas-proggame-code\">move();</div>Puis cliquez sur RUN. Vous pouvez appeler plusieurs fois la même fonction.",
+                    "globalObjective": "Programmer la séquence d?instructions pour déplacer votre avatar jusqu?au personnage en jaune."
                 }
             }]
     },

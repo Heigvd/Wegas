@@ -907,6 +907,10 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex'],
                     ix_provides: ['proggametile', "proggamemap"]
                 },
+                'wegas-proggame-objective': {
+                    path: 'wegas-proggame/js/wegas-proggame-objective-min.js',
+                    ws_provides: ["Objective"]
+                },
                 /**
                  * Flexitests
                  */
