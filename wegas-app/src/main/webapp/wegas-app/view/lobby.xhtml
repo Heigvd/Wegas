@@ -85,15 +85,15 @@
                     });
                     var refreshTabs = function() {
                         var tab = Y.Widget.getByNode("#gameModelsTab");
-                        tab.set("visible", !tab.witem(0).treeView.isEmpty());
+                        tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
                         tab = Y.Widget.getByNode("#gamesTreeViewTab");
-                        tab.set("visible", !tab.witem(0).treeView.isEmpty());
+                        tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
                     };
 
                     app.after("render", function() {                            // If there player is registered to a game
-                        if (Y.Wegas.Facade.RegisteredGames.data.length > 0) {
+//                        if (Y.Wegas.Facade.RegisteredGames.data.length > 0) {
                             Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
-                        }
+//                        }
                         Y.Widget.getByNode("#centerTabView").on("selectionChange", Y.Widget.getByNode("#rightTabView").destroyAll, Y.Widget.getByNode("#rightTabView"));
                         Y.Wegas.ResizableLayout.DEFAULTWIDTH = 500;
                         refreshTabs();
