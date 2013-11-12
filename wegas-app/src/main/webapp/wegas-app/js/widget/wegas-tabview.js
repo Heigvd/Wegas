@@ -139,7 +139,7 @@ YUI.add('wegas-tabview', function(Y) {
             nTab.get("panelNode").one("div").empty();                                      // @fixme since the above method is not enough
             nTab.load(widgetCfg, fn);                                           // Load target widget
             //nTab.set("selected", 2);
-            nTab.plug(Removeable);
+            //nTab.plug(Removeable);
         }
 
     });

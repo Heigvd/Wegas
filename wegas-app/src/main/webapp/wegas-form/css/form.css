@@ -14,7 +14,7 @@
     padding-left:100px;
     Webkit: collapse white-space between units;
     text-rendering: optimizespeed;
-    Webkit: fixes text-rendering: optimizeLegibility;
+    /*Webkit: fixes text-rendering: optimizeLegibility;*/
 }
 .yui3-form-field label {
     margin-left: -100px;

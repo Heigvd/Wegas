@@ -101,12 +101,13 @@
                         "type": "Tab",
                         "id": "availableGamesTab",
                         "label": "Available games",
+                        "visible": false,
                         "children": [{
-                                "type": "PublicGameTreeView",
+                                "type": "GameDataTable",
                                 "dataSource": "PublicGames",
-                                "emptyMessage": "No new game is available to play.",
+                                "emptyMessage": "No game is available to play.",
                                 "plugins": [{
-                                        "fn": "EditorTVAdminMenu",
+                                        "fn": "EditorDTMenu",
                                         "cfg": {
                                             "children": [{
                                                     "type": "Button",
@@ -119,91 +120,6 @@
                                                                 "wchildren": [{
                                                                         "type": "JoinTeam",
                                                                         "customEvent": true
-                                                                    }]
-                                                            }
-                                                        }]
-                                                }]
-                                        }
-                                    }, {
-                                        "fn": "WidgetToolbar",
-                                        "cfg": {
-                                            "children": [{
-                                                    "type": "NewEntityButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Create games",
-                                                    "targetClass": "Game",
-                                                    "dataSource": "Game",
-                                                    "formCfg": {
-                                                        "required": true,
-                                                        "type": "group",
-                                                        "fields": [{
-                                                                "name": "@class",
-                                                                "type": "hidden",
-                                                                "value": "null"
-                                                            }, {
-                                                                "label": "Based on",
-                                                                "name": "gameModelId",
-                                                                "required": true,
-                                                                "filters": {"canInstantiate": true},
-                                                                "type": "gamemodelselect"
-                                                            }, {
-                                                                "label": "name",
-                                                                "name": "name",
-                                                                "required": true,
-                                                                "showMsg": true
-                                                            }, {
-                                                                "label": "token",
-                                                                "name": "token",
-                                                                "description": "Leave blank for automatic generation"
-                                                            }]
-                                                    }
-                                                }, {
-                                                    "type": "Button",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join with token",
-                                                    "plugins": [{
-                                                            "fn": "OpenTabAction",
-                                                            "cfg": {
-                                                                "tabSelector": "#rightTabView",
-                                                                "emptyTab": true,
-                                                                "wchildren": [{
-                                                                        "type": "JoinGame"
-                                                                    }]
-                                                            }
-                                                        }]
-                                                }]
-                                        }
-                                    }]
-                            }]
-                    }, {
-                        "type": "Tab",
-                        "id": "joinedGamesTab",
-                        "label": "Joined games",
-                        "children": [{
-                                "type": "JoinedGameTreeView",
-                                "dataSource": "RegisteredGames",
-                                "emptyMessage": "You have not joined any game yet.",
-                                "plugins": [{
-                                        "fn": "EditorTVAdminMenu",
-                                        "cfg": {
-                                            "children": [{
-                                                    "type": "Button",
-                                                    "plugins": [{
-                                                            "fn": "OpenTabAction",
-                                                            "cfg": {
-                                                                "tabSelector": "#rightTabView",
-                                                                "emptyTab": true,
-                                                                "label": "Resume game",
-                                                                "wchildren": [{
-                                                                        "type": "GameDescription"
-                                                                    }, {
-                                                                        "type": "Button",
-                                                                        "cssClass": "editor-button-resume",
-                                                                        "label": "Resume game",
-                                                                        "plugins": [{
-                                                                                "fn": "OpenGameAction",
-                                                                                "cfg": {
-                                                                                    "editorUrl": "wegas-app/view/play.html?"
-                                                                                }
-                                                                            }]
                                                                     }]
                                                             }
                                                         }]
@@ -236,21 +152,103 @@
                                                                 "required": true,
                                                                 "showMsg": true
                                                             }, {
-                                                                "label": "token",
+                                                                "label": "Enrolment key",
                                                                 "name": "token",
                                                                 "description": "Leave blank for automatic generation"
                                                             }]
                                                     }
                                                 }, {
                                                     "type": "Button",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join with token",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join with key",
                                                     "plugins": [{
                                                             "fn": "OpenTabAction",
                                                             "cfg": {
                                                                 "tabSelector": "#rightTabView",
                                                                 "emptyTab": true,
                                                                 "wchildren": [{
-                                                                        "type": "JoinGame"
+                                                                        "type": "TokenJoin"
+                                                                    }]
+                                                            }
+                                                        }]
+                                                }]
+                                        }
+                                    }]
+                            }]
+                    }, {
+                        "type": "Tab",
+                        "id": "joinedGamesTab",
+                        "label": "Joined games",
+                        "children": [{
+                                "type": "GameDataTable",
+                                "dataSource": "RegisteredGames",
+                                "emptyMessage": "You have not joined any game yet",
+                                "dataTableCfg": {
+                                    "columns": [{
+                                            "key": "iconCSS",
+                                            "formatter": "icon",
+                                            "label": " ",
+                                            "sortable": false,
+                                            "width": "22px"
+                                        }, {
+                                            "key": "name",
+                                            "label": "Name"
+                                        }, {
+                                            "key": "createdBy",
+                                            "label": "Created by",
+                                            "width": "150px"
+                                        }, {
+                                            "key": "createdTime",
+                                            "label": "Created",
+                                            "width": "140px",
+                                            "formatter": "date"
+                                        }, {
+                                            "key": "gameModelName",
+                                            "label": "Game model",
+                                            "width": "150px"
+                                        }
+                                    ]
+                                },
+                                "plugins": [{
+                                        "fn": "EditorDTMenu",
+                                        "cfg": {
+                                            "children": [{
+                                                    "type": "Button",
+                                                    "plugins": [{
+                                                            "fn": "OpenTabAction",
+                                                            "cfg": {
+                                                                "tabSelector": "#rightTabView",
+                                                                "emptyTab": true,
+                                                                "label": "Open game",
+                                                                "wchildren": [{
+                                                                        "type": "GameDescription"
+                                                                    }, {
+                                                                        "type": "Button",
+                                                                        "cssClass": "editor-button-resume",
+                                                                        "label": "Open game",
+                                                                        "plugins": [{
+                                                                                "fn": "OpenGameAction",
+                                                                                "cfg": {
+                                                                                    "editorUrl": "wegas-app/view/play.html?"
+                                                                                }
+                                                                            }]
+                                                                    }]
+                                                            }
+                                                        }]
+                                                }]
+                                        }
+                                    }, {
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": [{
+                                                    "type": "Button",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join with key",
+                                                    "plugins": [{
+                                                            "fn": "OpenTabAction",
+                                                            "cfg": {
+                                                                "tabSelector": "#rightTabView",
+                                                                "emptyTab": true,
+                                                                "wchildren": [{
+                                                                        "type": "TokenJoin"
                                                                     }]
                                                             }
                                                         }]
@@ -263,7 +261,7 @@
                         "type": "Tab",
                         "label": "Created games",
                         "children": [{
-                                "type": "CreatedGameTreeView",
+                                "type": "GameDataTable",
                                 "dataSource": "Game",
                                 "emptyMessage": "You have not created any game yet",
                                 "cssClass": "editor-createdgametreeview",
@@ -294,7 +292,7 @@
                                                                 "required": true,
                                                                 "showMsg": true
                                                             }, {
-                                                                "label": "token",
+                                                                "label": "Enrolment key",
                                                                 "name": "token",
                                                                 "description": "Leave blank for automatic generation"
                                                             }]
@@ -308,14 +306,37 @@
                         "id": "gameModelsTab",
                         "label": "Game models",
                         "children": [{
-                                "type": "GameModelTreeView",
+                                "type": "GameDataTable",
                                 "dataSource": "GameModel",
+                                "dataTableCfg": {
+                                    "columns": [{
+                                            "key": "iconCSS",
+                                            "formatter": "icon",
+                                            "label": " ",
+                                            "sortable": false,
+                                            "width": "22px"
+                                        }, {
+                                            "key": "name",
+                                            "label": "Name"
+                                        }, {
+                                            "key": "createdBy",
+                                            "label": "Created by",
+                                            "width": "150px"
+                                        }, {
+                                            "key": "createdTime",
+                                            "label": "Created",
+                                            "width": "140px",
+                                            "formatter": "date"
+                                        }
+                                    ]
+
+                                },
                                 "plugins": [{
                                         "fn": "WidgetToolbar",
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New model",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Create model",
                                                     "targetClass": "GameModel",
                                                     "dataSource": "GameModel",
                                                     "formCfg": {
