@@ -1,0 +1,11 @@
+{
+    "1": {
+        "id": 1,
+        "direction": "vertical",
+        "type": "List",
+        "cssClass": "content",
+        "children": [{
+            "type": "SimpleDialogueMain"
+        }]
+    }
+}

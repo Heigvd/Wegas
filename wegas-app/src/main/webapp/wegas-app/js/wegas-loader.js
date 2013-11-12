@@ -946,6 +946,11 @@ YUI().use(function(Y) {
                         "autocomplete", "autocomplete-highlighters", "autocomplete-filters",
                         "dd-plugin", 'dd-drop', 'dd-proxy', 'dd-constrain', "button-group",
                         "wegas-teaching-arrow", "wegas-teaching-rectangle"]
+                },
+                /* SimpleDialogue */
+                'wegas-simpledialogue-main': {
+                    path: "wegas-simpledialogue/js/wegas-simpledialogue-main.js",
+                    ws_provides: "SimpleDialogueMain"
                 }
             }
         },
