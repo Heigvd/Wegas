@@ -25,9 +25,9 @@ YUI.add('wegas-sharerole', function(Y) {
                     gameModel = (e instanceof Y.Wegas.persistence.Game) ?
                     Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e;
 
-            if (!gameModel.get("properties.freeForAll") && !gameModel.get("properties.freeTeams")) {
-                this.set("visible", false);
-            }
+//            if (!gameModel.get("properties.freeForAll") && !gameModel.get("properties.freeTeams")) {
+//                this.set("visible", false);
+//            }
 
             this.targetEntityId = (e instanceof Y.Wegas.persistence.GameModel) ? "gm" + e.get("id")
                     : "g" + e.get("id");
@@ -70,7 +70,7 @@ YUI.add('wegas-sharerole', function(Y) {
                 }
             }, this);
 
-            this.get("contentBox").one(".wegas-link input").on("click", this.link.el.select, this); // Select whole link on click
+            this.get("contentBox").one(".wegas-link input").on("click", "select"); // Select whole link on click
         },
         destructor: function() {
             this.link.destroy();

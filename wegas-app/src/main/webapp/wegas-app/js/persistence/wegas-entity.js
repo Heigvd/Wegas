@@ -171,10 +171,12 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": true
             },
             properties: {
+                value: {},
                 getter: function(value, name) {
-                    if (Y.Lang.isString(value[name]) &&
-                            (name === "freeForAll" || name === "freeTeams")) {
-                        value[name] = (value[name] === "true") ? true : false;
+                    var key = name.split(".")[1];
+                    if (Y.Lang.isString(value[key]) &&
+                            (key === "freeForAll" || key === "freeTeams")) {
+                        value[key] = (value[key] === "true") ? true : false;
                     }
                     return value;
                 },
@@ -231,19 +233,25 @@ YUI.add('wegas-entity', function(Y) {
                         }
                     }]
             }, {
+                type: "DeleteEntityButton",
+                label: "Delete",
+                cssClass: "editor-deleteGameModel-button"
+            }, {
                 type: BUTTON,
                 label: "Open in editor",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
-            }, {
-                type: BUTTON,
-                label: "Duplicate",
-                cssClass: "editor-duplicateGameModel-button",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
+            },
+            //{
+            //    type: BUTTON,
+            //    label: "Duplicate",
+            //    cssClass: "editor-duplicateGameModel-button",
+            //    plugins: [{
+            //            fn: "DuplicateEntityAction"
+            //        }]
+            //},
+            {
                 type: BUTTON,
                 label: "Permissions",
                 cssClass: "wegas-advanced-feature",
@@ -269,9 +277,6 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView'
                         }
                     }]
-            }, {
-                type: "DeleteEntityButton",
-                cssClass: "editor-deleteGameModel-button"
             }]
                 //{
                 //    type: "Button",
@@ -328,6 +333,16 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     _type: HIDDEN
                 }
+            },
+            playersCount: {
+                "transient": true,
+                getter: function() {
+                    var count = 0;
+                    Y.Array.each(this.get("teams"), function(t) {
+                        count += t.get("players").length;
+                    });
+                    return count;
+                }
             }
         },
         EDITMENU: [{
@@ -377,13 +392,20 @@ YUI.add('wegas-entity', function(Y) {
                         }
                     }]
             }, {
+                type: "DeleteEntityButton",
+                label: "Delete"
+            }, {
                 type: "JoinOrResumeButton",
-                label: "Join"
-            }, {
-                type: "AddEntityChildButton",
-                label: "Add team",
-                targetClass: "Team"
-            }, {
+                label: "Join",
+                cssClass: "wegas-advanced-feature"
+            },
+//            {
+//                type: "AddEntityChildButton",
+//                label: "Add team",
+//                targetClass: "Team",
+//                cssClass: "wegas-advanced-feature"
+//            },
+            {
                 type: BUTTON,
                 label: "Permissions",
                 cssClass: "editor-shareGame-button wegas-advanced-feature",
@@ -406,11 +428,11 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView'
                         }
                     }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: "Linkwidget"
-            }]
+            }
+//            , {
+//                type: "Linkwidget"
+//            }
+        ]
     });
 
     Wegas.persistence.DebugGame = Wegas.persistence.Game;
@@ -478,7 +500,6 @@ YUI.add('wegas-entity', function(Y) {
             }, {
                 type: "Linkwidget"
             }]
-                //
     });
 
     /**
