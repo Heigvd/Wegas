@@ -287,6 +287,8 @@
     padding: 3px;
 }
 .yui3-proggame-alignable .table {
+    height: 64px;
+    overflow: hidden;
     background: url(../../wegas-proggame/images/proggame-sprite-dalles.png) no-repeat rgb(10,10,10);
 }
 

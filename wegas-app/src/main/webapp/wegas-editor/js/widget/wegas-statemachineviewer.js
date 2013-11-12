@@ -30,7 +30,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         cacheDialogue: null,
         scrollView: null,
         sliderZoom: null,
-        btnAdd: null,
+        btnNew: null,
         btnZoomValue: null,
         options: null,
         nodes: {},
@@ -104,8 +104,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }
             })).set("type", "save");*/
             
-            this.toolbar.add(this.btnAdd = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-add\"></span>Add"
+            this.toolbar.add(this.btnNew = new Y.Button({
+                label: "<span class=\"wegas-icon wegas-icon-add\"></span>New"
             }));
             
             this.toolbar.add(this.sliderZoom = new Y.Slider({
@@ -189,18 +189,23 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.get("entity").set("scope", new Y.Wegas.persistence[e.target.getDOMNode().value]());
             }, this);
             
-            for (key in this.get("availableStates")) {
-                this.options.states.push({
-                    type: "Button",
-                    label: this.get("availableStates")[key],
-                    on: {
-                        click: Y.bind(this.addStateType, this, this.get("availableStates")[key])
-                    }
+            if (this.get("availableStates").length > 1) {
+                for (key in this.get("availableStates")) {
+                    this.options.states.push({
+                        type: "Button",
+                        label: this.get("availableStates")[key],
+                        on: {
+                            click: Y.bind(this.addStateType, this, this.get("availableStates")[key])
+                        }
+                    });
+                }
+                this.btnNew.plug(Y.Plugin.WidgetMenu, {
+                    children: this.options.states
                 });
             }
-            this.btnAdd.plug(Y.Plugin.WidgetMenu, {
-                children: this.options.states
-            });
+            else if (this.get("availableStates").length === 1) {
+                this.btnNew.on("click", this.addStateType, this, this.get("availableStates")[0]);
+            }
             
             this.sliderZoom.on('valueChange', function(e) {
                 this.setZoom(e.newVal / StateMachineViewer.FACTOR_ZOOM, true);
@@ -225,7 +230,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             jp.unbind();
             this.scrollView.destroy();
             this.sliderZoom.destroy();
-            this.btnAdd.destroy();
+            this.btnNew.destroy();
             this.btnZoomValue.destroy();
         },
         loader: function() {

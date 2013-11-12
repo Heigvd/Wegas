@@ -1,0 +1,108 @@
+{
+    "@class": "GameModel",
+    "name": "SimpleDialogue",
+    "properties": {
+        "cssUri": "wegas-simpledialogue/css/wegas-simpledialogue.css",
+        "pagesUri": "wegas-simpledialogue/db/wegas-simpledialogue-pages.json?"
+    },
+    "childVariableDescriptors": [{
+        "@class": "DialogueDescriptor",
+        "name": "simpleDialogue",
+        "label": "simpleDialogue",
+        "defaultInstance": {
+            "@class": "FSMInstance",
+            "currentStateId": 1
+        },
+        "scope": {
+            "@class": "TeamScope"
+        },
+        "states": {
+            "1": {
+                "@class": "DialogueState",
+                "text": "Bonjour, ça va?",
+                "transitions": [{
+                    "@class": "DialogueTransition",
+                    "actionText": "Oui",
+                    "nextStateId": 2
+                }, {
+                    "@class": "DialogueTransition",
+                    "actionText": "Non",
+                    "nextStateId": 3
+                }],
+                "editorPosition": {
+                    "@class": "Coordinate",
+                    "x": 50,
+                    "y": 50
+                }
+            },
+            "2": {
+                "@class": "DialogueState",
+                "text": "A bientôt!",
+                "transitions": [{
+                    "@class": "DialogueTransition",
+                    "actionText": "Au revoir",
+                    "nextStateId": 1
+                }],
+                "editorPosition": {
+                    "@class": "Coordinate",
+                    "x": 550,
+                    "y": 50
+                }
+            },
+            "3": {
+                "@class": "DialogueState",
+                "text": "Prends une glace",
+                "transitions": [{
+                    "@class": "DialogueTransition",
+                    "actionText": "Merci",
+                    "nextStateId": 4
+                },{
+                    "@class": "DialogueTransition",
+                    "actionText": "J'ai encore faim",
+                    "nextStateId": 5
+                }],
+                "editorPosition": {
+                    "@class": "Coordinate",
+                    "x": 150,
+                    "y": 450
+                }
+            },
+            "4": {
+                "@class": "DialogueState",
+                "text": "Ça va mieux?",
+                "transitions": [{
+                    "@class": "DialogueTransition",
+                    "actionText": "Oui",
+                    "nextStateId": 2
+                },{
+                    "@class": "DialogueTransition",
+                    "actionText": "Non",
+                    "nextStateId": 5
+                }],
+                "editorPosition": {
+                    "@class": "Coordinate",
+                    "x": 450,
+                    "y": 450
+                }
+            },
+            "5": {
+                "@class": "DialogueState",
+                "text": "Reprends une glace ;-)",
+                "transitions": [{
+                    "@class": "DialogueTransition",
+                    "actionText": "Merci",
+                    "nextStateId": 4
+                },{
+                    "@class": "DialogueTransition",
+                    "actionText": "J'ai encore faim",
+                    "nextStateId": 5
+                }],
+                "editorPosition": {
+                    "@class": "Coordinate",
+                    "x": 300,
+                    "y": 250
+                }
+            }
+        }
+    }]
+}
