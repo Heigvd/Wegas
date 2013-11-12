@@ -275,6 +275,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     }
                 });
             }
+            this.highlightUnusedStates();
             jp.setSuspendDrawing(false, true);
             this.hideOverlay();
             this.syncUI();
@@ -383,6 +384,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     Y.Wegas.Facade.VariableDescriptor.cache.post(entity, DEFAULTCB);
                 }
             }
+            this.highlightUnusedStates();
         },
         zoom: function(event) {
             if (event.wheelDelta < 0) {
@@ -419,6 +421,33 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             });
             if (this.nodes[sm.getInstance().get("currentStateId")]) {
                 this.nodes[sm.getInstance().get("currentStateId")].get("boundingBox").addClass("currentState");
+            }
+        },
+        highlightUnusedStates: function() {
+            // Prepare vars
+            var currentState, listPath = [this.nodes[this.get("entity").getInitialStateId()]], listStates = {}, i;
+            
+            this.get("boundingBox").all(".unusedState").each(function() {
+                this.removeClass("unusedState");
+            });
+            // Prepare data
+            for (i in this.nodes) {
+                listStates[i] = this.nodes[i];
+            }
+            // Follow the path
+            while (listPath.length > 0) {
+                currentState = listPath.pop();
+                // Test if state has been already visited
+                if (listStates[currentState.get("sid")] != undefined) {
+                    for (i in currentState.get("entity").get("transitions")) {
+                        listPath.push(this.nodes[currentState.get("entity").get("transitions")[i].get("nextStateId")]);
+                    }
+                }
+                delete listStates[currentState.get("sid")];
+            }
+            // Highlight
+            for (i in listStates) {
+                listStates[i].get("boundingBox").addClass("unusedState");
             }
         }
     }, {
