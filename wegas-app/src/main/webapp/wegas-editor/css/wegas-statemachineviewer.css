@@ -156,6 +156,8 @@
 
 .initial-state{
     border-color:black;
+    border-style:double;
+    border-width:8px;
 }
 .wegas-statemachineviewer-content .currentState{
     background-color:rgba(255, 170, 0, 0.7);
