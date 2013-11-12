@@ -160,6 +160,9 @@
 .wegas-statemachineviewer-content .currentState{
     background-color:rgba(255, 170, 0, 0.7);
 }
+.wegas-statemachineviewer-content .unusedState{
+    background-color:rgba(255, 115, 115, 0.7);
+}
 ._jsPlumb_connector{
     z-index:1;
 }
