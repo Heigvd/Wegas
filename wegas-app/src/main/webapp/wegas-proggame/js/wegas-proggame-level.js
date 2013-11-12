@@ -26,6 +26,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         commandsStack: null,
         RUN_BUTTON_LABEL : "<div class='proggame-play'><span>RUN</span><span> CODE</span></div>",
         STOP_BUTTON_LABEL : "<span class='proggame-stop'>STOP</span>",
+        NEXT_BUTTON_LABEL : "<span class='proggame-next'>NEXT</span>",
         CONTENT_TEMPLATE: '<div>'
                 + '<div class="yui3-g top">'
 
@@ -64,6 +65,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: 'ace',
                 height: "300px",
                 language: "javascript",
+                theme: "twilight",
                 value: "//Put your code here..."
             });
             var enemy = this.findObject("Enemy");
@@ -180,7 +182,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                         this.consumeCommand();
                         break;
                     case "gameWon":
-                        this.runButton.set("label", "NEXT LEVEL");
+                        this.runButton.set("label", this.NEXT_BUTTON_LABEL);
                         this.runButton.detachAll("click");
                         this.runButton.on("click", this.doNextLevel, this);
                         break;

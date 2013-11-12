@@ -60,6 +60,8 @@
     padding-top: 15px;
     font-family: Ravie;
     font-size: 19px;
+    color: rgba(163, 184, 89, 1);
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
 .menu-loginbutton:hover::before{
@@ -116,9 +118,14 @@
     height: 699px;
 }
 
+.game-area {
+    background: url(../../wegas-proggame/images/proggame-right.png) no-repeat;
+    height: 699px;
+}
+
 .wegas-inbox .horizontal-tabview {
     margin-left: 15px;
-    height: 415px;
+    height: 641px;
     overflow: auto;
     width: 911px;
 }
@@ -165,6 +172,11 @@
 
 .proggame-stop {
     background: url(../../wegas-proggame/images/proggame-stop.png) no-repeat 2px -1px;
+    height: 29px;
+}
+
+.proggame-next {
+    background: url(../../wegas-proggame/images/proggame-next.png) no-repeat 0px -4px;
     height: 29px;
 }
 
