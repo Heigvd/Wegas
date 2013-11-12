@@ -11,9 +11,7 @@
  */
 YUI.add('wegas-proggame-level', function(Y) {
     "use strict";
-
     var CONTENTBOX = 'contentBox', ProgGameLevel;
-
     /**
      *  The level display class, with script input, ia, debugger and
      *  terrain display.
@@ -56,9 +54,8 @@ YUI.add('wegas-proggame-level', function(Y) {
         renderUI: function() {
             var i, cb = this.get(CONTENTBOX),
                     METHODTOTEXT = {
-                say: "say(text: String)"
-            }, api = this.get("api");
-
+                        say: "say(text: String)"
+                    }, api = this.get("api");
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one(".code-content"),
                 name: 'text',
@@ -67,40 +64,33 @@ YUI.add('wegas-proggame-level', function(Y) {
                 language: "javascript",
                 value: "//Put your code here..."
             });
-
-
             var enemy = this.findObject("Enemy");
             cb.one(".ai").append(Y.Wegas.Helper.nl2br((enemy && enemy.ai) || "<center><i>empty</i></center>"));
             cb.one(".topcenter h1").setHTML(this.get("label"));
             cb.one(".arguments").setHTML(this.get("arguments").join(", "));
-
             var acc = ["<h1>API</h1>"];
             for (i = 0; i < api.length; i += 1) {
                 acc.push((METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
             }
-            Y.all(".api").setHTML(acc.join(""));                                // All so it does not crash if widget is not present
+            Y.all(".api").setHTML(acc.join("")); // All so it does not crash if widget is not present
 
-            var params = this.toObject();                                       // @fixme here proggamedipslay parameters should be in a single attre
+            var params = this.toObject(); // @fixme here proggamedipslay parameters should be in a single attre
             delete params.plugins;
             this.display = new Y.Wegas.ProgGameDisplay(params);
             this.display.render(cb.one(".terrain"));
-
             this.runButton = new Y.Wegas.Button({
                 label: "RUN SCRIPT"
             });
             this.runButton.render(cb.one(".buttons"));
-
             this.resetUI();
         },
         bindUI: function() {
             this.handlers.response = Y.Wegas.Facade.VariableDescriptor.after("update",
-                    this.syncUI, this);                                             // If data changes, refresh
+                    this.syncUI, this); // If data changes, refresh
 
             this.runButton.on("click", this.run, this);
-
             this.display.after('commandExecuted', this.consumeCommand, this);
             this.after('commandExecuted', this.consumeCommand, this);
-
         },
         run: function() {
 
@@ -111,7 +101,6 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             this.resetUI();
             this.runButton.set("label", "STOP");
-
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
@@ -145,14 +134,12 @@ YUI.add('wegas-proggame-level', function(Y) {
         resetUI: function() {
             this.objects = Y.clone(this.get("objects"));
             this.commandsStack = null;
-
             //this.display.set("objects", this.objects);                          // Reset the display to default
             //this.display.syncUI();
             this.display.execute({
                 type: 'resetLevel',
                 objects: this.objects
             });
-
             this.get(CONTENTBOX).one(".debugger").setHTML("<h1>Debugger</h1>");
             //this.get("contentBox").one(".debugger").empty();
 
@@ -176,7 +163,6 @@ YUI.add('wegas-proggame-level', function(Y) {
             if (this.commandsStack && this.commandsStack.length > 0) {
                 var command = this.commandsStack.shift();
                 Y.log("consumeCommand" + ", " + command.type + ", " + command);
-
                 switch (command.type) {
 
                     case "move":
@@ -185,14 +171,12 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 command.object, true);
                         this.syncFrontUI();
                         break;
-
                     case "updated":
                         Y.mix(this.findObject(command.object.id), // Update target object cfg
                                 command.object, true);
                         this.syncFrontUI();
                         this.consumeCommand();
                         break;
-
                     case "gameWon":
                         this.runButton.set("label", "NEXT LEVEL");
                         this.runButton.detachAll("click");
@@ -200,7 +184,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                         break;
                     case "log":
                         this.get("contentBox").one(".debugger").append(command.text + "<br />");
-
                         Y.later(500, this, this.consumeCommand);
                         //this.fire("commandExecuted");
                         break;
@@ -208,7 +191,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                         break;
                 }
 
-                this.display.execute(command);                                  // Forware the command to the display
+                this.display.execute(command); // Forware the command to the display
 
             } else if (this.commandsStack) {
                 this.runButton.set("label", "RUN SCRIPT");
@@ -225,7 +208,6 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         syncFrontUI: function() {
             var cb = this.get(CONTENTBOX);
-
             if (this.findObject("Player")) {
                 this.updateUI(this.findObject("Player"), cb.one(".player-ui"));
             }
@@ -262,47 +244,108 @@ YUI.add('wegas-proggame-level', function(Y) {
                 _inputex: {
                     useButtons: true,
                     elementType: {
-                        type: "group",
+                        type: "contextgroup",
+                        contextKey: "components",
                         fields: [{
-                                name: "id",
-                                label: "Template",
-                                type: "select",
-                                choices: ["Player", "Enemy", "Bloc1", "Bloc2", "Bloc3"]
-                            }, {
-                                name: "x",
-                                type: "number",
-                                label: "x"
-                            }, {
-                                name: "y",
-                                type: "number",
-                                label: "y"
-                            }, {
-                                name: "direction",
-                                label: "direction",
-                                type: "select",
-                                choices: [{value: 1, label: "up"},
-                                    {value: 2, label: "right"},
-                                    {value: 3, label: "bottom"},
-                                    {value: 4, label: "left"}]
-                            }, {
-                                name: "collides",
-                                label: "collides",
-                                type: "boolean"
-                            }, {
-                                name: "components"
-                            }
-//                            ,{
-//                                name: "type",
-//                                label: "type"
-//                            }, {
-//                                name: "actions",
-//                                label: "Actions available",
-//                                type: "number"
-//                            }
-                        ]
-                    }
-                }
+                                name: "Trap",
+                                type: "group",
+                                fields: [
+                                    {
+                                        name: "id",
+                                        type: "string",
+                                        value: "Trap"
+                                    }, {
+                                        name: "x",
+                                        type: "number",
+                                        label: "x"
+                                    }, {
+                                        name: "y",
+                                        type: "number",
+                                        label: "y"
+                                    }, {
+                                        name: "enabled",
+                                        label: "Active by default",
+                                        type: "boolean",
+                                        value: true
+                                    }, {
+                                        name: "components",
+                                        type: "uneditable",
+                                        value: "Trap"
+                                    }
 
+                                ]
+                            }, {
+                                name: "PC",
+                                type: "group",
+                                fields: [
+                                    {
+                                        name: "id",
+                                        type: "string",
+                                        value: "Player"
+                                    }, {
+                                        name: "x",
+                                        type: "number",
+                                        label: "x"
+                                    }, {
+                                        name: "y",
+                                        type: "number",
+                                        label: "y"
+                                    }, {
+                                        name: "direction",
+                                        label: "direction",
+                                        type: "select",
+                                        choices: [{value: 1, label: "up"},
+                                            {value: 2, label: "right"},
+                                            {value: 3, label: "bottom"},
+                                            {value: 4, label: "left"}]
+                                    }, {
+                                        name: "collides",
+                                        label: "collides",
+                                        type: "boolean"
+                                    }, {
+                                        name: "components",
+                                        type: "uneditable",
+                                        value: "PC"
+                                    }
+                                ]
+                            }, {
+                                name: "NPC",
+                                type: "group",
+                                fields: [
+                                    {
+                                        name: "id",
+                                        type: "string",
+                                        value: "Enemy"
+                                    }, {
+                                        name: "x",
+                                        type: "number",
+                                        label: "x"
+                                    }, {
+                                        name: "y",
+                                        type: "number",
+                                        label: "y"
+                                    }, {
+                                        name: "direction",
+                                        label: "direction",
+                                        type: "select",
+                                        choices: [{value: 1, label: "up"},
+                                            {value: 2, label: "right"},
+                                            {value: 3, label: "bottom"},
+                                            {value: 4, label: "left"}]
+                                    }, {
+                                        name: "collides",
+                                        label: "collides",
+                                        type: "boolean"
+                                    }, {
+                                        name: "components",
+                                        type: "uneditable",
+                                        value: "NPC"
+                                    }
+                                ]
+                            }]
+                    }
+
+                }
             },
             arguments: {
                 type: "array",
@@ -389,6 +432,5 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
         }
     });
-
     Y.namespace('Wegas').ProgGameLevel = ProgGameLevel;
 });

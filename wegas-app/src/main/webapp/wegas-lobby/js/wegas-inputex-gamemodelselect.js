@@ -46,8 +46,8 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
         },
         setValue: function(value, fireUpdateEvent) {
             if ((!value || value === "")
-                    && !!Y.Wegas.GameModelTreeView.currentGameModel) {
-                value = Y.Wegas.GameModelTreeView.currentGameModel.get("id");
+                    && !!Y.Plugin.EditorDTMenu.currentGameModel) {
+                value = Y.Plugin.EditorDTMenu.currentGameModel.get("id");
             }
             GameModelSelect.superclass.setValue.call(this, value, fireUpdateEvent);
         }

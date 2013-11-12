@@ -100,6 +100,7 @@ YUI.add('wegas-form', function(Y) {
 
             this.cancelButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-cancel\" ></span>Cancel",
+                visible: false,
                 on: {
                     click: Y.bind(function() {
                         this.fire("cancel");

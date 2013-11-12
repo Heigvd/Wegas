@@ -45,9 +45,9 @@
                             }
                         }
                     });
-                    app.after("render", function() {                            // If there player is registered to a game
-                        Y.one(".title").setContent("Joining game: #{singleLobbyController.currentGame.name}");
-                    }, this);
+//                    app.after("render", function() {                            // If there player is registered to a game
+//                        Y.one(".title").setContent("Joining game: #{singleLobbyController.currentGame.name}");
+//                    }, this);
                     app.render();                                               // Launch app
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
