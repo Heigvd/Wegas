@@ -79,7 +79,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.display = new Y.Wegas.ProgGameDisplay(params);
             this.display.render(cb.one(".terrain"));
             this.runButton = new Y.Wegas.Button({
-                label: "RUN SCRIPT"
+                label: "<span>RUN</span><span> CODE</span>"
             });
             this.runButton.render(cb.one(".buttons"));
             this.resetUI();
