@@ -30,36 +30,35 @@ YUI.add('wegas-proggame-objective', function(Y) {
                     this.displayFix(globalObjective);
                 } else if (fullObjective && !globalObjective) {
                     this.displayPopup(fullObjective);
-                    this.displayFix(fullObjective);                    
+                    this.displayFix(fullObjective);
                 } else if (!fullObjective && globalObjective) {
                     this.displayPopup(globalObjective);
-                    this.displayFix(globalObjective);                    
+                    this.displayFix(globalObjective);
                 } else {
                     this.popupContent = "No objective to display";
-                    this.displayFix(this.popupContent); 
-                    
+                    this.displayFix(this.popupContent);
+
                 }
-                
+
                 this.reDisplayPopup();
             });
         },
         displayPopup: function(content) {
-                this.get("host").showMessage("info", content);
-                this.popupContent = content;
+            this.get("host").showMessage("info", content);
+            this.popupContent = content;
         },
         displayFix: function(content) {
             var div = Y.one(".objective"), node;
             node = "<h1>Objectives</h1><div class='objValue'>" + content + "</div>";
-            if (div){
+            if (div) {
                 div.get('childNodes').remove();
                 div.append(node);
             }
         },
         reDisplayPopup: function() {
-            var div = Y.one(".objective");
-            div.on('click', function(e) {
+            Y.all(".objective").on('click', function(e) {
                 this.displayPopup(this.popupContent);
-            },this);
+            }, this);
         }
     }, {
         NS: "Objective",
