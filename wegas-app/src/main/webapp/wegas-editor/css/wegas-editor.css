@@ -304,8 +304,7 @@ body {
 }
 
 /* Global title definition */
-.wegas-sharerole-hidden,
-.wegas-teamslist-hidden {
+.wegas-sharerole-hidden {
     display: none;
 }
 .wegas-gamedescription,
@@ -314,46 +313,42 @@ body {
 .wegas-shareuser-content {
     padding: 10px 10px 20px;
 }
-.wegas-teamslist-content {
-    padding: 10px 10px 20px;
-}
 
 .wegas-jointeam .title,
 .wegas-sharerole .title,
-.wegas-gamedescription .title,
-.wegas-teamslist .title {
+.wegas-gamedescription .title {
     font-weight: bolder;
     border-bottom: 1px solid lightgray;
     margin-bottom: 5px;
 }
-.wegas-joingame button,
+.wegas-join-token button,
 .wegas-jointeam button,
 .editor-button-resume {
     margin-left: 11.3em;
     margin-top: 10px;
     padding: 7px 18px;
 }
-.wegas-joingame .description {
+.wegas-join-token .description {
     padding: 10px 0 20px;
     margin: 10px 10px 20px;
 }
 .wegas-jointeam .description,
-.wegas-teamslist .description,
 .wegas-gamedescription .description {
     padding: 0 0 15px;
 }
-.wegas-teamslist .description {
+
+.wegas-editor-treeview-team .description {
     font-style: italic;
-    margin:10px 0;
+    margin:20px 10px 10px;
     padding: 10px;
     background: #f6f6f6;
 }
 
 /* Join game/team styles */
-.yui3-tabview .wegas-joingame-content > .inputEx-fieldWrapper{
+.yui3-tabview .wegas-join-token-content > .inputEx-fieldWrapper{
     padding-top: 30px;
 }
-.wegas-joingame .inputEx-label,
+.wegas-join-token .inputEx-label,
 .wegas-jointeam .inputEx-label{
     width: 11em;
 }
@@ -369,17 +364,17 @@ body {
     margin: 0 !important;
 }
 .wegas-jointeam .wegas-inputex-multioptions .inputEx-fieldWrapper  {
-    /*    opacity: 0.8;
-        padding: 10px;*/
+    opacity: 0.8;
+    padding: 10px;
 }
-.wegas-jointeam .wegas-inputex-multioptions div.inputEx-label {
+/*.wegas-jointeam .wegas-inputex-multioptions div.inputEx-label {
     width: auto;
     padding-right: 15px;
-}
+}*/
 .wegas-jointeam .wegas-inputex-multioptions .wegas-inputex-multi-selected {
-    /*    box-shadow: 0 0 1px #6d6d6d;
-        background: #ededed;
-        opacity: 1;*/
+    box-shadow: 0 0 1px #6d6d6d;
+    background: #ededed;
+    opacity: 1;
 }
 .wegas-jointeam .inputEx-ListField {
     padding: 0 0 0 20px;
@@ -422,30 +417,6 @@ body {
 .role-permissions .permissionList {
     width: 80%;
     margin-left: 115px;
-}
-
-/* Teams list */
-.wegas-teamslist .yui3-g {
-    padding-left: 250px;
-    font-size: 12px;
-    box-shadow: 0px 1px 0px #f1f1f1;
-}
-.wegas-teamslist .yui3-u {
-    padding-bottom: 2px;
-    padding-top: 5px;
-}
-.wegas-teamslist .team-name {
-    width: 140px;
-    margin-left: -250px;
-    padding-right: 10px;
-}
-.wegas-teamslist .team-token {
-    width: 90px;
-    padding-right: 10px;
-}
-.wegas-teamslist .team-link,
-.wegas-teamslist .team-link input {
-    width: 100%;
 }
 
 /* Share role */
@@ -520,4 +491,99 @@ body {
 .wegas-shareuser .wegas-button {
     margin: 0;
     background-color: white;
+}
+
+/* Lobby datatables */
+.wegas-lobby-datatable .wegas-lobby-datatable-icon {
+    padding: 0 0 0 6px;
+    width: 18px;
+}
+
+/*.wegas-lobby-datatable .wegas-lobby-datatable-icon .wegas-icon {*/
+    /*width: 10px;*/
+/*}*/
+/*.wegas-lobby-datatable .wegas-datatable-menu {
+    width:20px;
+    padding: 1px 5px;
+}*/
+.wegas-datatable-center {
+    text-align: center;
+}
+.wegas-lobby-datatable tr td.yui3-datatable-cell {
+    cursor: pointer;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr[data-yui3-record]:hover {
+    box-shadow: 0 0 1px #6d6d6d;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr:hover td.yui3-datatable-cell{
+    background-color: #f9f9f9;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr.wegas-datatable-selected {
+    box-shadow: 0 0 1px #6d6d6d !important;
+    font-weight: bolder;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr.wegas-datatable-selected td.yui3-datatable-cell {
+    background-color: #ededed !important;
+}
+.wegas-lobby-datatable .wegas-icon-menu {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    background: transparent url("../../wegas-app/images/wegas-app-sprite.png") 2px -334px no-repeat;
+    /*margin: 2px 5px;*/
+    display: inline-block;
+}
+
+
+/* Wegas editor icons */
+.yui3-skin-sam .wegas-icon-game,
+.yui3-skin-sam .wegas-icon-gamemodel,
+.yui3-skin-sam .wegas-icon-team,
+.yui3-skin-sam .wegas-icon-player,
+.yui3-skin-sam .wegas-icon-variabledescriptor,
+.yui3-skin-sam .wegas-icon-questiondescriptor,
+.yui3-skin-sam .wegas-icon-triggerdescriptor {
+    margin: -6px 0 -8px;
+    height: 24px;
+}
+.yui3-skin-sam .wegas-icon-gamemodel {
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -514px no-repeat;
+}
+.yui3-skin-sam .wegas-icon-game {
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -552px no-repeat;
+}
+.yui3-skin-sam .wegas-icon-team {
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -621px no-repeat;
+}
+.yui3-skin-sam .wegas-icon-player {
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -590px no-repeat;
+}
+.wegas-icon-variabledescriptor {
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -976px no-repeat;
+}
+.wegas-icon-questiondescriptor {
+    background: transparent url(../images/wegas-icon-pages.png) 0 -756px no-repeat;
+}
+.wegas-icon-choicedescriptor {
+    background: transparent url(../images/wegas-icon-pages.png) 0 -850px no-repeat;
+}
+.wegas-icon-triggerdescriptor {
+    background: transparent url(../images/wegas-icon-pages.png) 0 -940px no-repeat;
+}
+.wegas-icon-inboxdescriptor {
+    background: transparent url(../images/wegas-icon-pages.png) 0 -424px no-repeat;
+}
+.wegas-icon-resourcedescriptor {
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -590px no-repeat;
+}
+.yui3-skin-sam .wegas-icon-duplicate {
+    background: url(../../wegas-app/images/wegas-app-sprite.png) no-repeat 1px -1287px,
+        url(../../wegas-app/images/wegas-app-sprite.png) no-repeat -3px -1289px;
+    height: 19px;
+}
+.wegas-icon-delete {
+    background-position: 1px -944px;
+}
+.wegas-icon-open-in-editor {
+    background-position: 0 -943px;
 }

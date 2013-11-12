@@ -46,7 +46,7 @@
         "load": {
             "@class": "GameModelContent",
             "contentType": null,
-            "content": "Y.Wegas.List.EDITMENU[1].plugins[0].cfg.children.push( { type: \"Button\", label: \"ProgGame Level\", plugins: [{fn: \"AddChildWidgetAction\", cfg: {\"childType\": \"ProgGameLevel\"}}]});"
+            "content": "Y.use(\"layout\", function (Y) { Y.Wegas.Layout.EDITMENU[1].plugins[0].cfg.children.push( { type: \"Button\", label: \"ProgGame Level\", plugins: [{fn: \"AddChildWidgetAction\", cfg: {\"childType\": \"ProgGameLevel\"}}]}); });"
         }
     },
     "scriptLibrary": {

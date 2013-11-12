@@ -10,6 +10,7 @@ package com.wegas.core.persistence.game;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -43,6 +44,11 @@ public class Team extends AbstractEntity {
      */
     @NotNull
     private String name;
+    /**
+     *
+     */
+//    @Temporal(TemporalType.TIMESTAMP)
+//    private Date createdTime = new Date();
     /**
      *
      */
@@ -202,4 +208,5 @@ public class Team extends AbstractEntity {
     public void setToken(String token) {
         this.token = token;
     }
+
 }

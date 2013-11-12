@@ -478,6 +478,11 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', 'inputex-hidden'],
                     ix_provides: 'now'
                 },
+                'wegas-inputex-contextgroup': {
+                    path: 'wegas-editor/js/inputex/wegas-inputex-contextgroup-min.js',
+                    requires: ['inputex-group', 'inputex-select'],
+                    ix_provides: 'contextgroup'
+                },
                 /** Treeview **/
                 'treeview': {
                     path: 'wegas-editor/js/util/treeview-min.js',
@@ -520,10 +525,10 @@ YUI().use(function(Y) {
                         'inputex-select', 'inputex-string', "inputex-list", "inputex-combine", "inputex-password", "inputex-email"],
                     ws_provides: ["JoinTeam", "GameDescription"]
                 },
-                'wegas-joingame': {
+                'wegas-join-token': {
                     path: 'wegas-lobby/js/wegas-joingame-min.js',
                     requires: ['wegas-jointeam'],
-                    ws_provides: "JoinGame"
+                    ws_provides: "TokenJoin"
                 },
                 'wegas-loginwidget': {
                     path: 'wegas-lobby/js/wegas-loginwidget-min.js',
@@ -545,6 +550,11 @@ YUI().use(function(Y) {
                     requires: ['inputex-list', "inputex-checkbox", "inputex-autocomplete", 'autocomplete-highlighters',
                         'inputex-hidden', 'wegas-inputex-markup'],
                     ws_provides: "ShareUser"
+                },
+                'wegas-lobby-datatable': {
+                    path: 'wegas-lobby/js/wegas-lobby-datatable.js',
+                    requires: ['datatable'],
+                    ws_provides: "GameDataTable"
                 },
                 /**
                  * Editor
@@ -619,7 +629,7 @@ YUI().use(function(Y) {
                     path: 'wegas-editor/js/widget/wegas-editor-treeview-min.js',
                     requires: ['wegas-widget', "treeview", "treeview-filter",
                         "wegas-widgetmenu", 'wegas-editor-treeviewcss'],
-                    ws_provides: ['EditorTreeView', "JoinedGameTreeView"]
+                    ws_provides: ['EditorTreeView', "TeamTreeView"]
                 },
                 'wegas-editor-treeviewcss': {
                     path: 'wegas-editor/css/wegas-editor-treeview-min.css',
@@ -974,10 +984,12 @@ YUI().use(function(Y) {
                     path: 'crafty/crafty-min.js'
                 },
                 ace: {
-                    fullpath: "http://ajaxorg.github.io/ace-builds/src/ace.js"
-                            //charset: 'utf-8',
-                            //path: "ace/src-min-noconflict/ace.js"
-                            //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
+//                    path: "ace/src-min-noconflict/ace.js",
+//                            charset: 'utf-8',
+                            fullpath: "http://ace.c9.io/build/src/ace.js",
+//                            fullpath: "http://ace.c9.io/build/src-min/ace.js",
+//                    fullpath: "http://ajaxorg.github.io/ace-builds/src-min/ace.js",
+                    //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
 
                 },
                 googletranslate: {

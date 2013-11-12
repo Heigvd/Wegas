@@ -65,7 +65,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                                 type: 'permissionsselect',
                                 permissionsChoices: this.get("permsList"),
                                 targetEntityId: this.targetEntityId,
-                                roles: roles,
+                                value: roles,
                                 className: "role-permissions"
                             },
                             useButtons: true,

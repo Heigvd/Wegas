@@ -83,8 +83,8 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         this.reset(entity);                                                     // Reset the game model
 
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete:gm" + entity.getId());
-        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Duplicate:gm" + entity.getId());
-        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Instantiate:gm" + entity.getId());
+        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Duplicate:gm" + entity.getId());
+        userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Instantiate:gm" + entity.getId());
     }
 
     @Override
