@@ -55,7 +55,7 @@ public class GameModelController {
         // logger.info(Level.INFO, "POST GameModel");
         SecurityUtils.getSubject().checkPermission("GameModel:Create");
         gameModelFacade.create(gm);
-        
+
         return gm;
     }
 
@@ -66,7 +66,10 @@ public class GameModelController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
         GameModel duplicate = gameModelFacade.duplicate(templateGameModelId);
-        duplicate.merge(gm);
+
+        duplicate.setName(gm.getName());
+        //duplicate.merge(gm);
+
         return duplicate;
     }
 
@@ -141,10 +144,12 @@ public class GameModelController {
         Subject s = SecurityUtils.getSubject();
         //String r =  (requestManager.getView() == Views.Index.class) ? "View": "Edit";
 
-        for (GameModel g : gameModelFacade.findAll()) {
+        for (GameModel gm : gameModelFacade.findAll()) {
             //if (s.isPermitted("GameModel:" + r +":gm" + aGm.getId())) {
-            if (s.isPermitted("GameModel:View:gm" + g.getId())) {
-                games.add(g);
+            if (s.isPermitted("GameModel:View:gm" + gm.getId())
+                    || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
+                    || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
+                games.add(gm);
             }
         }
         return games;

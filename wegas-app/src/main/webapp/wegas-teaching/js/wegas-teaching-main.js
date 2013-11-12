@@ -257,7 +257,7 @@ YUI.add("wegas-teaching-main", function(Y) {
             });
             inputNode.plug(Y.Plugin.AutoComplete, {
                 resultHighlighter: "phraseMatch",
-                //resultFilters: "phraseMatch",
+                resultFilters: "phraseMatch",
                 source: links,
                 queryDelay: 0,
                 minQueryLength: 0

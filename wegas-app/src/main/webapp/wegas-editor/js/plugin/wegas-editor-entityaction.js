@@ -63,7 +63,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         execute: function() {
             var entity = this.get(ENTITY);
 
-            EditEntityAction.hideEditForm();
+            EditEntityAction.hideRightTabs();
             if (entity instanceof Y.Wegas.persistence.VariableDescriptor
                     || entity instanceof Y.Wegas.persistence.JpaAccount
                     || entity instanceof Y.Wegas.persistence.GameModel
@@ -167,7 +167,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         hideEditFormOverlay: function() {
             EditEntityAction.form.hideOverlay();
         },
-        hideEditForm: function() {
+        hideRightTabs: function() {
             Y.Widget.getByNode("#rightTabView").destroyAll();
         },
         /**
@@ -207,7 +207,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(NewEntityAction, EditEntityAction, {
         showAddForm: function(entity) {
             var dataSource = this.get("dataSource");
-            EditEntityAction.hideEditForm();
+            EditEntityAction.hideRightTabs();
             EditEntityAction.showEditForm(entity, function(newVal) {
                 dataSource.cache.post(newVal, null, {
                     success: function(e) {
@@ -355,7 +355,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(AddEntityChildAction, NewEntityAction, {
         showAddForm: function(entity, parentData) {
             var dataSource = this.get("dataSource");
-            EditEntityAction.hideEditForm();
+            EditEntityAction.hideRightTabs();
             EditEntityAction.showEditForm(entity, function(newVal) {
                 //@Hack since the server return the parent list,
                 // and we have no way to identify the newly created descriptor
@@ -429,7 +429,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(PublishGameModelAction, EntityAction, {
         execute: function() {
             if (confirm("Are your sure your want to publish this item ?")) {
-//this.get("dataSource").rest.publishObject(this.get("entity"));
+                //this.get("dataSource").rest.publishObject(this.get("entity"));
             }
         }
     }, {
@@ -448,13 +448,14 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     };
     Y.extend(DeleteEntityAction, EntityAction, {
         execute: function() {
-            if (confirm("Are your sure your want to delete this item ?")) {
+            var entity = this.get(ENTITY);
+            if (confirm("Are your sure your want to delete this " + entity.getType().toLowerCase() + " ?")) {
                 this.get("host").showOverlay();
-                this.get("dataSource").cache.deleteObject(this.get(ENTITY));
+                this.get("dataSource").cache.deleteObject(entity);
             }
         }
     }, {
-        NS: "wegas",
+        NS: "DeleteEntityAction",
         NAME: "DeleteEntityAction"
     });
     Plugin.DeleteEntityAction = DeleteEntityAction;

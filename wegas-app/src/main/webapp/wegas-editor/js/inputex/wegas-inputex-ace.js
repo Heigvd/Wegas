@@ -43,29 +43,28 @@ YUI.add('wegas-inputex-ace', function(Y) {
          * Render the field using the YUI Editor widget
          */
         renderComponent: function() {
-//            if (window.ace) {                                                   // Ace is present, run
-//                this.el = Y.Node.create('<div style="">'                      @fixme
-//                        + (this.options.value || "") + '</div>');
-//                this.fieldContainer.appendChild(this.el.getDOMNode());
-//
-//                this.editor = ace.edit(this.el.getDOMNode());
-//
-//                this.session = this.editor.getSession();
-//                this.session.setMode("ace/mode/" + this.options.language);
-//                this.editor.setHighlightActiveLine(false);
-//                this.editor.renderer.setHScrollBarAlwaysVisible(false);
-//
-//                Y.Wegas.app.after("layout:resize", function() {
-//                    Y.once('domready', this.resize, this);
-//                }, this.editor);
-//
-//                Y.after('windowresize', Y.bind(this.editor.resize, this.editor));
-//            } else {                                                            // Fallback
-//                Y.log("Unable to find Ace libraries, falling back to text field", "error", "Wegas.Inputex.Ace");
+            if (window.ace) {                                                   // Ace is present, run
+                this.el = Y.Node.create('<div>' + (this.options.value || "") + '</div>');//@fixme
+                this.fieldContainer.appendChild(this.el.getDOMNode());
+
+                this.editor = ace.edit(this.el.getDOMNode());
+
+                this.session = this.editor.getSession();
+                this.session.setMode("ace/mode/" + this.options.language);
+                this.editor.setHighlightActiveLine(false);
+                this.editor.renderer.setHScrollBarAlwaysVisible(false);
+
+                Y.Wegas.app.after("layout:resize", function() {
+                    Y.once('domready', this.resize, this);
+                }, this.editor);
+
+                Y.after('windowresize', Y.bind(this.editor.resize, this.editor));
+            } else {                                                            // Fallback
+                Y.log("Unable to find Ace libraries, falling back to text field", "error", "Wegas.Inputex.Ace");
                 inputEx.AceField.superclass.renderComponent.call(this);
-//            }
-//            
-//            
+            }
+//
+//
             //this.session.addEventListener("tokenizerUpdate", Y.bind(function(e) {
             //    var i, token,
             //    tokens = this.session.getTokens(e.data.first, e.data.last);

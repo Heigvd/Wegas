@@ -73,7 +73,7 @@ public class Game extends NamedEntity {
      */
     @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference("game-team")
-    @OrderBy("name")
+//    @OrderBy("createdTime")
     private List<Team> teams = new ArrayList<>();
     /**
      *
@@ -125,9 +125,9 @@ public class Game extends NamedEntity {
 
         // Done on join game
         //if (this.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll) && this.teams.isEmpty()) {
-            //Team t = new Team("Default");
-            //t.addPlayer(new Player("Test player"));
-            //this.addTeam(t);
+        //Team t = new Team("Default");
+        //t.addPlayer(new Player("Test player"));
+        //this.addTeam(t);
         //}
         this.setUpdatedTime(new Date());
     }

@@ -47,7 +47,7 @@ YUI.add('wegas-jointeam', function(Y) {
             cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name"));// Set game name
 
             if ((entity instanceof Y.Wegas.persistence.Game &&
-                    !(gameModel && gameModel.get("properties.freeForAll") === "true"))// For games that are free for all (no teams)
+                    !(gameModel && gameModel.get("properties.freeForAll")))// For games that are free for all (no teams)
                     || entity instanceof Y.Wegas.persistence.Team) {            // or for teams,
                 choices = Y.Array.map(teams, function(i) {                      // render team selection
                     return {
@@ -70,13 +70,13 @@ YUI.add('wegas-jointeam', function(Y) {
                     fields: [{
                             type: "select",
                             choices: choices,
-                            label: "Join an existing team"
+                            label: "Select an existing team"
                         }, {
                             type: "string",
                             label: "Name",
-                            typeInvite: "teamName",
+                            typeInvite: "Or create new one",
                             required: true,
-                            value: teamName
+                            //value: teamName
                         }]
                 });
 
@@ -85,39 +85,41 @@ YUI.add('wegas-jointeam', function(Y) {
                     this.teamField.inputs[1].el.focus();
                 }
 
-                this.teamField.inputs[0].hide();                                // Disable team selection everywhere (temporary)
-                this.teamField.inputs[1].el.focus();
+//                if (!gameModel.get("properties.freeTeams")) {
+//                    this.teamField.inputs[0].hide();                            // Disable team selection everywhere (temporary)
+//                    this.teamField.inputs[1].el.focus();
+//                }
 
-                cb.append("<div style=\"color: #505050;\">Members</div>"
-                        + "<div class=\"header yui3-g\"><div class=\"yui3-u\">Email</div><div class=\"yui3-u\">Password</div><div class=\"yui3-u\">First name</div><div class=\"yui3-u\">Last name</div></div>");
+                // cb.append("<div style=\"color: #505050;\">Members</div>"
+                //        + "<div class=\"header yui3-g\"><div class=\"yui3-u\">Email</div><div class=\"yui3-u\">Password</div><div class=\"yui3-u\">First name</div><div class=\"yui3-u\">Last name</div></div>");
 
-                this.playersField = new Y.inputEx.ListField({//                    Render team edition
-                    parentEl: cb,
-                    useButtons: true,
-                    elementType: {
-                        type: "combine",
-                        fields: [{
-                                //type: "email",
-                                typeInvite: "required",
-                                required: true,
-                                size: 13
-                            }, {
-                                type: "password",
-                                required: true,
-                                //typeInvite: "password",                       // typeInvite dont work on password in inputex
-                                size: 13
-                            }, {
-                                typeInvite: "optional",
-                                size: 13
-                            }, {
-                                typeInvite: "optional",
-                                size: 13
-                            }]
-                    },
-                    value: [firstUserCfg]
-                });
-                cb.all("input[type=\"password\"]").setAttribute("placeholder", "required");// Put placeholder on all passwords
-                cb.one(".inputEx-ListField").append(cb.one("img.inputEx-ListField-addButton"));// Place add button at the end of the list
+//                this.playersField = new Y.inputEx.ListField({//                 // Render team edition
+//                    parentEl: cb,
+//                    useButtons: true,
+//                    elementType: {
+//                        type: "combine",
+//                        fields: [{
+//                                //type: "email",
+//                                typeInvite: "required",
+//                                required: true,
+//                                size: 13
+//                            }, {
+//                                type: "password",
+//                                required: true,
+//                                //typeInvite: "password",                       // typeInvite dont work on password in inputex
+//                                size: 13
+//                            }, {
+//                                typeInvite: "optional",
+//                                size: 13
+//                            }, {
+//                                typeInvite: "optional",
+//                                size: 13
+//                            }]
+//                    },
+//                    value: [firstUserCfg]
+//                });
+//                cb.all("input[type=\"password\"]").setAttribute("placeholder", "required");// Put placeholder on all passwords
+//                cb.one(".inputEx-ListField").append(cb.one("img.inputEx-ListField-addButton"));// Place add button at the end of the list
             }
 
             this.joinButton = new Y.Button({//                                  // Render the button
@@ -161,10 +163,10 @@ YUI.add('wegas-jointeam', function(Y) {
                     var selectedField = this.teamField.getSelected(),
                             name = selectedField.getValue();
 
-                    if (!this.playersField.validate()) {
-                        this.showMessage("error", "Enter valid emails and passwords");
-                        return;
-                    }
+//                    if (!this.playersField.validate()) {
+//                        this.showMessage("error", "Enter valid emails and passwords");
+//                        return;
+//                    }
                     if (name === "") {
                         this.showMessage("error", "Enter a valid team name");
                         return;
@@ -207,7 +209,7 @@ YUI.add('wegas-jointeam', function(Y) {
         destructor: function() {
             if (this.teamField) {
                 this.teamField.destroy();
-                this.playersField.destroy();
+//                this.playersField.destroy();
             }
             this.joinButton.destroy();
         },
