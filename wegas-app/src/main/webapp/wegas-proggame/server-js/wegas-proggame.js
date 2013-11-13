@@ -112,7 +112,11 @@ Wegas.mix(ProgGameSimulation.prototype, {
          this.log("Not enough actions to say something");
          return;
          }*/
-
+        this.sendCommand({
+            type: "say",
+            id: this.cObject.id,
+            text: msg
+        });
         this.log(this.cObject.id + " says \"" + msg + "\"");
         this.said = msg;
     },
@@ -312,6 +316,10 @@ function print_r(object) {
 
 function run(playerFn, level) {
     var simulation = new ProgGameSimulation();
-    simulation.run(playerFn, level);
+    try {
+        simulation.run(playerFn, level);
+    } catch (e) {
+        simulation.log(e);
+    }
     return simulation.getCommands();
 }
