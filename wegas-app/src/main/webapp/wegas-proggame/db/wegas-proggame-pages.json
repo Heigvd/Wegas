@@ -233,11 +233,11 @@
         "onWin": "currentLevel.value=4;money.value+=500",
         "cssClass": "wegas-proggame-level",
         "map": [
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
-            [{"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}],
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}]
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
         "api": [{
                 "name": "move"
@@ -253,7 +253,7 @@
                 "id": "Enemy",
                 "direction": 4,
                 "components": "NPC",
-                "x": 4,
+                "x": 5,
                 "y": 2,
                 "actions": 0,
                 "collides": false
@@ -261,7 +261,7 @@
         "plugins": [{
                 "fn": "Popup",
                 "cfg": {
-                    "content": "Bienvenue dans le jeu de la programation. Vous êtes malheureusement coincé à l'intérieur du jeu, et le seul moyen de vous en sortir est de coder vos propres <i>algorightme</i> pour contrôler votre avatar.<div class=\"wegas-proggame-def\">Le mot algorithme est dérivé du nom d'un mathématicien perse qui a vécu au IXème siècle,  Mohammed al-Khwârizmî (en latin Algorismus). Il a proposé un ensemble d'opérations élémentaires à exécuter séquentiellement, pour additionner, soustraire, multiplier et diviser des nombres  décimaux. Voici donc une définition : Un algorithme consiste en la description d'un certain nombre d'opérations élémentaires selon un ordre logique permettant de résoudre un problème sur des données en un nombre fini d'étapes.</div>Pour sortir de ce niveau il faut atteindre la porte de sortie. Vous avez à disposition la fonction <i>move</i> pour l'atteindre: entre simplement le nom de la fonction, suivie de parenthèses et d'un point virgule, comme ceci:<div class=\"wegas-proggame-code\">move();</div>Puis cliquez sur RUN. Vous pouvez appeler plusieurs fois la même fonction."
+                    "content": "Votre avatar, le personnage de gauche, doit atteindre le personnage de droite. Pour ce faire, vous devez programmer la séquence d?instructions nécessaire au déplacement de votre avatar. Les instructions (fonctions) disponibles sont listées sous le bloque ?API? à gauche de l?écran. Pour ce stage, il n?y en a qu?une, la fonction ?move? qui aura pour effet de déplacer votre avatar d?une case en avant dans le sens de marche. Il vous faut donc réaliser la séquence d?instructions complète afin d?atteindre l?autre personnage. Pour voir le résultat de l'exécution de votre code, cliquer sur la flèche verte."
                 }
             }]
     },
@@ -275,15 +275,11 @@
         "onWin": "currentLevel.value=5",
         "cssClass": "wegas-proggame-level",
         "map": [
-            [{"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}],
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 17, "y": 5}, {"x": 21, "y": 5}, {"x": 17, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
-            [{"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 21, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}],
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 17, "y": 5}, {"x": 21, "y": 5}, {"x": 17, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 17, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
-            [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
-            [{"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}]
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 1, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
         "api": [{
                 "name": "move"

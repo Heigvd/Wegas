@@ -54,8 +54,8 @@ YUI.add('wegas-proggame-level', function(Y) {
         renderUI: function() {
             var i, cb = this.get(CONTENTBOX),
                     METHODTOTEXT = {
-                        say: "say(text: String)"
-                    }, api = this.get("api");
+                say: "say(text: String)"
+            }, api = this.get("api");
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one(".code-content"),
                 name: 'text',
@@ -106,7 +106,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 cfg: {
                     method: "POST",
                     data: "JSON.stringify(run("
-                            + "function (name) {" + this.aceField.getValue() + "\n}, "
+                            + "function (name) {with(this) {" + this.aceField.getValue() + "\n}}, "
                             + Y.JSON.stringify(this.toObject()) + "));"
                 },
                 on: {
