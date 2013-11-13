@@ -257,8 +257,8 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Bienvenue dans le jeu de la programation. Vous êtes malheureusement coincé à l'intérieur du jeu, et le seul moyen de vous en sortir est de coder vos propres <i>algorightme</i> pour contrôler votre avatar.<div class=\"wegas-proggame-def\">Le mot algorithme est dérivé du nom d'un mathématicien perse qui a vécu au IXème siècle,  Mohammed al-Khwârizmî (en latin Algorismus). Il a proposé un ensemble d'opérations élémentaires à exécuter séquentiellement, pour additionner, soustraire, multiplier et diviser des nombres  décimaux. Voici donc une définition : Un algorithme consiste en la description d'un certain nombre d'opérations élémentaires selon un ordre logique permettant de résoudre un problème sur des données en un nombre fini d'étapes.</div>Pour sortir de ce niveau il faut atteindre la porte de sortie. Vous avez à disposition la fonction <i>move</i> pour l'atteindre: entre simplement le nom de la fonction, suivie de parenthèses et d'un point virgule, comme ceci:<div class=\"wegas-proggame-code\">move();</div>Puis cliquez sur RUN. Vous pouvez appeler plusieurs fois la même fonction.",
-                    "globalObjective": "Programmer la séquence d?instructions pour déplacer votre avatar jusqu?au personnage en jaune."
+                    "fullObjective": "Votre avatar, le personnage de gauche, doit atteindre le personnage de droite. Pour ce faire, vous devez programmer la séquence d'instructions nécessaire au déplacement de votre avatar. Les instructions (fonctions) disponibles sont listées sous le bloque ?API? à gauche de l'écran. l'API (Application Programming Interface) de ce jeu vous proposera les fonctionnalités de base pour interagir avec votre avatar. Pour ce stage, il n'y en a qu'une, la fonction ?move? qui aura pour effet de déplacer votre avatar d'une case en avant dans le sens de marche. Il vous faut donc réaliser la séquence d'instructions complète afin d'atteindre l'autre personnage. Pour voir le résultat de l'exécution de votre code, cliquez sur la flèche verte.",
+                    "globalObjective": "Programmer la séquence d'instructions pour déplacer votre avatar jusqu'au personnage de droite"
                 }
             }]
     },
@@ -268,14 +268,14 @@
         "type": "ProgGameLevel",
         "arguments": [],
         "maxTurns": 1,
-        "winningCondition": "level.objects[0].x===level.objects[1].x && level.objects[0].y===level.objects[1].y",
+        "winningCondition": "objects[0].x===objects[1].x && objects[0].y===objects[1].y",
         "onWin": "currentLevel.value=5",
         "cssClass": "wegas-proggame-level",
         "map": [
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
-            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 1, "y": 0}, {"x": 0, "y": 0}],
-            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
         "api": [{
@@ -289,22 +289,23 @@
                 "id": "Player",
                 "components": "PC",
                 "direction": 2,
-                "x": 1,
-                "y": 4,
+                "x": 0,
+                "y": 2,
                 "actions": 20
             }, {
                 "id": "Enemy",
                 "components": "NPC",
                 "direction": 4,
-                "x": 5,
-                "y": 4,
+                "x": 6,
+                "y": 2,
                 "actions": 0,
                 "collides": false
             }],
         "plugins": [{
-                "fn": "Popup",
+                "fn": "Objective",
                 "cfg": {
-                    "content": "Bien joué! Je vois que la fonction n'a plus de secrets pour vous!<br /><br />Mais ça ne sera pas si façile cette fois, des obstacles se dressent sur votre route. Utilisez les fonctions<i>rotateLeft</i> et <i>rotateRight</i> pour le contourner."
+                    "fullObjective": "La fonction \"move\" ne vous permettant pas de vous déplacer dans une autre direction que le sens de marche, il serait utile de pouvoir faire tourner votre avatar. Utiliser les nouvelles fonctions de l'API pour programmer la séquence d'instructions permettant à votre avatar d'atteindre l'autre personnage.  ",
+                    "globalObjective": "Programmer la séquence d'instructions pour déplacer votre avatar jusqu'au personnage de droite"
                 }
             }]
     },

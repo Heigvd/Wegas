@@ -82,18 +82,29 @@
 }
 
 .api, .objective {
-    width: 203px;
+    width: 164px;
     height: 219px;
     background: url(../../wegas-proggame/images/proggame-left.png) no-repeat;
     font-family: Verdana;
     padding-top: 20px;
-    cursor: pointer;
 }
 
 .api {
     padding-left: 35px;
 }
+.objective {
+    cursor: pointer;
+}
 
+.objective:hover::before{
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    height: 200px;
+    width: 164px;
+    box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
+}
 .objective .objValue {
     width: 148px;
     margin-left: 18px;

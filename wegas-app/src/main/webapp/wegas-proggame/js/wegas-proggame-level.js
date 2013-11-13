@@ -24,9 +24,9 @@ YUI.add('wegas-proggame-level', function(Y) {
         display: null,
         runButton: null,
         commandsStack: null,
-        RUN_BUTTON_LABEL : "<div class='proggame-play'><span>RUN</span><span> CODE</span></div>",
-        STOP_BUTTON_LABEL : "<span class='proggame-stop'>STOP</span>",
-        NEXT_BUTTON_LABEL : "<span class='proggame-next'>NEXT</span>",
+        RUN_BUTTON_LABEL: "<div class='proggame-play'><span>RUN</span><span> CODE</span></div>",
+        STOP_BUTTON_LABEL: "<span class='proggame-stop'>STOP</span>",
+        NEXT_BUTTON_LABEL: "<span class='proggame-next'>NEXT</span>",
         CONTENT_TEMPLATE: '<div>'
                 + '<div class="yui3-g top">'
 
@@ -182,6 +182,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                         this.consumeCommand();
                         break;
                     case "gameWon":
+                        this.showMessage("info", "You won! You can proceed to next level!");
                         this.runButton.set("label", this.NEXT_BUTTON_LABEL);
                         this.runButton.detachAll("click");
                         this.runButton.on("click", this.doNextLevel, this);
