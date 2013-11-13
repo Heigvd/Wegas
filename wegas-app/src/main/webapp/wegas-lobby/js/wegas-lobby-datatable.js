@@ -126,19 +126,18 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     var createdBy = entity.get("createdBy"),
                             gameModel = Wegas.Facade.GameModel.cache.findById(entity.get("gameModelId"))
 
-                    //if (!gameModel) {
+                    if (!gameModel) {
                         Y.log("Unable to find game model for game: " + entity.get(NAME) + "(" + entity.get("gameModelId") + ")", "error");
-                    //} else {
-                        return {
-                            name: entity.get(NAME),
-                            createdTime: entity.get("createdTime"),
-                            token: gameModel && gameModel.get("properties.freeForAll") ? entity.get("token") : "",
-                            gameModelName: gameModel ? gameModel.get(NAME) : "",
-                            createdBy: createdBy ? createdBy.get(NAME) : "undefined",
-                            teamsCount: gameModel && gameModel.get("properties.freeForAll") ? -1 : entity.get("teams").length,
-                            playersCount: entity.get("playersCount")
-                        };
-                    //}
+                    }
+                    return {
+                        name: entity.get(NAME),
+                        createdTime: entity.get("createdTime"),
+                        token: gameModel && gameModel.get("properties.freeForAll") ? entity.get("token") : "",
+                        gameModelName: gameModel ? gameModel.get(NAME) : "",
+                        createdBy: createdBy ? createdBy.get(NAME) : "undefined",
+                        teamsCount: gameModel && gameModel.get("properties.freeForAll") ? -1 : entity.get("teams").length,
+                        playersCount: entity.get("playersCount")
+                    };
                     break;
 
                 case 'Team':
@@ -277,14 +276,14 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 dataSource: host.get(DATASOURCE)
             };
 
-
             Y.Plugin.EditorDTMenu.currentGameModel = entity;                  // @hack so game model creation will work
 
             if (last_tr) {
                 last_tr.removeClass("wegas-datatable-selected");
             }
             tr.addClass("wegas-datatable-selected");
-
+            console.log("onclick", last_tr, tr, menuItems);
+            console.log("onclick2", entity);
             if (entity) {
                 if (menuItems) {                                                // If there are menu items in the cfg
                     Wegas.Editable.mixMenuCfg(menuItems, data);                 // use them
@@ -303,6 +302,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 if (menuItems.length === 0) {
                     return;
                 }
+            console.log("onclick3", entity);
                 Y.Array.each(this.buttons, function(b) {                        // Remove existing buttons,
                     b.destroy();
                 });
@@ -314,7 +314,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     var button = Wegas.Widget.create(menuItems[0]);
                     button.render().fire("click");
                     button.destroy();
-                    Y.later(50, this, function() {
+                    Y.later(100, this, function() {
                         var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
                         if (target && target.toolbar) {
                             this.buttons = Y.Array.map(menuItems, function(i) {     // Add new buttons to the right tab's toolbar
