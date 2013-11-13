@@ -97,7 +97,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                 if (cTeam) {
                     name = cTeam.get("name") + " : " + name;
                 }
-                if (gameModel && gameModel.get("properties.freeForAll") === true){
+                if (gameModel && gameModel.get("properties.freeForAll")){
                     name = cPlayer.get("name");
                 }
             }

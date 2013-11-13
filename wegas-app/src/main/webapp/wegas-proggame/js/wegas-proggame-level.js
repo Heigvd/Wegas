@@ -24,6 +24,9 @@ YUI.add('wegas-proggame-level', function(Y) {
         display: null,
         runButton: null,
         commandsStack: null,
+        RUN_BUTTON_LABEL : "<div class='proggame-play'><span>RUN</span><span> CODE</span></div>",
+        STOP_BUTTON_LABEL : "<span class='proggame-stop'>STOP</span>",
+        NEXT_BUTTON_LABEL : "<span class='proggame-next'>NEXT</span>",
         CONTENT_TEMPLATE: '<div>'
                 + '<div class="yui3-g top">'
 
@@ -62,6 +65,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: 'ace',
                 height: "300px",
                 language: "javascript",
+                theme: "twilight",
                 value: "//Put your code here..."
             });
             var enemy = this.findObject("Enemy");
@@ -79,7 +83,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.display = new Y.Wegas.ProgGameDisplay(params);
             this.display.render(cb.one(".terrain"));
             this.runButton = new Y.Wegas.Button({
-                label: "<span>RUN</span><span> CODE</span>"
+                label: this.RUN_BUTTON_LABEL
             });
             this.runButton.render(cb.one(".buttons"));
             this.resetUI();
@@ -96,11 +100,11 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             if (this.runButton.get("label") === "STOP") {
                 this.commandsStack = null;
-                this.runButton.set("label", "RUN SCRIPT");
+                this.runButton.set("label", this.RUN_BUTTON_LABEL);
                 return;
             }
             this.resetUI();
-            this.runButton.set("label", "STOP");
+            this.runButton.set("label", this.STOP_BUTTON_LABEL);
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
@@ -112,7 +116,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 on: {
                     success: Y.bind(this.onServerReply, this),
                     failure: Y.bind(function() {
-                        this.runButton.set("label", "RUN SCRIPT");
+                        this.runButton.set("label", this.RUN_BUTTON_LABEL);
                         alert("Your script contains an error.");
                     }, this)
                 }
@@ -178,7 +182,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                         this.consumeCommand();
                         break;
                     case "gameWon":
-                        this.runButton.set("label", "NEXT LEVEL");
+                        this.runButton.set("label", this.NEXT_BUTTON_LABEL);
                         this.runButton.detachAll("click");
                         this.runButton.on("click", this.doNextLevel, this);
                         break;
@@ -194,7 +198,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 this.display.execute(command); // Forware the command to the display
 
             } else if (this.commandsStack) {
-                this.runButton.set("label", "RUN SCRIPT");
+                this.runButton.set("label", this.RUN_BUTTON_LABEL);
             }
         },
         doNextLevel: function() {

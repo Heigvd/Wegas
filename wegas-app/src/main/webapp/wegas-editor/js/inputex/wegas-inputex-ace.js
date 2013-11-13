@@ -31,6 +31,7 @@ YUI.add('wegas-inputex-ace', function(Y) {
             inputEx.AceField.superclass.setOptions.call(this, options);
 
             this.options.language = options.language || "javascript";
+            this.options.theme = options.theme || "textmate";
             this.options.height = options.height || "150px";
         },
         disable: function() {
@@ -51,6 +52,7 @@ YUI.add('wegas-inputex-ace', function(Y) {
 
                 this.session = this.editor.getSession();
                 this.session.setMode("ace/mode/" + this.options.language);
+                this.editor.setTheme("ace/theme/" + this.options.theme);
                 this.editor.setHighlightActiveLine(false);
                 this.editor.renderer.setHScrollBarAlwaysVisible(false);
 
