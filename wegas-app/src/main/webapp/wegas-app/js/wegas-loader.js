@@ -526,8 +526,8 @@ YUI().use(function(Y) {
                     ws_provides: ["JoinTeam", "GameDescription"]
                 },
                 'wegas-join-token': {
-                    path: 'wegas-lobby/js/wegas-joingame-min.js',
-                    requires: ['wegas-jointeam'],
+                    path: 'wegas-lobby/js/wegas-join-token-min.js',
+                    requires: ['wegas-join'],
                     ws_provides: "TokenJoin"
                 },
                 'wegas-loginwidget': {
