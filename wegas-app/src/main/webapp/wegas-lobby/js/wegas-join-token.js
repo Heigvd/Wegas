@@ -99,6 +99,8 @@ YUI.add('wegas-join-token', function(Y) {
             if (this.teamWidget) {
                 this.teamWidget.destroy();
             }
+            this.button.destroy();
+            this.tokenField.destroy();
         },
         /**
          * @function
@@ -117,7 +119,7 @@ YUI.add('wegas-join-token', function(Y) {
                     success: Y.bind(function(e) {
                         var cb = this.get(CONTENTBOX);
                         this.hideOverlay();
-                        cb.empty();
+                        this.destructor();
                         this.teamWidget = new Y.Wegas.JoinTeam({//              // Player can choose or create its team
                             entity: e.response.entities,
                             render: cb
