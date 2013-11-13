@@ -93,7 +93,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         em.flush();                                                             // To retrieve game id
 
         userFacade.addAccountPermission(currentUser.getMainAccount(),
-                "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
+                "Game:View,Edit,Delete,Duplicate,Instantiate:g" + game.getId());                             // Grant permission to creator
 
         try {                                                                   // By default games can be join w/ token
             roleFacade.findByName("Public").addPermission("Game:Token:g" + game.getId());
