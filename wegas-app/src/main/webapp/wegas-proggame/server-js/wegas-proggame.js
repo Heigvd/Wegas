@@ -26,10 +26,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
         this.cObject = null;
         this.said = "";
         this.level = level;
-
         this.objects = level.objects;                                           // Shortcut to level objects
         this.gameOverSent = false;
-        //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
+
+        //"sendCommand({type:'resetLevel', objects: " + JSON.stringify(this.get("objects")) + "});"
         var o, i, j;
         for (i = 0; i < this.objects.length; i += 1) {
             this.objects[i].defaultActions = this.objects[i].actions;
@@ -40,10 +40,9 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
 
         for (i = 0; i < level.maxTurns; i += 1) {
-            this.log('Turn ' + (i + 1));
+            //this.log('Turn ' + (i + 1));
 
             for (j = 0; j < this.objects.length; j += 1) {
-                this.log(playerFn);
                 if (this.checkGameOver())                                       // If the game is already stopped,
                     continue;                                                   // no need to continue
 
@@ -108,17 +107,33 @@ Wegas.mix(ProgGameSimulation.prototype, {
         if (this.checkGameOver())
             return;
 
-        /*if (!consumeActions(object, 1)) {
-         this.log("Not enough actions to say something");
-         return;
-         }*/
+        this.doSay("" + msg);
+
+        this.said = msg;
+    },
+    doSay: function(msg) {
+        this.log(this.cObject.id + " says \"" + msg + "\"");
         this.sendCommand({
             type: "say",
             id: this.cObject.id,
-            text: msg
+            text: msg,
+            duration: 2000
         });
-        this.log(this.cObject.id + " says \"" + msg + "\"");
-        this.said = msg;
+    },
+    read: function() {
+        if (this.checkGameOver())
+            return;
+
+        var panel = this.findAt(this.cObject.x, this.cObject.y),
+                value;
+
+        if (panel && panel.value) {
+            value = this.doEval(panel.value);
+            this.doSay("It's written \"" + value + "\"");
+            return value;
+        } else {
+            this.doSay("There's nothing to read here.");
+        }
     },
     move: function() {
         var object = this.cObject,
@@ -212,7 +227,6 @@ Wegas.mix(ProgGameSimulation.prototype, {
             }
         }
         if (this.level.map[y][x].y === 0 ? !collided : false) {                 // It's a XOR
-            this.log("Map collision" + this.level.map[x][y].y + "*" + this.level.map[x][y].y + "*" + x + "*" + y);
             return true;
         }
         return null;
@@ -246,13 +260,25 @@ Wegas.mix(ProgGameSimulation.prototype, {
             //})(this);
         }
     },
-    findObject: function(id) {
+    find: function(id) {
         for (var i = 0; i < this.objects.length; i = i + 1) {
             if (this.objects[i].id === id) {
                 return this.objects[i];
             }
         }
         return null;
+    },
+    findAt: function(x, y) {
+        for (var i = 0; i < this.objects.length; i = i + 1) {
+            if (this.objects[i].x === x && this.objects[i].y === y
+                    && this.objects[i].id !== "Player") {
+                return this.objects[i];
+            }
+        }
+        return null;
+    },
+    findObject: function(id) {
+        return find(id)
     }
 });
 
@@ -316,10 +342,10 @@ function print_r(object) {
 
 function run(playerFn, level) {
     var simulation = new ProgGameSimulation();
-    try {
-        simulation.run(playerFn, level);
-    } catch (e) {
-        simulation.log(e);
-    }
+//    try {
+    simulation.run(playerFn, level);
+//    } catch (e) {
+//        println(e);
+//    }
     return simulation.getCommands();
 }
