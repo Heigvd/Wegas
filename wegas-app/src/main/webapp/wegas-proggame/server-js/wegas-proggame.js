@@ -1,210 +1,260 @@
 var ret = [], cObject, level;
 
-function resetActions () {
-    for (var i = 0; i < level.objects.length; i++) {
-        level.objects[i].actions = level.objects[i].defaultActions;
-        sendCommand({
-            type: "updated",
-            object: level.objects[i].clone()
-        });
-    }
-}
-function run (playerFn, lvl) {
-    var i;
-    level = lvl;
-
-    //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
-
-    for (i = 0; i < level.objects.length; i += 1) {
-        level.objects[i].defaultActions = level.objects[i].actions;
-    }
-
-    if (level.onStart) {
-        eval(level.onStart);
-    }
-
-    for (i = 0; i < level.maxTurns; i += 1) {
-
-        log('Turn ' + (i + 1));
-
-        for (j = 0; j < level.objects.length; j += 1) {
-
-            if (checkGameOver()) continue;
-
-            o = level.objects[j];
-            if (o.ai) {
-                log(o.id + ' turn');
-                cObject = o.id;
-                eval(o.ai);
-            }
-            if (o.id === "Player") {
-                log('Player turn');
-                cObject = 'Player';
-                playerFn.apply(this, values(getArgs()));
+var Wegas = {//                                                                 // Utilities
+    bind: function(fn, scope) {
+        var scope = scope, fn = fn;
+        return function() {
+            fn.call(scope);
+        };
+    },
+    mix: function(receiver, supplier) {
+        var i;
+        for (i in supplier) {
+            if (supplier.hasOwnProperty(i) && !receiver[i]) {
+                receiver[i] = supplier[i];
             }
         }
-
-        resetActions();
     }
-    if (!checkGameOver()) {
-        log('It\'s lost.');
-    }
+};
 
-    return ret;
+function ProgGameSimulation() {
 }
+Wegas.mix(ProgGameSimulation.prototype, {
+    run: function(playerFn, level) {
+        this.args = {};
+        this.ret = [];
+        this.cObject = null;
+        this.said = "";
+        this.level = level;
 
-function sendCommand(cfg) {
-    ret.push(cfg);
-}
-function log (text) {
-    ret.push({
-        type: 'log',
-        text: text
-    });
-}
-var args = {};
-function pushArg(name, val) {
-    args[name] = val;
-}
-function getArgs() {
-    return args;
-}
-function consumeActions(object, actions) {
-    if (object.actions - actions < 0) {
-        //log("Not enough actions");
-        return false;
-    }
-    object.actions -= actions;
-    return true;
-}
-var said = "";
-function say(msg) {
-    var object = findObject(cObject);
+        this.objects = level.objects;                                           // Shortcut to level objects
+        this.gameOverSent = false;
+        //"sendCommand({type:'resetLevel', objects: " + Y.JSON.stringify(this.get("objects")) + "});"
+        var o, i, j;
+        for (i = 0; i < this.objects.length; i += 1) {
+            this.objects[i].defaultActions = this.objects[i].actions;
+        }
 
-    if (checkGameOver()) return;
+        if (level.onStart) {
+            eval(level.onStart);
+        }
 
-    /*if (!consumeActions(object, 1)) {
-        log("Not enough actions to say something");
-        return;
-    }*/
+        for (i = 0; i < level.maxTurns; i += 1) {
+            this.log('Turn ' + (i + 1));
 
-    log(object.id + " says \"" + msg + "\"" );
-    said = msg;
-}
+            for (j = 0; j < this.objects.length; j += 1) {
+                this.log(playerFn);
+                if (this.checkGameOver())                                       // If the game is already stopped,
+                    continue;                                                   // no need to continue
 
-function move() {
-    var object = findObject(cObject),
-    moveV = dirToVector(object.direction);
+                this.cObject = o = this.objects[j];                             // Set up a global reference
 
-    if (checkGameOver()) return;
+                if (o.id === "Player") {                                        // If current object is the player,
+                    //this.log('Your turn');
+                    this.doPlayerEval(playerFn);                                // run his code
+                }
+                if (o.ai) {                                                     // If object has an AI,
+                    //this.log(o.id + ' turn');
+                    this.doEval(o.ai);                                          // run its code
+                }
+            }
 
-    if (!consumeActions(object, 1)) {
-        log("Not enough actions to move");
-        return;
-    }
+            //this.resetActions();                                              // Reset available action at the beginning of each turn
+        }
+        if (!this.checkGameOver()) {                                            // If the game is still not won,
+            this.log('It\'s lost.');                                            // then it's definitely lost
+        }
+    },
+    resetActions: function() {
+        for (var i = 0; i < this.objects.length; i++) {
+            this.objects[i].actions = this.objects[i].defaultActions;
+            this.sendCommand({
+                type: "updated",
+                object: this.objects[i].clone()
+            });
+        }
+    },
+    commands: {
+        move: function() {
+        }
+    },
+    sendCommand: function(cfg) {
+        this.ret.push(cfg);
+    },
+    getCommands: function() {
+        return this.ret;
+    },
+    log: function(text) {
+        this.sendCommand({
+            type: 'log',
+            text: text
+        });
+    },
+    pushArg: function(name, val) {
+        this.args[name] = val;
+    },
+    getArgs: function() {
+        return this.args;
+    },
+    consumeActions: function(object, actions) {
+        if (object.actions - actions < 0) {
+            //this.log("Not enough actions");
+            return false;
+        }
+        object.actions -= actions;
+        return true;
+    },
+    say: function(msg) {
+        if (this.checkGameOver())
+            return;
 
-    if (checkCollision(cObject, object.x + moveV.x, object.y + moveV.y)) {
-        log("Something is blocking the way");
-    } else {
-        object.x += moveV.x;
-        object.y += moveV.y;
-        sendCommand({
+        /*if (!consumeActions(object, 1)) {
+         this.log("Not enough actions to say something");
+         return;
+         }*/
+
+        this.log(this.cObject.id + " says \"" + msg + "\"");
+        this.said = msg;
+    },
+    move: function() {
+        var object = this.cObject,
+                moveV = dirToVector(object.direction);
+
+        if (this.checkGameOver())
+            return;
+
+        if (!this.consumeActions(object, 1)) {
+            this.log("Not enough actions to move");
+            return;
+        }
+
+        if (this.checkCollision(object, object.x + moveV.x, object.y + moveV.y)) {
+            this.log("Something is blocking the way");
+        } else {
+            object.x += moveV.x;
+            object.y += moveV.y;
+            this.sendCommand({
+                type: 'move',
+                object: object.clone()
+            });
+        }
+    },
+    rotate: function(dir) {
+        var object = this.cObject;
+
+        if (this.checkGameOver())
+            return;
+
+        if (!this.consumeActions(object, 1)) {
+            this.log("Not enough actions to rotate.");
+            return;
+        }
+        object.direction += dir;
+        if (object.direction > 4)
+            object.direction = 1;
+        if (object.direction < 1)
+            object.direction = 4;
+        this.sendCommand({
             type: 'move',
             object: object.clone()
         });
-    }
+    },
+    right: function() {
+        this.rotate(1);
+    },
+    left: function() {
+        this.rotate(-1);
+    },
+    fire: function() {
+        var i, source = this.cObject;
+        println("fire" + source.actions);
 
-}
-function rotate (dir) {
-    var object = findObject(cObject);
+        if (this.checkGameOver())
+            return;
 
-    if (checkGameOver()) return;
-
-    if (!consumeActions(object, 1)) {
-        log("Not enough actions to rotate.");
-        return;
-    }
-    object.direction += dir;
-    if (object.direction > 4) object.direction = 1;
-    if (object.direction < 1) object.direction = 4;
-    sendCommand({
-        type: 'move',
-        object: object.clone()
-    });
-}
-function right () {
-    rotate(1);
-}
-function left () {
-    rotate(-1);
-}
-
-function fire () {
-    var i, source = findObject(cObject);
-    println("fire" + source.actions);
-
-    if (checkGameOver()) return;
-
-    if (!consumeActions(source, 1)) {
-        log("Not enough actions to fire.");
-        return;
-    }
-
-    sendCommand({
-        type: 'fire',
-        object: source.clone()
-    });
-
-    var colidee, dirV = dirToVector(source.direction);
-
-    for (i = 0; i <= source.range; i++) {
-        colidee = checkCollision(cObject, source.x + (i * dirV.x), source.y + (i * dirV.y));
-        if (colidee) {
-            colidee.life = 0;
-            sendCommand({
-                type: 'die',
-                object: colidee.clone()
-            });
+        if (!this.consumeActions(source, 1)) {
+            this.log("Not enough actions to fire.");
+            return;
         }
-    }
-}
 
-function checkCollision(sourceId, x, y) {
-    var o, k, objects = level.objects;
-    for (k=0; k < objects.length; k++) {
-        o = objects[k];
-        if (o.x === x && o.y === y && o.id !== sourceId &&
-            (o.collides === undefined || o.collides)) {
-            return objects[k];
-        }
-    }
-    return null;
-}
-
-var gameOverSent = false;
-function checkGameOver (cfg) {
-    if (gameOverSent) {
-        return true;
-    } else if (eval(level.winningCondition)) {
-        gameOverSent = true;
-        log("You won!");
-        ret.push({
-            type: "gameWon"
+        this.sendCommand({
+            type: 'fire',
+            object: source.clone()
         });
-        return true;
-    }
-    return false;
-}
-function findObject (id) {
-    var objects = level.objects;
-    for (var i = 0; i < objects.length; i = i + 1) {
-        if (objects[i].id === id) {
-            return objects[i];
+
+        var colidee, dirV = dirToVector(source.direction);
+
+        for (i = 0; i <= source.range; i++) {
+            colidee = this.checkCollision(this.cObject, source.x + (i * dirV.x), source.y + (i * dirV.y));
+            if (colidee) {
+                colidee.life = 0;
+                this.sendCommand({
+                    type: 'die',
+                    object: colidee.clone()
+                });
+            }
         }
+    },
+    checkCollision: function(source, x, y) {
+        var o, k, collides,
+                collided = false;
+        for (k = 0; k < this.objects.length; k++) {
+            o = this.objects[k];
+            collides = (o.x === x && o.y === y && o.id !== source.id);
+            collided = collided || collides;
+            if (collides && (o.collides === undefined || o.collides)) {
+                this.log("Player collision");
+                return o;
+            }
+        }
+        if (this.level.map[y][x].y === 0 ? !collided : false) {                 // It's a XOR
+            this.log("Map collision" + this.level.map[x][y].y + "*" + this.level.map[x][y].y + "*" + x + "*" + y);
+            return true;
+        }
+        return null;
+    },
+    checkGameOver: function() {
+        if (this.gameOverSent) {
+            return true;
+        } else if (this.doEval(this.level.winningCondition)) {
+            this.gameOverSent = true;
+            this.log("You won!");
+            this.sendCommand({
+                type: "gameWon"
+            });
+            return true;
+        }
+        return false;
+    },
+    doEval: function(code) {
+        with (this) {
+            return eval(code);
+        }
+    },
+    doPlayerEval: function(playerFn) {
+//        var scope = {};
+//        for (i in this.commands) {
+//            scope[i] = Wegas.bind(this.commands[i], this);
+//        }
+        with (this) {
+            //(function(that) {
+            playerFn.apply(this, values(this.getArgs()));                       // run fn
+            //})(this);
+        }
+    },
+    findObject: function(id) {
+        for (var i = 0; i < this.objects.length; i = i + 1) {
+            if (this.objects[i].id === id) {
+                return this.objects[i];
+            }
+        }
+        return null;
     }
-    return null;
-}
-Object.prototype.clone = function () {
+});
+
+
+// *** Utilities *** //
+Object.prototype.clone = function() {
     var newObj = (this instanceof Array) ? [] : {};
     for (var i in this) {
         if (i == 'clone')
@@ -212,11 +262,10 @@ Object.prototype.clone = function () {
         if (this[i] && typeof this[i] == "object") {
             newObj[i] = this[i].clone();
         } else
-            newObj[i] = this[i]
+            newObj[i] = this[i];
     }
     return newObj;
 };
-// *** Utilities *** //
 function dirToVector(dir) {
     var dirX = 0, dirY = 0;
     switch (dir) {
@@ -244,4 +293,25 @@ function values(object) {
         ret.push(object[i]);
     }
     return ret;
+}
+
+function print_r(object) {
+    var i;
+    for (i in object) {
+        if (object.hasOwnProperty(i)) {
+            print(i + ": ");
+            if (object[i] instanceof Object) {
+                println(" ");
+                print_r(object[i]);
+            } else {
+                println(object[i]);
+            }
+        }
+    }
+}
+
+function run(playerFn, level) {
+    var simulation = new ProgGameSimulation();
+    simulation.run(playerFn, level);
+    return simulation.getCommands();
 }
