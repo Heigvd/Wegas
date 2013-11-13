@@ -18,6 +18,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -65,11 +66,9 @@ public class GameController {
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     public Game find(@PathParam("entityId") Long entityId) {
-        final Game g = gameFacade.find(entityId);
+        this.checkPermissions(entityId);
 
-        SecurityHelper.checkPermission(g, "View");
-
-        return g;
+        return gameFacade.find(entityId);
     }
 
     /**
@@ -174,7 +173,7 @@ public class GameController {
         if (game.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll)) {   // If game is "freeForAll" (single team)
             if (game.getTeams().isEmpty()) {
                 team = new Team("Default");
-                game.addTeam(team);
+                teamFacade.create(game.getId(), team);
             } else {
                 team = game.getTeams().get(0);                                  // Join the first team available
             }
@@ -186,7 +185,7 @@ public class GameController {
 
         } catch (NoResultException e) {             // If there is no NoResultException, everything is ok, we can return the game
             this.checkPermissions(game.getId());
-            return (team != null) ? team : game;
+            return (team != null) ? new ArrayList(Arrays.asList(team, game)) : game;
         }
     }
 
