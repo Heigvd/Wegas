@@ -177,16 +177,16 @@ YUI.add('wegas-proggame-display', function(Y) {
                     }
                     break;
                 case "say":
-                    entity = this.getEntity(command.object.id);
+                    entity = this.getEntity(command.id);
                     this.allowNextCommand = true;
                     if (entity && typeof entity.say === 'function') {
-                        entity.say(/*text[, duration(3500)]*/);                         //@TODO : insert vars
+                        entity.say(command.text, command.duration);
                     } else {
                         this.fire('commandExecuted');
                     }
                     break;
                 default:
-                    Y.log("No action defined for '" + command.type + "'");
+                    Y.log("No action defined for '" + command.type + "'", "debug", "Y.Wegas.ProggameDisplay");
             }
         },
         getRealXYPos: function(position) {
@@ -308,9 +308,9 @@ YUI.add('wegas-proggame-display', function(Y) {
                 }
                 speed = (speed > 0) ? speed : 1;
                 dist = Math.sqrt(Crafty.math.squaredDistance(this.pos()._x, this.pos()._y, toX, toY));
-                time = Math.round(((dist / GRIDSIZE) * (100 / speed))) + 1; //+1 because if time = 0, time = infinite
+                time = Math.round(((dist / GRIDSIZE) * (100 / speed)));
                 this.tweenEnd.length = 0;
-                this.tween({x: toX, y: toY}, time);
+                this.tween({x: toX, y: toY}, time || 1); //1 because if time = 0, time = infinite
             },
             dir2anim: function(direction) {
                 switch (direction) {
@@ -341,7 +341,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this.shot = Crafty.e('LightningShot');
                 this.shot.attr('x', this.pos()._x);
                 this.shot.attr('y', this.pos()._y);
-                this.shot.execMove(dir, toX, toY, ProgGameDisplay.MOVE.FIRE);
+                this.shot.execMove(dir, toX, toY, ProgGameDisplay.SPEED.FIRE);
             }
         });
 
@@ -471,6 +471,11 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.sprite(15, 6);
                     Crafty.trigger('commandExecuted');
                 });
+            }
+        });
+        Crafty.c("Panel", {
+            init: function() {
+                this.requires("Tile, TerrainSprite, Speaker").sprite(26, 31);
             }
         });
     }());
