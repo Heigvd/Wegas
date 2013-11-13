@@ -3,6 +3,7 @@
 .cl {
     clear:both;
 }
+
 .wegas-absolutelayout {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 9pt;
@@ -59,6 +60,8 @@
     padding-top: 15px;
     font-family: Ravie;
     font-size: 19px;
+    color: rgba(163, 184, 89, 1);
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
 .menu-loginbutton:hover::before{
@@ -78,13 +81,30 @@
     color: transparent;
 }
 
-.api {
+.api, .objective {
     width: 203px;
-    height: 241px;
+    height: 219px;
     background: url(../../wegas-proggame/images/proggame-left.png) no-repeat;
     font-family: Verdana;
     padding-top: 20px;
+    cursor: pointer;
+}
+
+.api {
     padding-left: 35px;
+}
+
+.objective .objValue {
+    width: 148px;
+    margin-left: 18px;
+    overflow: auto;
+    height: 158px;
+}
+
+.objective h1 {
+    font-family: Blackadder ITC;
+    margin-left: 30px;
+    margin-bottom: 6px;
 }
 
 .api h1 {
@@ -93,15 +113,19 @@
     margin-bottom: 6px;
 }
 
-.game-area {
-    width: 940px;
-    height: 692px;
+.wegas-proggame-level {
     background: url(../../wegas-proggame/images/proggame-right-level.png) no-repeat;
+    height: 699px;
+}
+
+.game-area {
+    background: url(../../wegas-proggame/images/proggame-right.png) no-repeat;
+    height: 699px;
 }
 
 .wegas-inbox .horizontal-tabview {
     margin-left: 15px;
-    height: 415px;
+    height: 641px;
     overflow: auto;
     width: 911px;
 }
@@ -115,6 +139,10 @@
     font-family: Myriad Pro;
     font-size: 12pt;
     text-align: center;
+}
+
+.ui .terrain-ui {
+    display: none;
 }
 
 .topright {
@@ -131,8 +159,25 @@
     position: relative;
     top: 70px;
     left: -7px;
-    background-color: transparent;
+    background-color: rgba(168, 83, 10, 0.5);
+    border: solid 1px rgb(75, 74, 74);
     box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.75), 1px 1px 1px rgba(50, 50, 50, 0.75);
+    color: transparent;
+}
+
+.proggame-play {
+    background: url(../../wegas-proggame/images/proggame-play.png) no-repeat 0px -4px;
+    height: 31px;
+}
+
+.proggame-stop {
+    background: url(../../wegas-proggame/images/proggame-stop.png) no-repeat 2px -1px;
+    height: 29px;
+}
+
+.proggame-next {
+    background: url(../../wegas-proggame/images/proggame-next.png) no-repeat 0px -4px;
+    height: 29px;
 }
 
 .topright button span{
@@ -170,8 +215,8 @@
 }
 
 .topcenter .terrain {
-    margin-left: 340px;
-    margin-top: 44px;
+    margin-left: 373px;
+    margin-top: 137px;
 }
 
 .code {
@@ -182,9 +227,11 @@
     font-family: Verdana;
     color:  #fefefe;
     right: 277px;
+    width: 640px;
 }
 .code .inputEx-Field {
     float: none; /* Prevent inputex default to preserve width*/
+    margin-top: 5px;
 }
 
 .wegas-proggame-level-content .code textarea {
@@ -252,6 +299,8 @@
     padding: 3px;
 }
 .yui3-proggame-alignable .table {
+    height: 64px;
+    overflow: hidden;
     background: url(../../wegas-proggame/images/proggame-sprite-dalles.png) no-repeat rgb(10,10,10);
 }
 

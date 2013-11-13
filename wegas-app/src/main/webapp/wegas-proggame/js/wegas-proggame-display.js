@@ -38,7 +38,8 @@ YUI.add('wegas-proggame-display', function(Y) {
                     map = this.get('map');
 
             Crafty.init(GRIDSIZE * this.gridW, GRIDSIZE * this.gridH);
-
+            /* allow overflow, for text (say). Works only for DOM elements*/
+            Crafty.stage.elem.style.overflow = "visible";
             Crafty.refWidget = this;
             if (Crafty.support.canvas) {
                 Crafty.canvas.init();
@@ -171,6 +172,15 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.allowNextCommand = true;
                     if (entity && entity.execTrap) {
                         entity.execTrap();
+                    } else {
+                        this.fire('commandExecuted');
+                    }
+                    break;
+                case "say":
+                    entity = this.getEntity(command.object.id);
+                    this.allowNextCommand = true;
+                    if (entity && typeof entity.say === 'function') {
+                        entity.say(/*text[, duration(3500)]*/);                         //@TODO : insert vars
                     } else {
                         this.fire('commandExecuted');
                     }
@@ -364,29 +374,42 @@ YUI.add('wegas-proggame-display', function(Y) {
         });
         Crafty.c("Character", {
             init: function() {
-                this.requires("2D," + Crafty.refWidget.renderMethod + ", HumanSprite, SpriteAnimation, move4Direction, Crafty Time")
+                this.requires("2D," + Crafty.refWidget.renderMethod + ", HumanSprite, SpriteAnimation, move4Direction, Speaker")
                         .animate("moveUp", 0, 2, 7)
                         .animate("moveRight", 0, 0, 7)
                         .animate("moveDown", 0, 2, 7)
                         .animate("moveLeft", 0, 1, 7);
-            },
+            }
+        });
+        Crafty.c("Speaker", {
             say: function(text, delay) {
-                var textE = Crafty.e("2D, DOM, Text");
-                textE.text(text)
-                        .attr({x: this.x, y: this.y - 20, z: 401})
+                var textE = Crafty.e("2D, DOM, Text")
+                        .text(text)
+                        .attr({"z": 401, "visible": false})
                         .css({
-                            "background-color": "white",
-                            "color": "#580000",
-                            "border": "1px solid #580000",
+                            "background-color": "rgb(50, 50, 40)",
+                            "color": "white",
+                            "border": "2px solid #FFFFFF",
                             "line-height": "1.1em",
                             "font-size": "0.9em",
-                            "padding": "0.4em",
-                            "width": "9em",
-                            "max-width": "10em"
-                        });
+                            "padding": "4px",
+                            "max-width": "108px",
+                            "visibility": "hidden"
+                        }), POS = [this._x, this._y];
+
+
+                textE.bind("Draw", function(e) {
+                    this.unbind("Draw");
+                    Y.later(20, this, function() {
+                        this.attr({x: POS[0] - (this._element.offsetWidth / 2) + 14, y: POS[1] - this._element.offsetHeight - 10});
+                        this.visible = true;
+                    });
+
+                });
                 this.attach(textE);
                 Y.later(delay || 3500, textE, function() {
                     this.destroy();
+                    Crafty.trigger('commandExecuted');
                 });
             }
         });
