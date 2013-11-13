@@ -248,6 +248,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: "array",
                 _inputex: {
                     useButtons: true,
+                    sortable: "true",
                     elementType: {
                         type: "contextgroup",
                         contextKey: "components",
@@ -360,10 +361,10 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         label: "ID",
                                         value: "Panel"
                                     }, {
-                                        name: "returnVal",
-                                        label: "Function",
+                                        name: "value",
+                                        label: "Value",
                                         type: "text",
-                                        value: "function(){return 'Hello World';}"
+                                        value: "'Hello World !'"
                                     }, {
                                         name: "x",
                                         type: "number",
