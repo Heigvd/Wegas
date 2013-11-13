@@ -182,7 +182,7 @@ public class Game extends NamedEntity {
     /**
      * @return the gameModel
      */
-    @JsonBackReference
+    @JsonView(Views.ExtendedI.class)
     public GameModel getGameModel() {
         return gameModel;
     }
@@ -190,7 +190,6 @@ public class Game extends NamedEntity {
     /**
      * @param gameModel the gameModel to set
      */
-    @JsonBackReference
     public void setGameModel(GameModel gameModel) {
         this.gameModel = gameModel;
     }

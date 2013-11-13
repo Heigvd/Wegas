@@ -42,8 +42,8 @@ YUI.add('wegas-join-token', function(Y) {
             this.tokenField = new Y.inputEx.StringField({// Render
                 required: true,
                 parentEl: cb,
-                label: "Enrolement key",
-                typeInvite: "token"
+                label: "Enrolment key",
+                typeInvite: "type here"
             });
 
             if (this.get("displayPublicGames")) {
@@ -110,13 +110,16 @@ YUI.add('wegas-join-token', function(Y) {
             this.showOverlay();
             Y.Wegas.Facade.Game.sendRequest({
                 request: "/JoinGame/" + token,
+                cfg: {
+                    updateCache: false
+                },
                 on: {
                     success: Y.bind(function(e) {
                         var cb = this.get(CONTENTBOX);
                         this.hideOverlay();
                         cb.empty();
                         this.teamWidget = new Y.Wegas.JoinTeam({//              // Player can choose or create its team
-                            entity: e.response.entity,
+                            entity: e.response.entities,
                             render: cb
                         });
                         this.teamWidget.addTarget(this);                        // So overlay and message events will be forwarded
