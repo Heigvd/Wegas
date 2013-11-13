@@ -41,9 +41,9 @@ YUI.add("wegas-inputex-var-autocomplete", function(Y) {
             inputEx.StringField.superclass.onFocus.call(this, d);
         },
         findVariable: function(varName) {
-    //use flatten function (in Wegas.cache)
-            this.variables =  Y.Wegas.Facade.VariableDescriptor.cache.doFind("GET", "TaskDescriptor");
-            console.log(variables);
+            //use flatten function (in Wegas.cache)
+            this.variables = Y.Wegas.Facade.VariableDescriptor.cache.doFind("GET", "TaskDescriptor");
+            // console.log(variables);
         }
     });
 
