@@ -74,9 +74,16 @@ YUI.add('wegas-editor-action', function(Y) {
                 Y.Widget.getByNode("#rightTabView").destroyAll();
             }
 
-            Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"), {
-                selected: (this.get("emptyTab") || this.get("tabSelector") !== "#rightTabView") ? 2 : 0
-            }, this.get("wchildren"));    // Forward plugin data to the target widget
+            var tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"),
+                    {}, this.get("wchildren"));                                 // Forward plugin data to the target widget
+
+            if (this.get("emptyTab") || this.get("tabSelector") !== "#rightTabView") {// @hack
+                tab.set("selected", 2);
+            }
+
+            if (this.get("tabSelector") !== "#rightTabView") {                          // @hack
+                tab.plug(Y.Plugin.Removeable);
+            }
         }
 
     }, {

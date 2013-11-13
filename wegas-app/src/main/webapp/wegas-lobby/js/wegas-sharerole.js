@@ -22,12 +22,11 @@ YUI.add('wegas-sharerole', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
                     e = this.get("entity"),
-                    gameModel = (e instanceof Y.Wegas.persistence.Game) ?
-                    Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e;
+                    gameModel = (e instanceof Y.Wegas.persistence.Game) ? Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e;
 
-//            if (!gameModel.get("properties.freeForAll") && !gameModel.get("properties.freeTeams")) {
-//                this.set("visible", false);
-//            }
+            //if (!gameModel.get("properties.freeForAll") && !gameModel.get("properties.freeTeams")) {
+            //    this.set("visible", false);
+            //}
 
             this.targetEntityId = (e instanceof Y.Wegas.persistence.GameModel) ? "gm" + e.get("id")
                     : "g" + e.get("id");
