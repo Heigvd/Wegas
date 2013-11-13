@@ -124,21 +124,21 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
                 case 'Game':
                     var createdBy = entity.get("createdBy"),
-                            gameModel = Wegas.Facade.GameModel.cache.findById(entity.get("gameModelId"));
+                            gameModel = Wegas.Facade.GameModel.cache.findById(entity.get("gameModelId"))
 
-                    if (!gameModel) {
-                        Y.log("Unable to find game model for game: " + entity.get(NAME), "error");
-                    } else {
+                    //if (!gameModel) {
+                        Y.log("Unable to find game model for game: " + entity.get(NAME) + "(" + entity.get("gameModelId") + ")", "error");
+                    //} else {
                         return {
                             name: entity.get(NAME),
                             createdTime: entity.get("createdTime"),
-                            token: gameModel.get("properties.freeForAll") ? entity.get("token") : "",
-                            gameModelName: gameModel.get(NAME),
+                            token: gameModel && gameModel.get("properties.freeForAll") ? entity.get("token") : "",
+                            gameModelName: gameModel ? gameModel.get(NAME) : "",
                             createdBy: createdBy ? createdBy.get(NAME) : "undefined",
-                            teamsCount: gameModel.get("properties.freeForAll") ? -1 : entity.get("teams").length,
+                            teamsCount: gameModel && gameModel.get("properties.freeForAll") ? -1 : entity.get("teams").length,
                             playersCount: entity.get("playersCount")
                         };
-                    }
+                    //}
                     break;
 
                 case 'Team':

@@ -518,8 +518,8 @@ YUI().use(function(Y) {
                     requires: ['inputex-select'],
                     ix_provides: 'roleselect'
                 },
-                'wegas-jointeam': {
-                    path: 'wegas-lobby/js/wegas-jointeam-min.js',
+                'wegas-join': {
+                    path: 'wegas-lobby/js/wegas-join-min.js',
                     requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
                         'wegas-editor-action', "wegas-inputex-multipleoptions",
                         'inputex-select', 'inputex-string', "inputex-list", "inputex-combine", "inputex-password", "inputex-email"],

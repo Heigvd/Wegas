@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-jointeam', function(Y) {
+YUI.add('wegas-join', function(Y) {
     "use strict";
 
     /**
@@ -34,17 +34,37 @@ YUI.add('wegas-jointeam', function(Y) {
          * For creating the field inputEx libary is used
          */
         renderUI: function() {
+            var cb = this.get(CONTENTBOX),
+                    game = this.getTargetGame();
+
+            this.joinButton = new Y.Button({//                                  // Render the button
+                label: "Start playing",
+                render: cb,
+                visible: false
+            });
+
+            Y.Wegas.Facade.Game.cache.getWithView(game, "Extended", {/// Get the game model full description
+                on: {
+                    success: Y.bind(this.onGameRetrieved, this)
+                }
+            });
+        },
+        onGameRetrieved: function(e) {
             var emptyChoices, choices,
                     cb = this.get(CONTENTBOX),
                     entity = this.get("entity"),
                     game = this.getTargetGame(),
                     teams = game.get("teams"),
-                    gameModel = Y.Wegas.Facade.GameModel.cache.findById(game.get("gameModelId")),
+                    // gameModel = Y.Wegas.Facade.GameModel.cache.findById(game.get("gameModelId")),
+                    gameModel = e.response.entity.get("gameModel"),
                     teamName = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("name")
                     : game.get("name") + "-" + (game.get("teams").length + 1),
                     firstUserCfg = [teamName, "", null, null];
 
             cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name"));// Set game name
+            cb.one(".description").setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")
+                    .removeClass("wegas-loading-div");
+
 
             if ((entity instanceof Y.Wegas.persistence.Game &&
                     !(gameModel && gameModel.get("properties.freeForAll")))// For games that are free for all (no teams)
@@ -84,7 +104,6 @@ YUI.add('wegas-jointeam', function(Y) {
                     this.teamField.inputs[0].disable();
                     this.teamField.inputs[1].el.focus();
                 }
-
 //                if (!gameModel.get("properties.freeTeams")) {
 //                    this.teamField.inputs[0].hide();                            // Disable team selection everywhere (temporary)
 //                    this.teamField.inputs[1].el.focus();
@@ -122,21 +141,8 @@ YUI.add('wegas-jointeam', function(Y) {
 //                cb.one(".inputEx-ListField").append(cb.one("img.inputEx-ListField-addButton"));// Place add button at the end of the list
             }
 
-            this.joinButton = new Y.Button({//                                  // Render the button
-                label: "Start playing",
-                render: cb
-            });
-
-            Y.Wegas.Facade.GameModel.cache.getWithView(gameModel, "Extended", {/// Get the game model full description
-                on: {
-                    success: Y.bind(function(e) {
-                        cb.one(".description").setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")
-                                .removeClass("wegas-loading-div");
-                    }, this)
-                }
-            });
-        },
-        /**
+            this.joinButton.set("visible", true);
+        }, /**
          * @function
          * @private
          * @description All events are added to the buttons
@@ -147,7 +153,7 @@ YUI.add('wegas-jointeam', function(Y) {
             this.joinButton.on("click", function(e) {                           // Join button click
                 var entity = this.get("entity");
                 if (!this.teamField) {                                          // 1st case: free for all games or joining a team directly,
-                    this.sendTokenJoinGame(entity.get("token"));                // use the token to join
+                    this.sendTokenJoinGame(this.getTargetTeam().get("token"));                // use the token to join
 
                 } else if (this.teamField.getSelected()
                         instanceof Y.inputEx.SelectField) {                     // 2nd case, player selected a team,
@@ -213,10 +219,27 @@ YUI.add('wegas-jointeam', function(Y) {
             }
             this.joinButton.destroy();
         },
+        getTargetTeam: function() {
+            var entity = this.get("entity");
+            if (Y.Lang.isArray(entity)) {
+                return entity[0];
+            } else {
+                return entity;
+            }
+        },
         getTargetGame: function() {
             var entity = this.get("entity");
-            return (entity instanceof Y.Wegas.persistence.Team) ? Y.Wegas.Facade.Game.cache.findById(entity.get("gameId"))
-                    : entity;
+            if (Y.Lang.isArray(entity)) {
+                if (entity[1]) {
+                    return entity[1];
+                } else {
+                    return entity[0];
+                }
+            } else if (entity instanceof Y.Wegas.persistence.Team) {
+                return Y.Wegas.Facade.Game.cache.findById(entity.get("gameId"));
+            } else {
+                entity;
+            }
         },
         /**
          * @function
@@ -228,15 +251,18 @@ YUI.add('wegas-jointeam', function(Y) {
             Y.Wegas.Facade.Game.sendRequest({
                 request: "/JoinTeam/" + teamId,
                 cfg: {
-                    updateCache: !this.get("customEvent")
+                    updateCache: false
                 },
                 on: {
                     success: Y.bind(function() {
                         this.showMessage("success", "Game joined");
+
+                        Y.fire("gameJoined", {
+                            gameId: this.getTargetGame().get("id"),
+                            game: this.getTargetGame()
+                        });
+
                         this.get("contentBox").empty();
-
-                        Y.fire("gameJoined", {gameId: this.getTargetGame().get("id")});
-
                         var parent = this.get("parent");
                         if (parent) {
                             parent.remove();

@@ -53,14 +53,15 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        sendInitialRequest: function() {
+        sendInitialRequest: function(cfg) {
+            cfg = cfg || {};
             if (this.get("initialRequest") !== undefined) {                     // Use this condition to allow empty strings (e.g. ")
-                return this.sendRequest({
+                return this.sendRequest(Y.mix(cfg, {
                     request: this.get("initialRequest"),
                     cfg: {
                         initialRequest: true
                     }
-                });
+                }));
             } else {
                 return null;
             }
@@ -104,6 +105,7 @@ YUI.add('wegas-datasource', function(Y) {
                         && payload.serverResponse.get("entities")
                         && payload.serverResponse.get("entities").length > 0) {
                     payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
+                    payload.response.entities = payload.serverResponse.get("entities");
                 }
                 if (this.cache && payload.cfg.updateCache !== false) {
                     this.cache.onResponseRevived(payload);

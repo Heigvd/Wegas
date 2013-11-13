@@ -322,7 +322,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the games
      */
-    @JsonManagedReference
     @XmlTransient
     public List<Game> getGames() {
         return games;
@@ -331,9 +330,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @param games the games to set
      */
-    @JsonManagedReference
     public void setGames(List<Game> games) {
         this.games = games;
+        for (Game g: games) {
+            g.setGameModel(this);
+        }
     }
 
     /**

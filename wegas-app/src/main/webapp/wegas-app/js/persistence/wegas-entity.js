@@ -299,6 +299,9 @@ YUI.add('wegas-entity', function(Y) {
                     _type: "hidden"
                 }
             },
+            gameModel: {//                                                      // Extended-view only
+                "transient": true
+            },
             name: {
                 type: STRING
             },
@@ -306,6 +309,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
+                    label: "Enrolment key",
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     description: "Leave blank for automatic generation"
                 }
@@ -452,6 +456,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
+                    label: "Enrolment key",
                     description: "Leave blank for automatic generation"
                 }
             },
@@ -739,7 +744,6 @@ YUI.add('wegas-entity', function(Y) {
         getPublicName: function() {
             return "Guest";
         }
-
     }, {
         ATTRS: {
             "@class": {

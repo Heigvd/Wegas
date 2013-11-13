@@ -92,7 +92,7 @@
 
                     app.after("render", function() {                            // If there player is registered to a game
 //                        if (Y.Wegas.Facade.RegisteredGames.data.length > 0) {
-                            Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
+                        Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
 //                        }
                         Y.Widget.getByNode("#centerTabView").on("selectionChange", Y.Widget.getByNode("#rightTabView").destroyAll, Y.Widget.getByNode("#rightTabView"));
                         Y.Wegas.ResizableLayout.DEFAULTWIDTH = 500;
@@ -106,7 +106,7 @@
                                     Y.Wegas.Facade.GameModel.sendInitialRequest();// To refresh game model list
                                 }
 
-                                Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2).set("visible", true);// select the hosted games tab
+//                                Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2).set("visible", true);// select the hosted games tab
                                 //Y.Wegas.Facade.PublicGames.sendInitialRequest();  // Refresh available game list
                             }
                         });
@@ -118,10 +118,15 @@
                         if (Y.Widget.getByNode("#availableGamesTab").get("selected") > 0) {
                             Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
                         }
-                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest();    // reload datasource
-                        //Y.Wegas.Facade.Games.sendInitialRequest();
-                        Y.Wegas.Facade.PublicGames.sendInitialRequest();
-                        //Y.Wegas.Facade.GameModel.sendInitialRequest();          // To refresh game model list
+                        Y.Wegas.Facade.GameModel.sendInitialRequest({//         // Refresh game model list
+                            on: {
+                                success: function() {
+                                    Y.Wegas.Facade.RegisteredGames.sendInitialRequest();// reload datasource
+                                    Y.Wegas.Facade.Game.sendInitialRequest();
+                                    Y.Wegas.Facade.PublicGames.sendInitialRequest();
+                                }
+                            }
+                        });
                     });
 
                     app.render();                                               // Launch the editor
