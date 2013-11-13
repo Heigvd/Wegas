@@ -282,8 +282,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 last_tr.removeClass("wegas-datatable-selected");
             }
             tr.addClass("wegas-datatable-selected");
-            console.log("onclick", last_tr, tr, menuItems);
-            console.log("onclick2", entity);
             if (entity) {
                 if (menuItems) {                                                // If there are menu items in the cfg
                     Wegas.Editable.mixMenuCfg(menuItems, data);                 // use them
@@ -302,7 +300,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 if (menuItems.length === 0) {
                     return;
                 }
-            console.log("onclick3", entity);
                 Y.Array.each(this.buttons, function(b) {                        // Remove existing buttons,
                     b.destroy();
                 });
@@ -311,19 +308,20 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 //});
                 if (this.get("autoClick")) {                                    // If we are in autoclick,
 
-                    var button = Wegas.Widget.create(menuItems[0]);
-                    button.render().fire("click");
-                    button.destroy();
-                    Y.later(100, this, function() {
+                    Y.once("rightTabShown", function() {
                         var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
                         if (target && target.toolbar) {
-                            this.buttons = Y.Array.map(menuItems, function(i) {     // Add new buttons to the right tab's toolbar
+                            this.buttons = Y.Array.map(menuItems, function(i) { // Add new buttons to the right tab's toolbar
                                 return target.toolbar.add(i);
                             });
                             this.buttons[0].set("visible", false);
                         }
-                        //.fire("click");        // launch first button actionF
-                    });
+                        //.fire("click");                                       // launch first button actionF
+                    }, this);
+
+                    var button = Wegas.Widget.create(menuItems[0]);
+                    button.render().fire("click");
+                    button.destroy();
                 }
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");

@@ -119,6 +119,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             tab.set("selected", 2);
             tab.form.set("values", entity.toObject());
             tab.form.set("cfg", formCfg || entity.getFormCfg());
+
+            Y.fire("rightTabShown");
         },
         getEditionTab: function() {
             if (!EditEntityAction.tab || EditEntityAction.tab.get("destroyed")) {// First make sure the edit tab exists
