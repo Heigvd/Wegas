@@ -9,7 +9,6 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-/*global Crafty*/
 YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
     var ProgGameDisplay, GRIDSIZE = 32;
@@ -195,7 +194,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 return pos;
             }
             pos.push(position[0] * GRIDSIZE); //x
-            pos.push((this.gridH - position[1] - 1) * GRIDSIZE); //y
+            pos.push((position[1]) * GRIDSIZE); //y
             return pos;
         }
     }, {
@@ -263,7 +262,7 @@ YUI.add('wegas-proggame-display', function(Y) {
 
     Y.namespace('Wegas').ProgGameDisplay = ProgGameDisplay;
     /*
-     * Create Crafty Components 
+     * Create Crafty Components
      */
     (function() {
 
