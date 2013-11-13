@@ -24,9 +24,9 @@ YUI.add('wegas-proggame-level', function(Y) {
         display: null,
         runButton: null,
         commandsStack: null,
-        RUN_BUTTON_LABEL : "<div class='proggame-play'><span>RUN</span><span> CODE</span></div>",
-        STOP_BUTTON_LABEL : "<span class='proggame-stop'>STOP</span>",
-        NEXT_BUTTON_LABEL : "<span class='proggame-next'>NEXT</span>",
+        RUN_BUTTON_LABEL: "<div class='proggame-play'><span>RUN</span><span> CODE</span></div>",
+        STOP_BUTTON_LABEL: "<span class='proggame-stop'>STOP</span>",
+        NEXT_BUTTON_LABEL: "<span class='proggame-next'>NEXT</span>",
         CONTENT_TEMPLATE: '<div>'
                 + '<div class="yui3-g top">'
 
@@ -57,8 +57,8 @@ YUI.add('wegas-proggame-level', function(Y) {
         renderUI: function() {
             var i, cb = this.get(CONTENTBOX),
                     METHODTOTEXT = {
-                say: "say(text: String)"
-            }, api = this.get("api");
+                        say: "say(text: String)"
+                    }, api = this.get("api");
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one(".code-content"),
                 name: 'text',
@@ -256,6 +256,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 fields: [
                                     {
                                         name: "id",
+                                        label: "ID",
                                         type: "string",
                                         value: "Trap"
                                     }, {
@@ -284,6 +285,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 fields: [
                                     {
                                         name: "id",
+                                        label: "ID",
                                         type: "string",
                                         value: "Player"
                                     }, {
@@ -318,6 +320,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 fields: [
                                     {
                                         name: "id",
+                                        label: "ID",
                                         type: "string",
                                         value: "Enemy"
                                     }, {
@@ -344,6 +347,38 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         name: "components",
                                         type: "uneditable",
                                         value: "NPC"
+                                    }
+                                ]
+                            }, {
+                                name: "Panel",
+                                type: "group",
+                                fields: [
+                                    {
+                                        name: "id",
+                                        type: "string",
+                                        label: "ID",
+                                        value: "Panel"
+                                    }, {
+                                        name: "returnVal",
+                                        label: "Function",
+                                        type: "text",
+                                        value: "function(){return 'Hello World';}"
+                                    }, {
+                                        name: "x",
+                                        type: "number",
+                                        label: "x"
+                                    }, {
+                                        name: "y",
+                                        type: "number",
+                                        label: "y"
+                                    }, {
+                                        name: "collides",
+                                        label: "collides",
+                                        type: "boolean"
+                                    }, {
+                                        name: "components",
+                                        type: "uneditable",
+                                        value: "Panel"
                                     }
                                 ]
                             }]
