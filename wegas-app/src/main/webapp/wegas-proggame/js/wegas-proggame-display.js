@@ -276,6 +276,9 @@ YUI.add('wegas-proggame-display', function(Y) {
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-dalles.png', {
             TileSprite: [0, 0]
         });
+        Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/panel.png', {
+            PanelSprite: [0, 0]
+        });
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/lightning.png', {
             LightningSprite: [0, 0]
         });
@@ -475,7 +478,7 @@ YUI.add('wegas-proggame-display', function(Y) {
         });
         Crafty.c("Panel", {
             init: function() {
-                this.requires("Tile, TerrainSprite, Speaker").sprite(26, 31);
+                this.requires("Tile, PanelSprite, Speaker");
             }
         });
     }());
