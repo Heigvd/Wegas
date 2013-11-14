@@ -80,13 +80,18 @@ YUI.add('wegas-pmg-bac', function(Y) {
             return true;
         },
         request: function(taskDescriptor) {
-            Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/" + taskDescriptor.get("id") + "/VariableInstance/" + taskDescriptor.get("instance").id,
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                'Managed-Mode': 'false',
                 cfg: {
-                    method: "PUT",
-//                    updateCache: false,
+                    method: "POST",
+                    updateCache: false,
                     updateEvent: false,
-                    data: Y.JSON.stringify(taskDescriptor.get("instance"))
+                    data: Y.JSON.stringify({
+                        "@class": "Script",
+                        "language": "JavaScript",
+                        "content": "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), '" + taskDescriptor.get("name") +"').getInstance(self).setProperty('bac', '" + taskDescriptor.get("instance").properties.bac + "');"
+                    })
                 }
             });
         },
