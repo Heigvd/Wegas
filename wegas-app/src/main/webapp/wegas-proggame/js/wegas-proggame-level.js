@@ -399,6 +399,35 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         value: "Panel"
                                     }
                                 ]
+                            },{
+                                name: "Door",
+                                type: "group",
+                                fields: [
+                                    {
+                                        name: "id",
+                                        label: "ID",
+                                        type: "string",
+                                        value: "Trap"
+                                    }, {
+                                        name: "x",
+                                        type: "number",
+                                        label: "x"
+                                    }, {
+                                        name: "y",
+                                        type: "number",
+                                        label: "y"
+                                    }, {
+                                        name: "open",
+                                        label: "Open by default",
+                                        type: "boolean",
+                                        value: true
+                                    }, {
+                                        name: "components",
+                                        type: "uneditable",
+                                        value: "Trap"
+                                    }
+
+                                ]
                             }]
                     }
 
