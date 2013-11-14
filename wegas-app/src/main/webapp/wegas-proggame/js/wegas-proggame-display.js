@@ -9,6 +9,7 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
+/*global Crafty*/
 YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
     var ProgGameDisplay, GRIDSIZE = 32;
@@ -119,6 +120,9 @@ YUI.add('wegas-proggame-display', function(Y) {
                         if (entity.execMove) {
                             entity.execMove(object.direction, pos[0], pos[1]);
                         }
+                        if (typeof entity.initialize === "function") {
+                            entity.initialize(object.attr);
+                        }
                     }
                     this.fire("commandExecuted");
                     break;
@@ -180,6 +184,15 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.allowNextCommand = true;
                     if (entity && typeof entity.say === 'function') {
                         entity.say(command.text, command.duration);
+                    } else {
+                        this.fire('commandExecuted');
+                    }
+                    break;
+                case "doorState":
+                    entity = this.getEntity(command.id);
+                    this.allowNextCommand = true;
+                    if (entity && typeof entity.doorState === 'function') {
+                        entity.doorState(command.state);
                     } else {
                         this.fire('commandExecuted');
                     }
@@ -256,21 +269,30 @@ YUI.add('wegas-proggame-display', function(Y) {
             }],
         SPEED: {
             MOVE: 3,
-            FIRE: 7
+            FIRE: 7,
+            TRAP: 4
         }
     });
 
     Y.namespace('Wegas').ProgGameDisplay = ProgGameDisplay;
     /*
-     * Create Crafty Components
+     * Create Crafty Components 
      */
     (function() {
-
+        var speedToFrame = function(speed, x, y, toX, toY) {
+            var dist;
+            speed = (speed > 0) ? speed : 1;
+            dist = Math.sqrt(Crafty.math.squaredDistance(x, y, toX, toY));
+            return Math.round(((dist / GRIDSIZE) * (100 / speed))) || 1;
+        };
         Crafty.sprite(24, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/characters.png', {
             CharacterSprite: [0, 0]
         });
-        Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-marcheanim.png', {
-            HumanSprite: [0, 0]
+        Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim.png', {
+            HumanSprite: [0, 0],
+            TrapSprite: [0, 9],
+            DoorSprite: [0, 10],
+            ControllerSprite: [0, 12]
         });
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-dalles.png', {
             TileSprite: [0, 0]
@@ -301,18 +323,14 @@ YUI.add('wegas-proggame-display', function(Y) {
                 }, this);
             },
             execMove: function(direction, toX, toY, speed) {
-                var time, dist,
-                        animDir = this.dir2anim(direction);
+                var animDir = this.dir2anim(direction);
 
                 if (!this.isPlaying(animDir)) {
                     this.stop();
-                    this.animate(animDir, 10, -1);
+                    this.animate(animDir, 4, -1);
                 }
-                speed = (speed > 0) ? speed : 1;
-                dist = Math.sqrt(Crafty.math.squaredDistance(this.pos()._x, this.pos()._y, toX, toY));
-                time = Math.round(((dist / GRIDSIZE) * (100 / speed)));
                 this.tweenEnd.length = 0;
-                this.tween({x: toX, y: toY}, time || 1); //1 because if time = 0, time = infinite
+                this.tween({x: toX, y: toY}, speedToFrame(speed, this._x, this._y, toX, toY));
             },
             dir2anim: function(direction) {
                 switch (direction) {
@@ -465,14 +483,69 @@ YUI.add('wegas-proggame-display', function(Y) {
         });
         Crafty.c("Trap", {
             init: function() {
-                this.requires("Tile, TerrainSprite").sprite(15, 6);
-            },
-            execTrap: function() {
-                this.sprite(15, 11);
-                Y.later(5000, this, function() {
-                    this.sprite(15, 6);
+                var x, y;
+                this.requires("2D," + Crafty.refWidget.renderMethod + ",Tile, TrapSprite, SpriteAnimation, Tween");
+                x = this.__coord[0] / this.__coord[2];
+                y = this.__coord[1] / this.__coord[3];
+                this.initialize();
+                this.animate("trap", x, y, 3);
+                this.bind("TweenEnd", function() {
+                    this.stop();
                     Crafty.trigger('commandExecuted');
                 });
+            },
+            execTrap: function() {
+                var frameTime = speedToFrame(ProgGameDisplay.SPEED.TRAP, this._x, this._y, this._x, this._y + 64);
+                this.move("n", 64);
+                this.visible = true;
+                this.animate("trap", 4, -1);
+                this.tween({x: this._x, y: this._y + 64}, frameTime);
+            },
+            initialize: function() {
+                this.reset();
+                this.visible = false;
+            }
+        });
+        Crafty.c("Door", {
+            init: function() {
+                this.requires("Tile, DoorSprite, SpriteAnimation");
+                this.animate("openDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
+                this.animate("closeDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 4);
+                this.bind("AnimationEnd", function() {
+                    Crafty.trigger('commandExecuted');
+                });
+                this.setter("open", function(v) {
+                    if (v) {
+                        if (!this._open) {
+                            this.animate("openDoor", 10, 0);
+                        } else {
+                            this.reset();
+                        }
+                    } else {
+                        if (this._open) {
+                            this.animate("closeDoor", 10, 0);
+                        } else {
+                            this.reset();
+                        }
+                    }
+                    this._open = v;
+                });
+                this.initialize();
+            },
+            doorState: function(state) {
+                if (state) {
+                    this.open = true;
+                } else {
+                    this.open = false;
+                }
+            },
+            initialize: function(attrs) {
+                this.reset();
+                if (attrs) {
+                    this.attr(attrs);
+                } else {
+                    this.attr({open: false});
+                }
             }
         });
         Crafty.c("Panel", {
