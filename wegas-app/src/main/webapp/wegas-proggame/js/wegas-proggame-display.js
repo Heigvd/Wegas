@@ -12,7 +12,13 @@
 /*global Crafty*/
 YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
-    var ProgGameDisplay, GRIDSIZE = 32;
+    var ProgGameDisplay, GRIDSIZE = 32,
+            execFn = function() {
+                if (Crafty.refWidget.allowNextCommand) {
+                    Crafty.refWidget.allowNextCommand = false;
+                    Crafty.refWidget.fire('commandExecuted');
+                }
+            };
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
@@ -85,12 +91,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
         },
         bindUI: function() {
-            Crafty.bind('commandExecuted', function() {
-                if (Crafty.refWidget.allowNextCommand) {
-                    Crafty.refWidget.allowNextCommand = false;
-                    Crafty.refWidget.fire('commandExecuted');
-                }
-            });
+            Crafty.bind('commandExecuted', execFn);
         },
         destructor: function() {
             var k, components = Crafty("*");
@@ -100,9 +101,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                     components[k].destroy();
                 }
             }
-            Crafty.unbind('dieEnded');
-            Crafty.unbind('moveEnded');
-            Crafty.unbind('commandExecuted');
+            Crafty.unbind('commandExecuted', execFn);
         },
         getEntity: function(id) {
             return this.entities[id];
@@ -317,35 +316,28 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.tweenEnd.push(e);
                     if (this.tweenEnd.length === 2) {
                         this.stop();
+                        this.tweenEnd.length = 0;
                         Crafty.trigger('moveEnded');
                         Crafty.trigger('commandExecuted');
                     }
                 }, this);
             },
             execMove: function(direction, toX, toY, speed) {
-                var animDir = this.dir2anim(direction);
+                var animDir = this.dir2anim[direction];
 
                 if (!this.isPlaying(animDir)) {
                     this.stop();
                     this.animate(animDir, 4, -1);
-                }
-                this.tweenEnd.length = 0;
+                }             
                 this.tween({x: toX, y: toY}, speedToFrame(speed, this._x, this._y, toX, toY));
             },
-            dir2anim: function(direction) {
-                switch (direction) {
-                    case 1:
-                        return "moveUp";
-                    case 2:
-                        return "moveRight";
-                    case 3:
-                        return "moveDown";
-                    case 4:
-                        return "moveLeft";
-                    default:
-                        return null;
-                }
+            dir2anim: {
+                1: "moveUp",
+                2: "moveRight",
+                3: "moveDown",
+                4: "moveLeft"
             }
+
         });
 
         Crafty.c("shoot", {
