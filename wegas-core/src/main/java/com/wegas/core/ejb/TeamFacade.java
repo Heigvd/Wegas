@@ -84,11 +84,9 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     }
 
     private void addRights(Game game) {
-        if (!SecurityUtils.getSubject().isPermitted("Game:View:g" + game.getId())) {
-            userFacade.getCurrentUser().getMainAccount().addPermission(
-                    "Game:View:g" + game.getId(), // Add game view right
-                    "GameModel:View:gm" + game.getGameModel().getId());         // and also its associated game model
-        }
+        userFacade.getCurrentUser().getMainAccount().addPermission(
+                "Game:View:g" + game.getId(), // Add "View" right on game,
+                "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
     }
 
     /**
