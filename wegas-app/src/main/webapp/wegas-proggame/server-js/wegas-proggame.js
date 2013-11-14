@@ -61,7 +61,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
             //this.resetActions();                                              // Reset available action at the beginning of each turn
         }
         if (!this.checkGameOver()) {                                            // If the game is still not won,
-            this.log('It\'s lost.');                                            // then it's definitely lost
+            this.log('You lost.');                                              // then it's definitely lost
         }
     },
     resetActions: function() {
@@ -179,10 +179,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
         });
     },
     right: function() {
-        this.rotate(1);
+        this.rotate(-1);
     },
     left: function() {
-        this.rotate(-1);
+        this.rotate(1);
     },
     fire: function() {
         var i, source = this.cObject;
@@ -226,6 +226,9 @@ Wegas.mix(ProgGameSimulation.prototype, {
                 return o;
             }
         }
+        //this.log("pos" + y);
+        //this.log();
+        //if (this.level.map[this.level.map.length - 1 - y][x].y === 0 ? !collided : false) {// It's a XOR
         if (this.level.map[y][x].y === 0 ? !collided : false) {                 // It's a XOR
             return true;
         }
