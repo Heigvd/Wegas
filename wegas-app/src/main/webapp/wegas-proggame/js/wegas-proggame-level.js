@@ -57,8 +57,8 @@ YUI.add('wegas-proggame-level', function(Y) {
         renderUI: function() {
             var i, cb = this.get(CONTENTBOX),
                     METHODTOTEXT = {
-                        say: "say(text: String)"
-                    }, api = this.get("api");
+                say: "say(text: String)"
+            }, api = this.get("api");
             this.aceField = new Y.inputEx.AceField({
                 parentEl: cb.one(".code-content"),
                 name: 'text',
@@ -134,6 +134,9 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.aceField.destroy();
             this.display.destroy();
             this.runButton.destroy();
+            if (this.panel) {
+                this.panel.destroy();
+            }
         },
         resetUI: function() {
             this.objects = Y.clone(this.get("objects"));
@@ -238,6 +241,19 @@ YUI.add('wegas-proggame-level', function(Y) {
             } else {
                 el.show();
             }
+        },
+        getPanel: function() {
+            if (!this.panel) {
+                this.panel = new Y.Wegas.Panel({});
+                this.panel.render();
+            }
+            return this.panel;
+        },
+        /*
+         * @override
+         */
+        showMessage222: function(level, message) {
+            this.getPanel().show().setStdModContent("body", message);
         }
     }, {
         ATTRS: {
@@ -408,7 +424,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                             }]
                     }
                 }
-
             },
             maxTurns: {
                 type: "string",
