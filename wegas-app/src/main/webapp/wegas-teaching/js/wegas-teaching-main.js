@@ -279,7 +279,7 @@ YUI.add("wegas-teaching-main", function(Y) {
                 xy: [120, 100],
                 modal: true,
                 visible: false,
-                plugins: [Y.Plugin.Drag],
+                //plugins: [Y.Plugin.Drag],
                 render: true
             });
             this.rectangleEditor.addButton({
