@@ -1,6 +1,6 @@
-var ret = [], cObject, level;
+var ret = [], cObject, level, Wegas;
 
-var Wegas = {//                                                                 // Utilities
+Wegas = {//                                                                     // Utilities
     bind: function(fn, scope) {
         var scope = scope, fn = fn;
         return function() {
@@ -14,6 +14,7 @@ var Wegas = {//                                                                 
                 receiver[i] = supplier[i];
             }
         }
+        return receiver;
     }
 };
 
@@ -38,7 +39,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
         if (level.onStart) {
             eval(level.onStart);
         }
-
+        this.log('Running Main...');
         for (i = 0; i < level.maxTurns; i += 1) {
             //this.log('Turn ' + (i + 1));
 
@@ -83,6 +84,19 @@ Wegas.mix(ProgGameSimulation.prototype, {
     getCommands: function() {
         return this.ret;
     },
+    beforeAction: function(object) {
+        if (this.checkGameOver())
+            return false;
+
+        if (!this.consumeActions(object, 1)) {
+            this.log("Not enough actions to rotate.");
+            return false;
+        }
+        return true;
+    },
+    afterAction: function(object) {
+        this.doEval(this.level.onAction);
+    },
     log: function(text) {
         this.sendCommand({
             type: 'log',
@@ -96,28 +110,40 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return this.args;
     },
     consumeActions: function(object, actions) {
-        if (object.actions - actions < 0) {
-            //this.log("Not enough actions");
-            return false;
-        }
-        object.actions -= actions;
+
+//        if (object.actions - actions < 0) {
+//            //this.log("Not enough actions");
+//            return false;
+//        }
+//        object.actions -= actions;
+
         return true;
     },
     say: function(msg) {
-        if (this.checkGameOver())
+        if (!this.beforeAction())
             return;
 
-        this.doSay("" + msg);
-
+        this.doSay({
+            text: "" + msg
+        });
         this.said = msg;
+
+        this.afterAction();
     },
-    doSay: function(msg) {
-        this.log(this.cObject.id + " says \"" + msg + "\"");
-        this.sendCommand({
+    doSay: function(cfg) {
+        this.log(this.cObject.id + " says \"" + cfg.text + "\"");
+        this.sendCommand(Wegas.mix(cfg, {
             type: "say",
             id: this.cObject.id,
-            text: msg,
-            duration: 2000
+            duration: 1500
+        }));
+    },
+    doOpen: function(object) {
+        object.open = true;
+        this.sendCommand({
+            id: object.id,
+            type: "doorState",
+            state: true
         });
     },
     read: function() {
@@ -129,10 +155,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
 
         if (panel && panel.value) {
             value = this.doEval(panel.value);
-            this.doSay("It's written \"" + value + "\"");
+            this.doSay({text: "It's written \"" + value + "\""});
             return value;
         } else {
-            this.doSay("There's nothing to read here.");
+            this.doSay({text: "There's nothing to read here."});
         }
     },
     move: function() {
@@ -148,20 +174,27 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
 
         if (this.checkCollision(object, object.x + moveV.x, object.y + moveV.y)) {
-            this.log("Something is blocking the way");
+            this.doSay({text: "Something is blocking the way", duration: 800});
+            //this.log("Something is blocking the way");
         } else {
             object.x += moveV.x;
             object.y += moveV.y;
-            this.sendCommand({
-                type: 'move',
-                object: object.clone()
-            });
+            this.doMove(object);
         }
+    },
+    doMove: function(object) {
+        this.sendCommand({
+            type: 'move',
+            dir: object.direction,
+            id: object.id,
+            x: object.x,
+            y: object.y
+        });
     },
     rotate: function(dir) {
         var object = this.cObject;
 
-        if (this.checkGameOver())
+        if (!this.beforeAction(object))
             return;
 
         if (!this.consumeActions(object, 1)) {
@@ -173,10 +206,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
             object.direction = 1;
         if (object.direction < 1)
             object.direction = 4;
-        this.sendCommand({
-            type: 'move',
-            object: object.clone()
-        });
+
+        this.doMove(object);                                                    // Send move command
+
+        this.afterAction();
     },
     right: function() {
         this.rotate(-1);
@@ -222,8 +255,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
             collides = (o.x === x && o.y === y && o.id !== source.id);
             collided = collided || collides;
             if (collides && (o.collides === undefined || o.collides)) {
-                this.log("Player collision");
-                return o;
+                //this.log("Player collision");
+                if (!o.open) {                                                  // useful for doors
+                    return o;
+                }
             }
         }
         //this.log("pos" + y);
@@ -281,7 +316,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return null;
     },
     findObject: function(id) {
-        return find(id)
+        return find(id);
+    },
+    comparePos: function(a, b) {
+        return a.x === b.x && a.y === b.y;
     }
 });
 
@@ -290,9 +328,9 @@ Wegas.mix(ProgGameSimulation.prototype, {
 Object.prototype.clone = function() {
     var newObj = (this instanceof Array) ? [] : {};
     for (var i in this) {
-        if (i == 'clone')
+        if (i === 'clone')
             continue;
-        if (this[i] && typeof this[i] == "object") {
+        if (this[i] && typeof this[i] === "object") {
             newObj[i] = this[i].clone();
         } else
             newObj[i] = this[i];

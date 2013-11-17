@@ -38,20 +38,20 @@ YUI.add('wegas-proggame-level', function(Y) {
                 + '<div class="terrain"></div>'
                 + '</div>'
 
-
                 + '<div class="yui3-u topright">'
                 + '<div class="buttons"></div>'
-                + '<div class="ai"><h1>Enemy A.I.</h1></div>'
+                //+ '<div class="ai"><h1>Enemy A.I.</h1></div>'
                 + '<div class="debugger"><h1>Log</h1></div>'
                 + '</div>'
                 + '</div>'
 
-                + '<div class="code"><h1>public void main(<span class="arguments"></span>) {</h1><div class="code-content"></div><h1>}</h1></div>'
+                + '<div class="code"><h1>Main</h1><div class="code-content"></div></div>'
 
                 + '</div>',
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
+            this.currentState = "idle";
             this.objects = this.get("objects");
         },
         renderUI: function() {
@@ -59,19 +59,35 @@ YUI.add('wegas-proggame-level', function(Y) {
                     METHODTOTEXT = {
                 say: "say(text: String)"
             }, api = this.get("api");
-            this.aceField = new Y.inputEx.AceField({
+
+            this.aceField = new Y.inputEx.AceField({//                          // Render ace editor
                 parentEl: cb.one(".code-content"),
                 name: 'text',
                 type: 'ace',
-                height: "300px",
+                height: "170px",
                 language: "javascript",
                 theme: "twilight",
                 value: "//Put your code here..."
             });
-            var enemy = this.findObject("Enemy");
-            cb.one(".ai").append(Y.Wegas.Helper.nl2br((enemy && enemy.ai) || "<center><i>empty</i></center>"));
-            cb.one(".topcenter h1").setHTML(this.get("label"));
-            cb.one(".arguments").setHTML(this.get("arguments").join(", "));
+            this.aceField.editor.on("guttermousedown", function(e) {            // Add breakpoints on click support
+                var target = e.domEvent.target;
+                if (target.className.indexOf("ace_gutter-cell") === -1)
+                    return;
+                if (!this.isFocused())
+                    return;
+                if (e.clientX > 25 + target.getBoundingClientRect().left)
+                    return;
+                var row = e.getDocumentPosition().row;
+                e.editor.session.setBreakpoint(row);
+                e.stop();
+                // Break points that move on line add: https://github.com/MikeRatcliffe/Acebug/blob/master/chrome/content/ace++/startup.js#L66-104
+            }, this);
+
+            cb.one(".topcenter h1").setHTML(this.get("label"));                 // Display label
+            //var enemy = this.findObject("Enemy");                             // Display enemy IA
+            //cb.one(".ai").append(Y.Wegas.Helper.nl2br((enemy && enemy.ai) || "<center><i>empty</i></center>"));
+            //cb.one(".arguments").setHTML(this.get("arguments").join(", "));   // Display function arguements
+
             var acc = ["<h1>API</h1>"];
             for (i = 0; i < api.length; i += 1) {
                 acc.push((METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
@@ -92,19 +108,18 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.handlers.response = Y.Wegas.Facade.VariableDescriptor.after("update",
                     this.syncUI, this); // If data changes, refresh
 
-            this.runButton.on("click", this.run, this);
+            this.runButton.on("click", function() {
+                if (this.currentState === "idle") {
+                    this.setState("running");
+                } else {
+                    this.setState("idle")
+                }
+            }, this);
             this.display.after('commandExecuted', this.consumeCommand, this);
             this.after('commandExecuted', this.consumeCommand, this);
         },
         run: function() {
-
-            if (this.runButton.get("label") === "STOP") {
-                this.commandsStack = null;
-                this.runButton.set("label", this.RUN_BUTTON_LABEL);
-                return;
-            }
             this.resetUI();
-            this.runButton.set("label", this.STOP_BUTTON_LABEL);
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
@@ -116,7 +131,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 on: {
                     success: Y.bind(this.onServerReply, this),
                     failure: Y.bind(function() {
-                        this.runButton.set("label", this.RUN_BUTTON_LABEL);
+                        this.setState("idle");
                         alert("Your script contains an error.");
                     }, this)
                 }
@@ -137,6 +152,21 @@ YUI.add('wegas-proggame-level', function(Y) {
             if (this.panel) {
                 this.panel.destroy();
             }
+        },
+        setState: function(nextState) {
+            switch (nextState) {
+                case "idle" :
+                    this.runButton.set("label", this.RUN_BUTTON_LABEL);
+                    this.commandsStack = null;
+                    break;
+
+                case "running":
+                    this.runButton.set("label", this.STOP_BUTTON_LABEL);
+                    this.run();
+                    break;
+
+            }
+            this.currentState = nextState;
         },
         resetUI: function() {
             this.objects = Y.clone(this.get("objects"));
@@ -174,25 +204,40 @@ YUI.add('wegas-proggame-level', function(Y) {
 
                     case "move":
                     case "fire":
-                        Y.mix(this.findObject(command.object.id), // Update target object cfg
-                                command.object, true);
-                        this.syncFrontUI();
+                        //Y.mix(this.findObject(command.id), // Update target object cfg
+                        //        command.object, true);
+                        //this.syncFrontUI();
                         break;
+
                     case "updated":
                         Y.mix(this.findObject(command.object.id), // Update target object cfg
                                 command.object, true);
                         this.syncFrontUI();
                         this.consumeCommand();
                         break;
+
                     case "gameWon":
-                        this.showMessage("info", "You won! You can proceed to next level!");
-                        this.runButton.set("label", this.NEXT_BUTTON_LABEL);
-                        this.runButton.detachAll("click");
-                        this.runButton.on("click", this.doNextLevel, this);
+                        var panel = this.getPanel({
+                            bodyContent: "You won!",
+                            buttons: {
+                                footer: [{
+                                        name: 'proceed',
+                                        label: 'Next level',
+                                        action: Y.bind(function() {
+                                            panel.exit();
+                                            this.doNextLevel();
+                                        }, this)
+                                    }]
+                            }
+                        });
+                        //this.showMessage("info", "You won! You can proceed to next level!");
+                        //this.runButton.set("label", this.NEXT_BUTTON_LABEL);
+                        //this.runButton.detachAll("click");
+                        //this.runButton.on("click", this.doNextLevel, this);
                         break;
                     case "log":
                         this.get("contentBox").one(".debugger").append(command.text + "<br />");
-                        Y.later(500, this, this.consumeCommand);
+                        Y.later(100, this, this.consumeCommand);
                         //this.fire("commandExecuted");
                         break;
                     default:
@@ -202,7 +247,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 this.display.execute(command); // Forware the command to the display
 
             } else if (this.commandsStack) {
-                this.runButton.set("label", this.RUN_BUTTON_LABEL);
+                this.setState("idle");
             }
         },
         doNextLevel: function() {
@@ -242,18 +287,25 @@ YUI.add('wegas-proggame-level', function(Y) {
                 el.show();
             }
         },
-        getPanel: function() {
-            if (!this.panel) {
-                this.panel = new Y.Wegas.Panel({});
-                this.panel.render();
-            }
-            return this.panel;
+        getPanel: function(cfg) {
+            return new Y.Wegas.Panel(Y.mix(cfg, {
+                modal: true,
+                centered: true,
+                visible: true,
+                zIndex: 1000,
+                width: 500,
+                render: true
+                        //height: Y.DOM.winHeight() - 250,
+            }));
         },
         /*
          * @override
          */
-        showMessage222: function(level, message) {
-            this.getPanel().show().setStdModContent("body", message);
+        showMessage: function(level, message) {
+            this.getPanel({
+                bodyContent: message
+            });
+            //this.getPanel().setStdModContent("body", message).show()._uiSetFillHeight(this.get("fillHeight")).centered();       // Center the panel
         }
     }, {
         ATTRS: {
@@ -399,7 +451,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         value: "Panel"
                                     }
                                 ]
-                            },{
+                            }, {
                                 name: "Door",
                                 type: "group",
                                 fields: [
@@ -467,11 +519,20 @@ YUI.add('wegas-proggame-level', function(Y) {
             winningCondition: {
                 type: "string",
                 format: "text",
+                value: "comparePos(find('Player'), find('Enemy'))",
                 _inputex: {
                     _type: "ace"
                 }
             },
             onStart: {
+                type: "string",
+                format: "text",
+                optional: true,
+                _inputex: {
+                    _type: "ace"
+                }
+            },
+            onAction: {
                 type: "string",
                 format: "text",
                 optional: true,
@@ -496,7 +557,13 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             map: {
                 type: "array",
-                value: [[{x: 0, y: 0}]],
+                value: [
+                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
+                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
+                    [{x: 0, y: 0}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 0}],
+                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
+                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}]
+                ],
                 validator: Y.Lang.isArray,
                 _inputex: {
                     _type: "proggamemap",
@@ -507,6 +574,20 @@ YUI.add('wegas-proggame-level', function(Y) {
                 validator: Y.Lang.isArray,
                 type: "array",
                 "transient": true,
+                value: [{
+                        id: "Enemy",
+                        components: "NPC",
+                        direction: 4,
+                        x: 5,
+                        y: 2,
+                        collides: false
+                    }, {
+                        id: "Player",
+                        components: "PC",
+                        direction: 2,
+                        x: 0,
+                        y: 2
+                    }],
                 _inputex: {
                     type: "hidden",
                     useButtons: true,

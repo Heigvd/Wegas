@@ -16,8 +16,6 @@ YUI.add('wegas-proggame-objective', function(Y) {
      *  @name Y.Plugin.Objective
      *  @extends Y.Plugin.Base
      *  @constructor
-     *
-     *  @deprecated Use Y.Wegas.Panel instead
      */
     var Objective = Y.Base.create("wegas-proggame-objective", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         popupContent: null,

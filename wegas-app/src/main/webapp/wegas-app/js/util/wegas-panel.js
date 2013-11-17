@@ -26,7 +26,7 @@ YUI.add('wegas-panel', function(Y) {
         },
         exit: function() {
             this.get("boundingBox").hide(true);
-            Y.later(1000, this, this.destroy);
+            Y.later(500, this, this.destroy);
         }
     }, {
         CSS_PREFIX: "wegas-panel",
@@ -38,7 +38,9 @@ YUI.add('wegas-panel', function(Y) {
                 type: "string",
                 format: "html",
                 setter: function(val) {
-                    this.set("bodyContent", val);
+                    if (val) {
+                        this.set("bodyContent", val);
+                    }
                     return val;
                 }
             },
