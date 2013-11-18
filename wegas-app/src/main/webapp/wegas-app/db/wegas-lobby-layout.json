@@ -198,7 +198,7 @@
                                             "width": "150px"
                                         }, {
                                             "key": "createdTime",
-                                            "label": "Created",
+                                            "label": "Joined",
                                             "width": "140px",
                                             "formatter": "date"
                                         }, {
@@ -326,7 +326,7 @@
                                             "key": "createdTime",
                                             "label": "Created",
                                             "width": "140px",
-                                            "formatter": "date"
+                                            "formatter3": "date"
                                         }
                                     ]
 

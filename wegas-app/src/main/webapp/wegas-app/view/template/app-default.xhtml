@@ -65,8 +65,6 @@
                         YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
                         YUI_config.groups[groupName].comboBase = comboBase;
                     }
-                    YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
-                    YUI_config.groups.inputex.combine = #{!requestController.debugMode()};
 
                     for (var i in YUI_config.groups) {
                         if (i.indexOf("wegas") > -1) {
@@ -75,6 +73,9 @@
                             YUI_config.groups[i].filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
                         }
                     }
+                    setupLocalPath("libraries");
+                    YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
+                    YUI_config.groups.inputex.combine = #{!requestController.debugMode()};
                     setupLocalPath("inputex");                            // Set up libraries path
                 </script>
 
