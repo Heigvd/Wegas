@@ -71,7 +71,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 }
             }
             /*Apply filter*/
-//            Crafty.e("2D," + this.renderMethod + ", Image").image(Y.Wegas.app.get("base") + '/wegas-proggame/images/filtre.png', "repeat").attr({w: Crafty.viewport.width, h: Crafty.viewport.height});
+            //Crafty.e("2D," + this.renderMethod + ", Image").image(Y.Wegas.app.get("base") + '/wegas-proggame/images/filtre.png', "repeat").attr({w: Crafty.viewport.width, h: Crafty.viewport.height});
             for (i = 0; i < objects.length; i += 1) {                              // Add map objects
                 cfg = objects[i];
 
@@ -79,9 +79,9 @@ YUI.add('wegas-proggame-display', function(Y) {
                         .attr(cfg.attrs);                                       // Instantiate an entity
 
                 pos = this.getRealXYPos([cfg.x, cfg.y]);                        // Place it on the map
-
                 entity.attr('x', pos[0]);
                 entity.attr('y', pos[1]);
+
                 if (entity.execMove) {                                          // Allows to turn the player to the right direction
                     entity.execMove(cfg.direction, pos[0], pos[1]);
                 }
@@ -106,6 +106,7 @@ YUI.add('wegas-proggame-display', function(Y) {
         },
         execute: function(command) {
             var object, entity, pos, i;
+            this.allowNextCommand = true;
 
             switch (command.type) {
                 case "resetLevel":
@@ -121,22 +122,20 @@ YUI.add('wegas-proggame-display', function(Y) {
                             entity.initialize(object.attr);
                         }
                     }
-                    this.fire("commandExecuted");
                     break;
+
                 case "move":
-                    object = command.object;
-                    this.set("objects", object);// @fixme why?
-                    entity = this.getEntity(object.id);
-                    pos = this.getRealXYPos([object.x, object.y]);
-                    this.allowNextCommand = true;
+                    entity = this.getEntity(command.id);
+                    pos = this.getRealXYPos([command.x, command.y]);
+
                     if (entity && entity.execMove) {
-                        entity.execMove(object.direction, pos[0], pos[1], ProgGameDisplay.SPEED.MOVE);
-                    } else {
-                        this.fire('commandExecuted');
+                        entity.execMove(command.dir, pos[0], pos[1], ProgGameDisplay.SPEED.MOVE);
+                        return;
                     }
                     break;
+
                 case "fire":
-                    entity = this.getEntity(command.object.id);
+                    entity = this.getEntity(command.id);
                     switch (object.direction) {
                         case 1:
                             pos = this.getRealXYPos([object.x, object.y + object.range]);
@@ -151,47 +150,35 @@ YUI.add('wegas-proggame-display', function(Y) {
                             pos = this.getRealXYPos([object.x - object.range, object.y]);
                             break;
                     }
-                    this.allowNextCommand = true;
                     if (entity && entity.execFire) {
                         entity.execFire(object.direction, pos[0], pos[1]);
-                    } else {
-                        this.fire('commandExecuted');
+                        return;
                     }
                     break;
-                case "die":
-                    entity = this.getEntity(command.object.id);
-                    this.allowNextCommand = true;
-                    if (entity && entity.execDie) {
-                        entity.execDie();
-                    } else {
-                        this.fire('commandExecuted');
+
+                case "Die":
+                case "Trap":
+                    entity = this.getEntity(command.id);
+                    if (entity && entity["exec" + command.type]) {
+                        entity["exec" + command.type]();
+                        return;
                     }
                     break;
-                case "trap":
-                    entity = this.getEntity(command.object.id);
-                    this.allowNextCommand = true;
-                    if (entity && entity.execTrap) {
-                        entity.execTrap();
-                    } else {
-                        this.fire('commandExecuted');
-                    }
-                    break;
+
                 case "say":
                     entity = this.getEntity(command.id);
-                    this.allowNextCommand = true;
                     if (entity && typeof entity.say === 'function') {
                         entity.say(command.text, command.duration);
-                    } else {
-                        this.fire('commandExecuted');
+                        return;
                     }
                     break;
+
                 case "doorState":
                     entity = this.getEntity(command.id);
-                    this.allowNextCommand = true;
                     if (entity && typeof entity.doorState === 'function') {
                         entity.doorState(command.state);
-                    } else {
-                        this.fire('commandExecuted');
+                        this.fire('commandExecuted'); // @fixme Added since commandexecuted is not working after animation
+                        return;
                     }
                     break;
                 case "controllerState":
@@ -199,8 +186,6 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.allowNextCommand = true;
                     if (entity && typeof entity.controllerState === 'function') {
                         entity.controllerState(command.state);
-                    } else {
-                        this.fire('commandExecuted');
                     }
                     break;
                 case "yell":
@@ -212,8 +197,12 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.fire('commandExecuted'); // continue, non blocking action.
                     break;
                 default:
+                    this.allowNextCommand = false;
                     Y.log("No action defined for '" + command.type + "'", "debug", "Y.Wegas.ProggameDisplay");
+                    return;
+
             }
+            this.fire('commandExecuted');
         },
         getRealXYPos: function(position) {
             var pos = [];
@@ -290,7 +279,7 @@ YUI.add('wegas-proggame-display', function(Y) {
 
     Y.namespace('Wegas').ProgGameDisplay = ProgGameDisplay;
     /*
-     * Create Crafty Components 
+     * Create Crafty Components
      */
     (function() {
         var speedToFrame = function(speed, x, y, toX, toY) {
@@ -555,11 +544,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this.initialize();
             },
             doorState: function(state) {
-                if (state) {
-                    this.open = true;
-                } else {
-                    this.open = false;
-                }
+                this.open = state;
             },
             initialize: function(attrs) {
                 this.reset();
