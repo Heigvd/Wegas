@@ -492,6 +492,35 @@ YUI.add('wegas-proggame-level', function(Y) {
                                     }
 
                                 ]
+                            },{
+                                name: "Controller",
+                                type: "group",
+                                fields: [
+                                    {
+                                        name: "id",
+                                        label: "ID",
+                                        type: "string",
+                                        value: "Controller"
+                                    }, {
+                                        name: "x",
+                                        type: "number",
+                                        label: "x"
+                                    }, {
+                                        name: "y",
+                                        type: "number",
+                                        label: "y"
+                                    }, {
+                                        name: "enabled",
+                                        label: "Enabled by default",
+                                        type: "boolean",
+                                        value: false
+                                    }, {
+                                        name: "components",
+                                        type: "uneditable",
+                                        value: "Controller"
+                                    }
+
+                                ]
                             }]
                     }
 

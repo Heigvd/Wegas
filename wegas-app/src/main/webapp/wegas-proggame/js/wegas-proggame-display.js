@@ -55,8 +55,6 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
 //            Crafty.background('rgb(0,0,0)');
 
-
-
             for (i = 0; i < this.gridH; i += 1) {                               // Add map tiles
                 for (j = 0; j < this.gridW; j += 1) {
                     cfg = map[i][j];
@@ -181,6 +179,13 @@ YUI.add('wegas-proggame-display', function(Y) {
                         entity.doorState(command.state);
                         this.fire('commandExecuted'); // @fixme Added since commandexecuted is not working after animation
                         return;
+                    }
+                    break;
+                case "controllerState":
+                    entity = this.getEntity(command.id);
+                    this.allowNextCommand = true;
+                    if (entity && typeof entity.controllerState === 'function') {
+                        entity.controllerState(command.state);
                     }
                     break;
                 case "yell":
@@ -397,26 +402,36 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
         });
         Crafty.c("Speaker", {
-            say: function(text, delay) {
+            say: function(text, delay, think) {
                 var textE = Crafty.e("2D, DOM, Text")
                         .text(text)
                         .attr({"z": 401, "visible": false})
                         .css({
-                    "background-color": "rgb(50, 50, 40)",
-                    "color": "white",
-                    "border": "2px solid #FFFFFF",
-                    "line-height": "1.1em",
-                    "font-size": "0.9em",
-                    "padding": "4px",
-                    "max-width": "108px",
-                    "visibility": "hidden"
-                }), POS = [this._x, this._y];
+                            "background-color": "rgb(50, 50, 40)",
+                            "color": "white",
+                            "border": "7px solid #FFFFFF",
+                            "-moz-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                            "-webkit-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                            "-o-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                            "border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                            "line-height": "1.1em",
+                            "font-size": "0.9em",
+                            "padding": "4px",
+                            "max-width": "108px",
+                            "visibility": "hidden"
+                        }), POS = [this._x, this._y], connector = Crafty.e("2D, DOM").css({
+                    "background": "url(" + Y.Wegas.app.get('base') + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (+-32 + "px")),
+                    "width": "32px",
+                    "height": "32px"
+                }).attr({z: 402});
+                textE.attach(connector);
 
 
                 textE.bind("Draw", function(e) {
                     this.unbind("Draw");
                     Y.later(20, this, function() {
-                        this.attr({x: POS[0] - (this._element.offsetWidth / 2) + 14, y: POS[1] - this._element.offsetHeight - 10});
+                        this.attr({x: POS[0] - (this._element.offsetWidth / 2) + 14, y: POS[1] - this._element.offsetHeight - 32});
+                        this._children[0].shift(this._element.offsetWidth / 2 - 16, this._element.offsetHeight - 7);
                         this.visible = true;
                     });
 
@@ -537,6 +552,44 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.attr(attrs);
                 } else {
                     this.attr({open: false});
+                }
+            }
+        });
+        Crafty.c("Controller", {
+            init: function() {
+                this.requires("Tile, ControllerSprite, SpriteAnimation");
+                this.animate("disableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 3);
+                this.animate("enableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 3);
+                this.bind("AnimationEnd", function() {
+                    Crafty.trigger('commandExecuted');
+                });
+                this.setter("enabled", function(v) {
+                    if (v) {
+                        if (!this._enabled) {
+                            this.animate("disableController", 10, 0);
+                        } else {
+                            this.reset();
+                        }
+                    } else {
+                        if (this._enabled) {
+                            this.animate("enableController", 10, 0);
+                        } else {
+                            this.reset();
+                        }
+                    }
+                    this._enabled = v;
+                });
+                this.initialize();
+            },
+            controllerState: function(state) {
+                this.enabled = state;
+            },
+            initialize: function(attrs) {
+                this.reset();
+                if (attrs) {
+                    this.attr(attrs);
+                } else {
+                    this.attr({enabled: false});
                 }
             }
         });
