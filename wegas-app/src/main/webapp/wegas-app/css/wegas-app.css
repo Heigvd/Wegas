@@ -64,7 +64,7 @@ body h6{
     padding: .1em 0.6em .1em;
     min-height: 26px;
     margin: 0;
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 0px 0px rgba(0,0,0,0.15);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset, 0 2px 0 rgba(255,255,255,0.30) inset, 0 0px 0px rgba(0,0,0,0.15);
     background-color: #f2f2f2;
 }
 .yui3-button-primary,  .yui3-button-selected {
@@ -363,17 +363,18 @@ font{
 .yui3-skin-wegas .yui3-datatable-table {
     border: none;
 }
-.yui3-skin-wegas .yui3-datatable-header {
-    background: none;
-    font-weight:bold;
-    font-size: 90%
-}
-.yui3-skin-wegas .yui3-datatable-cell {
-}
 .yui3-skin-wegas .yui3-datatable-cell,
 .yui3-skin-wegas .yui3-datatable-header {
     border: none;
     border-bottom: 1px solid #f1f1f1;
+}
+.yui3-skin-wegas .yui3-datatable-header {
+    background: none;
+    font-weight:bold;
+    font-size: 90%;
+    padding: 7px 5px 4px 5px;
+}
+.yui3-skin-wegas .yui3-datatable-cell {
     padding: 2px 5px 2px 5px;
 }
 .yui3-skin-wegas .yui3-datatable-even .yui3-datatable-cell,

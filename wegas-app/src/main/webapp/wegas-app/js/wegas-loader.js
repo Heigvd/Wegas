@@ -979,7 +979,7 @@ YUI().use(function(Y) {
             }
         },
         /* Other libraries */
-        "wegas-libraries": {
+        "libraries": {
             async: false,
             combine: false,
             base: "./lib/",
@@ -1013,7 +1013,8 @@ YUI().use(function(Y) {
                     path: 'crafty/crafty-min.js'
                 },
                 ace: {
-                    path: "ace/src-noconflict/ace.js"
+                    async: false,
+                    path: "ace/src/ace.js"
                             //fullpath: "http://ace.c9.io/build/src-noconflict/ace.js"
                             //charset: 'utf-8',
                             //fullpath: "http://ace.c9.io/build/src-min/ace.js",

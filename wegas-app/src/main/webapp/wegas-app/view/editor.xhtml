@@ -48,7 +48,7 @@
 
             <script type="text/javascript">
 
-                YUI().use("wegas-app", /*'wegas-editorcss',*/ function(Y) {
+                YUI().use("wegas-app", function(Y) {
                     var app = new Y.Wegas.App({
                         //layoutSrc: 'rest/Page/#{editorGameController.currentGameModel.id}/EditorLayout',
                         layoutSrc: 'wegas-app/db/wegas-editor-layout.json',
@@ -203,7 +203,6 @@
                     app.after("render", function() {
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
                         Y.one(".wegas-title").setContent(gm.get("name"));
-
 
                         try {
                             #{editorGameController.getClientScripts()}          // Display game model specific js footer

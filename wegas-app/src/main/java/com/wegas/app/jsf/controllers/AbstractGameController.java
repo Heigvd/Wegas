@@ -69,13 +69,6 @@ public class AbstractGameController implements Serializable {
 //        return locale;
     }
 
-    public String getCSSs() {
-        String ret = "";
-        for (GameModelContent c : this.getCurrentGameModel().getCssLibrary().values()) {
-            ret += c.getContent();
-        }
-        return ret;
-    }
 
     public String getClientScripts() {
         String ret = "";

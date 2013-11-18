@@ -53,8 +53,9 @@ YUI.add('wegas-inputex-ace', function(Y) {
                 this.session = this.editor.getSession();
                 this.session.setMode("ace/mode/" + this.options.language);
                 this.editor.setTheme("ace/theme/" + this.options.theme);
-                this.editor.setHighlightActiveLine(false);
-                this.editor.renderer.setHScrollBarAlwaysVisible(false);
+                
+                //this.editor.setHighlightActiveLine(false);
+                //this.editor.renderer.setHScrollBarAlwaysVisible(false);
 
                 Y.Wegas.app.after("layout:resize", function() {
                     Y.once('domready', this.resize, this);
@@ -65,16 +66,6 @@ YUI.add('wegas-inputex-ace', function(Y) {
                 Y.log("Unable to find Ace libraries, falling back to text field", "error", "Wegas.Inputex.Ace");
                 inputEx.AceField.superclass.renderComponent.call(this);
             }
-//
-//
-            //this.session.addEventListener("tokenizerUpdate", Y.bind(function(e) {
-            //    var i, token,
-            //    tokens = this.session.getTokens(e.data.first, e.data.last);
-            //
-            //    for (i = 0; i > tokens.length; i += 1) {
-            //        token = tokens[i];                                            //identifier
-            //    }
-            //}, this));
         },
         /**
          * Set the html content
