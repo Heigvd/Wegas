@@ -69,7 +69,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     elClass = el.get(CLASS);
                     collapsed = !this.isNodeExpanded(el);
                     selected = (this.currentSelection === el.get(ID)) ? 2 : 0;
-                    text = el.getType().replace("Descriptor", "") + ': ' + el.getEditorLabel();
+                    text = el.getEditorLabel()/* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/;
 
                     switch (elClass) {
                         case 'StringDescriptor':

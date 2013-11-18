@@ -174,7 +174,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 //            });
             if (widget.each && !(widget instanceof Y.Wegas.PageLoader)) {
                 treeNode = new Y.TreeNode({
-                    label: widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
+                    label: widget.getEditorLabel() ? widget.getEditorLabel() : "<i>" + widget.getType() + "</i>",
                     rightWidget: DATASOURCE.editable ? button : null,
                     data: {
                         widget: widget
@@ -187,7 +187,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }, this);
             } else {
                 treeNode = new Y.TreeLeaf({
-                    label: widget.getType() + (widget.getEditorLabel() ? ": " + widget.getEditorLabel() : ""),
+                    label: widget.getEditorLabel() ? widget.getEditorLabel() : "<i>" + widget.getType() + "</i>",
                     rightWidget: DATASOURCE.editable ? button : null,
                     data: {
                         widget: widget
@@ -205,21 +205,21 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     pageFound = false,
                     widget = this.get("pageLoader").get("widget"), button,
                     bindChangePage = Y.bind(function(pageId) {
-                this.get("pageLoader").set("pageId", pageId);
-            }, this),
+                        this.get("pageLoader").set("pageId", pageId);
+                    }, this),
                     bindHideOverlay = Y.bind(this.hideOverlay, this),
                     deletePage = function(pageId) {
-                var i;
-                if (confirm("You are removing a page, this can't be undone. Are you sure?")) {
-                    if (this.get("selected") && this.get("parent").size() > 1) {
-                        i = this.get("parent").indexOf(this);
-                        bindChangePage(this.get("parent").item(i > 0 ? i - 1 : i + 1).get("data.page"));
-                    }
-                    DATASOURCE.deletePage(pageId);
-                    this.destroy();
-                    bindHideOverlay();
-                }
-            }, duplicatePage = function(pageId) {
+                        var i;
+                        if (confirm("You are removing a page, this can't be undone. Are you sure?")) {
+                            if (this.get("selected") && this.get("parent").size() > 1) {
+                                i = this.get("parent").indexOf(this);
+                                bindChangePage(this.get("parent").item(i > 0 ? i - 1 : i + 1).get("data.page"));
+                            }
+                            DATASOURCE.deletePage(pageId);
+                            this.destroy();
+                            bindHideOverlay();
+                        }
+                    }, duplicatePage = function(pageId) {
                 DATASOURCE.duplicate(pageId, Y.bind(function(page, id) {
                     this.get("pageLoader").set("pageId", id);
                 }, this));
