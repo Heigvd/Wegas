@@ -14,11 +14,11 @@ YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
     var ProgGameDisplay, GRIDSIZE = 32,
             execFn = function() {
-                if (Crafty.refWidget.allowNextCommand) {
-                    Crafty.refWidget.allowNextCommand = false;
-                    Crafty.refWidget.fire('commandExecuted');
-                }
-            };
+        if (Crafty.refWidget.allowNextCommand) {
+            Crafty.refWidget.allowNextCommand = false;
+            Crafty.refWidget.fire('commandExecuted');
+        }
+    };
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
@@ -185,12 +185,12 @@ YUI.add('wegas-proggame-display', function(Y) {
                     break;
                 case "yell":
                     entity = this.getEntity(command.id);
-                    this.allowNextCommand = true;
                     if (entity && typeof entity.shakeHands === 'function') {
                         entity.shakeHands(command.times);
                     }
                     this.fire('commandExecuted'); // continue, non blocking action.
-                    break;
+                    return;
+
                 default:
                     this.allowNextCommand = false;
                     Y.log("No action defined for '" + command.type + "'", "debug", "Y.Wegas.ProggameDisplay");
@@ -283,9 +283,9 @@ YUI.add('wegas-proggame-display', function(Y) {
             dist = Math.sqrt(Crafty.math.squaredDistance(x, y, toX, toY));
             return Math.round(((dist / GRIDSIZE) * (100 / speed))) || 1;
         };
-        Crafty.sprite(24, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/characters.png', {
-            CharacterSprite: [0, 0]
-        });
+        //Crafty.sprite(24, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/characters.png', {
+        //    CharacterSprite: [0, 0]
+        //});
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim.png', {
             HumanSprite: [0, 0],
             TrapSprite: [0, 9],
@@ -298,9 +298,9 @@ YUI.add('wegas-proggame-display', function(Y) {
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/panel.png', {
             PanelSprite: [0, 0]
         });
-        Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/lightning.png', {
-            LightningSprite: [0, 0]
-        });
+        //Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/lightning.png', {
+        //    LightningSprite: [0, 0]
+        //});
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/terrain.png', {
             TerrainSprite: [0, 0]
         });
