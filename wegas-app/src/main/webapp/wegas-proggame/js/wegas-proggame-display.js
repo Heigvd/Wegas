@@ -12,7 +12,13 @@
 /*global Crafty*/
 YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
-    var ProgGameDisplay, GRIDSIZE = 32;
+    var ProgGameDisplay, GRIDSIZE = 32,
+            execFn = function() {
+                if (Crafty.refWidget.allowNextCommand) {
+                    Crafty.refWidget.allowNextCommand = false;
+                    Crafty.refWidget.fire('commandExecuted');
+                }
+            };
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
@@ -85,12 +91,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
         },
         bindUI: function() {
-            Crafty.bind('commandExecuted', function() {
-                if (Crafty.refWidget.allowNextCommand) {
-                    Crafty.refWidget.allowNextCommand = false;
-                    Crafty.refWidget.fire('commandExecuted');
-                }
-            });
+            Crafty.bind('commandExecuted', execFn);
         },
         destructor: function() {
             var k, components = Crafty("*");
@@ -100,9 +101,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                     components[k].destroy();
                 }
             }
-            Crafty.unbind('dieEnded');
-            Crafty.unbind('moveEnded');
-            Crafty.unbind('commandExecuted');
+            Crafty.unbind('commandExecuted', execFn);
         },
         getEntity: function(id) {
             return this.entities[id];
@@ -184,7 +183,14 @@ YUI.add('wegas-proggame-display', function(Y) {
                         return;
                     }
                     break;
-
+                case "yell":
+                    entity = this.getEntity(command.id);
+                    this.allowNextCommand = true;
+                    if (entity && typeof entity.shakeHands === 'function') {
+                        entity.shakeHands(command.times);
+                    }
+                    this.fire('commandExecuted'); // continue, non blocking action.
+                    break;
                 default:
                     this.allowNextCommand = false;
                     Y.log("No action defined for '" + command.type + "'", "debug", "Y.Wegas.ProggameDisplay");
@@ -309,35 +315,28 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.tweenEnd.push(e);
                     if (this.tweenEnd.length === 2) {
                         this.stop();
+                        this.tweenEnd.length = 0;
                         Crafty.trigger('moveEnded');
                         Crafty.trigger('commandExecuted');
                     }
                 }, this);
             },
             execMove: function(direction, toX, toY, speed) {
-                var animDir = this.dir2anim(direction);
+                var animDir = this.dir2anim[direction];
 
                 if (!this.isPlaying(animDir)) {
                     this.stop();
                     this.animate(animDir, 4, -1);
                 }
-                this.tweenEnd.length = 0;
                 this.tween({x: toX, y: toY}, speedToFrame(speed, this._x, this._y, toX, toY));
             },
-            dir2anim: function(direction) {
-                switch (direction) {
-                    case 1:
-                        return "moveUp";
-                    case 2:
-                        return "moveRight";
-                    case 3:
-                        return "moveDown";
-                    case 4:
-                        return "moveLeft";
-                    default:
-                        return null;
-                }
+            dir2anim: {
+                1: "moveUp",
+                2: "moveRight",
+                3: "moveDown",
+                4: "moveLeft"
             }
+
         });
 
         Crafty.c("shoot", {
@@ -390,7 +389,11 @@ YUI.add('wegas-proggame-display', function(Y) {
                         .animate("moveUp", 0, 2, 7)
                         .animate("moveRight", 0, 0, 7)
                         .animate("moveDown", 0, 2, 7)
-                        .animate("moveLeft", 0, 1, 7);
+                        .animate("moveLeft", 0, 1, 7)
+                        .animate("handsUp", 0, 6, 6);
+            },
+            shakeHands: function(times) {
+                this.stop().animate("handsUp", 15, times || 1);
             }
         });
         Crafty.c("Speaker", {
@@ -436,7 +439,8 @@ YUI.add('wegas-proggame-display', function(Y) {
         });
         Crafty.c("NPC", {
             init: function() {
-                this.requires("Character");
+                this.requires("TintSprite, Character")
+                        .tintSprite("D6D600", 1);
 //                            .animate("moveUp", 9, 0, 11)
 //                            .animate("moveRight", 9, 1, 11)
 //                            .animate("moveDown", 9, 2, 11)
@@ -539,6 +543,53 @@ YUI.add('wegas-proggame-display', function(Y) {
         Crafty.c("Panel", {
             init: function() {
                 this.requires("Tile, PanelSprite, Speaker");
+            }
+        });
+    }());
+    (function() {
+        var tmp_canvas = document.createElement("canvas"), COMPONENT = "TintSprite",
+                ctx = tmp_canvas.getContext("2d"), draw;
+        draw = function() {
+            if (!this.__oldImg) {
+                this.__oldImg = this.img;
+            } else if (!this.__newColor) {
+                return;
+            }
+            this.__newColor = false;
+            tmp_canvas.width = this.__oldImg.width;
+            tmp_canvas.height = this.__oldImg.height;
+            ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
+            ctx.drawImage(this.__oldImg, 0, 0);
+            ctx.save();
+            ctx.globalCompositeOperation = "source-in";
+            ctx.fillStyle = this._color;
+            ctx.beginPath();
+            ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
+            ctx.closePath();
+            ctx.restore();
+            var img = document.createElement("img");
+            img.src = tmp_canvas.toDataURL();
+            this.img = img;
+        };
+        /**
+         * Component TintSprite
+         * Should be included before the actual sprite.
+         * Browser should support Canvas.
+         */
+        Crafty.c(COMPONENT, {
+            _color: Crafty.toRGB("FFFFFF"),
+            init: function() {
+                this.bind("Draw", draw).bind("RemoveComponent", function(e) {
+                    if (e === COMPONENT) {
+                        this.unbind("Draw", draw);
+                    }
+                });
+            },
+            tintSprite: function(color, opacity) {
+                this.__newColor = true;
+                this._color = Crafty.toRGB(color, opacity);
+                this.trigger("Change");
+                return this;
             }
         });
     }());
