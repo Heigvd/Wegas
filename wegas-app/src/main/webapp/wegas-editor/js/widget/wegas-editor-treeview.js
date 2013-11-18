@@ -122,7 +122,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
                             } else {
                                 ret.push({
                                     type: 'TreeNode',
-                                    //label: 'Game: ' + el.get(NAME) + ' (token:' + el.get("token") + ')',
                                     label: '<div class="yui3-g wegas-editor-treeview-table">'
                                             + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
                                             + '<div class="yui3-u yui3-u-col2 yui3-g">'
@@ -146,7 +145,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                             break;
 
                         case 'Team':
-                            text = 'Team: ' + el.get(NAME) + ' (token: ' + el.get("token") + ")";
+                            text = 'Team: ' + el.get(NAME);
                             ret.push({
                                 type: 'TreeNode',
                                 collapsed: collapsed,
@@ -282,19 +281,21 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 255px">'
                 + '<div class="yui3-u yui3-u-col1">Name</div>'
                 + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
-                + '<div class="yui3-u">Token</div></div>'
+                + '<div class="yui3-u">Enrolment key</div></div>'
                 + '</div>'
                 + '<div class="treeview"></div>'
-                + "<div class=\"message\"></div><div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team token, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
+                + "<div class=\"message\"></div><div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
                 + '</div>',
         renderUI: function() {
-            //if (Y.Wegas.Facade.GameModel.cache.findById(this.get("entity").get("gameModelId")).get("properties.freeForAll")) {
-            //this.set("visible", false);
-            //this.get("parent").set("visible", false);
-            //}
-
-            this.treeView = new Y.TreeView();
+            this.treeView = new Y.TreeView();                                   // Render the treeview
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
+
+            if (this.isFreeForAll()) {                                          // @hack Change the display if the gamemodel is freeforall
+                // //this.set("visible", false);
+                //this.get("parent").set("visible", false);
+                this.get("contentBox").one(".wegas-editor-treeview-tablehd .yui3-u-col2 .yui3-u").hide();
+                this.get("parent").set("label", "Players");
+            }
 
             this.plug(Y.Plugin.EditorTVAdminMenu, {
                 autoClick: false
@@ -351,10 +352,12 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
             this.hideOverlay();
         },
+        isFreeForAll: function() {
+            return Y.Wegas.Facade.GameModel.cache.findById(this.get("entity").get("gameModelId")).get("properties.freeForAll");
+        },
         genTreeViewElements: function(elements) {
             var ret = [], i, el, elClass, collapsed, selected,
-                    freeForAll = Y.Wegas.Facade.GameModel.cache.findById(this.get("entity").get("gameModelId")).get("properties.freeForAll");
-
+                    freeForAll = this.isFreeForAll();
 
             for (i in elements) {
                 if (elements.hasOwnProperty(i)) {
@@ -393,7 +396,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                 label: el.get(NAME),
                                 selected: selected,
                                 data: {
-                                    entity: el.get(NAME)
+                                    entity: el
                                 },
                                 iconCSS: 'wegas-icon-player',
                                 rightWidget: Y.Node.create(EDITBUTTONTPL)
@@ -521,7 +524,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
     Y.Plugin.EditorTVToggleClick = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {
-                this.get(HOST).treeView.on("*:click", function(e) {
+                this.get(HOST).treeView.on("treenode:click", function(e) {
                     //this.collapseAll();
                     e.target.toggleTree();
                 });

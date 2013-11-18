@@ -37,7 +37,10 @@ public class Player extends AbstractEntity {
      */
     @ManyToOne
     private User user;
-    @Column(name = "user_id", nullable = false, insertable = false, updatable = false)
+    /**
+     *
+     */
+    @Column(name = "user_id", nullable = true, insertable = false, updatable = false)
     private Long userId;
     /**
      *
