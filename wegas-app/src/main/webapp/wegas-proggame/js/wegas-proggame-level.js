@@ -59,7 +59,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                     METHODTOTEXT = {
                 say: "say(text: String)"
             }, api = this.get("api");
-
             this.aceField = new Y.inputEx.AceField({//                          // Render ace editor
                 parentEl: cb.one(".code-content"),
                 name: 'text',
@@ -103,6 +102,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             });
             this.runButton.render(cb.one(".buttons"));
             this.resetUI();
+            this.setState("idle");
         },
         bindUI: function() {
             this.handlers.response = Y.Wegas.Facade.VariableDescriptor.after("update",
@@ -112,30 +112,14 @@ YUI.add('wegas-proggame-level', function(Y) {
                 if (this.currentState === "idle") {
                     this.setState("running");
                 } else {
-                    this.setState("idle")
+                    this.setState("idle");
                 }
             }, this);
             this.display.after('commandExecuted', this.consumeCommand, this);
             this.after('commandExecuted', this.consumeCommand, this);
-        },
-        run: function() {
-            this.resetUI();
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
-                cfg: {
-                    method: "POST",
-                    data: "JSON.stringify(run("
-                            + "function (name) {with(this) {" + this.aceField.getValue() + "\n}}, "
-                            + Y.JSON.stringify(this.toObject()) + "));"
-                },
-                on: {
-                    success: Y.bind(this.onServerReply, this),
-                    failure: Y.bind(function() {
-                        this.setState("idle");
-                        alert("Your script contains an error.");
-                    }, this)
-                }
-            });
+
+            Y.later(10000, this, this.doIdleAnimation, [], true);               // While in idle mode, launch idle animation every 10 secs
+            Y.later(100, this, this.doIdleAnimation);
         },
         syncUI: function() {
             this.display.syncUI();
@@ -168,6 +152,25 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             this.currentState = nextState;
         },
+        run: function() {
+            this.resetUI();
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
+                cfg: {
+                    method: "POST",
+                    data: "JSON.stringify(run("
+                            + "function (name) {with(this) {" + this.aceField.getValue() + "\n}}, "
+                            + Y.JSON.stringify(this.toObject()) + "));"
+                },
+                on: {
+                    success: Y.bind(this.onServerReply, this),
+                    failure: Y.bind(function() {
+                        this.setState("idle");
+                        alert("Your script contains an error.");
+                    }, this)
+                }
+            });
+        },
         resetUI: function() {
             this.objects = Y.clone(this.get("objects"));
             this.commandsStack = null;
@@ -195,6 +198,15 @@ YUI.add('wegas-proggame-level', function(Y) {
             return Y.Array.find(this.objects, function(o) {
                 return o.id === id;
             });
+        },
+        doIdleAnimation: function() {
+            var texts = ["HELP! HELP!!! SOMEBODY HERE? PLEASE HELP ME!",
+                "PLEASE HELP ME!", "WHY ME? TELL ME WHY?", "WOULD ANYBODY BE KIND ENOUGH AS TO GET ME OUT OF HERE?"];
+            if (this.currentState === "idle") {
+                var enemy = this.display.getEntity("Enemy");
+                enemy.shakeHands(3);
+                enemy.say(texts[Math.round(Math.random() * texts.length)]);
+            }
         },
         consumeCommand: function() {
             if (this.commandsStack && this.commandsStack.length > 0) {
