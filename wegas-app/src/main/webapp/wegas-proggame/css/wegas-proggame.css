@@ -180,6 +180,10 @@
     background: url(../../wegas-proggame/images/proggame-play.png) no-repeat 0px -4px;
     height: 31px;
 }
+.proggame-playpause {
+    background: url(../../wegas-proggame/images/proggame-playpause.png) no-repeat 0px -4px;
+    height: 31px;
+}
 
 .proggame-stop {
     background: url(../../wegas-proggame/images/proggame-stop.png) no-repeat 2px -1px;
@@ -334,7 +338,10 @@
     height: 170px;
 }
 
-.ace_gutter-cell.ace_breakpoint{
+.ace_gutter-cell.ace_breakpoint {
     border-radius: 20px 0px 0px 20px;
     box-shadow: 0px 0px 1px 1px red inset;
+}
+.ace_gutter-cell.proggame-currentline {
+    background-color: green;
 }
