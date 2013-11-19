@@ -826,7 +826,8 @@ YUI().use(function(Y) {
             modules: {
                 /** Prog game **/
                 'wegas-proggame-level': {
-                    requires: ['wegas-widget', 'wegas-inputex-ace', 'wegas-proggame-display'],
+                    requires: ['wegas-widget', 'wegas-inputex-ace',
+                        'wegas-proggame-display', 'wegas-proggame-jsinstrument'],
                     ws_provides: 'ProgGameLevel'
                 },
                 'wegas-proggame-display': {
@@ -839,6 +840,9 @@ YUI().use(function(Y) {
                 },
                 'wegas-proggame-objective': {
                     ws_provides: ["Objective"]
+                },
+                'wegas-proggame-jsinstrument': {
+                    requires: ["esprima", "escodegen"]
                 },
                 'wegas-popup': {
                     ws_provides: ["Popup"]

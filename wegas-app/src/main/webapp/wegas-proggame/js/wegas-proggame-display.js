@@ -198,7 +198,7 @@ YUI.add('wegas-proggame-display', function(Y) {
 
                 default:
                     this.allowNextCommand = false;
-                    Y.log("No action defined for '" + command.type + "'", "debug", "Y.Wegas.ProggameDisplay");
+                    //Y.log("No action defined for '" + command.type + "'", "debug", "Y.Wegas.ProggameDisplay");
                     return;
 
             }
