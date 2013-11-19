@@ -812,7 +812,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 parameters: {
                     transition: this
                 },
-                connector: [loopback ? "StateMachine" : "Flowchart"]
+                connector: loopback ? "StateMachine" : "Flowchart"
             });
             this.addTarget(this.target);
             this.target.transitionsTarget.push(this);  
