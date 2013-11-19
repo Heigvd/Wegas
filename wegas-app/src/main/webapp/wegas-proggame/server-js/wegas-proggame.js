@@ -17,15 +17,23 @@ Wegas = {//                                                                     
         return receiver;
     }
 };
-
+function wdebug(msg) {
+    //println(msg);
+}
 function ProgGameSimulation() {
+    this.breakpoints = [];
+    this.debug = false;
+    this.startLine = -1;
 }
 Wegas.mix(ProgGameSimulation.prototype, {
     run: function(playerFn, level) {
+        wdebug("Simulation run");
         this.args = {};
         this.ret = [];
         this.cObject = null;
         this.said = "";
+        this.doRecordCommands = true;
+        this.currentLine = -1;
         this.level = level;
         this.objects = level.objects;                                           // Shortcut to level objects
         this.gameOverSent = false;
@@ -79,6 +87,14 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
     },
     sendCommand: function(cfg) {
+        wdebug("Sendcommand " + cfg.type + " current line: " + this.currentLine + ", start line:" + this.startLine + "*" + this.doRecordCommands);
+        if (this.currentLine < this.startLine) {                                // Debug
+            wdebug("early command dropped");
+            return;
+        }
+        if (!this.doRecordCommands) {
+            return false;
+        }
         this.ret.push(cfg);
     },
     getCommands: function() {
@@ -92,6 +108,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
             this.log("Not enough actions to rotate.");
             return false;
         }
+
         return true;
     },
     afterAction: function(object) {
@@ -165,7 +182,8 @@ Wegas.mix(ProgGameSimulation.prototype, {
         var object = this.cObject,
                 moveV = dirToVector(object.direction);
 
-        if (this.checkGameOver())
+
+        if (!this.beforeAction(object))
             return;
 
         if (!this.consumeActions(object, 1)) {
@@ -219,7 +237,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
     },
     fire: function() {
         var i, source = this.cObject;
-        println("fire" + source.actions);
+        wdebug("fire" + source.actions);
 
         if (this.checkGameOver())
             return;
@@ -320,6 +338,26 @@ Wegas.mix(ProgGameSimulation.prototype, {
     },
     comparePos: function(a, b) {
         return a.x === b.x && a.y === b.y;
+    },
+    __debug: function(line) {
+
+        this.currentLine += 1;
+        wdebug("debug line:" + line + ", currentline " + this.currentLine + ", startline: " + this.startLine);
+        if (
+                //line > this.currentLine // first time considering this line
+                // &&
+                this.currentLine > this.startLine) {
+            wdebug("halted" + this.breakpoints.indexOf(line) + "*" + line);
+            if (this.breakpoints.indexOf("" + line) > -1) {
+                this.sendCommand({
+                    type: "breakpoint",
+                    line: line,
+                    step: this.currentLine
+                });
+                this.doRecordCommands = false;
+            }
+        }
+        //this.currentLine = line;
     }
 });
 
@@ -366,21 +404,6 @@ function values(object) {
     return ret;
 }
 
-function print_r(object) {
-    var i;
-    for (i in object) {
-        if (object.hasOwnProperty(i)) {
-            print(i + ": ");
-            if (object[i] instanceof Object) {
-                println(" ");
-                print_r(object[i]);
-            } else {
-                println(object[i]);
-            }
-        }
-    }
-}
-
 function run(playerFn, level) {
     var simulation = new ProgGameSimulation();
 //    try {
@@ -388,5 +411,14 @@ function run(playerFn, level) {
 //    } catch (e) {
 //        println(e);
 //    }
-    return simulation.getCommands();
+    return JSON.stringify(simulation.getCommands());
+}
+function debug(playerFn, level, breakPoints, startLine) {
+
+    var simulation = new ProgGameSimulation();
+    simulation.debug = true;
+    simulation.startLine = startLine;
+    simulation.breakpoints = breakPoints;
+    simulation.run(playerFn, level);
+    return JSON.stringify(simulation.getCommands());
 }
