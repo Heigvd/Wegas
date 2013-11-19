@@ -191,6 +191,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             
             this.btnZoomValue.on('click', function(e) {
                 this.setZoom(1, false);
+                this.scrollView.set("scrollX", 0);
+                this.scrollView.set("scrollY", 0);
             }, this);
         },
         syncUI: function() {
