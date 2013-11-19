@@ -70,7 +70,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                         }]],
                 PaintStyle: {
                     lineWidth: 3,
-                    strokeStyle: "#11F",
+                    strokeStyle: "#777",
                     outlineColor: "white",
                     outlineWidth: 3
                 }
@@ -463,7 +463,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         renderUI: function() {
             var bb = this.get(BOUNDING_BOX);
             bb.addClass(this.cssClass.state);
-
+            bb.addClass(this.get("entity") instanceof Y.Wegas.persistence.DialogueState ? "sm-dialoguestate" : "sm-state");
+            
             /*if (this.get("entity") instanceof Y.Wegas.persistence.DialogueState) {
                 this.textNode = new Y.Node.create("<textarea placeholder=\"Text (Response)\">" + this.get("entity").get("text") + "</textarea>");
                 this.textNode.addClass(this.getClassName("text"));
@@ -802,8 +803,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }
         },
         connect: function(loopback) {
-            this.get(BOUNDING_BOX).appendTo(this.get("parent").get("parent").get(CONTENT_BOX).one(".sm-zoom"));
             var nextStateId = this.get("entity").get("nextStateId");
+            this.get(BOUNDING_BOX).appendTo(this.get("parent").get("parent").get(CONTENT_BOX).one(".sm-zoom"));
             this.source = this.get('parent');
             this.target = this.get("parent").get("parent").nodes[nextStateId.toString()];
 
@@ -812,6 +813,12 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 target: this.target.get(BOUNDING_BOX),
                 deleteEndpointsOnDetach: true,
                 uniqueEndpoint: false,
+                paintStyle: {
+                    lineWidth: 4,
+                    strokeStyle: this.get("entity") instanceof Y.Wegas.persistence.DialogueTransition ? "#4372C4" : "#E34747",
+                    outlineColor: "white",
+                    outlineWidth: 2
+                },
                 parameters: {
                     transition: this
                 },
