@@ -837,6 +837,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.connection.canvas.onmouseout = function() {
                 this.entity.labelNode.canvas.getElementsByClassName("transition-toolbox")[0].setAttribute("style", "display:none;");
             };
+            this.connection.canvas.onclick = function() {
+                Y.Plugin.EditEntityAction.showEditForm(this.entity.get("entity"), Y.bind(this.entity.setEntity, this.entity));
+            };
         },
         disconnect: function(e) {
             jp.detach(this.connection, {
