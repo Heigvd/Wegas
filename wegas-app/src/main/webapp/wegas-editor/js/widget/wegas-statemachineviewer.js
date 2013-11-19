@@ -182,7 +182,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 });
             }
             else if (this.get("availableStates").length === 1) {
-                this.btnNew.on("click", this.addStateType, this, this.get("availableStates")[0]);
+                this.btnNew.on("click", Y.bind(this.addStateType, this, this.get("availableStates")[0]));
             }
             
             this.sliderZoom.on('valueChange', function(e) {
@@ -268,7 +268,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
 
         },
         addStateType: function(type) {
-            var x, y, entity = type === "State" ? new Y.Wegas.persistence.State() : new Y.Wegas.persistence.DialogueState();
+            var x, y, entity = type === "State" ? new Y.Wegas.persistence.State() : new Y.Wegas.persistence.DialogueState();            
             x = parseInt(this.get(CONTENT_BOX).one('.scrollable').get('region').width / 2 + this.scrollView.get('scrollX'));
             y = parseInt(this.get(CONTENT_BOX).one('.scrollable').get('region').height / 2 + this.scrollView.get('scrollY'));
             entity.set("editorPosition", new Y.Wegas.persistence.Coordinate({
