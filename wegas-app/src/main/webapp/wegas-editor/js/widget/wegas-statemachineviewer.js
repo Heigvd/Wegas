@@ -513,6 +513,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.get("parent").save();
             }, ".state-initial", this);
             jp.draggable(this.get(BOUNDING_BOX), {
+                containment: this.get("parent").get("boundingBox").one(".sm-zoom").getDOMNode(),
                 after: {
                     "end": Y.bind(this.dragEnd, this)
                 }/* TODO : FIX
