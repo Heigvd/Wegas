@@ -95,14 +95,6 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.header = this.toolbar.get("header");
             this._childrenContainer = this.get(CONTENT_BOX).one(".sm-zoom");
             this.get(CONTENT_BOX).one(".sm-zoom").setStyle("transform", "scale(1)");
-            /*this.toolbar.add(new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-save\"></span>Save",
-                on: {
-                    'click': function(e) {
-                        this.fire("save");
-                    }
-                }
-            })).set("type", "save");*/
             
             this.toolbar.add(this.btnNew = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-add\"></span>New"
@@ -134,7 +126,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             window.jsPlumb.ready(Y.bind(this.initJsPlumb, this));
         },
         bindUI: function() {
-            var key, that = this;
+            var key;
             this.on("rebuild", function(e) {
                 e.halt(true);
                 this.showOverlay();
@@ -150,10 +142,6 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.processMenu("new");
             });
 
-            /*this.on("button:save", function(e) {
-                this.processMenu("save");
-            });*/
-            
             this.get(CONTENT_BOX).on('mousedown', function() {
                 this.get(CONTENT_BOX).one('.scrollable').addClass('mousedown');
             }, this);
@@ -161,22 +149,12 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.get(CONTENT_BOX).one('.scrollable').removeClass('mousedown');
             }, this);
             
-            /*this.get(CONTENT_BOX).on("dblclick", function(e) {
-                e.halt(true);
-                //TODO : something with Zoom
-                if (e.target === this.get(CONTENT_BOX) && this.get("entity")) {
-                    this.addState(e.clientX - this.get(CONTENT_BOX).getX() - 30, e.clientY - this.get(CONTENT_BOX).getY() - 30, this.stateId);
-                }
-            }, this);*/
-
             this.after("entityChange", function(e) {
                 this.fire("rebuild");
             });
             this.get(CONTENT_BOX).on("mousewheel", Y.bind(function(e) {
-                //if (e.altKey) {
-                    e.halt(true);
-                    this.zoom(e);
-                //}
+                e.halt(true);
+                this.zoom(e);
             }, this));
             this.on("wegas-state:userRemove", function(e) {
                 delete this.get("entity").get("states")[e.target.get("sid").toString()];
@@ -353,18 +331,6 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     entity.setInitialStateId(1); // TODO : the one specified :)
                     this.set("entity", entity);
                     break;
-                /*case "save":
-                    entity = this.get("entity");
-                    if (entity) {
-                        this.showOverlay();
-                        entity = JSON.parse(JSON.stringify(entity));
-                        if (entity.id) {
-                            Y.Wegas.Facade.VariableDescriptor.cache.put(entity, DEFAULTCB);
-                        } else {
-                            Y.Wegas.Facade.VariableDescriptor.cache.post(entity, DEFAULTCB);
-                        }
-                    }
-                    break;*/
                 default:
                     Y.log("Not Implemented yet: " + type, "warn", "Y.Wegas.StateMachineViewer");
             }
@@ -407,8 +373,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                             lvl);
 
             this.get(CONTENT_BOX).one(".sm-zoom").setStyle('transform', 'scale(' + this.currentZoom + ')');
-            //            this.get(CONTENT_BOX).one(".sm-zoom").setStyle("zoom", this.currentZoom);
-            jp.setZoom(this.currentZoom, false);
+            jp.setZoom(this.currentZoom);
             
             this.btnZoomValue.set("label", parseInt(this.currentZoom * 100) + "%");
             if (!isFromSliderOrInit) {
@@ -589,10 +554,6 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     this.get("entity").set("text", val);
                 }, this);
             }
-            /*this.get(CONTENT_BOX).delegate("click", function(e) {
-                Y.Plugin.EditEntityAction.showEditForm(this.get("entity"), Y.bind(this.setEntity, this));
-            }, ".state-edit", this);*/
-            
             this.get(CONTENT_BOX).on('click', function(e) {
                 Y.Plugin.EditEntityAction.showEditForm(this.get("entity"), Y.bind(this.setEntity, this));
             }, this);
@@ -851,7 +812,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 parameters: {
                     transition: this
                 },
-                connector: [loopback ? "StateMachine" : "Flowchart"]
+                connector: loopback ? "StateMachine" : "Flowchart"
             });
             this.addTarget(this.target);
             this.target.transitionsTarget.push(this);  

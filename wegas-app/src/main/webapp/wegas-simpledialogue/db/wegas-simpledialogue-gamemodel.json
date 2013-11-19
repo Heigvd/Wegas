@@ -6,6 +6,17 @@
         "pagesUri": "wegas-simpledialogue/db/wegas-simpledialogue-pages.json?"
     },
     "childVariableDescriptors": [{
+        "@class": "NumberDescriptor",
+        "name": "icecream",
+        "label": "Ice cream",
+        "defaultInstance":{
+            "@class": "NumberInstance",
+            "value": 0.0
+        },
+        "scope":{
+            "@class": "TeamScope"
+        }
+    },{
         "@class": "DialogueDescriptor",
         "name": "simpleDialogue",
         "label": "simpleDialogue",
@@ -33,6 +44,11 @@
                     "@class": "Coordinate",
                     "x": 50,
                     "y": 50
+                },
+                "onEnterEvent": {
+                    "@class": "Script",
+                    "content": "icecream.value = 0;",
+                    "language": "JavaScript"
                 }
             },
             "2": {
@@ -51,20 +67,20 @@
             },
             "3": {
                 "@class": "DialogueState",
-                "text": "Prends une glace",
+                "text": "Prends une glace <img src='../../wegas-simpledialogue/images/icecream.png' />",
                 "transitions": [{
                     "@class": "DialogueTransition",
                     "actionText": "Merci",
-                    "nextStateId": 4
+                    "nextStateId": 6
                 },{
                     "@class": "DialogueTransition",
                     "actionText": "J'ai encore faim",
-                    "nextStateId": 5
+                    "nextStateId": 7
                 }],
                 "editorPosition": {
                     "@class": "Coordinate",
-                    "x": 150,
-                    "y": 450
+                    "x": 50,
+                    "y": 550
                 }
             },
             "4": {
@@ -81,26 +97,60 @@
                 }],
                 "editorPosition": {
                     "@class": "Coordinate",
-                    "x": 450,
-                    "y": 450
+                    "x": 550,
+                    "y": 225
                 }
             },
             "5": {
                 "@class": "DialogueState",
-                "text": "Reprends une glace ;-)",
+                "text": "Reprends une glace ;-) <img src='../../wegas-simpledialogue/images/icecream.png' />",
                 "transitions": [{
                     "@class": "DialogueTransition",
                     "actionText": "Merci",
-                    "nextStateId": 4
+                    "nextStateId": 6
                 },{
                     "@class": "DialogueTransition",
-                    "actionText": "J'ai encore faim",
+                    "actionText": "Encore une stp!",
+                    "nextStateId": 7
+                }],
+                "editorPosition": {
+                    "@class": "Coordinate",
+                    "x": 550,
+                    "y": 550
+                }
+            },
+            "6": {
+                "@class": "State",
+                "onEnterEvent": {
+                    "@class": "Script",
+                    "content": "icecream.value++;",
+                    "language": "JavaScript"
+                },
+                "transitions": [{
+                    "@class": "Transition",
+                    "nextStateId": 4
+                }],
+                "editorPosition": {
+                    "@class": "Coordinate",
+                    "x": 270,
+                    "y": 360
+                }
+            },
+            "7": {
+                "@class": "State",
+                "onEnterEvent": {
+                    "@class": "Script",
+                    "content": "icecream.value++;",
+                    "language": "JavaScript"
+                },
+                "transitions": [{
+                    "@class": "Transition",
                     "nextStateId": 5
                 }],
                 "editorPosition": {
                     "@class": "Coordinate",
-                    "x": 300,
-                    "y": 250
+                    "x": 270,
+                    "y": 550
                 }
             }
         }

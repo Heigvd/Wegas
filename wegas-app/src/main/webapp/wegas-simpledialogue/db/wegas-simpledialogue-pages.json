@@ -5,6 +5,16 @@
         "type": "List",
         "cssClass": "content",
         "children": [{
+            "type": "Template",
+            "template": "text",
+            "cssClass": "icecream",
+            "variable": {
+                "name": "icecream"
+            },
+            "data": {
+                "label": "Glaces mangées"
+            }
+        },{
             "type": "SimpleDialogueMain"
         }]
     }
