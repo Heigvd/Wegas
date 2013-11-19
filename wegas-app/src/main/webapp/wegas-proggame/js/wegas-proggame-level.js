@@ -27,6 +27,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         RUN_BUTTON_LABEL: "<div class='proggame-play'><span>RUN</span><span> CODE</span></div>",
         STOP_BUTTON_LABEL: "<span class='proggame-stop'>STOP</span>",
         NEXT_BUTTON_LABEL: "<span class='proggame-next'>NEXT</span>",
+        DEBUG_BUTTON_LABEL: "<span class='proggame-playpause'></span>",
         CONTENT_TEMPLATE: '<div>'
                 + '<div class="yui3-g top">'
 
@@ -53,13 +54,15 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.handlers = {};
             this.currentState = "idle";
             this.objects = this.get("objects");
+
+            this.currentBreakpointLine = -1;
+            this.currentBreakpointStep = -1;
         },
         renderUI: function() {
             var i, cb = this.get(CONTENTBOX),
                     METHODTOTEXT = {
                 say: "say(text: String)"
             }, api = this.get("api");
-
             this.aceField = new Y.inputEx.AceField({//                          // Render ace editor
                 parentEl: cb.one(".code-content"),
                 name: 'text',
@@ -67,21 +70,28 @@ YUI.add('wegas-proggame-level', function(Y) {
                 height: "170px",
                 language: "javascript",
                 theme: "twilight",
-                value: "//Put your code here..."
+//                value: "//Put your code here...\nfunction move () {\n    var y,\n    x;\n\n}\nvar test;\ntest.x = 0;"
+                //value: "move();\nmove();"
+                value: "for (var i=0; i<10; i++) {\n    move();\n}"
             });
-            this.aceField.editor.on("guttermousedown", function(e) {            // Add breakpoints on click support
+            this.aceField.editor.on("guttermousedown", function(e) {     // Add breakpoints on click support
                 var target = e.domEvent.target;
                 if (target.className.indexOf("ace_gutter-cell") === -1)
                     return;
-                if (!this.isFocused())
-                    return;
-                if (e.clientX > 25 + target.getBoundingClientRect().left)
-                    return;
-                var row = e.getDocumentPosition().row;
-                e.editor.session.setBreakpoint(row);
+//                if (!this.aceField.editor.isFocused())
+//                    return;
+//                if (e.clientX > 25 + target.getBoundingClientRect().left)
+//                    return;
+                var row = e.getDocumentPosition().row,
+                        session = e.editor.getSession();
+                if (!session.getBreakpoints()[row]) {
+                    session.setBreakpoint(row);
+                } else {
+                    session.clearBreakpoint(row);
+                }
                 e.stop();
                 // Break points that move on line add: https://github.com/MikeRatcliffe/Acebug/blob/master/chrome/content/ace++/startup.js#L66-104
-            }, this);
+            });
 
             cb.one(".topcenter h1").setHTML(this.get("label"));                 // Display label
             //var enemy = this.findObject("Enemy");                             // Display enemy IA
@@ -102,40 +112,32 @@ YUI.add('wegas-proggame-level', function(Y) {
                 label: this.RUN_BUTTON_LABEL
             });
             this.runButton.render(cb.one(".buttons"));
+//            this.stopButton = new Y.Wegas.Button({
+//                label: "s",
+//                render: cb.one(".buttons")
+//            });
             this.resetUI();
+            this.setState("idle");
         },
         bindUI: function() {
             this.handlers.response = Y.Wegas.Facade.VariableDescriptor.after("update",
                     this.syncUI, this); // If data changes, refresh
 
             this.runButton.on("click", function() {
-                if (this.currentState === "idle") {
-                    this.setState("running");
+                if (this.currentState === "running") {
+                    this.setState("idle");
                 } else {
-                    this.setState("idle")
+                    this.setState("running");
                 }
             }, this);
             this.display.after('commandExecuted', this.consumeCommand, this);
             this.after('commandExecuted', this.consumeCommand, this);
-        },
-        run: function() {
-            this.resetUI();
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
-                cfg: {
-                    method: "POST",
-                    data: "JSON.stringify(run("
-                            + "function (name) {with(this) {" + this.aceField.getValue() + "\n}}, "
-                            + Y.JSON.stringify(this.toObject()) + "));"
-                },
-                on: {
-                    success: Y.bind(this.onServerReply, this),
-                    failure: Y.bind(function() {
-                        this.setState("idle");
-                        alert("Your script contains an error.");
-                    }, this)
-                }
+
+            Y.later(100, this, function() {
+//                this.runButton.fire("click");
             });
+            Y.later(10000, this, this.doIdleAnimation, [], true);               // While in idle mode, launch idle animation every 10 secs
+            Y.later(100, this, this.doIdleAnimation);
         },
         syncUI: function() {
             this.display.syncUI();
@@ -154,21 +156,82 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
         },
         setState: function(nextState) {
+            Y.log("setState(" + nextState + ")", "info", "Wegas.ProgGameLevel");
             switch (nextState) {
+                case "breaking":
+                    this.runButton.set("label", this.DEBUG_BUTTON_LABEL);
+                    break;
+
                 case "idle" :
                     this.runButton.set("label", this.RUN_BUTTON_LABEL);
                     this.commandsStack = null;
+                    this.aceField.session.removeGutterDecoration(this.currentBreakpointLine, "proggame-currentline");
+                    this.currentBreakpointLine = -1;
+                    this.currentBreakpointStep = -1;
                     break;
 
                 case "running":
                     this.runButton.set("label", this.STOP_BUTTON_LABEL);
-                    this.run();
+                    //this.run();
+                    if (this.currentState === "idle") {
+                        this.resetUI();
+                    }
+                    this.debug();
                     break;
 
             }
             this.currentState = nextState;
         },
+        run: function() {
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
+                cfg: {
+                    method: "POST",
+                    data: "run("
+                            + "function (name) {with(this) {" + this.aceField.getValue() + "\n}}, "
+                            + Y.JSON.stringify(this.toObject()) + ");"
+                },
+                on: {
+                    success: Y.bind(this.onServerReply, this),
+                    failure: Y.bind(function() {
+                        this.setState("idle");
+                        alert("Your script contains an error.");
+                    }, this)
+                }
+            });
+        },
+        debug: function() {
+            Y.log("debug()", "info", "Wegas.ProgGameLevel");
+            this.aceField.session.removeGutterDecoration(this.currentBreakpointLine, "proggame-currentline");
+
+            var ins = new Y.Wegas.JSInstrument(),
+                    code = ins.instrument(this.aceField.getValue()),
+                    breakpoints = Y.Object.keys(this.aceField.editor.getSession().getBreakpoints());
+
+            Y.log("instrumented code: " + code + ", current step: " + this.currentBreakpointStep + ", breakpoints: " + Y.JSON.stringify(breakpoints), "info", "Wegas.ProgGameLevel");
+
+            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
+                cfg: {
+                    method: "POST",
+                    data: "debug("
+                            + "function (name) {with(this) {" + code + "\n}}, "
+                            + Y.JSON.stringify(this.toObject()) + ", "
+                            //+"[0, 1], "
+                            + Y.JSON.stringify(breakpoints) + ", " +
+                            this.currentBreakpointStep + "); "
+                },
+                on: {
+                    success: Y.bind(this.onServerReply, this),
+                    failure: Y.bind(function() {
+                        this.setState("idle");
+                        alert("Your script contains an error.");
+                    }, this)
+                }
+            });
+        },
         resetUI: function() {
+            Y.log("resetUI()", "info", "Wegas.ProgGameDisplay");
             this.objects = Y.clone(this.get("objects"));
             this.commandsStack = null;
             //this.display.set("objects", this.objects);                          // Reset the display to default
@@ -183,10 +246,11 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.syncFrontUI();
         },
         onServerReply: function(e) {
+            Y.log("onServerReply(" + e.response.entity + ")", "info", "Wegas.ProgGameLevel");
             this.commandsStack = Y.JSON.parse(e.response.entity);
             var i;
             for (i = 0; i < this.commandsStack.length; i += 1) {
-                Y.log("command: " + this.commandsStack[i].type + ", " + this.commandsStack[i] + ", " + this.commandsStack[i].text);
+                //  Y.log("command: " + this.commandsStack[i].type + ", " + this.commandsStack[i] + ", " + this.commandsStack[i].text);
             }
 
             this.consumeCommand();
@@ -196,10 +260,20 @@ YUI.add('wegas-proggame-level', function(Y) {
                 return o.id === id;
             });
         },
+        doIdleAnimation: function() {
+            var texts = ["HELP! HELP!!! SOMEBODY HERE? PLEASE HELP ME!",
+                "PLEASE HELP ME!", "WHY ME? TELL ME WHY?", "WOULD ANYBODY BE KIND ENOUGH AS TO GET ME OUT OF HERE?"];
+
+            if (this.currentState === "idle") {
+                var enemy = this.display.getEntity("Enemy");
+                enemy.say(texts[Math.floor(Math.random() * (texts.length))]);
+                enemy.shakeHands(3);
+            }
+        },
         consumeCommand: function() {
             if (this.commandsStack && this.commandsStack.length > 0) {
                 var command = this.commandsStack.shift();
-                Y.log("consumeCommand" + ", " + command.type + ", " + command);
+                //Y.log("consumeCommand" + ", " + command.type + ", " + command);
                 switch (command.type) {
 
                     case "move":
@@ -235,11 +309,22 @@ YUI.add('wegas-proggame-level', function(Y) {
                         //this.runButton.detachAll("click");
                         //this.runButton.on("click", this.doNextLevel, this);
                         break;
+
                     case "log":
                         this.get("contentBox").one(".debugger").append(command.text + "<br />");
                         Y.later(100, this, this.consumeCommand);
                         //this.fire("commandExecuted");
                         break;
+
+                    case "breakpoint":
+                        Y.log("Breakpoint reached: " + command.line, "info");
+
+                        this.currentBreakpointLine = command.line;
+                        this.currentBreakpointStep = command.step;
+                        this.aceField.session.addGutterDecoration(command.line, "proggame-currentline");
+                        this.setState("breaking");
+                        break;
+
                     default:
                         break;
                 }
@@ -477,6 +562,35 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         name: "components",
                                         type: "uneditable",
                                         value: "Trap"
+                                    }
+
+                                ]
+                            }, {
+                                name: "Controller",
+                                type: "group",
+                                fields: [
+                                    {
+                                        name: "id",
+                                        label: "ID",
+                                        type: "string",
+                                        value: "Controller"
+                                    }, {
+                                        name: "x",
+                                        type: "number",
+                                        label: "x"
+                                    }, {
+                                        name: "y",
+                                        type: "number",
+                                        label: "y"
+                                    }, {
+                                        name: "enabled",
+                                        label: "Enabled by default",
+                                        type: "boolean",
+                                        value: false
+                                    }, {
+                                        name: "components",
+                                        type: "uneditable",
+                                        value: "Controller"
                                     }
 
                                 ]

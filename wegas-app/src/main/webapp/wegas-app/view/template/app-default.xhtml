@@ -65,13 +65,18 @@
                         YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
                         YUI_config.groups[groupName].comboBase = comboBase;
                     }
+
+                    for (var i in YUI_config.groups) {
+                        if (i.indexOf("wegas") > -1) {
+                            setupLocalPath(i);
+                            YUI_config.groups[i].combine = #{!requestController.debugMode()};
+                            YUI_config.groups[i].filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
+                        }
+                    }
+                    setupLocalPath("libraries");
                     YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
                     YUI_config.groups.inputex.combine = #{!requestController.debugMode()};
-                    YUI_config.groups.wegas.combine = #{!requestController.debugMode()};
-                    YUI_config.groups.wegas.filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
-                    setupLocalPath("wegas");
-                    setupLocalPath("inputex");
-                    setupLocalPath("libraries");                                // Set up libraries path
+                    setupLocalPath("inputex");                            // Set up libraries path
                 </script>
 
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
