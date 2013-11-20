@@ -35,9 +35,7 @@ YUI.add('wegas-proggame-objective', function(Y) {
                 } else {
                     this.popupContent = "No objective to display";
                     this.displayFix(this.popupContent);
-
                 }
-
                 this.reDisplayPopup();
             });
         },
@@ -54,9 +52,12 @@ YUI.add('wegas-proggame-objective', function(Y) {
             }
         },
         reDisplayPopup: function() {
-            Y.all(".objective").on('click', function(e) {
+            this.objectivesHandler = Y.all(".objective").on('click', function(e) {
                 this.displayPopup(this.popupContent);
             }, this);
+        },
+        destructor: function() {
+            this.objectivesHandler.detach();
         }
     }, {
         NS: "Objective",
