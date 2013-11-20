@@ -63,7 +63,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         execute: function() {
             var entity = this.get(ENTITY);
 
-            EditEntityAction.hideRightTabs();
             if (entity instanceof Y.Wegas.persistence.VariableDescriptor
                     || entity instanceof Y.Wegas.persistence.JpaAccount
                     || entity instanceof Y.Wegas.persistence.GameModel
@@ -71,12 +70,14 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
                         success: function(e) {
+                            EditEntityAction.hideRightTabs();
                             EditEntityAction.showUpdateForm(e.response.entity, e.callback.ds);
                         },
                         ds: this.get("dataSource")
                     }
                 });
             } else {
+                EditEntityAction.hideRightTabs();
                 EditEntityAction.showUpdateForm(this.get(ENTITY), this.get("dataSource"));
             }
         }

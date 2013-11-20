@@ -672,8 +672,7 @@ YUI().use(function(Y) {
                     path: 'css/wegas-pmgwidget.css',
                     type: 'css'
                 },
-                'wegas-pmg': {
-                    requires: ['wegas-pmg-breadcrumb'],
+                'wegas-pmg-breadcrumb': {
                     ws_provides: "PmgBreadcrumb"
                 },
                 'wegas-pmg-datatable': {
@@ -921,6 +920,7 @@ YUI().use(function(Y) {
                     ws_provides: "LoginWidget"
                 },
                 'wegas-logincss': {
+                    path: 'css/wegas-login-min.css',
                     type: 'css'
                 },
                 'wegas-sharerole': {
@@ -1014,7 +1014,7 @@ YUI().use(function(Y) {
                     path: 'excanvas/excanvas.compiled.js'
                 },
                 crafty: {
-                    path: 'crafty/crafty-min.js'
+                    path: 'crafty/0.5.3/crafty-min.js'
                 },
                 ace: {
                     async: false,

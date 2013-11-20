@@ -177,8 +177,9 @@ YUI.add('wegas-proggame-display', function(Y) {
                     entity = this.getEntity(command.id);
                     if (entity && typeof entity.doorState === 'function') {
                         entity.doorState(command.state);
-                        this.fire('commandExecuted'); // @fixme Added since commandexecuted is not working after animation
                         return;
+                    } else {
+                        this.fire('commandExecuted');
                     }
                     break;
                 case "controllerState":
@@ -531,21 +532,25 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this.requires("Tile, DoorSprite, SpriteAnimation");
                 this.animate("openDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
                 this.animate("closeDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 4);
-                this.bind("AnimationEnd", function() {
-                    Crafty.trigger('commandExecuted');
-                });
                 this.setter("open", function(v) {
+                    var animEndFn = function(e) {
+                        if (this._currentReelId === "openDoor" || this._currentReelId === "closeDoor") {
+                            Crafty.trigger('commandExecuted');
+                        }
+                    };
                     if (v) {
                         if (!this._open) {
-                            this.animate("openDoor", 10, 0);
+                            this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("openDoor", 10, 0);
                         } else {
                             this.reset();
+                            Crafty.trigger('commandExecuted');
                         }
                     } else {
                         if (this._open) {
-                            this.animate("closeDoor", 10, 0);
+                            this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("closeDoor", 10, 0);
                         } else {
                             this.reset();
+                            Crafty.trigger('commandExecuted');
                         }
                     }
                     this._open = v;
@@ -569,21 +574,23 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this.requires("Tile, ControllerSprite, SpriteAnimation");
                 this.animate("disableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 3);
                 this.animate("enableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 3);
-                this.bind("AnimationEnd", function() {
-                    Crafty.trigger('commandExecuted');
-                });
                 this.setter("enabled", function(v) {
+                    var animEndFn = function(e) {
+                        Crafty.trigger('commandExecuted');
+                    };
                     if (v) {
                         if (!this._enabled) {
-                            this.animate("disableController", 10, 0);
+                            this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("disableController", 10, 0);
                         } else {
                             this.reset();
+                            Crafty.trigger('commandExecuted');
                         }
                     } else {
                         if (this._enabled) {
-                            this.animate("enableController", 10, 0);
+                            this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("enableController", 10, 0);
                         } else {
                             this.reset();
+                            Crafty.trigger('commandExecuted');
                         }
                     }
                     this._enabled = v;
