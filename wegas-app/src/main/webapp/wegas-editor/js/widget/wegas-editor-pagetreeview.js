@@ -175,6 +175,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             if (widget.each && !(widget instanceof Y.Wegas.PageLoader)) {
                 treeNode = new Y.TreeNode({
                     label: widget.getEditorLabel() ? widget.getEditorLabel() : "<i>" + widget.getType() + "</i>",
+                    tooltip: "Type: " + widget.getType(),
                     rightWidget: DATASOURCE.editable ? button : null,
                     data: {
                         widget: widget
@@ -188,6 +189,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             } else {
                 treeNode = new Y.TreeLeaf({
                     label: widget.getEditorLabel() ? widget.getEditorLabel() : "<i>" + widget.getType() + "</i>",
+                    tooltip: "Type: " + widget.getType(),
                     rightWidget: DATASOURCE.editable ? button : null,
                     data: {
                         widget: widget
