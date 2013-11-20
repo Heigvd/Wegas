@@ -256,7 +256,7 @@
 .debugger .yui3-treeleaf-content-header:hover {
     background: none;
 }
-.yui3-treenode-content-icon, .yui3-treeleaf-content-icon {
+.debugger .yui3-treenode-content-icon, .debugger .yui3-treeleaf-content-icon {
     width: 0;
 }
 .topright .debugger h1 {
