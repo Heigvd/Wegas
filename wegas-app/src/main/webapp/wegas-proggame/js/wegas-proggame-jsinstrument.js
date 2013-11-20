@@ -5,11 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
- * @author Benjamin Gerber <ger.benjamin@gmail.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-/*global Crafty*/
 YUI.add('wegas-proggame-jsinstrument', function(Y) {
     "use strict";
 
@@ -87,10 +85,10 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                     }
                 }, true);
 
-                var code = window.escodegen.generate(tree, {
+                var instrumentedCode = window.escodegen.generate(tree, {
                     //indent: true
                 });
-                code = code.replace(/___DEBUGBLOCK___/g, "(function(){ var i, w = watches, ret = {};"
+                instrumentedCode = instrumentedCode.replace(/___DEBUGBLOCK___/g, "(function(){ var i, w = watches, ret = {};"
                         + "for(i=0;i<w.length;i++){"
                         + "try {"
                         + "ret[w[i]]=eval(w[i]);"
@@ -99,7 +97,7 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                         + "}"
                         + "return ret;})()");
 
-                return code;
+                return instrumentedCode;
             } catch (e) {
                 Y.log("Error evaluating client code", "error");
                 return;

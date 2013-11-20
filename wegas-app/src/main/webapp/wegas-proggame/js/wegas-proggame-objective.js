@@ -44,12 +44,7 @@ YUI.add('wegas-proggame-objective', function(Y) {
             this.popupContent = content;
         },
         displayFix: function(content) {
-            var div = Y.one(".objective"), node;
-            node = "<h1>Objectives</h1><div class='objValue'>" + content + "</div>";
-            if (div) {
-                div.get('childNodes').remove();
-                div.append(node);
-            }
+            Y.all(".objective").empty().append("<h1>Objectives</h1><div class='objValue'>" + content + "</div>");
         },
         reDisplayPopup: function() {
             this.objectivesHandler = Y.all(".objective").on('click', function(e) {

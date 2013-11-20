@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -275,8 +274,12 @@ YUI.add('wegas-proggame-level', function(Y) {
             });
         },
         doIdleAnimation: function() {
-            var texts = ["HELP! HELP!!! SOMEBODY HERE? PLEASE HELP ME!",
-                "PLEASE HELP ME!", "WHY ME? TELL ME WHY?", "WOULD ANYBODY BE KIND ENOUGH AS TO GET ME OUT OF HERE?"];
+            var texts = this.get("idlePhrases");
+
+            if (texts.length === 0) {
+                texts = ["HELP! HELP!!! SOMEBODY HERE? PLEASE HELP ME!",
+                    "PLEASE HELP ME!", "WHY ME? TELL ME WHY?", "WOULD ANYBODY BE KIND ENOUGH AS TO GET ME OUT OF HERE?"];
+            }
 
             if (this.currentState === "idle") {
                 var enemy = this.display.getEntity("Enemy");
@@ -700,6 +703,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             maxTurns: {
                 type: "string",
                 format: "Integer",
+                value: 1,
                 validator: function(s) {
                     return (parseInt(s) ? parseInt(s) : 1);
                 },
@@ -786,6 +790,10 @@ YUI.add('wegas-proggame-level', function(Y) {
                         type: "object"
                     }
                 }
+            },
+            idlePhrases: {
+                type: "array",
+                value: []
             }
         }
     });
