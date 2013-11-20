@@ -61,7 +61,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          */
         genTreeViewElements: function(elements) {
             var ret = [], i, el, elClass, text, collapsed, selected,
-                    l, result, children = [];
+                    l, result, children = [], tooltip;
 
             for (i in elements) {
                 if (elements.hasOwnProperty(i)) {
@@ -70,6 +70,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     collapsed = !this.isNodeExpanded(el);
                     selected = (this.currentSelection === el.get(ID)) ? 2 : 0;
                     text = el.getEditorLabel()/* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/;
+                    tooltip = "Type: " + el.getType().replace("Descriptor", "");
 
                     switch (elClass) {
                         case 'StringDescriptor':
@@ -86,6 +87,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
+                                tooltip:tooltip,
                                 children: els,
                                 //children: (els.length >= 1) ? els : null, //no children now, loaded on expands
                                 //children: null, //no children now, loaded on expands
@@ -105,6 +107,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
+                                tooltip:tooltip,
                                 collapsed: collapsed,
                                 selected: selected,
                                 children: (!collapsed) ? this.genTreeViewElements(el.get("items")) : [],
@@ -120,6 +123,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
+                                tooltip:tooltip,
                                 collapsed: collapsed,
                                 selected: selected,
                                 children: (!collapsed) ? this.genTreeViewElements(el.get("items")) : [],
@@ -152,6 +156,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
+                                tooltip:tooltip,
                                 children: children,
                                 data: {
                                     entity: el
@@ -168,6 +173,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeLeaf',
                                 label: text,
+                                tooltip:tooltip,
                                 selected: selected,
                                 data: {
                                     entity: el
@@ -182,6 +188,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             text = el.get(CLASS) + ': ' + el.get(NAME);
                             ret.push({
                                 label: text,
+                                tooltip:tooltip,
                                 data: el
                             });
                             break;

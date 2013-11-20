@@ -10,17 +10,18 @@
  * @author Cyril Junod
  */
 YUI.add('treeview', function(Y) {
+    "use strict";
     var getClassName = Y.ClassNameManager.getClassName,
             TREEVIEW = 'treeview',
             TREENODE = 'treenode',
-            TREELEAF = 'treeleaf',
+            //TREELEAF = 'treeleaf',
             CONTENT_BOX = "contentBox",
             BOUNDING_BOX = "boundingBox",
             classNames = {
-        loading: getClassName(TREENODE, "loading"),
-        collapsed: getClassName(TREENODE, "collapsed"),
-        visibleRightWidget: getClassName(TREEVIEW, "visible-right")
-    },
+                loading: getClassName(TREENODE, "loading"),
+                collapsed: getClassName(TREENODE, "collapsed"),
+                visibleRightWidget: getClassName(TREEVIEW, "visible-right")
+            },
     RIGHTWIDGETSETTERFN = function(v) {
         var rightWidget = this.get("rightWidget"),
                 targetNode = this.get(BOUNDING_BOX).one(".yui3-tree-rightwidget");
@@ -241,7 +242,7 @@ YUI.add('treeview', function(Y) {
              * Force event firing for an exisiting and none 0 attribute
              * "selected" on initialization
              */
-            this.onceAfter("renderedChange", function(e) {
+            this.onceAfter("renderedChange", function() {
                 var val = this.get("selected");
                 if (val && !this.get("selection")) {                            /* check for last selected node */
                     this.set("selected", 0);
@@ -320,6 +321,7 @@ YUI.add('treeview', function(Y) {
             this.set("loading", this.get("loading"));
             this.set("iconCSS", this.get("iconCSS"));
             this.set("label", this.get("label"));
+            this.set("tooltip", this.get("tooltip"));
             this.set("rightWidget", this.get("rightWidget"));
             this.set("collapsed", this.get("collapsed"));
             this.set("cssClass", this.get("cssClass"));
@@ -335,7 +337,9 @@ YUI.add('treeview', function(Y) {
             this.blur(); //remove a focused node generates some errors
             this.set("selected", 0);
             for (event in this.eventInstances) {
-                this.eventInstances[event].detach();
+                if (this.eventInstances.hasOwnProperty(event)) {
+                    this.eventInstances[event].detach();
+                }
             }
             if (this.get("rightWidget")) {
                 this.get("rightWidget").destroy();
@@ -428,9 +432,8 @@ YUI.add('treeview', function(Y) {
             if (this.get("collapsed")) {
                 this._childStore.push([child, index]);
                 return null;
-            } else {
-                return Y.WidgetParent.prototype._add.call(this, child, index);
             }
+            return Y.WidgetParent.prototype._add.call(this, child, index);
         }
     }, {
         /** @lends Y.TreeNode */
@@ -444,6 +447,17 @@ YUI.add('treeview', function(Y) {
                         this.labelNode.setContent(v);
                     }
                     return v;
+                }
+            },
+            tooltip: {
+                value: "",
+                validator: Y.Lang.isString,
+                setter: function(v) {
+                    if (v) {
+                        this.get(BOUNDING_BOX).one(".content-header").setAttribute("title", v);
+                    } else {
+                        this.get(BOUNDING_BOX).one(".content-header").removeAttribute("title");
+                    }
                 }
             },
             initialSelected: {
@@ -620,6 +634,7 @@ YUI.add('treeview', function(Y) {
          */
         syncUI: function() {
             this.set("label", this.get("label"));
+            this.set("tooltip", this.get("tooltip"));
             this.set("iconCSS", this.get("iconCSS"));
             this.set("editable", this.get("editable"));
             this.set("loading", this.get("loading"));
@@ -659,6 +674,17 @@ YUI.add('treeview', function(Y) {
                 },
                 getter: function(v) {
                     return this.labelNode.getContent();
+                }
+            },
+            tooltip: {
+                value: "",
+                validator: Y.Lang.isString,
+                setter: function(v) {
+                    if (v) {
+                        this.get(BOUNDING_BOX).one(".content-header").setAttribute("title", v);
+                    } else {
+                        this.get(BOUNDING_BOX).one(".content-header").removeAttribute("title");
+                    }
                 }
             },
             cssClass: {
