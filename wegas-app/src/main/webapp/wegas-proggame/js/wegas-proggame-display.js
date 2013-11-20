@@ -29,7 +29,6 @@ YUI.add('wegas-proggame-display', function(Y) {
         CONTENT_TEMPLATE: '<div><div class="object-layer"></div><div id="cr-stage"></div></div>',
         gridH: null,
         gridW: null,
-        allowNextCommand: null,
         initializer: function() {
             this.entities = [];
             this.allowNextCommand = false;
@@ -185,7 +184,6 @@ YUI.add('wegas-proggame-display', function(Y) {
                     break;
                 case "controllerState":
                     entity = this.getEntity(command.id);
-                    this.allowNextCommand = true;
                     if (entity && typeof entity.controllerState === 'function') {
                         entity.controllerState(command.state);
                     }
@@ -199,7 +197,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                     return;
 
                 default:
-                    this.allowNextCommand = false;
+                    //this.allowNextCommand = false;
                     //Y.log("No action defined for '" + command.type + "'", "debug", "Y.Wegas.ProggameDisplay");
                     return;
 
@@ -415,19 +413,19 @@ YUI.add('wegas-proggame-display', function(Y) {
                         .text(text)
                         .attr({"z": 401, "visible": false})
                         .css({
-                            "background-color": "rgb(50, 50, 40)",
-                            "color": "white",
-                            "border": "7px solid #FFFFFF",
-                            "-moz-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                            "-webkit-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                            "-o-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                            "border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                            "line-height": "1.1em",
-                            "font-size": "0.9em",
-                            "padding": "4px",
-                            "max-width": "108px",
-                            "visibility": "hidden"
-                        }), POS = [this._x, this._y], connector = Crafty.e("2D, DOM").css({
+                    "background-color": "rgb(50, 50, 40)",
+                    "color": "white",
+                    "border": "7px solid #FFFFFF",
+                    "-moz-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-webkit-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-o-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "line-height": "1.1em",
+                    "font-size": "0.9em",
+                    "padding": "4px",
+                    "max-width": "108px",
+                    "visibility": "hidden"
+                }), POS = [this._x, this._y], connector = Crafty.e("2D, DOM").css({
                     "background": "url(" + Y.Wegas.app.get('base') + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (+-32 + "px")),
                     "width": "32px",
                     "height": "32px",
