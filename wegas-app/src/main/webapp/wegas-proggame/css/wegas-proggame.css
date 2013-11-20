@@ -106,12 +106,10 @@
     box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
 }
 .objective .objValue {
-    width: 148px;
-    margin-left: 18px;
-    overflow: auto;
     height: 158px;
+    margin: 0 13px 0 24px;
+    overflow: auto;
 }
-
 .objective h1 {
     font-family: Blackadder ITC;
     margin-left: 30px;
@@ -256,7 +254,8 @@
 .debugger .yui3-treeleaf-content-header:hover {
     background: none;
 }
-.yui3-treenode-content-icon, .yui3-treeleaf-content-icon {
+.debugger .yui3-treenode-content-icon,
+.debugger .yui3-treeleaf-content-icon {
     width: 0;
 }
 .topright .debugger h1 {
