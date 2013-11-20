@@ -672,8 +672,7 @@ YUI().use(function(Y) {
                     path: 'css/wegas-pmgwidget.css',
                     type: 'css'
                 },
-                'wegas-pmg': {
-                    requires: ['wegas-pmg-breadcrumb'],
+                'wegas-pmg-breadcrumb': {
                     ws_provides: "PmgBreadcrumb"
                 },
                 'wegas-pmg-datatable': {
