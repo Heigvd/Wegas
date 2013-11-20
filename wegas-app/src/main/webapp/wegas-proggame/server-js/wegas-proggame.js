@@ -15,6 +15,27 @@ Wegas = {//                                                                     
             }
         }
         return receiver;
+    },
+    Object: {
+        values: function(object) {
+            var ret = [], i;
+            for (i in object) {
+                ret.push(object[i]);
+            }
+            return ret;
+        },
+        clone: function(o) {
+            var newObj = (o instanceof Array) ? [] : {};
+            for (var i in o) {
+                if (i === 'clone')
+                    continue;
+                if (o[i] && typeof o[i] === "object") {
+                    newObj[i] = Wegas.Object.clone([i]);
+                } else
+                    newObj[i] = o[i];
+            }
+            return newObj;
+        }
     }
 };
 function wdebug(msg) {
@@ -23,6 +44,7 @@ function wdebug(msg) {
 function ProgGameSimulation() {
     this.breakpoints = [];
     this.debug = false;
+    this.watches = [];
     this.startLine = -1;
 }
 Wegas.mix(ProgGameSimulation.prototype, {
@@ -78,7 +100,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
             this.objects[i].actions = this.objects[i].defaultActions;
             this.sendCommand({
                 type: "updated",
-                object: this.objects[i].clone()
+                object: Wegas.Object.clone(this.objects[i])
             });
         }
     },
@@ -180,7 +202,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
     },
     move: function() {
         var object = this.cObject,
-                moveV = dirToVector(object.direction);
+                moveV = this.dirToVector(object.direction);
 
 
         if (!this.beforeAction(object))
@@ -249,10 +271,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
 
         this.sendCommand({
             type: 'fire',
-            object: source.clone()
+            object: Wegas.Object.clone(source)
         });
 
-        var colidee, dirV = dirToVector(source.direction);
+        var colidee, dirV = this.dirToVector(source.direction);
 
         for (i = 0; i <= source.range; i++) {
             colidee = this.checkCollision(this.cObject, source.x + (i * dirV.x), source.y + (i * dirV.y));
@@ -260,7 +282,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
                 colidee.life = 0;
                 this.sendCommand({
                     type: 'die',
-                    object: colidee.clone()
+                    object: Wegas.Object.clone(colidee)
                 });
             }
         }
@@ -301,8 +323,12 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return false;
     },
     doEval: function(code) {
-        with (this) {
-            return eval(code);
+        try {
+            with (this) {
+                return eval(code);
+            }
+        } catch (e) {
+            return null;
         }
     },
     doPlayerEval: function(playerFn) {
@@ -312,7 +338,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
 //        }
         with (this) {
             //(function(that) {
-            playerFn.apply(this, values(this.getArgs()));                       // run fn
+            playerFn.apply(this/*, Wegas.Object.values(this.getArgs())*/);                       // run fn
             //})(this);
         }
     },
@@ -339,84 +365,83 @@ Wegas.mix(ProgGameSimulation.prototype, {
     comparePos: function(a, b) {
         return a.x === b.x && a.y === b.y;
     },
-    __debug: function(line) {
+    _____debug: function(line, scope, vars) {
+//            this.log("mmmm"+ y+"*"+);
 
         this.currentLine += 1;
         wdebug("debug line:" + line + ", currentline " + this.currentLine + ", startline: " + this.startLine);
-        if (
-                //line > this.currentLine // first time considering this line
-                // &&
-                this.currentLine > this.startLine) {
+        if (this.currentLine > this.startLine) {
+            //&& line > this.currentLine && // first time considering this line
             wdebug("halted" + this.breakpoints.indexOf(line) + "*" + line);
             if (this.breakpoints.indexOf("" + line) > -1) {
                 this.sendCommand({
                     type: "breakpoint",
                     line: line,
-                    step: this.currentLine
+                    step: this.currentLine,
+                    scope: vars
+                            //scope: this.genScope(scope)
                 });
                 this.doRecordCommands = false;
             }
         }
         //this.currentLine = line;
+    },
+    _____watch: function() {
+        for (var i = 0; i < arguments.length; i += 1) {
+            if (!this.watches.indexOf(arguments[i]) > -1) {
+                this.watches.push(arguments[i]);
+            }
+        }
+    },
+    genScope: function() {
+        var i, ret = {};
+        for (i = 0; i < this.watches.length; i += 1) {
+            try {
+
+                ret[this.watches[i]] = eval(this.watches[i]);
+//                ret[this.watches[i]] = this.doEval(this.watches[i]);
+            } catch (e) {
+                // GOTCHA
+            }
+//            ret[this.watches[i]] = true;
+        }
+        return ret;
+    },
+// *** Utilities *** //
+    dirToVector: function(dir) {
+        var dirX = 0, dirY = 0;
+        switch (dir) {
+            case 1:
+                dirY = 1;
+                break;
+            case 2:
+                dirX = 1;
+                break;
+            case 3:
+                dirY = -1;
+                break;
+            case 4:
+                dirX = -1;
+                break;
+        }
+        return {
+            x: dirX,
+            y: dirY
+        };
     }
 });
 
 
-// *** Utilities *** //
-Object.prototype.clone = function() {
-    var newObj = (this instanceof Array) ? [] : {};
-    for (var i in this) {
-        if (i === 'clone')
-            continue;
-        if (this[i] && typeof this[i] === "object") {
-            newObj[i] = this[i].clone();
-        } else
-            newObj[i] = this[i];
-    }
-    return newObj;
-};
-function dirToVector(dir) {
-    var dirX = 0, dirY = 0;
-    switch (dir) {
-        case 1:
-            dirY = 1;
-            break;
-        case 2:
-            dirX = 1;
-            break;
-        case 3:
-            dirY = -1;
-            break;
-        case 4:
-            dirX = -1;
-            break;
-    }
-    return {
-        x: dirX,
-        y: dirY
-    };
-}
-function values(object) {
-    var ret = [], i;
-    for (i in object) {
-        ret.push(object[i]);
-    }
-    return ret;
-}
 
 function run(playerFn, level) {
     var simulation = new ProgGameSimulation();
-//    try {
     simulation.run(playerFn, level);
-//    } catch (e) {
-//        println(e);
-//    }
     return JSON.stringify(simulation.getCommands());
 }
-function debug(playerFn, level, breakPoints, startLine) {
-
+function debug(playerFn, level, breakPoints, watches, startLine) {
     var simulation = new ProgGameSimulation();
     simulation.debug = true;
+    simulation.watches = watches;
     simulation.startLine = startLine;
     simulation.breakpoints = breakPoints;
     simulation.run(playerFn, level);
