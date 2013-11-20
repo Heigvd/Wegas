@@ -826,7 +826,7 @@ YUI().use(function(Y) {
             modules: {
                 /** Prog game **/
                 'wegas-proggame-level': {
-                    requires: ['tabview', 'wegas-widget', 'wegas-inputex-ace',
+                    requires: ['tabview', "treeview", 'wegas-widget', 'wegas-inputex-ace',
                         'wegas-proggame-display', 'wegas-proggame-jsinstrument'],
                     ws_provides: 'ProgGameLevel'
                 },
