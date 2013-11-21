@@ -36,8 +36,36 @@
                         }
                     }]
             }, {
-                "type": "Text",
-                "content": "<div class=\"api\"><h1>Api</h1></div>",
+                "type": "TabView",
+                "cssClass": "apiTab",
+                "children": [{
+                        "type": "Tab",
+                        "label": "API",
+                        "selected": 2,
+                        "children": [{
+                                "type": "Text",
+                                "content": "<div class=\"api\"></div>"
+                            }]
+                    }, {
+                        "type": "Tab",
+                        "label": "files",
+                        "children": [{
+                                "type": "ScriptFiles",
+                                "variable": {
+                                    "name": "files"
+                                }
+                            }],
+                        "plugins": [{
+                                "fn": "ConditionalDisable",
+                                "cfg": {
+                                    "condition": {
+                                        "@class": "Script",
+                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentLevel').getValue(self)<12",
+                                        "language": "JavaScript"
+                                    }
+                                }
+                            }]
+                    }],
                 "plugins": [{
                         "fn": "CSSPosition",
                         "cfg": {

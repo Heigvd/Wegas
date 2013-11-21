@@ -845,6 +845,10 @@ YUI().use(function(Y) {
                 },
                 'wegas-popup': {
                     ws_provides: ["Popup"]
+                },
+                'wegas-proggame-scriptfiles': {
+                    requires:["PanelWidget"],
+                    ws_provides: ["ScriptFiles"]
                 }
             }
         },
