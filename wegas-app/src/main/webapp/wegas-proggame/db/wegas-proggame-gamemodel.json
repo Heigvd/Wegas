@@ -37,6 +37,18 @@
             },
             "label": null,
             "description": null
+        }, {
+            "@class": "InboxDescriptor",
+            "name": "files",
+            "defaultInstance": {
+                "@class": "InboxInstance",
+                "messages": []
+            },
+            "scope": {
+                "@class": "PlayerScope"
+            },
+            "label": null,
+            "description": null
         }],
     "properties": {
         "cssUri": "wegas-proggame/css/wegas-proggame.css",
