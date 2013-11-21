@@ -47,8 +47,8 @@ public class Team extends AbstractEntity {
     /**
      *
      */
-//    @Temporal(TemporalType.TIMESTAMP)
-//    private Date createdTime = new Date();
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTime = new Date();
     /**
      *
      */
@@ -65,7 +65,7 @@ public class Team extends AbstractEntity {
      */
     @ManyToOne(optional = false)
     @NotNull
-    @JoinColumn(name = "parentgame_id")
+    @JoinColumn(name = "parentgame_id", nullable = false)
     @XmlTransient
     //@XmlInverseReference(mappedBy = "teams")
     @JsonBackReference(value = "game-team")
@@ -209,4 +209,17 @@ public class Team extends AbstractEntity {
         this.token = token;
     }
 
+    /**
+     * @return the createdTime
+     */
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    /**
+     * @param createdTime the createdTime to set
+     */
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
 }

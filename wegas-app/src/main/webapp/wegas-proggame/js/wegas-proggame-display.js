@@ -8,11 +8,18 @@
 
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
 /*global Crafty*/
 YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
-    var ProgGameDisplay, GRIDSIZE = 32;
+    var ProgGameDisplay, GRIDSIZE = 32,
+            execFn = function() {
+                if (Crafty.refWidget.allowNextCommand) {
+                    Crafty.refWidget.allowNextCommand = false;
+                    Crafty.refWidget.fire('commandExecuted');
+                }
+            };
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
@@ -22,7 +29,6 @@ YUI.add('wegas-proggame-display', function(Y) {
         CONTENT_TEMPLATE: '<div><div class="object-layer"></div><div id="cr-stage"></div></div>',
         gridH: null,
         gridW: null,
-        allowNextCommand: null,
         initializer: function() {
             this.entities = [];
             this.allowNextCommand = false;
@@ -49,8 +55,6 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
 //            Crafty.background('rgb(0,0,0)');
 
-
-
             for (i = 0; i < this.gridH; i += 1) {                               // Add map tiles
                 for (j = 0; j < this.gridW; j += 1) {
                     cfg = map[i][j];
@@ -67,7 +71,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 }
             }
             /*Apply filter*/
-//            Crafty.e("2D," + this.renderMethod + ", Image").image(Y.Wegas.app.get("base") + '/wegas-proggame/images/filtre.png', "repeat").attr({w: Crafty.viewport.width, h: Crafty.viewport.height});
+            //Crafty.e("2D," + this.renderMethod + ", Image").image(Y.Wegas.app.get("base") + '/wegas-proggame/images/filtre.png', "repeat").attr({w: Crafty.viewport.width, h: Crafty.viewport.height});
             for (i = 0; i < objects.length; i += 1) {                              // Add map objects
                 cfg = objects[i];
 
@@ -75,9 +79,9 @@ YUI.add('wegas-proggame-display', function(Y) {
                         .attr(cfg.attrs);                                       // Instantiate an entity
 
                 pos = this.getRealXYPos([cfg.x, cfg.y]);                        // Place it on the map
-
                 entity.attr('x', pos[0]);
                 entity.attr('y', pos[1]);
+
                 if (entity.execMove) {                                          // Allows to turn the player to the right direction
                     entity.execMove(cfg.direction, pos[0], pos[1]);
                 }
@@ -85,12 +89,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
         },
         bindUI: function() {
-            Crafty.bind('commandExecuted', function() {
-                if (Crafty.refWidget.allowNextCommand) {
-                    Crafty.refWidget.allowNextCommand = false;
-                    Crafty.refWidget.fire('commandExecuted');
-                }
-            });
+            Crafty.bind('commandExecuted', execFn);
         },
         destructor: function() {
             var k, components = Crafty("*");
@@ -100,15 +99,14 @@ YUI.add('wegas-proggame-display', function(Y) {
                     components[k].destroy();
                 }
             }
-            Crafty.unbind('dieEnded');
-            Crafty.unbind('moveEnded');
-            Crafty.unbind('commandExecuted');
+            Crafty.unbind('commandExecuted', execFn);
         },
         getEntity: function(id) {
             return this.entities[id];
         },
         execute: function(command) {
             var object, entity, pos, i;
+            this.allowNextCommand = true;
 
             switch (command.type) {
                 case "resetLevel":
@@ -124,22 +122,20 @@ YUI.add('wegas-proggame-display', function(Y) {
                             entity.initialize(object.attr);
                         }
                     }
-                    this.fire("commandExecuted");
                     break;
+
                 case "move":
-                    object = command.object;
-                    this.set("objects", object);// @fixme why?
-                    entity = this.getEntity(object.id);
-                    pos = this.getRealXYPos([object.x, object.y]);
-                    this.allowNextCommand = true;
+                    entity = this.getEntity(command.id);
+                    pos = this.getRealXYPos([command.x, command.y]);
+
                     if (entity && entity.execMove) {
-                        entity.execMove(object.direction, pos[0], pos[1], ProgGameDisplay.SPEED.MOVE);
-                    } else {
-                        this.fire('commandExecuted');
+                        entity.execMove(command.dir, pos[0], pos[1], ProgGameDisplay.SPEED.MOVE);
+                        return;
                     }
                     break;
+
                 case "fire":
-                    entity = this.getEntity(command.object.id);
+                    entity = this.getEntity(command.id);
                     switch (object.direction) {
                         case 1:
                             pos = this.getRealXYPos([object.x, object.y + object.range]);
@@ -154,52 +150,59 @@ YUI.add('wegas-proggame-display', function(Y) {
                             pos = this.getRealXYPos([object.x - object.range, object.y]);
                             break;
                     }
-                    this.allowNextCommand = true;
                     if (entity && entity.execFire) {
                         entity.execFire(object.direction, pos[0], pos[1]);
-                    } else {
-                        this.fire('commandExecuted');
+                        return;
                     }
                     break;
-                case "die":
-                    entity = this.getEntity(command.object.id);
-                    this.allowNextCommand = true;
-                    if (entity && entity.execDie) {
-                        entity.execDie();
-                    } else {
-                        this.fire('commandExecuted');
+
+                case "Die":
+                case "Trap":
+                    entity = this.getEntity(command.id);
+                    if (entity && entity["exec" + command.type]) {
+                        entity["exec" + command.type]();
+                        return;
                     }
                     break;
-                case "trap":
-                    entity = this.getEntity(command.object.id);
-                    this.allowNextCommand = true;
-                    if (entity && entity.execTrap) {
-                        entity.execTrap();
-                    } else {
-                        this.fire('commandExecuted');
-                    }
-                    break;
+
                 case "say":
                     entity = this.getEntity(command.id);
-                    this.allowNextCommand = true;
                     if (entity && typeof entity.say === 'function') {
                         entity.say(command.text, command.duration);
-                    } else {
-                        this.fire('commandExecuted');
+                        return;
                     }
                     break;
+
                 case "doorState":
                     entity = this.getEntity(command.id);
-                    this.allowNextCommand = true;
                     if (entity && typeof entity.doorState === 'function') {
                         entity.doorState(command.state);
+                        return;
                     } else {
                         this.fire('commandExecuted');
                     }
                     break;
+                case "controllerState":
+                    entity = this.getEntity(command.id);
+                    if (entity && typeof entity.controllerState === 'function') {
+                        entity.controllerState(command.state);
+                    }
+                    break;
+                case "yell":
+                    entity = this.getEntity(command.id);
+                    if (entity && typeof entity.shakeHands === 'function') {
+                        entity.shakeHands(command.times);
+                    }
+                    this.fire('commandExecuted'); // continue, non blocking action.
+                    return;
+
                 default:
-                    Y.log("No action defined for '" + command.type + "'", "debug", "Y.Wegas.ProggameDisplay");
+                    //this.allowNextCommand = false;
+                    //Y.log("No action defined for '" + command.type + "'", "debug", "Y.Wegas.ProggameDisplay");
+                    return;
+
             }
+            this.fire('commandExecuted');
         },
         getRealXYPos: function(position) {
             var pos = [];
@@ -276,7 +279,7 @@ YUI.add('wegas-proggame-display', function(Y) {
 
     Y.namespace('Wegas').ProgGameDisplay = ProgGameDisplay;
     /*
-     * Create Crafty Components 
+     * Create Crafty Components
      */
     (function() {
         var speedToFrame = function(speed, x, y, toX, toY) {
@@ -285,9 +288,9 @@ YUI.add('wegas-proggame-display', function(Y) {
             dist = Math.sqrt(Crafty.math.squaredDistance(x, y, toX, toY));
             return Math.round(((dist / GRIDSIZE) * (100 / speed))) || 1;
         };
-        Crafty.sprite(24, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/characters.png', {
-            CharacterSprite: [0, 0]
-        });
+        //Crafty.sprite(24, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/characters.png', {
+        //    CharacterSprite: [0, 0]
+        //});
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim.png', {
             HumanSprite: [0, 0],
             TrapSprite: [0, 9],
@@ -300,9 +303,9 @@ YUI.add('wegas-proggame-display', function(Y) {
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/panel.png', {
             PanelSprite: [0, 0]
         });
-        Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/lightning.png', {
-            LightningSprite: [0, 0]
-        });
+        //Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/lightning.png', {
+        //    LightningSprite: [0, 0]
+        //});
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/terrain.png', {
             TerrainSprite: [0, 0]
         });
@@ -317,35 +320,28 @@ YUI.add('wegas-proggame-display', function(Y) {
                     this.tweenEnd.push(e);
                     if (this.tweenEnd.length === 2) {
                         this.stop();
+                        this.tweenEnd.length = 0;
                         Crafty.trigger('moveEnded');
                         Crafty.trigger('commandExecuted');
                     }
                 }, this);
             },
             execMove: function(direction, toX, toY, speed) {
-                var animDir = this.dir2anim(direction);
+                var animDir = this.dir2anim[direction];
 
                 if (!this.isPlaying(animDir)) {
                     this.stop();
                     this.animate(animDir, 4, -1);
                 }
-                this.tweenEnd.length = 0;
                 this.tween({x: toX, y: toY}, speedToFrame(speed, this._x, this._y, toX, toY));
             },
-            dir2anim: function(direction) {
-                switch (direction) {
-                    case 1:
-                        return "moveUp";
-                    case 2:
-                        return "moveRight";
-                    case 3:
-                        return "moveDown";
-                    case 4:
-                        return "moveLeft";
-                    default:
-                        return null;
-                }
+            dir2anim: {
+                1: "moveUp",
+                2: "moveRight",
+                3: "moveDown",
+                4: "moveLeft"
             }
+
         });
 
         Crafty.c("shoot", {
@@ -394,35 +390,57 @@ YUI.add('wegas-proggame-display', function(Y) {
         });
         Crafty.c("Character", {
             init: function() {
-                this.requires("2D," + Crafty.refWidget.renderMethod + ", HumanSprite, SpriteAnimation, move4Direction, Speaker")
+                this.requires("2D," + Crafty.refWidget.renderMethod + ", HumanSprite, SpriteAnimation, move4Direction, Speaker, Collision")
                         .animate("moveUp", 0, 2, 7)
                         .animate("moveRight", 0, 0, 7)
                         .animate("moveDown", 0, 2, 7)
-                        .animate("moveLeft", 0, 1, 7);
+                        .animate("moveLeft", 0, 1, 7)
+                        .animate("handsUp", 0, 6, 6)
+                        .onHit("Collide", function(e) {
+                            this.h -= 1;
+                            this.y += 1;
+                        }, function() {
+                            this.destroy();
+                        }).origin(0, 32);
+            },
+            shakeHands: function(times) {
+                this.stop().animate("handsUp", 15, times || 1);
             }
         });
         Crafty.c("Speaker", {
-            say: function(text, delay) {
+            say: function(text, delay, think) {
                 var textE = Crafty.e("2D, DOM, Text")
                         .text(text)
                         .attr({"z": 401, "visible": false})
                         .css({
-                            "background-color": "rgb(50, 50, 40)",
-                            "color": "white",
-                            "border": "2px solid #FFFFFF",
-                            "line-height": "1.1em",
-                            "font-size": "0.9em",
-                            "padding": "4px",
-                            "max-width": "108px",
-                            "visibility": "hidden"
-                        }), POS = [this._x, this._y];
+                    "background-color": "rgb(50, 50, 40)",
+                    "color": "white",
+                    "border": "7px solid #FFFFFF",
+                    "-moz-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-webkit-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-o-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "line-height": "1.1em",
+                    "font-size": "0.9em",
+                    "padding": "4px",
+                    "max-width": "108px",
+                    "visibility": "hidden"
+                }), POS = [this._x, this._y], connector = Crafty.e("2D, DOM").css({
+                    "background": "url(" + Y.Wegas.app.get('base') + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (+-32 + "px")),
+                    "width": "32px",
+                    "height": "32px",
+                    "visibility": "hidden"
+                }).attr({"z": 402, "visible": false});
+                textE.attach(connector);
 
 
                 textE.bind("Draw", function(e) {
                     this.unbind("Draw");
                     Y.later(20, this, function() {
-                        this.attr({x: POS[0] - (this._element.offsetWidth / 2) + 14, y: POS[1] - this._element.offsetHeight - 10});
+                        this.attr({x: POS[0] - (this._element.offsetWidth / 2) + 14, y: POS[1] - this._element.offsetHeight - 32});
+                        this._children[0].shift(this._element.offsetWidth / 2 - 16, this._element.offsetHeight - 7);
                         this.visible = true;
+                        this._children[0].visible = true;
                     });
 
                 });
@@ -444,7 +462,8 @@ YUI.add('wegas-proggame-display', function(Y) {
         });
         Crafty.c("NPC", {
             init: function() {
-                this.requires("Character");
+                this.requires("TintSprite, Character")
+                        .tintSprite("D6D600", 1);
 //                            .animate("moveUp", 9, 0, 11)
 //                            .animate("moveRight", 9, 1, 11)
 //                            .animate("moveDown", 9, 2, 11)
@@ -497,6 +516,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             execTrap: function() {
                 var frameTime = speedToFrame(ProgGameDisplay.SPEED.TRAP, this._x, this._y, this._x, this._y + 64);
                 this.move("n", 64);
+                this.addComponent("Collide");
                 this.visible = true;
                 this.animate("trap", 4, -1);
                 this.tween({x: this._x, y: this._y + 64}, frameTime);
@@ -504,6 +524,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             initialize: function() {
                 this.reset();
                 this.visible = false;
+                this.removeComponent("Collide");
             }
         });
         Crafty.c("Door", {
@@ -511,21 +532,25 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this.requires("Tile, DoorSprite, SpriteAnimation");
                 this.animate("openDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
                 this.animate("closeDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 4);
-                this.bind("AnimationEnd", function() {
-                    Crafty.trigger('commandExecuted');
-                });
                 this.setter("open", function(v) {
+                    var animEndFn = function(e) {
+                        if (this._currentReelId === "openDoor" || this._currentReelId === "closeDoor") {
+                            Crafty.trigger('commandExecuted');
+                        }
+                    };
                     if (v) {
                         if (!this._open) {
-                            this.animate("openDoor", 10, 0);
+                            this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("openDoor", 10, 0);
                         } else {
                             this.reset();
+                            Crafty.trigger('commandExecuted');
                         }
                     } else {
                         if (this._open) {
-                            this.animate("closeDoor", 10, 0);
+                            this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("closeDoor", 10, 0);
                         } else {
                             this.reset();
+                            Crafty.trigger('commandExecuted');
                         }
                     }
                     this._open = v;
@@ -533,11 +558,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this.initialize();
             },
             doorState: function(state) {
-                if (state) {
-                    this.open = true;
-                } else {
-                    this.open = false;
-                }
+                this.open = state;
             },
             initialize: function(attrs) {
                 this.reset();
@@ -548,9 +569,96 @@ YUI.add('wegas-proggame-display', function(Y) {
                 }
             }
         });
+        Crafty.c("Controller", {
+            init: function() {
+                this.requires("Tile, ControllerSprite, SpriteAnimation");
+                this.animate("disableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 3);
+                this.animate("enableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 3);
+                this.setter("enabled", function(v) {
+                    var animEndFn = function(e) {
+                        Crafty.trigger('commandExecuted');
+                    };
+                    if (v) {
+                        if (!this._enabled) {
+                            this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("disableController", 10, 0);
+                        } else {
+                            this.reset();
+                            Crafty.trigger('commandExecuted');
+                        }
+                    } else {
+                        if (this._enabled) {
+                            this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("enableController", 10, 0);
+                        } else {
+                            this.reset();
+                            Crafty.trigger('commandExecuted');
+                        }
+                    }
+                    this._enabled = v;
+                });
+                this.initialize();
+            },
+            controllerState: function(state) {
+                this.enabled = state;
+            },
+            initialize: function(attrs) {
+                this.reset();
+                if (attrs) {
+                    this.attr(attrs);
+                } else {
+                    this.attr({enabled: false});
+                }
+            }
+        });
         Crafty.c("Panel", {
             init: function() {
                 this.requires("Tile, PanelSprite, Speaker");
+            }
+        });
+    }());
+    (function() {
+        var tmp_canvas = document.createElement("canvas"), COMPONENT = "TintSprite",
+                ctx = tmp_canvas.getContext("2d"), draw;
+        draw = function() {
+            if (!this.__oldImg) {
+                this.__oldImg = this.img;
+            } else if (!this.__newColor) {
+                return;
+            }
+            this.__newColor = false;
+            tmp_canvas.width = this.__oldImg.width;
+            tmp_canvas.height = this.__oldImg.height;
+            ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
+            ctx.drawImage(this.__oldImg, 0, 0);
+            ctx.save();
+            ctx.globalCompositeOperation = "source-in";
+            ctx.fillStyle = this._color;
+            ctx.beginPath();
+            ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
+            ctx.closePath();
+            ctx.restore();
+            var img = document.createElement("img");
+            img.src = tmp_canvas.toDataURL();
+            this.img = img;
+        };
+        /**
+         * Component TintSprite
+         * Should be included before the actual sprite.
+         * Browser should support Canvas.
+         */
+        Crafty.c(COMPONENT, {
+            _color: Crafty.toRGB("FFFFFF"),
+            init: function() {
+                this.bind("Draw", draw).bind("RemoveComponent", function(e) {
+                    if (e === COMPONENT) {
+                        this.unbind("Draw", draw);
+                    }
+                });
+            },
+            tintSprite: function(color, opacity) {
+                this.__newColor = true;
+                this._color = Crafty.toRGB(color, opacity);
+                this.trigger("Change");
+                return this;
             }
         });
     }());

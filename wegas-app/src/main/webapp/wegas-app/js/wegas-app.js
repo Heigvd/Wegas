@@ -234,7 +234,7 @@ YUI.add('wegas-app', function(Y) {
              */
             base: {
                 getter: function() {
-                    return Y.config.groups.wegas.base;
+                    return Y.config.groups.wegas.base.replace("wegas-app/", "");
                 }
             },
             layoutSrc: {},

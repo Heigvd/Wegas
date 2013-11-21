@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 /**
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>, 
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>,
  * Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-pageeditor', function(Y) {

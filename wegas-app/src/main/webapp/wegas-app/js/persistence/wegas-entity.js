@@ -175,7 +175,9 @@ YUI.add('wegas-entity', function(Y) {
                 getter: function(value, name) {
                     var key = name.split(".")[1];
                     if (Y.Lang.isString(value[key]) &&
-                            (key === "freeForAll" || key === "freeTeams")) {
+                            (key === "freeForAll"
+                                    || key === "allowCreateTeam"
+                                    || key === "allowJoinTeam")) {
                         value[key] = (value[key] === "true") ? true : false;
                     }
                     return value;
@@ -242,16 +244,26 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
-            },
-            //{
-            //    type: BUTTON,
-            //    label: "Duplicate",
-            //    cssClass: "editor-duplicateGameModel-button",
-            //    plugins: [{
-            //            fn: "DuplicateEntityAction"
-            //        }]
-            //},
-            {
+            }, {
+                type: BUTTON,
+                label: "More",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            menuCfg: {
+                                //points: ["tr", "br"]
+                            },
+                            children: [{
+                                    type: BUTTON,
+                                    label: "Make a copy",
+                                    cssClass: "editor-duplicateGameModel-button",
+                                    plugins: [{
+                                            fn: "DuplicateEntityAction"
+                                        }]
+                                }]
+                        }
+                    }]
+            }, {
                 type: BUTTON,
                 label: "Permissions",
                 cssClass: "wegas-advanced-feature",

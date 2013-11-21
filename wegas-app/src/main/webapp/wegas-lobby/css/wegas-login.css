@@ -13,7 +13,7 @@
     font-family: "Arial";
 }
 
-.header {
+.wegas-loginwidget-content > .header {
     margin:0;
     width:100%;
     background-color:#072644;

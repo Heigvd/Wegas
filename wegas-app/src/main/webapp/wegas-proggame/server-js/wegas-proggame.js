@@ -1,6 +1,6 @@
-var ret = [], cObject, level;
+var ret = [], cObject, level, Wegas;
 
-var Wegas = {//                                                                 // Utilities
+Wegas = {//                                                                     // Utilities
     bind: function(fn, scope) {
         var scope = scope, fn = fn;
         return function() {
@@ -14,17 +14,48 @@ var Wegas = {//                                                                 
                 receiver[i] = supplier[i];
             }
         }
+        return receiver;
+    },
+    Object: {
+        values: function(object) {
+            var ret = [], i;
+            for (i in object) {
+                ret.push(object[i]);
+            }
+            return ret;
+        },
+        clone: function(o) {
+            var newObj = (o instanceof Array) ? [] : {};
+            for (var i in o) {
+                if (i === 'clone')
+                    continue;
+                if (o[i] && typeof o[i] === "object") {
+                    newObj[i] = Wegas.Object.clone([i]);
+                } else
+                    newObj[i] = o[i];
+            }
+            return newObj;
+        }
     }
 };
-
+function wdebug(msg) {
+    //println(msg);
+}
 function ProgGameSimulation() {
+    this.breakpoints = [];
+    this.debug = false;
+    this.watches = [];
+    this.startLine = -1;
 }
 Wegas.mix(ProgGameSimulation.prototype, {
     run: function(playerFn, level) {
+        wdebug("Simulation run");
         this.args = {};
         this.ret = [];
         this.cObject = null;
         this.said = "";
+        this.doRecordCommands = true;
+        this.currentLine = -1;
         this.level = level;
         this.objects = level.objects;                                           // Shortcut to level objects
         this.gameOverSent = false;
@@ -38,7 +69,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
         if (level.onStart) {
             eval(level.onStart);
         }
-
+        this.log('Running Main...');
         for (i = 0; i < level.maxTurns; i += 1) {
             //this.log('Turn ' + (i + 1));
 
@@ -69,7 +100,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
             this.objects[i].actions = this.objects[i].defaultActions;
             this.sendCommand({
                 type: "updated",
-                object: this.objects[i].clone()
+                object: Wegas.Object.clone(this.objects[i])
             });
         }
     },
@@ -78,10 +109,32 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
     },
     sendCommand: function(cfg) {
+        wdebug("Sendcommand " + cfg.type + " current line: " + this.currentLine + ", start line:" + this.startLine + "*" + this.doRecordCommands);
+        if (this.currentLine < this.startLine) {                                // Debug
+            wdebug("early command dropped");
+            return;
+        }
+        if (!this.doRecordCommands) {
+            return false;
+        }
         this.ret.push(cfg);
     },
     getCommands: function() {
         return this.ret;
+    },
+    beforeAction: function(object) {
+        if (this.checkGameOver())
+            return false;
+
+        if (!this.consumeActions(object, 1)) {
+            this.log("Not enough actions to rotate.");
+            return false;
+        }
+
+        return true;
+    },
+    afterAction: function(object) {
+        this.doEval(this.level.onAction);
     },
     log: function(text) {
         this.sendCommand({
@@ -96,28 +149,40 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return this.args;
     },
     consumeActions: function(object, actions) {
-        if (object.actions - actions < 0) {
-            //this.log("Not enough actions");
-            return false;
-        }
-        object.actions -= actions;
+
+//        if (object.actions - actions < 0) {
+//            //this.log("Not enough actions");
+//            return false;
+//        }
+//        object.actions -= actions;
+
         return true;
     },
     say: function(msg) {
-        if (this.checkGameOver())
+        if (!this.beforeAction())
             return;
 
-        this.doSay("" + msg);
-
+        this.doSay({
+            text: "" + msg
+        });
         this.said = msg;
+
+        this.afterAction();
     },
-    doSay: function(msg) {
-        this.log(this.cObject.id + " says \"" + msg + "\"");
-        this.sendCommand({
+    doSay: function(cfg) {
+        this.log(this.cObject.id + " says \"" + cfg.text + "\"");
+        this.sendCommand(Wegas.mix(cfg, {
             type: "say",
             id: this.cObject.id,
-            text: msg,
-            duration: 2000
+            duration: 1500
+        }));
+    },
+    doOpen: function(object) {
+        object.open = true;
+        this.sendCommand({
+            id: object.id,
+            type: "doorState",
+            state: true
         });
     },
     read: function() {
@@ -129,17 +194,18 @@ Wegas.mix(ProgGameSimulation.prototype, {
 
         if (panel && panel.value) {
             value = this.doEval(panel.value);
-            this.doSay("It's written \"" + value + "\"");
+            this.doSay({text: "It's written \"" + value + "\""});
             return value;
         } else {
-            this.doSay("There's nothing to read here.");
+            this.doSay({text: "There's nothing to read here."});
         }
     },
     move: function() {
         var object = this.cObject,
-                moveV = dirToVector(object.direction);
+                moveV = this.dirToVector(object.direction);
 
-        if (this.checkGameOver())
+
+        if (!this.beforeAction(object))
             return;
 
         if (!this.consumeActions(object, 1)) {
@@ -148,20 +214,27 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
 
         if (this.checkCollision(object, object.x + moveV.x, object.y + moveV.y)) {
-            this.log("Something is blocking the way");
+            this.doSay({text: "Something is blocking the way", duration: 800});
+            //this.log("Something is blocking the way");
         } else {
             object.x += moveV.x;
             object.y += moveV.y;
-            this.sendCommand({
-                type: 'move',
-                object: object.clone()
-            });
+            this.doMove(object);
         }
+    },
+    doMove: function(object) {
+        this.sendCommand({
+            type: 'move',
+            dir: object.direction,
+            id: object.id,
+            x: object.x,
+            y: object.y
+        });
     },
     rotate: function(dir) {
         var object = this.cObject;
 
-        if (this.checkGameOver())
+        if (!this.beforeAction(object))
             return;
 
         if (!this.consumeActions(object, 1)) {
@@ -173,10 +246,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
             object.direction = 1;
         if (object.direction < 1)
             object.direction = 4;
-        this.sendCommand({
-            type: 'move',
-            object: object.clone()
-        });
+
+        this.doMove(object);                                                    // Send move command
+
+        this.afterAction();
     },
     right: function() {
         this.rotate(-1);
@@ -186,7 +259,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
     },
     fire: function() {
         var i, source = this.cObject;
-        println("fire" + source.actions);
+        wdebug("fire" + source.actions);
 
         if (this.checkGameOver())
             return;
@@ -198,10 +271,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
 
         this.sendCommand({
             type: 'fire',
-            object: source.clone()
+            object: Wegas.Object.clone(source)
         });
 
-        var colidee, dirV = dirToVector(source.direction);
+        var colidee, dirV = this.dirToVector(source.direction);
 
         for (i = 0; i <= source.range; i++) {
             colidee = this.checkCollision(this.cObject, source.x + (i * dirV.x), source.y + (i * dirV.y));
@@ -209,7 +282,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
                 colidee.life = 0;
                 this.sendCommand({
                     type: 'die',
-                    object: colidee.clone()
+                    object: Wegas.Object.clone(colidee)
                 });
             }
         }
@@ -222,8 +295,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
             collides = (o.x === x && o.y === y && o.id !== source.id);
             collided = collided || collides;
             if (collides && (o.collides === undefined || o.collides)) {
-                this.log("Player collision");
-                return o;
+                //this.log("Player collision");
+                if (!o.open) {                                                  // useful for doors
+                    return o;
+                }
             }
         }
         //this.log("pos" + y);
@@ -248,8 +323,12 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return false;
     },
     doEval: function(code) {
-        with (this) {
-            return eval(code);
+        try {
+            with (this) {
+                return eval(code);
+            }
+        } catch (e) {
+            return null;
         }
     },
     doPlayerEval: function(playerFn) {
@@ -259,7 +338,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
 //        }
         with (this) {
             //(function(that) {
-            playerFn.apply(this, values(this.getArgs()));                       // run fn
+            playerFn.apply(this/*, Wegas.Object.values(this.getArgs())*/);                       // run fn
             //})(this);
         }
     },
@@ -281,74 +360,90 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return null;
     },
     findObject: function(id) {
-        return find(id)
+        return find(id);
+    },
+    comparePos: function(a, b) {
+        return a.x === b.x && a.y === b.y;
+    },
+    _____debug: function(line, scope, vars) {
+//            this.log("mmmm"+ y+"*"+);
+
+        this.currentLine += 1;
+        wdebug("debug line:" + line + ", currentline " + this.currentLine + ", startline: " + this.startLine);
+        if (this.currentLine > this.startLine) {
+            //&& line > this.currentLine && // first time considering this line
+            wdebug("halted" + this.breakpoints.indexOf(line) + "*" + line);
+            if (this.breakpoints.indexOf("" + line) > -1) {
+                this.sendCommand({
+                    type: "breakpoint",
+                    line: line,
+                    step: this.currentLine,
+                    scope: vars
+                            //scope: this.genScope(scope)
+                });
+                this.doRecordCommands = false;
+            }
+        }
+        //this.currentLine = line;
+    },
+    _____watch: function() {
+        for (var i = 0; i < arguments.length; i += 1) {
+            if (!this.watches.indexOf(arguments[i]) > -1) {
+                this.watches.push(arguments[i]);
+            }
+        }
+    },
+    genScope: function() {
+        var i, ret = {};
+        for (i = 0; i < this.watches.length; i += 1) {
+            try {
+
+                ret[this.watches[i]] = eval(this.watches[i]);
+//                ret[this.watches[i]] = this.doEval(this.watches[i]);
+            } catch (e) {
+                // GOTCHA
+            }
+//            ret[this.watches[i]] = true;
+        }
+        return ret;
+    },
+// *** Utilities *** //
+    dirToVector: function(dir) {
+        var dirX = 0, dirY = 0;
+        switch (dir) {
+            case 1:
+                dirY = 1;
+                break;
+            case 2:
+                dirX = 1;
+                break;
+            case 3:
+                dirY = -1;
+                break;
+            case 4:
+                dirX = -1;
+                break;
+        }
+        return {
+            x: dirX,
+            y: dirY
+        };
     }
 });
 
 
-// *** Utilities *** //
-Object.prototype.clone = function() {
-    var newObj = (this instanceof Array) ? [] : {};
-    for (var i in this) {
-        if (i == 'clone')
-            continue;
-        if (this[i] && typeof this[i] == "object") {
-            newObj[i] = this[i].clone();
-        } else
-            newObj[i] = this[i];
-    }
-    return newObj;
-};
-function dirToVector(dir) {
-    var dirX = 0, dirY = 0;
-    switch (dir) {
-        case 1:
-            dirY = 1;
-            break;
-        case 2:
-            dirX = 1;
-            break;
-        case 3:
-            dirY = -1;
-            break;
-        case 4:
-            dirX = -1;
-            break;
-    }
-    return {
-        x: dirX,
-        y: dirY
-    };
-}
-function values(object) {
-    var ret = [], i;
-    for (i in object) {
-        ret.push(object[i]);
-    }
-    return ret;
-}
-
-function print_r(object) {
-    var i;
-    for (i in object) {
-        if (object.hasOwnProperty(i)) {
-            print(i + ": ");
-            if (object[i] instanceof Object) {
-                println(" ");
-                print_r(object[i]);
-            } else {
-                println(object[i]);
-            }
-        }
-    }
-}
 
 function run(playerFn, level) {
     var simulation = new ProgGameSimulation();
-//    try {
     simulation.run(playerFn, level);
-//    } catch (e) {
-//        println(e);
-//    }
-    return simulation.getCommands();
+    return JSON.stringify(simulation.getCommands());
+}
+function debug(playerFn, level, breakPoints, watches, startLine) {
+    var simulation = new ProgGameSimulation();
+    simulation.debug = true;
+    simulation.watches = watches;
+    simulation.startLine = startLine;
+    simulation.breakpoints = breakPoints;
+    simulation.run(playerFn, level);
+    return JSON.stringify(simulation.getCommands());
 }

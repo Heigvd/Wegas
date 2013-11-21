@@ -228,8 +228,8 @@ YUI.add("wegas-teaching-main", function(Y) {
                 zIndex: 50000,
                 modal: true,
                 visible: false,
-                render: true,
-                plugins: [Y.Plugin.Drag]
+                render: true
+                        //plugins: [Y.Plugin.Drag]
             });
             this.arrowEditor.addButton({
                 value: 'Save',
@@ -240,16 +240,14 @@ YUI.add("wegas-teaching-main", function(Y) {
                     this.currentArrow.setType(this.getArrowEditorType());
                     this.currentArrow.setText(text);
                     this.saveCurrentArrow();
-                    this.currentArrow.label.one('* *').setHTML((text && text.lenght > 0) ? text : "<em>Click to edit</em>");
+                    this.currentArrow.label.one('* *').setHTML((text && text.length > 0) ? text : "<em>Click to edit</em>");
                     this.arrowEditor.hide();
                 }
             });
 
-            var bodyNode = this.arrowEditor.getStdModNode("body"),
-                    listLinks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "links").get("items"),
-                    links = Y.Array.map(listLinks, function(i) {
-                return i.getInstance().get("value");
-            }), inputNode = bodyNode.one("input");
+            var links = this.get("availableLinkLabels"),
+                    bodyNode = this.arrowEditor.getStdModNode("body"),
+                    inputNode = bodyNode.one("input");
 
             bodyNode.setStyles({
                 padding: "8px",
@@ -257,13 +255,13 @@ YUI.add("wegas-teaching-main", function(Y) {
             });
             inputNode.plug(Y.Plugin.AutoComplete, {
                 resultHighlighter: "phraseMatch",
-                resultFilters: "phraseMatch",
+                //resultFilters: "phraseMatch",
                 source: links,
                 queryDelay: 0,
                 minQueryLength: 0
             });
-            inputNode.on(['focus', "click"], function() {
-                this.ac.sendRequest('');
+            inputNode.on(['focus', "click"], function(e) {
+                this.ac.sendRequest(this.get("value"));
                 this.ac.show();
             });
             inputNode.on("clickoutside", inputNode.ac.hide, inputNode.ac);
@@ -281,7 +279,7 @@ YUI.add("wegas-teaching-main", function(Y) {
                 xy: [120, 100],
                 modal: true,
                 visible: false,
-                plugins: [Y.Plugin.Drag],
+                //plugins: [Y.Plugin.Drag],
                 render: true
             });
             this.rectangleEditor.addButton({
@@ -344,9 +342,9 @@ YUI.add("wegas-teaching-main", function(Y) {
                 drag = new Y.DD.Drag({//                                        // Init drag
                     node: n
                 }).plug(Y.Plugin.DDProxy, {
-                    moveOnEnd: false                                            //We don't want the node to move on end drag
+                    moveOnEnd: false                                            // We don't want the node to move on end drag
                 }).plug(Y.Plugin.DDConstrained, {
-                    constrain2node: this.get(CONTENTBOX)                        //Keep me inside the workarea
+                    constrain2node: this.get(CONTENTBOX)                        // Keep nodes inside the workarea
                 });
 
                 drag.on('drag:drophit', function(e) {
@@ -368,10 +366,11 @@ YUI.add("wegas-teaching-main", function(Y) {
         ATTRS: {
             themes: {
                 type: "array",
-                value: [],
-                _inputex: {
-                    _type: "list"
-                }
+                value: []
+            },
+            availableLinkLabels: {
+                type: "array",
+                value: ["Est équivalent", "Utilise", "Spécialise", "Sous-ensemble", "Appartient"]
             }
         }
     });
