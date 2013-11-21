@@ -1,6 +1,6 @@
 {
     "1": {
-        "id": 1,
+        "@name": "Main page",
         "type": "AbsoluteLayout",
         "cssClass": "layout",
         "direction": "horizontal",
@@ -212,22 +212,23 @@
             }]
     },
     "2": {
-        "id": 2,
         "type": "PageLoader",
         "pageLoaderId": "leveldisplay",
         "variable": {
             "name": "currentLevel"
         }
     },
+    "6": {
+        "type": "InboxDisplay",
+        "variable": {
+            "name": "inbox"
+        }
+    },
     "11": {
-        "id": 3,
         "label": "Level 1.1 - First moves",
         "type": "ProgGameLevel",
-        "arguments": [],
-        "maxTurns": 1,
         "winningCondition": "objects[0].x===objects[1].x && objects[0].y===objects[1].y",
         "onWin": "currentLevel.value=12;money.value+=500",
-        "cssClass": "wegas-proggame-level",
         "map": [
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
@@ -243,21 +244,19 @@
                 "components": "PC",
                 "direction": 2,
                 "x": 0,
-                "y": 2,
-                "actions": 20
+                "y": 2
             }, {
                 "id": "Enemy",
                 "direction": 4,
                 "components": "NPC",
                 "x": 5,
                 "y": 2,
-                "actions": 0,
                 "collides": false
             }],
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Votre avatar, le personnage de gauche, doit atteindre le personnage de droite. Pour ce faire, vous devez programmer la séquence d'instructions nécessaire au déplacement de votre avatar. Les instructions (fonctions) disponibles sont listées sous le bloque ?API? à gauche de l'écran. l'API (Application Programming Interface) de ce jeu vous proposera les fonctionnalités de base pour interagir avec votre avatar. Pour ce stage, il n'y en a qu'une, la fonction ?move? qui aura pour effet de déplacer votre avatar d'une case en avant dans le sens de marche. Il vous faut donc réaliser la séquence d'instructions complète afin d'atteindre l'autre personnage. Pour voir le résultat de l'exécution de votre code, cliquez sur la flèche verte.",
+                    "fullObjective": "Votre avatar, le personnage de gauche, doit atteindre le personnage de droite. Pour ce faire, vous devez programmer la séquence d'instructions nécessaire au déplacement de votre avatar. Les instructions (fonctions) disponibles sont listées sous le bloque 'API' à gauche de l'écran. l'API (Application Programming Interface) de ce jeu vous proposera les fonctionnalités de base pour interagir avec votre avatar. Pour ce stage, il n'y en a qu'une, la fonction 'move' qui aura pour effet de déplacer votre avatar d'une case en avant dans le sens de marche. Il vous faut donc réaliser la séquence d'instructions complète afin d'atteindre l'autre personnage. Pour voir le résultat de l'exécution de votre code, cliquez sur la flèche verte.",
                     "globalObjective": "Programmer la séquence d'instructions pour déplacer votre avatar jusqu'au personnage de droite"
                 }
             }]
@@ -265,11 +264,8 @@
     "12": {
         "label": "Level 1.2",
         "type": "ProgGameLevel",
-        "arguments": [],
-        "maxTurns": 1,
         "winningCondition": "objects[0].x===objects[1].x && objects[0].y===objects[1].y",
         "onWin": "currentLevel.value=13",
-        "cssClass": "wegas-proggame-level",
         "map": [
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}],
@@ -289,8 +285,7 @@
                 "components": "PC",
                 "direction": 2,
                 "x": 0,
-                "y": 2,
-                "actions": 999
+                "y": 2
             }, {
                 "id": "Enemy",
                 "components": "NPC",
@@ -310,11 +305,8 @@
     "13": {
         "label": "Level 1.3 - Getting harder",
         "type": "ProgGameLevel",
-        "arguments": [],
-        "maxTurns": 1,
         "winningCondition": "objects[0].x===objects[1].x && objects[0].y===objects[1].y",
         "onWin": "currentLevel.value=21",
-        "cssClass": "wegas-proggame-level",
         "map": [
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
@@ -334,34 +326,29 @@
                 "components": "PC",
                 "direction": 2,
                 "x": 0,
-                "y": 2,
-                "actions": 999
+                "y": 2
             }, {
                 "id": "Enemy",
                 "components": "NPC",
                 "direction": 4,
                 "x": 6,
                 "y": 2,
-                "actions": 0,
                 "collides": false
             }],
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Utilisez les fonctions de l?API pour déplacer votre avatar jusqu?au personnage en jaune.",
+                    "fullObjective": "Utilisez les fonctions de l'API pour déplacer votre avatar jusqu'au personnage en jaune.",
                     "globalObjective": "Programmer la séquence d'instructions pour déplacer votre avatar jusqu'au personnage de droite"
                 }
             }]
     },
     "5Unused": {
-        "id": 5,
         "label": "Level 3",
         "type": "ProgGameLevel",
-        "arguments": [],
         "maxTurns": 2,
         "winningCondition": "level.objects[0].life===0",
         "onWin": "currentLevel.value=7;money.value+=500;",
-        "cssClass": "wegas-proggame-level",
         "api": [{
                 "name": "move"
             }, {
@@ -401,30 +388,17 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Utilisez les fonctions de l?API pour déplacer votre avatar jusqu?au personnage en jaune.",
+                    "fullObjective": "Utilisez les fonctions de l'API pour déplacer votre avatar jusqu'au personnage en jaune.",
                     "globalObjective": "Programmer la séquence d'instructions pour déplacer votre avatar jusqu'au personnage de droite"
                 }
             }]
     },
-    "6": {
-        "id": 6,
-        "type": "InboxDisplay",
-        "variable": {
-            "name": "inbox"
-        }
-    },
     "21": {
-        "id": 7,
-        "arguments": [],
         "label": "Level 2.1",
         "type": "ProgGameLevel",
-        "maxTurns": 1,
-        "arguments": [],
         "onWin": "currentLevel.value=22",
         "onAction": "if(said.indexOf(\"password\")>=0 || said.indexOf(\"Password\")>=0) {doOpen(find('Door'));}",
         "winningCondition": "comparePos(find('Player'), find('Enemy'))",
-        "winningCondition_old": "said.indexOf(\"Hello\")>=0 || said.indexOf(\"hello\")>=0",
-        "cssClass": "wegas-proggame-level",
         "api": [{
                 "name": "move"
             }, {
@@ -462,26 +436,23 @@
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
+        "invites": ["Eh! Le mot de passe c'est \"Password\".", "Tu m'as entendu?, le mot de passe c'est password je te dis"],
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Les fonctions utilisées lors des stages précédents ne possédaient aucun paramètre. Le nouvelle fonction de l?API nommée ?say? prend un paramètre. Ce paramètre est une chaîne de caractère représentant le texte de ce que va dire votre Avatar. Ce paramètre vous permet ainsi d?agir sur le comportement de votre avatar de manière plus fine que les précédentes fonctions, mais vous devez en contrepartie fournir une information supplémentaire lors de l?appel de cette fonctionnalité. Dans ce stage, utiliser simplement la nouvelle fonction ?say? afin de dire ?Hello? au personnage en face de vous.",
-                    "globalObjective": "Dire \"Hello\" au personnage en jaune."
+                    "fullObjective": "Les fonctions utilisées lors des stages précédents ne possédaient aucun paramètre. Le nouvelle fonction de l'API nommée <em>say</em> prend un paramètre. Ce paramètre est une chaîne de caractère représentant le texte de ce que va dire votre avatar. Il vous permet ainsi d'agir sur le comportement de votre avatar de manière plus fine que les fonctions précédentes, mais vous devez en contrepartie fournir une information supplémentaire lors de l'appel de cette fonctionnalité.<br /><br />Dans le prochain niveau, une porte vous empêche de rejoindre le personnage en jaune. Elle est controlée par une commande vocal, vous pourrez donc utiliser la méthode <em>say</em> pour la contrôler. Le password pour ce niveau est \"Password\".",
+                    "globalObjective": "Dire le mot de passe \"password\" à haute voix."
                 }
             }]
     },
     "22": {
         "id": 7,
-        "arguments": [],
         "label": "Level 2.2",
         "type": "ProgGameLevel",
-        "maxTurns": 1,
-        "arguments": [],
         "onStart": "panelValue = Math.round(Math.random()*100)",
         "onAction": "if(said === panelValue) {doOpen(find('Door'));}",
         "winningCondition": "comparePos(find('Player'), find('Enemy'))",
         "onWin": "currentLevel.value=23",
-        "cssClass": "wegas-proggame-level",
         "api": [{
                 "name": "move"
             }, {
@@ -531,22 +502,17 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Tout programme traite une certaine quantité d?informations, il est donc nécessaire de pouvoir récupérer ces informations avant traitement. Dans ce stage vous devez déplacer votre avatar jusqu?au panneau afin d?y lire ce qui si trouve. Pour cela, L?API offre une nouvelle fonctionnalité nommée ?read?. Comme cette fonction retourne une valeur, il est essentiel de la stocker dans une variable afin de pouvoir la traiter par la suite. Déplacez votre avatar jusqu?au panneau, stockez ce qui y est écrit, puis déplacez votre avatar jusqu?au personnage en jaune afin de lui communiquer la valeur récupérée.",
-                    "globalObjective": "Stocker la valeur écrite sur le panneau et la communiquer au personnage en jaune."
+                    "fullObjective": "Tout programme traite une certaine quantité d'informations, il est donc nécessaire de pouvoir récupérer ces informations avant traitement. Dans ce stage vous devez déplacer votre avatar jusqu'au panneau afin d'y lire ce qui si trouve. Pour cela, L'API offre une nouvelle fonctionnalité nommée 'read'. Comme cette fonction retourne une valeur, il est essentiel de la stocker dans une variable afin de pouvoir la traiter par la suite. En Javascript les variables sont définies en utilisant le mot clé <b>var<b>. Vous pouvez créer une variable comme ceci: <div class=\"wegas-proggame-code\">var myVar = \"unechainedecharacteres\";</div> Dans ce niveau, la mot de passe est écrit sur le panneau. Déplacez votre avatar jusqu'au panneau, stockez ce qui y est écrit puis dites-le à haute voix.",
+                    "globalObjective": "Stocker la valeur écrite sur le panneau et l'utiliser pour ouvrir la porte."
                 }
             }]
     },
     "23": {
-        "id": 7,
-        "arguments": [],
         "label": "Level 2.3",
         "type": "ProgGameLevel",
-        "maxTurns": 1,
-        "arguments": [],
         "onStart": "panelValue1 = Math.round(Math.random()*10);panelValue2 = Math.round(Math.random()*10);",
         "onAction": "if(said === (panelValue1 + panelValue2)) {doOpen(find('Door'));}",
-        "onWin": "currentLevel.value=23",
-        "cssClass": "wegas-proggame-level",
+        "onWin": "currentLevel.value=24",
         "api": [{
                 "name": "move"
             }, {
@@ -609,14 +575,76 @@
                 }
             }]
     },
+    "24": {
+        "label": "Level 2.4",
+        "type": "ProgGameLevel",
+        "onStart": "panelValue1 = Math.round(Math.random()*10);",
+        "onAction": "if(said === panelValue1 * 2 * Math.PI) {doOpen(find('Door'));}",
+        "onWin": "currentLevel.value=25",
+        "api": [{
+                "name": "move"
+            }, {
+                "name": "left"
+            }, {
+                "name": "right"
+            }, {
+                "name": "say"
+            }, {
+                "name": "read"
+            }],
+        "objects": [{
+                "id": "Enemy",
+                "direction": 4,
+                "components": "NPC",
+                "x": 5,
+                "y": 2,
+                "collides": false
+            }, {
+                "id": "Door",
+                "components": "Door",
+                "x": 4,
+                "y": 2,
+                "collides": true
+            }, {
+                "id": "Panel",
+                "direction": 4,
+                "components": "Panel",
+                "value": "panelValue1",
+                "x": 1,
+                "y": 2,
+                "collides": false
+            }, {
+                "id": "Player",
+                "components": "PC",
+                "direction": 2,
+                "x": 0,
+                "y": 2
+            }],
+        "map": [
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
+        ],
+        "plugins": [{
+                "fn": "Objective",
+                "cfg": {
+                    "fullObjective": "L'API que vous avez utilisé jusque ici n'est pas la seule bibliothèque de fonctions disponible. Vous trouverez des bibliothèques de fonctions diverses et variées pour la plupart des langages de programmation. Dans ce stage, vous devez utiliser la bibliothèque de fonction ?Math?  pour effectuer un calcul géométrique. Vous aurez en effet besoin de la constante PI pour calculer la circonférence d'un cercle. La syntaxe pour accéder à  la constante PI  est la suivante: Math.PI . Le rayon du cercle devra être lu sur le panneau. Le résultat du calcul devra ensuite être communiqué au personnage en jaune.",
+                    "globalObjective": "Calculer la circonférence d?un cercle dont le rayon doit être lu sur le panneau. Cette valeur est le mot de passe dont vous aurez besoin pour passer au niveau suivant."
+                }
+            }]
+    },
+    "25": {
+        "type": "Text",
+        "content": "New levels will be available next week"
+    },
     "8": {
         "label": "Level 4",
         "type": "ProgGameLevel",
-        "maxTurns": 1,
         "winningCondition": "said.indexOf(\"Hello \" + getArgs().name) >= 0",
         "onWin": "currentLevel.value=4",
         "onStart": "var names= [\"Romuald\", \"Pete\", \"Roger\", \"Gandalf\", \"Jo\"], name = names[Math.floor((Math.random()*5))];pushArg(\"name\", name);log(\"My name is \" + name);",
-        "cssClass": "wegas-proggame-level",
         "arguments": ["String name"],
         "api": [{
                 "name": "move"
@@ -634,8 +662,7 @@
                 "components": "PC",
                 "direction": 2,
                 "x": 1,
-                "y": 2,
-                "actions": 5
+                "y": 2
             }, {
                 "id": "Enemy",
                 "direction": 4,

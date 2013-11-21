@@ -167,22 +167,39 @@
     border: solid 1px rgb(75, 74, 74);
     box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.75), 1px 1px 1px rgba(50, 50, 50, 0.75);
 }
-.topright .buttons button { /* Run button */
-    width: 50px;
-    height: 50px;
+.topright .buttons {
     position: relative;
     top: 70px;
-    left: -7px;
+    left: -6px;
+    width: 60px;
+}
+
+.topright .buttons  button{
     color: transparent;
+}
+.topright .buttons .proggame-runbutton { /* Run button */
+    width: 50px;
+    height: 50px;
+    margin-bottom: 5px;
+}
+.topright .buttons .proggame-smallbutton {
+    padding: 4px;
+    min-height: 0;
 }
 
 .proggame-play {
     background: url(../../wegas-proggame/images/proggame-play.png) no-repeat 0px -4px;
     height: 31px;
+    display: block;
 }
 .proggame-playpause {
     background: url(../../wegas-proggame/images/proggame-playpause.png) no-repeat 0px -4px;
     height: 31px;
+}
+.proggame-stop-small {
+    background: url(../../wegas-proggame/images/proggame_stop.gif) no-repeat 0 0;
+    height: 12px;
+    width: 12px;
 }
 
 .proggame-stop {
@@ -197,7 +214,6 @@
 
 .topright button span{
     display: block;
-    margin-left: -1px;
     font-family: Verdana;
     font-weight: bold;
 }
@@ -206,7 +222,7 @@
 }
 .topright .debugger {
     position: relative;
-    top: -59px;
+    top: -91px;
     left: 53px;
     padding-left: 10px;
     font-family: Myriad Pro;

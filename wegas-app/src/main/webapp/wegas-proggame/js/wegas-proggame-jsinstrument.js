@@ -74,7 +74,7 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                                 inter = [getDebugStatement(s.loc.start.line)];
                                 switch (s.type) {
                                     case "VariableDeclaration":
-                                        inter.push(getWatchStatement(s));
+                                        //inter.push(getWatchStatement(s));     // Automatically add declared variables to the list of watches (may be useful if we remove them at the end of execution)
                                         break;
                                 }
                                 add.push(inter);
@@ -86,7 +86,7 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                 }, true);
 
                 var instrumentedCode = window.escodegen.generate(tree, {
-                    //indent: true
+                    indent: true
                 });
                 instrumentedCode = instrumentedCode.replace(/___DEBUGBLOCK___/g, "(function(){ var i, w = watches, ret = {};"
                         + "for(i=0;i<w.length;i++){"
@@ -95,7 +95,7 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                         //ret[this.watches[i]] = this.doEval(this.watches[i]);
                         + "} catch(e){}"
                         + "}"
-                        + "return ret;})()");
+                        + "return ret;})()");                                   // This function returns any watched variable int he scope, so it can be used in the breakpoint event
 
                 return instrumentedCode;
             } catch (e) {
@@ -103,6 +103,13 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                 return;
             }
         },
+        /**
+         * Zip any item of lists in b and objects in a (very specific)
+         *
+         * @param {Array} a
+         * @param {Array} b
+         * @returns {Array}
+         */
         zip: function(a, b) {
             var results = [];
             Y.Array.each(a, function(item, index) {
@@ -111,6 +118,13 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
             });
             return results;
         },
+        /**
+         *
+         * @param {Array} object
+         * @param {function} visitor
+         * @param {type} path
+         * @returns 
+         */
         traverse: function(object, visitor, path) {
             var key, child;
 
