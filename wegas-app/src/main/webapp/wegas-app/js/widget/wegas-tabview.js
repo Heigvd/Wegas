@@ -267,6 +267,12 @@ YUI.add('wegas-tabview', function(Y) {
             delete TabView.tabs[this.get("id")];
             Tab.superclass.destructor.apply(this, arguments);
         },
+        _onActivate: function(e) {
+            if (e.target.get("disabled")) {
+                return;
+            }
+            Tab.superclass._onActivate.apply(this, arguments);
+        },
         // *** Private Methods *** //
         /**
          * @function

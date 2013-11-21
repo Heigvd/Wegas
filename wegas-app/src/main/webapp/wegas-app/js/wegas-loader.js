@@ -911,6 +911,11 @@ YUI().use(function(Y) {
                     path: 'wegas-proggame/js/wegas-proggame-objective-min.js',
                     ws_provides: ["Objective"]
                 },
+                'wegas-proggame-scriptfiles': {
+                    path: 'wegas-proggame/js/wegas-proggame-scriptfiles-min.js',
+                    requires:["PanelWidget"],
+                    ws_provides: ["ScriptFiles"]
+                },
                 /**
                  * Flexitests
                  */
