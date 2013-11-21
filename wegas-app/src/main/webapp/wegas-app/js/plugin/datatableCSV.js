@@ -29,28 +29,36 @@ YUI.add('datatable-csv', function(Y) {
          * @returns {undefined}
          */
         initializer: function() {
-            this.get("host").get("boundingBox").append("<span class='datatable-csv-export'>CSV </span>");
-            this.get("host").get("boundingBox").append("<span class='datatable-csv-file'> CSV-download</span>");
-            this.get("host").get("boundingBox").one(".datatable-csv-export").on("click", function() {
-                DatatableCSV.dataToWindow(this._toCSV());
-            }, this);
-            this.get("host").get("boundingBox").one(".datatable-csv-file").on("click", function() {
-                var csv = this._toCSV(),
-                        //node = this.get("host").get("boundingBox").one(".datatable-csv-file"),
-                        gm_name = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("name"),
-                        game_name = Y.Wegas.Facade.Game.cache.getCurrentGame().get("name"),
-                        name = gm_name + "-" + game_name + "-" + Y.Lang.now() + ".csv";
+            this.bcsv = new Y.Button({
+                label: "CSV",
+                on: {
+                    click: Y.bind(function() {
+                        DatatableCSV.dataToWindow(this._toCSV());
+                    }, this)
+                }
+            }).render(this.get("host").get("boundingBox"));
+            this.bdcsv = new Y.Button({
+                label: "Download CSV",
+                on: {
+                    click: Y.bind(function() {
+                        var csv = this._toCSV(),
+                                //node = this.get("host").get("boundingBox").one(".datatable-csv-file"),
+                                gm_name = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("name"),
+                                game_name = Y.Wegas.Facade.Game.cache.getCurrentGame().get("name"),
+                                name = gm_name + "-" + game_name + "-" + Y.Lang.now() + ".csv";
 
-                DatatableCSV.download("text/csv", name, csv);
-                //Disabled due to IE allowing limited data URI
-                //if (DatatableCSV.DATA_URI_SUPPORT) {
-                //    node.setAttribute("href", "data:text/csv;header=true," + encodeURIComponent(csv));
-                //    node.setAttribute("download", name);
-                //} else {
-                //    //FALLBACK : get a real browser
-                //    download("text/csv", name, csv);
-                //}
-            }, this);
+                        DatatableCSV.download("text/csv", name, csv);
+                        //Disabled due to IE allowing limited data URI
+                        //if (DatatableCSV.DATA_URI_SUPPORT) {
+                        //    node.setAttribute("href", "data:text/csv;header=true," + encodeURIComponent(csv));
+                        //    node.setAttribute("download", name);
+                        //} else {
+                        //    //FALLBACK : get a real browser
+                        //    download("text/csv", name, csv);
+                        //}
+                    }, this)
+                }
+            }).render(this.get("host").get("boundingBox"));
         },
         /**
          * Transformation method, datatable to CSV
@@ -74,7 +82,7 @@ YUI.add('datatable-csv', function(Y) {
                 records.push(fields);
 
             }
-            return this.arraysToCSV(records);
+            return DatatableCSV.arraysToCSV(records);
 
         },
         /**
@@ -84,8 +92,11 @@ YUI.add('datatable-csv', function(Y) {
          * @returns {undefined}
          */
         destructor: function() {
-            if (this.get("host").get("boundingBox").one(".datatable-csv-export")) {
-                this.get("host").get("boundingBox").one(".datatable-csv-export").destroy(true);
+            if (this.bcsv){
+                this.bcsv.destroy();
+            }
+            if (this.bdcsv){
+                this.bdcsv.destroy();
             }
         }
     }, {

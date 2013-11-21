@@ -6,9 +6,10 @@
     <ui:composition template="template/app-default.xhtml">
 
         <ui:define name="title">#{gameController.currentGameModel.name} - #{gameController.currentGame.name}</ui:define>
+
         <ui:define name="head">
 
-            <!-- Include custom style sheets directly in the page body -->
+            <!-- In player mode, CSS library for current game model is included directly in the model -->
             <style type="text/css">#{gameController.styleSheets}</style>
 
             <!-- Dev tool: style sheet reference injected directly in the game model -->
@@ -18,11 +19,6 @@
             </ui:repeat>
 
             <meta name="google-translate-customization" content="#gameController.currentGameModel.getProperty('googleTranslateId')" />
-
-            <!-- In player mode, CSS library for current game model is included directly in the model -->
-            <style type="text/css">
-                #{gameController.getCSSs()}
-            </style>
 
         </ui:define>
 

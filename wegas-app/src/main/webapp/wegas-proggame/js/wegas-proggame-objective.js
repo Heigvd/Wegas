@@ -16,8 +16,6 @@ YUI.add('wegas-proggame-objective', function(Y) {
      *  @name Y.Plugin.Objective
      *  @extends Y.Plugin.Base
      *  @constructor
-     *
-     *  @deprecated Use Y.Wegas.Panel instead
      */
     var Objective = Y.Base.create("wegas-proggame-objective", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         popupContent: null,
@@ -37,9 +35,7 @@ YUI.add('wegas-proggame-objective', function(Y) {
                 } else {
                     this.popupContent = "No objective to display";
                     this.displayFix(this.popupContent);
-
                 }
-
                 this.reDisplayPopup();
             });
         },
@@ -48,17 +44,15 @@ YUI.add('wegas-proggame-objective', function(Y) {
             this.popupContent = content;
         },
         displayFix: function(content) {
-            var div = Y.one(".objective"), node;
-            node = "<h1>Objectives</h1><div class='objValue'>" + content + "</div>";
-            if (div) {
-                div.get('childNodes').remove();
-                div.append(node);
-            }
+            Y.all(".objective").empty().append("<h1>Objectives</h1><div class='objValue'>" + content + "</div>");
         },
         reDisplayPopup: function() {
-            Y.all(".objective").on('click', function(e) {
+            this.objectivesHandler = Y.all(".objective").on('click', function(e) {
                 this.displayPopup(this.popupContent);
             }, this);
+        },
+        destructor: function() {
+            this.objectivesHandler.detach();
         }
     }, {
         NS: "Objective",

@@ -448,8 +448,10 @@
         "type": "ProgGameLevel",
         "maxTurns": 1,
         "arguments": [],
-        "winningCondition": "said.indexOf(\"Hello\")>=0 || said.indexOf(\"hello\")>=0",
         "onWin": "currentLevel.value=22",
+        "onAction": "if(said.indexOf(\"password\")>=0 || said.indexOf(\"Password\")>=0) {doOpen(find('Door'));}",
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
+        "winningCondition_old": "said.indexOf(\"Hello\")>=0 || said.indexOf(\"hello\")>=0",
         "cssClass": "wegas-proggame-level",
         "api": [{
                 "name": "move"
@@ -461,13 +463,17 @@
                 "name": "say"
             }],
         "objects": [{
+                "id": "Door",
+                "components": "Door",
+                "x": 2,
+                "y": 2,
+                "collides": true
+            }, {
                 "id": "Player",
                 "components": "PC",
                 "direction": 2,
-                "x": 1,
-                "y": 2,
-                "actions": 5,
-                "range": 3
+                "x": 0,
+                "y": 2
             }, {
                 "id": "Enemy",
                 "direction": 4,
@@ -477,12 +483,12 @@
                 "collides": false
             }],
         "map": [
-            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
-            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
-            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
-            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
-            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
-            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
         "plugins": [{
                 "fn": "Objective",
@@ -500,7 +506,8 @@
         "maxTurns": 1,
         "arguments": [],
         "onStart": "panelValue = Math.round(Math.random()*100)",
-        "winningCondition": "said === panelValue",
+        "onAction": "if(said === panelValue) {doOpen(find('Door'));}",
+        "winningCondition": "comparePos(find('Player'), find('Enemy'))",
         "onWin": "currentLevel.value=23",
         "cssClass": "wegas-proggame-level",
         "api": [{
@@ -515,12 +522,11 @@
                 "name": "read"
             }],
         "objects": [{
-                "id": "Enemy",
-                "direction": 4,
-                "components": "NPC",
-                "x": 5,
+                "id": "Door",
+                "components": "Door",
+                "x": 4,
                 "y": 2,
-                "collides": false
+                "collides": true
             }, {
                 "id": "Panel",
                 "direction": 4,
@@ -530,18 +536,23 @@
                 "y": 2,
                 "collides": false
             }, {
+                "id": "Enemy",
+                "components": "NPC",
+                "direction": 4,
+                "x": 5,
+                "y": 2,
+                "collides": false
+            }, {
                 "id": "Player",
                 "components": "PC",
                 "direction": 2,
                 "x": 0,
-                "y": 2,
-                "actions": 5,
-                "range": 3
+                "y": 2
             }],
         "map": [
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
-            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
@@ -561,7 +572,7 @@
         "maxTurns": 1,
         "arguments": [],
         "onStart": "panelValue1 = Math.round(Math.random()*10);panelValue2 = Math.round(Math.random()*10);",
-        "winningCondition": "said === (panelValue1 + panelValue2)",
+        "onAction": "if(said === (panelValue1 + panelValue2)) {doOpen(find('Door'));}",
         "onWin": "currentLevel.value=23",
         "cssClass": "wegas-proggame-level",
         "api": [{
@@ -583,6 +594,12 @@
                 "y": 2,
                 "collides": false
             }, {
+                "id": "Door",
+                "components": "Door",
+                "x": 4,
+                "y": 2,
+                "collides": true
+            }, {
                 "id": "Panel",
                 "direction": 4,
                 "components": "Panel",
@@ -595,7 +612,7 @@
                 "direction": 4,
                 "components": "Panel",
                 "value": "panelValue2",
-                "x": 3,
+                "x": 2,
                 "y": 2,
                 "collides": false
             }, {
@@ -603,14 +620,12 @@
                 "components": "PC",
                 "direction": 2,
                 "x": 0,
-                "y": 2,
-                "actions": 5,
-                "range": 3
+                "y": 2
             }],
         "map": [
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
-            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],

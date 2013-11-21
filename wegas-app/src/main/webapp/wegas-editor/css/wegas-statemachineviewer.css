@@ -34,7 +34,7 @@
     display:inline-block;
     width:70px;
     height:50px;
-    border:4px solid grey;
+    border:4px solid;
     border-radius: 20px;
     padding: 10px;
     box-shadow: 2px 3px 5px #6D6D6D;
@@ -42,6 +42,15 @@
     background-color:rgba(255,255,255,0.9);
     cursor: move;
 }
+
+.sm-state{
+    border-color: #E34747;
+}
+
+.sm-dialoguestate{
+    border-color: #4372C4;
+}
+
 .yui3-wegas-state:hover, .jsPlumb_dragged{
     z-index:7;
 }
@@ -155,7 +164,7 @@
 }
 
 .initial-state{
-    border-color:black;
+    /*border-color:black;*/
     border-style:double;
     border-width:8px;
 }
@@ -170,6 +179,15 @@
 }
 ._jsPlumb_endpoint{
     z-index:1;
+}
+
+._jsPlumb_drag_select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;    
 }
 
 .yui3-wegas-transition{
