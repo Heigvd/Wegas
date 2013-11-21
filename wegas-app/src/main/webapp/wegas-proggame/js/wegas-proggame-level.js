@@ -15,6 +15,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             STOP_BUTTON_LABEL = "<span class='proggame-stop'>STOP</span>",
             NEXT_BUTTON_LABEL = "<span class='proggame-next'>NEXT</span>",
             DEBUG_BUTTON_LABEL = "<span class='proggame-playpause'></span>",
+            SMALLSTOP_BUTTON_LABEL = "<span class='proggame-stop-small'>STOP</span>",
             ProgGameLevel;
     /**
      *  The level display class, with script input, ia, debugger and
@@ -97,8 +98,18 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.display = new Y.Wegas.ProgGameDisplay(params);                 // Render canvas display widget
             this.display.render(cb.one(".terrain"));
 
-            this.runButton = new Y.Wegas.Button();                              // Render run button
+            this.runButton = new Y.Wegas.Button({
+                cssClass: "proggame-runbutton"
+            });                                                                 // Render run button
             this.runButton.render(cb.one(".buttons"));
+
+            this.stopButton = new Y.Wegas.Button({
+                label: SMALLSTOP_BUTTON_LABEL,
+                //disabled: true,
+                visible: false,
+                cssClass: "proggame-smallbutton",
+                render: cb.one(".buttons")
+            });                                                                 // Render stop button
 
             this.renderDebugTabView();                                          // Render debug treeview
 
@@ -116,6 +127,10 @@ YUI.add('wegas-proggame-level', function(Y) {
                     this.setState("debugrun");
                     //this.setState("run");
                 }
+            }, this);
+
+            this.stopButton.on("click", function () {
+                this.setState("idle");
             }, this);
 
             this.display.after('commandExecuted', this.consumeCommand, this);   // When a command is executed, continue stack evaluation
@@ -203,42 +218,58 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.currentState = nextState;
         },
         run: function() {
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
-                cfg: {
-                    method: "POST",
-                    data: "run(function (name) {with(this) {" + this.aceField.getValue() + "\n}}, "
-                            + Y.JSON.stringify(this.toObject()) + ");"          // the current level
-                },
-                on: {
-                    success: Y.bind(this.onServerReply, this),
-                    failure: Y.bind(function() {
-                        this.setState("idle");
-                        alert("Your script contains an error.");
-                    }, this)
-                }
-            });
+            this.sendRunRequest(this.aceField.getValue());
         },
         debug: function() {
             Y.log("debug()", "info", "Wegas.ProgGameLevel");
             this.aceField.session.removeGutterDecoration(this.currentBreakpointLine, "proggame-currentline");
 
-            var ins = new Y.Wegas.JSInstrument(),
-                    code = ins.instrument(this.aceField.getValue()),
+            var code = this.instrument(),
+                    breakpoints = Y.Object.keys(this.aceField.editor.getSession().getBreakpoints());
+
+            Y.log("Sending request: current step: " + this.currentBreakpointStep
+                    + ", breakpoints: " + Y.JSON.stringify(breakpoints)
+                    + "\ninstrumented code: \n" + code, "info", "Wegas.ProgGameLevel");
+
+            this.sendRunRequest(code, {
+                debug: true,
+                watches: this.watches, // Watched values
+                breakpoints: breakpoints, // breakpoints
+                startStep: this.currentBreakpointStep                           // The running step reached during last evaluation
+            });
+        },
+        instrument: function() {
+            var ins = new Y.Wegas.JSInstrument();
+            return ins.instrument(this.aceField.getValue());
+
+        },
+        reRun: function() {
+            Y.log("reRun()", "info", "Wegas.ProgGameLevel");
+
+            var code = this.instrument(),
                     breakpoints = Y.Object.keys(this.aceField.editor.getSession().getBreakpoints());
 
             Y.log("instrumented code: " + code + ", current step: " + this.currentBreakpointStep + ", breakpoints: " + Y.JSON.stringify(breakpoints), "info", "Wegas.ProgGameLevel");
 
+            this.sendRunRequest(code, {
+                debug: true,
+                watches: this.watches, // Watched values
+                breakpoints: breakpoints, // breakpoints
+                startStep: this.currentBreakpointStep - 1,
+                targetStep: this.currentBreakpointStep
+//                recordCommands: false
+            });
+        },
+        sendRunRequest: function(code, interpreterCfg) {
+            interpreterCfg = interpreterCfg || {};
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
-                    data: "debug("
+                    data: "run("
                             + "function (name) {with(this) {" + code + "\n}}, " // Player's code
                             + Y.JSON.stringify(this.toObject()) + ", "          // the current level
-                            + Y.JSON.stringify(breakpoints) + ", "              // breakpoints
-                            + Y.JSON.stringify(this.watches) + ", "             // Watched values
-                            + this.currentBreakpointStep + "); "                // The running step reached during last evaluation
+                            + Y.JSON.stringify(interpreterCfg) + ");"
                 },
                 on: {
                     success: Y.bind(this.onServerReply, this),
@@ -330,11 +361,13 @@ YUI.add('wegas-proggame-level', function(Y) {
                         break;
 
                     case "breakpoint":
-                        Y.log("Breakpoint reached: " + command.line, "info", "Wegas.ProgGameLevel");
+                        Y.log("Breakpoint reached at line: " + command.line + ", step: " + command.step, "info", "Wegas.ProgGameLevel");
 
+                        if (command.line !== this.currentBreakpointLine) {      // May occure on rerun
+                            this.aceField.session.addGutterDecoration(command.line, "proggame-currentline");
+                        }
                         this.currentBreakpointLine = command.line;
                         this.currentBreakpointStep = command.step;
-                        this.aceField.session.addGutterDecoration(command.line, "proggame-currentline");
 
                         this.updateDebugTreeview(command.scope);
                         this.setState("breaking");
@@ -344,7 +377,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                         break;
                 }
 
-                this.display.execute(command); // Forware the command to the display
+                this.display.execute(command);                                  // Forward the command to the display
 
             } else if (this.commandsStack) {
                 this.setState("idle");
@@ -387,9 +420,13 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.addWatchButton.on("click", function() {
                 var watch = prompt("Expression");
                 this.watches.push(watch);
-                this.variableTreeView.add({
-                    label: watch + ": null"
-                });
+                if (this.currentState === "breaking") {                         // If an evaluation is on going
+                    this.reRun();                                               // rerun script until current step to get new
+                } else {
+                    this.variableTreeView.add({
+                        label: watch + ": null"
+                    });
+                }
                 //this.updateDebugTreeview();
             }, this);
             this.variableTreeView = new Y.TreeView({
