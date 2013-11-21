@@ -41,14 +41,14 @@
                 "children": [{
                         "type": "Tab",
                         "label": "API",
-                        "selected": 2,
+                        "selected2": 1,
                         "children": [{
                                 "type": "Text",
                                 "content": "<div class=\"api\"></div>"
                             }]
                     }, {
                         "type": "Tab",
-                        "label": "files",
+                        "label": "Files",
                         "children": [{
                                 "type": "ScriptFiles",
                                 "variable": {
