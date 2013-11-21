@@ -62,8 +62,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param subject
      * @param body
      */
-    public void sendMessage(Player p, String from, String subject, String body) {
-        this.getInstance(p).sendMessage(from, subject, body);
+    public Message sendMessage(Player p, String from, String subject, String body) {
+        return this.getInstance(p).sendMessage(from, subject, body);
     }
 
     /**
@@ -76,8 +76,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param body
      * @param attachements
      */
-    public void sendMessage(Player p, String from, String subject, String body, List<String> attachements) {
-        this.getInstance(p).sendMessage(from, subject, body, attachements);
+    public Message sendMessage(Player p, String from, String subject, String body, List<String> attachements) {
+        return this.getInstance(p).sendMessage(from, subject, body, attachements);
     }
 
     /**

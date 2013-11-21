@@ -154,7 +154,10 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         buildSubTree: function(node, widget) {
             var treeNode, button = new Y.Node.create("<span class=\"wegas-treeview-editmenubutton\"></span>"),
                     menuCfg;
-            if (!widget) {
+            if (!widget || typeof widget.getMenuCfg !== "function") {
+                if(widget){
+                    Y.log(widget + " not editable", "warn", "Y.Wegas.PageEditorTreeView");
+                }
                 return;
             }
             menuCfg = widget.getMenuCfg({

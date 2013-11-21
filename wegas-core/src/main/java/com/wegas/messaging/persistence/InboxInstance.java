@@ -93,8 +93,10 @@ public class InboxInstance extends VariableInstance {
      * @param subject
      * @param body
      */
-    public void sendMessage(String from, String subject, String body) {
-        this.sendMessage(new Message(from, subject, body));
+    public Message sendMessage(String from, String subject, String body) {
+        Message msg = new Message(from, subject, body);
+        this.sendMessage(msg);
+        return msg;
     }
 
     /**
@@ -104,8 +106,10 @@ public class InboxInstance extends VariableInstance {
      * @param body
      * @param attachements
      */
-    public void sendMessage(String from, String subject, String body, List<String> attachements) {
-        this.sendMessage(new Message(from, subject, body, attachements));
+    public Message sendMessage(final String from, final String subject, final String body, final List<String> attachements) {
+        final Message msg = new Message(from, subject, body, attachements);
+        this.sendMessage(msg);
+        return msg;
     }
 
     @Override

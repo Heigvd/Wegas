@@ -81,7 +81,8 @@
     color: transparent;
 }
 
-.api, .objective {
+/* objective api and file styles */
+.apiTab .yui3-tab-panel, .objective {
     width: 164px;
     height: 219px;
     background: url(../../wegas-proggame/images/proggame-left.png) no-repeat;
@@ -89,7 +90,43 @@
     padding-top: 20px;
 }
 
-.api {
+.apiTab .yui3-tab-selected {
+    margin: 0 0 0 0;
+}
+
+.yui3-skin-sam .yui3-tab {
+    margin: 0 0 0 0;
+}
+
+.apiTab .yui3-tabview-list li a, .apiTab .yui3-tab-label:hover, .apiTab .yui3-tab-label:focus,
+.apiTab .yui3-tab-selected .yui3-tab-label, .apiTab .yui3-tab-selected .yui3-tab-label:focus, .apiTab .yui3-tab-selected .yui3-tab-label:hover{
+    background: url(../../wegas-proggame/images/proggame-button-empty.png) no-repeat;
+    background-size: 114px 50px;
+    background-position: 0px -14px;
+    padding: 10px 1.4em 10px;
+    padding-top: 7px;
+}
+
+.apiTab .yui3-tab-label:hover:before {
+    content: "";
+    position: absolute;
+    top: 21px;
+    left: 8px;
+    height: 8px;
+    width: 103px;
+    box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
+.apiTab .yui3-tabview-panel {
+    background-color: transparent;
+    height: 219px;
+}
+
+.apiTab .yui3-tab-disabled {
+    opacity: .55
+}
+
+.api, .wegas-proggame-scriptfiles-content{
     padding-left: 35px;
 }
 .objective {
@@ -124,6 +161,17 @@
     margin-bottom: 6px;
 }
 
+.wegas-proggame-scriptfiles-content button {
+    margin-left: 20px;
+    margin-bottom: 12px;
+}
+
+.fileName p:hover {
+    cursor: pointer;
+    color: blue;
+}
+
+/* Center area styles */
 .wegas-proggame-level {
     background: url(../../wegas-proggame/images/proggame-right-level.png) no-repeat;
     height: 699px;
