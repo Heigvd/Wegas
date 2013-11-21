@@ -335,7 +335,7 @@
                                 "type": "PageLoader",
                                 "pageLoaderId": "previewPageLoader",
                                 "defaultPageId": 1,
-                                "cssClass": "editor-preview",
+                                "cssClass": "editor-preview wegas-playerview",
                                 "plugins": [{
                                         "fn": "WidgetToolbar",
                                         "cfg": {

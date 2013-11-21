@@ -87,7 +87,7 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             //cb.one(".arguments").setHTML(this.get("arguments").join(", "));   // Display function arguements
 
-            var acc = ["<h1>API</h1>"];
+            var acc = [];
             for (i = 0; i < api.length; i += 1) {
                 acc.push((METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
             }

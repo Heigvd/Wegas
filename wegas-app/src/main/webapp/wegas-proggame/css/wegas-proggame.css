@@ -82,32 +82,35 @@
 }
 
 /* objective api and file styles */
-.apiTab .yui3-tab-panel, .objective {
-    width: 164px;
+/*.apiTab {
+    background: url(../../wegas-proggame/images/proggame-left.png) no-repeat;
+}*/
+.apiTab , .objective {
+    width: 122px;
     height: 219px;
     background: url(../../wegas-proggame/images/proggame-left.png) no-repeat;
     font-family: Verdana;
-    padding-top: 20px;
+    padding: 16px 13px 12px 25px;
 }
 
-.apiTab .yui3-tab-selected {
+/*.apiTab .yui3-tab-selected {
     margin: 0 0 0 0;
-}
+}*/
 
-.yui3-skin-sam .yui3-tab {
+/*.yui3-skin-sam .yui3-tab {
     margin: 0 0 0 0;
-}
+}*/
 
-.apiTab .yui3-tabview-list li a, .apiTab .yui3-tab-label:hover, .apiTab .yui3-tab-label:focus,
+/*.apiTab .yui3-tabview-list li a, .apiTab .yui3-tab-label:hover, .apiTab .yui3-tab-label:focus,
 .apiTab .yui3-tab-selected .yui3-tab-label, .apiTab .yui3-tab-selected .yui3-tab-label:focus, .apiTab .yui3-tab-selected .yui3-tab-label:hover{
     background: url(../../wegas-proggame/images/proggame-button-empty.png) no-repeat;
     background-size: 114px 50px;
     background-position: 0px -14px;
     padding: 10px 1.4em 10px;
     padding-top: 7px;
-}
+}*/
 
-.apiTab .yui3-tab-label:hover:before {
+/*.apiTab .yui3-tab-label:hover:before {
     content: "";
     position: absolute;
     top: 21px;
@@ -115,19 +118,15 @@
     height: 8px;
     width: 103px;
     box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
-}
+}*/
 
-.apiTab .yui3-tabview-panel {
+/*.apiTab .yui3-tabview-panel {
     background-color: transparent;
     height: 219px;
-}
+}*/
 
 .apiTab .yui3-tab-disabled {
     opacity: .55
-}
-
-.api, .wegas-proggame-scriptfiles-content{
-    padding-left: 35px;
 }
 .objective {
     cursor: pointer;
@@ -144,24 +143,21 @@
 }
 .objective .objValue {
     height: 158px;
-    margin: 0 13px 0 24px;
     overflow: auto;
 }
 .objective h1 {
     font-family: Blackadder ITC;
-    margin-left: 30px;
+    /*margin-left: 30px;*/
     margin-bottom: 6px;
 }
 
 .api h1 {
     font-family: Blackadder ITC;
-    margin-left: 20px;
     margin-bottom: 6px;
 }
 
 .wegas-proggame-scriptfiles-content button {
-    margin-left: 20px;
-    margin-bottom: 12px;
+    margin-bottom: 5px;
 }
 
 .fileName p:hover {
@@ -210,6 +206,7 @@
     height: 200px;
 }
 
+.apiTab button,
 .topright button {
     background-color: rgba(168, 83, 10, 0.5);
     border: solid 1px rgb(75, 74, 74);
@@ -270,7 +267,7 @@
 }
 .topright .debugger {
     position: relative;
-    top: -91px;
+    top: -68px;
     left: 53px;
     padding-left: 10px;
     font-family: Myriad Pro;
@@ -279,31 +276,33 @@
     width: 165px;
     background: url(../../wegas-proggame/images/proggame-sepa-debugg.png) no-repeat 0px 33px;
 }
-.topright .debugger .yui3-tabview-panel {
+.wegas-playerview .yui3-tabview-panel {
     overflow: auto;
     background: none;
     height: 162px;
     border: none;
     padding: 17px 0 0 0;
 }
-.debugger .yui3-tab-label {
+.wegas-playerview .yui3-tab-label {
     min-width: 0px;
     background: transparent;
     border-radius: 10px;
+    padding: 5px 15px;
 }
 .debugger button {
     font-size: 11px;
 }
-.debugger .yui3-tabview-list {
+.wegas-playerview .yui3-tabview-list {
     border: none;
 }
-.debugger .yui3-tab-selected .yui3-tab-label,
-.debugger .yui3-tab-selected .yui3-tab-label:focus,
-.debugger .yui3-tab-selected .yui3-tab-label:hover {
+.wegas-playerview .yui3-tab-selected .yui3-tab-label,
+.wegas-playerview .yui3-tab-selected .yui3-tab-label:focus,
+.wegas-playerview .yui3-tab-selected .yui3-tab-label:hover {
     background: rgba(100, 100, 100, 0.6);
+    padding: 5px 15px;
 }
-.debugger .yui3-tab-label:hover,
-.debugger .yui3-tab-label:focus  {
+.wegas-playerview .yui3-tab-label:hover,
+.wegas-playerview .yui3-tab-label:focus  {
     background: rgba(100, 100, 100, 0.3);
 }
 
