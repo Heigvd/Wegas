@@ -3,7 +3,6 @@
         "@name": "Main page",
         "type": "AbsoluteLayout",
         "cssClass": "layout",
-        "direction": "horizontal",
         "plugins": [{
                 "fn": "CSSSize",
                 "cfg": {
@@ -245,6 +244,23 @@
         "variable": {
             "name": "currentLevel"
         }
+    },
+    "3": {
+        "@name": "Shop",
+        "type": "AbsoluteLayout",
+        "plugins": [{
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "width": "1280px",
+                        "height": "801px"
+                    }
+                }
+            }],
+        "children": [{
+                "type": "Text"
+            }]
     },
     "6": {
         "type": "InboxDisplay",
