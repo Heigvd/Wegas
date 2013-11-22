@@ -21,7 +21,7 @@ YUI.add('wegas-tabview', function(Y) {
      * @class Manage a tabview specific to Wegas
      * @constructor
      */
-    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Layout], {
         /** @lends Y.Wegas.TabView# */
 
         // *** Private fields *** //
@@ -86,6 +86,41 @@ YUI.add('wegas-tabview', function(Y) {
          * Prefix css. Static
          */
         CSS_PREFIX: "yui3-tabview",
+        ATTRS: {
+            panelNode: {
+                "transient": true
+            },
+            listNode: {
+                "transient": true
+            }
+        },
+        EDITMENU: [{
+                type: "Button",
+                label: "Edit",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        fn: "EditWidgetAction"
+                    }
+                ]
+            }, {
+                type: "Button",
+                label: "Add tab",
+                plugins: [{
+                        fn: "AddChildWidgetAction",
+                        cfg: {
+                            "childType": "Tab"
+                        }
+                    }
+                ]
+            }, {
+                type: "Button",
+                label: "Delete",
+                cssClass: "editor-exploreGameModel-button",
+                plugins: [{
+                        fn: "DeleteLayoutWidgetAction"
+                    }
+                ]
+            }],
         /**
          * References to tab
          */
@@ -173,8 +208,7 @@ YUI.add('wegas-tabview', function(Y) {
 
         this._items = [];
 
-        var children,
-                handle;
+        var children, handle;
 
         if (config && config.children) {
 
@@ -214,7 +248,7 @@ YUI.add('wegas-tabview', function(Y) {
      * @constructor
      * @description Manage a tabspecific to Wegas
      */
-    Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget, Y.Wegas.Editable, Parent, Y.WidgetChild], {
+    Tab = Y.Base.create("tab", Y.Tab, [Parent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Layout], {
         /** @lends Y.Wegas.Tab# */
         PANEL_TEMPLATE: '<div><div class=\"panel-inner\"></div></div>',
         // *** Private Fields *** //
@@ -339,10 +373,23 @@ YUI.add('wegas-tabview', function(Y) {
             /**
              * Overrides the panelNode management
              */
+            label: {
+                type: "string"
+            },
             content: {
+                "transient": true,
                 setter: function() {
                 }
+            },
+            panelNode: {
+                "transient": true
             }
+//            children: {
+//                getter: function() {
+//                    this._witems;
+//                }
+//            }
+
         }
     });
     Y.namespace('Wegas').Tab = Tab;
@@ -404,14 +451,8 @@ YUI.add('wegas-tabview', function(Y) {
          * @description stop event propagation and remove host.
          */
         onRemoveClick: function(e) {
+            this.get("host").remove().destroy();
             e.stopPropagation();
-            var host = this.get("host");
-
-            host.remove();
-            host.destroy();
-
-            //var tab = Y.Widget.getByNode(e.target);
-            // tab.remove();
         }
     }, {
         NS: "removeable",
@@ -450,7 +491,7 @@ YUI.add('wegas-tabview', function(Y) {
                     if (this.get("host").isEmpty()) {
                         Y.Wegas.app.widget.hidePosition("right");
                     }
-                })
+                });
             });
             this.onHostEvent("addChild", function() {
                 if (this.get("host").isEmpty()) {

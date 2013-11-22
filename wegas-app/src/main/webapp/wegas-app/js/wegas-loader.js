@@ -132,7 +132,8 @@ YUI().use(function(Y) {
                     ws_provides: ['AbsoluteLayout', "Position"]
                 },
                 'wegas-layout-absolutecss': {
-                    path: 'css/wegas-layout-absolute-min.css'
+                    path: 'css/wegas-layout-absolute-min.css',
+                    type: "css"
                 },
                 'wegas-layout-choicelist': {
                     path: "js/widget/wegas-layout-choicelist-min.js",
@@ -219,7 +220,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-tabview': {
                     path: 'js/widget/wegas-tabview-min.js',
-                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-popuplistener'],
+                    requires: ['tabview', 'wegas-layout', 'wegas-tabviewcss', 'wegas-popuplistener'],
                     ws_provides: 'TabView'
                 },
                 'wegas-tabviewcss': {
@@ -585,7 +586,7 @@ YUI().use(function(Y) {
                     ws_provides: ['EditorTreeView', "TeamTreeView"]
                 },
                 'wegas-editor-treeviewcss': {
-                    path: 'css/wegas-editor-treeview-min.css',
+                    path: 'css/wegas-editor-treeview.css',
                     type: "css"
                 },
                 'wegas-editor-variabletreeview': {
@@ -825,7 +826,8 @@ YUI().use(function(Y) {
             modules: {
                 /** Prog game **/
                 'wegas-proggame-level': {
-                    requires: ['tabview', "treeview", 'wegas-widget', 'wegas-inputex-ace',
+                    requires: ['tabview', "treeview",
+                        'wegas-tabview', 'wegas-widget', 'wegas-inputex-ace',
                         'wegas-proggame-display', 'wegas-proggame-jsinstrument'],
                     ws_provides: 'ProgGameLevel'
                 },
@@ -834,11 +836,11 @@ YUI().use(function(Y) {
                     ws_provides: 'ProgGameDisplay'
                 },
                 'wegas-proggame-inputex': {
-                    requires: ['wegas-inputex'],
+                    requires: 'wegas-inputex',
                     ix_provides: ['proggametile', "proggamemap"]
                 },
                 'wegas-proggame-objective': {
-                    ws_provides: ["Objective"]
+                    ws_provides: "Objective"
                 },
                 'wegas-proggame-jsinstrument': {
                     requires: ["esprima", "escodegen"]
@@ -847,8 +849,8 @@ YUI().use(function(Y) {
                     ws_provides: ["Popup"]
                 },
                 'wegas-proggame-scriptfiles': {
-                    requires:["PanelWidget"],
-                    ws_provides: ["ScriptFiles"]
+                    requires: "wegas-panel",
+                    ws_provides: "ScriptFiles"
                 }
             }
         },
