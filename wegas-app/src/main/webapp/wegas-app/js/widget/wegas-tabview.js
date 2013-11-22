@@ -21,7 +21,7 @@ YUI.add('wegas-tabview', function(Y) {
      * @class Manage a tabview specific to Wegas
      * @constructor
      */
-    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget], {
+    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.TabView# */
 
         // *** Private fields *** //
@@ -69,6 +69,15 @@ YUI.add('wegas-tabview', function(Y) {
             this.removeAll().each(function(w) {
                 w.destroy();
             });
+        },
+        /**
+         * Override WidgetParent method. Otherwise when a sibling of the tabview is
+         * selected (with selection level 2), it's children tab are unselected
+         * @param {type} event
+         * @returns {unresolved}
+         */
+        _afterParentSelectedChange: function(event) {
+            return;
         }
     }, {
         /** @lends Y.Wegas.TabView# */
@@ -182,13 +191,12 @@ YUI.add('wegas-tabview', function(Y) {
         Y.after(this._renderChildren, this, "renderUI");
         Y.after(this._bindUIParent, this, "bindUI");
 
-        //        this.after("selectionChange", this._afterSelectionChange);
-        //        this.after("selectedChange", this._afterParentSelectedChange);
-        //        this.after("activeDescendantChange", this._afterActiveDescendantChange);
+        //this.after("selectionChange", this._afterSelectionChange);
+        //this.after("selectedChange", this._afterParentSelectedChange);
+        //this.after("activeDescendantChange", this._afterActiveDescendantChange);
 
         this._hDestroyChild = this.after("*:destroy", this._afterDestroyChild);
         this.after("*:focusedChange", this._updateActiveDescendant);
-        ;
     }
 
     //Y.extend(Parent, Y.WidgetParent);
@@ -206,7 +214,7 @@ YUI.add('wegas-tabview', function(Y) {
      * @constructor
      * @description Manage a tabspecific to Wegas
      */
-    Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget, Parent, Y.WidgetChild], {
+    Tab = Y.Base.create("tab", Y.Tab, [Y.Wegas.Widget, Y.Wegas.Editable, Parent, Y.WidgetChild], {
         /** @lends Y.Wegas.Tab# */
         PANEL_TEMPLATE: '<div><div class=\"panel-inner\"></div></div>',
         // *** Private Fields *** //
@@ -314,7 +322,6 @@ YUI.add('wegas-tabview', function(Y) {
         witem: function(index) {
             return this._witems[index];
         }
-
     }, {
         CSS_PREFIX: "yui3-tab",
         /** @lends Y.Wegas.Tab */
