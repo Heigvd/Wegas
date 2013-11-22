@@ -4,7 +4,7 @@
     clear:both;
 }
 
-.wegas-absolutelayout {
+.layout {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 9pt;
     background: url(../../wegas-proggame/images/proggame-title.png) top left no-repeat,
@@ -91,6 +91,11 @@
     background: url(../../wegas-proggame/images/proggame-left.png) no-repeat;
     font-family: Verdana;
     padding: 16px 13px 12px 25px;
+}
+.apiTab .yui3-tabview-panel,
+.debugger .yui3-tabview-panel {
+    overflow: auto;
+    padding: 17px 0 0 0;
 }
 
 /*.apiTab .yui3-tab-selected {
@@ -277,11 +282,9 @@
     background: url(../../wegas-proggame/images/proggame-sepa-debugg.png) no-repeat 0px 33px;
 }
 .wegas-playerview .yui3-tabview-panel {
-    overflow: auto;
     background: none;
     height: 162px;
     border: none;
-    padding: 17px 0 0 0;
 }
 .wegas-playerview .yui3-tab-label {
     min-width: 0px;
@@ -341,14 +344,22 @@
     top: 472px;
     left: 26px;
     font-size: 5pt;
-    font-family: Verdana;
     color:  #fefefe;
     right: 277px;
     width: 640px;
 }
+.code .yui3-tab-label {
+    color: white;
+    font-family: Verdana;
+}
+.code .yui3-tab-selected .yui3-tab-label,
+.code .yui3-tab-selected .yui3-tab-label:focus,
+.code .yui3-tab-selected .yui3-tab-label:hover  {
+    color: white;
+}
 .code .inputEx-Field {
     float: none; /* Prevent inputex default to preserve width*/
-    margin-top: 5px;
+    /*margin-top: 5px;*/
 }
 
 .wegas-proggame-level-content .code textarea {
