@@ -8,20 +8,12 @@
                 "type": "Button",
                 "content": "",
                 "cssClass": "wegas-title",
+                "tooltip": "Back to lobby",
                 "plugins": [{
-                        "fn": "WidgetMenu",
+                        "fn": "OpenUrlAction",
                         "cfg": {
-                            "children": [{
-                                    "type": "Button",
-                                    "label": "Properties",
-                                    "plugins": [{
-                                            "fn": "EditEntityAction",
-                                            "cfg": {
-                                                "entity": "currentGameModel",
-                                                "dataSource": "GameModel"
-                                            }
-                                        }]
-                                }]
+                            "url": "",
+                            "target": "_self"
                         }
                     }]
             }, {
@@ -121,6 +113,16 @@
                         "fn": "WidgetMenu",
                         "cfg": {
                             "children": [{
+                                    "type": "Button",
+                                    "label": "Properties",
+                                    "plugins": [{
+                                            "fn": "EditEntityAction",
+                                            "cfg": {
+                                                "entity": "currentGameModel",
+                                                "dataSource": "GameModel"
+                                            }
+                                        }]
+                                }, {
                                     "type": "OpenTabButton",
                                     "label": "Files",
                                     "wchildren": [{
@@ -303,13 +305,6 @@
                                                             }
                                                         }],
                                                     "targetClass": "VariableDescriptor"
-                                                }, {
-                                                    "type": "Button",
-                                                    "cssClass": "editor-restart-button",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
-                                                    "plugins": [{
-                                                            "fn": "ResetAction"
-                                                        }]
                                                 }]
                                         }
                                     }]
@@ -337,9 +332,18 @@
                                 "defaultPageId": 1,
                                 "cssClass": "editor-preview wegas-playerview",
                                 "plugins": [{
+                                        "fn": "PreviewFullScreen"
+                                    }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
-                                            "children": []
+                                            "children": [{
+                                                    "type": "Button",
+                                                    "cssClass": "editor-restart-button",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-reset\"></span>Restart",
+                                                    "plugins": [{
+                                                            "fn": "ResetAction"
+                                                        }]
+                                                }]
                                         }
                                     }, {
                                         "fn": "PageEditor"
@@ -352,8 +356,6 @@
                                         "cfg": {
                                             "showServerMessages": true
                                         }
-                                    }, {
-                                        "fn": "PreviewFullScreen"
                                     }
 
                                 ]

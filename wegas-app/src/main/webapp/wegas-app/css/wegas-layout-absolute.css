@@ -15,6 +15,10 @@
     height: inherit;
 }
 .wegas-absolutelayout-content:empty:before{
-    content: "Empty container, add me some elements"
+    content: "This element is empty. Click on 'Edit page'  and add new elements.";
+    display: block;
+    font-style: italic;
+    margin-top: 50px;
+    text-align: center;
 }
 
