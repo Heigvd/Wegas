@@ -26,7 +26,6 @@ public abstract class SecurityHelper {
 
     public static boolean isPermitted(final Game game, final String permission) {
         return SecurityUtils.getSubject().isPermitted("Game:" + permission + ":g" + game.getId())
-                || (game instanceof DebugGame
-                && SecurityUtils.getSubject().isPermitted("GameModel:" + permission + ":gm" + game.getGameModelId()));
+                || (game instanceof DebugGame && SecurityUtils.getSubject().isPermitted("GameModel:" + permission + ":gm" + game.getGameModelId()));
     }
 }
