@@ -31,7 +31,7 @@ YUI.add('wegas-loginwidget', function(Y) {
          * @lends Y.Wegas.LoginWidget#
          */
         CONTENT_TEMPLATE: "<div><a href=\"https://github.com/Heigvd/Wegas\"><img style=\"position: absolute; top: 0; left: 0; border: 0;\" src=\"https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png\" alt=\"Fork me on GitHub\"></a>\n\
-               <div class='header'>\n\
+               <div class='wegas-login-header'>\n\
                     <div class='content'>\n\
                         <div class='left'>\n\
                             <div class='logo'>\n\</div>\n\
