@@ -1,9 +1,9 @@
 {
     "type": "List",
     "children": [{
-        "type": "Text",
-        "content": "<div class='content'><div class='left'><div class='logo'></div></div></div>",
-        "cssClass": "header"
+            "type": "Text",
+            "content": "<div class='content'><div class='left'><div class='logo'></div></div></div>",
+            "cssClass": "wegas-login-header"
         }, {
             "type": "Text",
             "content": "",
