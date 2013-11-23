@@ -197,7 +197,7 @@ public class GameController {
     @GET
     @Path("/JoinTeam/{teamId : .*}/")
     public Game joinTeam(@PathParam("teamId") Long teamId) {
-        checkPermissions(teamFacade.find(teamId).getGame().getId());
+        this.checkPermissions(teamFacade.find(teamId).getGame().getId());
         return teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
     }
 
@@ -210,7 +210,7 @@ public class GameController {
     @POST
     @Path("{gameId : .*}/CreateTeam/{name : .*}/")
     public Team createTeam(@PathParam("gameId") Long gameId, @PathParam("name") String name) {
-        checkPermissions(gameId);
+        this.checkPermissions(gameId);
         Team t = new Team(name);
         this.teamFacade.create(gameId, t);
         //Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
@@ -218,8 +218,12 @@ public class GameController {
         return t;
     }
 
-    private void checkPermissions(Long id) throws UnauthorizedException {
-        if (!SecurityUtils.getSubject().isPermitted("Game:Token:g" + id) && !SecurityUtils.getSubject().isPermitted("Game:View:g" + id)) {
+    private void checkPermissions(Long id) {
+        this.checkPermissions(gameFacade.find(id));
+    }
+
+    private void checkPermissions(Game g) {
+        if (!SecurityHelper.isPermitted(g, "Token") && !SecurityHelper.isPermitted(g, "View")) {
             throw new UnauthorizedException();
         }
     }
