@@ -325,7 +325,7 @@ YUI.add('wegas-tabview', function(Y) {
          * to the tab
          */
         load: function(cfg, callback) {
-            Y.Wegas.Widget.use(cfg, Y.bind(function(cfg, callback) {          // Load the subpage dependencies
+            Y.Wegas.Widget.use(cfg, Y.bind(function(cfg, callback) {            // Load the subpage dependencies
                 var widgets = this.add(cfg);                                    // Render the subpage
                 if (callback) {
                     callback(widgets.item(0));                                  // Trigger the callback
@@ -384,12 +384,6 @@ YUI.add('wegas-tabview', function(Y) {
             panelNode: {
                 "transient": true
             }
-//            children: {
-//                getter: function() {
-//                    this._witems;
-//                }
-//            }
-
         }
     });
     Y.namespace('Wegas').Tab = Tab;
@@ -441,7 +435,7 @@ YUI.add('wegas-tabview', function(Y) {
             //tabview.after('tab:render', this.afterTabRender, this);
         },
         //afterTabRender: function(e) {
-        //    e.target.get('boundingBox').append(this.REMOVE_TEMPLATE);           // boundingBox is the Tab's LI
+        //    e.target.get('boundingBox').append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
         //},
 
         /**
@@ -505,4 +499,17 @@ YUI.add('wegas-tabview', function(Y) {
     });
     Y.namespace("Plugin").LayoutToggleTab = LayoutToggleTab;
 
+
+    /**
+     * Override to add support for disabled tabs
+     * @param {type} e
+     */
+    Y.Tab.prototype._onActivate = function(e) {
+        if (e.target === this && !this.get("disabled")) {   /* modified */
+            //  Prevent the browser from navigating to the URL specified by the
+            //  anchor's href attribute.
+            e.domEvent.preventDefault();
+            e.target.set('selected', 1);
+        }
+    };
 });

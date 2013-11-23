@@ -13,6 +13,9 @@
 .yui3-skin-sam .yui3-tab {
     position: relative;
 }
+.yui3-skin-sam  .yui3-tab-disabled {
+    opacity: 0.5;
+}
 .yui3-skin-sam .yui3-tab-hidden {
     display: none;
 }
