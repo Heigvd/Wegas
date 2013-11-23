@@ -11,7 +11,7 @@
         url(../../wegas-proggame/images/proggame-background.jpg) top left no-repeat;
 }
 
-.battle-button, .battle-button:hover, .wegas-absolutelayout .yui3-button-disabled{
+.battle-button, .battle-button:hover/*, .wegas-absolutelayout .yui3-button-disabled*/{
     background: url(../../wegas-proggame/images/proggame-button-battle.png) no-repeat;
 }
 
@@ -25,7 +25,7 @@
     box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
 }
 
-.mails-button, .mails-button:hover, .wegas-absolutelayout .yui3-button-disabled{
+.mails-button, .mails-button:hover/*, .wegas-absolutelayout .yui3-button-disabled*/{
     background: url(../../wegas-proggame/images/proggame-button-mails.png) no-repeat;
 }
 
@@ -39,7 +39,7 @@
     box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
 }
 
-.history-button, .history-button:hover, .wegas-absolutelayout .yui3-button-disabled{
+.history-button, .history-button:hover/*, .wegas-absolutelayout .yui3-button-disabled*/{
     background: url(../../wegas-proggame/images/proggame-button-history.png) no-repeat;
 }
 
@@ -74,11 +74,11 @@
     box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
 }
 
-.menu-button, .wegas-absolutelayout .yui3-button-selected,
-.wegas-absolutelayout .yui3-button-disabled{
+.menu-button, .wegas-absolutelayout .yui3-button-selected
+/*.wegas-absolutelayout .yui3-button-disabled*/{
     box-shadow: none;
     background-color: transparent;
-    color: transparent;
+    color: rgba(163, 184, 89, 1);
 }
 
 /* objective api and file styles */
@@ -130,8 +130,8 @@
     height: 219px;
 }*/
 
-.apiTab .yui3-tab-disabled {
-    opacity: .55
+.wegas-playerview .yui3-tab-disabled {
+    display:none;
 }
 .objective {
     cursor: pointer;

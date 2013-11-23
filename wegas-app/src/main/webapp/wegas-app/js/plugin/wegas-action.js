@@ -206,18 +206,19 @@ YUI.add('wegas-action', function(Y) {
         execute: function() {
             var host = this.get(HOST);
             host.showOverlay();
-
-            Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Wegas.app.get('currentPlayer'),
-                cfg: {
-                    method: "POST",
-                    data: Y.JSON.stringify(this.get("onClick"))
-                },
-                on: {
-                    success: Y.bind(host.hideOverlay, host),
-                    failure: Y.bind(host.defaultFailureHandler, host)
-                }
-            });
+            if (!host.get("disabled")) {
+                Wegas.Facade.VariableDescriptor.sendRequest({
+                    request: "/Script/Run/" + Wegas.app.get('currentPlayer'),
+                    cfg: {
+                        method: "POST",
+                        data: Y.JSON.stringify(this.get("onClick"))
+                    },
+                    on: {
+                        success: Y.bind(host.hideOverlay, host),
+                        failure: Y.bind(host.defaultFailureHandler, host)
+                    }
+                });
+            }
         }
     }, {
         NS: "ExecuteScriptAction",
