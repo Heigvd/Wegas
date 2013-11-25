@@ -727,7 +727,7 @@ YUI().use(function(Y) {
                     ws_provides: 'Bac'
                 },
                 "wegas-pmg-tablepopup": {
-                    path: 'wegas-pmg/js/plugin/wegas-pmg-tablepopup-min.js',
+                    path: 'js/plugin/wegas-pmg-tablepopup-min.js',
                     requires: ['wegas-widgetmenu'],
                     ws_provides: 'Tablepopup'
                 }
