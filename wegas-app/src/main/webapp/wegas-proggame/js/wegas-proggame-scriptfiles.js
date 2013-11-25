@@ -22,16 +22,16 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
         handlers: null,
         initializer: function() {
             this.handlers = {};
-            this.createPanel();
-            
-            Y.publish('openFile', {
-                broadcast: 2
+
+            this.publish('openFile', {
+                broadcast: true,
+                emitFacade: true
             });
         },
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
             this.addButton = new Y.Wegas.Button({
-                label: "add file"
+                label: "Add file"
             });
             this.addButton.render(cb);
             cb.append("<div class='fileName'></div>");
@@ -40,18 +40,19 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
         },
         bindUI: function() {
             this.handlers.sync = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-    
+
             this.addButton.on("click", function(e) {
-                this.newFilePanel.show();
+//                this.newFilePanel.show();
+                this.createPanel().show();
             }, this);
         },
         syncUI: function() {
             var inboxDescriptor = this.get('variable.evaluated'),
                     messages = inboxDescriptor.getInstance().get("messages"), node,
                     cb = this.get(CONTENTBOX), fileNameDiv = cb.one(".fileName"), i;
-            
+
             fileNameDiv.get('childNodes').remove();
-            
+
             if (messages.length === 0) {
                 fileNameDiv.append("<p>No files to display</p>");
             } else {
@@ -61,8 +62,8 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
                     fileNameDiv.append(node);
 
                     node.on("click", function(e) {
-                        this.fire("openFile", node.data);
-                        console.log("openFile event");
+                        //console.log("openFile event");
+                        this.fire("openFile", {file: e.target.data});
                     }, this);
                 }
             }
@@ -73,47 +74,47 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
                 srcNode: node,
                 headerContent: 'Add a new file',
                 width: 250,
+                modal: true,
                 centered: true,
                 visible: false,
                 render: true,
-                buttons: [
-                    {
+                buttons: [{
                         value: 'Add',
                         section: Y.WidgetStdMod.FOOTER,
                         action: function(e) {
                             e.preventDefault();
-                            this.hide();
+                            this.exit();
                             that.addFile(this.get("srcNode").one("input").get("value"));
                             this.get("srcNode").one("input").set("value", "");
                         }
-                    },
-                    {
+                    }, {
                         value: 'Cancel',
                         section: Y.WidgetStdMod.FOOTER,
                         action: function(e) {
                             e.preventDefault();
-                            this.hide();
+                            this.exit();
                         }
                     }
                 ]
             });
+            return this.newFilePanel;
         },
         addFile: function(fileName) {
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                'Managed-Mode': 'false',
+                //'Managed-Mode': 'false',
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.find(gameModel, 'files').sendMessage(self, '', '" + fileName +".js', '', []);"
+                        language: "JavaScript",
+                        content: "VariableDescriptorFacade.find(gameModel, 'files').sendMessage(self, '', '" + fileName + ".js', '', []);"
                     })
                 },
                 on: {
-                    success: function(e) {
-                        this.fire("openFile", e.response.entity);
-                    }
+                    success: Y.bind(function(e) {
+                        this.fire("openFile", {file: e.response.entity});
+                    }, this)
                 }
             });
         },

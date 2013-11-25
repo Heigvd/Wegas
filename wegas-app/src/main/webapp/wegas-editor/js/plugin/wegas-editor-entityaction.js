@@ -63,6 +63,9 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         execute: function() {
             var entity = this.get(ENTITY);
 
+            EditEntityAction.hideRightTabs();                                   // Destroy all tabs in the right panel
+            EditEntityAction.getEditionTab();                                   // Create the edition tab (and the left panel won't pop in and out)
+
             if (entity instanceof Y.Wegas.persistence.VariableDescriptor
                     || entity instanceof Y.Wegas.persistence.JpaAccount
                     || entity instanceof Y.Wegas.persistence.GameModel
@@ -70,7 +73,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
                         success: function(e) {
-                            EditEntityAction.hideRightTabs();
                             EditEntityAction.showUpdateForm(e.response.entity, e.callback.ds);
                         },
                         ds: this.get("dataSource")
@@ -114,14 +116,21 @@ YUI.add('wegas-editor-entityaction', function(Y) {
 
             var tab = EditEntityAction.getEditionTab(),
                     prefix = (entity.get("id")) ? "Edit " : "New ";             // No id -> new entity
+
+            tab.setAttrs({
+                label: prefix + entity.getType().replace("Descriptor", "").toLowerCase(),
+                selected: 2
+            });
+            tab.form.setAttrs({
+                values: entity.toObject(),
+                cfg: formCfg || entity.getFormCfg()
+            });
             tab.form.toolbar.setStatusMessage("");
-            tab.form.saveButton.set("disabled", false);
-            tab.set("label", prefix + entity.getType().replace("Descriptor", "").toLowerCase());
-            tab.set("selected", 2);
-            tab.form.set("values", entity.toObject());
-            tab.form.set("cfg", formCfg || entity.getFormCfg());
+            //tab.form.saveButton.set("disabled", false);
 
             Y.fire("rightTabShown");
+
+            return tab.form;
         },
         getEditionTab: function() {
             if (!EditEntityAction.tab || EditEntityAction.tab.get("destroyed")) {// First make sure the edit tab exists
@@ -358,7 +367,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(AddEntityChildAction, NewEntityAction, {
         showAddForm: function(entity, parentData) {
             var dataSource = this.get("dataSource");
-            EditEntityAction.hideRightTabs();
+            EditEntityAction.hideRightTabs();                                   // Hide all active tabs
+
             EditEntityAction.showEditForm(entity, function(newVal) {
                 //@Hack since the server return the parent list,
                 // and we have no way to identify the newly created descriptor

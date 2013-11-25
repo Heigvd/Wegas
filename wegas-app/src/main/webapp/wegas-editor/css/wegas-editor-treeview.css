@@ -25,7 +25,12 @@
 }
 
 /** Styles for table trees (Games) */
-.wegas-editor-treeview-content .yui3-treeview > ul > li {
+.wegas-editor-treeview-content .yui3-treeview > ul > li,
+.wegas-page-editor .yui3-treeview > ul > li {
+    box-shadow: 0px -1px 0px #f1f1f1;
+}
+.wegas-editor-treeview-content .yui3-treeview > ul > li:last-child,
+.wegas-page-editor .yui3-treeview > ul > li:last-child{
     box-shadow: 0px 1px 0px #f1f1f1;
 }
 .wegas-editor-treeview-table {
