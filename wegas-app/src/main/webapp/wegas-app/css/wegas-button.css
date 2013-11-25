@@ -15,11 +15,12 @@
     background-repeat: no-repeat;
     background-image: url(../images/wegas-app-sprite.png);
 }
-.yui3-skin-sam .wegas-icon-reset {
-    background-position: 0px -300px;
-}
+.yui3-skin-sam .wegas-icon-reset,
 .yui3-skin-sam .wegas-icon-refresh {
     background-position: 0px -300px;
+}
+.yui3-skin-sam .wegas-icon-pagerefresh {
+    background-position: 0px -1327px;
 }
 .yui3-skin-sam .wegas-icon-new {
     background-position: 0px 0px;
@@ -91,4 +92,7 @@
 }
 .yui3-skin-sam .wegas-icon-designmode {
     background-position: 0px -1110px;
+}
+.yui3-skin-sam .wegas-icon-showregions {
+    background-position: 0px -1360px;
 }

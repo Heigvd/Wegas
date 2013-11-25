@@ -19,7 +19,11 @@ YUI.add('wegas-object-entities', function(Y) {
     /**
      * ObjectDescriptor mapper
      */
-    Y.Wegas.persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+    Y.Wegas.persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+        getProperty: function(player, key) {
+            return this.getInstance(player).get("properties." + key);
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "ObjectDescriptor"
@@ -60,7 +64,7 @@ YUI.add('wegas-object-entities', function(Y) {
                             label: "Default properties",
                             _type: HASHLIST,
                             keyField: NAME,
-                    useButtons: true,
+                            useButtons: true,
                             valueField: VALUE,
                             elementType: {
                                 type: COMBINE,
@@ -89,6 +93,30 @@ YUI.add('wegas-object-entities', function(Y) {
                 arguments: [{
                         type: "hidden",
                         value: "self"
+                    }]
+            },
+            getProperty: {
+                label: "property equals",
+                returns: "string",
+                arguments: [{
+                        type: "hidden",
+                        value: "self"
+                    }, {
+                        value: "property name",
+                        scriptType: STRING
+                    }]
+            },
+            setProperty: {
+                label: "set property",
+                arguments: [{
+                        type: "hidden",
+                        value: "self"
+                    }, {
+                        value: "property name",
+                        scriptType: STRING
+                    }, {
+                        value: "value",
+                        scriptType: STRING
                     }]
             }
         }

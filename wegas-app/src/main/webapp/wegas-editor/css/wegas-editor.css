@@ -242,6 +242,7 @@ body {
 }
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-widgetmenu-hassubmenu:after {
     content: url("../../wegas-app/images/wegas-submenuindicator-white.png");
+    top:2px;
 }
 .yui3-skin-sam .wegas-layout-hd .wegas-login {
     float:right  !important;

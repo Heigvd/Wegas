@@ -15,11 +15,11 @@ YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
     var ProgGameDisplay, GRIDSIZE = 32,
             execFn = function() {
-                if (Crafty.refWidget.allowNextCommand) {
-                    Crafty.refWidget.allowNextCommand = false;
-                    Crafty.refWidget.fire('commandExecuted');
-                }
-            };
+        if (Crafty.refWidget.allowNextCommand) {
+            Crafty.refWidget.allowNextCommand = false;
+            Crafty.refWidget.fire('commandExecuted');
+        }
+    };
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
@@ -178,16 +178,16 @@ YUI.add('wegas-proggame-display', function(Y) {
                     if (entity && typeof entity.doorState === 'function') {
                         entity.doorState(command.state);
                         return;
-                    } else {
-                        this.fire('commandExecuted');
                     }
                     break;
+
                 case "controllerState":
                     entity = this.getEntity(command.id);
                     if (entity && typeof entity.controllerState === 'function') {
                         entity.controllerState(command.state);
                     }
                     break;
+
                 case "yell":
                     entity = this.getEntity(command.id);
                     if (entity && typeof entity.shakeHands === 'function') {
@@ -397,11 +397,11 @@ YUI.add('wegas-proggame-display', function(Y) {
                         .animate("moveLeft", 0, 1, 7)
                         .animate("handsUp", 0, 6, 6)
                         .onHit("Collide", function(e) {
-                            this.h -= 1;
-                            this.y += 1;
-                        }, function() {
-                            this.destroy();
-                        }).origin(0, 32);
+                    this.h -= 1;
+                    this.y += 1;
+                }, function() {
+                    this.destroy();
+                }).origin(0, 32);
             },
             shakeHands: function(times) {
                 this.stop().animate("handsUp", 15, times || 1);

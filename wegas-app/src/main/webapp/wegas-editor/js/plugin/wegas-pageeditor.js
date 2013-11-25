@@ -50,6 +50,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             var el, host = this.get('host');
             if (host.toolbar) {
                 el = host.toolbar.get('header');
+
                 this.addButton = new Y.Button({/*@HACK */
                     label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                     on: {
@@ -65,9 +66,14 @@ YUI.add('wegas-pageeditor', function(Y) {
                             }
                         }
                     }
-                }).render(el).plug(Y.Plugin.WidgetMenu);                        /* End @HACK */
+                });
+                this.addButton.render(el).plug(Y.Plugin.WidgetMenu);            /* End @HACK */
+
+                el.append('<div style="width:15px;display:inline-block;"></div>');// Add a spacer
+
+                /*Edit page  */
                 this.designButton = new Y.ToggleButton({
-                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span><span class='experimental'>Edit page</span>"
+                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Edit page"
                 }).render(el);
                 this.fixedHandlers.push(this.designButton.after("pressedChange", function(e) {
                     host.get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
@@ -82,6 +88,9 @@ YUI.add('wegas-pageeditor', function(Y) {
                         });
                         this.bind();
                         this.layoutButton.show();
+                        this.sourceButton.show();
+                        this.addButton.show();
+                        this.refreshButton.show();
                         host.get(CONTENTBOX).prepend(this.overlayMask);
                     } else {
                         this.detach();
@@ -90,27 +99,35 @@ YUI.add('wegas-pageeditor', function(Y) {
                         this.shownOverlay.hide();
                         this.layoutButton.set("pressed", false);
                         this.layoutButton.hide();
+                        this.sourceButton.hide();
+                        this.refreshButton.hide();
+                        this.addButton.hide();
                     }
                 }, this));
-                this.layoutButton = new Y.ToggleButton({
-                    label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Draw elements</span>",
+
+
+                /*Refresh*/
+                this.refreshButton = new Y.Button({
+                    label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
+                    visible: false
+                }).render(el);
+                this.fixedHandlers.push(this.refreshButton.after("click", function(e) {
+                    this.get("host").reload();
+                }, this));
+
+                this.layoutButton = new Y.ToggleButton({// Layout
+                    label: "<span class=\"wegas-icon wegas-icon-showregions\"></span>Draw elements</span>",
                     visible: false
                 }).render(el);
                 this.fixedHandlers.push(this.layoutButton.after("pressedChange", function(e) {
                     this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-layoutmode",
                             e.newVal);
                 }, this));
-                /*Refresh*/
-                this.refreshButton = new Y.Button({
-                    label: "<span class='wegas-icon wegas-icon-reset'></span>Refresh"
-                }).render(el);
-                this.fixedHandlers.push(this.refreshButton.after("click", function(e) {
-                    this.get("host").reload();
-                }, this));
-                /** Source view**/
 
+                /** Source view**/
                 this.sourceButton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>Source",
+                    visible: false,
                     on: {
                         click: Y.bind(this.processSource, this)
                     }
