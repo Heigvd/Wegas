@@ -663,7 +663,7 @@
                             }
                         }
                     }]
-            },{
+            }, {
                 "type": "Button",
                 "label": "Stage<br /> 2.4",
                 "plugins": [{
@@ -716,7 +716,7 @@
                             }
                         }
                     }]
-            },{
+            }, {
                 "type": "Button",
                 "label": "Stage<br /> 2.5",
                 "plugins": [{
@@ -769,7 +769,7 @@
                             }
                         }
                     }]
-            },{
+            }, {
                 "type": "Text",
                 "content": "Level 3: Condition <em>Coming soon</em>",
                 "plugins": [{
@@ -967,7 +967,7 @@
             }, {
                 "type": "Button",
                 "disabled": false,
-                "label": "<b>Buy <br />file library</b><br /><br />500 gold",
+                "label": "<b>Buy <br />file library</b><br /><br />2000 gold",
                 "tooltip": "The file library let you to store your code in files, in order to use it again.",
                 "plugins": [{
                         "fn": "ConditionalDisable",
@@ -985,7 +985,7 @@
                             "onClick": {
                                 "@class": "Script",
                                 "language": "JavaScript",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"money\").add(self, -500);\nVariableDescriptorFacade.find(gameModel, \"inventory\").setProperty(self, \"filelibrary\", \"true\");"
+                                "content": "VariableDescriptorFacade.find(gameModel, \"money\").add(self, -2000);\nVariableDescriptorFacade.find(gameModel, \"inventory\").setProperty(self, \"filelibrary\", \"true\");"
                             }
                         }
                     }, {
@@ -1031,13 +1031,13 @@
         },
         "plugins": [{
                 "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "padding": "20px",
-                                "color": "white "
-                            }
-                        }
-                    }]
+                "cfg": {
+                    "styles": {
+                        "padding": "20px",
+                        "color": "white "
+                    }
+                }
+            }]
     },
     "11": {
         "label": "Level 1.1 - First moves",
