@@ -11,7 +11,7 @@
             "scope": {
                 "@class": "PlayerScope"
             },
-            "minValue": null,
+            "minValue": 0,
             "maxValue": null
         }, {
             "@class": "NumberDescriptor",
@@ -47,8 +47,17 @@
             "scope": {
                 "@class": "PlayerScope"
             },
-            "label": null,
-            "description": null
+            "label": "Files"
+        }, {
+            "@class": "ObjectDescriptor",
+            "label": "Inventory",
+            "name": "inventory",
+            "defaultInstance": {
+                "@class": "ObjectInstance"
+            },
+            "scope": {
+                "@class": "PlayerScope"
+            }
         }],
     "properties": {
         "cssUri": "wegas-proggame/css/wegas-proggame.css",
