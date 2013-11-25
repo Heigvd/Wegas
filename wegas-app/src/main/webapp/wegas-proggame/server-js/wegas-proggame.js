@@ -25,8 +25,8 @@ Wegas = {//                                                                     
             return ret;
         },
         clone: function(o) {
-            var newObj = (o instanceof Array) ? [] : {};
-            for (var i in o) {
+            var i, newObj = (o instanceof Array) ? [] : {};
+            for (i in o) {
                 if (i === 'clone')
                     continue;
                 if (o[i] && typeof o[i] === "object") {
@@ -41,11 +41,13 @@ Wegas = {//                                                                     
 function wdebug(msg) {
     //println(msg);
 }
-function ProgGameSimulation() {
-    this.breakpoints = [];
-    this.debug = false;
-    this.watches = [];
-    this.startLine = -1;
+function ProgGameSimulation(cfg) {
+    this.debug = cfg.debug || false;
+    this.breakpoints = cfg.breakpoints || [];
+    this.watches = cfg.watches || [];
+    this.startStep = (cfg.startStep === undefined) ? -1 : cfg.startStep;
+    this.targetStep = (cfg.targetStep === undefined) ? 10000000 : cfg.targetStep;
+    this.doRecordCommands = (cfg.doRecordCommands === undefined) ? true : cfg.recordCommands;
 }
 Wegas.mix(ProgGameSimulation.prototype, {
     run: function(playerFn, level) {
@@ -54,8 +56,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
         this.ret = [];
         this.cObject = null;
         this.said = "";
-        this.doRecordCommands = true;
-        this.currentLine = -1;
+        this.currentStep = -1;
         this.level = level;
         this.objects = level.objects;                                           // Shortcut to level objects
         this.gameOverSent = false;
@@ -109,9 +110,13 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
     },
     sendCommand: function(cfg) {
-        wdebug("Sendcommand " + cfg.type + " current line: " + this.currentLine + ", start line:" + this.startLine + "*" + this.doRecordCommands);
-        if (this.currentLine < this.startLine) {                                // Debug
+        wdebug("Sendcommand " + cfg.type + " current line: " + this.currentStep + ", start line:" + this.startStep + "*" + this.doRecordCommands);
+        if (this.currentStep < this.startStep) {                                // Debug
             wdebug("early command dropped");
+            return;
+        }
+        if (this.currentStep > this.targetStep) {                               // Debug
+            wdebug("late command dropped");
             return;
         }
         if (!this.doRecordCommands) {
@@ -366,25 +371,23 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return a.x === b.x && a.y === b.y;
     },
     _____debug: function(line, scope, vars) {
-//            this.log("mmmm"+ y+"*"+);
-
-        this.currentLine += 1;
-        wdebug("debug line:" + line + ", currentline " + this.currentLine + ", startline: " + this.startLine);
-        if (this.currentLine > this.startLine) {
-            //&& line > this.currentLine && // first time considering this line
+        this.currentStep += 1;
+        wdebug("____debug line:" + line + ", current step " + this.currentStep + ", startStep: " + this.startStep);
+        if (this.currentStep > this.startStep) {
+            //&& line > this.currentStep && // first time considering this line
             wdebug("halted" + this.breakpoints.indexOf(line) + "*" + line);
             if (this.breakpoints.indexOf("" + line) > -1) {
                 this.sendCommand({
                     type: "breakpoint",
                     line: line,
-                    step: this.currentLine,
+                    step: this.currentStep,
                     scope: vars
                             //scope: this.genScope(scope)
                 });
                 this.doRecordCommands = false;
             }
         }
-        //this.currentLine = line;
+        //this.currentStep = line;
     },
     _____watch: function() {
         for (var i = 0; i < arguments.length; i += 1) {
@@ -431,19 +434,9 @@ Wegas.mix(ProgGameSimulation.prototype, {
     }
 });
 
-
-
-function run(playerFn, level) {
-    var simulation = new ProgGameSimulation();
-    simulation.run(playerFn, level);
-    return JSON.stringify(simulation.getCommands());
-}
-function debug(playerFn, level, breakPoints, watches, startLine) {
-    var simulation = new ProgGameSimulation();
-    simulation.debug = true;
-    simulation.watches = watches;
-    simulation.startLine = startLine;
-    simulation.breakpoints = breakPoints;
+function run(playerFn, level, cfg) {
+    cfg = cfg || {};
+    var simulation = new ProgGameSimulation(cfg);
     simulation.run(playerFn, level);
     return JSON.stringify(simulation.getCommands());
 }

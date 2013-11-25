@@ -1324,11 +1324,6 @@ YUI.add('wegas-entity', function(Y) {
                                     "targetClass": "NumberDescriptor"
                                 }, {
                                     "type": "AddEntityChildButton",
-                                    "label": "String",
-                                    "targetClass": "StringDescriptor",
-                                    cssClass: "wegas-advanced-feature"
-                                }, {
-                                    "type": "AddEntityChildButton",
                                     "label": "Text",
                                     "targetClass": "TextDescriptor"
                                 }, {
@@ -1347,6 +1342,11 @@ YUI.add('wegas-entity', function(Y) {
                                     "type": "AddEntityChildButton",
                                     "label": "Object",
                                     "targetClass": "ObjectDescriptor"
+                                }, {
+                                    "type": "AddEntityChildButton",
+                                    "label": "String",
+                                    "targetClass": "StringDescriptor",
+                                    cssClass: "wegas-advanced-feature"
                                 }]
                         }
                     }]

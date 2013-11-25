@@ -81,6 +81,13 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> {
         return this.getInstance(p).getProperties().size();
     }
 
+    /**
+     * Metods for use in script
+     */
+    public String getProperty(Player p, String key) {
+        return this.getInstance(p).getProperties().get(key);
+    }
+
     public void setProperty(Player p, String key, String value) {
         this.getInstance(p).getProperties().put(key, value);
     }
