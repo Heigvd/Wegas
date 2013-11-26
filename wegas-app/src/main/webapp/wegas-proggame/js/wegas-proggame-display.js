@@ -15,11 +15,11 @@ YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
     var ProgGameDisplay, GRIDSIZE = 32,
             execFn = function() {
-        if (Crafty.refWidget.allowNextCommand) {
-            Crafty.refWidget.allowNextCommand = false;
-            Crafty.refWidget.fire('commandExecuted');
-        }
-    };
+                if (Crafty.refWidget.allowNextCommand) {
+                    Crafty.refWidget.allowNextCommand = false;
+                    Crafty.refWidget.fire('commandExecuted');
+                }
+            };
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
@@ -293,16 +293,17 @@ YUI.add('wegas-proggame-display', function(Y) {
         //});
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim.png', {
             HumanSprite: [0, 0],
-            TrapSprite: [0, 9],
+            TrapSprite: [0, 15],
             DoorSprite: [0, 10],
-            ControllerSprite: [0, 12]
+            ControllerSprite: [0, 12],
+            PanelSprite: [0, 16]
         });
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-dalles.png', {
             TileSprite: [0, 0]
         });
-        Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/panel.png', {
-            PanelSprite: [0, 0]
-        });
+//        Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/panel.png', {
+//            PanelSprite: [0, 0]
+//        });
         //Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/lightning.png', {
         //    LightningSprite: [0, 0]
         //});
@@ -397,11 +398,11 @@ YUI.add('wegas-proggame-display', function(Y) {
                         .animate("moveLeft", 0, 1, 7)
                         .animate("handsUp", 0, 6, 6)
                         .onHit("Collide", function(e) {
-                    this.h -= 1;
-                    this.y += 1;
-                }, function() {
-                    this.destroy();
-                }).origin(0, 32);
+                            this.h -= 1;
+                            this.y += 1;
+                        }, function() {
+                            this.destroy();
+                        }).origin(0, 32);
             },
             shakeHands: function(times) {
                 var POS = Y.clone(this.__coord);
@@ -509,13 +510,14 @@ YUI.add('wegas-proggame-display', function(Y) {
         Crafty.c("Trap", {
             init: function() {
                 var x, y;
-                this.requires("2D," + Crafty.refWidget.renderMethod + ",Tile, TrapSprite, SpriteAnimation, Tween");
+                this.requires("2D," + Crafty.refWidget.renderMethod + ",Tile, TrapSprite, SpriteAnimation, Tween, Collision")
+                        .collision([10,13],[3,24],[10,27],[25,25],[28,13]);
                 x = this.__coord[0] / this.__coord[2];
                 y = this.__coord[1] / this.__coord[3];
                 this.initialize();
-                this.animate("trap", x, y, 3);
+                this.animate("trap", 0, 9, 3);
                 this.bind("TweenEnd", function() {
-                    this.stop();
+                    this.stop().sprite(0, 15);
                     Crafty.trigger('commandExecuted');
                 });
             },
