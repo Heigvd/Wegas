@@ -840,7 +840,8 @@ YUI().use(function(Y) {
                     ix_provides: ['proggametile', "proggamemap"]
                 },
                 'wegas-proggame-objective': {
-                    ws_provides: "Objective"
+                    requires: "treeview",
+                    ws_provides: ["Objective", "TreeViewWidget"]
                 },
                 'wegas-proggame-jsinstrument': {
                     requires: ["esprima", "escodegen"]

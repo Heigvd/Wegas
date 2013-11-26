@@ -79,7 +79,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     }
                 });
             } else {
-                EditEntityAction.hideRightTabs();
                 EditEntityAction.showUpdateForm(this.get(ENTITY), this.get("dataSource"));
             }
         }

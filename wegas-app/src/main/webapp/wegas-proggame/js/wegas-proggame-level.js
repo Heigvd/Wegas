@@ -287,7 +287,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             });
         },
         doIdleAnimation: function() {
-            var texts = this.get("idlePhrases");
+            var texts = this.get("invites");
 
             if (texts.length === 0) {
                 texts = ["HELP! HELP!!! SOMEBODY HERE? PLEASE HELP ME!",
@@ -370,7 +370,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 request: "/ProgGame/Run/" + Y.Wegas.app.get('currentPlayer'),
                 cfg: {
                     method: "POST",
-                    data: this.get("onWin") + "VariableDescriptorFacade.find(gameModel, \"money\").add(self, 100);"
+                    data: this.get("onWin") + ";VariableDescriptorFacade.find(gameModel, \"money\").add(self, 100);"
                 },
                 on: {
                     success: Y.bind(function() {
@@ -389,15 +389,47 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
         },
         renderApi: function() {
-            var i, api = this.get("api"), acc = [],
-                    METHODTOTEXT = {
-                say: "say(text: String)"
-            };
+            var api = this.get("api"),
+                    treeView = Y.Widget.getByNode(".proggame-api"),
+                    packages = {}, node,
+                    nodes = [];
 
-            for (i = 0; i < api.length; i += 1) {
-                acc.push((METHODTOTEXT[api[i].name] || api[i].name + "()") + "<br />");
-            }
-            Y.all(".api").setHTML(acc.join(""));                                // All so it does not crash if widget is not present
+            Y.Array.map(api, function(i) {
+                node = Y.Wegas.ProgGameLevel.API[i] || {
+                    label: i + "()"
+                };
+                if (node.pkg) {
+                    if (!packages[node.pkg]) {
+                        packages[node.pkg] = {
+                            type: "TreeNode",
+                            label: node.pkg,
+                            collapsed: false,
+                            children: []
+                        };
+                    }
+                    packages[node.pkg].children.push(node);
+                } else {
+                    nodes.push(node);
+                }
+            });
+//            var packages = {}, ret = [];
+//            Y.Array.each(nodes, function(i) {
+//                if (i.pkg) {
+//                    if (!packages[i.name]) {
+//                        packages[i.name] = {
+//                            type: "TreeNode",
+//                            label: i.pkg,
+//                            children: []
+//                        };
+//                    }
+//                    packages[i.name].children.push(i);
+//                } else {
+//                    ret.push(i);
+//                }
+//            });
+            nodes = nodes.concat(Y.Object.values(packages));
+            treeView.treeView.removeAll();
+            treeView.treeView.add(nodes);
         },
         addEditorTab: function(label, code) {
             var tab = this.editorTabView.add({
@@ -494,7 +526,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 } else {
                     this.variableTreeView.add({
                         label: watch + ": null",
-                        editable: true
+                        iconCSS: ""
                     });
                 }
                 //this.updateDebugTreeview();
@@ -521,7 +553,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                         type: "TreeNode",
                         label: label + ": Object",
                         children: children,
-                        editable: true
+                        iconCSS: ""
                     };
                 } else if (Y.Lang.isArray(o)) {
                     return {
@@ -529,17 +561,21 @@ YUI.add('wegas-proggame-level', function(Y) {
                         //label: label + ": Array[" + o + "]"
                         label: label + ": Array[" + o.length + "]",
                         children: Y.Array.map(o, genItems),
-                        editable: true
+                        iconCSS: ""
+
                     };
                 } else {
                     return {
-                        editable: true,
-                        label: label + ":" + o
+                        label: label + ":" + o,
+                        iconCSS: ""
                     };
                 }
             }
             watches = genItems(watches).children;                               // Generate tree items and remove level 0 (do not show a tree node for the context)
 
+            Y.Array.each(watches, function(i) {                                // First level nodes are editables
+//                i.editable = false;
+            });
             this.variableTreeView.removeAll();                                  // Update treeview (set("children", items) does not seem to work)
             this.variableTreeView.add(watches);
         },
@@ -803,10 +839,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                     useButtons: true,
                     sortable: true,
                     elementType: {
-                        type: "group",
-                        fields: [{
-                                name: "name"
-                            }]
                     }
                 }
             },
@@ -901,9 +933,68 @@ YUI.add('wegas-proggame-level', function(Y) {
                     }
                 }
             },
-            idlePhrases: {
+            invites: {
                 type: "array",
                 value: []
+            }
+        },
+        API: {
+            say: {
+                label: "say(text: String)",
+                tooltip: "say(text: String)\n\n"
+                        + "Your avatar will loudly say the content of the text parameter.\n\n"
+                        + "Parameters\ntext:String - The text you want to say out lout"
+            },
+            read: {
+                label: "read():Number",
+                tooltip: "read():Number\n\n"
+                        + "Your avatar will read any panel on the same case as he is and return it.\n\n"
+                        + "Returns\nNumber - The text on the panel"
+
+            },
+            move: {
+                label: "move()",
+                tooltip: "move():Number\n\n"
+                        + "Using this function, your avatar will move one tile  in the direction he is currently facing."
+            },
+            left: {
+                label: "left()",
+                tooltip: "left()\n\n"
+                        + "Your avatar turns to the left without moving."
+            },
+            right: {
+                label: "right()",
+                tooltip: "right()\n\n"
+                        + "Your avatar turns to the left without moving."
+            },
+            "Math.PI": {
+                pkg: "Math",
+                tooltip: "Math:PI:Number\n\nContante containing the value of PI (approx. 3.14)",
+                label: "Math.PI:Number"
+            },
+            "Math.floor": {
+                label: "Math.floor():Number",
+                pkg: "Math",
+                tooltip: "Math.floor():Number\n\n"
+                        + "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.\n\n"
+                        + "Parameters\nx:Number - The number you want to round\n"
+                        + "Returns\nNumber - The nearest integer when rounding downwards"
+                        //tooltipHTML: "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.<br /><br />"
+                        //        + "<b>Parameters</b><br />x:Number - The number you want to round"
+                        //        + "<b>Returns</b><br />Number - The nearest integer when rounding downwards",
+
+            },
+            "Math.round": {
+                pkg: "Math",
+                label: "Math.round(x:Number):Number",
+                tooltip: "Math.round(x:Number):Number\n\n"
+                        + "If the fractional portion of number is .5 or greater, the argument is rounded to the next higher integer. If the fractional portion of number is less than .5, the argument is rounded to the next lower integer.\n"
+                        + "Because round is a static method of Math, you always use it as Math.round(), rather than as a method of a Math object you created.\n\n"
+                        //+ "The Math.round() function returns the value of a number rounded to the nearest integer.\n\n"
+                        + "Parameters\n"
+                        + "x:Number - The number you want to round\n"
+                        + "Returns\n"
+                        + "Number - the value of x rounded to the nearest integer"
             }
         }
     });

@@ -1,4 +1,20 @@
 /* Prog Game Styles */
+/* Override wegas treeview styles */
+.wegas-playerview .yui3-treeleaf-content-header,
+.wegas-playerview .yui3-treenode-content-header {
+    padding: 0px 0 3px;
+}
+.wegas-playerview .yui3-treenode-content {
+    margin-left: 8px;
+}
+.wegas-playerview .yui3-treenode-content-icon,
+.wegas-playerview .yui3-treeleaf-content-icon {
+    display: none;
+}
+.wegas-playerview .yui3-treeview-content  {
+    padding: 0;
+}
+
 /* Layout style */
 .cl {
     clear:both;
@@ -98,6 +114,17 @@
     padding: 17px 0 0 0;
 }
 
+
+.proggame-api .selected>div>.yui3-treeleaf-content-header,
+.proggame-api .selected>.yui3-treenode-content-header {
+    background: none;
+    border: none;
+    font-weight: initial;
+}
+.proggame-api .yui3-treenode-content-header:hover,
+.proggame-api .yui3-treeleaf-content-header:hover {
+    background: none;
+}
 /*.apiTab .yui3-tab-selected {
     margin: 0 0 0 0;
 }*/
@@ -320,10 +347,7 @@
 .debugger .yui3-treeleaf-content-header:hover {
     background: none;
 }
-.debugger .yui3-treenode-content-icon,
-.debugger .yui3-treeleaf-content-icon {
-    width: 0;
-}
+
 .topright .debugger h1 {
     font-family: Verdana;
     font-size: 16px;
