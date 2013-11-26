@@ -404,7 +404,12 @@ YUI.add('wegas-proggame-display', function(Y) {
                 }).origin(0, 32);
             },
             shakeHands: function(times) {
-                this.stop().animate("handsUp", 15, times || 1);
+                var POS = Y.clone(this.__coord);
+                this.stop().bind("AnimationEnd", function() {
+                    if (this._currentReelId === 'handsUp') {
+                        this.sprite(POS[0] / POS[2], POS[1] / POS[3]);
+                    }
+                }).animate("handsUp", 15, times || 1);
             }
         });
         Crafty.c("Speaker", {
@@ -413,19 +418,20 @@ YUI.add('wegas-proggame-display', function(Y) {
                         .text(text)
                         .attr({"z": 401, "visible": false})
                         .css({
-                    "background-color": "rgb(50, 50, 40)",
-                    "color": "white",
-                    "border": "7px solid #FFFFFF",
-                    "-moz-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                    "-webkit-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                    "-o-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                    "border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                    "line-height": "1.1em",
-                    "font-size": "0.9em",
-                    "padding": "4px",
-                    "max-width": "108px",
-                    "visibility": "hidden"
-                }), POS = [this._x, this._y], connector = Crafty.e("2D, DOM").css({
+                            "background-color": "rgb(50, 50, 40)",
+                            "color": "white",
+                            "border": "7px solid #FFFFFF",
+                            "-moz-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                            "-webkit-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                            "-o-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                            "border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                            "line-height": "1.1em",
+                            "font-size": "0.9em",
+                            "padding": "4px",
+                            "max-width": "108px",
+                            "visibility": "hidden"
+                        }), POS = [this._x, this._y],
+                        connector = Crafty.e("2D, DOM").css({
                     "background": "url(" + Y.Wegas.app.get('base') + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (+-32 + "px")),
                     "width": "32px",
                     "height": "32px",
