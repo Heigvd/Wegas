@@ -205,8 +205,8 @@ YUI.add('wegas-action', function(Y) {
     Y.extend(ExecuteScriptAction, Action, {
         execute: function() {
             var host = this.get(HOST);
-            host.showOverlay();
             if (!host.get("disabled")) {
+                host.showOverlay();
                 Wegas.Facade.VariableDescriptor.sendRequest({
                     request: "/Script/Run/" + Wegas.app.get('currentPlayer'),
                     cfg: {

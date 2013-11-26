@@ -23,6 +23,10 @@ YUI.add('wegas-proggame-objective', function(Y) {
             var fullObjective = this.get("fullObjective"),
                     globalObjective = this.get("globalObjective");
             this.afterHostEvent("render", function() {
+
+                Y.all(".proggame-objectives").show();
+                Y.all(".apiTab").show();
+
                 if (fullObjective && globalObjective) {
                     this.displayPopup(fullObjective);
                     this.displayFix(globalObjective);
@@ -52,6 +56,9 @@ YUI.add('wegas-proggame-objective', function(Y) {
             }, this);
         },
         destructor: function() {
+            Y.all(".proggame-objectives").hide();
+            Y.all(".apiTab").hide();
+
             this.objectivesHandler.detach();
         }
     }, {
@@ -75,4 +82,18 @@ YUI.add('wegas-proggame-objective', function(Y) {
         }
     });
     Y.Plugin.Objective = Objective;
+
+    var TreeViewWidget = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        renderUI: function() {
+            this.treeView = new Y.TreeView({
+                render: this.get("contentBox"),
+                children: []
+            });
+            this.treeView.on("treenode:click", function(e) {
+                //this.collapseAll();
+                e.target.toggleTree();
+            });
+        }
+    });
+    Y.Wegas.TreeViewWidget = TreeViewWidget;
 });
