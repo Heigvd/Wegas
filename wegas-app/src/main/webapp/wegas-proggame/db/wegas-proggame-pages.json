@@ -15,6 +15,7 @@
             }],
         "children": [{
                 "type": "Text",
+                "cssClass": "proggame-objectives",
                 "content": "<div class=\"objective\">",
                 "plugins": [{
                         "fn": "CSSPosition",
@@ -42,8 +43,8 @@
                         "label": "API",
                         "selected2": 1,
                         "children": [{
-                                "type": "Text",
-                                "content": "<div class=\"api\"></div>"
+                                "type": "TreeViewWidget",
+                                "cssClass": "proggame-api"
                             }]
                     }, {
                         "type": "Tab",
@@ -364,7 +365,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -417,7 +418,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -470,7 +471,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -552,7 +553,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -605,7 +606,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -658,7 +659,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -711,7 +712,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -764,7 +765,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -901,7 +902,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -909,7 +910,7 @@
             }, {
                 "type": "Button",
                 "disabled": false,
-                "label": "<b>Buy <br />variables watches</b><br /><br />300 gold",
+                "label": "<b>Buy <br />variables<br /> watches</b><br /><br />300 gold",
                 "tooltip": "With watches, you can check the value of any variable while executing. <br />You can see their value changing at each step of the execution.",
                 "plugins": [{
                         "fn": "ConditionalDisable",
@@ -936,7 +937,7 @@
                             "styles": {
                                 "position": "absolute",
                                 "top": "100px",
-                                "left": "200px"
+                                "left": "170px"
                             }
                         }
                     }, {
@@ -959,7 +960,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -994,7 +995,7 @@
                             "styles": {
                                 "position": "absolute",
                                 "top": "100px",
-                                "left": "350px"
+                                "left": "290px"
                             }
                         }
                     }, {
@@ -1017,7 +1018,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "background-color": "transparent",
+                                "background": "transparent",
                                 "border": "1px solid white"
                             }
                         }
@@ -1051,9 +1052,7 @@
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
-        "api": [{
-                "name": "move"
-            }],
+        "api": ["move"],
         "objects": [{
                 "id": "Player",
                 "components": "PC",
@@ -1088,13 +1087,7 @@
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "left"
-            }, {
-                "name": "right"
-            }],
+        "api": ["move", "left", "right"],
         "objects": [{
                 "id": "Player",
                 "components": "PC",
@@ -1129,13 +1122,7 @@
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "left"
-            }, {
-                "name": "right"
-            }],
+        "api": ["move", "left", "right"],
         "objects": [{
                 "id": "Player",
                 "components": "PC",
@@ -1212,17 +1199,9 @@
         "label": "Level 2.1",
         "type": "ProgGameLevel",
         "onWin": "currentLevel.value=22",
-        "onAction": "if(said.indexOf(\"1234\")>=0 || said==1234) {doOpen(find('Door'));}",
+        "onAction": "if((\"\"+said).indexOf(\"1234\")>=0) {doOpen(find('Door'));}",
         "winningCondition": "comparePos(find('Player'), find('Enemy'))",
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "left"
-            }, {
-                "name": "right"
-            }, {
-                "name": "say"
-            }],
+        "api": ["move", "left", "right", "say"],
         "objects": [{
                 "id": "Door",
                 "components": "Door",
@@ -1251,7 +1230,7 @@
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
-        "invites": ["Eh! Le mot de passe c'est \"1234\".", "Tu m'as entendu?, le mot de passe c'est 1234 je te dis"],
+        "invites": ["Eh! Le mot de passe c'est \"1234\".", "Tu m'as entendu? Le mot de passe c'est 1234!"],
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
@@ -1268,17 +1247,7 @@
         "onAction": "if(said === panelValue) {doOpen(find('Door'));}",
         "winningCondition": "comparePos(find('Player'), find('Enemy'))",
         "onWin": "currentLevel.value=23",
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "left"
-            }, {
-                "name": "right"
-            }, {
-                "name": "say"
-            }, {
-                "name": "read"
-            }],
+        "api": ["move", "left", "right", "say", "read"],
         "objects": [{
                 "id": "Door",
                 "components": "Door",
@@ -1317,7 +1286,7 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Tout programme traite une certaine quantité d'informations, il est donc nécessaire de pouvoir récupérer ces informations avant traitement. Dans ce stage vous devez déplacer votre avatar jusqu'au panneau afin d'y lire ce qui si trouve. Pour cela, L'API offre une nouvelle fonctionnalité nommée 'read'. Comme cette fonction retourne une valeur, il est essentiel de la stocker dans une variable afin de pouvoir la traiter par la suite. En Javascript les variables sont définies en utilisant le mot clé <b>var<b>. Vous pouvez créer une variable comme ceci: <div class=\"wegas-proggame-code\">var myVar = \"unechainedecharacteres\";</div> Dans ce niveau, la mot de passe est écrit sur le panneau. Déplacez votre avatar jusqu'au panneau, stockez ce qui y est écrit puis dites-le à haute voix.",
+                    "fullObjective": "Tout programme traite une certaine quantité d'informations, il est donc nécessaire de pouvoir récupérer ces informations avant traitement. Dans ce stage vous devez déplacer votre avatar jusqu'au panneau afin d'y lire ce qui s'y trouve. Pour cela, L'API offre une nouvelle fonctionnalité nommée 'read'. Comme cette fonction retourne une valeur, il est essentiel de la stocker dans une variable afin de pouvoir la traiter par la suite. En Javascript les variables sont définies en utilisant le mot clé <b>var<b>. Vous pouvez créer une variable comme ceci: <div class=\"wegas-proggame-code\">var myVar = \"unechainedecharacteres\";</div> Dans ce niveau, la mot de passe est écrit sur le panneau. Déplacez votre avatar jusqu'au panneau, stockez ce qui y est écrit puis dites-le à haute voix.",
                     "globalObjective": "Stocker la valeur écrite sur le panneau et l'utiliser pour ouvrir la porte."
                 }
             }]
@@ -1328,17 +1297,7 @@
         "onStart": "panelValue1 = Math.round(Math.random()*10);panelValue2 = Math.round(Math.random()*10);",
         "onAction": "if(said === (panelValue1 + panelValue2)) {doOpen(find('Door'));}",
         "onWin": "currentLevel.value=24",
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "left"
-            }, {
-                "name": "right"
-            }, {
-                "name": "say"
-            }, {
-                "name": "read"
-            }],
+        "api": ["move", "left", "right", "say", "read", "Math.PI"],
         "objects": [{
                 "id": "Enemy",
                 "direction": 4,
@@ -1393,20 +1352,10 @@
     "24": {
         "label": "Level 2.4",
         "type": "ProgGameLevel",
-        "onStart": "panelValue1 = Math.round(Math.random()*10);",
-        "onAction": "if(said === panelValue1 * 2 * Math.PI) {doOpen(find('Door'));}",
-        "onWin": "currentLevel.value=25",
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "left"
-            }, {
-                "name": "right"
-            }, {
-                "name": "say"
-            }, {
-                "name": "read"
-            }],
+        "onStart": "panelValue1 = Math.round(Math.random()*1000/1000);",
+        "onAction": "if(said === Math.floor(panelValue1)) {doOpen(find('Door'));}",
+        "onWin": "currentLevel.value=26",
+        "api": ["move", "left", "right", "say", "read", "Math.PI", "Math.round"],
         "objects": [{
                 "id": "Enemy",
                 "direction": 4,
@@ -1445,14 +1394,29 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "L'API que vous avez utilisé jusque ici n'est pas la seule bibliothèque de fonctions disponible. Vous trouverez des bibliothèques de fonctions diverses et variées pour la plupart des langages de programmation. Dans ce stage, vous devez utiliser la bibliothèque de fonction ?Math?  pour effectuer un calcul géométrique. Vous aurez en effet besoin de la constante PI pour calculer la circonférence d'un cercle. La syntaxe pour accéder à  la constante PI  est la suivante: Math.PI . Le rayon du cercle devra être lu sur le panneau. Le résultat du calcul devra ensuite être communiqué au personnage en jaune.",
-                    "globalObjective": "Calculer la circonférence d?un cercle dont le rayon doit être lu sur le panneau. Cette valeur est le mot de passe dont vous aurez besoin pour passer au niveau suivant."
+                    "fullObjective_old": "Utilisez la fonction Math.round pour arrondir le nombre écri nombre au dixième",
+                    "globalObjective": "Arrondir la valeur du panneau au dixième."
                 }
             }]
     },
     "25": {
         "type": "Text",
-        "content": "New levels will be available next week"
+        "content": "New levels will be available next week",
+        "plugins": [{
+                "fn": "CSSText",
+                "cfg": {
+                    "styles": {
+                        "color": "white"
+                    }
+                }
+            }, {
+                "fn": "CSSStyles",
+                "cfg": {
+                    "styles": {
+                        "padding": "20px"
+                    }
+                }
+            }]
     },
     "8": {
         "label": "Level 4",
