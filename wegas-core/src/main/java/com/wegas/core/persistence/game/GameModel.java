@@ -93,9 +93,10 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("createdTime")
     @JsonManagedReference
-    //@JsonView(Views.ExportI.class)
     @JsonIgnore
+    //@JsonView(Views.ExportI.class)  
     private List<Game> games = new ArrayList<>();
     /**
      * Holds all the scripts contained in current game model.
@@ -332,7 +333,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setGames(List<Game> games) {
         this.games = games;
-        for (Game g: games) {
+        for (Game g : games) {
             g.setGameModel(this);
         }
     }
