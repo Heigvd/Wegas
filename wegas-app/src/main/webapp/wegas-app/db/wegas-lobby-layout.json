@@ -285,6 +285,7 @@
                                                             }, {
                                                                 "label": "Enrolment key",
                                                                 "name": "token",
+                                                                "wrapperClassName": "inputEx-fieldWrapper wegas-advanced-feature",
                                                                 "description": "Leave blank for automatic generation"
                                                             }]
                                                     }

@@ -148,8 +148,8 @@ YUI.add('wegas-join', function(Y) {
                     render: teamSelectionNode,
                     entity: entity
                 });
-                this.teamEdition.addExistingAccount(Y.Wegas.app.get("currentUser.accounts")[0]);
-                //this.teamEdition.playersField.add(Y.Wegas.app.get("currentUser.accounts")[0]);
+                this.teamEdition.addExistingAccount(
+                        Y.Wegas.Facade.User.cache.get("currentUser").getMainAccount());// Push  current user to the team's player list
             }
 
             this.joinButton.set("visible", true);
@@ -486,11 +486,15 @@ YUI.add('wegas-join', function(Y) {
             cb.one(".inputEx-ListField").append(cb.one("img.inputEx-ListField-addButton"));// Move add button at the end of the list
         },
         addExistingAccount: function(account) {
-            var cb = this.get("contentBox");
-            this.otherAccounts.push(account);
+            var cb = this.get("contentBox"),
+                    firstname = (account instanceof Y.Wegas.persistence.GuestJpaAccount) ? account.getPublicName() :
+                    account.get("firstname");
+
+            this.otherAccounts.push(account.toObject());
+
             cb.one(".uneditable-players").append("<div class=\"yui3-g\">"
-                    + "<div class=\"yui3-u\">" + (account.firstname || account.name) + "</div>"
-                    + "<div class=\"yui3-u\">" + (account.lasname || "") + "</div>"
+                    + "<div class=\"yui3-u\">" + (firstname || account.get("name")) + "</div>"
+                    + "<div class=\"yui3-u\">" + (account.get("lastname") || "") + "</div>"
                     + "<div class=\"yui3-u\">*****</div>"
                     + "<div class=\"yui3-u\">*****</div></div>");
         },
