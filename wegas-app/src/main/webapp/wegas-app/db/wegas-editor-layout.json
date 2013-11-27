@@ -364,7 +364,6 @@
             }]
     },
     "right": {
-        "width": 50,
         "resize": true,
         "collapse": false,
         "scroll": true,
