@@ -210,12 +210,12 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         }, {
                             key: "playersCount",
                             label: "Players",
-                            width: "50px",
+                            width: "80px",
                             formatter: "count"
                         }, {
                             key: "teamsCount",
                             label: "Teams",
-                            width: "50px",
+                            width: "80px",
                             formatter: "count"
                         }, {
                             key: "gameModelName",
