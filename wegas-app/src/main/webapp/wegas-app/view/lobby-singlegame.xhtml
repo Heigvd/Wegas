@@ -5,7 +5,7 @@
 
     <ui:composition template="template/app-default.xhtml">
 
-        <ui:define name="title">Team login for #{singleLobbyController.currentGame.name}</ui:define>
+        <ui:define name="title">#{singleLobbyController.currentGame.name} - Join page</ui:define>
 
         <ui:define name="head">
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
@@ -27,8 +27,9 @@
                             },
                             User: {
                                 source: "rest/Extended/User",
+                                initialRequest: "/#{requestController.getCurrentUser().id}",
                                 plugins: [{
-                                        fn: "WegasCache"
+                                        fn: "UserCache"
                                     }]
                             },
                             PublicGames: {

@@ -401,6 +401,9 @@ font{
     color: #505050;
     font-style: italic;
 }
+.wegas-editteam-content  .inputEx-ListField {
+    padding-left: 20px;
+}
 .wegas-editteam  .inputEx-ListField .inputEx-Group .inputEx-fieldWrapper {
     float: left;    /* Player edition is displayed inline */
     padding-right: 3px;
