@@ -99,83 +99,6 @@
                 "cssClass": "editor-tab",
                 "children": [{
                         "type": "Tab",
-                        "id": "availableGamesTab",
-                        "label": "Available games",
-                        "visible": false,
-                        "children": [{
-                                "type": "GameDataTable",
-                                "dataSource": "PublicGames",
-                                "emptyMessage": "No game is available to play.",
-                                "plugins": [{
-                                        "fn": "EditorDTMenu",
-                                        "cfg": {
-                                            "children": [{
-                                                    "type": "Button",
-                                                    "label": "Join game",
-                                                    "plugins": [{
-                                                            "fn": "OpenTabAction",
-                                                            "cfg": {
-                                                                "tabSelector": "#rightTabView",
-                                                                "emptyTab": true,
-                                                                "wchildren": [{
-                                                                        "type": "JoinTeam",
-                                                                        "customEvent": true
-                                                                    }]
-                                                            }
-                                                        }]
-                                                }]
-                                        }
-                                    }, {
-                                        "fn": "WidgetToolbar",
-                                        "cfg": {
-                                            "children": [{
-                                                    "type": "NewEntityButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Create game",
-                                                    "targetClass": "Game",
-                                                    "dataSource": "Game",
-                                                    "formCfg": {
-                                                        "required": true,
-                                                        "type": "group",
-                                                        "fields": [{
-                                                                "name": "@class",
-                                                                "type": "hidden",
-                                                                "value": "null"
-                                                            }, {
-                                                                "label": "Based on",
-                                                                "name": "gameModelId",
-                                                                "required": true,
-                                                                "filters": {"canInstantiate": true},
-                                                                "type": "gamemodelselect"
-                                                            }, {
-                                                                "label": "name",
-                                                                "name": "name",
-                                                                "required": true,
-                                                                "showMsg": true
-                                                            }, {
-                                                                "label": "Enrolment key",
-                                                                "name": "token",
-                                                                "description": "Leave blank for automatic generation"
-                                                            }]
-                                                    }
-                                                }, {
-                                                    "type": "Button",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join with key",
-                                                    "plugins": [{
-                                                            "fn": "OpenTabAction",
-                                                            "cfg": {
-                                                                "tabSelector": "#rightTabView",
-                                                                "emptyTab": true,
-                                                                "wchildren": [{
-                                                                        "type": "TokenJoin"
-                                                                    }]
-                                                            }
-                                                        }]
-                                                }]
-                                        }
-                                    }]
-                            }]
-                    }, {
-                        "type": "Tab",
                         "id": "joinedGamesTab",
                         "label": "Joined games",
                         "children": [{
@@ -214,6 +137,15 @@
                                             "children": [{
                                                     "type": "Button",
                                                     "plugins": [{
+                                                            "fn": "OpenGameAction",
+                                                            "cfg": {
+                                                                "editorUrl": "wegas-app/view/play.html?"
+                                                            }
+                                                        }]
+                                                }],
+                                            "children_old": [{
+                                                    "type": "Button",
+                                                    "plugins": [{
                                                             "fn": "OpenTabAction",
                                                             "cfg": {
                                                                 "tabSelector": "#rightTabView",
@@ -249,6 +181,65 @@
                                                                 "emptyTab": true,
                                                                 "wchildren": [{
                                                                         "type": "TokenJoin"
+                                                                    }]
+                                                            }
+                                                        }]
+                                                }, {
+                                                    "type": "Button",
+                                                    "cssClass": "wegas-advanced-feature",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join public game",
+                                                    "plugins": [{
+                                                            "fn": "OpenTabAction",
+                                                            "cfg": {
+                                                                "label": "Public games",
+                                                                "tabSelector": "#rightTabView",
+                                                                "emptyTab": true,
+                                                                "wchildren": [{
+                                                                        "type": "GameDataTable",
+                                                                        "dataSource": "PublicGames",
+                                                                        "dataTableCfg": {
+                                                                            "columns": [{
+                                                                                    "key": "iconCSS",
+                                                                                    "formatter": "icon",
+                                                                                    "label": " ",
+                                                                                    "sortable": false,
+                                                                                    "width": "22px"
+                                                                                }, {
+                                                                                    "key": "name",
+                                                                                    "label": "Name"
+                                                                                }, {
+                                                                                    "key": "createdBy",
+                                                                                    "label": "Created by",
+                                                                                    "width": "150px"
+                                                                                }, {
+                                                                                    "key": "createdTime",
+                                                                                    "label": "Created",
+                                                                                    "width": "140px",
+                                                                                    "formatter3": "date"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "emptyMessage": "No game is available to play.",
+                                                                        "plugins": [{
+                                                                                "fn": "EditorDTMenu",
+                                                                                "cfg": {
+                                                                                    "children": [{
+                                                                                            "type": "Button",
+                                                                                            "label": "Join game",
+                                                                                            "plugins": [{
+                                                                                                    "fn": "OpenTabAction",
+                                                                                                    "cfg": {
+                                                                                                        "tabSelector": "#rightTabView",
+                                                                                                        "emptyTab": true,
+                                                                                                        "wchildren": [{
+                                                                                                                "type": "JoinTeam",
+                                                                                                                "customEvent": true
+                                                                                                            }]
+                                                                                                    }
+                                                                                                }]
+                                                                                        }]
+                                                                                }
+                                                                            }]
                                                                     }]
                                                             }
                                                         }]
@@ -329,7 +320,6 @@
                                             "formatter3": "date"
                                         }
                                     ]
-
                                 },
                                 "plugins": [{
                                         "fn": "WidgetToolbar",
@@ -373,11 +363,11 @@
             }]
     },
     "right": {
-        "width": 50,
+        "width": 500,
         "resize": true,
         "collapse": false,
         "scroll": true,
-        "animate": true,
+        "animate": false,
         "children": [{
                 "type": "TabView",
                 "id": "rightTabView",

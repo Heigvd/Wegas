@@ -92,10 +92,9 @@
 
                     app.after("render", function() {                            // If there player is registered to a game
 //                        if (Y.Wegas.Facade.RegisteredGames.data.length > 0) {
-                        Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
+//                        Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
 //                        }
                         Y.Widget.getByNode("#centerTabView").on("selectionChange", Y.Widget.getByNode("#rightTabView").destroyAll, Y.Widget.getByNode("#rightTabView"));
-                        Y.Wegas.ResizableLayout.DEFAULTWIDTH = 500;
                         refreshTabs();
 
                         Y.Wegas.Facade.Game.cache.on("added", function(e) {     // After a game is created

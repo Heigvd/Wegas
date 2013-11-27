@@ -914,7 +914,7 @@ YUI().use(function(Y) {
                 'wegas-join': {
                     requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
                         'wegas-editor-action', "wegas-inputex-multipleoptions",
-                        'inputex-select', 'inputex-string', "inputex-list", "inputex-combine", "inputex-password", "inputex-email"],
+                        'inputex-select', 'inputex-string', "inputex-list", "inputex-hidden", "inputex-password", "inputex-email"],
                     ws_provides: ["JoinTeam", "GameDescription"]
                 },
                 'wegas-join-token': {
