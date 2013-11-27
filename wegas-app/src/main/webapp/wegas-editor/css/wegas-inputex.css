@@ -13,6 +13,16 @@
 div.inputEx-hidden {
     display: none;
 }
+/* Add red border to invalid inputs */
+.inputEx-invalid > div > div >input {
+    border: 1px solid #C00E0C;
+    background: #ffDFD3;
+}
+.inputEx-valid > div > div >input {
+    border: 1px solid lightgray;
+    background: white;
+}
+
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;
 }
@@ -21,7 +31,6 @@ div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     margin: 0;
     float:none;
 }
-
 .wegas-formwhite-space div.inputEx-label   {
     white-space: normal;
 }

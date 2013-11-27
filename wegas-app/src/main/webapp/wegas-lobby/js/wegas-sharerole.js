@@ -22,24 +22,29 @@ YUI.add('wegas-sharerole', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
                     e = this.get("entity"),
-                    gameModel = (e instanceof Y.Wegas.persistence.Game) ? Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e;
+                    gameModel = (e instanceof Y.Wegas.persistence.Game) ? Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e,
+                    visibilityChoices = [
+                {value: 'Private', label: 'Only people in the list can join'},
+                {value: 'Link', label: 'Anyone with the link can join.'},
+                {value: 'Public', label: 'Everybody can join'}
+            ];
 
             //if (!gameModel.get("properties.freeForAll") && !gameModel.get("properties.freeTeams")) {
             //    this.set("visible", false);
             //}
+            if (!gameModel.get("properties.freeForAll")) {                      // For games with teams, add the team enorlement key option
+                visibilityChoices.splice(1, 0, {value: 'TeamToken', label: 'Anyone with a team specific enrolement key can join.'});
+            }
 
             this.targetEntityId = (e instanceof Y.Wegas.persistence.GameModel) ? "gm" + e.get("id")
                     : "g" + e.get("id");
 
             this.visibility = new Y.inputEx.SelectField({
                 label: 'Accessibility',
-                choices: [
-                    {value: 'Private', label: 'Only people in the list can join'},
-                    {value: 'Link', label: 'Anyone with the link can join'},
-                    {value: 'Public', label: 'Everybody can join'}
-                ],
+                choices: visibilityChoices,
                 parentEl: cb
             });
+
             this.link = new Y.inputEx.StringField({
                 wrapperClassName: "inputEx-fieldWrapper wegas-link",
                 parentEl: cb,
@@ -54,22 +59,23 @@ YUI.add('wegas-sharerole', function(Y) {
             this.visibility.on("updated", function(value) {
                 this.syncLinkVisibility(value);
                 Y.Wegas.Facade.User.cache.deleteAllRolePermissions(this.get('role'), this.targetEntityId);
-                if (value === "Public") {
-                    Y.Array.each(this.get('permsList'), function(permission) {
-                        if (permission.name === "Public") {
-                            this.addPermission(permission.value);
+
+                var permission = Y.Array.find(this.get('permsList'), function(p) {
+                    return p.name === value;
+                });
+                if (permission) {
+                    Y.Wegas.Facade.User.sendRequest({// Send an add permission request
+                        request: "/AddPermission/" + this.get('role') + "/" + permission.value + ":" + this.targetEntityId,
+                        cfg: {
+                            method: "POST"
                         }
-                    }, this);
-                } else if (value === "Link") {
-                    Y.Array.each(this.get('permsList'), function(permission) {
-                        if (permission.name === "Link") {
-                            this.addPermission(permission.value);
-                        }
-                    }, this);
+                    });
                 }
             }, this);
 
-            this.get("contentBox").one(".wegas-link input").on("click", "select"); // Select whole link on click
+            this.get("contentBox").one(".wegas-link input").on("click", function(e) {
+                e.target.select();
+            });                                                                 // Select whole link on click
         },
         destructor: function() {
             this.link.destroy();
@@ -102,18 +108,10 @@ YUI.add('wegas-sharerole', function(Y) {
         },
         syncLinkVisibility: function(selectValue) {
             if (this.visibility.getValue() === "Private") {
-                this.link.hide();
+                //this.link.hide();
             } else {
-                this.link.show();
+                //this.link.show();
             }
-        },
-        addPermission: function(permission) {
-            Y.Wegas.Facade.User.sendRequest({
-                request: "/AddPermission/" + this.get('role') + "/" + permission + ":" + this.targetEntityId,
-                cfg: {
-                    method: "POST"
-                }
-            });
         }
     }, {
         ATTRS: {

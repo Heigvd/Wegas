@@ -388,6 +388,9 @@ YUI.add('wegas-entity', function(Y) {
                                         }, {
                                             name: "Link",
                                             value: "Game:Token"
+                                        }, {
+                                            name: "TeamToken",
+                                            value: "Game:TeamToken"
                                         }]
                                 }, {
                                     type: "ShareUser",

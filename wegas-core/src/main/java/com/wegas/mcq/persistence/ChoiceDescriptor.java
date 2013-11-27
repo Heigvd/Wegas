@@ -123,7 +123,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     /**
-     * @deprecacted Using setCurrentResult(Player player, String resultName) in scripts so it works after an exportation
+     * @deprecacted Using setCurrentResult(Player player, String resultName) in
+     * scripts so it works after an exportation
      * @param player
      * @param resultId
      */
