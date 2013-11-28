@@ -96,7 +96,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @OrderBy("createdTime")
     @JsonManagedReference
     @JsonIgnore
-    //@JsonView(Views.ExportI.class)  
+    //@JsonView(Views.ExportI.class)
     private List<Game> games = new ArrayList<>();
     /**
      * Holds all the scripts contained in current game model.
@@ -186,12 +186,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public void merge(AbstractEntity n) {
-        super.merge(n);
         GameModel other = (GameModel) n;
-        //this.setParentGameModel(other.getParentGameModel());
-        this.setDescription(other.getDescription());
+        this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
+
+        super.merge(n);
         this.properties.clear();
         this.properties.putAll(other.getProperties());
+
+        //this.setParentGameModel(other.getParentGameModel());
     }
 
     /**
