@@ -26,7 +26,6 @@ YUI.add("wegas-userpreferences", function(Y) {
                     }
                 }
 
-                host.cancelButton.hide();
                 host.set("cfg", entity.getFormCfg(fieldsToIgnore));
                 host.set("values", entity.toObject());
             });

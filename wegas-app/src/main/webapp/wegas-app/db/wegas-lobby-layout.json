@@ -255,7 +255,6 @@
                                 "type": "GameDataTable",
                                 "dataSource": "Game",
                                 "emptyMessage": "You have not created any game yet",
-                                "cssClass": "editor-createdgametreeview",
                                 "plugins": [{
                                         "fn": "WidgetToolbar",
                                         "cfg": {
