@@ -128,23 +128,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
-    public List<Map> findAccountByValue(String search) {
+    public List<JpaAccount> findAccountByValue(String search) {
         Query findByToken = em.createNamedQuery("findAccountByValue");
         findByToken.setParameter("search", "%" + search.toLowerCase() + "%");
         findByToken.setMaxResults(MAXRESULT);
-        List<JpaAccount> res = (List<JpaAccount>) findByToken.getResultList();
-        List<Map> returnValue = new ArrayList<>();
-        for (JpaAccount a : res) {
-            Map account = new HashMap<>();
-            returnValue.add(account);
-            if (a.getFirstname() != null && a.getLastname() != null) {
-                account.put("label", a.getFirstname() + " " + a.getLastname());
-            } else {
-                account.put("label", a.getEmail());
-            }
-            account.put("value", a.getId());
-        }
-        return returnValue;
+        return findByToken.getResultList();
     }
 
     @Override

@@ -442,9 +442,33 @@ YUI.add('wegas-join', function(Y) {
 
                 + "<div class=\"uneditable-players\"></div></div>",
         renderUI: function() {
-            var cb = this.get("contentBox");
+            var cb = this.get("contentBox"), autoCompleteCfg = {
+                type: "autocomplete",
+                autoComp: {
+                    minQueryLength: 2,
+                    maxResults: 30,
+                    resultTextLocator: function(o) {
+                        return o.firstname + " " + o.lastname;
+                    },
+                    resultHighlighter: 'phraseMatch',
+                    source: Y.Wegas.app.get("base") + "rest/User/AutoCompleteFull/{query}",
+                    enableCache: true
+                            //resultListLocator: Y.bind(function(responses) {           // Remove users that are already in the list
+                            //    var i;
+                            //    Y.Array.each(this.userList.subFields, function(user) {
+                            //        for (i = 0; i < responses.length; i++) {
+                            //            if (user.getValue().userId === responses[i].value) {
+                            //                responses.splice(responses[i], 1);
+                            //                break;
+                            //            }
+                            //        }
+                            //    });
+                            //    return responses;
+                            //}, this)
+                }
+            };
 
-            this.otherAccounts = []
+            this.otherAccounts = [];
 
             this.playersField = new Y.inputEx.ListField({//                     // Render team edition
                 parentEl: cb,
@@ -456,23 +480,26 @@ YUI.add('wegas-join', function(Y) {
                             name: "@class",
                             type: "hidden",
                             value: "JpaAccount"
-                        }, {
+                        },
+                        Y.mix({
                             name: "firstname",
                             required: true,
                             typeInvite: "required",
                             size: 13
-                        }, {
+                        }, autoCompleteCfg),
+                        Y.mix({
                             name: "lastname",
                             typeInvite: "required",
                             required: true,
                             size: 13
-                        }, {
+                        }, autoCompleteCfg),
+                        Y.mix({
                             name: "email",
-                            type: "email",
+                            //type: "email",
                             typeInvite: "optional",
                             //required: true,
                             size: 13
-                        }, {
+                        }, autoCompleteCfg), {
                             name: "password",
                             type: "password",
                             //required: true,
@@ -480,10 +507,28 @@ YUI.add('wegas-join', function(Y) {
                             size: 13
                         }]
                 }
-                // value: [firstUserCfg]
             });
             cb.all("input[type=\"password\"]").setAttribute("placeholder", "required");// Put placeholder attribute on all password fields
             cb.one(".inputEx-ListField").append(cb.one("img.inputEx-ListField-addButton"));// Move add button at the end of the list
+
+            Y.on("domready", this.updateAutoCompletes, this);
+            cb.one("img.inputEx-ListField-addButton").on("click", function() {
+                Y.later(10, this, this.updateAutoCompletes);
+            }, this);// Add proper callback on autocomplete
+        },
+        updateAutoCompletes: function() {
+            var i, j;
+            for (i = 0; i < this.playersField.subFields.length; i++) {
+                for (j = 1; j < 4; j += 1) {
+                    var field = this.playersField.subFields[i].inputs[j];
+                    if (!field.wmodified) {
+                        field.yEl.ac.after("select", function(e) {
+                            this.setValue(e.result.raw);
+                        }, this.playersField.subFields[i]);
+                        field.wmodified = true;
+                    }
+                }
+            }
         },
         addExistingAccount: function(account) {
             var cb = this.get("contentBox"),
