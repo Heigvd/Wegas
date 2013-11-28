@@ -131,7 +131,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description do a slide (tween) animation to hide the panel
          */
         hidePosition: function(position) {
-            if (!!this.get(position + ".animated")) {  // False by default
+            if (!!this.get(position + ".animate")) {  // False by default
                 this.getAnim(position).set("reverse", true).run();
             } else {
                 this.getPositionNode(position).all(".yui3-tabview-panel > div").hide();
@@ -151,7 +151,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 cfg.width = 350;
             }
 
-            if (!!this.get(position + ".animated")) {                           // False by default
+            if (!!this.get(position + ".animate")) {                           // False by default
                 if (parseInt(target.getStyle("width"), 10) < cfg.width) {       // Only display if hidden
                     this.getAnim(position).set("reverse", false).run();
                 }
