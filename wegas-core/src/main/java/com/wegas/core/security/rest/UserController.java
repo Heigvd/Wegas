@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -94,6 +95,26 @@ public class UserController {
     @GET
     @Path("AutoComplete/{value}")
     public List<Map> getAutoComplete(@PathParam("value") String value) {
+        if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
+            throw new UnauthorizedException();
+        }
+        List<Map> returnValue = new ArrayList<>();
+        for (JpaAccount a : userFacade.findAccountByValue(value)) {
+            Map account = new HashMap<>();
+            returnValue.add(account);
+            if (a.getFirstname() != null && a.getLastname() != null) {
+                account.put("label", a.getFirstname() + " " + a.getLastname());
+            } else {
+                account.put("label", a.getEmail());
+            }
+            account.put("value", a.getId());
+        }
+        return returnValue;
+    }
+
+    @GET
+    @Path("AutoCompleteFull/{value}")
+    public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
