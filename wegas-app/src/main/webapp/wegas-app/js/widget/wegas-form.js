@@ -1,7 +1,7 @@
 /*
  * Wegas
- * http://wegas.albasim.ch
  *
+ * http://wegas.albasim.ch
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
@@ -46,10 +46,10 @@ YUI.add('wegas-form', function(Y) {
         /**
          * @function
          * @private
-         * @description call function "renderToolbar".
+         * @description
          */
         renderUI: function() {
-            this.renderToolbar();
+            Y.Array.each(this.get("buttons"), this.addButton, this);
         },
         /**
          * @function
@@ -67,46 +67,35 @@ YUI.add('wegas-form', function(Y) {
         destructor: function() {
             this.set("form", null);
         },
-        // ** Private Methods ** //
-        /**
-         * Add a submit button (with "afterValidation" and
-         * "submit" events) and a cancel button (with "cancel" event).
-         * Render the Toolbar.
-         * @function
-         * @private
-         */
-        renderToolbar: function() {
-            var toolbarNode = this.toolbar.get('header');
+        addButton: function(b) {
+            switch (b.action) {
+                case "submit":
+                    b.on = {
+                        click: Y.bind(function() {
+                            var form = this.get("form"),
+                                    val = form.getValue();
 
-            this.saveButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save",
-                on: {
-                    click: Y.bind(function() {
-                        var form = this.get("form"),
-                                val = form.getValue();
-
-                        if (!form.validate()) {
-                            return;
-                        }
-                        if (val.valueselector) {
-                            val = val.valueselector;
-                        }
-                        this.fire("submit", {
-                            value: val
-                        });
-                    }, this)
-                }
-            }).render(toolbarNode);
-
-            this.cancelButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-cancel\" ></span>Cancel",
-                visible: false,
-                on: {
-                    click: Y.bind(function() {
-                        this.fire("cancel");
-                    }, this)
-                }
-            }).render(toolbarNode);
+                            if (!form.validate()) {
+                                return;
+                            }
+                            if (val.valueselector) {
+                                val = val.valueselector;
+                            }
+                            this.fire("submit", {
+                                value: val
+                            });
+                        }, this)
+                    };
+                    break;
+                default:
+                    b.on = {
+                        click: Y.bind(function(action) {
+                            this.fire(action);
+                        }, this, b.action)
+                    };
+                    break;
+            }
+            this.toolbar.add(b);
         },
         /**
          * @function
@@ -164,7 +153,6 @@ YUI.add('wegas-form', function(Y) {
              */
             cfg: {
                 setter: function(val) {
-
                     if (val) {
                         var cfg = Y.clone(val);                                 // Duplicate so val will be untouched while serializing
                         cfg.parentEl = this.get("contentBox");                  // Set up the form parentEl attribute, so it knows where to render
@@ -179,7 +167,6 @@ YUI.add('wegas-form', function(Y) {
                             }, this);
                         }, this, cfg));
                     }
-
                     return val;
                 },
                 items: {
@@ -193,11 +180,19 @@ YUI.add('wegas-form', function(Y) {
                     legend: "Fields",
                     fields: Y.inputEx.Group.groupOptions
                 }
+            },
+            buttons: {
+                value: [{
+                        type: "Button",
+                        action: "submit",
+                        label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save"
+                    }
+                ]
             }
         }
     });
-
     Y.namespace("Wegas").Form = Form;
+
     /* Add relevant plugin*/
     Y.Wegas.Form.ATTRS.plugins = Y.clone(Y.Wegas.Widget.ATTRS.plugins);
     Y.Wegas.Form.ATTRS.plugins._inputex.items.push({
