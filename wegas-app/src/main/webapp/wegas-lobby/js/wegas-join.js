@@ -69,11 +69,9 @@ YUI.add('wegas-join', function(Y) {
                     entity = this.getTargetEntity(),
                     game = this.getTargetGame(),
                     teams = game.get("teams"),
-                    // gameModel = Y.Wegas.Facade.GameModel.cache.findById(game.get("gameModelId")),
                     gameModel = e.response.entity.get("gameModel"),
                     teamName = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("name")
-                    : game.get("name") + "-" + (game.get("teams").length + 1),
-                    firstUserCfg = [teamName, "", null, null];
+                    : game.get("name") + "-" + (game.get("teams").length + 1);
 
             cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name"));// Set game name
             cb.one(".description").setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")
@@ -159,17 +157,19 @@ YUI.add('wegas-join', function(Y) {
                     selectedField = (this.teamField) ? this.teamField.getSelected() : null,
                     name = (selectedField) ? selectedField.getValue() : null;
 
-            if (!this.teamEdition.playersField.validate()) {
-                this.showMessage("error", "Invalid name, password or email");
-                return;
-            }
-            if (this.showTeamCreation) {
+            if (this.showTeamEdition || this.showTeamCreation) {
+                if (!this.teamEdition.playersField.validate()) {
+                    this.showMessage("error", "Invalid name, password or email");
+                    return;
+                }
                 if (name === "") {
                     this.showMessage("error", "Enter a valid team name");
                     return;
                 }
-                this.showOverlay();
-                Y.Wegas.Facade.Game.sendRequest({//                     // create it
+
+            }
+            if (this.showTeamCreation) {                                        // If entity is a game token which allows team creation,
+                Y.Wegas.Facade.Game.sendRequest({//                             // create the team
                     request: "/" + entity.get("id") + "/CreateTeam/" + name,
                     cfg: {
                         method: "POST",
@@ -177,7 +177,7 @@ YUI.add('wegas-join', function(Y) {
                     },
                     on: {
                         success: Y.bind(function(e) {
-                            this.sendMultiJoinTeamRequest(e.response.entity.get("id"));// and join it
+                            this.sendMultiJoinTeamRequest(e.response.entity.get("id"));// and then join it
                         }, this),
                         failure: Y.bind(function(e) {
                             this.hideOverlay();
@@ -185,15 +185,10 @@ YUI.add('wegas-join', function(Y) {
                         }, this)
                     }
                 });
-            } else if (this.showTeamEdition) {
-                if (name === "") {
-                    this.showMessage("error", "Enter a valid team name");
-                    return;
-                }
-                this.showOverlay();
+            } else if (this.showTeamEdition) {                                  // If joining
                 if (name !== entity.get("name")) {                              // If team name was edited,
                     entity.set("name", name);
-                    Y.Wegas.Facade.Game.sendRequest({//                         // update team name
+                    Y.Wegas.Facade.Game.sendRequest({//                         // update it
                         request: "/Team/" + entity.get("id"),
                         cfg: {
                             method: "PUT",
@@ -202,72 +197,12 @@ YUI.add('wegas-join', function(Y) {
                         }
                     });
                 }
-                this.sendMultiJoinTeamRequest(entity.get("id"));
+                this.sendMultiJoinTeamRequest(entity.get("id"));                // join the team
             } else if (this.showTeamSelection) {
                 // todo
-            } else {                                                            // Free for all games or joining a team directly,
+            } else {                                                            // If game is Free for all games or joining a team directly,
                 this.sendTokenJoinGame(this.getTargetEntity().get("token"));    // use the token to join
             }
-
-//            if (!this.teamField) {                                          // 1st case: free for all games or joining a team directly,
-//                this.sendTokenJoinGame(this.getTargetEntity().get("token"));// use the token to join
-//
-//            } else if (this.teamField.getSelected()
-//                    instanceof Y.inputEx.SelectField) {                     // 2nd case, player selected a team,
-//                var selectedField = this.teamField.getSelected(),
-//                        value = selectedField.getValue();
-//
-//                if (selectedField.validate() && value) {
-//                    this.sendJoinTeamRequest(value);                        // join target team
-//                } else {
-//                    this.showMessage("error", "Select a valid team");
-//                }
-//            } else {                                                        // 3rd case: player entered a new team name,
-//                var selectedField = this.teamField.getSelected(),
-//                        name = selectedField.getValue();
-//
-////                    if (!this.playersField.validate()) {
-////                        this.showMessage("error", "Enter valid emails and passwords");
-////                        return;
-////                    }
-//                if (name === "") {
-//                    this.showMessage("error", "Enter a valid team name");
-//                    return;
-//                }
-//                this.showOverlay();
-//                if (entity instanceof Y.Wegas.persistence.Team) {           // If we are joining an existing team,
-//                    if (name !== entity.get("name")) {                      // If team name was edited,
-//                        entity.set("name", name);
-//                        Y.Wegas.Facade.Game.sendRequest({//                 // update team
-//                            request: "/Team/" + entity.get("id"),
-//                            cfg: {
-//                                method: "PUT",
-//                                updateCache: !this.get("customEvent"),
-//                                data: entity.toObject()
-//                            }
-//                        });
-//                    }
-//                    this.sendJoinTeamRequest(entity.get("id"));             // join the team
-//                } else {                                                    // Else if the team does not exist,
-//                    Y.Wegas.Facade.Game.sendRequest({//                     // create it
-//                        request: "/" + entity.get("id") + "/CreateTeam/" + name,
-//                        cfg: {
-//                            method: "POST",
-//                            updateCache: !this.get("customEvent")
-//                        },
-//                        on: {
-//                            success: Y.bind(function(e) {
-//                                this.sendJoinTeamRequest(e.response.entity.get("id"));// and join it
-//                            }, this),
-//                            failure: Y.bind(function(e) {
-//                                this.hideOverlay();
-//                                this.showMessage("error", e.response.results.message || "Error creating team");
-//                            }, this)
-//                        }
-//                    });
-//                }
-//            }
-
         },
         getTargetEntity: function() {
             var entity = this.get("entity");
