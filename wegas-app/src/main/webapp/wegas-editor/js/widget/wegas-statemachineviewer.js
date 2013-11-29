@@ -397,7 +397,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.get(CONTENT_BOX).append(this.menuNode);
 
             if (this.get("sid")) {
-                this.sidNode = new Y.Node.create("<div>" + (this.get("entity").get("text") || "") + "</div>");
+                this.sidNode = new Y.Node.create("<div style=\"overflow: hidden;\">" + (this.get("entity").get("text") || "") + "</div>");
                 this.get(CONTENT_BOX).append(this.sidNode);
             }
             if (this.get("x")) {
@@ -736,10 +736,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }
             this.labelNode = this.connection.getLabelOverlay();
             if (this.labelNode) {
-                Y.one(this.labelNode.getElement()).delegate("click", function(e) {
+                Y.one(this.labelNode.getElement()).on("click", function(e) {
                     Y.Plugin.EditEntityAction.showEditForm(this.get("entity"), Y.bind(this.setEntity, this));
-                }, ".transition-edit", this);
+                }, this);
                 Y.one(this.labelNode.getElement()).delegate("click", function(e) {
+                    e.halt("true");
                     var i, transitions = this.get("parent").get("entity").get("transitions");
                     for (i in transitions) {
                         if (transitions[i] === this.get("entity")) {
