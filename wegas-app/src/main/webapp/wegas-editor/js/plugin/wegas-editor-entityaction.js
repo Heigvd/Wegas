@@ -561,14 +561,15 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          * @function
          */
         execute: function() {
-            Wegas.TabView.findTabAndLoadWidget("State machine editor", // Load and display the editor in a new tab
-                    "#centerTabView", {selected: 2}, Y.mix(this.get("viewerCfg"), {
+            Wegas.TabView.findTabAndLoadWidget("State machine", // Load and display the editor in a new tab
+                    "#centerTabView", {}, Y.mix(this.get("viewerCfg"), {
                 type: "StateMachineViewer",
                 plugins: [{
                         fn: "WidgetToolbar"
                     }]
-            }), Y.bind(function(entity, widget) {
+            }), Y.bind(function(entity, widget, tab) {
                 widget.set("entity", entity);
+                tab.set("selected", 2);
             }, this, this.get("entity")));
         }
     }, {
