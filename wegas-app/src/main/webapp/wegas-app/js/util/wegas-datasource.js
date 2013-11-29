@@ -77,7 +77,7 @@ YUI.add('wegas-datasource', function(Y) {
             request.on = request.on || {};
             request.on.failure = request.on.failure || Y.bind(this.fire, this, "failure");
             Y.mix(request.cfg.headers, DEFAULTHEADERS);
-            if (Lang.isObject(request.cfg.data)) {                              // Stringify data if required
+            if (request.cfg.method && Lang.isObject(request.cfg.data)) {        // Stringify data if required
                 request.cfg.data = Y.JSON.stringify(request.cfg.data);
             }
             return Y.Wegas.DataSource.superclass.sendRequest.call(this, request);

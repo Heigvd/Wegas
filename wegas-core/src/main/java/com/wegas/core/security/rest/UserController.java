@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.rest;
 
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
@@ -102,6 +103,8 @@ public class UserController {
         for (JpaAccount a : userFacade.findAccountByValue(value)) {
             Map account = new HashMap<>();
             returnValue.add(account);
+//            if (a.getFirstname() != null && a.getLastname() != null) {
+//                account.put("label", a.getFirstname() + " " + a.getLastname());
             if (a.getFirstname() != null && a.getLastname() != null) {
                 account.put("label", a.getFirstname() + " " + a.getLastname());
             } else {
@@ -119,6 +122,30 @@ public class UserController {
             throw new UnauthorizedException();
         }
         return userFacade.findAccountByValue(value);
+    }
+
+    @GET
+    @Path("FindAccountsByValues")
+    public List<Map> findAccountsByValues(@QueryParam("values") List<String> values) {
+        List<Map> returnValue = new ArrayList<>();
+        for (String value : values) {
+            try {
+                Map account = new HashMap<>();
+                JpaAccount a = accountFacade.findByEmail(value.trim());
+                if (a.getFirstname() != null && a.getLastname() != null) {
+                    account.put("label", a.getFirstname() + " " + a.getLastname());
+                } else {
+                    account.put("label", a.getEmail());
+                }
+                account.put("value", a.getId());
+                returnValue.add(account);
+            } catch (PersistenceException e2) {
+                // GOTCHA
+                // for(String subtToken)
+                // Could not find token
+            }
+        }
+        return returnValue;
     }
 
     /**
@@ -191,7 +218,8 @@ public class UserController {
     @Path("Authenticate")
     public void login(@QueryParam("email") String email,
             @QueryParam("password") String password,
-            @QueryParam("remember") @DefaultValue("false") boolean remember,
+            @QueryParam("remember")
+            @DefaultValue("false") boolean remember,
             @Context HttpServletRequest request) {
 
         Subject subject = SecurityUtils.getSubject();

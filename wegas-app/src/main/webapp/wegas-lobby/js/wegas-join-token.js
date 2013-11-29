@@ -186,9 +186,7 @@ YUI.add('wegas-join-token', function(Y) {
                             });
                         }, this);
                     }, this),
-                    failure: Y.bind(function(e) {
-                        this.showMessage("error", "Error");
-                    }, this)
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         }
