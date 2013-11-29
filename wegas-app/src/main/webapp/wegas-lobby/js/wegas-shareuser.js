@@ -76,7 +76,7 @@ YUI.add('wegas-shareuser', function(Y) {
                     maxResults: 30,
                     resultTextLocator: 'label',
                     resultHighlighter: 'phraseMatch',
-                    // queryDelimiter: ';',
+                    queryDelimiter: ',',
                     source: Y.Wegas.app.get("base") + "rest/User/AutoComplete/{query}",
                     enableCache: false,
                     resultListLocator: Y.bind(function(responses) {
@@ -103,15 +103,51 @@ YUI.add('wegas-shareuser', function(Y) {
         },
         bindUI: function() {
             this.saveButton.on("click", function() {
-                if (this.field.getValue() === "")
-                    return;
+                var values = [],
+                        fieldValue = this.field.yEl.get("value"),
+                        userNames = fieldValue.split(",");
 
-                Y.Array.forEach(this.field.options.value, function(account) {
+                if (fieldValue === "") {                                        // Check the input element is not empty
+                    return;
+                }
+                //if (this.field.getValue() === "")
+                //    return;
+
+                Y.Array.each(userNames, function(value) {                       // Remove items that have
+                    if ((!this.field.options.value || !this.field.options.value.indexOf[value.trim()])
+                            && value.trim() !== "") {
+                        values.push(value);
+                    }
+                }, this);
+                if (values.length > 0) {
+                    Y.Wegas.Facade.User.sendRequest({
+                        request: "/FindAccountsByValues/",
+                        cfg: {
+                            data: {
+                                values: values
+                            }
+                        },
+                        on: {
+                            success: Y.bind(function(e) {
+                                Y.Array.each(e.response.results.entities, function(account) {
+                                    this.userList.addElement({
+                                        username: account.get("val.label"),
+                                        userId: account.get("val.value"),
+                                    });
+                                }, this);
+                            }, this),
+                            failure: Y.bind(this.defaultFailureHandler, this)
+                        }
+                    });
+                }
+
+                Y.Array.each(this.field.options.value, function(account) {
                     this.userList.addElement({
                         username: account.label,
                         userId: account.value
                     });
                 }, this);
+
                 this.field.options.value = [];
                 this.field.setValue("");
             }, this);
@@ -124,9 +160,6 @@ YUI.add('wegas-shareuser', function(Y) {
         loadPermissions: function() {
             Y.Wegas.Facade.User.sendRequest({
                 request: "/FindAccountPermissionByInstance/" + this.userList.targetEntityId,
-                cfg: {
-                    method: "GET"
-                },
                 on: {
                     success: Y.bind(function(e) {
                         var data = e.response.results.entities,
@@ -152,9 +185,7 @@ YUI.add('wegas-shareuser', function(Y) {
 
                         }, this);
                     }, this),
-                    failure: Y.bind(function(e) {
-                        this.showMessage("error", "Error loading permissions");
-                    }, this)
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         }
@@ -198,6 +229,9 @@ YUI.add('wegas-shareuser', function(Y) {
                 request: "/DeleteAccountPermissionByInstanceAndAccount/" + entityId + "/" + userId,
                 cfg: {
                     method: "DELETE"
+                },
+                on: {
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         }
@@ -231,7 +265,7 @@ YUI.add('wegas-shareuser', function(Y) {
                 },
                 on: {
                     failure: Y.bind(function(e) {
-                        this.showMessage("error", "Error by remove permission");
+                        this.showMessage("error", "Error removing permission");
                     }, this)
                 }
             });
@@ -244,7 +278,7 @@ YUI.add('wegas-shareuser', function(Y) {
                 },
                 on: {
                     failure: Y.bind(function(e) {
-                        this.showMessage("error", "Error by add permission");
+                        this.showMessage("error", "Error adding permission");
                     }, this)
                 }
             });

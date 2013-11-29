@@ -166,8 +166,10 @@ YUI.add('wegas-join', function(Y) {
                     this.showMessage("error", "Enter a valid team name");
                     return;
                 }
-
             }
+
+            this.showOverlay();
+
             if (this.showTeamCreation) {                                        // If entity is a game token which allows team creation,
                 Y.Wegas.Facade.Game.sendRequest({//                             // create the team
                     request: "/" + entity.get("id") + "/CreateTeam/" + name,
@@ -194,10 +196,17 @@ YUI.add('wegas-join', function(Y) {
                             method: "PUT",
                             updateCache: false,
                             data: entity.toObject()
+                        },
+                        on: {
+                            success: function() {
+                                this.sendMultiJoinTeamRequest(entity.get("id"));// join the team
+                            },
+                            failure: Y.bind(this.defaultFailureHandler, this)
                         }
                     });
+                } else {
+                    this.sendMultiJoinTeamRequest(entity.get("id"));            // join the team
                 }
-                this.sendMultiJoinTeamRequest(entity.get("id"));                // join the team
             } else if (this.showTeamSelection) {
                 // todo
             } else {                                                            // If game is Free for all games or joining a team directly,
@@ -270,7 +279,8 @@ YUI.add('wegas-join', function(Y) {
                     data: this.teamEdition.getAccounts()
                 },
                 on: {
-                    success: Y.bind(this.onGameJoined, this)
+                    success: Y.bind(this.onGameJoined, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         },

@@ -220,7 +220,6 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareUser",
-                                    cssClass: "editor-shareUser-list",
                                     permsList: [{
                                             rightLabel: "Edit",
                                             value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
@@ -394,7 +393,6 @@ YUI.add('wegas-entity', function(Y) {
                                         }]
                                 }, {
                                     type: "ShareUser",
-                                    cssClass: "editor-shareUser-list",
                                     permsList: [{
                                             rightLabel: "Play",
                                             value: "Game:View"
