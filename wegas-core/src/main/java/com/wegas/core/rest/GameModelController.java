@@ -154,19 +154,16 @@ public class GameModelController {
         }
         return games;
     }
-
     /**
      *
      * @param entityId
      * @return
      * @throws IOException
      */
-    @POST
-    @Path("{entityId: [1-9][0-9]*}/Publish")
-    public GameModel publish(@PathParam("entityId") Long entityId) throws IOException {
-
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + entityId);
-
-        return gameModelFacade.publish(entityId);
-    }
+//    @POST
+//    @Path("{entityId: [1-9][0-9]*}/Publish")
+//    public GameModel publish(@PathParam("entityId") Long entityId) throws IOException {
+//        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + entityId);
+//        return gameModelFacade.publish(entityId);
+//    }
 }
