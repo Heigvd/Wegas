@@ -134,14 +134,13 @@
     height: 16px;
 }
 .transition-edit{
-    /*position:absolute;*/
-    display:inline-block;
+/*    display:inline-block;
     width: 49%;
     height: 100%;
     background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -943px;
     background-repeat: no-repeat;
-    cursor: pointer;
+    cursor: pointer;*/
 }
 .transition-delete {
     display:inline-block;
@@ -223,7 +222,6 @@
     cursor:pointer;
     max-width: 120px;
     /*max-height: 30px;*/
-    overflow: hidden;
 }
 .transition-label:hover{
     z-index:8;
