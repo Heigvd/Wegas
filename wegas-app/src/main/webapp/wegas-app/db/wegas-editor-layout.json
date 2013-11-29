@@ -255,55 +255,9 @@
                                         "fn": "WidgetToolbar",
                                         "cfg": {
                                             "children": [{
-                                                    "type": "Button",
+                                                    "type": "NewDescriptorButton",
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                                                     "cssClass": "editor-newVariable-button",
-                                                    "plugins": [{
-                                                            "fn": "WidgetMenu",
-                                                            "cfg": {
-                                                                "children": [{
-                                                                        "type": "NewEntityButton",
-                                                                        "label": "Number",
-                                                                        "targetClass": "NumberDescriptor"
-                                                                    }, {
-                                                                        "type": "NewEntityButton",
-                                                                        "label": "String",
-                                                                        "targetClass": "StringDescriptor",
-                                                                        "cssClass": "wegas-advanced-feature"
-                                                                    }, {
-                                                                        "type": "AddEntityChildButton",
-                                                                        "label": "Text",
-                                                                        "targetClass": "TextDescriptor"
-                                                                    }, {
-                                                                        "type": "NewEntityButton",
-                                                                        "label": "Folder",
-                                                                        "targetClass": "ListDescriptor"
-                                                                    }, {
-                                                                        "type": "NewEntityButton",
-                                                                        "label": "Question",
-                                                                        "targetClass": "QuestionDescriptor"
-                                                                    }, {
-                                                                        "type": "NewEntityButton",
-                                                                        "label": "Trigger",
-                                                                        "targetClass": "TriggerDescriptor"
-                                                                    }, {
-                                                                        "type": "NewEntityButton",
-                                                                        "label": "State machine",
-                                                                        "targetClass": "FSMDescriptor",
-                                                                        "cssClass": "experimental"
-                                                                    }, {
-                                                                        "type": "NewEntityButton",
-                                                                        "label": "Object",
-                                                                        "targetClass": "ObjectDescriptor",
-                                                                        "cssClass": "wegas-advanced-feature"
-                                                                    }, {
-                                                                        "type": "NewEntityButton",
-                                                                        "label": "Inbox",
-                                                                        "targetClass": "InboxDescriptor",
-                                                                        "cssClass": "wegas-advanced-feature"
-                                                                    }]
-                                                            }
-                                                        }],
                                                     "targetClass": "VariableDescriptor"
                                                 }]
                                         }
