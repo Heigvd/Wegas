@@ -328,7 +328,7 @@ YUI.add('wegas-tabview', function(Y) {
             Y.Wegas.Widget.use(cfg, Y.bind(function(cfg, callback) {            // Load the subpage dependencies
                 var widgets = this.add(cfg);                                    // Render the subpage
                 if (callback) {
-                    callback(widgets.item(0));                                  // Trigger the callback
+                    callback(widgets.item(0), this);                            // Trigger the callback
                 }
             }, this, cfg, callback));
         },
