@@ -284,4 +284,22 @@ YUI.add("wegas-button", function(Y) {
             this.plug(Y.Plugin.OpenPageAction, cfg);
         }
     });
+
+     Y.Wegas.NewDescriptorButton = Y.Base.create("button", Y.Wegas.Button, [], {
+        /** @lends Y.Wegas.NewDescriptorButton# */
+        /**
+         * @function
+         * @private
+         * @param cfg
+         */
+        initializer: function() {
+            this.plug(Y.Plugin.WidgetMenu, {
+                children: Y.Array.map(Y.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children, function (o) {
+                    return Y.mix({
+                        type: "NewEntityButton"
+                    }, o);
+                })
+            });
+        }
+    });
 });
