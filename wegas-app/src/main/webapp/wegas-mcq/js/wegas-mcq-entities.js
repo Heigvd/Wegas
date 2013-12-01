@@ -15,14 +15,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
             SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
             HTML = "html", SCRIPT = "script", NUMBER = "number",
+            Wegas = Y.Wegas,
             IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
         _inputex: {
             _type: HIDDEN
         }
-    },
-    Wegas = Y.Wegas;
+    };
 
     /**
      * QuestionDescriptor mapper
@@ -281,12 +281,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     _type: HIDDEN
                 }
             }
-            //impact: {
-            //    _inputex: {
-            //        _type: SCRIPT
-            //    },
-            //    optional: true
-            //},
         },
         EDITMENU: [{
                 type: "EditEntityButton"

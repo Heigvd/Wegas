@@ -62,12 +62,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      */
-    @Embedded
-    @JsonView(Views.EditorI.class)
-    private Script impact;
-    /**
-     *
-     */
     private Long duration = Long.valueOf(1);
     /**
      *
@@ -80,10 +74,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
         ChoiceDescriptor other = (ChoiceDescriptor) a;
         this.setDescription(other.getDescription());
-        this.setImpact(other.getImpact());
+        super.merge(a);
         this.setDuration(other.getDuration());
         this.setCost(other.getCost());
         ListUtils.mergeLists(this.getResults(), other.getResults());
@@ -174,20 +167,6 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * @return the impact
-     */
-    public Script getImpact() {
-        return impact;
-    }
-
-    /**
-     * @param impact the impact to set
-     */
-    public void setImpact(Script impact) {
-        this.impact = impact;
     }
 
     /**

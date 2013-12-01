@@ -1750,7 +1750,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -1815,7 +1814,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -1880,7 +1878,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -1956,7 +1953,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2065,7 +2061,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2152,7 +2147,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2228,7 +2222,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2310,7 +2303,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2375,7 +2367,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2440,7 +2431,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2505,7 +2495,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2596,7 +2585,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2672,7 +2660,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2748,7 +2735,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2824,7 +2810,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2900,7 +2885,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -2976,7 +2960,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -3074,7 +3057,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -3150,7 +3132,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -3248,7 +3229,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -3412,7 +3392,6 @@
                                         }
                                     ],
                                     "description": null,
-                                    "impact": null,
                                     "duration": 1,
                                     "cost": 0
                                 }
@@ -3515,7 +3494,6 @@
                                                 }
                                             ],
                                             "description": "<p class=\"p1\">Vous rencontrez les monteurs afin de parler de leurs attentes. Vous&nbsp;<span style=\"line-height: 1.231;\">obtiendrez une liste d'informations sur leurs besoins.</span></p>\n<p class=\"p1\">Budget temps: 3</p>\n<p>&nbsp;</p>\n<p class=\"p1\">Co&ucirc;ts: 5000.- (frais fixes du projet)</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -3548,7 +3526,6 @@
                                                 }
                                             ],
                                             "description": "<p class=\"p1\">Vous rencontrez bri&egrave;vement les monteurs afin de parler de leurs&nbsp;<span style=\"line-height: 1.231;\">attentes. Vous obtiendrez une liste d'informations sur leurs besoins.</span></p>\n<p class=\"p1\">&nbsp;</p>\n<p class=\"p1\"><span style=\"line-height: 1.231;\">Budget temps: 1</span></p>\n<p class=\"p1\"><span style=\"line-height: 1.231;\">Co&ucirc;ts: 3000.- (frais fixes du projet)</span></p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -3581,7 +3558,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous ne prenez pas contact avec les monteurs.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -3635,7 +3611,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez cette proposition et devrez donc g&eacute;rer l'activit&eacute; suppl&eacute;mentaire \"prototype utilisateur\" lors de la planification et de la r&eacute;alisation.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -3668,7 +3643,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez que vous pr&eacute;f&eacute;rez ne pas r&eacute;aliser de prototype.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -3722,7 +3696,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez que vous &ecirc;tes int&eacute;ress&eacute; et souhaitez effectuer l'&eacute;valuation.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 3</p>\n<p>Co&ucirc;ts: 4500.- (frais fixes du projet)</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -3755,7 +3728,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez que vous &ecirc;tes int&eacute;ress&eacute; et souhaitez effectuer une &eacute;valuation. Mais vous demandez de r&eacute;aliser une &eacute;valuation sommaire au lieu de l'&eacute;valuation compl&egrave;te.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 1</p>\n<p>Co&ucirc;ts: 2000.- (frais fixes du projet)</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -3788,7 +3760,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez que pour ce projet vous n'effectuerez pas d'&eacute;valuation des besoins des clients.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -3842,7 +3813,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez que vous effectueriez l'analyse de faisabilit&eacute; de march&eacute;, suivie de l'analyse de faisabilit&eacute; technique, puis termineriez par l'analyse de faisabilit&eacute; &eacute;conomique.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -3875,7 +3845,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous lui r&eacute;pondez que vous effectueriez l'analyse de faisabilit&eacute; technique, suivie de l'analyse de faisabilit&eacute; &eacute;conomique, puis termineriez par l'analyse de march&eacute;.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -3908,7 +3877,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous lui r&eacute;pondez que vous effectueriez l'analyse de faisabilit&eacute; &eacute;conomique, suivie de l'analyse de faisabilit&eacute; technique, puis termineriez par l'analyse de march&eacute;.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -3941,7 +3909,6 @@
                                                 }
                                             ],
                                             "description": "<p>&nbsp;</p>\n<p class=\"p1\">Vous r&eacute;pondez que vous ne savez pas.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -3995,7 +3962,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez la proposition de votre banquier.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 1</p>\n<p>Co&ucirc;t: 500.- (frais fixes du projet)</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4028,7 +3994,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous refusez de contracter l'assurance \"taux de change\".</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -4082,7 +4047,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez la proposition. Vous obtiendrez des informations suppl&eacute;mentaires et plus pr&eacute;cises concernant le potentiel de clients int&eacute;ress&eacute;s, ainsi que sur le prix qu'ils seraient pr&ecirc;ts &agrave; payer pour ce syst&egrave;me.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 3</p>\n<p>Co&ucirc;ts: 4000.- (frais fixes du projet)</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4115,7 +4079,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez la proposition, mais proposez de faire une &eacute;tude sommaire. Vous obtiendrez des informations g&eacute;n&eacute;rales concernant le potentiel de clients int&eacute;ress&eacute;s, ainsi que sur le prix de vente de cette option.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 2</p>\n<p>Co&ucirc;ts: 2000.- (frais fixes du projet)</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4148,7 +4111,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez que vous conservez l'estimation de base fournie par le responsable marketing.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -4202,7 +4164,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez la proposition. Vous obtiendrez des informations suppl&eacute;mentaires et plus pr&eacute;cises concernant le potentiel de clients int&eacute;ress&eacute;s et le prix qu'ils sont pr&ecirc;ts &agrave; payer pour ce syst&egrave;me.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 2</p>\n<p>Co&ucirc;ts: 2500.- (frais fixes du projet)</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4235,7 +4196,6 @@
                                                 }
                                             ],
                                             "description": "",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -4289,7 +4249,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez la proposition. Une pr&eacute;-&eacute;tude sera r&eacute;alis&eacute;e par un ing&eacute;nieur d&eacute;veloppeur. Il pourra vous donner des informations sur la faisabilit&eacute; technique du syst&egrave;me.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 2</p>\n<p>Co&ucirc;t: 3000.- (frais fixes du projet)</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4322,7 +4281,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous pr&eacute;f&eacute;rez ne pas r&eacute;aliser l'&eacute;tude.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -4376,7 +4334,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous effectuez l'enqu&ecirc;te aupr&egrave;s de l'ensemble des r&eacute;parateurs. Vous obtiendrez ainsi des informations sur les diff&eacute;rentes r&eacute;parations et, quelques r&eacute;parateurs ayant pr&eacute;alablement travaill&eacute; chez la concurrence, sur la position d'Artos face aux autres constructeurs.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 4</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4409,7 +4366,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous effectuez une enqu&ecirc;te sommaire aupr&egrave;s des quelques r&eacute;parateurs ayant pr&eacute;alablement travaill&eacute; chez la concurrence. Vous obtiendrez ainsi quelques informations sur la position d'Artos face aux autres constructeurs.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 2</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4442,7 +4398,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous pr&eacute;f&eacute;rez ne pas effectuer l'enqu&ecirc;te.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -4496,7 +4451,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous allez rencontrer les personnes qui r&eacute;aliseront la programmation de l'interface homme-machine pour obtenir des informations sur la r&eacute;alisation de cette t&acirc;che.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4529,7 +4483,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous essayez d'obtenir aupr&egrave;s de la direction des informations sur les d&eacute;lais possibles pour la r&eacute;alisation du projet e-assistance.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4562,7 +4515,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous essayez d'obtenir aupr&egrave;s d'un des membres de la direction des informations relatives &agrave; la strat&eacute;gie d'Artos, en lien avec votre projet.</p>\n<p>&nbsp;</p>\n<p>Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4595,7 +4547,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous prenez un moment pour vous reposez ou passer un peu de temps avec votre famille.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -4679,7 +4630,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;alisez l'&eacute;valuation des besoins sans int&eacute;grer le monteur et &eacute;conomisez le co&ucirc;t de cette ressource.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4712,7 +4662,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous refusez cette proposition et conservez la variante actuelle.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -4766,7 +4715,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez. <br />La participation au s&eacute;minaire augmentera les frais fixes de la t&acirc;che \"&eacute;valuation environnement de d&eacute;veloppement\" de 1000.- (les co&ucirc;ts salariaux sont support&eacute;s par l'entreprise, mais les frais du s&eacute;minaire sont &agrave; la charge du projet). <br /> La dur&eacute;e de la t&acirc;che ne devrait pas diminuer de mani&egrave;re significative, mais sa qualit&eacute; pourrait en &ecirc;tre sensiblement augment&eacute;e.<br /> Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4795,7 +4743,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez que c'est une bonne id&eacute;e, mais que vous n'avez pas encore les budgets disponibles.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -4849,7 +4796,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez la proposition.<br />E-assistance int&eacute;grera les fonctionnalit&eacute;s \"visio-conf&eacute;rence\" et \"prise de contr&ocirc;le &agrave; distance\". <br /> Ceci augmentera d'une semaine la dur&eacute;e de la t&acirc;che \"programmation des traitements\" <br /> Budget temps: 2</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4882,7 +4828,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous pr&eacute;f&eacute;rez ne pas introduire cette fonctionnalit&eacute;.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -4932,7 +4877,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous choisissez de conserver la variante actuelle.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4965,7 +4909,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous d&eacute;cidez qu'une petite partie de la programmation des traitements sera effectu&eacute;e par des d&eacute;veloppeurs d'Artos-Asie. La dur&eacute;e de la t&acirc;che reste la m&ecirc;me, mais il est possible de la r&eacute;aliser avec un informaticien logiciel junior en moins. <br /> Le co&ucirc;t de la sous-traitance s'ajouterait aux frais fixes de la t&acirc;che (3000.-).<br /> L'exp&eacute;rience a montr&eacute; que si la sous-traitance permet un gain financier, la qualit&eacute; de la t&acirc;che est parfois l&eacute;g&egrave;rement affect&eacute;e. <br /> Budget temps: 2</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -4998,7 +4941,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous d&eacute;cidez qu'une partie importante de la programmation des traitements sera effectu&eacute;e par des d&eacute;veloppeurs d'Artos-Asie. La dur&eacute;e de la t&acirc;che est diminu&eacute;e d'une semaine et il est possible de la r&eacute;aliser avec un informaticien logiciel junior et un informaticien logiciel senior en moins. <br /> Le co&ucirc;t de la sous-traitance s'ajouterait aux frais fixes de la t&acirc;che (13'000.-).<br /> L'exp&eacute;rience a montr&eacute; que si la sous-traitance permet un gain financier, parfois la qualit&eacute; de la t&acirc;che est l&eacute;g&egrave;rement affect&eacute;e. <br /> Budget temps: 3</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -5052,7 +4994,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous choisissez de conserver la variante actuelle.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5085,7 +5026,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous choisissez la variante de r&eacute;alisation qui consiste &agrave; affecter des ressources suppl&eacute;mentaires (ajouter 2 commerciaux seniors et 1 commercial expert). <br /> La dur&eacute;e de la t&acirc;che serait ainsi r&eacute;duite d'une semaine, sans changement de qualit&eacute;. <br /> Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5118,7 +5058,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous choisissez la variante de r&eacute;alisation qui consiste &agrave; diminuer les ressources (1 commercial junior en moins, 2 commerciaux seniors en moins). <br /> Les ressources restantes auraient alors besoin d'une semaine suppl&eacute;mentaire pour effectuer la t&acirc;che. <br /> Une petite diminution de la qualit&eacute; pourrait avoir lieu, mais ce n'est pas certain. <br /> Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -5202,7 +5141,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous proposez de ne lib&eacute;rer Yves qu'&agrave; 50% pour le rapport d'activit&eacute; et de le conserver &agrave; 50% pour le projet.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5235,7 +5173,6 @@
                                                 }
                                             ],
                                             "description": "<p>Yves ne sera plus disponible d&egrave;s cette semaine et pour 3 semaines.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -5304,7 +5241,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez l'int&eacute;gration de cette nouvelle fonctionnalit&eacute;.<br /> Budget temps: 1 <br /> T&acirc;che \"Programmation des traitements\": augmentation de la dur&eacute;e d'une demi-semaine</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5337,7 +5273,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous n'introduisez pas cette nouvelle fonctionnalit&eacute;.<br /> Co&ucirc;ts: 0</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -5406,7 +5341,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous acceptez l'int&eacute;gration de cette nouvelle fonctionnalit&eacute;.<br /> Budget temps: 1 <br /> T&acirc;che \"Programmation des traitements\": augmentation de la dur&eacute;e d'une demi-semaine</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5439,7 +5373,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous n'introduisez pas cette nouvelle fonctionnalit&eacute;.<br /> Co&ucirc;ts:0</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -5508,7 +5441,6 @@
                                                 }
                                             ],
                                             "description": "<p>Effectivement cette option semble tr&egrave;s int&eacute;ressante. Vous choisissez de l'int&eacute;grer dans le syst&egrave;me.<br /> Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5541,7 +5473,6 @@
                                                 }
                                             ],
                                             "description": "<p>Effectivement cette option semble tr&egrave;s int&eacute;ressante. Vous choisissez de l'int&eacute;grer dans le syst&egrave;me d'une fa&ccedil;on simplifi&eacute;e. Ceci permettra de faire la m&ecirc;me chose, mais d'une mani&egrave;re un peu moins ergonomique.<br /> Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5574,7 +5505,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous demandez un d&eacute;lai de r&eacute;flexion et proposez de r&eacute;pondre d'ici une semaine. <br /> Vous envoyez un mail aux programmeurs pour leur demander leur avis sur l'utilit&eacute; et l'impact de ce changement.<br /> Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5607,7 +5537,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous refuser la demande de cette nouvelle fonctionnalit&eacute;. <br /> Co&ucirc;t: 0</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -5676,7 +5605,6 @@
                                                 }
                                             ],
                                             "description": "<p>Effectivement cette option semble tr&egrave;s int&eacute;ressante. Vous choisissez de l'int&eacute;grer dans le syst&egrave;me.<br /> Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5709,7 +5637,6 @@
                                                 }
                                             ],
                                             "description": "<p>Effectivement cette option semble tr&egrave;s int&eacute;ressante. Vous choisissez de l'int&eacute;grer dans le syst&egrave;me, mais d'une mani&egrave;re simplifi&eacute;e, permettant de faire la m&ecirc;me chose, mais d'une mani&egrave;re un peu moins ergonomique).</p>\n<p>Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5742,7 +5669,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous refuser la demande de cette nouvelle fonctionnalit&eacute;.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -5796,7 +5722,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous lib&eacute;rez Val&eacute;rie.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5829,7 +5754,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous informez la direction que Val&eacute;rie est n&eacute;cessaire &agrave; votre projet et ne la lib&eacute;rez donc pas.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -5898,7 +5822,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous suivez le conseil de l'informaticien logiciel est red&eacute;finissez les sp&eacute;cifications de l'IHM &agrave; la baisse. Ceci vous permet diminuer de moiti&eacute; la dur&eacute;e de la programmation de l'IHM et donc de dimunuer dans la m&ecirc;me proportion les co&ucirc;ts salariaux.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -5927,7 +5850,6 @@
                                                 }
                                             ],
                                             "description": "Vous préférez conserver les spécifications actuelles.",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -5996,7 +5918,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous accepter que Karim suive cette formation. Karim sera donc absent durant une semaine. <br /> Son niveau passerait de junior &agrave; senior. <br /> Co&ucirc;ts: participation &agrave; la formation pour 800.- (ajout&eacute;s aux frais fixes du projet).</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6029,7 +5950,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous informez Karim qu'il n'est malheureusement pas possible de suivre cette formation actuellement. Mais ceci sera peut-&ecirc;tre possible lorsqu'il y aura une p&eacute;riode un peu plus calme.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -6098,7 +6018,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous pr&eacute;f&eacute;rez ne pas essayer d'aller contre cette d&eacute;cision (ou n'avez pas besoin d'Yvonne pour le moment) et acceptez donc l'affectation.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6131,7 +6050,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous demander de conserver cette ressource.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -6200,7 +6118,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous informez l'&eacute;quipe de se pr&eacute;parer &agrave; effectuer des heures suppl&eacute;mentaires. <br /> Ces heures seront pay&eacute;es &agrave; un tarif plus &eacute;lev&eacute; et augmenteront donc d'environ 20% le co&ucirc;t de la t&acirc;che, mais permettront de r&eacute;duire de 20% la dur&eacute;e celle-ci.<br /> Budget temps: 1</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6229,7 +6146,6 @@
                                                 }
                                             ],
                                             "description": "Vous préférez effectuer cette tâche sans recours aux heures supplémentaires.",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -6298,7 +6214,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez &agrave; No&eacute;mie : \"En ordre, prenez une semaine de pause et revenez en forme la semaine prochaine.\"</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6331,7 +6246,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez &agrave; No&eacute;mie : \"En ordre pour prendre cong&eacute; cette semaine, mais il faudrait juste passer un moment lundi pour transmettre les informations n&eacute;cessaires au bon d&eacute;roulement du projet cette semaine.\"</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6364,7 +6278,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez : \"Ce n'est vraiment pas le moment. Nous avons absolument besoin de vous dans le projet. Par contre vous pourrez prendre cong&eacute; d&egrave;s que nous aurons avanc&eacute; dans ce projet.\"</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -6433,7 +6346,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous leur r&eacute;pondez que le syst&egrave;me sera mis en oeuvre d'ici 2 semaines.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6466,7 +6378,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous leur r&eacute;pondez qu'il faudra un peu plus de deux semaines, mais que normalement dans 3 ou 4 semaines tout devrait &ecirc;tre en place.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6499,7 +6410,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous leur r&eacute;pondez que le d&eacute;veloppement n'est pas une petite affaire et qu'il leur faudra attendre plusieurs semaines avant de voir le syst&egrave;me mis en oeuvre.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6532,7 +6442,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous pr&eacute;f&eacute;rez ne pas leur r&eacute;pondre pour le moment.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -6601,7 +6510,6 @@
                                                 }
                                             ],
                                             "description": "<p>Un co&ucirc;t de 2000 est affect&eacute; au projet.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6634,7 +6542,6 @@
                                                 }
                                             ],
                                             "description": "<p>Aucun co&ucirc;ts affect&eacute; au projet. Urs continuera de travailler avec son ancienne machine.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -6703,7 +6610,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous leur r&eacute;pondez que le syst&egrave;me sera op&eacute;rationnel d'ici la semaine prochaine.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6736,7 +6642,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous leur r&eacute;pondez qu'il faudra plut&ocirc;t deux semaines pour voir le syst&egrave;me en fonction.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6769,7 +6674,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous leur r&eacute;pondez que le d&eacute;veloppement n'est pas une petite affaire et qu'il leur faudra attendre bien trois semaines (voie plus) avant de voir le syst&egrave;me mis en oeuvre.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6802,7 +6706,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous pr&eacute;f&eacute;rez ne pas leur r&eacute;pondre pour le moment.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
@@ -6871,7 +6774,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous lui r&eacute;pondez \"Mais, avec plaisir !\" <br /> ... et vous mettez au travail pour pr&eacute;parer ces visites. <br /> Co&ucirc;ts:<br /> 6 cartes temps<br /> Perturbation du travail pendant 3 demi-journ&eacute;es</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6904,7 +6806,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous lui r&eacute;pondez \"Nous sommes actuellement bien charg&eacute;, mais il serait possible de vous recevoir pour une visite d'un apr&egrave;s-midi. <br /> Co&ucirc;ts:<br /> 3 cartes temps<br /> Perturbation du travail pendant une demi-journ&eacute;e</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         },
@@ -6937,7 +6838,6 @@
                                                 }
                                             ],
                                             "description": "<p>Vous r&eacute;pondez que vous &ecirc;tes d&eacute;sol&eacute;, mais que vous n'avez vraiment pas la disponibilit&eacute; pour ces visites.<br /> Pas de co&ucirc;ts.</p>",
-                                            "impact": null,
                                             "duration": 1,
                                             "cost": 0
                                         }
