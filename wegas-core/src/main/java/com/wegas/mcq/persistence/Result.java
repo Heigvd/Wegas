@@ -57,7 +57,7 @@ public class Result extends AbstractEntity {
      *
      */
     @Embedded
-    @JsonView(Views.EditorI.class) //@TODO FIX: extended but correct clientside
+    @JsonView(Views.EditorExtendedI.class)
     private Script impact;
     /**
      *
@@ -123,7 +123,6 @@ public class Result extends AbstractEntity {
 //            this.getChoiceInstances().remove(0);
 //        }
 //    }
-
     @Override
     public Long getId() {
         return this.id;

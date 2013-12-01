@@ -90,7 +90,6 @@ public class UpdateController {
         for (VariableDescriptor vd : findAll) {
             if (vd instanceof ChoiceDescriptor) {
                 ChoiceDescriptor choice = (ChoiceDescriptor) vd;
-                replaceAll(choice.getImpact(), keys, values);
                 for (Result r : choice.getResults()) {
                     replaceAll(r.getImpact(), keys, values);
                 }
