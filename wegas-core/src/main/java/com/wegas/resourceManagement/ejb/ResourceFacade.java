@@ -224,7 +224,7 @@ public class ResourceFacade {
 
         if (event.getEntity() instanceof TaskDescriptor) {
             TaskDescriptor task = (TaskDescriptor) event.getEntity();
-            for (String predecessorName : task.getImportedPredecessors()) {
+            for (String predecessorName : task.getImportedPredecessorNames()) {
                 task.addPredecessor((TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName));
             }
         }

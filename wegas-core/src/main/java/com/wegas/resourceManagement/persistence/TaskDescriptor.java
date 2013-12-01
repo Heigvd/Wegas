@@ -63,7 +63,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         @JoinColumn(name = "taskdescriptor_variabledescriptor_id")},
             inverseJoinColumns = {
         @JoinColumn(name = "predecessors_variabledescriptor_id")})              // prevent change in the db
-    @JsonView(Views.IndexI.class)
+    @JsonIgnore
     private List<TaskDescriptor> predecessors = new ArrayList<>();
     /*
      *
@@ -75,8 +75,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      *
      */
     @Transient
-    @JsonView(Views.Export.class)
-    private List<String> exportedPredecessors = new ArrayList<>();
+    private List<String> predecessorNames = new ArrayList<>();
 
     /**
      * /**
@@ -364,7 +363,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      * @return the exportedPredecessors
      */
-    public List<String> getExportedPredecessors() {
+    public List<String> getPredecessorNames() {
         List<String> names = new ArrayList<>();
         for (TaskDescriptor t : this.getPredecessors()) {
             names.add(t.getName());
@@ -373,14 +372,14 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     @JsonIgnore
-    public List<String> getImportedPredecessors() {
-        return this.exportedPredecessors;
+    public List<String> getImportedPredecessorNames() {
+        return this.predecessorNames;
     }
 
     /**
      * @param exportedPredecessors the exportedPredecessors to set
      */
-    public void setExportedPredecessors(List<String> exportedPredecessors) {
-        this.exportedPredecessors = exportedPredecessors;
+    public void setPredecessorNames(List<String> exportedPredecessors) {
+        this.predecessorNames = exportedPredecessors;
     }
 }
