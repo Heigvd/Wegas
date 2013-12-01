@@ -89,6 +89,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 /* New button */
                 this.addButton = new Y.Button({/*@HACK */
                     label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                    visible: false,
                     on: {
                         click: function(e) {
                             var menu = host.get("widget").getMenuCfg({

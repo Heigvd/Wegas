@@ -10,12 +10,14 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.rest.util.Views;
 import com.wegas.resourceManagement.persistence.DialogueDescriptor;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -33,6 +35,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
     @MapKeyColumn(name = "fsm_statekey")
+    @JsonView(Views.EditorExtendedI.class)
     private Map<Long, State> states = new HashMap<>();
 
     /**
