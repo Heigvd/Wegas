@@ -83,8 +83,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     //@JsonView(Views.EditorI.class)
     private String label;
     /**
-     * Title displayed in the for the player, should be removed from variable descriptor and placed
-     * in the required entities (MCQQuestionDrescriptor, TriggerDescriptor, aso)
+     * Title displayed in the for the player, should be removed from variable
+     * descriptor and placed in the required entities (MCQQuestionDrescriptor,
+     * TriggerDescriptor, aso)
      */
     @Column(name = "editorLabel")
     private String title;
@@ -101,7 +102,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @NotNull
-    @JsonView(Views.EditorI.class)
+    @JsonView(Views.EditorExtendedI.class)
     private VariableInstance defaultInstance;
     /*
      * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name

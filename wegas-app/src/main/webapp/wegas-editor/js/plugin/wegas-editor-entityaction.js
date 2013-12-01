@@ -568,8 +568,17 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         fn: "WidgetToolbar"
                     }]
             }), Y.bind(function(entity, widget, tab) {
-                widget.set("entity", entity);
                 tab.set("selected", 2);
+                widget.showOverlay();
+                EditEntityAction.showEditFormOverlay();
+                this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
+                    on: {
+                        success: function(e) {
+                            tab.hideOverlay();
+                            widget.set("entity", e.response.entity);
+                        }
+                    }
+                });
             }, this, this.get("entity")));
         }
     }, {

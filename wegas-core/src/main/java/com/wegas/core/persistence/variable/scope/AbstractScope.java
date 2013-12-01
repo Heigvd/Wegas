@@ -14,7 +14,6 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
@@ -52,6 +51,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
      *
      */
     //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+    @JsonView(Views.EditorExtendedI.class)
     private String broadcastScope = PlayerScope.class.getSimpleName();
 
     /**
