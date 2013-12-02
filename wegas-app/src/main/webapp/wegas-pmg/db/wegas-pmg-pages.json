@@ -713,7 +713,8 @@
                         "label": "Name"
                     },
                     {
-                        "label": "Estimated duration",
+                        "label": "Estimated</br>duration",
+                        "width": "54px",
                         "name": "Estimatedduration",
                         "key": "instance.duration"
                     },
@@ -1584,7 +1585,8 @@
                         "label": "Name"
                     },
                     {
-                        "label": "Estimated duration",
+                        "label": "Estimated</br>duration",
+                        "width": "54px",
                         "name": "Estimatedduration",
                         "key": "instance.duration"
                     },
