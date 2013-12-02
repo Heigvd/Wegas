@@ -991,6 +991,20 @@ YUI().use(function(Y) {
             }
         },
         /* Other libraries */
+        "wegas-libraries": {
+            combine: true,
+            base: "./lib/",
+            root: "/lib/",
+            modules: {
+                gauge: {
+                    path: "gauge-min.js"
+                },
+                diff_match_patch: {
+                    path: "diffmatchpatch/diff_match_patch.js"
+                }
+            }
+        },
+        /* Other libraries (that should not be combined) */
         "libraries": {
             async: false,
             combine: false,
@@ -1006,17 +1020,8 @@ YUI().use(function(Y) {
                 escodegen: {
                     path: 'escodegen/escodegen-min.js'
                 },
-                gauge: {
-                    path: "gauge-min.js"
-                },
-                pusher: {
-                    fullpath: "http://js.pusher.com/1.12/pusher.min.js"
-                },
                 tinymce: {
                     path: "tiny_mce/tiny_mce.js"
-                },
-                diff_match_patch: {
-                    path: "diffmatchpatch/diff_match_patch.js"
                 },
                 excanvas: {
                     path: 'excanvas/excanvas.compiled.js'
@@ -1027,19 +1032,15 @@ YUI().use(function(Y) {
                 ace: {
                     async: false,
                     path: "ace/src/ace.js"
-                            //fullpath: "http://ace.c9.io/build/src-noconflict/ace.js"
-                            //charset: 'utf-8',
-                            //fullpath: "http://ace.c9.io/build/src-min/ace.js",
-                            //fullpath: "http://ajaxorg.github.io/ace-builds/src-min/ace.js",
                             //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
-
+                },
+                pusher: {
+                    fullpath: "http://js.pusher.com/1.12/pusher.min.js"
                 },
                 googletranslate: {
                     async: false,
                     fullpath: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-                            //fullpath: "//translate.google.com/translate_a/element.js?cb=googleSectionalElementInit&"
-                            //fullpath: "//translate.google.com/translate_a/element.js?ug=section&hl=en&cb=googleSectionalElementInit"
-                            //fullpath: "//translate.google.com/translate_a/element.js?hl=en"
+                            //fullpath: "//translate.google.com/translate_a/element.js?ug=section&hl=en&cb=googleSectionalElementInit&hl=en"
                 }
             }
         }
