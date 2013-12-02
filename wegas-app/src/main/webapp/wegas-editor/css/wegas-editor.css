@@ -353,14 +353,6 @@ body {
 .wegas-jointeam .inputEx-label{
     width: 11em;
 }
-.wegas-jointeam .header .yui3-u {
-    width: 112px;
-    color: #505050;
-    font-style: italic;
-}
-.wegas-jointeam .header .yui3-u:first-child {
-    padding-left: 20px;
-}
 .wegas-jointeam  .inputEx-ListField >span {
     margin: 0 !important;
 }
@@ -373,19 +365,9 @@ body {
     padding-right: 15px;
 }*/
 .wegas-jointeam .wegas-inputex-multioptions .wegas-inputex-multi-selected {
-    box-shadow: 0 0 1px #6d6d6d;
+/*    box-shadow: 0 0 1px #6d6d6d;
     background: #ededed;
-    opacity: 1;
-}
-.wegas-jointeam .inputEx-ListField {
-    padding: 0 0 0 20px;
-}
-.wegas-jointeam .inputEx-CombineField .inputEx-fieldWrapper {
-    padding-right: 3px;
-}
-.wegas-jointeam .inputEx-invalid > div > div >input {
-    border: 1px solid coral;
-    background: #ffDFD3;
+    opacity: 1;*/
 }
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper{

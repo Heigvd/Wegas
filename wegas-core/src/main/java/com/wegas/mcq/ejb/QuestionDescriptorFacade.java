@@ -209,7 +209,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         arguments.put("selectedChoice", choiceDescriptor.getInstance(player));
         arguments.put("selectedQuestion", reply.getQuestionInstance());
         scriptManager.eval(player, reply.getResult().getImpact(), arguments);
-        scriptManager.eval(player, reply.getResult().getChoiceDescriptor().getImpact(), arguments);
         try {                                                                   // Throw a global event
             scriptManager.eval(player,
                     new Script("eventManager.fire(\"replyValidate\", {reply: selectedReply, choice:selectedChoice, question:selectedQuestion});"),

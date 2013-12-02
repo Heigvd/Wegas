@@ -275,6 +275,14 @@ abstract public class VariableInstance extends AbstractEntity {
         return defaultDescriptor;
     }
 
+    public VariableDescriptor findDescriptor() {
+        if (this.getDefaultDescriptor() != null) {
+            return this.getDefaultDescriptor();
+        } else {
+            return this.getDescriptor();
+        }
+    }
+
     /**
      * @param defaultDescriptor the defaultDescriptor to set
      */

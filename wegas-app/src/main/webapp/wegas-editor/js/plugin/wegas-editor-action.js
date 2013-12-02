@@ -39,6 +39,7 @@ YUI.add('wegas-editor-action', function(Y) {
                 Wegas.Facade.VariableDescriptor.sendRequest({
                     request: '/Reset/',
                     on: {
+                        success: Y.bind(host.hideOverlay, host),
                         failure: Y.bind(host.defaultFailureHandler, host)
                     }
                 });

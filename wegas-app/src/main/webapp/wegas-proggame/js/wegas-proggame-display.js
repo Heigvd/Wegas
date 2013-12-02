@@ -238,38 +238,6 @@ YUI.add('wegas-proggame-display', function(Y) {
                 tileHeigth: 32
             }
         },
-        OBJECTTEMPLATES: [{
-                id: "Player",
-                type: "pc",
-                direction: 2,
-                x: 0,
-                y: 0,
-                life: 100,
-                actions: 20,
-                range: 3,
-                components: "PC"
-            }, {
-                direction: 4,
-                id: "Enemy",
-                type: "npc",
-                x: 0,
-                y: 0,
-                life: 100,
-                actions: 0,
-                range: 2,
-                collides: false,
-                components: "NPC"
-            }, {
-                id: "Bloc1",
-                type: "other",
-                components: "Obstacle"
-            }, {
-                id: "Bloc2",
-                type: "other"
-            }, {
-                id: "Bloc3",
-                type: "other"
-            }],
         SPEED: {
             MOVE: 3,
             FIRE: 7,
@@ -288,26 +256,15 @@ YUI.add('wegas-proggame-display', function(Y) {
             dist = Math.sqrt(Crafty.math.squaredDistance(x, y, toX, toY));
             return Math.round(((dist / GRIDSIZE) * (100 / speed))) || 1;
         };
-        //Crafty.sprite(24, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/characters.png', {
-        //    CharacterSprite: [0, 0]
-        //});
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim.png', {
             HumanSprite: [0, 0],
-            TrapSprite: [0, 9],
+            TrapSprite: [0, 15],
             DoorSprite: [0, 10],
-            ControllerSprite: [0, 12]
+            ControllerSprite: [0, 12],
+            PanelSprite: [0, 16]
         });
         Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-dalles.png', {
             TileSprite: [0, 0]
-        });
-        Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/panel.png', {
-            PanelSprite: [0, 0]
-        });
-        //Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/lightning.png', {
-        //    LightningSprite: [0, 0]
-        //});
-        Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/terrain.png', {
-            TerrainSprite: [0, 0]
         });
 
         //move function
@@ -404,7 +361,12 @@ YUI.add('wegas-proggame-display', function(Y) {
                 }).origin(0, 32);
             },
             shakeHands: function(times) {
-                this.stop().animate("handsUp", 15, times || 1);
+                var POS = Y.clone(this.__coord);
+                this.stop().bind("AnimationEnd", function() {
+                    if (this._currentReelId === 'handsUp') {
+                        this.sprite(POS[0] / POS[2], POS[1] / POS[3]);
+                    }
+                }).animate("handsUp", 15, times || 1);
             }
         });
         Crafty.c("Speaker", {
@@ -425,7 +387,8 @@ YUI.add('wegas-proggame-display', function(Y) {
                     "padding": "4px",
                     "max-width": "108px",
                     "visibility": "hidden"
-                }), POS = [this._x, this._y], connector = Crafty.e("2D, DOM").css({
+                }), POS = [this._x, this._y],
+                        connector = Crafty.e("2D, DOM").css({
                     "background": "url(" + Y.Wegas.app.get('base') + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (+-32 + "px")),
                     "width": "32px",
                     "height": "32px",
@@ -470,24 +433,9 @@ YUI.add('wegas-proggame-display', function(Y) {
 //                            .animate("moveLeft", 9, 3, 11);
             }
         });
-        Crafty.c("Obstacle", {
-            init: function() {
-                this.requires("2D," + Crafty.refWidget.renderMethod + ", TerrainSprite")
-                        .sprite(23, 18);
-                //{x: 23, y: 18},
-                //{x: 24, y: 21},
-                //{x: 21, y: 21}
-            }
-        });
         Crafty.c("Tile", {
             init: function() {
                 this.requires("2D," + Crafty.refWidget.renderMethod);
-            }
-        });
-        Crafty.c("GrassTile", {
-            init: function() {
-                this.requires("Tile, TerrainSprite")
-                        .sprite(21, 5);
             }
         });
         Crafty.c("EmptyTile", {
@@ -503,13 +451,14 @@ YUI.add('wegas-proggame-display', function(Y) {
         Crafty.c("Trap", {
             init: function() {
                 var x, y;
-                this.requires("2D," + Crafty.refWidget.renderMethod + ",Tile, TrapSprite, SpriteAnimation, Tween");
+                this.requires("2D," + Crafty.refWidget.renderMethod + ",Tile, TrapSprite, SpriteAnimation, Tween, Collision")
+                        .collision([10, 13], [3, 24], [10, 27], [25, 25], [28, 13]);
                 x = this.__coord[0] / this.__coord[2];
                 y = this.__coord[1] / this.__coord[3];
                 this.initialize();
-                this.animate("trap", x, y, 3);
+                this.animate("trap", 0, 9, 3);
                 this.bind("TweenEnd", function() {
-                    this.stop();
+                    this.stop().sprite(0, 15);
                     Crafty.trigger('commandExecuted');
                 });
             },

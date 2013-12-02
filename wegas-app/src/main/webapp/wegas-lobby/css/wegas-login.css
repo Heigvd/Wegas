@@ -113,12 +113,6 @@ h1, .title{
 .preview img{
     box-shadow: 2px 2px 4px 4px #888;
 }
-
-input[type="text"] {
-    width: 155px;
-}
-.signupgroup {
-}
 .signupgroup div{
     float:left;
     width:165px;

@@ -93,9 +93,10 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("createdTime")
     @JsonManagedReference
-    //@JsonView(Views.ExportI.class)
     @JsonIgnore
+    //@JsonView(Views.ExportI.class)
     private List<Game> games = new ArrayList<>();
     /**
      * Holds all the scripts contained in current game model.
@@ -185,12 +186,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     @Override
     public void merge(AbstractEntity n) {
-        super.merge(n);
         GameModel other = (GameModel) n;
-        //this.setParentGameModel(other.getParentGameModel());
-        this.setDescription(other.getDescription());
+        this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
+
+        super.merge(n);
         this.properties.clear();
         this.properties.putAll(other.getProperties());
+
+        //this.setParentGameModel(other.getParentGameModel());
     }
 
     /**
@@ -332,7 +335,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setGames(List<Game> games) {
         this.games = games;
-        for (Game g: games) {
+        for (Game g : games) {
             g.setGameModel(this);
         }
     }

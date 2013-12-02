@@ -15,8 +15,10 @@ import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.util.SecurityHelper;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -24,7 +26,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -90,7 +91,7 @@ public class SingleLobbyController implements Serializable {
                     try {
                         playerFacade.findCurrentPlayer(currentTeam.getGame());
                     } catch (NoResultException etp) {                           // Player has not joined yet
-                        if (SecurityUtils.getSubject().isPermitted("Game:Token:g" + currentTeam.getGame().getId())) {
+                        if (SecurityHelper.isAnyPermitted(currentTeam.getGame(), Arrays.asList("Token", "TeamToken", "View"))) {
                             teamFacade.joinTeam(currentTeam, userFacade.getCurrentUser()); // so we join him
                         } else {
                             externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // not allowed

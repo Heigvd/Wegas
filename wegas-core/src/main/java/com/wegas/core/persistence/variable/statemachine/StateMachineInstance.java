@@ -10,9 +10,11 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.dialogue.DialogueInstance;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -51,9 +53,13 @@ public class StateMachineInstance extends VariableInstance implements Serializab
      *
      * @return
      */
-    @XmlTransient
     public State getCurrentState() {
-        return ((StateMachineDescriptor) this.getDescriptor()).getStates().get(this.currentStateId);
+        final Map<Long, State> states = ((StateMachineDescriptor) this.findDescriptor()).getStates();
+        if (states.containsKey(this.currentStateId)) {
+            return states.get(this.currentStateId);
+        } else {
+            return null;
+        }
     }
 
     /**

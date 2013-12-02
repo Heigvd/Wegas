@@ -70,16 +70,17 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     || entity instanceof Y.Wegas.persistence.JpaAccount
                     || entity instanceof Y.Wegas.persistence.GameModel
                     || entity instanceof Y.Wegas.persistence.VariableInstance) {// @fixme we may get extended mode for every entities,
+                EditEntityAction.showEditFormOverlay();
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
                         success: function(e) {
+                            EditEntityAction.hideEditFormOverlay();
                             EditEntityAction.showUpdateForm(e.response.entity, e.callback.ds);
                         },
                         ds: this.get("dataSource")
                     }
                 });
             } else {
-                EditEntityAction.hideRightTabs();
                 EditEntityAction.showUpdateForm(this.get(ENTITY), this.get("dataSource"));
             }
         }
@@ -154,10 +155,17 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 }, EditEntityAction);
                 form.before("updated", function(e) {
                     EditEntityAction.form.toolbar.setStatusMessage("*");
-                    EditEntityAction.form.saveButton.set("disabled", false);
+                    //EditEntityAction.form.saveButton.set("disabled", false);
                 });
                 EditEntityAction.tab.form = EditEntityAction.form = form;
                 EditEntityAction.tab.add(form);
+                if (!Y.Wegas.App.hideRightPanelCloseButton) {
+                    form.addButton({
+                        type: "Button",
+                        action: "cancel",
+                        label: "<span class=\"wegas-icon wegas-icon-cancel\" ></span>Close"
+                    });
+                }
             }
             return EditEntityAction.tab;
         },
@@ -553,14 +561,24 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          * @function
          */
         execute: function() {
-            Wegas.TabView.findTabAndLoadWidget("State machine editor", // Load and display the editor in a new tab
-                    "#centerTabView", {selected: 2}, Y.mix(this.get("viewerCfg"), {
+            Wegas.TabView.findTabAndLoadWidget("State machine", // Load and display the editor in a new tab
+                    "#centerTabView", {}, Y.mix(this.get("viewerCfg"), {
                 type: "StateMachineViewer",
                 plugins: [{
                         fn: "WidgetToolbar"
                     }]
-            }), Y.bind(function(entity, widget) {
-                widget.set("entity", entity);
+            }), Y.bind(function(entity, widget, tab) {
+                tab.set("selected", 2);
+                widget.showOverlay();
+                EditEntityAction.showEditFormOverlay();
+                this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
+                    on: {
+                        success: function(e) {
+                            tab.hideOverlay();
+                            widget.set("entity", e.response.entity);
+                        }
+                    }
+                });
             }, this, this.get("entity")));
         }
     }, {
