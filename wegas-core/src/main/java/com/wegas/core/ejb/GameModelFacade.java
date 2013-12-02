@@ -79,6 +79,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     public void create(final GameModel entity) {
         super.create(entity);
 
+        this.em.flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
         this.reset(entity);                                                     // Reset the game model
 
