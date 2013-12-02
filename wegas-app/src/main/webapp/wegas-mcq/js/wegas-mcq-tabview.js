@@ -262,7 +262,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }
 
             if (cQuestionInstance.get("replies").length > 0) {                  // Display the selected replies
-                ret.push('<div class="subtitle">Selected replies</div><div class="replies">');
+                ret.push('<div class="subtitle">Results</div><div class="replies">');  //Selected replies
                 for (j = cQuestionInstance.get("replies").length - 1; j >= 0; j -= 1) {
                     reply = cQuestionInstance.get("replies")[j];
                     choiceDescriptor = reply.getChoiceDescriptor();

@@ -1,1660 +1,1662 @@
-{
-    "1": {
-        "type": "AbsoluteLayout",
-        "cssClass": "layout",
-        "children": [{
-                "type": "Image",
-                "url": " http://wegas.albasim.ch/wegas-pmg/images/pmg-logo-1.png",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "20px",
-                                "left": "7px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "height": "53px"
-                            }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
-                        }
-                    }]
-            }, {
-                "type": "PmgBreadcrumb",
-                "locations": [
-                    "Initiation",
-                    "Planning",
-                    "Execution",
-                    "Closing"
-                ],
-                "variable": "currentPhase",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "25px",
-                                "left": "72px"
-                            }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "The current phase of your project"
-                        }
-                    }]
-            }, {
-                "type": "Template",
-                "cssClass": "pmg-period",
-                "template": "valuebox",
-                "custom": "",
-                "data": {},
-                "variable": {
-                    "expr": "currentPeriod.items[currentPhase.value].descriptorId"
-                },
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "50px",
-                                "left": "72px"
-                            }
-                        }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "The current week of your project"
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Pass week",
-                "cssClass": "pmg-nextweek",
-                "disabled": false,
-                "tooltip": "Advance to next week",
-                "plugins": [{
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "nextPeriod()"
-                            },
-                            "targetEvent": "click"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "23px",
-                                "left": "445px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "height": "46px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSBackground",
-                        "cfg": {
-                            "styles": {
-                                "backgroundColor": "#0981A9"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "GaugeDisplay",
-                "label": "Direction",
-                "percentMaxValue": 200,
-                "variable": {
-                    "name": "managementApproval"
-                },
-                "cfg": {
-                    "percentColors": [
-                        [0.0, "#CD5757"],
-                        [0.5, "#DDD546"],
-                        [1.0, "#51DC74"]
-                    ]
-                },
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "550px"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "GaugeDisplay",
-                "label": "User",
-                "percentMaxValue": 200,
-                "variable": {
-                    "name": "userApproval"
-                },
-                "cfg": {
-                    "percentColors": [
-                        [0.0, "#CD5757"],
-                        [0.5, "#DDD546"],
-                        [1.0, "#51DC74"]
-                    ]
-                },
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "616px"
-                            }
-                        }
-                    }]
-            },
-            {
-                "type": "GaugeDisplay",
-                "label": "Quality",
-                "percentMaxValue": 200,
-                "variable": {
-                    "name": "quality"
-                },
-                "cfg": {
-                    "percentColors": [
-                        [0.0, "#CD5757"],
-                        [0.5, "#DDD546"],
-                        [1.0, "#51DC74"]
-                    ]
-                },
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "719px"
-                            }
-                        }
-                    }]
-            },
-            {
-                "type": "GaugeDisplay",
-                "label": "Costs",
-                "percentMaxValue": 200,
-                "variable": {
-                    "name": "costs"
-                },
-                "cfg": {
-                    "percentColors": [
-                        [
-                            0.0,
-                            "#CD5757"
-                        ],
-                        [
-                            0.5,
-                            "#DDD546"
-                        ],
-                        [
-                            1.0,
-                            "#51DC74"
-                        ]
-                    ]
-                },
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "784px"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "GaugeDisplay",
-                "label": "Delay",
-                "percentMaxValue": 200,
-                "variable": {
-                    "name": "delay"
-                },
-                "cfg": {
-                    "percentColors": [
-                        [0.0, "#CD5757"],
-                        [0.5, "#DDD546"],
-                        [1.0, "#51DC74"]
-                    ]
-                },
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "852px"
-                            }
-                        }
-                    }]
-            },
-            {
-                "cssClass": "pmg-timevariable",
-                "type": "Template",
-                "custom": "",
-                "data": {},
-                "variable": {
-                    "expr": "timeCards.items[currentPhase.value].descriptorId"
-                },
-                "template": "box",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "10px",
-                                "right": "10px"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "List",
-                "direction": "horizontal",
-                "cssClass": "horizontal-menu",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "90px",
-                                "left": "0",
-                                "right": "0"
-                            }
-                        }
-                    }],
-                "children": [
-                    {
-                        "type": "Button",
-                        "label": "Project",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 2,
-                                    "targetPageLoaderId": "maindisplayarea",
-                                    "targetEvent": "click"
+    {
+        "1": {
+            "type": "AbsoluteLayout",
+            "cssClass": "layout",
+            "children": [{
+                    "type": "Image",
+                    "url": " http://wegas.albasim.ch/wegas-pmg/images/pmg-logo-1.png",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "20px",
+                                    "left": "7px"
                                 }
                             }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "height": "53px"
+                                }
+                            }
+                        }, {
+                            "fn": "Tooltip",
+                            "cfg": {
+                                "content": "Artos Inc. - Project Management Game"
+                            }
+                        }]
+                }, {
+                    "type": "PmgBreadcrumb",
+                    "locations": [
+                        "Initiation",
+                        "Planning",
+                        "Execution",
+                        "Closing"
+                    ],
+                    "variable": "currentPhase",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "25px",
+                                    "left": "72px"
+                                }
+                            }
+                        }, {
+                            "fn": "Tooltip",
+                            "cfg": {
+                                "content": "The current phase of your project"
+                            }
+                        }]
+                }, {
+                    "type": "Template",
+                    "cssClass": "pmg-period",
+                    "template": "valuebox",
+                    "custom": "",
+                    "data": {},
+                    "variable": {
+                        "expr": "currentPeriod.items[currentPhase.value].descriptorId"
+                    },
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "50px",
+                                    "left": "72px"
+                                }
+                            }
+                        }, {
+                            "fn": "Tooltip",
+                            "cfg": {
+                                "content": "The current week of your project"
+                            }
+                        }]
+                }, {
+                    "type": "Button",
+                    "label": "Pass week",
+                    "cssClass": "pmg-nextweek",
+                    "disabled": false,
+                    "tooltip": "Advance to next week",
+                    "plugins": [{
+                            "fn": "ExecuteScriptAction",
+                            "cfg": {
+                                "onClick": {
+                                    "@class": "Script",
+                                    "language": "JavaScript",
+                                    "content": "nextPeriod()"
+                                },
+                                "targetEvent": "click"
+                            }
+                        }, {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "23px",
+                                    "left": "445px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "height": "46px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSBackground",
+                            "cfg": {
+                                "styles": {
+                                    "backgroundColor": "#0981A9"
+                                }
+                            }
+                        }]
+                }, {
+                    "type": "GaugeDisplay",
+                    "label": "Direction",
+                    "percentMaxValue": 200,
+                    "variable": {
+                        "name": "managementApproval"
+                    },
+                    "cfg": {
+                        "percentColors": [
+                            [0.0, "#CD5757"],
+                            [0.5, "#DDD546"],
+                            [1.0, "#51DC74"]
                         ]
                     },
-                    {
-                        "type": "Button",
-                        "label": "Tasks",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 13,
-                                    "targetPageLoaderId": "maindisplayarea",
-                                    "targetEvent": "click"
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "4px",
+                                    "left": "550px"
                                 }
-                            },
-                            {
-                                "fn": "ConditionalDisable",
-                                "cfg": {
-                                    "condition": {
-                                        "@class": "Script",
-                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
-                                        "language": "JavaScript"
+                            }
+                        }]
+                }, {
+                    "type": "GaugeDisplay",
+                    "label": "User",
+                    "percentMaxValue": 200,
+                    "variable": {
+                        "name": "userApproval"
+                    },
+                    "cfg": {
+                        "percentColors": [
+                            [0.0, "#CD5757"],
+                            [0.5, "#DDD546"],
+                            [1.0, "#51DC74"]
+                        ]
+                    },
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "4px",
+                                    "left": "616px"
+                                }
+                            }
+                        }]
+                },
+                {
+                    "type": "GaugeDisplay",
+                    "label": "Quality",
+                    "percentMaxValue": 200,
+                    "variable": {
+                        "name": "quality"
+                    },
+                    "cfg": {
+                        "percentColors": [
+                            [0.0, "#CD5757"],
+                            [0.5, "#DDD546"],
+                            [1.0, "#51DC74"]
+                        ]
+                    },
+                    "plugins": [{
+                            "fn": "ConditionalDisable",
+                            "cfg": {
+                                "condition": {
+                                    "@class": "Script",
+                                    "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                    "language": "JavaScript"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "4px",
+                                    "left": "719px"
+                                }
+                            }
+                        }]
+                },
+                {
+                    "type": "GaugeDisplay",
+                    "label": "Costs",
+                    "percentMaxValue": 200,
+                    "variable": {
+                        "name": "costs"
+                    },
+                    "cfg": {
+                        "percentColors": [
+                            [
+                                0.0,
+                                "#CD5757"
+                            ],
+                            [
+                                0.5,
+                                "#DDD546"
+                            ],
+                            [
+                                1.0,
+                                "#51DC74"
+                            ]
+                        ]
+                    },
+                    "plugins": [{
+                            "fn": "ConditionalDisable",
+                            "cfg": {
+                                "condition": {
+                                    "@class": "Script",
+                                    "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                    "language": "JavaScript"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "4px",
+                                    "left": "784px"
+                                }
+                            }
+                        }]
+                }, {
+                    "type": "GaugeDisplay",
+                    "label": "Delay",
+                    "percentMaxValue": 200,
+                    "variable": {
+                        "name": "delay"
+                    },
+                    "cfg": {
+                        "percentColors": [
+                            [0.0, "#CD5757"],
+                            [0.5, "#DDD546"],
+                            [1.0, "#51DC74"]
+                        ]
+                    },
+                    "plugins": [{
+                            "fn": "ConditionalDisable",
+                            "cfg": {
+                                "condition": {
+                                    "@class": "Script",
+                                    "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                    "language": "JavaScript"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "4px",
+                                    "left": "852px"
+                                }
+                            }
+                        }]
+                },
+                {
+                    "cssClass": "pmg-timevariable",
+                    "type": "Template",
+                    "custom": "",
+                    "data": {},
+                    "variable": {
+                        "expr": "timeCards.items[currentPhase.value].descriptorId"
+                    },
+                    "template": "box",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "10px",
+                                    "right": "10px"
+                                }
+                            }
+                        }]
+                }, {
+                    "type": "List",
+                    "direction": "horizontal",
+                    "cssClass": "horizontal-menu",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "90px",
+                                    "left": "0",
+                                    "right": "0"
+                                }
+                            }
+                        }],
+                    "children": [
+                        {
+                            "type": "Button",
+                            "label": "Project",
+                            "disabled": false,
+                            "plugins": [
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 2,
+                                        "targetPageLoaderId": "maindisplayarea",
+                                        "targetEvent": "click"
                                     }
                                 }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "Gantt",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 14,
-                                    "targetPageLoaderId": "maindisplayarea",
-                                    "targetEvent": "click"
-                                }
-                            },
-                            {
-                                "fn": "ConditionalDisable",
-                                "cfg": {
-                                    "condition": {
-                                        "@class": "Script",
-                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
-                                        "language": "JavaScript"
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "Resources",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 5,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            },
-                            {
-                                "fn": "ConditionalDisable",
-                                "cfg": {
-                                    "condition": {
-                                        "@class": "Script",
-                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
-                                        "language": "JavaScript"
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "EVM",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 10,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            },
-                            {
-                                "fn": "ConditionalDisable",
-                                "cfg": {
-                                    "condition": {
-                                        "@class": "Script",
-                                        "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
-                                        "language": "JavaScript"
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "cssClass": "menu-loginbutton",
-                        "disabled": false,
-                        "labelIsUser": false,
-                        "preferencePageId": 1000,
-                        "targetPageLoader": "maindisplayarea",
-                        "type": "LoginButton"
-                    }
-                ]
-            }, {
-                "type": "List",
-                "direction": "vertical",
-                "cssClass": "vertical-menu",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "120px",
-                                "right": "0px",
-                                "bottom": "0px"
-                            }
-                        }
-                    }],
-                "children": [
-                    {
-                        "type": "Button",
-                        "cssClass": "actions",
-                        "disabled": false,
-                        "label": "",
-                        "tooltip": "Actions",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 6,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "cssClass": "questions",
-                        "disabled": false,
-                        "label": "",
-                        "tooltip": "Questions",
-                        "plugins": [
-                            {
-                                "fn": "UnreadCount",
-                                "cfg": {
-                                    "variable": {
-                                        "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
-                                    }
-                                }
-                            },
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 7,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "cssClass": "inbox",
-                        "setToReadAfter": 0,
-                        "tooltip": "Mailbox",
-                        "disabled": false,
-                        "label": "",
-                        "plugins": [
-                            {
-                                "fn": "UnreadCount",
-                                "cfg": {
-                                    "variable": {
-                                        "name": "inbox"
-                                    }
-                                }
-                            },
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 8,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "cssClass": "history",
-                        "disabled": false,
-                        "label": "",
-                        "tooltip": "History",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 9,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    }, {
-                        "type": "Button",
-                        "cssClass": "help",
-                        "disabled": false,
-                        "label": "",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 10,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    }
-                ]
-            }, {
-                "type": "PageLoader",
-                "pageLoaderId": "maindisplayarea",
-                "cssClass": "body",
-                "defaultPageId": 2,
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "120px",
-                                "bottom": "0px",
-                                "right": "59px",
-                                "left": "0px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSBackground",
-                        "cfg": {
-                            "styles": {
-                                "backgroundColor": "#ffffff"
-                            }
-                        }
-                    }]
-            }
-        ]
-    },
-    "2": {
-        "cssClass": "project-page",
-        "type": "List",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgSlidePanel",
-                "title": "Finances",
-                "cssClass": "finances",
-                "animation": false,
-                "children": [
-                    {
-                        "type": "Template",
-                        "data": {
+                            ]
                         },
-                        "template": "text",
-                        "custom": "<%  var fixedCosts=0, wages=0, unworked=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.VariableDescriptor.cache.find('name', 'projectFixedCosts').getInstance().get('value'); for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); unworked = unworked + parseFloat(properties.unworkedHoursCosts); } taskTotal = wages + fixedCosts + unworked; total = taskTotal + projectFixedCost; %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div><div class='tasks'><div class='taskTotal'><span class='label'>Tasks</span><span class='variableValue'><%= taskTotal %></span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'><%= unworked %></span></div></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
-                        "variable": {
-                            "name": "tasks"
+                        {
+                            "type": "Button",
+                            "label": "Tasks",
+                            "disabled": false,
+                            "plugins": [
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 13,
+                                        "targetPageLoaderId": "maindisplayarea",
+                                        "targetEvent": "click"
+                                    }
+                                },
+                                {
+                                    "fn": "ConditionalDisable",
+                                    "cfg": {
+                                        "condition": {
+                                            "@class": "Script",
+                                            "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                            "language": "JavaScript"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Button",
+                            "label": "Gantt",
+                            "disabled": false,
+                            "plugins": [
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 14,
+                                        "targetPageLoaderId": "maindisplayarea",
+                                        "targetEvent": "click"
+                                    }
+                                },
+                                {
+                                    "fn": "ConditionalDisable",
+                                    "cfg": {
+                                        "condition": {
+                                            "@class": "Script",
+                                            "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                            "language": "JavaScript"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Button",
+                            "label": "Resources",
+                            "disabled": false,
+                            "plugins": [
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 5,
+                                        "targetEvent": "click",
+                                        "targetPageLoaderId": "maindisplayarea"
+                                    }
+                                },
+                                {
+                                    "fn": "ConditionalDisable",
+                                    "cfg": {
+                                        "condition": {
+                                            "@class": "Script",
+                                            "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                            "language": "JavaScript"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Button",
+                            "label": "EVM",
+                            "disabled": false,
+                            "plugins": [
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 10,
+                                        "targetEvent": "click",
+                                        "targetPageLoaderId": "maindisplayarea"
+                                    }
+                                },
+                                {
+                                    "fn": "ConditionalDisable",
+                                    "cfg": {
+                                        "condition": {
+                                            "@class": "Script",
+                                            "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                            "language": "JavaScript"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "cssClass": "menu-loginbutton",
+                            "disabled": false,
+                            "labelIsUser": false,
+                            "preferencePageId": 1000,
+                            "targetPageLoader": "maindisplayarea",
+                            "type": "LoginButton"
                         }
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "title": "EVM",
-                "cssClass": "evm",
-                "animation": false,
-                "children": [
-                    {
-                        "height": "200px",
-                        "chartType": "combo",
-                        "width": "90%",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "type": "Chart",
-                        "verticalGridlines": true,
-                        "variables": [
-                            {
-                                "name": "actualCost",
-                                "label": "AC (Actual Cost)"
-                            },
-                            {
-                                "name": "planedValue",
-                                "label": "PV (Planed Value)"
-                            },
-                            {
-                                "name": "earnedValue",
-                                "label": "EV (Earned Value)"
+                    ]
+                }, {
+                    "type": "List",
+                    "direction": "vertical",
+                    "cssClass": "vertical-menu",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "120px",
+                                    "right": "0px",
+                                    "bottom": "0px"
+                                }
                             }
-                        ]
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "title": "Indicators History: Management and Users",
-                "cssClass": "indicators-management",
-                "animation": false,
-                "children": [
-                    {
-                        "height": "200px",
-                        "chartType": "combo",
-                        "width": "90%",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "type": "Chart",
-                        "verticalGridlines": true,
-                        "variables": [
-                            {
-                                "name": "managementApproval",
-                                "label": "Management"
-                            },
-                            {
-                                "name": "userApproval",
-                                "label": "Users"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "title": "Indicators History: Quality, Costs, and Shedule",
-                "cssClass": "indicators-quality",
-                "animation": false,
-                "children": [
-                    {
-                        "height": "200px",
-                        "chartType": "combo",
-                        "width": "90%",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "type": "Chart",
-                        "verticalGridlines": true,
-                        "variables": [
-                            {
-                                "name": "costs",
-                                "label": "Costs"
-                            },
-                            {
-                                "name": "delay",
-                                "label": "Shedule"
-                            },
-                            {
-                                "name": "quality",
-                                "label": "Quality"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    },
-    "3": {
-        "cssClass": "task-plannification-page",
-        "type": "List",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgDatatable",
-                "variable": {
-                    "name": "tasks"
-                },
-                "defaultSort": null,
-                "columnsCfg": [
-                    {
-                        "key": "index",
-                        "label": "No"
-                    },
-                    {
-                        "key": "label",
-                        "label": "Name"
-                    },
-                    {
-                        "label": "Estimated</br>duration",
-                        "width": "54px",
-                        "name": "Estimatedduration",
-                        "key": "instance.duration"
-                    },
-                    {
-                        "label": "Realised %",
-                        "name": "Realised",
-                        "width": "7%",
-                        "key": "instance.properties.completeness"
-                    },
-                    {
-                        "label": "Fixed costs",
-                        "name": "Fixedcosts",
-                        "key": "instance.properties.fixedCosts",
-                        "className": "right",
-                        "formatter": "rounded"
-                    },
-                    {
-                        "name": "Wages",
-                        "label": "Wages",
-                        "key": "instance.properties.wages"
-                    },
-                    {
-                        "name": "Quality",
-                        "label": "Quality",
-                        "key": "instance.properties.quality"
-                    },
-                    {
-                        "key": "requirements",
-                        "label": "Ressources",
-                        "formatter": "requieredRessources",
-                        "sortable": false
-                    },
-                    {
-                        "allowHTML": true,
-                        "label": "Assigned resources",
-                        "formatter": "assignedRessources",
-                        "sortable": false
-                    }
-                ],
-                "plugins": [
-                    {
-                        "fn": "Bac",
-                        "cfg": {
-                            "columnPosition": 4
+                        }],
+                    "children": [
+                        {
+                            "type": "Button",
+                            "cssClass": "actions",
+                            "disabled": false,
+                            "label": "",
+                            "tooltip": "Actions",
+                            "plugins": [
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 6,
+                                        "targetEvent": "click",
+                                        "targetPageLoaderId": "maindisplayarea"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Button",
+                            "cssClass": "questions",
+                            "disabled": false,
+                            "label": "",
+                            "tooltip": "Questions",
+                            "plugins": [
+                                {
+                                    "fn": "UnreadCount",
+                                    "cfg": {
+                                        "variable": {
+                                            "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
+                                        }
+                                    }
+                                },
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 7,
+                                        "targetEvent": "click",
+                                        "targetPageLoaderId": "maindisplayarea"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Button",
+                            "cssClass": "inbox",
+                            "setToReadAfter": 0,
+                            "tooltip": "Mailbox",
+                            "disabled": false,
+                            "label": "",
+                            "plugins": [
+                                {
+                                    "fn": "UnreadCount",
+                                    "cfg": {
+                                        "variable": {
+                                            "name": "inbox"
+                                        }
+                                    }
+                                },
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 8,
+                                        "targetEvent": "click",
+                                        "targetPageLoaderId": "maindisplayarea"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Button",
+                            "cssClass": "history",
+                            "disabled": false,
+                            "label": "",
+                            "tooltip": "History",
+                            "plugins": [
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 9,
+                                        "targetEvent": "click",
+                                        "targetPageLoaderId": "maindisplayarea"
+                                    }
+                                }
+                            ]
+                        }, {
+                            "type": "Button",
+                            "cssClass": "help",
+                            "disabled": false,
+                            "label": "",
+                            "plugins": [
+                                {
+                                    "fn": "OpenPageAction",
+                                    "cfg": {
+                                        "subpageId": 10,
+                                        "targetEvent": "click",
+                                        "targetPageLoaderId": "maindisplayarea"
+                                    }
+                                }
+                            ]
                         }
-                    },
-                    {
-                        "fn": "Tablepopup",
-                        "cfg": {
-                            "width": "250px",
-                            "field": "description",
-                            "column": 1
-                        }
-                    }
-                ]
-            }
-        ]
-    },
-    "4": {
-        "type": "List",
-        "cssClass": "gantt-plannification-page",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgDatatable",
-                "plugins": [
-                    {
-                        "fn": "ScheduleDT",
-                        "cfg": {
-                            "columnToAdd": 16,
+                    ]
+                }, {
+                    "type": "PageLoader",
+                    "pageLoaderId": "maindisplayarea",
+                    "cssClass": "body",
+                    "defaultPageId": 2,
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "120px",
+                                    "bottom": "0px",
+                                    "right": "59px",
+                                    "left": "0px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSBackground",
+                            "cfg": {
+                                "styles": {
+                                    "backgroundColor": "#ffffff"
+                                }
+                            }
+                        }]
+                }
+            ]
+        },
+        "2": {
+            "cssClass": "project-page",
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "PmgSlidePanel",
+                    "title": "Finances",
+                    "cssClass": "finances",
+                    "animation": false,
+                    "children": [
+                        {
+                            "type": "Template",
+                            "data": {
+                            },
+                            "template": "text",
+                            "custom": "<%  var fixedCosts=0, wages=0, unworked=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.VariableDescriptor.cache.find('name', 'projectFixedCosts').getInstance().get('value'); for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); unworked = unworked + parseFloat(properties.unworkedHoursCosts); } taskTotal = wages + fixedCosts + unworked; total = taskTotal + projectFixedCost; %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div><div class='tasks'><div class='taskTotal'><span class='label'>Tasks</span><span class='variableValue'><%= taskTotal %></span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'><%= unworked %></span></div></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
                             "variable": {
-                                "name": "periodPhase3"
+                                "name": "tasks"
                             }
                         }
-                    },
-                    {
-                        "fn": "Planification",
-                        "cfg": {
-                        }
-                    },
-                    {
-                        "fn": "Plannificationcolor",
-                        "cfg": {
-                        }
-                    },
-                    {
-                        "fn": "Tablepopup",
-                        "cfg": {
-                            "width": "250px",
-                            "field": "description",
-                            "column": 1
-                        }
-                    }
-                ],
-                "variable": {
-                    "name": "tasks"
+                    ]
                 },
-                "columnsCfg": [
-                    {
-                        "key": "index",
-                        "label": "No",
-                        "sortable": true,
-                        "allowHTML": true
-                    },
-                    {
-                        "key": "label",
-                        "label": "Name",
-                        "sortable": true,
-                        "allowHTML": true
-                    }
-                ],
-                "defaultSort": null
-            }
-        ]
-    },
-    "5": {
-        "type": "List",
-        "cssClass": "resources-page",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgSlidePanel",
-                "cssClass": "animated",
-                "title": "Commercial",
-                "animation": true,
-                "children": [
-                    {
-                        "type": "PmgDatatable",
-                        "plugins": [
-                            {
-                                "fn": "ScheduleDT",
-                                "cfg": {
-                                    "columnToAdd": 16,
-                                    "variable": {
-                                        "name": "periodPhase3"
-                                    }
+                {
+                    "type": "PmgSlidePanel",
+                    "title": "EVM",
+                    "cssClass": "evm",
+                    "animation": false,
+                    "children": [
+                        {
+                            "height": "200px",
+                            "chartType": "combo",
+                            "width": "90%",
+                            "horizontalGridlines": true,
+                            "legendPosition": "bottom",
+                            "type": "Chart",
+                            "verticalGridlines": true,
+                            "variables": [
+                                {
+                                    "name": "actualCost",
+                                    "label": "AC (Actual Cost)"
+                                },
+                                {
+                                    "name": "planedValue",
+                                    "label": "PV (Planed Value)"
+                                },
+                                {
+                                    "name": "earnedValue",
+                                    "label": "EV (Earned Value)"
                                 }
-                            },
-                            {
-                                "fn": "Assignment",
-                                "cfg": {
-                                    "taskList": {
-                                        "name": "tasks"
-                                    },
-                                    "columnPosition": 5
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "PmgSlidePanel",
+                    "title": "Indicators History: Management and Users",
+                    "cssClass": "indicators-management",
+                    "animation": false,
+                    "children": [
+                        {
+                            "height": "200px",
+                            "chartType": "combo",
+                            "width": "90%",
+                            "horizontalGridlines": true,
+                            "legendPosition": "bottom",
+                            "type": "Chart",
+                            "verticalGridlines": true,
+                            "variables": [
+                                {
+                                    "name": "managementApproval",
+                                    "label": "Management"
+                                },
+                                {
+                                    "name": "userApproval",
+                                    "label": "Users"
                                 }
-                            },
-                            {
-                                "fn": "Reservation",
-                                "cfg": {
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "PmgSlidePanel",
+                    "title": "Indicators History: Quality, Costs, and Shedule",
+                    "cssClass": "indicators-quality",
+                    "animation": false,
+                    "children": [
+                        {
+                            "height": "200px",
+                            "chartType": "combo",
+                            "width": "90%",
+                            "horizontalGridlines": true,
+                            "legendPosition": "bottom",
+                            "type": "Chart",
+                            "verticalGridlines": true,
+                            "variables": [
+                                {
+                                    "name": "costs",
+                                    "label": "Costs"
+                                },
+                                {
+                                    "name": "delay",
+                                    "label": "Shedule"
+                                },
+                                {
+                                    "name": "quality",
+                                    "label": "Quality"
                                 }
-                            },
-                            {
-                                "fn": "OccupationColor",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "ActivityColor",
-                                "cfg": {
-                                }
-                            }
-                        ],
-                        "variable": {
-                            "name": "commercial"
-                        },
-                        "columnsCfg": [
-                            {
-                                "key": "label",
-                                "label": "Name",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "grade",
-                                "label": "Grade",
-                                "formatter": "skillLevel",
-                                "key": "instance.skillsets",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Wage",
-                                "label": "Wage",
-                                "key": "instance.properties.wage",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Rate",
-                                "label": "Rate",
-                                "key": "instance.properties.activityRate",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Motiv",
-                                "label": "Motiv.",
-                                "key": "instance.moral",
-                                "sortable": true,
-                                "allowHTML": true
-                            }
-                        ],
-                        "defaultSort": null
-                    },
-                    {
-                        "type": "Text",
-                        "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "cssClass": "animated",
-                "title": "Consultant IT",
-                "animation": true,
-                "children": [
-                    {
-                        "type": "PmgDatatable",
-                        "plugins": [
-                            {
-                                "fn": "ScheduleDT",
-                                "cfg": {
-                                    "columnToAdd": 16,
-                                    "variable": {
-                                        "name": "periodPhase3"
-                                    }
-                                }
-                            },
-                            {
-                                "fn": "Assignment",
-                                "cfg": {
-                                    "taskList": {
-                                        "name": "tasks"
-                                    },
-                                    "columnPosition": 5
-                                }
-                            },
-                            {
-                                "fn": "Reservation",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "OccupationColor",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "ActivityColor",
-                                "cfg": {
-                                }
-                            }
-                        ],
-                        "variable": {
-                            "name": "consultantIT"
-                        },
-                        "columnsCfg": [
-                            {
-                                "key": "label",
-                                "label": "Name",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "grade",
-                                "label": "Grade",
-                                "formatter": "skillLevel",
-                                "key": "instance.skillsets",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Wage",
-                                "label": "Wage",
-                                "key": "instance.properties.wage",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Rate",
-                                "label": "Rate",
-                                "key": "instance.properties.activityRate",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Motiv",
-                                "label": "Motiv.",
-                                "key": "instance.moral",
-                                "sortable": true,
-                                "allowHTML": true
-                            }
-                        ],
-                        "defaultSort": null
-                    },
-                    {
-                        "type": "Text",
-                        "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "cssClass": "animated",
-                "title": "Informaticien Hardware",
-                "animation": true,
-                "children": [
-                    {
-                        "type": "PmgDatatable",
-                        "plugins": [
-                            {
-                                "fn": "ScheduleDT",
-                                "cfg": {
-                                    "columnToAdd": 16,
-                                    "variable": {
-                                        "name": "periodPhase3"
-                                    }
-                                }
-                            },
-                            {
-                                "fn": "Assignment",
-                                "cfg": {
-                                    "taskList": {
-                                        "name": "tasks"
-                                    },
-                                    "columnPosition": 5
-                                }
-                            },
-                            {
-                                "fn": "Reservation",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "OccupationColor",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "ActivityColor",
-                                "cfg": {
-                                }
-                            }
-                        ],
-                        "variable": {
-                            "name": "informaticienHardware"
-                        },
-                        "columnsCfg": [
-                            {
-                                "key": "label",
-                                "label": "Name",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "grade",
-                                "label": "Grade",
-                                "formatter": "skillLevel",
-                                "key": "instance.skillsets",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Wage",
-                                "label": "Wage",
-                                "key": "instance.properties.wage",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Rate",
-                                "label": "Rate",
-                                "key": "instance.properties.activityRate",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Motiv",
-                                "label": "Motiv.",
-                                "key": "instance.moral",
-                                "sortable": true,
-                                "allowHTML": true
-                            }
-                        ],
-                        "defaultSort": null
-                    },
-                    {
-                        "type": "Text",
-                        "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "cssClass": "animated",
-                "title": "Informaticien Logiciel",
-                "animation": true,
-                "children": [
-                    {
-                        "type": "PmgDatatable",
-                        "plugins": [
-                            {
-                                "fn": "ScheduleDT",
-                                "cfg": {
-                                    "columnToAdd": 16,
-                                    "variable": {
-                                        "name": "periodPhase3"
-                                    }
-                                }
-                            },
-                            {
-                                "fn": "Assignment",
-                                "cfg": {
-                                    "taskList": {
-                                        "name": "tasks"
-                                    },
-                                    "columnPosition": 5
-                                }
-                            },
-                            {
-                                "fn": "Reservation",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "OccupationColor",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "ActivityColor",
-                                "cfg": {
-                                }
-                            }
-                        ],
-                        "variable": {
-                            "name": "informaticienLogiciel"
-                        },
-                        "columnsCfg": [
-                            {
-                                "key": "label",
-                                "label": "Name",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "grade",
-                                "label": "Grade",
-                                "formatter": "skillLevel",
-                                "key": "instance.skillsets",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Wage",
-                                "label": "Wage",
-                                "key": "instance.properties.wage",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Rate",
-                                "label": "Rate",
-                                "key": "instance.properties.activityRate",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Motiv",
-                                "label": "Motiv.",
-                                "key": "instance.moral",
-                                "sortable": true,
-                                "allowHTML": true
-                            }
-                        ],
-                        "defaultSort": null
-                    },
-                    {
-                        "type": "Text",
-                        "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "cssClass": "animated",
-                "title": "Monteur",
-                "animation": true,
-                "children": [
-                    {
-                        "type": "PmgDatatable",
-                        "plugins": [
-                            {
-                                "fn": "ScheduleDT",
-                                "cfg": {
-                                    "columnToAdd": 16,
-                                    "variable": {
-                                        "name": "periodPhase3"
-                                    }
-                                }
-                            },
-                            {
-                                "fn": "Assignment",
-                                "cfg": {
-                                    "taskList": {
-                                        "name": "tasks"
-                                    },
-                                    "columnPosition": 5
-                                }
-                            },
-                            {
-                                "fn": "Reservation",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "OccupationColor",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "ActivityColor",
-                                "cfg": {
-                                }
-                            }
-                        ],
-                        "variable": {
-                            "name": "monteur"
-                        },
-                        "columnsCfg": [
-                            {
-                                "key": "label",
-                                "label": "Name",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "grade",
-                                "label": "Grade",
-                                "formatter": "skillLevel",
-                                "key": "instance.skillsets",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Wage",
-                                "label": "Wage",
-                                "key": "instance.properties.wage",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Rate",
-                                "label": "Rate",
-                                "key": "instance.properties.activityRate",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Motiv",
-                                "label": "Motiv.",
-                                "key": "instance.moral",
-                                "sortable": true,
-                                "allowHTML": true
-                            }
-                        ],
-                        "defaultSort": null
-                    },
-                    {
-                        "type": "Text",
-                        "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "cssClass": "animated",
-                "title": "Web Designer",
-                "animation": true,
-                "children": [
-                    {
-                        "type": "PmgDatatable",
-                        "plugins": [
-                            {
-                                "fn": "ScheduleDT",
-                                "cfg": {
-                                    "columnToAdd": 16,
-                                    "variable": {
-                                        "name": "periodPhase3"
-                                    }
-                                }
-                            },
-                            {
-                                "fn": "Assignment",
-                                "cfg": {
-                                    "taskList": {
-                                        "name": "tasks"
-                                    },
-                                    "columnPosition": 5
-                                }
-                            },
-                            {
-                                "fn": "Reservation",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "OccupationColor",
-                                "cfg": {
-                                }
-                            },
-                            {
-                                "fn": "ActivityColor",
-                                "cfg": {
-                                }
-                            }
-                        ],
-                        "variable": {
-                            "name": "webDesigner"
-                        },
-                        "columnsCfg": [
-                            {
-                                "key": "label",
-                                "label": "Name",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "grade",
-                                "label": "Grade",
-                                "formatter": "skillLevel",
-                                "key": "instance.skillsets",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Wage",
-                                "label": "Wage",
-                                "key": "instance.properties.wage",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Rate",
-                                "label": "Rate",
-                                "key": "instance.properties.activityRate",
-                                "sortable": true,
-                                "allowHTML": true
-                            },
-                            {
-                                "name": "Motiv",
-                                "label": "Motiv.",
-                                "key": "instance.moral",
-                                "sortable": true,
-                                "allowHTML": true
-                            }
-                        ],
-                        "defaultSort": null
-                    },
-                    {
-                        "type": "Text",
-                        "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
-                    }
-                ]
-            }
-        ]
-    },
-    "6": {
-        "cssClass": "actions-page",
-        "type": "List",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "Text",
-                "content": "<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
-            },
-            {
-                "type": "MCQTabView",
-                "showUnanswered": false,
-                "variable": {
-                    "expr": "actions.items[currentPhase.value].descriptorId"
+                            ]
+                        }
+                    ]
                 }
-            }
-        ]
-    },
-    "7": {
-        "cssClass": "questions-page",
-        "type": "List",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "Text",
-                "content": "<div class='title'><h2>Questions to answer this week</h2></div><div class='title'><h2>Details</h2></div>"
-            },
-            {
-                "type": "MCQTabView",
-                "variable": {
-                    "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
-                }
-            }
-        ]
-    },
-    "8": {
-        "cssClass": "inbox-page",
-        "type": "List",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "Text",
-                "content": "<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Messages</h2></div>"
-            },
-            {
-                "type": "InboxDisplay",
-                "variable": {
-                    "name": "inbox"
-                }
-            }
-        ]
-    },
-    "9": {
-        "cssClass": "history-page",
-        "type": "List",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "Text",
-                "content": "<div class='title'><h2>Questions and actions history</h2></div><div class='title'><h2>Details</h2></div>"
-            },
-            {
-                "type": "InboxDisplay",
-                "variable": {
-                    "name": "inbox"
-                }
-            }
-        ]
-    },
-    "10": {
-        "cssClass": "evm-page",
-        "direction": "vertical",
-        "type": "List",
-        "children": [
-            {
-                "type": "PmgSlidePanel",
-                "title": "EVM",
-                "cssClass": "evm",
-                "animation": false,
-                "children": [
-                    {
-                        "type": "Chart",
-                        "width": "90%",
-                        "height": "400px",
-                        "chartType": "combo",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "verticalGridlines": true,
-                        "variables": [
-                            {
-                                "name": "actualCost",
-                                "label": "AC (Actual Cost)"
-                            },
-                            {
-                                "name": "planedValue",
-                                "label": "PV (Planed Value)"
-                            },
-                            {
-                                "name": "earnedValue",
-                                "label": "EV (Earned Value)"
+            ]
+        },
+        "3": {
+            "cssClass": "task-plannification-page",
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "PmgDatatable",
+                    "variable": {
+                        "name": "tasks"
+                    },
+                    "defaultSort": null,
+                    "columnsCfg": [
+                        {
+                            "key": "index",
+                            "label": "No"
+                        },
+                        {
+                            "key": "label",
+                            "label": "Name"
+                        },
+                        {
+                            "label": "Estimated</br>duration",
+                            "width": "54px",
+                            "name": "Estimatedduration",
+                            "key": "instance.duration"
+                        },
+                        {
+                            "label": "Realised %",
+                            "name": "Realised",
+                            "width": "7%",
+                            "key": "instance.properties.completeness"
+                        },
+                        {
+                            "label": "Fixed costs",
+                            "name": "Fixedcosts",
+                            "key": "instance.properties.fixedCosts",
+                            "className": "right",
+                            "formatter": "rounded"
+                        },
+                        {
+                            "name": "Wages",
+                            "label": "Wages",
+                            "key": "instance.properties.wages"
+                        },
+                        {
+                            "name": "Quality",
+                            "label": "Quality",
+                            "key": "instance.properties.quality"
+                        },
+                        {
+                            "key": "requirements",
+                            "label": "Ressources",
+                            "formatter": "requieredRessources",
+                            "sortable": false
+                        },
+                        {
+                            "allowHTML": true,
+                            "label": "Assigned resources",
+                            "name": "assignedResources",
+                            "formatter": "assignedRessources",
+                            "sortable": false
+                        }
+                    ],
+                    "plugins": [
+                        {
+                            "fn": "Bac",
+                            "cfg": {
+                                "columnPosition": 4
                             }
-                        ]
-                    }
-                ]
-            }
-        ]
-    },
-    "11": {
-        "type": "List",
-        "cssClass": "gantt-execution-page",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgDatatable",
-                "plugins": [
-                    {
-                        "fn": "ScheduleDT",
-                        "cfg": {
-                            "columnToAdd": 16,
+                        },
+                        {
+                            "fn": "Tablepopup",
+                            "cfg": {
+                                "width": "250px",
+                                "field": "description",
+                                "column": 1
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "4": {
+            "type": "List",
+            "cssClass": "gantt-plannification-page",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "PmgDatatable",
+                    "plugins": [
+                        {
+                            "fn": "ScheduleDT",
+                            "cfg": {
+                                "columnToAdd": 16,
+                                "variable": {
+                                    "name": "periodPhase3"
+                                }
+                            }
+                        },
+                        {
+                            "fn": "Planification",
+                            "cfg": {
+                            }
+                        },
+                        {
+                            "fn": "Plannificationcolor",
+                            "cfg": {
+                            }
+                        },
+                        {
+                            "fn": "Tablepopup",
+                            "cfg": {
+                                "width": "250px",
+                                "field": "description",
+                                "column": 1
+                            }
+                        }
+                    ],
+                    "variable": {
+                        "name": "tasks"
+                    },
+                    "columnsCfg": [
+                        {
+                            "key": "index",
+                            "label": "No",
+                            "sortable": true,
+                            "allowHTML": true
+                        },
+                        {
+                            "key": "label",
+                            "label": "Name",
+                            "sortable": true,
+                            "allowHTML": true
+                        }
+                    ],
+                    "defaultSort": null
+                }
+            ]
+        },
+        "5": {
+            "type": "List",
+            "cssClass": "resources-page",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "PmgSlidePanel",
+                    "cssClass": "animated",
+                    "title": "Commercial",
+                    "animation": true,
+                    "children": [
+                        {
+                            "type": "PmgDatatable",
+                            "plugins": [
+                                {
+                                    "fn": "ScheduleDT",
+                                    "cfg": {
+                                        "columnToAdd": 16,
+                                        "variable": {
+                                            "name": "periodPhase3"
+                                        }
+                                    }
+                                },
+                                {
+                                    "fn": "Assignment",
+                                    "cfg": {
+                                        "taskList": {
+                                            "name": "tasks"
+                                        },
+                                        "columnPosition": 5
+                                    }
+                                },
+                                {
+                                    "fn": "Reservation",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "OccupationColor",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "ActivityColor",
+                                    "cfg": {
+                                    }
+                                }
+                            ],
                             "variable": {
-                                "name": "periodPhase3"
+                                "name": "commercial"
+                            },
+                            "columnsCfg": [
+                                {
+                                    "key": "label",
+                                    "label": "Name",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "grade",
+                                    "label": "Grade",
+                                    "formatter": "skillLevel",
+                                    "key": "instance.skillsets",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Wage",
+                                    "label": "Wage",
+                                    "key": "instance.properties.wage",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Rate",
+                                    "label": "Rate",
+                                    "key": "instance.properties.activityRate",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Motiv",
+                                    "label": "Motiv.",
+                                    "key": "instance.moral",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                }
+                            ],
+                            "defaultSort": null
+                        },
+                        {
+                            "type": "Text",
+                            "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
+                        }
+                    ]
+                },
+                {
+                    "type": "PmgSlidePanel",
+                    "cssClass": "animated",
+                    "title": "Consultant IT",
+                    "animation": true,
+                    "children": [
+                        {
+                            "type": "PmgDatatable",
+                            "plugins": [
+                                {
+                                    "fn": "ScheduleDT",
+                                    "cfg": {
+                                        "columnToAdd": 16,
+                                        "variable": {
+                                            "name": "periodPhase3"
+                                        }
+                                    }
+                                },
+                                {
+                                    "fn": "Assignment",
+                                    "cfg": {
+                                        "taskList": {
+                                            "name": "tasks"
+                                        },
+                                        "columnPosition": 5
+                                    }
+                                },
+                                {
+                                    "fn": "Reservation",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "OccupationColor",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "ActivityColor",
+                                    "cfg": {
+                                    }
+                                }
+                            ],
+                            "variable": {
+                                "name": "consultantIT"
+                            },
+                            "columnsCfg": [
+                                {
+                                    "key": "label",
+                                    "label": "Name",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "grade",
+                                    "label": "Grade",
+                                    "formatter": "skillLevel",
+                                    "key": "instance.skillsets",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Wage",
+                                    "label": "Wage",
+                                    "key": "instance.properties.wage",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Rate",
+                                    "label": "Rate",
+                                    "key": "instance.properties.activityRate",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Motiv",
+                                    "label": "Motiv.",
+                                    "key": "instance.moral",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                }
+                            ],
+                            "defaultSort": null
+                        },
+                        {
+                            "type": "Text",
+                            "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
+                        }
+                    ]
+                },
+                {
+                    "type": "PmgSlidePanel",
+                    "cssClass": "animated",
+                    "title": "Informaticien Hardware",
+                    "animation": true,
+                    "children": [
+                        {
+                            "type": "PmgDatatable",
+                            "plugins": [
+                                {
+                                    "fn": "ScheduleDT",
+                                    "cfg": {
+                                        "columnToAdd": 16,
+                                        "variable": {
+                                            "name": "periodPhase3"
+                                        }
+                                    }
+                                },
+                                {
+                                    "fn": "Assignment",
+                                    "cfg": {
+                                        "taskList": {
+                                            "name": "tasks"
+                                        },
+                                        "columnPosition": 5
+                                    }
+                                },
+                                {
+                                    "fn": "Reservation",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "OccupationColor",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "ActivityColor",
+                                    "cfg": {
+                                    }
+                                }
+                            ],
+                            "variable": {
+                                "name": "informaticienHardware"
+                            },
+                            "columnsCfg": [
+                                {
+                                    "key": "label",
+                                    "label": "Name",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "grade",
+                                    "label": "Grade",
+                                    "formatter": "skillLevel",
+                                    "key": "instance.skillsets",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Wage",
+                                    "label": "Wage",
+                                    "key": "instance.properties.wage",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Rate",
+                                    "label": "Rate",
+                                    "key": "instance.properties.activityRate",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Motiv",
+                                    "label": "Motiv.",
+                                    "key": "instance.moral",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                }
+                            ],
+                            "defaultSort": null
+                        },
+                        {
+                            "type": "Text",
+                            "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
+                        }
+                    ]
+                },
+                {
+                    "type": "PmgSlidePanel",
+                    "cssClass": "animated",
+                    "title": "Informaticien Logiciel",
+                    "animation": true,
+                    "children": [
+                        {
+                            "type": "PmgDatatable",
+                            "plugins": [
+                                {
+                                    "fn": "ScheduleDT",
+                                    "cfg": {
+                                        "columnToAdd": 16,
+                                        "variable": {
+                                            "name": "periodPhase3"
+                                        }
+                                    }
+                                },
+                                {
+                                    "fn": "Assignment",
+                                    "cfg": {
+                                        "taskList": {
+                                            "name": "tasks"
+                                        },
+                                        "columnPosition": 5
+                                    }
+                                },
+                                {
+                                    "fn": "Reservation",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "OccupationColor",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "ActivityColor",
+                                    "cfg": {
+                                    }
+                                }
+                            ],
+                            "variable": {
+                                "name": "informaticienLogiciel"
+                            },
+                            "columnsCfg": [
+                                {
+                                    "key": "label",
+                                    "label": "Name",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "grade",
+                                    "label": "Grade",
+                                    "formatter": "skillLevel",
+                                    "key": "instance.skillsets",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Wage",
+                                    "label": "Wage",
+                                    "key": "instance.properties.wage",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Rate",
+                                    "label": "Rate",
+                                    "key": "instance.properties.activityRate",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Motiv",
+                                    "label": "Motiv.",
+                                    "key": "instance.moral",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                }
+                            ],
+                            "defaultSort": null
+                        },
+                        {
+                            "type": "Text",
+                            "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
+                        }
+                    ]
+                },
+                {
+                    "type": "PmgSlidePanel",
+                    "cssClass": "animated",
+                    "title": "Monteur",
+                    "animation": true,
+                    "children": [
+                        {
+                            "type": "PmgDatatable",
+                            "plugins": [
+                                {
+                                    "fn": "ScheduleDT",
+                                    "cfg": {
+                                        "columnToAdd": 16,
+                                        "variable": {
+                                            "name": "periodPhase3"
+                                        }
+                                    }
+                                },
+                                {
+                                    "fn": "Assignment",
+                                    "cfg": {
+                                        "taskList": {
+                                            "name": "tasks"
+                                        },
+                                        "columnPosition": 5
+                                    }
+                                },
+                                {
+                                    "fn": "Reservation",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "OccupationColor",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "ActivityColor",
+                                    "cfg": {
+                                    }
+                                }
+                            ],
+                            "variable": {
+                                "name": "monteur"
+                            },
+                            "columnsCfg": [
+                                {
+                                    "key": "label",
+                                    "label": "Name",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "grade",
+                                    "label": "Grade",
+                                    "formatter": "skillLevel",
+                                    "key": "instance.skillsets",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Wage",
+                                    "label": "Wage",
+                                    "key": "instance.properties.wage",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Rate",
+                                    "label": "Rate",
+                                    "key": "instance.properties.activityRate",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Motiv",
+                                    "label": "Motiv.",
+                                    "key": "instance.moral",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                }
+                            ],
+                            "defaultSort": null
+                        },
+                        {
+                            "type": "Text",
+                            "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
+                        }
+                    ]
+                },
+                {
+                    "type": "PmgSlidePanel",
+                    "cssClass": "animated",
+                    "title": "Web Designer",
+                    "animation": true,
+                    "children": [
+                        {
+                            "type": "PmgDatatable",
+                            "plugins": [
+                                {
+                                    "fn": "ScheduleDT",
+                                    "cfg": {
+                                        "columnToAdd": 16,
+                                        "variable": {
+                                            "name": "periodPhase3"
+                                        }
+                                    }
+                                },
+                                {
+                                    "fn": "Assignment",
+                                    "cfg": {
+                                        "taskList": {
+                                            "name": "tasks"
+                                        },
+                                        "columnPosition": 5
+                                    }
+                                },
+                                {
+                                    "fn": "Reservation",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "OccupationColor",
+                                    "cfg": {
+                                    }
+                                },
+                                {
+                                    "fn": "ActivityColor",
+                                    "cfg": {
+                                    }
+                                }
+                            ],
+                            "variable": {
+                                "name": "webDesigner"
+                            },
+                            "columnsCfg": [
+                                {
+                                    "key": "label",
+                                    "label": "Name",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "grade",
+                                    "label": "Grade",
+                                    "formatter": "skillLevel",
+                                    "key": "instance.skillsets",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Wage",
+                                    "label": "Wage",
+                                    "key": "instance.properties.wage",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Rate",
+                                    "label": "Rate",
+                                    "key": "instance.properties.activityRate",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                },
+                                {
+                                    "name": "Motiv",
+                                    "label": "Motiv.",
+                                    "key": "instance.moral",
+                                    "sortable": true,
+                                    "allowHTML": true
+                                }
+                            ],
+                            "defaultSort": null
+                        },
+                        {
+                            "type": "Text",
+                            "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
+                        }
+                    ]
+                }
+            ]
+        },
+        "6": {
+            "cssClass": "actions-page",
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "Text",
+                    "content": "<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
+                },
+                {
+                    "type": "MCQTabView",
+                    "showUnanswered": false,
+                    "variable": {
+                        "expr": "actions.items[currentPhase.value].descriptorId"
+                    }
+                }
+            ]
+        },
+        "7": {
+            "cssClass": "questions-page",
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "Text",
+                    "content": "<div class='title'><h2>Questions to answer this week</h2></div><div class='title'><h2>Details</h2></div>"
+                },
+                {
+                    "type": "MCQTabView",
+                    "variable": {
+                        "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
+                    }
+                }
+            ]
+        },
+        "8": {
+            "cssClass": "inbox-page",
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "Text",
+                    "content": "<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Messages</h2></div>"
+                },
+                {
+                    "type": "InboxDisplay",
+                    "variable": {
+                        "name": "inbox"
+                    }
+                }
+            ]
+        },
+        "9": {
+            "cssClass": "history-page",
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "Text",
+                    "content": "<div class='title'><h2>Questions and actions history</h2></div><div class='title'><h2>Details</h2></div>"
+                },
+                {
+                    "type": "InboxDisplay",
+                    "variable": {
+                        "name": "inbox"
+                    }
+                }
+            ]
+        },
+        "10": {
+            "cssClass": "evm-page",
+            "direction": "vertical",
+            "type": "List",
+            "children": [
+                {
+                    "type": "PmgSlidePanel",
+                    "title": "EVM",
+                    "cssClass": "evm",
+                    "animation": false,
+                    "children": [
+                        {
+                            "type": "Chart",
+                            "width": "90%",
+                            "height": "400px",
+                            "chartType": "combo",
+                            "horizontalGridlines": true,
+                            "legendPosition": "bottom",
+                            "verticalGridlines": true,
+                            "variables": [
+                                {
+                                    "name": "actualCost",
+                                    "label": "AC (Actual Cost)"
+                                },
+                                {
+                                    "name": "planedValue",
+                                    "label": "PV (Planed Value)"
+                                },
+                                {
+                                    "name": "earnedValue",
+                                    "label": "EV (Earned Value)"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "11": {
+            "type": "List",
+            "cssClass": "gantt-execution-page",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "PmgDatatable",
+                    "plugins": [
+                        {
+                            "fn": "ScheduleDT",
+                            "cfg": {
+                                "columnToAdd": 16,
+                                "variable": {
+                                    "name": "periodPhase3"
+                                }
+                            }
+                        },
+                        {
+                            "fn": "Plannificationcolor",
+                            "cfg": {
+                            }
+                        },
+                        {
+                            "fn": "PlannificationActivityColor",
+                            "cfg": {
+                            }
+                        },
+                        {
+                            "fn": "PlannificationProgressColor",
+                            "cfg": {
+                            }
+                        },
+                        {
+                            "fn": "Tablepopup",
+                            "cfg": {
+                                "width": "250px",
+                                "field": "description",
+                                "column": 1
                             }
                         }
+                    ],
+                    "variable": {
+                        "name": "tasks"
                     },
-                    {
-                        "fn": "Plannificationcolor",
-                        "cfg": {
+                    "columnsCfg": [
+                        {
+                            "key": "index",
+                            "label": "No",
+                            "sortable": true,
+                            "allowHTML": true
+                        },
+                        {
+                            "key": "label",
+                            "label": "Name",
+                            "sortable": true,
+                            "allowHTML": true
+                        },
+                        {
+                            "label": "Realised %",
+                            "name": "Realized",
+                            "width": "7%",
+                            "key": "instance.properties.completeness",
+                            "sortable": true,
+                            "allowHTML": true
                         }
-                    },
-                    {
-                        "fn": "PlannificationActivityColor",
-                        "cfg": {
-                        }
-                    },
-                    {
-                        "fn": "PlannificationProgressColor",
-                        "cfg": {
-                        }
-                    },
-                    {
-                        "fn": "Tablepopup",
-                        "cfg": {
-                            "width": "250px",
-                            "field": "description",
-                            "column": 1
-                        }
-                    }
-                ],
-                "variable": {
-                    "name": "tasks"
+                    ],
+                    "defaultSort": null
                 },
-                "columnsCfg": [
-                    {
-                        "key": "index",
-                        "label": "No",
-                        "sortable": true,
-                        "allowHTML": true
+                {
+                    "type": "Text",
+                    "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"planification\">&nbsp;</div>\nPlanified</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nWorked</div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\nDue</div>\n</div>"
+                }
+            ]
+        },
+        "12": {
+            "cssClass": "task-execution-page",
+            "type": "List",
+            "direction": "vertical",
+            "children": [
+                {
+                    "type": "PmgDatatable",
+                    "variable": {
+                        "name": "tasks"
                     },
-                    {
-                        "key": "label",
-                        "label": "Name",
-                        "sortable": true,
-                        "allowHTML": true
-                    },
-                    {
-                        "label": "Realised %",
-                        "name": "Realized",
-                        "width": "7%",
-                        "key": "instance.properties.completeness",
-                        "sortable": true,
-                        "allowHTML": true
-                    }
-                ],
-                "defaultSort": null
-            },
-            {
-                "type": "Text",
-                "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"planification\">&nbsp;</div>\nPlanified</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nWorked</div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\nDue</div>\n</div>"
-            }
-        ]
-    },
-    "12": {
-        "cssClass": "task-execution-page",
-        "type": "List",
-        "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgDatatable",
-                "variable": {
-                    "name": "tasks"
-                },
-                "defaultSort": null,
-                "columnsCfg": [
-                    {
-                        "key": "index",
-                        "label": "No"
-                    },
-                    {
-                        "key": "label",
-                        "label": "Name"
-                    },
-                    {
-                        "label": "Estimated</br>duration",
-                        "width": "54px",
-                        "name": "Estimatedduration",
-                        "key": "instance.duration"
-                    },
-                    {
-                        "label": "Realised %",
-                        "name": "Realised",
-                        "width": "7%",
-                        "key": "instance.properties.completeness"
-                    },
-                    {
-                        "label": "Fixed costs",
-                        "name": "Fixedcosts",
-                        "formatter": "rounded",
-                        "className": "right",
-                        "key": "instance.properties.fixedCosts"
-                    },
-                    {
-                        "label": "BAC",
-                        "name": "bac",
-                        "key": "instance.properties.bac"
-                    },
-                    {
-                        "label": "Wages",
-                        "name": "Wages",
-                        "key": "instance.properties.wages"
-                    },
-                    {
-                        "name": "Quality",
-                        "label": "Quality",
-                        "key": "instance.properties.quality"
-                    },
-                    {
-                        "key": "requirements",
-                        "label": "Ressources",
-                        "formatter": "requieredRessources",
-                        "sortable": false
-                    },
-                    {
-                        "label": "Assigned resources",
-                        "formatter": "assignedRessources",
-                        "sortable": false
-                    }
-                ],
-                "plugins": [
-                    {
-                        "fn": "Tablepopup",
-                        "cfg": {
-                            "width": "250px",
-                            "field": "description",
-                            "column": 1
+                    "defaultSort": null,
+                    "columnsCfg": [
+                        {
+                            "key": "index",
+                            "label": "No"
+                        },
+                        {
+                            "key": "label",
+                            "label": "Name"
+                        },
+                        {
+                            "label": "Estimated</br>duration",
+                            "width": "54px",
+                            "name": "Estimatedduration",
+                            "key": "instance.duration"
+                        },
+                        {
+                            "label": "Realised %",
+                            "name": "Realised",
+                            "width": "7%",
+                            "key": "instance.properties.completeness"
+                        },
+                        {
+                            "label": "Fixed costs",
+                            "name": "Fixedcosts",
+                            "formatter": "rounded",
+                            "className": "right",
+                            "key": "instance.properties.fixedCosts"
+                        },
+                        {
+                            "label": "BAC",
+                            "name": "bac",
+                            "key": "instance.properties.bac"
+                        },
+                        {
+                            "label": "Wages",
+                            "name": "Wages",
+                            "key": "instance.properties.wages"
+                        },
+                        {
+                            "name": "Quality",
+                            "label": "Quality",
+                            "key": "instance.properties.quality"
+                        },
+                        {
+                            "key": "requirements",
+                            "label": "Ressources",
+                            "formatter": "requieredRessources",
+                            "sortable": false
+                        },
+                        {
+                            "label": "Assigned resources",
+                            "name": "assignedResources",
+                            "formatter": "assignedRessources",
+                            "sortable": false
                         }
-                    }
-                ]
+                    ],
+                    "plugins": [
+                        {
+                            "fn": "Tablepopup",
+                            "cfg": {
+                                "width": "250px",
+                                "field": "description",
+                                "column": 1
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "13": {
+            "type": "PageLoader",
+            "cssClass": "task-page",
+            "variable": {
+                "name": "taskPage"
             }
-        ]
-    },
-    "13": {
-        "type": "PageLoader",
-        "cssClass": "task-page",
-        "variable": {
-            "name": "taskPage"
-        }
-    },
-    "14": {
-        "type": "PageLoader",
-        "cssClass": "gantt-page",
-        "variable": {
-            "name": "ganttPage"
+        },
+        "14": {
+            "type": "PageLoader",
+            "cssClass": "gantt-page",
+            "variable": {
+                "name": "ganttPage"
+            }
         }
     }
-}
