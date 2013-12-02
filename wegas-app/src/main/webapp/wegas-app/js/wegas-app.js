@@ -150,22 +150,25 @@ YUI.add('wegas-app', function(Y) {
          * @description initilize DataSources
          */
         initDataSources: function() {
+            var onInitialRequest = function() {
+                this.requestCounter -= 1;
+                if (this.requestCounter === 0) {
+                    this.initPage();                                            // Run the initPage() method when they all arrived.
+                }
+            };
 
-            this.requestCounter = 0;
+            this.requestCounter = 1;
 
             Y.Wegas.use(Y.Object.values(this.get('dataSources')), Y.bind(function(Y) {
-                var k, dataSource, dataSources = this.get('dataSources'),
-                        onInitialRequest = function() {
-                    this.requestCounter -= 1;
-                    if (this.requestCounter === 0) {
-                        this.initPage();                                        // Run the initPage() method when they all arrived.
-                    }
-                };
+                var k, dataSource, dataSources = this.get('dataSources');
 
                 for (k in dataSources) {
                     if (dataSources.hasOwnProperty(k)) {
-                        dataSources[k].source = this.get("base") + dataSources[k].source; // Set up datasource path
-                        dataSource = dataSources[k]["type"] ? new Y.Wegas[dataSources[k]["type"]](dataSources[k]) : new Y.Wegas.DataSource(dataSources[k]);        // Instantiate the datasource
+                        dataSources[k].source
+                                = this.get("base") + dataSources[k].source;     // Set up datasource path
+                        dataSource = dataSources[k]["type"] ?
+                                new Y.Wegas[dataSources[k]["type"]](dataSources[k])
+                                : new Y.Wegas.DataSource(dataSources[k]);       // Instantiate the datasource
                         Y.namespace("Wegas.Facade")[k] = dataSource;            // Set up global references
                         dataSource.once("response", onInitialRequest, this);    // Listen to the datasources initial requests
                         if (Y.Lang.isNumber(dataSource.sendInitialRequest())) { // Send the initial request
@@ -173,13 +176,24 @@ YUI.add('wegas-app', function(Y) {
                         }
                     }
                 }
-
-                if (this.requestCounter === 0) {                                // If no request was sent, render directly
-                    this.initPage();
-                }
             }, this));
 
+            Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + Y.Wegas.Helper.genId(), {// No cache
+                context: this,
+                on: {
+                    success: function(id, o) {
+                        try {
+                            this.widgetCfg = Y.JSON.parse(o.responseText);      // Process the JSON data returned from the server
+                        } catch (e) {
+                            alert("Wegas.App.initUI(): Layout json parse failed failed!");
+                            Y.error("Layout parse failed", e, "Y.Wegas.App");
+                            return;
+                        }
 
+                        Y.Wegas.Widget.use(this.widgetCfg, Y.bind(onInitialRequest, this));// Load the subwidget dependencies
+                    }
+                }
+            });
         },
         /**
          * @function
@@ -187,39 +201,22 @@ YUI.add('wegas-app', function(Y) {
          * @description initPage methods
          */
         initPage: function() {
-            Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + Y.Wegas.Helper.genId(), {
-                context: this,
-                on: {
-                    success: function(id, o) {
-                        var cfg;
-                        try {
-                            cfg = Y.JSON.parse(o.responseText);		// Process the JSON data returned from the server
-                        } catch (e) {
-                            alert("Wegas.App.initUI(): Layout json parse failed failed!");
-                            Y.error("Layout parse failed", e, "Y.Wegas.App");
-                            return;
-                        }
+            //Y.Wegas.Widget.use(this.widgetCfg, Y.bind(function(cfg) {         // Load the subwidget dependencies
+            this.widget = Y.Wegas.Widget.create(this.widgetCfg);                // Render the subwidget
+            this.widget.render();
+            this.fire("render");                                                // Fire a render event for some eventual post processing
+            //}, this, this.widgetCfg));
 
-                        Y.Wegas.Widget.use(cfg, Y.bind(function(cfg) {         // Load the subwidget dependencies
-                            this.widget = Y.Wegas.Widget.create(cfg);           // Render the subwidget
-                            this.widget.render();
-                            this.fire("render");                         // Fire a render event for some eventual post processing
-                        }, this, cfg));
-
-                        //this.pageLoader = new Y.Wegas.PageLoader();               // Load the subwidget using pageloader
-                        //this.pageLoader.render();
-                        // cfg.id = -100;
-                        // this.dataSources.Page.data.push(cfg);
-                        //try {
-                        //    this.pageLoader.set("pageId", -100);
-                        //} catch (renderException) {
-                        //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack)
-                        //     ? renderException.stack : renderException), 'error', 'Wegas.App');
-                        //}
-
-                    }
-                }
-            });
+            //this.pageLoader = new Y.Wegas.PageLoader();                       // Load the subwidget using pageloader
+            //this.pageLoader.render();
+            // cfg.id = -100;
+            // this.dataSources.Page.data.push(cfg);
+            //try {
+            //    this.pageLoader.set("pageId", -100);
+            //} catch (renderException) {
+            //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack)
+            //     ? renderException.stack : renderException), 'error', 'Wegas.App');
+            //}
         }
     }, {
         /** @lends Y.Wegas.App */
