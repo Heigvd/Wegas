@@ -34,8 +34,9 @@ YUI().use(function(Y) {
                  */
                 'wegas-app': {
                     requires: [
-                        'wegas-helper', 'wegas-entity', 'wegas-datasource',
-                        'wegas-pageloader', 'wegas-button',
+                        'wegas-helper', 'wegas-entity', 'wegas-datasource', // Required
+                        'wegas-pageloader', 'wegas-button', "wegas-panel", // Optimitation: since those are always used, load them right from the start
+                        "wegas-popuplistener", "wegas-layout",
                         "event-key"
                                 // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
