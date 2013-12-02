@@ -44,25 +44,29 @@ YUI.add('wegas-inputex-ace', function(Y) {
          * Render the field using the YUI Editor widget
          */
         renderComponent: function() {
-            if (window.ace) {                                                   // Ace is present, run
+            if (window.ace) {                                                   // Ace is present, launch it
                 this.el = Y.Node.create('<div>' + (this.options.value || "") + '</div>');//@fixme
                 this.fieldContainer.appendChild(this.el.getDOMNode());
 
                 this.editor = ace.edit(this.el.getDOMNode());
-
-                this.session = this.editor.getSession();
-                this.session.setMode("ace/mode/" + this.options.language);
                 this.editor.setTheme("ace/theme/" + this.options.theme);
-                
+                this.editor.setShowPrintMargin(false);
+                //this.editor.setOptions({
+                //    //enableBasicAutocompletion: true,
+                //    enableSnippets: true
+                //});
                 //this.editor.setHighlightActiveLine(false);
                 //this.editor.renderer.setHScrollBarAlwaysVisible(false);
 
-                Y.Wegas.app.after("layout:resize", function() {
-                    Y.once('domready', this.resize, this);
+                this.session = this.editor.getSession();
+                this.session.setMode("ace/mode/" + this.options.language);
+
+                Y.Wegas.app.after("layout:resize", function() {                 // Every time the layout is resized (wegas editor only)
+                    Y.once('domready', this.resize, this);                      // resize ace viewport
                 }, this.editor);
 
-                Y.after('windowresize', Y.bind(this.editor.resize, this.editor));
-            } else {                                                            // Fallback
+                Y.after('windowresize', Y.bind(this.editor.resize, this.editor));// Every time window is resized, resize ace viewport
+            } else {                                                            // Fallback with textarea
                 Y.log("Unable to find Ace libraries, falling back to text field", "error", "Wegas.Inputex.Ace");
                 inputEx.AceField.superclass.renderComponent.call(this);
             }

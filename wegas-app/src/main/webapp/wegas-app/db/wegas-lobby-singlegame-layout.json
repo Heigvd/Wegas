@@ -3,7 +3,14 @@
     "children": [{
             "type": "Text",
             "content": "<div class='content'><div class='left'><div class='logo'></div></div></div>",
-            "cssClass": "wegas-login-header"
+            "cssClass": "wegas-login-header",
+            "plugins": [{
+                    "fn": "OpenUrlAction",
+                    "cfg": {
+                        "url": "",
+                        "target": "_self"
+                    }
+                }]
         }, {
             "type": "Text",
             "content": "",

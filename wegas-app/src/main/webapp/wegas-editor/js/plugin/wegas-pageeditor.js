@@ -51,27 +51,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             if (host.toolbar) {
                 el = host.toolbar.get('header');
 
-                this.addButton = new Y.Button({/*@HACK */
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    on: {
-                        click: function(e) {
-                            var menu = host.get("widget").getMenuCfg({
-                                targetwidget: host.get("widget")
-                            }), i;
-                            for (i = 0; i < menu.length; i += 1) {
-                                if (menu[i].label === "Add") {                  /* search "add" menu */
-                                    this.menu.set("children", menu[i].plugins[0].cfg.children);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                });
-                this.addButton.render(el).plug(Y.Plugin.WidgetMenu);            /* End @HACK */
+                el.append('<div style="width:15px;display:inline-block;"></div>');// Add a separator
 
-                el.append('<div style="width:15px;display:inline-block;"></div>');// Add a spacer
-
-                /*Edit page  */
+                /* Edit page  */
                 this.designButton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Edit page"
                 }).render(el);
@@ -79,7 +61,6 @@ YUI.add('wegas-pageeditor', function(Y) {
                     host.get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
                             e.newVal);
                     if (e.newVal) {
-
                         Y.Wegas.Facade.Page.cache.getIndex(function(index) {
                             var pageName = index[host.get("pageId")] !== ""
                                     ? index[host.get("pageId")]
@@ -105,6 +86,23 @@ YUI.add('wegas-pageeditor', function(Y) {
                     }
                 }, this));
 
+                /* New button */
+                this.addButton = new Y.Button({/*@HACK */
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                    visible: false,
+                    on: {
+                        click: function(e) {
+                            var menu = host.get("widget").getMenuCfg({
+                                targetwidget: host.get("widget")
+                            }), addElement = Y.Array.find(menu, function(o) {   /* search "add" menu */
+                                return o.label === "Add";
+                            });
+
+                            this.menu.set("children", addElement.plugins[0].cfg.children);// And place it'
+                        }
+                    }
+                });
+                this.addButton.render(el).plug(Y.Plugin.WidgetMenu);            /* End @HACK */
 
                 /*Refresh*/
                 this.refreshButton = new Y.Button({

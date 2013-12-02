@@ -16,10 +16,13 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -66,7 +69,8 @@ public class GameController {
     @GET
     @Path("{entityId : [1-9][0-9]*}")
     public Game find(@PathParam("entityId") Long entityId) {
-        this.checkPermissions(entityId);
+        Game g = gameFacade.find(entityId);
+        SecurityHelper.checkAnyPermission(g, Arrays.asList("View", "Token", "TeamToken"));
 
         return gameFacade.find(entityId);
     }
@@ -184,8 +188,19 @@ public class GameController {
             throw new Exception("You are already registered to this game.");    // There user is already registered to target game
 
         } catch (NoResultException e) {             // If there is no NoResultException, everything is ok, we can return the game
-            this.checkPermissions(game.getId());
-            return (team != null) ? new ArrayList(Arrays.asList(team, game)) : game;
+
+            if (team != null) {
+                SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token", "TeamToken"));
+                return Arrays.asList(team, game);
+
+            } else if (SecurityHelper.isAnyPermitted(game, Arrays.asList("View", "Token"))) {
+                return game;
+
+            } else if (SecurityHelper.isPermitted(game, "TeamToken")) {
+                return "Team token required";
+            } else {
+                throw new UnauthorizedException();
+            }
         }
     }
 
@@ -197,8 +212,25 @@ public class GameController {
     @GET
     @Path("/JoinTeam/{teamId : .*}/")
     public Game joinTeam(@PathParam("teamId") Long teamId) {
-        this.checkPermissions(teamFacade.find(teamId).getGame().getId());
+        SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
+                Arrays.asList("View", "Token", "TeamToken"));                   // Make sure the user can join
+
         return teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
+    }
+
+    @POST
+    @Path("/JoinTeam/{teamId : .*}/")
+    public Game joinTeamByGroup(@PathParam("teamId") Long teamId, List<AbstractAccount> accounts) {
+        SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
+                Arrays.asList("View", "Token", "TeamToken"));                   // Make sure the user can join
+
+        List<User> users = userFacade.findOrCreate(accounts);
+        Game g = null;
+
+        for (User user : users) {
+            g = teamFacade.joinTeam(teamId, user.getId()).getGame();
+        }
+        return g;
     }
 
     /**
@@ -210,21 +242,13 @@ public class GameController {
     @POST
     @Path("{gameId : .*}/CreateTeam/{name : .*}/")
     public Team createTeam(@PathParam("gameId") Long gameId, @PathParam("name") String name) {
-        this.checkPermissions(gameId);
+
+        SecurityHelper.checkAnyPermission(gameFacade.find(gameId), Arrays.asList("View", "Token"));
+
         Team t = new Team(name);
         this.teamFacade.create(gameId, t);
         //Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
 
         return t;
-    }
-
-    private void checkPermissions(Long id) {
-        this.checkPermissions(gameFacade.find(id));
-    }
-
-    private void checkPermissions(Game g) {
-        if (!SecurityHelper.isPermitted(g, "Token") && !SecurityHelper.isPermitted(g, "View")) {
-            throw new UnauthorizedException();
-        }
     }
 }

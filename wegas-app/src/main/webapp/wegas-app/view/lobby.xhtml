@@ -8,10 +8,6 @@
         <ui:define name="head">
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
             <style type="text/css">
-                .yui3-skin-sam .editor-createdgametreeview li .yui3-treeleaf-content-header,
-                .yui3-skin-sam .editor-createdgametreeview li .yui3-treenode-content-header {
-                    cursor: auto;
-                }
                 .yui3-skin-sam #centerTabView .yui3-tab-label {
                     min-width: 120px;
                 }
@@ -86,27 +82,26 @@
                     var refreshTabs = function() {
                         var tab = Y.Widget.getByNode("#gameModelsTab");
                         tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
-                        tab = Y.Widget.getByNode("#gamesTreeViewTab");
-                        tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
+                        //tab = Y.Widget.getByNode("#gamesTreeViewTab");
+                        //tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
                     };
 
-                    app.after("render", function() {                            // If there player is registered to a game
-//                        if (Y.Wegas.Facade.RegisteredGames.data.length > 0) {
-                        Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
-//                        }
-                        Y.Widget.getByNode("#centerTabView").on("selectionChange", Y.Widget.getByNode("#rightTabView").destroyAll, Y.Widget.getByNode("#rightTabView"));
-                        Y.Wegas.ResizableLayout.DEFAULTWIDTH = 500;
+                    app.after("render", function() {
+                        if (Y.Wegas.Facade.Game.data.length > 0) {              // If the user has already created a game
+                            Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2);// select created games tab
+                        }
+                        Y.Widget.getByNode("#centerTabView").on("selectionChange",
+                                Y.Widget.getByNode("#rightTabView").destroyAll, Y.Widget.getByNode("#rightTabView"));
                         refreshTabs();
 
                         Y.Wegas.Facade.Game.cache.on("added", function(e) {     // After a game is created
                             if (e.entity instanceof Y.Wegas.persistence.Game) {
-
                                 var gm = Y.Wegas.Facade.GameModel.cache.findById(e.entity.get("gameModelId"));
                                 if (!gm || !gm.get("canView")) {
                                     Y.Wegas.Facade.GameModel.sendInitialRequest();// To refresh game model list
                                 }
 
-//                                Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2).set("visible", true);// select the hosted games tab
+                                //Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2).set("visible", true);// select the hosted games tab
                                 //Y.Wegas.Facade.PublicGames.sendInitialRequest();  // Refresh available game list
                             }
                         });
@@ -115,9 +110,6 @@
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
                         window.open(app.get("base") + "wegas-app/view/play.html?gameId=" + e.gameId);// open the game in a new tab
 
-                        if (Y.Widget.getByNode("#availableGamesTab").get("selected") > 0) {
-                            Y.Widget.getByNode("#joinedGamesTab").set("selected", 2);// select ongoing games tab
-                        }
                         Y.Wegas.Facade.GameModel.sendInitialRequest({//         // Refresh game model list
                             on: {
                                 success: function() {
@@ -130,6 +122,7 @@
                     });
 
                     app.render();                                               // Launch the editor
+                    Y.Wegas.App.hideRightPanelCloseButton = true;               // Close button in the right tab disabled for the lobby
                 });
             </script>
         </ui:define>

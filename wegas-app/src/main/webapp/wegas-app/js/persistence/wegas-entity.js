@@ -220,7 +220,6 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareUser",
-                                    cssClass: "editor-shareUser-list",
                                     permsList: [{
                                             rightLabel: "Edit",
                                             value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
@@ -388,10 +387,12 @@ YUI.add('wegas-entity', function(Y) {
                                         }, {
                                             name: "Link",
                                             value: "Game:Token"
+                                        }, {
+                                            name: "TeamToken",
+                                            value: "Game:TeamToken"
                                         }]
                                 }, {
                                     type: "ShareUser",
-                                    cssClass: "editor-shareUser-list",
                                     permsList: [{
                                             rightLabel: "Play",
                                             value: "Game:View"
@@ -1319,33 +1320,53 @@ YUI.add('wegas-entity', function(Y) {
                             },
                             "event": "mouseenter",
                             "children": [{
-                                    "type": "AddEntityChildButton",
-                                    "label": "Number",
-                                    "targetClass": "NumberDescriptor"
+                                    type: "AddEntityChildButton",
+                                    label: "Number",
+                                    targetClass: "NumberDescriptor"
                                 }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Text",
-                                    "targetClass": "TextDescriptor"
+                                    type: "AddEntityChildButton",
+                                    label: "Text",
+                                    targetClass: "TextDescriptor"
                                 }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Folder",
-                                    "targetClass": "ListDescriptor"
+                                    type: "AddEntityChildButton",
+                                    label: "Folder",
+                                    targetClass: "ListDescriptor"
                                 }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Question",
-                                    "targetClass": "QuestionDescriptor"
+                                    type: "AddEntityChildButton",
+                                    label: "Question",
+                                    targetClass: "QuestionDescriptor"
                                 }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Trigger",
-                                    "targetClass": "TriggerDescriptor"
+                                    type: "AddEntityChildButton",
+                                    label: "Trigger",
+                                    targetClass: "TriggerDescriptor"
                                 }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "Object",
-                                    "targetClass": "ObjectDescriptor"
+                                    type: "AddEntityChildButton",
+                                    label: "Object",
+                                    targetClass: "ObjectDescriptor"
                                 }, {
-                                    "type": "AddEntityChildButton",
-                                    "label": "String",
-                                    "targetClass": "StringDescriptor",
+                                    type: "NewEntityButton",
+                                    label: "State machine",
+                                    targetClass: "FSMDescriptor",
+                                    cssClass: "experimental"
+                                }, {
+                                    type: "NewEntityButton",
+                                    label: "Dialogue",
+                                    targetClass: "DialogueDescriptor",
+                                    cssClass: "experimental wegas-advaned-feature"
+                                }, {
+                                    type: "AddEntityChildButton",
+                                    label: "String",
+                                    targetClass: "StringDescriptor",
+                                    cssClass: "wegas-advanced-feature"
+                                }, {
+                                    type: "NewEntityButton",
+                                    label: "Object",
+                                    targetClass: "ObjectDescriptor",
+                                    cssClass: "wegas-advanced-feature"
+                                }, {
+                                    type: "NewEntityButton",
+                                    label: "Inbox",
+                                    targetClass: "InboxDescriptor",
                                     cssClass: "wegas-advanced-feature"
                                 }]
                         }

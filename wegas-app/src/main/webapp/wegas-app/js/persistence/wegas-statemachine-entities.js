@@ -23,6 +23,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     label: "Current state id"
                 }
             },
+            currentState: {
+                "transient": true
+            },
             enabled: {
                 type: BOOLEAN,
                 value: true,
@@ -88,7 +91,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         // *** Private methods *** //
         getCurrentState: function() {
-            return this.get(STATES)[this.getInstance().get("currentStateId")];
+            return this.getInstance().get("currentState");
         },
         getInitialStateId: function() {
             return this.get("defaultInstance").get("currentStateId");
@@ -128,11 +131,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     },
                     currentStateId: {
                         type: NUMBER,
-                        optional: true,
                         _inputex: {
-                            label: 'Initial state id',
+                            type: HIDDEN,
                             value: 1
                         }
+                    },
+                    currentState: {
+                        "transient": true
                     },
                     enabled: {
                         type: BOOLEAN,
@@ -147,101 +152,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 writeOnce: "initOnly",
                 _inputex: {
                     _type: HIDDEN
-                }/*,
-                 _inputex: {
-                 _type:'hashlist',
-                 label: 'States',
-                 elementType: {
-                 type:'group',
-                 fields: [{
-                 name: '@class',
-                 value:'DialogueState',
-                 type: HIDDEN
-                 },{
-                 name: 'id',
-                 type: 'string',
-                 label: "Id",
-                 disabled: true
-                 }, {
-                 name: 'label',
-                 label: 'Label'
-                 }, {
-                 name: 'text',
-                 label: 'Text',
-                 type: 'text',
-                 rows: 8
-                 }, {
-                 name: 'onEnterEvent',
-                 type:'group',
-                 fields: [{
-                 name: '@class',
-                 value:'Script',
-                 type: HIDDEN
-                 }, {
-                 name: 'language',
-                 value:'JavaScript',
-                 type: HIDDEN
-                 }, {
-                 name: 'content',
-                 'type': 'text',
-                 label:'On enter',
-                 rows: 3
-                 }]
-                 }, {
-                 name: 'transitions',
-                 label: 'Transitions',
-                 type: 'list',
-                 elementType: {
-                 type:'group',
-                 fields: [{
-                 name: '@class',
-                 value:'DialogueTransition',
-                 type: HIDDEN
-                 }, {
-                 name: 'triggerCondition',
-                 type:'group',
-                 fields: [{
-                 name: '@class',
-                 value:'Script',
-                 type: HIDDEN
-                 }, {
-                 name: 'language',
-                 value:'JavaScript',
-                 type: HIDDEN
-                 }, {
-                 name: 'content',
-                 'type': HIDDEN,
-                 label:'Condition',
-                 rows: 3
-                 }]
-                 }, {
-                 name: 'actionText',
-                 label: 'Action/User input'
-                 }, {
-                 name: 'nextStateId',
-                 label: 'Next state id'
-                 }, {
-                 name: 'preStateImpact',
-                 type:'group',
-                 fields: [{
-                 name: '@class',
-                 value:'Script',
-                 type: HIDDEN
-                 }, {
-                 name: 'language',
-                 value:'JavaScript',
-                 type: HIDDEN
-                 }, {
-                 name: 'content',
-                 'type': 'text',
-                 label:'On transition',
-                 rows: 8
-                 }]
-                 }]
-                 }
-                 }]
-                 }
-                 }*/
+                }
             }
         },
         EDITMENU: [{
@@ -303,7 +214,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             onEnterEvent: {
                 value: null,
                 _inputex: {
-                    _type: "script"
+                    _type: "script",
+                    label: "Impact"
                 }
             },
             transitions: {
@@ -341,7 +253,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: null,
                 _inputex: {
                     _type: SCRIPT,
-                    label: 'Transition impact'
+                    label: 'Impact'
                 }
             },
             nextStateId: {
@@ -497,8 +409,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         fn: "EditFSMAction",
                         cfg: {
                             viewerCfg: {
-                                availableStates: ["State", "DialogueState"],
-                                availableTransitions: ["Transition", "DialogueTransition"]
+                                availableStates: [/*"State",*/ "DialogueState"],
+                                availableTransitions: [/*"Transition",*/ "DialogueTransition"]
                             }
                         }
                     }]
@@ -529,6 +441,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         //    + "/Do/" + this.get(ID);
         //}
     }, {
+        EDITORNAME: "choice",
         ATTRS: {
             "@class": {
                 value: "DialogueTransition"
@@ -539,6 +452,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: null,
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
+                },
+                _inputex: {
+                    index: -1,
+                    label: "Text"
                 }
             }
         }
@@ -547,8 +464,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
      * DialogueState Entity
      */
     Y.Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Y.Wegas.persistence.State, [], {
-        initializer: function() {
-        },
         /*
          *
          */
@@ -598,6 +513,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             this.set(TEXT, a.join(token));
         }
     }, {
+        EDITORNAME: "server text",
         ATTRS: {
             "@class": {
                 value: "DialogueState"
@@ -608,6 +524,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: null,
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
+                },
+                _inputex: {
+                    index: -1
                 }
             }
         }

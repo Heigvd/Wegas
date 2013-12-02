@@ -79,6 +79,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     public void create(final GameModel entity) {
         super.create(entity);
 
+        this.em.flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
         this.reset(entity);                                                     // Reset the game model
 
@@ -133,21 +134,11 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         return newEntity;
     }
 
-    public GameModel publish(final Long entityId) throws IOException {
-
-        final GameModel parentGM = this.find(entityId);
-
-        GameModel publish = duplicate(entityId);
-        publish.setName(parentGM.getName() + "(publish)");
-        //publish.setParentGameModel(parentGM);
-        return publish;
-    }
-
     @Override
     public void remove(final GameModel gameModel) {
         super.remove(gameModel);
         //Remove jcr repo.
-        //TODO : in fact, removes all files but not the workspace.
+        // @TODO : in fact, removes all files but not the workspace. @fx Why remove files? The may be referenced in other workspaces
         try {
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId());
             connector.deleteWorkspace();

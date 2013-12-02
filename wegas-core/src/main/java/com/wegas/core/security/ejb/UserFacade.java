@@ -22,11 +22,9 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.persistence.Permission;
-import com.wegas.core.security.rest.UserController;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -80,11 +78,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      */
     @EJB
     private GameFacade gameFacade;
-    /**
-     *
-     */
-    @EJB
-    private UserController userController;
 
     /**
      *
@@ -135,32 +128,23 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
-    public List<Map> findAccountByValue(String search) {
+    public List<JpaAccount> findAccountByValue(String search) {
         Query findByToken = em.createNamedQuery("findAccountByValue");
         findByToken.setParameter("search", "%" + search.toLowerCase() + "%");
         findByToken.setMaxResults(MAXRESULT);
-        List<JpaAccount> res = (List<JpaAccount>) findByToken.getResultList();
-        List<Map> returnValue = new ArrayList<>();
-        for (JpaAccount a : res) {
-            Map account = new HashMap<>();
-            returnValue.add(account);
-            if (a.getFirstname() != null && a.getLastname() != null) {
-                account.put("label", a.getFirstname() + " " + a.getLastname());
-            } else {
-                account.put("label", a.getEmail());
-            }
-            account.put("value", a.getId());
-        }
-        return returnValue;
+        return findByToken.getResultList();
     }
 
     @Override
     public void create(User user) {
+        AbstractAccount account = user.getMainAccount();
         try {
-            AbstractAccount account = user.getMainAccount();
             if (account instanceof JpaAccount) {                                // @fixme This is only done to have a nice error and not the unparsable ConstraintViolationException
-                accountFacade.findByEmail(((JpaAccount) user.getMainAccount()).getEmail());
-                throw new WegasException("This email is already associated with an existing account.");
+                String mail = ((JpaAccount) account).getEmail();
+                if (mail != null && !mail.isEmpty()) {
+                    accountFacade.findByEmail(mail);
+                    throw new WegasException("This email is already associated with an existing account.");
+                }
             }
         } catch (PersistenceException e) {
             // GOTCHA
@@ -168,15 +152,43 @@ public class UserFacade extends AbstractFacadeImpl<User> {
 
         super.create(user);
         try {
-            user.getMainAccount().addRole(roleFacade.findByName("Public"));
+            account.addRole(roleFacade.findByName("Public"));
         } catch (PersistenceException ex) {
             logger.error("Unable to find Role: Public", ex);
         }
         try {
-            user.getMainAccount().addRole(roleFacade.findByName("Registered"));
+            account.addRole(roleFacade.findByName("Registered"));
         } catch (PersistenceException ex) {
             logger.error("Unable to find Role: Registered", ex);
         }
+        this.em.flush();
+    }
+
+    public User findOrCreate(User user) {
+        try {
+            AbstractAccount account = user.getMainAccount();
+            if (account.getId() != null) {
+                return accountFacade.find(account.getId()).getUser();
+            }
+            if (account instanceof JpaAccount) {                                // If user already exists,
+                String mail = ((JpaAccount) account).getEmail();
+                if (mail != null && !mail.isEmpty()) {
+                    return accountFacade.findByEmail(mail).getUser();           // return it
+                }
+            }
+        } catch (PersistenceException e) {
+            // GOTCHA
+        }
+        this.create(user);                                                      // If user could not be found, create and return it
+        return user;
+    }
+
+    public List<User> findOrCreate(List<AbstractAccount> accounts) {
+        List<User> ret = new ArrayList<>();
+        for (AbstractAccount account : accounts) {
+            ret.add(this.findOrCreate(new User(account)));
+        }
+        return ret;
     }
 
     /**

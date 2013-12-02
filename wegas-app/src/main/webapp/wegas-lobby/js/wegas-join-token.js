@@ -110,21 +110,42 @@ YUI.add('wegas-join-token', function(Y) {
          */
         sendTokenJoin: function(token) {
             this.showOverlay();
+            Y.log("sendTokenJoin()", "info", "Wegas.TokenJoin");
+
             Y.Wegas.Facade.Game.sendRequest({
-                request: "/JoinGame/" + token,
+                request: "/JoinGame/" + token + "?view=Extended",
                 cfg: {
                     updateCache: false
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        var cb = this.get(CONTENTBOX);
+                        var cb = this.get(CONTENTBOX),
+                                entity = e.response.entity,
+                                gm;
                         this.hideOverlay();
-                        this.destructor();
-                        this.teamWidget = new Y.Wegas.JoinTeam({//              // Player can choose or create its team
-                            entity: e.response.entities,
-                            render: cb
-                        });
-                        this.teamWidget.addTarget(this);                        // So overlay and message events will be forwarded
+
+                        if (entity === "Team token required") {                 // Team token is required, game token was provided
+                            // @fixme should show a message when this happens from the lobby
+
+//                        } else if (entity instanceof Y.Wegas.persistence.Game) {
+//                            gm = entity.get("gameModel");
+//                                    &&
+//                                !(gm.get("properties.allowCreateTeam") || gm.get("properties.allowJoinTeam"))) {
+                        } else if (e.response.entities[0] instanceof Y.Wegas.persistence.Team
+                                && !(e.response.entities[1].get("gameModel").get("properties.freeForAll")
+                                || e.response.entities[0].get("players").length === 0)) {// If the token is already in use
+
+                            this.showMessageBis("error",
+                                    "This team has already been created. You can contact it's members so they can join you in.");
+                        } else {
+                            Y.log("sendTokenJoin(): Rendering team widget", "info", "Wegas.TokenJoin");
+                            this.destructor();
+                            this.teamWidget = new Y.Wegas.JoinTeam({//          // Player can choose or create its team
+                                entity: e.response.entities,
+                                render: cb
+                            });
+                            this.teamWidget.addTarget(this);                    // So overlay and message events will be forwarded
+                        }
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
@@ -165,9 +186,7 @@ YUI.add('wegas-join-token', function(Y) {
                             });
                         }, this);
                     }, this),
-                    failure: Y.bind(function(e) {
-                        this.showMessage("error", "Error");
-                    }, this)
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         }

@@ -12,6 +12,7 @@
             <meta name="google-translate-customization" content="#editorGameController.currentGameModel.getProperty('googleTranslateId')" />
 
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
+
             <style type="text/css">
                 .yui3-skin-sam .yui3-button.wegas-title,
                 .yui3-skin-sam .yui3-button.wegas-title:hover  {
@@ -37,6 +38,9 @@
                 }
             </style>
 
+            <!-- In player mode, CSS library for current game model is included directly in the model -->
+            <style type="text/css">#{editorGameController.styleSheets}</style>
+
             <!-- Dev tool: style sheet reference injected directly in the game model -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.getProperty('cssUri') != null}"
                        var="o" value="#{editorGameController.currentGameModel.getProperty('cssUri').split(',')}" varStatus="status">
@@ -48,7 +52,7 @@
 
             <script type="text/javascript">
 
-                YUI().use("wegas-app", function(Y) {
+                YUI().use("wegas-app", "wegas-scripteval", function(Y) {
                     var app = new Y.Wegas.App({
                         //layoutSrc: 'rest/Page/#{editorGameController.currentGameModel.id}/EditorLayout',
                         layoutSrc: 'wegas-app/db/wegas-editor-layout.json',

@@ -19,7 +19,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -46,7 +45,7 @@ public class Game extends NamedEntity {
      */
     @NotNull
     //@Pattern(regexp = "^\\w+$")
-    protected String name;
+    private String name;
     /**
      *
      */
@@ -112,12 +111,19 @@ public class Game extends NamedEntity {
         this.token = token;
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (this.teams.isEmpty()) {
+//            this.addTeam(new DebugTeam());
+        }
+        this.preUpdate();
+    }
+
     /**
      *
      */
-    @PrePersist
     @PreUpdate
-    public void prePersist() {
+    public void preUpdate() {
         if (this.getToken() == null || this.getToken().equals("")) {
             this.setToken(Helper.genToken(10));
         }

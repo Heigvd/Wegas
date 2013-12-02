@@ -64,8 +64,6 @@ YUI.add('wegas-layout-resizable', function(Y) {
             this.renderPosition('center');
             this.renderPosition('right');
             //this.renderPosition('bottom');
-
-//            this._syncUIStdMod();
         },
         /**
          * @function
@@ -76,7 +74,6 @@ YUI.add('wegas-layout-resizable', function(Y) {
          */
         bindUI: function() {
             Y.on("windowresize", Y.bind(this.syncUI, this));                    // Sync the layout whenever the windows is resized
-            //this.get("boundingBox").on("resize", this._syncUIStdMod, this);
             Y.on('domready', this.syncUI, this);
         },
         /**
@@ -134,7 +131,11 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description do a slide (tween) animation to hide the panel
          */
         hidePosition: function(position) {
-            this.getAnim(position).set("reverse", true).run();
+            if (!!this.get(position + ".animate")) {  // False by default
+                this.getAnim(position).set("reverse", true).run();
+            } else {
+                this.getPositionNode(position).all(".yui3-tabview-panel > div").hide();
+            }
         },
         /**
          * @function
@@ -143,10 +144,19 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description do a slide (tween) animation to show the panel
          */
         showPosition: function(position) {
-            var target = this.getPositionNode(position);
+            var target = this.getPositionNode(position),
+                    cfg = this.get(position);
 
-            if (parseInt(target.getStyle("width"), 10) < ResizableLayout.DEFAULTWIDTH) {// Only display if hidden
-                this.getAnim(position).set("reverse", false).run();
+            if (!cfg.width) {
+                cfg.width = 350;
+            }
+
+            if (!!this.get(position + ".animate")) {                           // False by default
+                if (parseInt(target.getStyle("width"), 10) < cfg.width) {       // Only display if hidden
+                    this.getAnim(position).set("reverse", false).run();
+                }
+            } else {
+                target.all(".yui3-tabview-panel > div").show();
             }
         },
         getAnim: function(position) {
@@ -157,7 +167,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                         width: 0
                     },
                     to: {
-                        width: ResizableLayout.DEFAULTWIDTH
+                        width: this.get(position + ".width")
                     },
                     easing: 'easeOut',
                     duration: 0.6
@@ -177,10 +187,9 @@ YUI.add('wegas-layout-resizable', function(Y) {
         renderPosition: function(position) {
             var i, cWidget,
                     target = this.getPositionNode(position),
-                    positionCfg = this.get(position);
+                    cfg = this.get(position);
 
-
-            if (positionCfg) {                                                  // If there is a provided configuration
+            if (cfg) {                                                  // If there is a provided configuration
                 if (position === "left") {
                     this.resizeLeft = new Y.Resize({
                         node: target,
@@ -188,8 +197,10 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     });
                     this.resizeLeft.on("resize", this.syncCenterNode, this);
                     this.resizeLeft.on("end", this.syncCenterNode, this);
-
-
+                    target.setStyles({
+                        right: "auto",
+                        left: "0px"
+                    });
                 } else if (position === "right") {
                     this.resizeRight = new Y.Resize({
                         node: target,
@@ -197,12 +208,15 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     });
                     this.resizeRight.on("resize", this.syncCenterNode, this);
                     this.resizeRight.on("end", this.syncCenterNode, this);
-
-                    target.setStyle("width", 0);
+                    target.setStyles({
+                        right: "0px",
+                        left: "auto",
+                        width: cfg.width || 0
+                    });
                 }
 
-                for (i = 0; i < positionCfg.children.length; i = i + 1) {      // ender the children
-                    cWidget = Y.Wegas.Widget.create(positionCfg.children[i]);
+                for (i = 0; i < cfg.children.length; i = i + 1) {      // ender the children
+                    cWidget = Y.Wegas.Widget.create(cfg.children[i]);
                     // cWidget.after("render", this.syncUI, this );
                     cWidget.render(target);
                 }
@@ -220,23 +234,14 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     leftNode = cb.one(".wegas-layout-left"),
                     rightNode = cb.one(".wegas-layout-right");
 
-            leftNode.setStyles({
-                right: "auto",
-                left: "0px"
-            });
             cb.one(".wegas-layout-center").setStyles({
                 "left": leftNode.getStyle("width"),
                 "right": rightNode.getStyle("width")
-            });
-            rightNode.setStyles({
-                right: "0px",
-                left: "auto"
             });
             Y.Wegas.app.fire("layout:resize");
         }
 
     }, {
-        DEFAULTWIDTH: 350,
         /**
          * @lends Y.Wegas.Layout#
          */

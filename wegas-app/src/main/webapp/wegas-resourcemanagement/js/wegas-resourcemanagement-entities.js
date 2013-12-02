@@ -34,13 +34,17 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
-                    label: "Resource name"
+                    label: "Resource name",
+                    index: -1
                 }
             },
             description: {
                 type: STRING,
                 format: HTML,
-                optional: true
+                optional: true,
+                _inputex: {
+                    index: -1
+                }
             },
             properties: {
                 _inputex: {
@@ -560,12 +564,18 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             title: {
                 type: STRING,
-                optional: true
+                optional: true,
+                _inputex: {
+                    index: -1
+                }
             },
             description: {
                 type: STRING,
                 format: HTML,
-                optional: true
+                optional: true,
+                _inputex: {
+                    index: -1
+                }
             },
             index: {
                 type: NUMBER,
@@ -574,15 +584,20 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             predecessors: {
                 type: ARRAY,
+                "transient": true,
+                getter: function() {
+                    return Y.Array.map(this.get("predecessorNames"), function(name) {
+                        return Y.Wegas.Facade.VariableDescriptor.cache.find("name", name);
+                    });
+                }
+            },
+            predecessorNames: {
+                type: ARRAY,
                 value: [],
+                "transient": true, //@fixme Shloud be enabled to allow edition
                 _inputex: {
                     label: "Predecessors",
-                    _type: LIST,
-                    useButtons: true,
-                    elementType: {
-                        type: SELECT,
-                        value: "taskDescriptorId"
-                    }
+                    useButtons: true
                 }
             },
             properties: {
