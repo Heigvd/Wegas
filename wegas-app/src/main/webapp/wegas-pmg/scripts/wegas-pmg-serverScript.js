@@ -1,7 +1,7 @@
 //Global variable for easy use
 importPackage(javax.naming);
 var gm = self.getGameModel(), testMode = true;
-steps = 10, minTaskDuration = 0.1;
+steps = 10, minTaskDuration = 0.1, taskTable = {};
 
 /**
  * Call all necessary method to pass a period and calculate all variable.
@@ -66,6 +66,7 @@ function completeRealizationPeriod() {
         println('==============================');
         println('==============================');
     }
+    taskTable = {};
     for (i = 0; i < steps; i++) {
         calculTasksProgress(i);
         if (testMode) {
@@ -292,7 +293,7 @@ function calculTasksProgress(currentStep) {
     //get one unique requirement by activities and calculate its progression
     activitiesAsNeeds = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);
     for (i = 0; i < activitiesAsNeeds.length; i++) { //for each need
-        calculateProgressOfNeed(activitiesAsNeeds[i], allCurrentActivities);
+        calculateProgressOfNeed(activitiesAsNeeds[i], allCurrentActivities, currentStep);
     }
     //get each modified task and calculate is new quality and completeness
     oneTaskPerActivity = getUniqueTasksInActivities(activitiesAsNeeds);
@@ -735,7 +736,7 @@ function getRequirementsByWork(requirements) {
  * @param {Array} allCurrentActivities an Array of Activity
  * @returns {Number} a number between 0 and 100
  */
-function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
+function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentStep) {
     var i, taskDesc, taskInst, employeeDesc, employeeInst, activityRate, sameNeedActivity,
             affectedEmployeesDesc = [], requirements, stepAdvance = 1, sumActivityRate = 0,
             employeesMotivationXActivityRate = 0, deltaLevel, workAs, selectedReq,
@@ -746,6 +747,9 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
             averageSkillsetQuality, stepQuality = 0;
 
     taskDesc = activityAsNeeds.getTaskDescriptor();
+    if (currentStep === 0) {
+        taskTable[taskDesc.getName()] = parseInt(taskDesc.getInstance(self).getProperty('completeness'));
+    }
     taskInst = taskDesc.getInstance(self);
     requirements = taskInst.getRequirements();
     reqByWorks = getRequirementsByWork(requirements);
@@ -810,7 +814,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
         } else {
             correctedRessources = reqByWorks[workAs].totalOfEmployees + parseFloat(taskDesc.getProperty('coordinationRatioSup')) * (affectedEmployeesDesc.length - reqByWorks[workAs].totalOfEmployees);
         }
-            stepAdvance *= correctedRessources / reqByWorks[workAs].totalOfEmployees; //numberOfRessourcesFactor
+        stepAdvance *= correctedRessources / reqByWorks[workAs].totalOfEmployees; //numberOfRessourcesFactor
     }
 
     if (reqByWorks[workAs].dimFactorAdvancement) {
@@ -822,7 +826,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities) {
     stepAdvance *= getRandomFactorFromTask(taskInst);
 
     //calculate learnFactor
-    if (parseInt(taskInst.getProperty('completeness')) > 15) {
+    if (taskTable[taskDesc.getName()] > 15 && !workOnTask(employeeDesc.getLabel() ,taskDesc.getName())) {
         stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskDesc.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor
     }
 
@@ -1063,7 +1067,7 @@ function checkEnd(allCurrentActivities, currentStep) {
             checkAssignments(employeeInst.getAssignments(), currentStep);
         } else if (parseFloat(taskInst.getProperty('completeness')) < 100) {
             reqByWorks = getRequirementsByWork(taskInst.getRequirements());
-            nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks, employeeInst.getSkillsets().keySet().toArray()[0].toString());                  
+            nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks, employeeInst.getSkillsets().keySet().toArray()[0].toString());
             if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {
                 sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',
                         'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
@@ -1144,6 +1148,22 @@ function sendMessage(subject, content, from) {
     else {
         println('Bean InGameMailFacade does not exist, unable to send in-game message: ' + subject);
     }
+}
+
+function workOnTask(empName, taskName) {
+    var employee = VariableDescriptorFacade.findByName(gm, empName), empInstance, i, activity,
+            task = VariableDescriptorFacade.findByName(gm, taskName),
+            currentPeriode = VariableDescriptorFacade.findByName(gm, "periodPhase3").getInstance().value,
+            precedentPeriode = currentPeriode - 1;
+    
+    empInstance = employee.getInstance();
+    for (i = 0; i < empInstance.getActivities().size(); i++) {
+        activity = empInstance.getActivities().get(i);
+        if (parseInt(activity.getTime()) === precedentPeriode && task.getId() === activity.getTaskDescriptorId()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
