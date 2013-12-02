@@ -23,6 +23,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     label: "Current state id"
                 }
             },
+            currentState: {
+                "transient": true
+            },
             enabled: {
                 type: BOOLEAN,
                 value: true,
@@ -88,7 +91,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         // *** Private methods *** //
         getCurrentState: function() {
-            return this.get(STATES)[this.getInstance().get("currentStateId")];
+            return this.getInstance().get("currentState");
         },
         getInitialStateId: function() {
             return this.get("defaultInstance").get("currentStateId");
@@ -128,11 +131,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     },
                     currentStateId: {
                         type: NUMBER,
-                        optional: true,
                         _inputex: {
-                            label: 'Initial state id',
+                            type: HIDDEN,
                             value: 1
                         }
+                    },
+                    currentState: {
+                        "transient": true
                     },
                     enabled: {
                         type: BOOLEAN,
