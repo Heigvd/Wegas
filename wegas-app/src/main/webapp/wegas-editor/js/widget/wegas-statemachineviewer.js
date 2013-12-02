@@ -216,11 +216,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         },
         addStateType: function(type) {
             var region = this.get(CONTENT_BOX).one('.scrollable').get('region'),
+                    x = parseInt(region.width / 2 + this.scrollView.get('scrollX')),
+                    y = parseInt(region.height / 2 + this.scrollView.get('scrollY')),
                     state = type === "State" ? new Y.Wegas.persistence.State() : new Y.Wegas.persistence.DialogueState();
 
             state.set("editorPosition", new Y.Wegas.persistence.Coordinate({
-                x: parseInt(region.width / 2 + this.scrollView.get('scrollX')),
-                y: parseInt(region.height / 2 + this.scrollView.get('scrollY'))
+                x: x,
+                y: y
             }));
             this.setZoom(1, false); // force setting default zoom to have correct position
             this.addState(x, y, this.stateId, state);
