@@ -29,6 +29,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @Table(name = "MCQChoiceDescriptor")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @XmlType(name = "ChoiceDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
