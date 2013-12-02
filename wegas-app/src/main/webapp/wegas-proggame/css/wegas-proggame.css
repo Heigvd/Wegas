@@ -20,11 +20,24 @@
     clear:both;
 }
 
-.layout {
+html, .editor-preview .layout > div {
     font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
     font-size: 9pt;
     background: url(../../wegas-proggame/images/proggame-title.png) top left no-repeat,
-        url(../../wegas-proggame/images/proggame-background.jpg) top left no-repeat;
+        url(../../wegas-proggame/images/proggame-background-2.jpg) top left no-repeat;
+}
+.layout {
+    overflow: visible;
+}
+.layout::before {
+    /*    overflow: hidden;
+        content: " ";
+        position: absolute;
+        width: 1900px;
+        height: 800px;
+        z-index: -1;
+        background: url(../../wegas-proggame/images/proggame-title.png) top left no-repeat,
+            url(../../wegas-proggame/images/proggame-background-2.jpg) top left no-repeat;*/
 }
 
 .battle-button, .battle-button:hover/*, .wegas-absolutelayout .yui3-button-disabled*/{

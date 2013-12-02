@@ -63,7 +63,7 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                     loc: true
                 });
 
-                console.log("Wegas.JSInstrument: Parsed source tree:", tree);
+                //console.log("Wegas.JSInstrument: Parsed source tree:", tree);
                 this.traverse(tree, function(object, path) {
                     var add = [], inter;
                     switch (object['type']) {
@@ -123,7 +123,7 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
          * @param {Array} object
          * @param {function} visitor
          * @param {type} path
-         * @returns 
+         * @returns
          */
         traverse: function(object, visitor, path) {
             var key, child;
