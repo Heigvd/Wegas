@@ -86,10 +86,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.showOverlay();
                 this.onceAfter("jsPlumbLoaded", this.rebuild);
             });
-            cb.on("mousewheel", function(e) {
+            cb.on("mousewheel", Y.bind(function(e) {
                 e.halt(true);
                 this.zoom(e);
-            }, this);
+            }, this));
 
             this.on("wegas-state:userRemove", function(e) {
                 delete this.get("entity").get("states")[e.target.get("sid").toString()];
