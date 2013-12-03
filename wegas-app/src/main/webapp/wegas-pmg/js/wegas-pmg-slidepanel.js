@@ -78,8 +78,10 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
         },
         syncUI: function() {
             var cb = this.get(CONTENTBOX), height;
-            height = cb.get('scrollHeight');
-            cb.ancestor().one(".slidepanel-cleaner").setStyle('height', height); //compensates the non-height of the content's absolute position.
+            if (!cb.get("parentElement").hasClass("wegas-slidepanel-toggled")) {
+                height = cb.get('scrollHeight');
+                cb.ancestor().one(".slidepanel-cleaner").setStyle('height', height); //compensates the non-height of the content's absolute position.
+            }
         },
         destructor: function() {
             var k;
