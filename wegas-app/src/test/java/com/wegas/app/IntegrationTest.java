@@ -10,6 +10,8 @@ package com.wegas.app;
 import com.gargoylesoftware.htmlunit.ScriptException;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.glassfish.embeddable.*;
 import org.glassfish.embeddable.archive.ScatteredArchive;
@@ -40,12 +42,13 @@ public class IntegrationTest {
         //glassfishProperties.setConfigFileReadOnly(false);
         TestHelper.createIntegrationDB();
         glassfish = GlassFishRuntime.bootstrap(bootstrapProperties).newGlassFish(glassfishProperties);
+        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
+        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
         glassfish.start();
 
         //File war = new File("./target/Wegas.war");
         //appName = glassfish.getDeployer().deploy(war, "--name=Wegas", "--contextroot=Wegas", "--force=true");
         // deployer.deploy(war);
-
         ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR,
                 new File("./target/embed-war/"));
         archive.addClassPath(new File("./target/classes/"));                  // target/classes directory contains complied servlets
@@ -74,7 +77,7 @@ public class IntegrationTest {
             beginAt("wegas-app/view/login.html?debug=true");
         } catch (NullPointerException e) {  //@fixme error using xmlhttprequest from jwebunit
             System.out.println("Jweb unit encountered an exception");
-           // e.printStackTrace();
+            // e.printStackTrace();
         }
         assertResponseCode(200);
         assertTitleEquals("Login - Wegas");
@@ -83,6 +86,5 @@ public class IntegrationTest {
         //tester.setTextField("password", "test123");
         //tester.clickLink("login");
         //tester.submit();
-
     }
 }
