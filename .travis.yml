@@ -5,6 +5,8 @@ services: postgresql
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
 - echo -e "Host albasim.ch\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+install:
+- "echo no install"
 script:
 - "mvn -P release-profil clean:clean install"
 env:
