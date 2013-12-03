@@ -77,5 +77,19 @@
             <goal>ghSite:site</goal>
         </goals>
     </action>
+    <action>
+            <actionName>CUSTOM-Deploy-prod</actionName>
+            <displayName>Deploy-prod</displayName>
+            <goals>
+                <goal>clean:clean</goal>
+                <goal>install</goal>
+                <goal>wagon:upload-single</goal>
+                
+                
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>release-profile</activatedProfile>
+            </activatedProfiles>
+        </action>
 
 </actions>

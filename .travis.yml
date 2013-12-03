@@ -1,8 +1,14 @@
 language: java
 jdk:
-  - oraclejdk7
-#  - openjdk7
-#  - openjdk6
+- oraclejdk7
 services: postgresql
 before_script:
-  - psql -c 'create database wegas_test;' -U postgres
+- psql -c 'create database wegas_test;' -U postgres
+- echo -e "Host albasim.ch\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+script:
+- "mvn -P release-profil clean:clean install"
+env:
+  global:
+  - secure: H2Thf0eWcmMyHzWS+KdKX+7lIxD0Gyi8ccJNBcFDVj11/3mCHg1TAFLqgo/WE0k74Vof0sjtXvHeTAV3Nwaks5p+bBAN8gi1Z+HYnYVOUUXMQ3h83nhuFlZ5Z0DdtU3muM1B5r0hVP03hd2fAej3AzylLaGUZs84ISRbtN/P6l8=
+after_success:
+- "scp wegas-app/target/Wegas.war $USER@dev.wegas.ch:/home/drop/builds"
