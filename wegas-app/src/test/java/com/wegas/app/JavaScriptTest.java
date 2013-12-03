@@ -8,11 +8,11 @@
 package com.wegas.app;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sourceforge.jwebunit.junit.JWebUnit;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.glassfish.embeddable.GlassFish;
-import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.glassfish.embeddable.archive.ScatteredArchive;
@@ -36,6 +36,8 @@ public class JavaScriptTest {
         glassfishProperties.setPort("https-listener", 5252);
 
         glassfish = GlassFishRuntime.bootstrap().newGlassFish(glassfishProperties);
+        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
+        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
         glassfish.start();
 
         ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR, new File("./src/main/webapp/wegas-app/"));

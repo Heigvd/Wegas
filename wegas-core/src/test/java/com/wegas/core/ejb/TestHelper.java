@@ -10,6 +10,8 @@ package com.wegas.core.ejb;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
 import org.apache.shiro.SecurityUtils;
@@ -31,6 +33,8 @@ public class TestHelper {
 
         // Init shiro
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
+        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
+        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
 
         return EJBContainer.createEJBContainer(properties);
     }
