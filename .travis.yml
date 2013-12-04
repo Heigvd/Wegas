@@ -7,11 +7,11 @@ branches:
   - master
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
-- sudo apt-get update && sudo apt-get install sshpass tree
+- sudo apt-get update && sudo apt-get install sshpass
 install:
-- mvn -P release-profile generate-resources
+- mvn -P release-profile -DskipTests install
 script:
-- mvn -P release-profile clean:clean install
+- mvn -P release-profile test
 env:
   global:
   - secure: IldKSO+pk6RwzzF8iZt0qwh3yx1v49FAis/vJgUIDNWwDVQhOm7T5aJ4MUmbrGZgOFr9cCvlAO4A6qolf2Zn1cipaHzpyGzg5vhVlN1SEYh/WYYm9bTrDS0LqG6xL1Kp+YJD8B48rteEFG7dAL9au9w8ipoTO+PW66CbcoxDR5o=
@@ -19,4 +19,4 @@ env:
 after_success:
 - sshpass -e scp -oStrictHostKeyChecking=no wegas-app/target/Wegas.war $USER@dev.albasim.ch:/home/drop/builds
 after_failure:
-- tree; sshpass -e scp -oStrictHostKeyChecking=no wegas-app/target/Wegas.war $USER@dev.albasim.ch:/home/drop/buildsFailed
+- ls; sshpass -e scp -oStrictHostKeyChecking=no wegas-app/target/Wegas.war $USER@dev.albasim.ch:/home/drop/buildsFailed
