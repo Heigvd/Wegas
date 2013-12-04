@@ -7,7 +7,7 @@ branches:
   - master
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
-- apt-get install sshpass
+- sudo apt-get update && sudo apt-get install sshpass
 install:
 - mvn -P release-profil generate-resources
 script:
