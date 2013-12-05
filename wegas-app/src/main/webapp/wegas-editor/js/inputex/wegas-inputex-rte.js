@@ -51,7 +51,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         "../../wegas-app/css/wegas-app.css"],
                     mode: "none", // "none", "textares"
                     theme: "advanced", // "simple", "advanced"
-                    plugins: "autolink,style,table,lists," +//autoresize
+                    plugins: "autolink,style,table,lists," + //autoresize
                             "advimage,advlink,iespell,inlinepopups,media," +
                             "contextmenu",
                     theme_advanced_buttons1: "bold,italic,bullist,styleselect,link,image,media,|,cleanup,code",
@@ -160,7 +160,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
 
             if (value) {
                 value = value.replace(
-                        new RegExp("data-file=\"([^\"]*)\"", "gi"), "src=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\"");
+                        new RegExp("data-file=\"([^\"]*)\"", "gi"),
+                        "src=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\""
+                        + " href=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\"");// @hack Place both href and src so it will work for both <a> and <img> elements
             }
             RTEField.superclass.setValue.call(this, value);
 
