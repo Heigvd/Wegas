@@ -75,6 +75,7 @@
 
         <wegas.debug>true</wegas.debug>
         <wegas.build>${maven.build.timestamp}</wegas.build>
+        <wegas.prod.deploy>sftp://wegas.albasim.ch/home/drop/builds</wegas.prod.deploy>
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
@@ -747,8 +748,36 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-beta-4</version>
+                <inherited>false</inherited>
+                <configuration>
+                    <serverId>prod-site</serverId>
+                    <fromFile>wegas-app/target/Wegas.war</fromFile>
+                    <url>${wegas.prod.deploy}</url>
+                    <toFile>Wegas_${wegas.build}.war</toFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>upload-war</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload-single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>2.5</version>
+            </extension>
+        </extensions>
     </build>
 
     <repositories>
