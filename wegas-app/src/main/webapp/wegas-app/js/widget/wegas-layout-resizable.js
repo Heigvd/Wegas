@@ -131,10 +131,17 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description do a slide (tween) animation to hide the panel
          */
         hidePosition: function(position) {
-            if (!!this.get(position + ".animate")) {  // False by default
-                this.getAnim(position).set("reverse", true).run();
+            var node = this.getPositionNode(position);
+            if (!!this.get(position + ".animate")) {                            // False by default
+                node.setStyle("left", "initial");                               // Reset left value
+                this.getAnim(position).setAttrs({// and change anim width because the element may have been resized
+                    reverse: true,
+                    to: {
+                        width: node.getStyle("width")
+                    }
+                }).run();
             } else {
-                this.getPositionNode(position).all(".yui3-tabview-panel > div").hide();
+                node.all(".yui3-tabview-panel > div").hide();// @hack
             }
         },
         /**
@@ -151,7 +158,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 cfg.width = 350;
             }
 
-            if (!!this.get(position + ".animate")) {                           // False by default
+            if (!!this.get(position + ".animate")) {                            // False by default
                 if (parseInt(target.getStyle("width"), 10) < cfg.width) {       // Only display if hidden
                     this.getAnim(position).set("reverse", false).run();
                 }
@@ -235,12 +242,11 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     rightNode = cb.one(".wegas-layout-right");
 
             cb.one(".wegas-layout-center").setStyles({
-                "left": leftNode.getStyle("width"),
-                "right": rightNode.getStyle("width")
+                left: leftNode.getStyle("width"),
+                right: rightNode.getStyle("width")
             });
             Y.Wegas.app.fire("layout:resize");
         }
-
     }, {
         /**
          * @lends Y.Wegas.Layout#
