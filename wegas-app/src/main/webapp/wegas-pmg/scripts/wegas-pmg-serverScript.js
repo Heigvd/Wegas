@@ -15,6 +15,10 @@ function nextPeriod() {
     var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, 'currentPhase'),
             ganttPage, taskPage, phases;
     phases = VariableDescriptorFacade.findByName(gm, 'currentPeriod');
+
+    // First Check if all questions are answered
+    allPhaseQuestionAnswered(time);
+
     if (time.period === parseInt(phases.items.get(time.phase).getMaxValue())) { // if end of phase
         phases.items.get(time.phase).getInstance(self).setValue(1);
         phase.getInstance(self).setValue(time.phase + 1);
@@ -826,7 +830,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
     stepAdvance *= getRandomFactorFromTask(taskInst);
 
     //calculate learnFactor
-    if (taskTable[taskDesc.getName()] > 15 && !workOnTask(employeeDesc.getLabel() ,taskDesc.getName())) {
+    if (taskTable[taskDesc.getName()] > 15 && !workOnTask(employeeDesc.getLabel(), taskDesc.getName())) {
         stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskDesc.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor
     }
 
@@ -1150,12 +1154,34 @@ function sendMessage(subject, content, from) {
     }
 }
 
+/**
+ * Check if all questions from a phase are answered
+ * @param inGameTime time
+ */
+function allPhaseQuestionAnswered(time) {
+    var questions = VariableDescriptorFacade.findByName(gm, "questions"),
+            currentPhaseQuestions = questions.items.get(time.phase).items.get(time.period - 1).items;
+    for (var i = 0; i < currentPhaseQuestions.size(); i++) {
+        var question = currentPhaseQuestions.get(i);
+        if (question.isReplied(self) == false && question.getInstance(self).getActive() == true) {
+            throw new Error("StringMessage: You have not answered all questions from this week.");
+        }
+    }
+}
+
+/**
+ * function to know if an employee is working on the task.
+ * A employee working on task mean that he works the period before (currentPeriode -1)
+ * @param String empName
+ * @param String taskName
+ * @returns Boolean true if works on project
+ */
 function workOnTask(empName, taskName) {
     var employee = VariableDescriptorFacade.findByName(gm, empName), empInstance, i, activity,
             task = VariableDescriptorFacade.findByName(gm, taskName),
             currentPeriode = VariableDescriptorFacade.findByName(gm, "periodPhase3").getInstance().value,
             precedentPeriode = currentPeriode - 1;
-    
+
     empInstance = employee.getInstance();
     for (i = 0; i < empInstance.getActivities().size(); i++) {
         activity = empInstance.getActivities().get(i);
