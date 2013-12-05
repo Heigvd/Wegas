@@ -76,7 +76,7 @@ YUI.add('wegas-form', function(Y) {
                                     val = form.getValue();
 
                             if (!form.validate()) {
-                                this.showMessageBis("Error", "Some fields are not valid.", "error");
+                                this.showMessageBis("error", "Some fields are not valid.");
                                 return;
                             }
                             if (val.valueselector) {
