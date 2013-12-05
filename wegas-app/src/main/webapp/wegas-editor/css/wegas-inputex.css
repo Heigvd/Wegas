@@ -202,8 +202,18 @@ img.inputEx-ListField-delButton {
 }
 
 /* Tinymce field */
-.defaultSkin table.mceLayout {
-    width: 100% !important;
+.wegas-form .mce-container {
+    margin: 0;
+}
+.wegas-form .mce-panel {
+    border: none;
+    background: white;
+}
+.wegas-form .mce-edit-area {
+    border: 1px solid lightgray !important;
+}
+.wegas-form .mce-btn-group .mce-btn {
+    background-image: none;
 }
 
 /* Styles for form edition */
