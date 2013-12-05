@@ -75,7 +75,10 @@
 
         <wegas.debug>true</wegas.debug>
         <wegas.build>${maven.build.timestamp}</wegas.build>
-        <wegas.prod.deploy>sftp://wegas.albasim.ch/home/drop/builds</wegas.prod.deploy>
+
+        <wegas.deploy.path>sftp://dev.albasim.ch/home/drop/</wegas.deploy.path>
+        <wegas.deploy.server>dev-site</wegas.deploy.server>       
+        <wegas.deploy.name>Wegas.war</wegas.deploy.name>
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
@@ -107,6 +110,14 @@
                 <wegas.debug>false</wegas.debug>
                 <wegas.clientErrorLogging>true</wegas.clientErrorLogging>
                 <wegas.useYUICDN>true</wegas.useYUICDN>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod-profile</id>
+            <properties>
+                <wegas.deploy.path>sftp://wegas.albasim.ch/home/drop/builds</wegas.deploy.path>
+                <wegas.deploy.server>prod-site</wegas.deploy.server>
+                <wegas.deploy.name>Wegas_${wegas.build}.war</wegas.deploy.name>
             </properties>
         </profile>
     </profiles>
@@ -754,10 +765,10 @@
                 <version>1.0-beta-4</version>
                 <inherited>false</inherited>
                 <configuration>
-                    <serverId>prod-site</serverId>
+                    <serverId>${wegas.deploy.server}</serverId>
                     <fromFile>wegas-app/target/Wegas.war</fromFile>
-                    <url>${wegas.prod.deploy}</url>
-                    <toFile>Wegas_${wegas.build}.war</toFile>
+                    <url>${wegas.deploy.path}</url>
+                    <toFile>${wegas.deploy.name}</toFile>
                 </configuration>
                 <executions>
                     <execution>

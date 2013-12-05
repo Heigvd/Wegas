@@ -75,9 +75,12 @@ YUI.add("wegas-widget", function(Y) {
         defaultFailureHandler: function(e) {
             this.hideOverlay();
             var error = e.response.message || e.response.results.message || "Error during request.",
-                    test = error.match(/ConstraintViolationException: (.*) is out of bound/);
+                    test = error.match(/ConstraintViolationException: (.*) is out of bound/),
+                    stringMessage = error.match(/Error: StringMessage: (.*)/);
             if (test) {
                 this.showMessageBis("error", "You don't have enough " + test[1] + ".");
+            } else if (stringMessage) {
+                this.showMessageBis("error", stringMessage[1].split(" in <")[0]);
             } else {
                 this.showMessageBis("error", error);
             }
