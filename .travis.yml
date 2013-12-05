@@ -4,17 +4,17 @@ jdk:
 services: postgresql
 branches:
   only:
-   - master
+  - master
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
+- sudo apt-get update > /dev/null && sudo apt-get install sshpass
 install:
-- "echo no install"
+- mvn -P release-profile generate-resources
 script:
-- "mvn -P release-profil clean:clean install"
+- mvn -P release-profile install
 env:
   global:
-  - secure: H2Thf0eWcmMyHzWS+KdKX+7lIxD0Gyi8ccJNBcFDVj11/3mCHg1TAFLqgo/WE0k74Vof0sjtXvHeTAV3Nwaks5p+bBAN8gi1Z+HYnYVOUUXMQ3h83nhuFlZ5Z0DdtU3muM1B5r0hVP03hd2fAej3AzylLaGUZs84ISRbtN/P6l8=
+  - secure: IldKSO+pk6RwzzF8iZt0qwh3yx1v49FAis/vJgUIDNWwDVQhOm7T5aJ4MUmbrGZgOFr9cCvlAO4A6qolf2Zn1cipaHzpyGzg5vhVlN1SEYh/WYYm9bTrDS0LqG6xL1Kp+YJD8B48rteEFG7dAL9au9w8ipoTO+PW66CbcoxDR5o=
+  - secure: dc1+zvl7dLsaietPU2/s/MKyIopVry5BTS5sS6z+D2e50JH1zvhFoLD92UDJM0rs8zDWa4nzrwG0yYj8roDlVzCj+VJ+VMyQFspHtcHle109Uqo+V0Ac3BSfugkchbJfO2I545CiVXnJGR/SxOfiLPwPy7rRUU0YT34xyW5A8b0=
 after_success:
-- "scp -oStrictHostKeyChecking=no wegas-app/target/Wegas.war $USER@dev.albasim.ch:/home/drop/builds"
-after_failure:
-- "scp -oStrictHostKeyChecking=no wegas-app/target/Wegas.war $USER@dev.albasim.ch:/home/drop/buildsFailed"
+- sshpass -e scp -oStrictHostKeyChecking=no wegas-app/target/Wegas.war $USER@dev.albasim.ch:/home/drop
