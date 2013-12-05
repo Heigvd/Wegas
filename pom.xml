@@ -76,7 +76,7 @@
         <wegas.debug>true</wegas.debug>
         <wegas.build>${maven.build.timestamp}</wegas.build>
 
-        <wegas.deploy.path>sftp://dev.albasim.ch/home/drop/</wegas.deploy.path>
+        <wegas.deploy.path>sftp://dev.albasim.ch/home/drop</wegas.deploy.path>
         <wegas.deploy.server>dev-site</wegas.deploy.server>       
         <wegas.deploy.name>Wegas.war</wegas.deploy.name>
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
