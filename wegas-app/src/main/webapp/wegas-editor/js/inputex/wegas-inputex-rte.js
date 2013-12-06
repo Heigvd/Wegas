@@ -50,23 +50,25 @@ YUI.add("wegas-inputex-rte", function(Y) {
                 tinymce.init({
                     plugins: [
                         "autolink autoresize link image lists ",
-                        "code media table contextmenu ",
-                        "nonbreaking directionality paste"
-                                //wordcount autosave advlist textcolor charmap print preview hr anchor pagebreak spellchecker
+                        "code media table contextmenu paste"
+                                //textcolor
+                                //wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
                     ],
-                    toolbar1: "bold italic bullist | link image media | cleanup code", //formatselect  removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselectspellchecker template
+                    toolbar1: "bold italic bullist | link image media | code",
+                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselectspellchecker template
+                    // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
                     menubar: false,
                     statusbar: false,
                     relative_urls: false,
                     toolbar_items_size: 'small',
                     file_browser_callback: this.onFileBrowserClick,
                     image_advtab: true,
-                    //autoresize_min_height: 100,
+                    autoresize_min_height: 50,
                     autoresize_max_height: 500,
                     content_css: [
-                        //"http://yui.yahooapis.com/combo?3.12.0/build/cssreset/cssreset-min.css&amp;3.12.0/build/cssfonts/cssfonts-min.css&amp;3.12.0/build/cssgrids/cssgrids-min.css",
-                        //"../../wegas-app/css/wegas-app.css"
-                        "../../wegas-editor/css/wegas-inputex-rte.css"
+                        // "http://yui.yahooapis.com/combo?3.12.0/build/cssreset/cssreset-min.css&amp;3.12.0/build/cssfonts/cssfonts-min.css&amp;3.12.0/build/cssgrids/cssgrids-min.css",
+                        // Y.Wegas.app.get("base") + "wegas-app/css/wegas-app.css"
+                        Y.Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
                     ],
                     style_formats: [{// Style formats
                             title: 'Title 1',
