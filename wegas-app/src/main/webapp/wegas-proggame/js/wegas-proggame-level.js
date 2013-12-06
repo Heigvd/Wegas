@@ -394,6 +394,9 @@ YUI.add('wegas-proggame-level', function(Y) {
                     packages = {}, node,
                     nodes = [];
 
+            if (!treeView)
+                return;                                                         // Api widget node could not be found (probably rendering widget alone)
+
             Y.Array.map(api, function(i) {
                 node = Y.Wegas.ProgGameLevel.API[i] || {
                     label: i + "()"
@@ -634,11 +637,9 @@ YUI.add('wegas-proggame-level', function(Y) {
                         fields: [{
                                 name: "Trap",
                                 type: "group",
-                                fields: [
-                                    {
+                                fields: [{
                                         name: "id",
                                         label: "ID",
-                                        type: "string",
                                         value: "Trap"
                                     }, {
                                         name: "x",
@@ -654,17 +655,15 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         type: "boolean",
                                         value: true
                                     }, {
+                                    }, {
                                         name: "components",
                                         type: "uneditable",
                                         value: "Trap"
-                                    }
-
-                                ]
+                                    }]
                             }, {
                                 name: "PC",
                                 type: "group",
-                                fields: [
-                                    {
+                                fields: [{
                                         name: "id",
                                         label: "ID",
                                         type: "string",
@@ -693,13 +692,11 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         name: "components",
                                         type: "uneditable",
                                         value: "PC"
-                                    }
-                                ]
+                                    }]
                             }, {
                                 name: "NPC",
                                 type: "group",
-                                fields: [
-                                    {
+                                fields: [{
                                         name: "id",
                                         label: "ID",
                                         type: "string",
@@ -728,13 +725,11 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         name: "components",
                                         type: "uneditable",
                                         value: "NPC"
-                                    }
-                                ]
+                                    }]
                             }, {
                                 name: "Panel",
                                 type: "group",
-                                fields: [
-                                    {
+                                fields: [{
                                         name: "id",
                                         type: "string",
                                         label: "ID",
@@ -760,17 +755,15 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         name: "components",
                                         type: "uneditable",
                                         value: "Panel"
-                                    }
-                                ]
+                                    }]
                             }, {
                                 name: "Door",
                                 type: "group",
-                                fields: [
-                                    {
+                                fields: [{
                                         name: "id",
                                         label: "ID",
                                         type: "string",
-                                        value: "Trap"
+                                        value: "Door"
                                     }, {
                                         name: "x",
                                         type: "number",
@@ -787,15 +780,12 @@ YUI.add('wegas-proggame-level', function(Y) {
                                     }, {
                                         name: "components",
                                         type: "uneditable",
-                                        value: "Trap"
-                                    }
-
-                                ]
+                                        value: "Door"
+                                    }]
                             }, {
                                 name: "Controller",
                                 type: "group",
-                                fields: [
-                                    {
+                                fields: [{
                                         name: "id",
                                         label: "ID",
                                         type: "string",
@@ -817,9 +807,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         name: "components",
                                         type: "uneditable",
                                         value: "Controller"
-                                    }
-
-                                ]
+                                    }]
                             }]
                     }
 

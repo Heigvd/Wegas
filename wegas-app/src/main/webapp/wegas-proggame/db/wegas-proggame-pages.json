@@ -288,518 +288,8 @@
                             }
                         }
                     }]
-            }, {
-                "type": "Text",
-                "content": "Level 1: Moving around",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "60px",
-                                "left": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "500px",
-                                "height": "100px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Stage<br /> 1.1",
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<11",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 11,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "80px",
-                                "left": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50px",
-                                "height": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "background": "transparent",
-                                "border": "1px solid white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Stage<br /> 1.2",
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<12",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 12,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "80px",
-                                "left": "110px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50px",
-                                "height": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "background": "transparent",
-                                "border": "1px solid white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Stage<br /> 1.3",
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<13",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 13,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "80px",
-                                "left": "170px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50px",
-                                "height": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "background": "transparent",
-                                "border": "1px solid white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Text",
-                "content": "Level 2: Variables",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "150px",
-                                "left": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "500px",
-                                "height": "100px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Stage<br /> 2.1",
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<21",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 21,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "170px",
-                                "left": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50px",
-                                "height": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "background": "transparent",
-                                "border": "1px solid white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Stage<br /> 2.2",
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<22",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 22,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "170px",
-                                "left": "110px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50px",
-                                "height": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "background": "transparent",
-                                "border": "1px solid white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Stage<br /> 2.3",
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<23",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 23,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "170px",
-                                "left": "170px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50px",
-                                "height": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "background": "transparent",
-                                "border": "1px solid white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Stage<br /> 2.4",
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<24",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 24,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "170px",
-                                "left": "230px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50px",
-                                "height": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "background": "transparent",
-                                "border": "1px solid white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Stage<br /> 2.5",
-                "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<25",
-                                "language": "JavaScript"
-                            }
-                        }
-                    }, {
-                        "fn": "OpenPageAction",
-                        "cfg": {
-                            "subpageId": 25,
-                            "targetEvent": "click",
-                            "targetPageLoaderId": "maindisplayarea"
-                        }
-                    }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "170px",
-                                "left": "290px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50px",
-                                "height": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "background": "transparent",
-                                "border": "1px solid white"
-                            }
-                        }
-                    }]
-            }, {
-                "type": "Text",
-                "content": "Level 3: Condition <em>Coming soon</em>",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "240px",
-                                "left": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "500px",
-                                "height": "100px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }]
-            }
+            },
+            {"type": "Text", "content": "Level 1: Moving around", "plugins": [{"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "60px", "left": "50px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "500px", "height": "100px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}]}, {"type": "Button", "label": "Stage<br /> 1.1", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<11", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "11", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "80px", "left": "50px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "50px", "height": "50px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}, {"fn": "CSSStyles", "cfg": {"styles": {"background": "transparent", "border": "1px solid white"}}}]}, {"type": "Button", "label": "Stage<br /> 1.2", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<12", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "12", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "80px", "left": "110px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "50px", "height": "50px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}, {"fn": "CSSStyles", "cfg": {"styles": {"background": "transparent", "border": "1px solid white"}}}]}, {"type": "Button", "label": "Stage<br /> 1.3", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<13", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "13", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "80px", "left": "170px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "50px", "height": "50px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}, {"fn": "CSSStyles", "cfg": {"styles": {"background": "transparent", "border": "1px solid white"}}}]}, {"type": "Text", "content": "Level 2: Variables", "plugins": [{"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "150px", "left": "50px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "500px", "height": "100px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}]}, {"type": "Button", "label": "Stage<br /> 2.1", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<21", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "21", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "170px", "left": "50px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "50px", "height": "50px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}, {"fn": "CSSStyles", "cfg": {"styles": {"background": "transparent", "border": "1px solid white"}}}]}, {"type": "Button", "label": "Stage<br /> 2.2", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<22", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "22", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "170px", "left": "110px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "50px", "height": "50px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}, {"fn": "CSSStyles", "cfg": {"styles": {"background": "transparent", "border": "1px solid white"}}}]}, {"type": "Button", "label": "Stage<br /> 2.3", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<23", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "23", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "170px", "left": "170px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "50px", "height": "50px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}, {"fn": "CSSStyles", "cfg": {"styles": {"background": "transparent", "border": "1px solid white"}}}]}, {"type": "Button", "label": "Stage<br /> 2.4", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<24", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "24", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "170px", "left": "230px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "50px", "height": "50px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}, {"fn": "CSSStyles", "cfg": {"styles": {"background": "transparent", "border": "1px solid white"}}}]}, {"type": "Text", "content": "Level 3: Functions", "plugins": [{"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "240px", "left": "50px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "500px", "height": "100px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}]}, {"type": "Button", "label": "Stage<br /> 3.1", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<31", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "31", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "260px", "left": "50px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "50px", "height": "50px"}}}, {"fn": "CSSText", "cfg": {"styles": {"color": "white"}}}, {"fn": "CSSStyles", "cfg": {"styles": {"background": "transparent", "border": "1px solid white"}}}]}
         ]
     },
     "3": {
@@ -1354,7 +844,7 @@
         "type": "ProgGameLevel",
         "onStart": "panelValue1 = Math.round(Math.random()*1000/1000);",
         "onAction": "if(said === Math.floor(panelValue1)) {doOpen(find('Door'));}",
-        "onWin": "currentLevel.value=26",
+        "onWin": "currentLevel.value=31",
         "api": ["move", "left", "right", "say", "read", "Math.PI", "Math.round"],
         "objects": [{
                 "id": "Enemy",
@@ -1399,7 +889,60 @@
                 }
             }]
     },
-    "25": {
+    "31": {
+        "label": "Level 3.1",
+        "type": "ProgGameLevel",
+        "onStart": "panelValue1 = Math.round(Math.random()*1000/1000);",
+        "onWin": "currentLevel.value=32",
+        "api": ["move", "left", "right", "say", "read", "Math.PI", "Math.round", "Math"],
+        "objects": [{
+                "id": "Enemy",
+                "direction": 4,
+                "components": "NPC",
+                "x": 4,
+                "y": 2,
+                "collides": false
+            }, {
+                "id": "Trap1",
+                "components": "Trap",
+                "x": 2,
+                "y": 3
+            }, {
+                "direction": 4,
+                "id": "Panel",
+                "components": "Panel",
+                "value": "panelValue",
+                "x": 1,
+                "y": 2,
+                "collides": false
+            }, {
+                "id": "Trap2",
+                "components": "Trap",
+                "x": 2,
+                "y": 1
+            }, {
+                "id": "Player",
+                "components": "PC",
+                "direction": 2,
+                "x": 0,
+                "y": 2
+            }],
+        "map": [
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 1}, {"x": 0, "y": 0}],
+            [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
+        ],
+        "plugins": [{
+                "fn": "Objective",
+                "cfg": {
+                    "fullObjective_": "",
+                    "globalObjective": ""
+                }
+            }]
+    },
+    "32": {
         "type": "Text",
         "content": "New levels will be available next week",
         "plugins": [{

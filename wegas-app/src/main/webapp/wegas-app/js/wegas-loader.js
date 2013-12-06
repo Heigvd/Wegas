@@ -979,7 +979,7 @@ YUI().use(function(Y) {
                     ws_provides: 'CEPFolder'
                 },
                 /* SimpleDialogue */
-                'wegas-simpledialogue-main': {
+                'wegas-simpledialogue': {
                     path: "wegas-simpledialogue/js/wegas-simpledialogue-main.js",
                     ws_provides: "SimpleDialogueMain"
                 }
@@ -1022,7 +1022,7 @@ YUI().use(function(Y) {
                     path: 'escodegen/escodegen-min.js'
                 },
                 tinymce: {
-                    path: "tiny_mce/tiny_mce.js"
+                    path: "tinymce/tinymce.min.js"
                 },
                 excanvas: {
                     path: 'excanvas/excanvas.compiled.js'

@@ -8,55 +8,16 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
-/* Inbox styles *//* Overide default tabview styles */
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-list {
-    display: inline-block;
-    float:left;
-    border: none;
-    display: inline-block;
-    border-right: 1px solid lightgray;
-    width: 39.7%;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tabview-panel {
-    display:inline-block;
-    width:60%;
-    padding:0;
-    border:none;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tab-panel  {
-    border-left: 1px solid lightgray;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tab {
-    display: block;
-    border:none;
-    border-bottom:1px solid #DBDBDB;
-    margin: 0;
-    cursor:pointer;
-    width:100%;
-    padding:0;
-}
-.yui3-skin-sam .wegas-inbox .yui3-tab a.yui3-tab-label  {
-    background: none;
-    border: none;
-    padding: 6px 0px;
-    width:100%;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tab a:hover {
-    background: rgba(178, 210, 255, 0.1);
-    box-shadow: 0px 0px 4px #6D6D6D;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tab-selected {
-    background: rgba(178, 210, 255, 0.5);
-    box-shadow: 0px 0px 4px #6D6D6D;
-}
-.yui3-skin-sam  .wegas-inbox .yui3-tab-selected .yui3-tab-label {
-    color:black;
-}
-
+/* Inbox styles */
 .yui3-skin-sam .wegas-inbox .read {
     padding: 0 10px;
-    margin-left: 20px;
+    /*margin-left: 20px;*/
+}
+.yui3-skin-sam .wegas-inbox .unread {
+    padding: 0 10px;
+    font-weight: bolder;
+    /*display: list-item;*/
+    /*list-style: disc outside none;*/
 }
 
 .yui3-skin-sam .wegas-inbox .msg-header{
@@ -72,12 +33,4 @@
     border-bottom: 1px solid lightgray;
     padding: 5px 10px;
     background: none;
-}
-
-.yui3-skin-sam .wegas-inbox .unread {
-    padding: 0 10px;
-    margin-left: 20px;
-    font-weight: bold;
-    display: list-item;
-    list-style: disc outside none;
 }
