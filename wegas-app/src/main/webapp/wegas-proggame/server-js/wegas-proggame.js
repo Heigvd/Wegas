@@ -131,10 +131,10 @@ Wegas.mix(ProgGameSimulation.prototype, {
         if (this.checkGameOver())
             return false;
 
-        if (!this.consumeActions(object, 1)) {
-            this.log("Not enough actions to rotate.");
-            return false;
-        }
+        //if (!this.consumeActions(object, 1)) {
+        //    this.log("Not enough actions.");
+        //    return false;
+        //}
 
         return true;
     },
@@ -142,6 +142,9 @@ Wegas.mix(ProgGameSimulation.prototype, {
         this.doEval(this.level.onAction);
     },
     log: function(text) {
+        if (text instanceof Object) {
+            text = JSON.stringify(text);
+        }
         this.sendCommand({
             type: 'log',
             text: text
@@ -154,12 +157,11 @@ Wegas.mix(ProgGameSimulation.prototype, {
         return this.args;
     },
     consumeActions: function(object, actions) {
-
-//        if (object.actions - actions < 0) {
-//            //this.log("Not enough actions");
-//            return false;
-//        }
-//        object.actions -= actions;
+        //if (object.actions - actions < 0) {
+        //    //this.log("Not enough actions");
+        //    return false;
+        //}
+        //object.actions -= actions;
 
         return true;
     },
@@ -206,9 +208,8 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
     },
     move: function() {
-        var object = this.cObject,
+        var i, o, object = this.cObject,
                 moveV = this.dirToVector(object.direction);
-
 
         if (!this.beforeAction(object))
             return;
@@ -225,6 +226,22 @@ Wegas.mix(ProgGameSimulation.prototype, {
             object.x += moveV.x;
             object.y += moveV.y;
             this.doMove(object);
+
+            for (i = 0; i < this.currentCollides.length; i += 1) {
+                o = this.currentCollides[i];
+                switch (o.components) {
+                    case "Trap":
+                        if (o.enabled) {
+                            this.sendCommand({
+                                type: "Trap",
+                                id: o.id
+                            });
+                            this.log('You lost.');                              // then it's definitely lost
+                            this.doRecordCommands = false;
+                        }
+                        break;
+                }
+            }
         }
     },
     doMove: function(object) {
@@ -292,27 +309,48 @@ Wegas.mix(ProgGameSimulation.prototype, {
             }
         }
     },
-    checkCollision: function(source, x, y) {
-        var o, k, collides,
-                collided = false;
+    getObjectsAt: function(x, y) {
+        var k, objects = [];
         for (k = 0; k < this.objects.length; k++) {
-            o = this.objects[k];
-            collides = (o.x === x && o.y === y && o.id !== source.id);
-            collided = collided || collides;
-            if (collides && (o.collides === undefined || o.collides)) {
-                //this.log("Player collision");
-                if (!o.open) {                                                  // useful for doors
-                    return o;
+            if (this.objects[k].x === x && this.objects[k].y === y) {
+                objects.push(this.objects[k]);
+            }
+        }
+        return objects;
+    },
+    checkCollision: function(source, x, y) {
+        var o, k, collided = false,
+                objects = this.getObjectsAt(x, y);
+
+        this.currentCollides = [];
+
+        for (k = 0; k < objects.length; k++) {
+            o = objects[k];
+            if (o.id !== source.id) {
+                this.currentCollides.push(o);
+                collided = true;
+                switch (o.components) {
+                    case "Door":                                                // Doors
+                        if (!o.open) {
+                            return o;
+                        }
+                        break;
+                    case "Trap":                                                // Traps do not collide
+                        break;
+                    default:                                                    // By default check collision
+                        if (o.collides === undefined || o.collides) {
+                            return o;
+                        }
+                        break;
                 }
             }
         }
-        //this.log("pos" + y);
-        //this.log();
+
         //if (this.level.map[this.level.map.length - 1 - y][x].y === 0 ? !collided : false) {// It's a XOR
         if (this.level.map[y][x].y === 0 ? !collided : false) {                 // It's a XOR
             return true;
         }
-        return null;
+        return false;
     },
     checkGameOver: function() {
         if (this.gameOverSent) {
