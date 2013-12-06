@@ -1022,7 +1022,7 @@ YUI().use(function(Y) {
                     path: 'escodegen/escodegen-min.js'
                 },
                 tinymce: {
-                    page: "tinymce/tinymce.min.js"
+                    path: "tinymce/tinymce.min.js"
                 },
                 excanvas: {
                     path: 'excanvas/excanvas.compiled.js'
