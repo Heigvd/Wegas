@@ -204,16 +204,27 @@ img.inputEx-ListField-delButton {
 /* Tinymce field */
 .wegas-form .mce-container {
     margin: 0;
+    padding: 0;
 }
 .wegas-form .mce-panel {
-    border: none;
-    background: white;
+    border-color: lightgray;
+    background: #f2f2f2;
 }
-.wegas-form .mce-edit-area {
-    border: 1px solid lightgray !important;
+.wegas-form .mce-panel {
+    border-color: lightgray;
+    background: #f2f2f2;
+}
+.wegas-form .mce-toolbar-grp {
+    padding: 2px;
+}
+.wegas-form .mce-btn-group {
+    padding: 0 13px 0 0;
 }
 .wegas-form .mce-btn-group .mce-btn {
     background-image: none;
+    border: none;
+    border-radius: 3px;
+    margin-right: 1px;
 }
 
 /* Styles for form edition */
