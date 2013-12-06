@@ -1,32 +1,48 @@
-YUI.add("wegas-simpledialogue-main", function(Y) {
-    
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @fileoverview
+ * @author Anthony Geiser <antho.geiser@gmail.com>
+ */
+YUI.add("wegas-simpledialogue", function(Y) {
     "use strict";
+
     var CONTENTBOX = "contentBox", SimpleDialogueMain;
-    
+
     SimpleDialogueMain = Y.Base.create("wegas-teaching-main", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        currentDialogue: null,
-        handlers: null,
+        CONTENT_TEMPLATE: '<div><div class="dialogue"><div class="talk"></div><div class="response"><ul class="responseElements"></ul></div></div></div>',
         initializer: function() {
             this.handlers = {};
-            this.currentDialogue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "simpleDialogue");
-        },
-        renderUI: function() {
-            var cb = this.get(CONTENTBOX);
-            cb.append('<div class="dialogue"><div class="talk"></div><div class="response"></div></div>');
         },
         bindUI: function() {
-            var no, cb = this.get(CONTENTBOX);
             this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-            this.handlers.dialogueResponse = cb.one('.dialogue .response').delegate('click', function(e) {
-                no = parseInt(e.currentTarget.getDOMNode().attributes[0].nodeValue);
+
+            this.get(CONTENTBOX).delegate('click', function(e) {
+                var no = parseInt(e.currentTarget.getAttribute("response_no"));
                 if (this.availableActions[no]) {
                     this.currentDialogue.doTransition(this.availableActions[no]);
                 }
-            }, '.responseElements li', this);
+            }, '.dialogue .response .responseElements li', this);
         },
         syncUI: function() {
-            var cb = this.get(CONTENTBOX);
-            this.readStateMachine(cb);
+            this.currentDialogue = this.get("dialogueVariable.evaluated");
+
+            if (!this.currentDialogue) {
+                this.get(CONTENTBOX).one('.dialogue .talk').insert("Dialog variable could not be found");
+                return;
+            }
+            var state = this.currentDialogue.getCurrentState();
+            this.displayText(state.get('text'));
+            if (!state instanceof Y.Wegas.persistence.DialogueDescriptor) {
+                Y.log("State isn't a dialogue state.", 'error', 'SimpleDialogue');
+                return;
+            }
+            state.getAvailableActions(Y.bind(this.readStateContent, this));
         },
         destructor: function() {
             var i;
@@ -34,43 +50,37 @@ YUI.add("wegas-simpledialogue-main", function(Y) {
                 this.handlers[i].detach();
             }
         },
-        readStateMachine: function(cb) {
-            if (!this.currentDialogue) {
-                cb.one('.dialogue .talk').insert("Aucun dialogue n'est disponible.");
-                return;
-            }
-            this.state = this.currentDialogue.getCurrentState();
-            if (!this.state.getAvailableActions) {
-                Y.log("State isn't a dialogue state.", 'error', 'wegas-simpledialogue-main.js');
-                return;
-            }
-            this.state.getAvailableActions(Y.bind(this.readStateContent, this));
-        },
         readStateContent: function(availableActions) {
-            var cb = this.get(CONTENTBOX);
             this.availableActions = availableActions;
-            cb.one('.dialogue .talk').setHTML('<p></p>');
-            this.displayText(cb, this.state.get('text'));
+            this.displayResponse(availableActions);
         },
-        displayText: function(cb, textParts) {
-            cb.one('.dialogue .talk p').insert(textParts);
-            this.displayResponse(cb);
+        displayText: function(textParts) {
+            this.get(CONTENTBOX).one('.dialogue .talk').setHTML("<p>" + textParts + "</p>");
         },
-        displayResponse: function(cb) {
-            var i;
-            if (!this.availableActions) {
+        displayResponse: function(availableActions) {
+            var i, responseNode = this.get(CONTENTBOX).one('.dialogue .response .responseElements');
+
+            if (!availableActions) {
                 return;
             }
-            if (cb.one('.dialogue .response .responseElements')) {
-                cb.one('.dialogue .response .responseElements').empty(true);
-            } else {
-                cb.one('.dialogue .response').insert('<ul class="responseElements"></ul>');
+            responseNode.empty(true);
+            for (i = 0; i < availableActions.length; i++) {
+                responseNode.insert('<li response_no="' + i + '">' + availableActions[i].get('actionText') + '</li>');
             }
-
-            for (i = 0; i < this.availableActions.length; i++) {
-                cb.one('.dialogue .response .responseElements').insert('<li response_no="' + i + '">' + this.availableActions[i].get('actionText') + '</li>');
+        }
+    }, {
+        ATTRS: {
+            dialogueVariable: {
+                value: {
+                    name: "simpleDialogue"
+                },
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    legend: "Dialogue",
+                    classFilter: ["DialogueDescriptor"]
+                }
             }
-            cb.one('.response').show();
         }
     });
     Y.namespace("Wegas").SimpleDialogueMain = SimpleDialogueMain;
