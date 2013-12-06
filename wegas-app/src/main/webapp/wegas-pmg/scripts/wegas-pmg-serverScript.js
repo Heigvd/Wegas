@@ -516,6 +516,9 @@ function isReservedToWork(employeeInst) {
     var i, occupations = employeeInst.getOccupations(),
             time = getCurrentInGameTime(), reservedToWork = false;
     for (i = 0; i < occupations.size(); i++) {
+        if (parseInt(occupations.get(i).getTime()) === time.period && !isTrue(occupations.get(i).getEditable())) {
+            return false;
+        }
         if (parseInt(occupations.get(i).getTime()) === time.period && isTrue(occupations.get(i).getEditable())) {
             reservedToWork = true;
         }
