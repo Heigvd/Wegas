@@ -583,7 +583,7 @@ YUI.add("wegas-widget", function(Y) {
         if (altType) {
             config.childType = Y.Lang.isString(altType) ? Y.Wegas[altType] || Y[altType] : altType;
         }
-        return baseCreateChild.call(this, config);                                        //reroute
+        return baseCreateChild.call(this, config);                              //reroute
     };
     /*
      * @hack Override so plugin host accepts string definition of classes and
@@ -595,7 +595,7 @@ YUI.add("wegas-widget", function(Y) {
                 config = Plugin.cfg;
                 Plugin = Plugin.fn;
             }
-            if (Plugin && !Lang.isFunction(Plugin)) {			// @hacked
+            if (Plugin && !Lang.isFunction(Plugin)) {                           // @hacked
                 Plugin = Y.Plugin[Plugin];
             }
         }
