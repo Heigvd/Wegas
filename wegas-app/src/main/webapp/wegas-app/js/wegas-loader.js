@@ -979,7 +979,7 @@ YUI().use(function(Y) {
                     ws_provides: 'CEPFolder'
                 },
                 /* SimpleDialogue */
-                'wegas-simpledialogue-main': {
+                'wegas-simpledialogue': {
                     path: "wegas-simpledialogue/js/wegas-simpledialogue-main.js",
                     ws_provides: "SimpleDialogueMain"
                 }
