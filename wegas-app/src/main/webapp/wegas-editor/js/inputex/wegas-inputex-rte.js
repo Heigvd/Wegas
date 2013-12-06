@@ -27,6 +27,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
 
     Y.extend(RTEField, inputEx.Textarea, {
         destroy: function() {
+            tinymce.execCommand('mceRemoveEditor', false, this.el.id);
             RTEField.superclass.destroy.call(this);
         },
         /**
@@ -46,21 +47,29 @@ YUI.add("wegas-inputex-rte", function(Y) {
             RTEField.superclass.renderComponent.call(this);
             if (!RTEField.init) {
                 RTEField.init = true;
-                tinyMCE.init({
-                    content_css: ["http://yui.yahooapis.com/combo?3.12.0/build/cssreset/cssreset-min.css&amp;3.12.0/build/cssfonts/cssfonts-min.css&amp;3.12.0/build/cssgrids/cssgrids-min.css",
-                        "../../wegas-app/css/wegas-app.css"],
-                    mode: "none", // "none", "textares"
-                    theme: "advanced", // "simple", "advanced"
-                    plugins: "autolink,style,table,lists," + //autoresize
-                            "advimage,advlink,iespell,inlinepopups,media," +
-                            "contextmenu",
-                    theme_advanced_buttons1: "bold,italic,bullist,styleselect,link,image,media,|,cleanup,code",
-                    theme_advanced_toolbar_location: "top",
-                    theme_advanced_toolbar_align: "left",
-                    theme_advanced_statusbar_location: "none", // top, bottom, none
-                    theme_advanced_resizing: false,
+                tinymce.init({
+                    plugins: [
+                        "autolink autoresize link image lists ",
+                        "code media table contextmenu paste"
+                                //textcolor
+                                //wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
+                    ],
+                    toolbar1: "bold italic bullist | link image media | code",
+                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselectspellchecker template
+                    // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
+                    menubar: false,
+                    statusbar: false,
                     relative_urls: false,
+                    toolbar_items_size: 'small',
                     file_browser_callback: this.onFileBrowserClick,
+                    image_advtab: true,
+                    autoresize_min_height: 50,
+                    autoresize_max_height: 500,
+                    content_css: [
+                        // "http://yui.yahooapis.com/combo?3.12.0/build/cssreset/cssreset-min.css&amp;3.12.0/build/cssfonts/cssfonts-min.css&amp;3.12.0/build/cssgrids/cssgrids-min.css",
+                        // Y.Wegas.app.get("base") + "wegas-app/css/wegas-app.css"
+                        Y.Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
+                    ],
                     style_formats: [{// Style formats
                             title: 'Title 1',
                             block: 'h1'
@@ -76,30 +85,10 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         }, {
                             title: 'Normal',
                             inline: 'span'
-                        }]
-
-                            //content_css : "css/content.css",                              // Example content CSS (should be your site CSS)
-                            // template_external_list_url : "lists/template_list.js",   // Drop lists for link/image/media/template dialogs
-                            // external_link_list_url : "lists/link_list.js",
-                            // external_image_list_url : "lists/image_list.js",
-                            // media_external_list_url : "lists/media_list.js",
-                            // Replace values for the template plugin
-                            // template_replace_values : {
-                            //    username : "Some User",
-                            //    staffid : "991234"
-                            // }
-                            // plugins: autolink, lists,spellchecker,pagebreak,style,
-                            // layer,table,save,advhr,advimage,advlink,emotions,iespell,
-                            // inlinepopups,insertdatetime,preview,media,searchreplace,
-                            // print,contextmenu,paste,directionality,fullscreen,noneditable,
-                            // visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist, autosave,visualblocks
-                            // Theme options ( full )
-                            // theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,|,bullist,numlist,|,outdent,indent,|,undo,redo,|,link,unlink,image,media,charmap,emotions,iespell,|,forecolor,backcolor",
-                            // theme_advanced_buttons2 : "tablecontrols,|,hr,removeformat,cleanup,styleprops,iespell,spellchecker,visualaid,|,insertlayer,moveforward,movebackward,absolute,|,search,replace,|,fullscreen,code",
-                });
+                        }]});
             }
             Y.once("domready", function() {
-                tinyMCE.execCommand('mceAddControl', false, this.el.id);
+                tinymce.execCommand('mceAddEditor', false, this.el.id);
             }, this);
         },
         onFileBrowserClick: function(field_name, url, type, win) {

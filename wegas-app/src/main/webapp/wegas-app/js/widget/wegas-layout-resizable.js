@@ -154,12 +154,10 @@ YUI.add('wegas-layout-resizable', function(Y) {
             var target = this.getPositionNode(position),
                     cfg = this.get(position);
 
-            if (!cfg.width) {
-                cfg.width = 350;
-            }
-
             if (!!this.get(position + ".animate")) {                            // False by default
-                if (parseInt(target.getStyle("width"), 10) < cfg.width) {       // Only display if hidden
+                //if (parseInt(target.getStyle("width"), 10) < cfg.width) {       // Only display if hidde
+                if (parseInt(target.getStyle("width"), 10) < 70) {              // Only display if hidde
+                    target.setStyle("left", "initial");                         // Reset left value since it may have been changed during resize
                     this.getAnim(position).set("reverse", false).run();
                 }
             } else {
@@ -174,7 +172,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                         width: 0
                     },
                     to: {
-                        width: this.get(position + ".width")
+                        width: this.get(position + ".width") || 400
                     },
                     easing: 'easeOut',
                     duration: 0.6

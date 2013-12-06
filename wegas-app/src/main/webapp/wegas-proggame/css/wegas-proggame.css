@@ -1,5 +1,21 @@
 /* Prog Game Styles */
 /* Override wegas treeview styles */
+
+
+/* Din font */
+@font-face {
+    font-family: "KG Ways to Say Goodbye";
+    font-style: normal;
+    font-weight: normal;
+    src: url("../images/KGWaystoSayGoodbye.ttf");
+}
+@font-face {
+    font-family: "Ravie";
+    font-stsoyle: normal;
+    font-weight: bold;
+    src: url("../images/Ravie.ttf");
+}
+
 .wegas-playerview .yui3-treeleaf-content-header,
 .wegas-playerview .yui3-treenode-content-header {
     padding: 0px 0 3px;
@@ -28,6 +44,7 @@ html, .editor-preview .layout > div {
 }
 .layout {
     overflow: visible;
+    overflow-x: hidden;
 }
 .layout::before {
     /*    overflow: hidden;
@@ -494,4 +511,9 @@ html, .editor-preview .layout > div {
 }
 .ace_gutter-cell.proggame-currentline {
     background-color: green;
+}
+
+/* crafty styles */
+#cr-stage > div {
+    width: 400px;
 }
