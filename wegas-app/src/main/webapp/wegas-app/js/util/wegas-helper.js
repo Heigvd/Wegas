@@ -65,6 +65,11 @@ YUI.add('wegas-helper', function(Y) {
         escapeCSSClass: function(str) {
             return str.replace(/ /g, "-").toLowerCase();
         },
+        stripHtml: function(html) {
+            var div = document.createElement("div");
+            div.innerHTML = html;
+            return div.textContent || div.innerText || "";
+        },
         /**
          * Format a date, using provided format string.
          *

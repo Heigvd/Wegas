@@ -11,19 +11,16 @@
  */
 YUI.add('wegas-pageeditor', function(Y) {
     "use strict";
-    var PageEditor, BOUNDINGBOX = "boundingBox",
-            CONTENTBOX = "contentBox",
-            Alignable = Y.Base.create("wegas-pageeditor-overlay", Y.Widget,
-            [Y.WidgetPosition, Y.WidgetStack], {
-//CONTENT_TEMPLATE: '<div><span class="wegas-icon wegas-icon-edit"></span><div>'
+
+    var PageEditor, Alignable,
+            BOUNDINGBOX = "boundingBox",
+            CONTENTBOX = "contentBox";
+
+    Alignable = Y.Base.create("wegas-pageeditor-overlay", Y.Widget, [Y.WidgetPosition, Y.WidgetStack], {
+        //CONTENT_TEMPLATE: '<div><span class="wegas-icon wegas-icon-edit"></span><div>'
     }, {
         CSS_PREFIX: "wegas-pageeditor-overlay"
-    }),
-    inRegion = function(node, xy) {
-        var region = Y.one(node).get("region");
-        return xy[0] > region.left && xy[0] < (region.left + region.width) &&
-                xy[1] > region.top && xy[1] < (region.top + region.height);
-    };
+    });
     /**
      *  @class
      *  @name Y.Plugin.PageEditor
@@ -34,7 +31,7 @@ YUI.add('wegas-pageeditor', function(Y) {
         PageEditor.superclass.constructor.apply(this, arguments);
     };
     Y.extend(PageEditor, Y.Plugin.Base, {
-// *** Lifecycle methods *** //
+        // *** Lifecycle methods *** //
         initializer: function() {
             this.handlers = [];
             this.fixedHandlers = [];
@@ -171,7 +168,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }
             }));
             this.fixedHandlers.push(this.get("host").get(CONTENTBOX).after("mouseout", function(e) {
-                if (!inRegion(e.currentTarget, [e.clientX, e.clientY])) {
+                if (!PageEditor.inRegion(e.currentTarget, [e.clientX, e.clientY])) {
                     this.hideOverlay();
                 }
             }, this));
@@ -212,7 +209,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }
             }, this));
             this.handlers.push(this.overlayMask.menu.on("menuOpen", function(e) {
-                if (inRegion(this.shownOverlay.get(CONTENTBOX).one(".wegas-editmenubutton-icon"), [e.domEvent.clientX, e.domEvent.clientY])) { /* Clicked editmenu */
+                if (PageEditor.inRegion(this.shownOverlay.get(CONTENTBOX).one(".wegas-editmenubutton-icon"), [e.domEvent.clientX, e.domEvent.clientY])) { /* Clicked editmenu */
                     this.targetWidget = this.shownOverlay._widget;
                     this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
                         widget: this.targetWidget
@@ -410,7 +407,11 @@ YUI.add('wegas-pageeditor', function(Y) {
     }, {
         NS: "pageeditor",
         NAME: "pageeditor",
-        ATTRS: {}
+        inRegion: function(node, xy) {
+            var region = Y.one(node).get("region");
+            return xy[0] > region.left && xy[0] < (region.left + region.width) &&
+                    xy[1] > region.top && xy[1] < (region.top + region.height);
+        }
     });
     Y.Base.mix(PageEditor, [Y.Wegas.PageEditorDD, Y.Wegas.PageEditorResize]); //Enable dragdrop
     Y.namespace('Plugin').PageEditor = PageEditor;
