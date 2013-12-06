@@ -61,7 +61,7 @@ YUI.add("wegas-button", function(Y) {
             }
         },
         getEditorLabel: function() {
-            return this.get("label");
+            return Y.Wegas.Helper.stripHtml(this.get("label"));
         },
         /**
          * @function
@@ -285,7 +285,7 @@ YUI.add("wegas-button", function(Y) {
         }
     });
 
-     Y.Wegas.NewDescriptorButton = Y.Base.create("button", Y.Wegas.Button, [], {
+    Y.Wegas.NewDescriptorButton = Y.Base.create("button", Y.Wegas.Button, [], {
         /** @lends Y.Wegas.NewDescriptorButton# */
         /**
          * @function
@@ -294,7 +294,7 @@ YUI.add("wegas-button", function(Y) {
          */
         initializer: function() {
             this.plug(Y.Plugin.WidgetMenu, {
-                children: Y.Array.map(Y.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children, function (o) {
+                children: Y.Array.map(Y.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children, function(o) {
                     return Y.mix({
                         type: "NewEntityButton"
                     }, o);
