@@ -19,6 +19,8 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -33,6 +35,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
     @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class),
     @JsonSubTypes.Type(name = "DialogueInstance", value = DialogueInstance.class)
 })
+@Access(AccessType.FIELD)
 public class StateMachineInstance extends VariableInstance implements Serializable {
 
     @Column(name = "currentstate_id")
@@ -53,6 +56,7 @@ public class StateMachineInstance extends VariableInstance implements Serializab
      *
      * @return
      */
+    @JsonProperty("currentState")
     public State getCurrentState() {
         final Map<Long, State> states = ((StateMachineDescriptor) this.findDescriptor()).getStates();
         if (states.containsKey(this.currentStateId)) {
@@ -60,6 +64,11 @@ public class StateMachineInstance extends VariableInstance implements Serializab
         } else {
             return null;
         }
+    }
+
+    @JsonIgnore
+    public void setCurrentState(State state) {
+        //Not meant to be used
     }
 
     /**

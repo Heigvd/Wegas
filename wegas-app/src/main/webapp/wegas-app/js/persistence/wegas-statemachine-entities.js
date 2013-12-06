@@ -24,7 +24,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             currentState: {
-                "transient": true
+                "transient": true,
+                type: "string"
             },
             enabled: {
                 type: BOOLEAN,
@@ -135,9 +136,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                             type: HIDDEN,
                             value: 1
                         }
-                    },
-                    currentState: {
-                        "transient": true
                     },
                     enabled: {
                         type: BOOLEAN,

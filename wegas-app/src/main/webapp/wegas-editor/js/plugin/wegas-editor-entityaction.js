@@ -574,8 +574,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
                         success: function(e) {
-                            tab.hideOverlay();
                             widget.set("entity", e.response.entity);
+                            EditEntityAction.hideEditFormOverlay();
                         }
                     }
                 });
