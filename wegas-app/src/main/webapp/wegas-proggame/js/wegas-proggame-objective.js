@@ -68,6 +68,7 @@ YUI.add('wegas-proggame-objective', function(Y) {
             fullObjective: {
                 type: "string",
                 format: "html",
+                optional: true,
                 _inputex: {
                     label: "Full objective"
                 }
@@ -75,8 +76,9 @@ YUI.add('wegas-proggame-objective', function(Y) {
             globalObjective: {
                 type: "string",
                 format: "html",
+                optional: true,
                 _inputex: {
-                    label: "Global objective"
+                    label: "Short objective"
                 }
             }
         }

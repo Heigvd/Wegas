@@ -7,13 +7,13 @@
     font-family: "KG Ways to Say Goodbye";
     font-style: normal;
     font-weight: normal;
-    src: url("../images/KGWaystoSayGoodbye.ttf");
+    src: url("../../wegas-proggame/images/KGWaystoSayGoodbye.ttf");
 }
 @font-face {
     font-family: "Ravie";
     font-stsoyle: normal;
     font-weight: bold;
-    src: url("../images/Ravie.ttf");
+    src: url("../../wegas-proggame/images/Ravie.ttf");
 }
 
 .wegas-playerview .yui3-treeleaf-content-header,
@@ -43,8 +43,8 @@ html, .editor-preview .layout > div {
         url(../../wegas-proggame/images/proggame-background-2.jpg) top left no-repeat;
 }
 .layout {
-    overflow: visible;
-    overflow-x: hidden;
+/*    overflow: visible;
+    overflow-x: hidden;*/
 }
 .layout::before {
     /*    overflow: hidden;
@@ -475,10 +475,8 @@ html, .editor-preview .layout > div {
     visibility:hidden;
 }
 .yui3-proggame-alignable-content {
-    margin: 2px;
     max-height:512px;
     overflow:auto;
-    padding: 3px;
 }
 .yui3-proggame-alignable .table {
     height: 64px;
@@ -516,4 +514,31 @@ html, .editor-preview .layout > div {
 /* crafty styles */
 #cr-stage > div {
     width: 400px;
+}
+
+/* Popup overlay stayles */
+.yui3-skin-sam .yui3-widget-mask {
+    background: rgba(1,1,1, 0.4) url(../../wegas-proggame/images/popupBg.png) no-repeat 100px 0;
+    opacity: 1;
+}
+.wegas-panel-content {
+    background: none;
+    width: 800px;
+    border: none;
+    box-shadow: none;
+    color: black;
+}
+.wegas-panel-content .yui3-widget-ft button {
+    background: url(../../wegas-proggame/images/btnOk.png) no-repeat;
+    width: 175px;
+    height: 104px;
+    box-shadow: none;
+    border:none;
+    color: transparent;
+    position: absolute;
+    top: 366px;
+    left: 315px;
+}
+.wegas-panel-content .yui3-widget-ft button:hover {
+    background: url(../../wegas-proggame/images/btnOkA.png) no-repeat;
 }

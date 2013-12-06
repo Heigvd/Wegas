@@ -837,7 +837,7 @@ YUI().use(function(Y) {
                     ws_provides: 'ProgGameDisplay'
                 },
                 'wegas-proggame-inputex': {
-                    requires: 'wegas-inputex',
+                    requires: ['wegas-inputex', "inputex-list"],
                     ix_provides: ['proggametile', "proggamemap"]
                 },
                 'wegas-proggame-objective': {

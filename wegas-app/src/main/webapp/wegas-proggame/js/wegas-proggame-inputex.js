@@ -5,17 +5,14 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-proggame-inputex', function(Y) {
     "use strict";
 
     var inputEx = Y.inputEx,
-            Alignable = Y.Base.create("proggame-alignable", Y.Widget,
-                    [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetPositionConstrain]),
+            Alignable = Y.Base.create("proggame-alignable", Y.Widget, [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetPositionConstrain]),
             TILESIZE = 32;
 
     /**
@@ -29,6 +26,7 @@ YUI.add('wegas-proggame-inputex', function(Y) {
         setOptions: function(options) {
             options.elementType = {
                 type: "list",
+                useButtons: false,
                 elementType: {
                     type: "proggametile",
                     value: {x: 0, y: 0}
@@ -143,7 +141,7 @@ YUI.add('wegas-proggame-inputex', function(Y) {
                     });
                     var cb = this.alignable.get("contentBox"),
                             ct = ["<div class=\"table\">"],
-                            spriteSheet = Y.Wegas.ProgGameDisplay.SPRITESHEETS["tile"];
+                            spriteSheet = Y.Wegas.ProgGameDisplay.SPRITESHEETS["TileSprite"];
 
                     for (i = 0; i < spriteSheet.height; i += 1) {
                         ct.push("<div>");

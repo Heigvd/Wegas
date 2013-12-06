@@ -103,6 +103,10 @@ div.inputEx-fieldWrapper {
     width: 100%;
     height: 150px;
 }
+.inputEx-Field .ace_editor {
+    width: 99.5%;
+    height: 100px;
+}
 
 /* Variable descriptor select */
 .wegas-inputex-variabledescriptorselect-group > label {
