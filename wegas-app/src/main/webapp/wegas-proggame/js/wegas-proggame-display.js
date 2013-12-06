@@ -230,6 +230,14 @@ YUI.add('wegas-proggame-display', function(Y) {
             MOVE: 3,
             FIRE: 7,
             TRAP: 6
+        },
+        SPRITESHEETS: {
+            TileSprite: {
+                width: 1,
+                height: 4
+                        //tileWidth: 32,
+                        //tileHeigth: 32
+            }
         }
     });
 

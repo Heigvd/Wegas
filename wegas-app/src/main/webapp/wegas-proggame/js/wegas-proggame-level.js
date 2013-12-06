@@ -10,7 +10,8 @@
  */
 YUI.add('wegas-proggame-level', function(Y) {
     "use strict";
-    var CONTENTBOX = 'contentBox',
+    var CONTENTBOX = 'contentBox', HIDDEN = "hidden",
+            NUMBER = "number", STRING = "string", NUMBER = "number", BOOLEAN = "boolean",
             RUN_BUTTON_LABEL = "<div class='proggame-play'><span>RUN</span><span> CODE</span></div>",
             STOP_BUTTON_LABEL = "<span class='proggame-stop'>STOP</span>",
             NEXT_BUTTON_LABEL = "<span class='proggame-next'>NEXT</span>",
@@ -167,6 +168,17 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.debugTabView.destroy();
             this.idleHandler.cancel();
         },
+        /**
+         * Override to prevent the serialization of the openpage action we
+         * created programatically.
+         *
+         * @returns {unresolved}
+         */
+        toJSON: function() {
+            var ret = Y.Wegas.Editable.prototype.toJSON.apply(this, arguments);
+            ret.plugins.pop();
+            return ret;
+        },
         setState: function(nextState) {
             Y.log("setState(" + nextState + ")", "info", "Wegas.ProgGameLevel");
             if (this.currentState === nextState) {
@@ -224,7 +236,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         instrument: function() {
             var ins = new Y.Wegas.JSInstrument();                               // Instantiate js instrumenter
-            return ins.instrument(this.mainEditorTab.aceField.getValue());                    // return instrumented value of current player script
+            return ins.instrument(this.mainEditorTab.aceField.getValue());      // return instrumented value of current player script
         },
         reRun: function() {
             Y.log("reRun()", "info", "Wegas.ProgGameLevel");
@@ -602,15 +614,30 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
         },
         getPanel: function(cfg) {
-            return new Y.Wegas.Panel(Y.mix(cfg, {
+            var panel = new Y.Wegas.Panel(Y.mix(cfg, {
                 modal: true,
-                centered: true,
+                centered: false,
+                //focusOn: [],
+                //hideOn: [
+                //    {
+                //        // When we don't specify a `node`,
+                //        // it defaults to the `boundingBox` of this Panel instance.
+                //        eventName: 'click',
+                //        node: Y.one('body')
+                //    }
+                //],
+                x: 300,
+                y: 200,
                 visible: true,
                 zIndex: 1000,
-                width: 500,
+                width: "800px",
                 //height: Y.DOM.winHeight() - 250,
                 render: true
             }));
+            Y.later(50, this, function() {
+                Y.one("body").once("click", panel.exit, panel);
+            });
+            return panel;
         },
         /*
          * @override
@@ -624,7 +651,10 @@ YUI.add('wegas-proggame-level', function(Y) {
     }, {
         ATTRS: {
             label: {
-                type: "string"
+                type: STRING,
+                _inputex: {
+                    index: -1
+                }
             },
             objects: {
                 type: "array",
@@ -643,21 +673,21 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         value: "Trap"
                                     }, {
                                         name: "x",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "x"
                                     }, {
                                         name: "y",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "y"
                                     }, {
                                         name: "enabled",
                                         label: "Active by default",
-                                        type: "boolean",
+                                        type: BOOLEAN,
                                         value: true
                                     }, {
                                     }, {
                                         name: "components",
-                                        type: "uneditable",
+                                        type: HIDDEN,
                                         value: "Trap"
                                     }]
                             }, {
@@ -666,15 +696,15 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 fields: [{
                                         name: "id",
                                         label: "ID",
-                                        type: "string",
+                                        type: STRING,
                                         value: "Player"
                                     }, {
                                         name: "x",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "x"
                                     }, {
                                         name: "y",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "y"
                                     }, {
                                         name: "direction",
@@ -687,10 +717,10 @@ YUI.add('wegas-proggame-level', function(Y) {
                                     }, {
                                         name: "collides",
                                         label: "collides",
-                                        type: "boolean"
+                                        type: HIDDEN
                                     }, {
                                         name: "components",
-                                        type: "uneditable",
+                                        type: HIDDEN,
                                         value: "PC"
                                     }]
                             }, {
@@ -699,15 +729,15 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 fields: [{
                                         name: "id",
                                         label: "ID",
-                                        type: "string",
+                                        type: STRING,
                                         value: "Enemy"
                                     }, {
                                         name: "x",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "x"
                                     }, {
                                         name: "y",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "y"
                                     }, {
                                         name: "direction",
@@ -720,10 +750,10 @@ YUI.add('wegas-proggame-level', function(Y) {
                                     }, {
                                         name: "collides",
                                         label: "collides",
-                                        type: "boolean"
+                                        type: BOOLEAN
                                     }, {
                                         name: "components",
-                                        type: "uneditable",
+                                        type: HIDDEN,
                                         value: "NPC"
                                     }]
                             }, {
@@ -731,7 +761,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 type: "group",
                                 fields: [{
                                         name: "id",
-                                        type: "string",
+                                        type: STRING,
                                         label: "ID",
                                         value: "Panel"
                                     }, {
@@ -741,19 +771,20 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         value: "'Hello World !'"
                                     }, {
                                         name: "x",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "x"
                                     }, {
                                         name: "y",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "y"
                                     }, {
                                         name: "collides",
                                         label: "collides",
-                                        type: "boolean"
+                                        value: false,
+                                        type: HIDDEN
                                     }, {
                                         name: "components",
-                                        type: "uneditable",
+                                        type: HIDDEN,
                                         value: "Panel"
                                     }]
                             }, {
@@ -762,24 +793,24 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 fields: [{
                                         name: "id",
                                         label: "ID",
-                                        type: "string",
+                                        type: STRING,
                                         value: "Door"
                                     }, {
                                         name: "x",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "x"
                                     }, {
                                         name: "y",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "y"
                                     }, {
                                         name: "open",
                                         label: "Open by default",
-                                        type: "boolean",
-                                        value: true
+                                        type: BOOLEAN,
+                                        value: false
                                     }, {
                                         name: "components",
-                                        type: "uneditable",
+                                        type: HIDDEN,
                                         value: "Door"
                                     }]
                             }, {
@@ -788,24 +819,24 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 fields: [{
                                         name: "id",
                                         label: "ID",
-                                        type: "string",
+                                        type: STRING,
                                         value: "Controller"
                                     }, {
                                         name: "x",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "x"
                                     }, {
                                         name: "y",
-                                        type: "number",
+                                        type: NUMBER,
                                         label: "y"
                                     }, {
                                         name: "enabled",
                                         label: "Enabled by default",
-                                        type: "boolean",
+                                        type: BOOLEAN,
                                         value: false
                                     }, {
                                         name: "components",
-                                        type: "uneditable",
+                                        type: HIDDEN,
                                         value: "Controller"
                                     }]
                             }]
@@ -813,52 +844,48 @@ YUI.add('wegas-proggame-level', function(Y) {
 
                 }
             },
-            arguments: {
-                type: "array",
-                value: [],
-                _inputex: {
-                    useButtons: true
-                }
-            },
+            //arguments: {
+            //    type: "array",
+            //    value: [],
+            //    _inputex: {
+            //        useButtons: true
+            //    }
+            //},
             api: {
                 type: "array",
                 value: [],
                 _inputex: {
                     useButtons: true,
-                    sortable: true,
-                    elementType: {
-                    }
+                    sortable: true
                 }
             },
-            maxTurns: {
-                type: "string",
-                format: "Integer",
-                value: 1,
-                validator: function(s) {
-                    return (parseInt(s) ? parseInt(s) : 1);
-                },
-                _inputex: {
-                    label: "Max turns"
-                }
-            },
+            //maxTurns: {
+            //    type: STRING,
+            //    format: "Integer",
+            //    value: 1,
+            //    validator: function(s) {
+            //        return (parseInt(s) ? parseInt(s) : 1);
+            //    },
+            //    _inputex: {
+            //        label: "Max turns"
+            //    }
+            //},
             winningCondition: {
-                type: "string",
-                format: "text",
+                type: STRING,
                 value: "comparePos(find('Player'), find('Enemy'))",
                 _inputex: {
                     _type: "ace"
                 }
             },
             onStart: {
-                type: "string",
-                format: "text",
+                type: STRING,
                 optional: true,
                 _inputex: {
                     _type: "ace"
                 }
             },
             onAction: {
-                type: "string",
+                type: STRING,
                 format: "text",
                 optional: true,
                 _inputex: {
@@ -866,7 +893,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             },
             onTurn: {
-                type: "string",
+                type: STRING,
                 format: "text",
                 optional: true,
                 _inputex: {
@@ -874,7 +901,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             },
             onWin: {
-                type: "string",
+                type: STRING,
                 optional: true,
                 _inputex: {
                     _type: "ace"
@@ -914,7 +941,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                         y: 2
                     }],
                 _inputex: {
-                    type: "hidden",
+                    type: HIDDEN,
                     useButtons: true,
                     elementType: {
                         type: "object"
