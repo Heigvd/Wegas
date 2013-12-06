@@ -28,33 +28,9 @@ YUI.add('wegas-inbox', function(Y) {
          */
         // ** Private fields ** //
         /**
-         * TabView widget used to display message header and body
-         */
-        tabView: null,
-        /**
-         * Reference to each used functions
-         */
-        handlers: null,
-        /**
-         * datasource from Y.Wegas.Facade.VariableDescriptor
-         */
-        dataSource: null,
-        /**
-         * Button widget used to delete e-mail
-         */
-        deleteButton: null,
-        /**
-         * Current selected message in tabview;
-         */
-        msg: null,
-        /**
          *
          */
         readRequestTid: null,
-        /**
-         * JS translator
-         */
-        jsTranslator: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -66,12 +42,6 @@ YUI.add('wegas-inbox', function(Y) {
             this.dataSource = Y.Wegas.Facade.VariableDescriptor;
             this.handlers = {};
             this.jsTranslator = new Y.Wegas.JSTranslator();
-            this.plug(Y.Plugin.WidgetToolbar);
-            this.deleteButton = new Y.Wegas.Button({
-                label: "<span class='wegas-icon wegas-icon-cancel'></span>" + this.jsTranslator.getRB().Delete
-            });
-            this.toolbar.add(this.deleteButton);
-            this.tabView = new Y.TabView();
         },
         /**
          * @function
@@ -80,9 +50,28 @@ YUI.add('wegas-inbox', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
+
+            this.tabView = new Y.TabView();                                     //TabView widget used to display message header and body
             this.tabView.render(cb);
             this.tabView.get("boundingBox").addClass("horizontal-tabview");
             cb.append("<div style='clear:both'></div>");
+
+            //this.plug(Y.Plugin.WidgetToolbar);
+            if (this.toolbar) {
+                var delBtn = new Y.Wegas.Button({
+                    label: "<span class='wegas-icon wegas-icon-cancel'></span>" + this.jsTranslator.getRB().Delete
+                });
+                delBtn.on("click", function(e) {
+                    var selection = this.tabView.get("selection");
+                    if (!selection || !selection.msg) {
+                        return;
+                    }
+                    if (confirm('The e-mail "' + selection.msg.get("subject") + '" will be deleted permanently. Continue ?')) {
+                        this.deleteEmail(selection.msg);
+                    }
+                }, this);
+                this.toolbar.add(delBtn);
+            }
         },
         /**
          * @function
@@ -99,14 +88,6 @@ YUI.add('wegas-inbox', function(Y) {
                     this.syncUI();
                 }
             }, this);
-            this.handlers.deleteEMail = this.deleteButton.on("click", function(e) {
-                if (!this.msg) {
-                    return;
-                }
-                if (confirm('The e-mail "' + this.msg.get("subject") + '" will be deleted permanently. Continue ?')) {
-                    this.deleteEmail();
-                }
-            }, this);
         },
         /**
          * @function
@@ -116,11 +97,11 @@ YUI.add('wegas-inbox', function(Y) {
          * Re-select the current selected msg;
          */
         syncUI: function() {
-            var i, msg, tab, from, indexCounter = 0,
+            var i, msg, tab, from,
                     inboxDescriptor = this.get('variable.evaluated'),
                     inboxVariable, messages,
-                    selectedIndex = 0,
-                    tabs = [];
+                    selection = this.tabView.get("selection"),
+                    oldMsg = selection && selection.msg;
             if (!inboxDescriptor) {
                 this.tabView.add({
                     label: '',
@@ -132,6 +113,7 @@ YUI.add('wegas-inbox', function(Y) {
             messages = inboxVariable.get("messages");
 
             this.isSyncing = true;
+
             this.tabView.removeAll();
             for (i = messages.length - 1; i >= 0; i -= 1) {
                 msg = messages[i];
@@ -145,15 +127,13 @@ YUI.add('wegas-inbox', function(Y) {
                             + '</div>'
                             + '<div class="msg-body"><center><em><i>Loading</i></em></center></div>'
                 });
+                this.tabView.add(tab);
                 tab.msg = msg;
-                tabs.push(tab);
 
-                if (this.msg && this.msg.get("id") === msg.get("id")) {
-                    selectedIndex = indexCounter;
+                if (oldMsg && oldMsg.get("id") === msg.get("id")) {
+                    tab.set("selected", 2);
                 }
-                indexCounter += 1;
             }
-            this.tabView.add(tabs);
 
             if (messages.length === 0) {
                 this.tabView.add({
@@ -163,7 +143,9 @@ YUI.add('wegas-inbox', function(Y) {
             }
 
             this.isSyncing = false;
-            this.tabView.selectChild(selectedIndex);
+            if (!this.tabView.get("selection")) {
+                this.tabView.selectChild(0);
+            }
         },
         /**
          * @function
@@ -180,17 +162,11 @@ YUI.add('wegas-inbox', function(Y) {
          * @private
          * @description Send a REST request to delete selected message
          */
-        deleteEmail: function(e) {
-            if (!this.msg) {
-                return;
-            }
+        deleteEmail: function(msg) {
             this.dataSource.sendRequest({
-                request: "/Inbox/Message/" + this.msg.get("id"),
+                request: "/Inbox/Message/" + msg.get("id"),
                 cfg: {
                     method: "DELETE"
-                },
-                on: {
-                    success: this.msg = null
                 }
             });
         },
@@ -235,8 +211,6 @@ YUI.add('wegas-inbox', function(Y) {
                         }, e.newVal)
                     }
                 });
-                this.msg = e.newVal.msg;
-
                 if (e.newVal.msg.get("unread")) {                               // If the message is currently unread,
                     this.timer = Y.later(this.get("setToReadAfter") * 1000, this,
                             function(msg, tab) {                                // Send a request to mark it as read
