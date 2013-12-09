@@ -10,7 +10,7 @@
  */
 YUI.add('wegas-proggame-level', function(Y) {
     "use strict";
-    var CONTENTBOX = 'contentBox', HIDDEN = "hidden",
+    var CONTENTBOX = 'contentBox', HIDDEN = "hidden", ARRAY = "array",
             NUMBER = "number", STRING = "string", NUMBER = "number", BOOLEAN = "boolean",
             RUN_BUTTON_LABEL = "<div class='proggame-play'><span>RUN</span><span> CODE</span></div>",
             STOP_BUTTON_LABEL = "<span class='proggame-stop'>STOP</span>",
@@ -634,6 +634,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 //height: Y.DOM.winHeight() - 250,
                 render: true
             }));
+            panel.get("boundingBox").addClass("proggame-panel");
             Y.later(50, this, function() {
                 Y.one("body").once("click", panel.exit, panel);
             });
@@ -657,7 +658,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             },
             objects: {
-                type: "array",
+                type: ARRAY,
                 _inputex: {
                     useButtons: true,
                     sortable: "true",
@@ -844,32 +845,14 @@ YUI.add('wegas-proggame-level', function(Y) {
 
                 }
             },
-            //arguments: {
-            //    type: "array",
-            //    value: [],
-            //    _inputex: {
-            //        useButtons: true
-            //    }
-            //},
             api: {
-                type: "array",
+                type: ARRAY,
                 value: [],
                 _inputex: {
                     useButtons: true,
                     sortable: true
                 }
             },
-            //maxTurns: {
-            //    type: STRING,
-            //    format: "Integer",
-            //    value: 1,
-            //    validator: function(s) {
-            //        return (parseInt(s) ? parseInt(s) : 1);
-            //    },
-            //    _inputex: {
-            //        label: "Max turns"
-            //    }
-            //},
             winningCondition: {
                 type: STRING,
                 value: "comparePos(find('Player'), find('Enemy'))",
@@ -892,14 +875,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                     _type: "ace"
                 }
             },
-            onTurn: {
-                type: STRING,
-                format: "text",
-                optional: true,
-                _inputex: {
-                    _type: "ace"
-                }
-            },
             onWin: {
                 type: STRING,
                 optional: true,
@@ -908,7 +883,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             },
             map: {
-                type: "array",
+                type: ARRAY,
                 value: [
                     [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
                     [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
@@ -924,7 +899,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             mapObjects: {
                 validator: Y.Lang.isArray,
-                type: "array",
+                type: ARRAY,
                 "transient": true,
                 value: [{
                         id: "Enemy",
@@ -949,9 +924,36 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             },
             invites: {
-                type: "array",
+                type: ARRAY,
                 value: []
+            },
+            maxTurns: {
+                type: STRING,
+                value: 1,
+                //format: "Integer",
+                //validator: function(s) {
+                //    return (parseInt(s) ? parseInt(s) : 1);
+                //},
+                _inputex: {
+                    label: "Max turns",
+                    type: HIDDEN
+                }
             }
+            //arguments: {
+            //    type: ARRAY,
+            //    value: [],
+            //    _inputex: {
+            //        useButtons: true
+            //    }
+            //},
+            //onTurn: {
+            //    type: STRING,
+            //    format: "text",
+            //    optional: true,
+            //    _inputex: {
+            //        _type: "ace"
+            //    }
+            //},
         },
         API: {
             say: {

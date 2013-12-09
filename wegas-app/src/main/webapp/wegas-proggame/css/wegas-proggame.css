@@ -37,14 +37,14 @@
 }
 
 html, .editor-preview .layout > div {
-    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-family: "Verdana", "Arial", Sans-Serif;
     font-size: 9pt;
     background: url(../../wegas-proggame/images/proggame-title.png) top left no-repeat,
-        url(../../wegas-proggame/images/proggame-background-2.jpg) top left no-repeat;
+        url(../../wegas-proggame/images/proggame-background-2-withpanel.jpg) top left no-repeat;
 }
 .layout {
-/*    overflow: visible;
-    overflow-x: hidden;*/
+    /*    overflow: visible;
+        overflow-x: hidden;*/
 }
 .layout::before {
     /*    overflow: hidden;
@@ -58,24 +58,22 @@ html, .editor-preview .layout > div {
 }
 
 .battle-button, .battle-button:hover/*, .wegas-absolutelayout .yui3-button-disabled*/{
-    background: url(../../wegas-proggame/images/proggame-button-battle.png) no-repeat;
-}
-
-.battle-button:hover::before{
-    content: "";
-    position: absolute;
-    top: 21px;
-    left: 8px;
-    height: 42px;
-    width: 161px;
-    box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
+    background: url(../../wegas-proggame/images/proggame-menu-buttons.png) no-repeat;
 }
 
 .mails-button, .mails-button:hover/*, .wegas-absolutelayout .yui3-button-disabled*/{
-    background: url(../../wegas-proggame/images/proggame-button-mails.png) no-repeat;
+    background: url(../../wegas-proggame/images/proggame-menu-buttons.png) no-repeat -361px 0px;
+    /*background: url(../../wegas-proggame/images/proggame-button-mails.png) no-repeat;*/
+}
+.proggame-button-shop, .proggame-button-shop:hover {
+    background: url(../../wegas-proggame/images/proggame-menu-buttons.png) no-repeat -199px 0px;
+    box-shadow: none;
 }
 
-.mails-button:hover::before{
+.battle-button:hover::before,
+.proggame-button-shop:hover::before,
+.mails-button:hover::before,
+.menu-loginbutton:hover::before {
     content: "";
     position: absolute;
     top: 21px;
@@ -84,22 +82,26 @@ html, .editor-preview .layout > div {
     width: 141px;
     box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
 }
-
-.history-button, .history-button:hover/*, .wegas-absolutelayout .yui3-button-disabled*/{
-    background: url(../../wegas-proggame/images/proggame-button-history.png) no-repeat;
+.battle-button:hover::before{
+    left: 8px;
+    width: 161px;
+}
+.mails-button:hover::before {
+    left: 11px;
+    width: 129px;
+}
+.menu-loginbutton:hover::before {
+    left: 8px;
+    width: 161px;
 }
 
-.history-button:hover::before{
-    content: "";
-    position: absolute;
-    top: 21px;
-    left: 6px;
-    height: 42px;
-    width: 125px;
-    box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
+.menu-button, .wegas-absolutelayout .yui3-button-selected {
+    box-shadow: none;
+    background-color: transparent;
+    color: rgba(163, 184, 89, 1);
 }
 
-.menu-loginbutton, .menu-loginbutton:hover{
+/*.menu-loginbutton, .menu-loginbutton:hover{
     background: url(../../wegas-proggame/images/proggame-button-empty.png) no-repeat;
     box-shadow: none;
     background-color: transparent;
@@ -108,24 +110,7 @@ html, .editor-preview .layout > div {
     font-size: 19px;
     color: rgba(163, 184, 89, 1);
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-}
-
-.menu-loginbutton:hover::before{
-    content: "";
-    position: absolute;
-    top: 21px;
-    left: 8px;
-    height: 42px;
-    width: 161px;
-    box-shadow: -1px 10px 10px 1px rgba(0, 0, 0, 0.7);
-}
-
-.menu-button, .wegas-absolutelayout .yui3-button-selected
-/*.wegas-absolutelayout .yui3-button-disabled*/{
-    box-shadow: none;
-    background-color: transparent;
-    color: rgba(163, 184, 89, 1);
-}
+}*/
 
 /* objective api and file styles */
 /*.apiTab {
@@ -208,13 +193,13 @@ html, .editor-preview .layout > div {
     overflow: auto;
 }
 .objective h1 {
-    font-family: Blackadder ITC;
+    font-family: "KG Ways to Say Goodbye";;
     /*margin-left: 30px;*/
     margin-bottom: 6px;
 }
 
 .api h1 {
-    font-family: Blackadder ITC;
+    font-family: "KG Ways to Say Goodbye";
     margin-bottom: 6px;
 }
 
@@ -234,7 +219,7 @@ html, .editor-preview .layout > div {
 }
 
 .game-area {
-    background: url(../../wegas-proggame/images/proggame-right.png) no-repeat;
+    /*background: url(../../wegas-proggame/images/proggame-right.png) no-repeat;*/
     height: 699px;
 }
 
@@ -251,7 +236,7 @@ html, .editor-preview .layout > div {
 
 /* play style */
 .ui h1 {
-    font-family: Myriad Pro;
+    /*font-family: Myriad Pro;*/
     font-size: 12pt;
     text-align: center;
 }
@@ -458,7 +443,6 @@ html, .editor-preview .layout > div {
     background: url(../../wegas-proggame/images/proggame-sprite-dalles.png) no-repeat rgb(10,10,10);
 }
 .inputex-proggametile:hover {
-
     box-shadow: 1px 1px 1px black,-1px -1px 1px black;
 }
 .inputex-proggametile:hover > div {
@@ -499,7 +483,7 @@ html, .editor-preview .layout > div {
 }
 
 /* Ace styles */
-.ace_editor {
+.inputEx-Field .ace_editor {
     height: 170px;
 }
 
@@ -521,14 +505,14 @@ html, .editor-preview .layout > div {
     background: rgba(1,1,1, 0.4) url(../../wegas-proggame/images/popupBg.png) no-repeat 100px 0;
     opacity: 1;
 }
-.wegas-panel-content {
+.proggame-panel .wegas-panel-content {
     background: none;
     width: 800px;
     border: none;
     box-shadow: none;
     color: black;
 }
-.wegas-panel-content .yui3-widget-ft button {
+.proggame-panel  .wegas-panel-content .yui3-widget-ft button {
     background: url(../../wegas-proggame/images/btnOk.png) no-repeat;
     width: 175px;
     height: 104px;
@@ -539,6 +523,26 @@ html, .editor-preview .layout > div {
     top: 366px;
     left: 315px;
 }
-.wegas-panel-content .yui3-widget-ft button:hover {
+.proggame-panel .wegas-panel-content .yui3-widget-ft button:hover {
     background: url(../../wegas-proggame/images/btnOkA.png) no-repeat;
+}
+
+.yui3-skin-sam .proggame-levelselection-button {
+    font-family: "KG Ways to Say Goodbye";
+    background: transparent;
+    color: white;
+    font-size: 1.8em;
+    line-height: 0.9;
+    padding: 0;
+    padding-top: 4px;
+    /*background-color: rgb(50, 50, 40);*/
+}
+.yui3-skin-sam .proggame-levelselection-button,
+.yui3-skin-sam .proggame-button {
+    border: 7px solid #FFFFFF;
+    box-shadow: none;
+    -moz-border-image: url(../../wegas-proggame/images/dialog.png) 7 stretch;
+    -webkit-border-image: url(../../wegas-proggame/images/dialog.png) 7 stretch;
+    -o-border-image: url(../../wegas-proggame/images/dialog.png) 7 stretch;
+    border-image: url(../../wegas-proggame/images/dialog.png) 7 stretch;
 }
