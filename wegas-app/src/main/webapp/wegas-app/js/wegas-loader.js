@@ -1032,7 +1032,7 @@ YUI().use(function(Y) {
                 },
                 ace: {
                     async: false,
-                    path: "ace/src/ace.js"
+                    path: "ace/src-min/ace.js"
                             //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
                 },
                 pusher: {
