@@ -3,17 +3,17 @@ function genMap(levels) {
     var i, ret = [], count = 0, subinc, stage, j;
 
     for (var i in levels) {
-        var inc = count * 90,
+        var inc = count * 100,
                 level = count + 1;
         ret.push({
             "type": "Text",
-            "content": i,
+            "content": i.toUpperCase(),
             "plugins": [{
                     "fn": "CSSPosition",
                     "cfg": {
                         "styles": {
                             "position": "absolute",
-                            "top": inc +60+ "px",
+                            "top": inc + 80 + "px",
                             "left": "50px"
                         }
                     }
@@ -30,17 +30,26 @@ function genMap(levels) {
                     "fn": "CSSText",
                     "cfg": {
                         "styles": {
-                            "color": "white"
+                            "color": "white",
+                            "fontSize": "2em"
+                        }
+                    }
+                }, {
+                    "fn": "CSSStyles",
+                    "cfg": {
+                        "styles": {
+                            "fontFamily": "KG Ways to Say Goodbye"
                         }
                     }
                 }]
         });
         for (j = 0; j < levels[i]; j += 1) {
             stage = "" + (j + 1);
-            subinc = 60 * j;
+            subinc = 70 * j;
             ret.push({
                 "type": "Button",
-                "label": "Stage<br /> " + level + "." + stage,
+                "label": "STAGE<br /> " + level + "." + stage,
+                cssClass: "proggame-levelselection-button",
                 "plugins": [{
                         "fn": "ConditionalDisable",
                         "cfg": {
@@ -62,7 +71,7 @@ function genMap(levels) {
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": 80 + inc + "px",
+                                "top": 110 + inc + "px",
                                 "left": 50 + subinc + "px"
                             }
                         }
@@ -71,23 +80,8 @@ function genMap(levels) {
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "width": "50px",
-                                "height": "50px"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSText",
-                        "cfg": {
-                            "styles": {
-                                "color": "white"
-                            }
-                        }
-                    }, {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "background": "transparent",
-                                "border": "1px solid white"
+                                "width": "60px",
+                                "height": "60px"
                             }
                         }
                     }]
