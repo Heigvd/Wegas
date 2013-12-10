@@ -24,8 +24,12 @@
         <script type="text/javascript" src="./wegas-widgetmenu-test.js"></script>
 
         <script type="text/javascript">
-            YUI_config.groups.wegas.base = "../../../";
-            YUI_config.groups.wegas.filter = "raw";
+            for (var i in YUI_config.groups) {
+                if (i.indexOf("wegas") > -1) {
+                    YUI_config.groups[i].base = "../../../" + YUI_config.groups[i].base;
+                    YUI_config.groups[i].filter = "raw";// Select raw files
+                }
+            }
 
             YUI({
                 coverage: ['widgettoolbar']

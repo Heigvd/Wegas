@@ -69,7 +69,6 @@ html, .editor-preview .layout > div {
     background: url(../../wegas-proggame/images/proggame-menu-buttons.png) no-repeat -199px 0px;
     box-shadow: none;
 }
-
 .battle-button:hover::before,
 .proggame-button-shop:hover::before,
 .mails-button:hover::before,
@@ -94,13 +93,11 @@ html, .editor-preview .layout > div {
     left: 8px;
     width: 161px;
 }
-
 .menu-button, .wegas-absolutelayout .yui3-button-selected {
     box-shadow: none;
     background-color: transparent;
     color: rgba(163, 184, 89, 1);
 }
-
 /*.menu-loginbutton, .menu-loginbutton:hover{
     background: url(../../wegas-proggame/images/proggame-button-empty.png) no-repeat;
     box-shadow: none;
