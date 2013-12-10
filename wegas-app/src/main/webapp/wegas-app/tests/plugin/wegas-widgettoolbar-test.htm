@@ -23,14 +23,18 @@
         <script type="text/javascript" src="./wegas-widgettoolbar-test.js"></script>
 
         <script type="text/javascript">
-            YUI_config.groups.wegas.base = "../../../";
-            YUI_config.groups.wegas.filter = "raw";
+            for (var i in YUI_config.groups) {
+                if (i.indexOf("wegas") > -1) {
+                    YUI_config.groups[i].base = "../../../" + YUI_config.groups[i].base;
+                    YUI_config.groups[i].filter = "raw";// Select raw files
+                }
+            }
             YUI_config.groups.libraries.base = "../../../lib/";                 // Set up libraries path
 
             YUI({
                 useBrowserConsole: true,
                 coverage: ['widgettoolbar']
-            }).use('test-console', 'wegas-widgettoolbar-test', function (Y) {
+            }).use('test-console', 'wegas-widgettoolbar-test', function(Y) {
                 new Y.Test.Console({
                     useBrowserConsole: true
                 }).render();

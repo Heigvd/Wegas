@@ -993,7 +993,6 @@ YUI().use(function(Y) {
         },
         /* Other libraries */
         "wegas-libraries": {
-            combine: true,
             base: "./lib/",
             root: "/lib/",
             modules: {
