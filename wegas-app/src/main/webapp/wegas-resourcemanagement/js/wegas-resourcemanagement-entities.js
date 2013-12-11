@@ -104,6 +104,28 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             label: "Default confiance"
                         }
                     },
+                    occupations: {
+                        type: ARRAY,
+                        _inputex: {
+                            label: "Absences",
+                            _type: LIST,
+                            useButtons: true,
+                            elementType: {
+                                type: GROUP,
+                                fields: [{
+                                        name: "@class",
+                                        type: HIDDEN,
+                                        value: "Occupation"
+                                    }, {
+                                        name: "editable",
+                                        value: false,
+                                        type: HIDDEN
+                                    }, {
+                                        name: "time"
+                                    }]
+                            }
+                        }
+                    },
                     confidenceHistory: {
                         type: ARRAY,
                         optional: true,
@@ -512,7 +534,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             occupations: {
                 type: ARRAY,
-                value: []
+                value: [],
+                _inputex: {
+                    _type: HIDDEN
+                }
             },
             activities: {
                 type: ARRAY,
