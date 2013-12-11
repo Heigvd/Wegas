@@ -1648,6 +1648,7 @@
         "13": {
             "type": "PageLoader",
             "cssClass": "task-page",
+            "pageLoaderId": "taskPageLoader",
             "variable": {
                 "name": "taskPage"
             }
@@ -1655,6 +1656,7 @@
         "14": {
             "type": "PageLoader",
             "cssClass": "gantt-page",
+            "pageLoaderId": "GanttPage",
             "variable": {
                 "name": "ganttPage"
             }

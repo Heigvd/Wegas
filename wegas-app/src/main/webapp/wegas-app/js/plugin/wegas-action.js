@@ -177,9 +177,9 @@ YUI.add('wegas-action', function(Y) {
                 value: "maindisplayarea",
                 _inputex: {
                     label: "Target zone",
-                    _type: "pageloaderselect"/*,
+                    //_type: "pageloaderselect",//@fixme There a bug with this widget when the target page is not loaded
                      value: "maindisplayarea",
-                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'*/
+                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
             subpageVariable: {

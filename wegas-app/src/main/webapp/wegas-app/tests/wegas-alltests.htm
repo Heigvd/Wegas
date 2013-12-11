@@ -17,7 +17,7 @@
     </head>
     <body class="yui3-skin-sam">
 
-         <script type="text/javascript" src="http://yui.yahooapis.com/3.12.0/build/yui/yui-min.js"></script>
+        <script type="text/javascript" src="http://yui.yahooapis.com/3.12.0/build/yui/yui-min.js"></script>
         <!--<script type="text/javascript" src="../../lib/yui3/build/yui/yui.js"></script>-->
         <script type="text/javascript" src="http://neyric.github.com/inputex/src/loader.js"></script>
         <!--<script type="text/javascript" src="../../lib/inputex/src/loader.js"></script>-->
@@ -29,9 +29,12 @@
         <script type="text/javascript" src="./widget/wegas-serialization-test.js"></script>
 
         <script type="text/javascript">
-            //YUI_config.filter = "raw";
-            YUI_config.groups.wegas.base = "../../";
-            YUI_config.groups.wegas.filter = "raw";
+            for (var i in YUI_config.groups) {
+                if (i.indexOf("wegas") > -1) {
+                    YUI_config.groups[i].base = "../../" + YUI_config.groups[i].base;
+                    YUI_config.groups[i].filter = "raw";// Select raw files
+                }
+            }
             YUI_config.groups.inputex.base = "http://neyric.github.com/inputex/src/";
             YUI_config.groups.inputex.filter = "raw";
             YUI_config.groups.libraries.base = "../../lib/";                 // Set up libraries path
@@ -41,7 +44,7 @@
             YUI({
                 //coverage: ['widgetmenu']
             }).use('test-console', 'wegas-widgettoolbar-test', 'wegas-widgetmenu-test',
-            'wegas-serialization-test', function (Y) {
+                    'wegas-serialization-test', function(Y) {
                 new Y.Test.Console({
                     useBrowserConsole: true,
                     verbose: true

@@ -18,6 +18,9 @@ input[type="submit"], input[type="reset"] {
     padding:2px 4px;
     cursor: pointer;
 }
+*:focus {
+    outline: none; /* Remove chrome focus outline */
+}
 
 /*
 * Counter YUI's cssreset.
