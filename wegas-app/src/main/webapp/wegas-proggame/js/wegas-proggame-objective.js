@@ -48,7 +48,7 @@ YUI.add('wegas-proggame-objective', function(Y) {
             this.popupContent = content;
         },
         displayFix: function(content) {
-            Y.all(".objective").empty().append("<h1>Objectives</h1><div class='objValue'>" + content + "</div>");
+            Y.all(".objective").empty().append("<h1>OBJECTIVES</h1><div class='objValue'>" + content + "</div>");
         },
         reDisplayPopup: function() {
             this.objectivesHandler = Y.all(".objective").on('click', function(e) {
@@ -68,6 +68,7 @@ YUI.add('wegas-proggame-objective', function(Y) {
             fullObjective: {
                 type: "string",
                 format: "html",
+                optional: true,
                 _inputex: {
                     label: "Full objective"
                 }
@@ -75,8 +76,9 @@ YUI.add('wegas-proggame-objective', function(Y) {
             globalObjective: {
                 type: "string",
                 format: "html",
+                optional: true,
                 _inputex: {
-                    label: "Global objective"
+                    label: "Short objective"
                 }
             }
         }

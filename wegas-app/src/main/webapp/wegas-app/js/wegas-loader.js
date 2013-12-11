@@ -837,7 +837,7 @@ YUI().use(function(Y) {
                     ws_provides: 'ProgGameDisplay'
                 },
                 'wegas-proggame-inputex': {
-                    requires: 'wegas-inputex',
+                    requires: ['wegas-inputex', "inputex-list"],
                     ix_provides: ['proggametile', "proggamemap"]
                 },
                 'wegas-proggame-objective': {
@@ -979,7 +979,7 @@ YUI().use(function(Y) {
                     ws_provides: 'CEPFolder'
                 },
                 /* SimpleDialogue */
-                'wegas-simpledialogue-main': {
+                'wegas-simpledialogue': {
                     path: "wegas-simpledialogue/js/wegas-simpledialogue-main.js",
                     ws_provides: "SimpleDialogueMain"
                 }
@@ -993,7 +993,6 @@ YUI().use(function(Y) {
         },
         /* Other libraries */
         "wegas-libraries": {
-            combine: true,
             base: "./lib/",
             root: "/lib/",
             modules: {
@@ -1022,7 +1021,7 @@ YUI().use(function(Y) {
                     path: 'escodegen/escodegen-min.js'
                 },
                 tinymce: {
-                    path: "tiny_mce/tiny_mce.js"
+                    path: "tinymce/tinymce.min.js"
                 },
                 excanvas: {
                     path: 'excanvas/excanvas.compiled.js'
@@ -1032,7 +1031,7 @@ YUI().use(function(Y) {
                 },
                 ace: {
                     async: false,
-                    path: "ace/src/ace.js"
+                    path: "ace/src-min/ace.js"
                             //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
                 },
                 pusher: {

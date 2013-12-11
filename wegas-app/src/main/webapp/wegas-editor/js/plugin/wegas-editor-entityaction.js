@@ -119,7 +119,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     prefix = (entity.get("id")) ? "Edit " : "New ";             // No id -> new entity
 
             tab.setAttrs({
-                label: prefix + entity.getType().replace("Descriptor", "").toLowerCase(),
+                label: prefix + entity.getType().replace("Descriptor", "").replace("Instance", "").toLowerCase(),
                 selected: 2
             });
             tab.form.setAttrs({
@@ -574,8 +574,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
                         success: function(e) {
-                            tab.hideOverlay();
                             widget.set("entity", e.response.entity);
+                            EditEntityAction.hideEditFormOverlay();
                         }
                     }
                 });

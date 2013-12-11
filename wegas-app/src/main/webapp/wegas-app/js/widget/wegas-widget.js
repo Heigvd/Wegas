@@ -14,21 +14,7 @@ YUI.add("wegas-widget", function(Y) {
     var Lang = Y.Lang,
             BOUNDING_BOX = "boundingBox",
             baseCreateChild = Y.WidgetParent.prototype._createChild,
-            basePlug = Y.Widget.prototype.plug,
-            rebuild;
-    rebuild = function() {
-        var parent, index, cfg;
-        if (this.isRoot()) {
-            parent = Y.Widget.getByNode(this.get(BOUNDING_BOX).get("parentNode"));
-            parent.reload();
-            return parent.get("widget"); // dependencies should (and must) be loaded by now that way we obtain the new widget
-        }
-        parent = this.get("parent");
-        index = parent.get("children").indexOf(this);
-        cfg = this.toObject();
-        this.destroy();
-        return parent.add(cfg, index).item(0);
-    };
+            basePlug = Y.Widget.prototype.plug;
 
     /**
      * @name Y.Wegas.Widget
@@ -57,7 +43,7 @@ YUI.add("wegas-widget", function(Y) {
         });
         this.publish("AttributesChange", {
             defaultFn: function() {
-                var widget = rebuild.call(this);
+                var widget = this.rebuild();
                 if (Y.Plugin.EditEntityAction.currentEntity === this) {
                     Y.Plugin.EditEntityAction.currentEntity = widget;
                 }
@@ -138,6 +124,19 @@ YUI.add("wegas-widget", function(Y) {
             if (!this.get("destroyed")) {
                 bool ? this.get(BOUNDING_BOX).addClass("highlighted") : this.get(BOUNDING_BOX).removeClass("highlighted");
             }
+        },
+        rebuild: function() {
+            var parent, index, cfg;
+            if (this.isRoot()) {
+                parent = Y.Widget.getByNode(this.get(BOUNDING_BOX).get("parentNode"));
+                parent.reload();
+                return parent.get("widget"); // dependencies should (and must) be loaded by now that way we obtain the new widget
+            }
+            parent = this.get("parent");
+            index = parent.get("children").indexOf(this);
+            cfg = this.toObject();
+            this.destroy();
+            return parent.add(cfg, index).item(0);
         }
     });
     Y.mix(Widget, {
@@ -584,7 +583,7 @@ YUI.add("wegas-widget", function(Y) {
         if (altType) {
             config.childType = Y.Lang.isString(altType) ? Y.Wegas[altType] || Y[altType] : altType;
         }
-        return baseCreateChild.call(this, config);                                        //reroute
+        return baseCreateChild.call(this, config);                              //reroute
     };
     /*
      * @hack Override so plugin host accepts string definition of classes and
@@ -596,7 +595,7 @@ YUI.add("wegas-widget", function(Y) {
                 config = Plugin.cfg;
                 Plugin = Plugin.fn;
             }
-            if (Plugin && !Lang.isFunction(Plugin)) {			// @hacked
+            if (Plugin && !Lang.isFunction(Plugin)) {                           // @hacked
                 Plugin = Y.Plugin[Plugin];
             }
         }
