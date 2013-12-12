@@ -92,27 +92,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
             }, this);
         },
         onFileBrowserClick: function(field_name, url, type, win) {
-            RTEField.filePanel = new Y.Panel({
-                headerContent: 'Choose a file from library',
-                bodyContent: '',
-                width: 600,
-                height: Y.DOM.winHeight() - 150,
-                zIndex: 303000,
-                modal: true,
-                render: true,
-                centered: true
-            });
+            RTEField.filePanel = new Y.Wegas.FileSelect();
 
-            RTEField.filePanel.on("visibleChange", function() {
-                Y.later(0, this, function() {
-                    RTEField.filePanel.explorer.destroy();
-                    RTEField.filePanel.destroy();
-                });
-            }, this);
-            RTEField.filePanel.explorer = new Y.Wegas.FileExplorer()
-                    .render(RTEField.filePanel.getStdModNode(Y.WidgetStdMod.BODY));
-
-            RTEField.filePanel.explorer.on("*:fileSelected", function(e, path) {
+            RTEField.filePanel.on("*:fileSelected", function(e, path) {
                 e.stopImmediatePropagation();
                 e.preventDefault();
                 RTEField.filePanel.hide();
