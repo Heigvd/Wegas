@@ -31,4 +31,8 @@
 *.psd binary
 *.swf binary
 *.eap binary
+*.ico binary
+*.woff binary
+*.ttf binary
+*.svg binary
 
