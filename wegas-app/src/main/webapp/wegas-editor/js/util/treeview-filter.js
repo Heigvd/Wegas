@@ -18,9 +18,9 @@ YUI.add("treeview-filter", function(Y) {
                 Y.log("TreeView filter host must be a TreeView", "warn", "TreeViewFilter");
                 return;
             }
-            this.after("searchValChange", function(e) {
+            this.after(["searchValChange", "testFnChange"], function(e) {
                 if (e.prevVal !== e.newVal) {
-                    this.doFilter(this.get("host"), e.newVal);
+                    this.doFilter(this.get("host"), this.get("searchVal"));
                 }
             });
 
