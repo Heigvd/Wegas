@@ -97,11 +97,11 @@
 .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget{
     opacity:0;
-/*    transition: opacity 0.1s linear 0.1s;
-    -o-transition: opacity 0.1s linear 0.1s;
-    -moz-transition: opacity 0.1s linear 0.1s;
-    -ms-transition: opacity 0.1s linear 0.1s;
-    -webkit-transition: opacity 0.1s linear 0.1s;*/
+    /*    transition: opacity 0.1s linear 0.1s;
+        -o-transition: opacity 0.1s linear 0.1s;
+        -moz-transition: opacity 0.1s linear 0.1s;
+        -ms-transition: opacity 0.1s linear 0.1s;
+        -webkit-transition: opacity 0.1s linear 0.1s;*/
 }
 .yui3-treenode-content-header:hover > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header:hover > .yui3-treeleaf-content-rightwidget
@@ -109,11 +109,11 @@
 .selected > div > .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget */
 {
     opacity:1;
-/*    transition: opacity 0.1s linear 0.05s;
-    -o-transition: opacity 0.1s linear 0.05s;
-    -moz-transition: opacity 0.1s linear 0.05s;
-    -ms-transition: opacity 0.1s linear 0.05s;
-    -webkit-transition: opacity 0.1s linear 0.05s;*/
+    /*    transition: opacity 0.1s linear 0.05s;
+        -o-transition: opacity 0.1s linear 0.05s;
+        -moz-transition: opacity 0.1s linear 0.05s;
+        -ms-transition: opacity 0.1s linear 0.05s;
+        -webkit-transition: opacity 0.1s linear 0.05s;*/
 }
 
 .yui3-treenode-content-label,
@@ -159,19 +159,23 @@
 .yui3-treenode-collapsed>ul:empty::before{
     content: "";
 }
+
+.yui3-treeview-content .filter-sub-match > .content-header{
+    max-height: 50px;
+    padding: 2px 27px 2px 2px;
+    opacity: .6;
+}
+
 .yui3-treeview-content .filter-match > .content-header,
 .yui3-treeview-content .filter-match > div > .content-header{
-    padding:2px 27px 2px 2px;
+    padding: 2px 27px 2px 2px;
+    opacity: 1;
 }
 .yui3-treeview-content .filter-no-match > .content-header,
-.yui3-treeview-content .filter-no-match > div > .content-header,
-.yui3-treeview-content .filter-sub-match > .content-header{
+.yui3-treeview-content .filter-no-match > div > .content-header{
     padding-top:0;
     padding-bottom: 0;
     max-height: 0;
 }
 
-.yui3-treeview-content .filter-match .filter-no-match .content-header{
-    max-height: 50px;
-    padding:2px 27px 2px 2px;
-}
+

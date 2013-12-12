@@ -15,9 +15,9 @@ YUI.add('wegas-fileexplorer', function(Y) {
     var FileExplorer,
             CONTENTBOX = 'contentBox',
             DEFAULTHEADERS = {
-        'Content-Type': 'application/json; charset=ISO-8859-1',
-        'Managed-Mode': false
-    },
+                'Content-Type': 'application/json; charset=ISO-8859-1',
+                'Managed-Mode': false
+            },
     MAX_FILE_SIZE = 20000000, BOUNDING_BOX = "boundingBox";
 
     FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
@@ -51,6 +51,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 bubbles: true,
                 emitFacade: true,
                 defaultFn: this.openFile
+            });
+            this.publish("directorySelected", {
+                bubbles: true,
+                emitFacade: true
             });
             this.fileUploader = new this.FileUploader({
                 visible: true,
@@ -116,7 +120,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         params: {
                             path: ""
                         }
-                    })
+                    }),
+                    data: {mimeType: this.directoryMimeType}
                 });
                 this.treeView.add(this.rootNode);
             }
@@ -252,14 +257,14 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.treeView.on("*:nodeExpanded", function(e) {
                 this.listNodeData(e.node);
             }, this);
-            this.treeView.on("treeleaf:iconClick", function(e) {
+            this.treeView.on(["treeleaf:iconClick", "treeleaf:labelClick"], function(e) {
                 if (e.target.path) {
                     this.fire("fileSelected", e.target.path);
                 }
             }, this);
-            this.events.tlLClickEvent = this.treeView.on("treeleaf:labelClick", function(e) {
+            this.treeView.on(["treenode:iconClick", "treenode:labelClick"], function(e) {
                 if (e.target.path) {
-                    this.fire("fileSelected", e.target.path);
+                    this.fire("directorySelected", e.target.path);
                 }
             }, this);
             this.treeView.on("wegas-menu:itemClick", function(e) {
