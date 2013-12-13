@@ -116,28 +116,29 @@ YUI.add('wegas-join', function(Y) {
                     emptyChoices = true;
                 }
 
+                teamSelectionNode.append("<div style=\"margin:10px 0\"><span style=\"color: #505050;font-style: italic;padding-left: 20px;\">Team name:</span>&nbsp;&nbsp;&nbsp;" + teamName + "</div>");
+
                 this.teamField = new Y.inputEx.MultipleOptions({//                Create team edition field
                     parentEl: teamSelectionNode,
                     fields: [{
+                            type: "hidden",
+                            label: "Team name",
+                            required: true,
+                            value: teamName
+                        }, {
                             type: "select",
                             choices: choices,
                             label: "Select an existing team"
-                        }, {
-                            type: "string",
-                            label: "Name",
-                            typeInvite: "Or create new one",
-                            required: true,
-                            value: teamName
                         }]
                 });
 
                 if (emptyChoices) {                                             // Disable team selection if it's empty
-                    this.teamField.inputs[0].disable();
-                    this.teamField.inputs[1].el.focus();
+                    this.teamField.inputs[1].disable();
+                    //this.teamField.inputs[0].el.focus();
                 }
                 if (!showTeamSelection) {
-                    this.teamField.inputs[0].hide();                            // Disable team selection everywhere (temporary)
-                    this.teamField.inputs[1].el.focus();
+                    this.teamField.inputs[1].hide();                            // Disable team selection everywhere (temporary)
+                    //this.teamField.inputs[0].el.focus();
                 }
 
             }
@@ -172,7 +173,7 @@ YUI.add('wegas-join', function(Y) {
 
             if (this.showTeamCreation) {                                        // If entity is a game token which allows team creation,
                 Y.Wegas.Facade.Game.sendRequest({//                             // create the team
-                    request: "/" + entity.get("id") + "/CreateTeam/" + name,
+                    request: "/" + entity.get("id") + "/CreateTeam/" + name + "/",
                     cfg: {
                         method: "POST",
                         updateCache: false
