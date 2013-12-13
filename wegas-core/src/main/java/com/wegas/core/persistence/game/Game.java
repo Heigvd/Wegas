@@ -55,6 +55,13 @@ public class Game extends NamedEntity {
     /**
      *
      */
+    @Basic(fetch = FetchType.LAZY)
+    @Lob
+    @JsonView(Views.ExtendedI.class)
+    private String description;
+    /**
+     *
+     */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
     /**
@@ -86,6 +93,14 @@ public class Game extends NamedEntity {
      */
     @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
     private Long gameModelId;
+
+    public enum GameAccess {
+
+        OPEN,
+        ENROLMENTKEY,
+        SINGLEUSAGEENROLMENTKEY,
+        CLOSE
+    }
     /**
      *
      */
@@ -131,8 +146,9 @@ public class Game extends NamedEntity {
 
     @PrePersist
     public void prePersist() {
+        this.setCreatedTime(new Date());
         if (this.teams.isEmpty()) {
-//            this.addTeam(new DebugTeam());
+            //this.addTeam(new DebugTeam());
         }
         this.preUpdate();
     }
@@ -161,8 +177,9 @@ public class Game extends NamedEntity {
 
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
         Game other = (Game) a;
+        this.setDescription(other.getDescription());
+        super.merge(a);
         this.setAccess(other.getAccess());
         this.setToken(other.getToken());
         this.setKey(other.setKey());
@@ -360,5 +377,19 @@ public class Game extends NamedEntity {
      */
     public void setKey(String enrolmentKey) {
         this.key = enrolmentKey;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

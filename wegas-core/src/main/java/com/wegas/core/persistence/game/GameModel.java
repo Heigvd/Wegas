@@ -14,6 +14,7 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.persistence.User;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
@@ -63,15 +64,22 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      *
      */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
+    private String description;
+    /**
+     *
+     */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @XmlTransient
+    @JsonIgnore
+    private User createdBy;
     /**
      *
      */
@@ -201,6 +209,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @PrePersist
     public void prePersist() {
+        this.setCreatedTime(new Date());
         this.addGame(new DebugGame());                                          // Every game has a debug game
     }
 
@@ -535,5 +544,26 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * @return the createdBy
+     */
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    /**
+     * @param createdBy the createdBy to set
+     */
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getCreatedByName() {
+        if (this.getCreatedBy() != null) {
+            return this.getCreatedBy().getName();
+        }
+        return null;
     }
 }

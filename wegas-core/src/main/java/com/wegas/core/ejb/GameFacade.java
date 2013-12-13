@@ -86,10 +86,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
 
         final User currentUser = userFacade.getCurrentUser();
-
-        if (!(currentUser.getMainAccount() instanceof GuestJpaAccount)) {       // @hack @fixme, guest are not stored in the db so link wont work
-            game.setCreatedBy(currentUser);
-        }
+        game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
         GameModel gameModel = gameModelEntityFacade.find(gameModelId);
         gameModel.addGame(game);
