@@ -9,8 +9,6 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +18,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
-import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  *
@@ -71,7 +68,7 @@ public class Team extends AbstractEntity {
      */
     @ManyToOne(optional = false)
     @NotNull
-    @JoinColumn(name = "parentgame_id", nullable = false)
+    @JoinColumn(name = "parentgame_id")
     @XmlTransient
     //@XmlInverseReference(mappedBy = "teams")
     @JsonBackReference(value = "game-team")
