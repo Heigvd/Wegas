@@ -13,6 +13,7 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameAccess;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
@@ -201,6 +202,21 @@ public class GameController {
             } else {
                 throw new UnauthorizedException();
             }
+        }
+    }
+
+    @GET
+    @Path("{gameId : [1-9][0-9]*}/KeyJoin/{key : .*}/")
+    public Object keyJoinGame(@PathParam("gameId") Long gameId, @PathParam("key") String key) throws Exception {
+        Game game = gameFacade.find(gameId);
+
+        try {                                       // We check if logged user is already registered in the target game
+            playerFacade.findByGameIdAndUserId(game.getId(), userFacade.getCurrentUser().getId());
+            throw new Exception("You are already registered to this game.");    // There user is already registered to target game
+
+        } catch (NoResultException e) {             // If there is no NoResultException, everything is ok, we can return the game
+            gameFacade.checkKey(game, key);
+            return game;
         }
     }
 

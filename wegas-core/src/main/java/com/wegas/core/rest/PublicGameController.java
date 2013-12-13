@@ -11,8 +11,10 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.util.SecurityHelper;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -51,6 +53,28 @@ public class PublicGameController {
         for (Iterator<Game> it = games.iterator(); it.hasNext();) {
             Game g = it.next();
             if (SecurityHelper.isPermitted(g, "View")
+                    && !registeredGames.contains(g)) {
+                retGames.add(g);
+            }
+        }
+        return retGames;
+    }
+
+    /**
+     *
+     * @param userId
+     * @return
+     */
+    @GET
+    @Path("AvailableGames/{userId : [1-9][0-9]*}")
+    public Collection<Game> availableGames(@PathParam("userId") Long userId) {
+        final Collection<Game> retGames = new ArrayList<>();
+        final Collection<Game> games = gameFacade.findAll("createdTime ASC");
+        final Collection<Game> registeredGames = gameFacade.findRegisteredGames(userId);
+
+        for (Iterator<Game> it = games.iterator(); it.hasNext();) {
+            Game g = it.next();
+            if (SecurityHelper.isAnyPermitted(g, Arrays.asList("View", "Token", "TeamToken"))
                     && !registeredGames.contains(g)) {
                 retGames.add(g);
             }

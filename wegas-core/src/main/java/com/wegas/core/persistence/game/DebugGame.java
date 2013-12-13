@@ -22,11 +22,9 @@ public class DebugGame extends Game {
         super(DEBUGGAMENAME);                                                 // Name is fixed
         Team t = new Team("Test team 1");                                       // Add a default team
         t.addPlayer(new Player("Test player 1"));
-        t.addPlayer(new Player("Test player 2"));
         this.addTeam(t);
         Team t2 = new Team("Test team 2");                                      // Add a default team
-        t2.addPlayer(new Player("Test player 3"));
-        t2.addPlayer(new Player("Test player 4"));
+        t2.addPlayer(new Player("Test player 2"));
         this.addTeam(t2);
     }
 }
