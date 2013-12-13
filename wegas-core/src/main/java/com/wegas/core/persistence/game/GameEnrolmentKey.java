@@ -7,10 +7,12 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.Helper;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -20,10 +22,11 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@Table(name = "gameenrolementkey")
 @XmlRootElement
 @XmlType(name = "")                                                             // This forces to use Class's short name as contentType
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class GameModelContent implements Serializable {
+public class GameEnrolmentKey implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,54 +35,21 @@ public class GameModelContent implements Serializable {
     /**
      *
      */
-    private String contentType;
+    @Column(name = "wkey")
+    private String key;
     /**
      *
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    //@Column(columnDefinition = "text")
-    //@JsonView({Views.Export.class})
-    private String content = "";
+    private Boolean used = false;
+    @ManyToOne(optional = false)
+    @XmlTransient
+    private Game game;
 
-    public GameModelContent() {
-    }
-
-    public GameModelContent(String content) {
-        this.content = content;
-    }
-
-    public GameModelContent(String contentType, String content) {
-        this.contentType = contentType;
-        this.content = content;
-    }
-
-    /**
-     * @return the contentType
-     */
-    public String getContentType() {
-        return contentType;
-    }
-
-    /**
-     * @param contentType the contentType to set
-     */
-    public void setContentType(String type) {
-        this.contentType = type;
-    }
-
-    /**
-     * @return the content
-     */
-    public String getContent() {
-        return content;
-    }
-
-    /**
-     * @param content the content to set
-     */
-    public void setContent(String content) {
-        this.content = content;
+    @PreUpdate
+    public void preUpdate() {
+        if (this.getKey() == null || this.getKey().equals("")) {
+            this.setKey(Helper.genToken(10));
+        }
     }
 
     /**
@@ -94,5 +64,47 @@ public class GameModelContent implements Serializable {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the key
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * @param key the key to set
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    /**
+     * @return the used
+     */
+    public Boolean getUsed() {
+        return used;
+    }
+
+    /**
+     * @param used the used to set
+     */
+    public void setUsed(Boolean used) {
+        this.used = used;
+    }
+
+    /**
+     * @return the game
+     */
+    public Game getGame() {
+        return game;
+    }
+
+    /**
+     * @param game the game to set
+     */
+    public void setGame(Game game) {
+        this.game = game;
     }
 }
