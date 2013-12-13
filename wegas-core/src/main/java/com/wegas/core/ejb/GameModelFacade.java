@@ -14,6 +14,8 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel_;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.util.List;
 import javax.ejb.EJB;
@@ -78,6 +80,9 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     @Override
     public void create(final GameModel entity) {
         super.create(entity);
+
+        final User currentUser = userFacade.getCurrentUser();
+        entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
         this.em.flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities

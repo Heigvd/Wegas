@@ -154,7 +154,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 case 'GameModel':
                     if (entity.get("canEdit")) {
                         return {
-                            name: entity.get(NAME)
+                            name: entity.get(NAME),
+                            createdByName: entity.get("createdByName"),
+                            createdTime: entity.get("createdTime"),
                         };
                     }
                     break;
@@ -318,7 +320,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             return target.toolbar.add(i);
                         });
                         this.buttons[0].set("visible", false)
-                        if (this.buttons[1]) this.buttons[1].get(CONTENTBOX).setStyle("marginLeft", "15px");
+                        if (this.buttons[1])
+                            this.buttons[1].get(CONTENTBOX).setStyle("marginLeft", "15px");
                     }
                     //.fire("click");                                       // launch first button actionF
                     //}, this);

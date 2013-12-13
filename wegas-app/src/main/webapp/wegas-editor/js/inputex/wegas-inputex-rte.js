@@ -63,7 +63,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     toolbar_items_size: 'small',
                     file_browser_callback: this.onFileBrowserClick,
                     image_advtab: true,
-                    autoresize_min_height: 50,
+                    autoresize_min_height: 35,
                     autoresize_max_height: 500,
                     content_css: [
                         // "http://yui.yahooapis.com/combo?3.12.0/build/cssreset/cssreset-min.css&amp;3.12.0/build/cssfonts/cssfonts-min.css&amp;3.12.0/build/cssgrids/cssgrids-min.css",

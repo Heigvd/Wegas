@@ -118,8 +118,15 @@
                             on: {
                                 success: function() {
                                     Y.Wegas.Facade.RegisteredGames.sendInitialRequest();// reload datasource
-                                    Y.Wegas.Facade.Game.sendInitialRequest();
                                     Y.Wegas.Facade.PublicGames.sendInitialRequest();
+
+                                    Y.Wegas.Facade.Game.sendInitialRequest({
+                                        on: {
+                                            success: function () {
+                                                Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game added to the list", 6000);
+                                            }
+                                        }
+                                    });
                                 }
                             }
                         });

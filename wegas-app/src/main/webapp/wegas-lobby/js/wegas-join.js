@@ -24,7 +24,7 @@ YUI.add('wegas-join', function(Y) {
     var CONTENTBOX = "contentBox",
             JoinTeam = Y.Base.create("wegas-jointeam", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         /** @lends Y.Wegas.JoinTeam# */
-        CONTENT_TEMPLATE: "<div><div class=\"title\"></div>"
+        CONTENT_TEMPLATE: "<div><div class=\"title\"></div><div class=\"subtitle\"></div>"
                 + "<div class=\"description wegas-loading-div\"></div>"
                 + "<div class=\"teamselection\"></div>"
                 + "</div>",
@@ -74,6 +74,7 @@ YUI.add('wegas-join', function(Y) {
                     : game.get("name") + "-" + (game.get("teams").length + 1);
 
             cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name"));// Set game name
+            cb.one(".subtitle").setHTML("Created by " + game.get("createdBy").get("name") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
             cb.one(".description").setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")
                     .removeClass("wegas-loading-div");
 
@@ -345,7 +346,7 @@ YUI.add('wegas-join', function(Y) {
 
     var GameDescription = Y.Base.create("wegas-gamedescription", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         /** @lends Y.Wegas.JoinTeam# */
-        CONTENT_TEMPLATE: "<div><div class=\"title\"></div><div class=\"description wegas-loading-div\"></div></div>",
+        CONTENT_TEMPLATE: "<div><div class=\"title\"></div><div class=\"subtitle\"></div><div class=\"description wegas-loading-div\"></div></div>",
         // *** Private fields *** //
 
         /**
@@ -362,8 +363,9 @@ YUI.add('wegas-join', function(Y) {
                     gameModel = Y.Wegas.Facade.GameModel.cache.findById(game.get("gameModelId"));
 
             cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name")); // Add title
+            cb.one(".subtitle").setHTML("Created by " + game.get("createdBy").get("name") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
 
-            Y.Wegas.Facade.GameModel.cache.getWithView(gameModel, "Extended", {/// Get the game model full description
+            Y.Wegas.Facade.GameModel.cache.getWithView(game, "Extended", {/// Get the game model full description
                 on: {
                     success: Y.bind(function(e) {
                         cb.one(".description").setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")

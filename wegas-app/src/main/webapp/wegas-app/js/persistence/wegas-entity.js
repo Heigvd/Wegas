@@ -192,7 +192,10 @@ YUI.add('wegas-entity', function(Y) {
             description: {
                 type: STRING,
                 format: HTML,
-                optional: true
+                optional: true,
+                _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
             },
             canView: {
                 "transient": true
@@ -204,6 +207,12 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": true
             },
             canInstantiate: {
+                "transient": true
+            },
+            createdTime: {
+                "transient": true
+            },
+            createdByName: {
                 "transient": true
             }
         },
@@ -308,6 +317,13 @@ YUI.add('wegas-entity', function(Y) {
             name: {
                 type: STRING
             },
+            description: {
+                type: STRING,
+                format: HTML,
+                _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
+            },
             createdBy: {
                 "transient": true
             },
@@ -359,23 +375,35 @@ YUI.add('wegas-entity', function(Y) {
                             valueTrigger: "OPEN", // this action will run when this field value is set to OPEN
                             actions: [
                                 {name: 'key', action: 'hide'},
+                                {name: 'token', action: 'hide'}, //@fixme temporary
                                 {name: 'keys', action: 'hide'}]
                         }, {
                             valueTrigger: "ENROLMENTKEY",
                             actions: [
                                 {name: 'key', action: 'show'},
+                                {name: 'token', action: 'show'}, //@fixme temporary
                                 {name: 'keys', action: 'hide'}]
                         }, {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
                             actions: [
                                 {name: 'key', action: 'hide'},
+                                {name: 'token', action: 'hide'}, //@fixme temporary
                                 {name: 'keys', action: 'show'}]
                         }, {
                             valueTrigger: "CLOSE",
                             actions: [
                                 {name: 'key', action: 'hide'},
+                                {name: 'token', action: 'hide'}, //@fixme temporary
                                 {name: 'keys', action: 'hide'}]
                         }]
+                }
+            },
+            token: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    label: "Enrolment key", // @fixme Temporary
+                    description: "Leave blank for automatic generation"
                 }
             },
             key: {
@@ -383,6 +411,7 @@ YUI.add('wegas-entity', function(Y) {
                 optional: true,
                 _inputex: {
                     label: "Enrolment key",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature', // @fixme Temporary
                     description: "Leave blank for automatic generation"
                 }
             },
@@ -406,14 +435,6 @@ YUI.add('wegas-entity', function(Y) {
                                 type: HIDDEN
                             }]
                     }
-                }
-            },
-            token: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                    description: "Leave blank for automatic generation"
                 }
             },
             playersCount: {
