@@ -80,7 +80,6 @@ public class Occupation extends AbstractAssignement {
         this.setDescription(other.getDescription());
         this.setTime(other.getTime());
         this.setEditable(other.getEditable());
-        this.setResourceInstance(other.getResourceInstance());
         this.setTaskDescriptor(other.getTaskDescriptor());
     }
 

@@ -105,7 +105,13 @@ public class ResourceInstance extends VariableInstance {
             this.setActivities(other.getActivities());
         }
         if (other.getOccupations() != null) {
-            this.setOccupations(other.getOccupations());
+            this.occupations.clear();
+            for (Occupation occ : other.getOccupations()) {
+                Occupation o = new Occupation();
+                o.merge(occ);
+                o.setResourceInstance(this);
+                this.occupations.add(o);
+            }
         }
         this.skillsets.clear();
         this.skillsets.putAll(other.getSkillsets());
@@ -183,20 +189,20 @@ public class ResourceInstance extends VariableInstance {
         activities.add(activity);
         activity.setResourceInstance(this);
     }
-    
+
     /**
      *
      * @param activities
      */
     public void removeActivity(Activity activity) {
-        if (activity.getId() == null){
-            for (int i=0; i<this.activities.size(); i++){
-                if (this.activities.get(i) == activity){
+        if (activity.getId() == null) {
+            for (int i = 0; i < this.activities.size(); i++) {
+                if (this.activities.get(i) == activity) {
                     this.activities.remove(i);
                 }
             }
         } else {
-           activities.remove(activity); 
+            activities.remove(activity);
         }
     }
 
