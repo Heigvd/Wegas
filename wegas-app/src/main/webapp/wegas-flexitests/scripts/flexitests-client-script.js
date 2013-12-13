@@ -11,7 +11,7 @@
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 /*global Y */
-Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout-choicelist"], function(Z) {
+Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout-choicelist", "wegas-addimages-action"], function(Y) {
     "use strict";
     Y.Wegas.FlexitestsController.EDITMENU = [{
             type: "Button",
@@ -112,6 +112,13 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
                                         }
                                     }
                                 ]
+                            }, {
+                                type: "Button",
+                                label: "Folder's images",
+                                plugins: [{
+                                        fn: "AddImagesWidgetAction"
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -122,7 +129,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             label: "Delete",
             cssClass: "editor-exploreGameModel-button",
             plugins: [{
-                    fn: "DeleteWidgetAction"
+                    fn: "DeleteLayoutWidgetAction"
                 }
             ]
         }
@@ -187,7 +194,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             label: "Delete",
             cssClass: "editor-exploreGameModel-button",
             plugins: [{
-                    fn: "DeleteWidgetAction"
+                    fn: "DeleteLayoutWidgetAction"
                 }
             ]
         }
@@ -197,5 +204,13 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
         type: "Button",
         label: "Flexitests, expected response",
         data: "FlexiResponse"
+    });
+    Y.Wegas.Layout.EDITMENU[1].plugins[0].cfg.children.push({
+        type: "Button",
+        label: "Folder's images",
+        plugins: [{
+                fn: "AddImagesWidgetAction"
+            }
+        ]
     });
 });
