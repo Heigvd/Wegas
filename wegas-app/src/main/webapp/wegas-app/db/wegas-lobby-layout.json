@@ -173,27 +173,13 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "Button",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join with key",
-                                                    "plugins": [{
-                                                            "fn": "OpenTabAction",
-                                                            "cfg": {
-                                                                "tabSelector": "#rightTabView",
-                                                                "emptyTab": true,
-                                                                "wchildren": [{
-                                                                        "type": "TokenJoin"
-                                                                    }]
-                                                            }
-                                                        }]
-                                                }, {
-                                                    "type": "Button",
                                                     "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join game",
-                                                    "cssClass": "wegas-advanced-feature",
                                                     "plugins": [{
                                                             "fn": "WidgetMenu",
                                                             "cfg": {
                                                                 "children": [{
                                                                         "type": "Button",
-                                                                        "label": "Join with enrolment key",
+                                                                        "label": "Join with an enrolment key",
                                                                         "plugins": [{
                                                                                 "fn": "OpenTabAction",
                                                                                 "cfg": {
@@ -234,7 +220,7 @@
                                                                                                         "key": "createdTime",
                                                                                                         "label": "Created",
                                                                                                         "width": "140px",
-                                                                                                        "formatter3": "date"
+                                                                                                        "formatter": "date"
                                                                                                     }
                                                                                                 ]
                                                                                             },
@@ -358,7 +344,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Create game",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
                                                     "targetClass": "Game",
                                                     "dataSource": "Game",
                                                     "formCfg": {
@@ -415,7 +401,7 @@
                                             "key": "createdTime",
                                             "label": "Created",
                                             "width": "140px",
-                                            "formatter3": "date"
+                                            "formatter": "date"
                                         }
                                     ]
                                 },
@@ -424,7 +410,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>Create model",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New model",
                                                     "targetClass": "GameModel",
                                                     "dataSource": "GameModel",
                                                     "formCfg": {

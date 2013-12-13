@@ -98,6 +98,10 @@ YUI.add('wegas-widgettoolbar', function(Y) {
         size: function() {
             return this.children.length;
         },
+        remove: function(index) {
+            this.children[index].destroy();
+            this.children.splice(index, 1);
+        },
         /**
          * @function
          * @private

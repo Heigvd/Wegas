@@ -239,11 +239,11 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
-            },  {
+            }, {
                 type: "DeleteEntityButton",
                 label: "Delete",
                 cssClass: "editor-deleteGameModel-button"
-            },{
+            }, {
                 type: BUTTON,
                 label: "More",
                 plugins: [{
@@ -259,44 +259,36 @@ YUI.add('wegas-entity', function(Y) {
                                     plugins: [{
                                             fn: "DuplicateEntityAction"
                                         }]
+                                }, {
+                                    type: BUTTON,
+                                    label: "Permissions",
+                                    cssClass: "wegas-advanced-feature",
+                                    plugins: [{
+                                            fn: "OpenTabAction",
+                                            cfg: {
+                                                emptyTab: true,
+                                                wchildren: [{
+                                                        type: "RolePermissionList",
+                                                        permsList: [{
+                                                                name: "GameModel:View"
+                                                            }, {
+                                                                name: "GameModel:Edit",
+                                                                value: "GameModel:View,Edit,Delete"
+                                                            }, {
+                                                                name: "GameModel:Duplicate",
+                                                                value: "GameModel:Duplicate"
+                                                            }, {
+                                                                name: "GameModel:Instantiate",
+                                                                value: "GameModel:Instantiate"
+                                                            }]
+                                                    }],
+                                                tabSelector: '#rightTabView'
+                                            }
+                                        }]
                                 }]
                         }
                     }]
-            }, {
-                type: BUTTON,
-                label: "Permissions",
-                cssClass: "wegas-advanced-feature",
-                plugins: [{
-                        fn: "OpenTabAction",
-                        cfg: {
-                            emptyTab: true,
-                            wchildren: [{
-                                    type: "RolePermissionList",
-                                    permsList: [{
-                                            name: "GameModel:View"
-                                        }, {
-                                            name: "GameModel:Edit",
-                                            value: "GameModel:View,Edit,Delete"
-                                        }, {
-                                            name: "GameModel:Duplicate",
-                                            value: "GameModel:Duplicate"
-                                        }, {
-                                            name: "GameModel:Instantiate",
-                                            value: "GameModel:Instantiate"
-                                        }]
-                                }],
-                            tabSelector: '#rightTabView'
-                        }
-                    }]
             }]
-                //{
-                //    type: "Button",
-                //    label: "Publish",
-                //    cssClass: "editor-publishGameModel-button",
-                //    plugins: [{
-                //        fn: "PublishGameModelAction"
-                //    }]
-                //}
     });
 
     /**
@@ -335,12 +327,15 @@ YUI.add('wegas-entity', function(Y) {
                 value: "http://wegas.albasim.ch/game.html?token=fmie92if"
             },
             visibility: {
-//                "transient": true,
+                "transient": true,
                 type: STRING,
                 choices: [
                     //{value: 'Private', label: 'Only people in the list s join'},
                     {value: 'Public', label: 'Game is visible in the lobby.'},
-                    {value: 'Link', label: 'Player need the link to join. '}]
+                    {value: 'Link', label: 'Player need the link to join. '}],
+                _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
             },
             access: {
                 type: STRING,
@@ -388,7 +383,6 @@ YUI.add('wegas-entity', function(Y) {
                 optional: true,
                 _inputex: {
                     label: "Enrolment key",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     description: "Leave blank for automatic generation"
                 }
             },

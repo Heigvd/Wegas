@@ -210,7 +210,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         }, {
                             key: "playersCount",
                             label: "Players",
-                            width: "80px",
+                            width: "65px",
                             formatter: "count"
                         }, {
                             key: "gameModelName",
@@ -318,7 +318,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             return target.toolbar.add(i);
                         });
                         this.buttons[0].set("visible", false)
-                        this.buttons[1].get(CONTENTBOX).setStyle("marginLeft", "15px");
+                        if (this.buttons[1]) this.buttons[1].get(CONTENTBOX).setStyle("marginLeft", "15px");
                     }
                     //.fire("click");                                       // launch first button actionF
                     //}, this);
