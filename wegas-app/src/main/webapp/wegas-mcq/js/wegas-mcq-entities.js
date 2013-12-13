@@ -73,6 +73,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             value: true
                         }
                     }
+                },
+                _inputex: {
+                    index: 3
                 }
             },
             pictures: {
@@ -256,6 +259,9 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             field: "results"
                         }
                     }
+                },
+                _inputex: {
+                    index: 2
                 }
             },
             duration: {
@@ -278,7 +284,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: ARRAY,
                 value: [],
                 _inputex: {
-                    _type: HIDDEN
+                    _type: HIDDEN,
+                    index: 3
                 }
             }
         },
@@ -408,7 +415,10 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         answer: {
                             type: STRING,
                             optional: true,
-                            format: HTML
+                            format: HTML,
+                            _inputex: {
+                                label: "Result"
+                            }
                         },
                         impact: {
                             optional: true,
@@ -445,6 +455,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 _inputex: {
                     label: null,
                     index: 2,
+                    useButtons: false,
                     listAddLabel: " ",
                     listRemoveLabel: " ",
                     wrapperClassName: "inputEx-fieldWrapper-nomargin"
