@@ -417,8 +417,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-rte': {
                     path: 'js/inputex/wegas-inputex-rte-min.js',
-                    requires: ['wegas-inputex', 'inputex-textarea', 'tinymce', 'panel',
-                        'wegas-fileexplorer'],
+                    requires: ['wegas-inputex', 'inputex-textarea', 'tinymce', 'wegas-panel-fileselect'],
                     ix_provides: 'html'
                 },
                 'wegas-inputex-list': {
@@ -458,7 +457,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-url': {
                     path: 'js/inputex/wegas-inputex-url-min.js',
-                    requires: ['inputex-url', 'panel', 'wegas-fileexplorer'],
+                    requires: ['inputex-url', 'wegas-panel-fileselect'],
                     ix_provides: ['wegasurl', 'wegasimageurl']
                 },
                 'wegas-inputex-ace': {
@@ -510,6 +509,11 @@ YUI().use(function(Y) {
                     path: 'js/util/treeview-sortable-min.js',
                     requires: ['plugin', 'sortable', 'sortable-scroll'],
                     ws_provides: 'TreeViewSortable'
+                },
+                'wegas-panel-fileselect': {
+                    path: 'js/util/wegas-panel-fileselect-min.js',
+                    requires: ['widget-base', 'panel', 'wegas-fileexplorer'],
+                    ws_provides: 'FileSelect'
                 },
                 /**
                  * Editor
@@ -874,6 +878,10 @@ YUI().use(function(Y) {
                 'wegas-flexitests-results': {
                     requires: ["wegas-widget", "datatable", "datatable-csv"],
                     ws_provides: "FlexitestsResults"
+                },
+                'wegas-addimages-action': {
+                    requires: ["wegas-action", "wegas-panel-fileselect"],
+                    ws_provides: "AddImagesWidgetAction"
                 }
             }
         },

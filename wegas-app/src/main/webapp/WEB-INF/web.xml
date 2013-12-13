@@ -108,6 +108,18 @@
         <extension>json</extension>
         <mime-type>application/json;charset=ISO-8859-1</mime-type>
     </mime-mapping>
+    <mime-mapping>
+        <extension>ico</extension>
+        <mime-type>image/x-icon</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>woff</extension>
+        <mime-type>application/font-woff</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ttf</extension>
+        <mime-type>application/x-font-ttf</mime-type>
+    </mime-mapping>
 
     <!-- Facebook Servlet -->
     <!--<servlet>

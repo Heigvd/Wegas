@@ -31,6 +31,7 @@ YUI.add("wegas-inputex-url", function(Y) {
 
     Y.extend(inputEx.Wegas.UrlField, inputEx.StringField, {
         filepanel: null,
+        filter: null,
         /**
          * Adds the invalid Url message
          * @param {Object} options Options object as passed to the constructor
@@ -71,29 +72,14 @@ YUI.add("wegas-inputex-url", function(Y) {
             }).render(this.fieldContainer);
         },
         showFileExplorer: function() {
-            this.filepanel = new Y.Panel({
-                headerContent: 'Choose a file from library',
-                bodyContent: '',
-                width: 600,
-                height: Y.DOM.winHeight() - 150,
-                zIndex: 80,
-                modal: true,
-                render: true,
-                centered: true
+            this.filepanel = new Y.Wegas.FileSelect({
+                filter: this.filter
             });
-            this.filepanel.on("visibleChange", function() {
-                Y.later(0, this, function() {
-                    this.fileExplorer.destroy();
-                    this.filepanel.destroy();
-                });
-            }, this);
 
-            this.fileExplorer = new Y.Wegas.FileExplorer().render(this.filepanel.getStdModNode(Y.WidgetStdMod.BODY));
-
-            this.fileExplorer.on("*:fileSelected", function(e, path) {
+            this.filepanel.on("*:fileSelected", function(e, path) {
                 e.stopImmediatePropagation();
                 e.preventDefault();
-                this.filepanel.hide();
+                this.filepanel.destroy();
                 this.setValue(path);
             }, this);
         }
@@ -106,6 +92,9 @@ YUI.add("wegas-inputex-url", function(Y) {
     };
 
     Y.extend(inputEx.Wegas.ImageUrlField, inputEx.Wegas.UrlField, {
+        filter: function() {
+            return /image\//.test(this.get("data.mimeType"));
+        },
         /**
          * Adds a img tag before the field to display the favicon
          */
