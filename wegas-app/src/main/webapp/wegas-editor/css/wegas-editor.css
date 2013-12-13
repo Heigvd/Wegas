@@ -365,9 +365,9 @@ body {
     padding-right: 15px;
 }*/
 .wegas-jointeam .wegas-inputex-multioptions .wegas-inputex-multi-selected {
-/*    box-shadow: 0 0 1px #6d6d6d;
-    background: #ededed;
-    opacity: 1;*/
+    /*    box-shadow: 0 0 1px #6d6d6d;
+        background: #ededed;
+        opacity: 1;*/
 }
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper{
@@ -576,6 +576,10 @@ body {
 .wegas-icon-delete {
     background-position: 1px -944px;
 }
-.wegas-icon-open-in-editor {
+/*.wegas-icon-open-in-editor {
+    background-position: 0 -943px;
+}*/
+.wegas-icon-open {
+/*    background-position: 1px -709px;     Goggles */
     background-position: 0 -943px;
 }

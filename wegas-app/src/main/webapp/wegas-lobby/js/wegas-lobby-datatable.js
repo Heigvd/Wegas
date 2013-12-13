@@ -213,16 +213,16 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             width: "80px",
                             formatter: "count"
                         }, {
-                            key: "teamsCount",
-                            label: "Teams",
-                            width: "80px",
-                            formatter: "count"
-                        }, {
                             key: "gameModelName",
                             label: "Game model",
                             width: "150px"
                         }
-//                        , {
+//                        {
+//                            key: "teamsCount",
+//                            label: "Teams",
+//                            width: "80px",
+//                            formatter: "count"
+//                        }, {
 //                            key: "menu",
 //                            label: " ",
 //                            sortable: false,
@@ -294,6 +294,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         case "Delete":
                         case "Duplicate":
                         case "Open in editor":
+                        case "Open":
                             i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                     }
                 });
@@ -308,16 +309,19 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 //});
                 if (this.get("autoClick")) {                                    // If we are in autoclick,
 
-                    Y.once("rightTabShown", function() {
-                        var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
-                        if (target && target.toolbar) {
-                            this.buttons = Y.Array.map(menuItems, function(i) { // Add new buttons to the right tab's toolbar
-                                return target.toolbar.add(i);
-                            });
-                            this.buttons[0].set("visible", false);
-                        }
-                        //.fire("click");                                       // launch first button actionF
-                    }, this);
+                    //Y.once("rightTabShown", function() {
+                    //    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
+
+                    var target = host;
+                    if (target && target.toolbar) {
+                        this.buttons = Y.Array.map(menuItems, function(i) { // Add new buttons to the right tab's toolbar
+                            return target.toolbar.add(i);
+                        });
+                        this.buttons[0].set("visible", false)
+                        this.buttons[1].get(CONTENTBOX).setStyle("marginLeft", "15px");
+                    }
+                    //.fire("click");                                       // launch first button actionF
+                    //}, this);
 
                     var button = Wegas.Widget.create(menuItems[0]);
                     button.render().fire("click");
