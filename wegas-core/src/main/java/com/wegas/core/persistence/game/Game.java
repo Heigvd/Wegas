@@ -70,7 +70,7 @@ public class Game extends NamedEntity {
     /**
      *
      */
-    @OneToMany(mappedBy = "game", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("game-team")
     @OrderBy("createdTime")
     private List<Team> teams = new ArrayList<>();
@@ -86,6 +86,24 @@ public class Game extends NamedEntity {
      */
     @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
     private Long gameModelId;
+    /**
+     *
+     */
+    @Enumerated
+    private GameAccess access = GameAccess.ENROLMENTKEY;
+    /**
+     *
+     */
+    @NotNull
+    @Column(name = "wkey")
+    @JsonView(Views.EditorExtendedI.class)
+    private String key;
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonView(Views.EditorExtendedI.class)
+    private List<GameEnrolmentKey> keys = new ArrayList<>();
 
     /**
      *
@@ -127,6 +145,9 @@ public class Game extends NamedEntity {
         if (this.getToken() == null || this.getToken().equals("")) {
             this.setToken(Helper.genToken(10));
         }
+        if (this.setKey() == null || this.setKey().equals("")) {
+            this.setKey(Helper.genToken(10));
+        }
         //this.token = this.token.replace(" ", "-");
 
         // Done on join game
@@ -142,7 +163,9 @@ public class Game extends NamedEntity {
     public void merge(AbstractEntity a) {
         super.merge(a);
         Game other = (Game) a;
+        this.setAccess(other.getAccess());
         this.setToken(other.getToken());
+        this.setKey(other.setKey());
     }
 
     /**
@@ -295,5 +318,47 @@ public class Game extends NamedEntity {
      */
     public void setGameModelId(Long gameModelId) {
         this.gameModelId = gameModelId;
+    }
+
+    /**
+     * @return the access
+     */
+    public GameAccess getAccess() {
+        return access;
+    }
+
+    /**
+     * @param access the access to set
+     */
+    public void setAccess(GameAccess access) {
+        this.access = access;
+    }
+
+    /**
+     * @return the keys
+     */
+    public List<GameEnrolmentKey> getKeys() {
+        return keys;
+    }
+
+    /**
+     * @param keys the keys to set
+     */
+    public void setKeys(List<GameEnrolmentKey> keys) {
+        this.keys = keys;
+    }
+
+    /**
+     * @return the enrolmentKey
+     */
+    public String setKey() {
+        return key;
+    }
+
+    /**
+     * @param enrolmentKey the enrolmentKey to set
+     */
+    public void setKey(String enrolmentKey) {
+        this.key = enrolmentKey;
     }
 }

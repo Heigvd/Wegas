@@ -69,6 +69,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             if (entity instanceof Y.Wegas.persistence.VariableDescriptor
                     || entity instanceof Y.Wegas.persistence.JpaAccount
                     || entity instanceof Y.Wegas.persistence.GameModel
+                    || entity instanceof Y.Wegas.persistence.Game
                     || entity instanceof Y.Wegas.persistence.VariableInstance) {// @fixme we may get extended mode for every entities,
                 EditEntityAction.showEditFormOverlay();
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
@@ -232,8 +233,9 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 dataSource.cache.post(newVal, null, {
                     success: function(e) {
                         EditEntityAction.hideEditFormOverlay();
-                        EditEntityAction.showUpdateForm(e.response.entity, dataSource);
-                        EditEntityAction.showFormMessage("success", "Item has been added");
+                        EditEntityAction.hideRightTabs();                       // Hide all right tabs
+                        //EditEntityAction.showUpdateForm(e.response.entity, dataSource);
+                        //EditEntityAction.showFormMessage("success", "Item has been added");
                     },
                     failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                 });

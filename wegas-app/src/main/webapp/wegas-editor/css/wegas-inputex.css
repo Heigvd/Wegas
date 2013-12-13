@@ -222,7 +222,7 @@ img.inputEx-ListField-delButton {
     padding: 2px;
 }
 .wegas-form .mce-btn-group {
-    padding: 0 13px 0 0;
+    margin: 0 13px 0 0;
 }
 .wegas-form .mce-btn-group .mce-btn {
     background-image: none;

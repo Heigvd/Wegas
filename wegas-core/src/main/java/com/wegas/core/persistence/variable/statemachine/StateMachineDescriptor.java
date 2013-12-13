@@ -99,6 +99,14 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     public Boolean isEnabled(Player p) {
         return this.getInstance(p).getEnabled();
     }
+     /**
+     *
+     * @param p
+     * @return
+     */
+    public Boolean isDisabled(Player p) {
+        return !this.getInstance(p).getEnabled();
+    }
 
     private void mergeStates(HashMap<Long, State> newStates) {
         for (Iterator<Entry<Long, State>> it = this.states.entrySet().iterator(); it.hasNext();) {

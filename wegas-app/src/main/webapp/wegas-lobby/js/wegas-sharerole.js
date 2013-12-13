@@ -29,11 +29,11 @@ YUI.add('wegas-sharerole', function(Y) {
                 {value: 'Public', label: 'Everybody can join'}
             ];
 
-            //if (!gameModel.get("properties.freeForAll") && !gameModel.get("properties.freeTeams")) {
+            //if (!gameModel.get("properties.freeForAll")) {
             //    this.set("visible", false);
             //}
             if (!gameModel.get("properties.freeForAll")) {                      // For games with teams, add the team enorlement key option
-                visibilityChoices.splice(1, 0, {value: 'TeamToken', label: 'Anyone with a team specific enrolement key can join.'});
+                visibilityChoices.splice(1, 0, {value: 'TeamToken', label: 'Anyone with a team specific enrolment key can join.'});
             }
 
             this.targetEntityId = (e instanceof Y.Wegas.persistence.GameModel) ? "gm" + e.get("id")

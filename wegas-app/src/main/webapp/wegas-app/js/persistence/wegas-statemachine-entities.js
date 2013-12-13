@@ -189,6 +189,14 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         value: SELF
                     }],
                 returns: BOOLEAN
+            },
+            isDisabled: {
+                label: "is inactive",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }],
+                returns: BOOLEAN
             }
         }
     });
