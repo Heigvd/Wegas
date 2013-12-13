@@ -100,7 +100,7 @@
                 "children": [{
                         "type": "Tab",
                         "id": "joinedGamesTab",
-                        "label": "Joined games",
+                        "label": "Play",
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "RegisteredGames",
@@ -186,12 +186,93 @@
                                                         }]
                                                 }, {
                                                     "type": "Button",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join game",
                                                     "cssClass": "wegas-advanced-feature",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join public game",
+                                                    "plugins": [{
+                                                            "fn": "WidgetMenu",
+                                                            "cfg": {
+                                                                "children": [{
+                                                                        "type": "Button",
+                                                                        "label": "Join with enrolment key",
+                                                                        "plugins": [{
+                                                                                "fn": "OpenTabAction",
+                                                                                "cfg": {
+                                                                                    "tabSelector": "#rightTabView",
+                                                                                    "emptyTab": true,
+                                                                                    "wchildren": [{
+                                                                                            "type": "TokenJoin"
+                                                                                        }]
+                                                                                }
+                                                                            }]
+                                                                    }, {
+                                                                        "type": "Button",
+                                                                        "label": "Join a public game",
+                                                                        "plugins": [{
+                                                                                "fn": "OpenTabAction",
+                                                                                "cfg": {
+                                                                                    "label": "Public games",
+                                                                                    "tabSelector": "#rightTabView",
+                                                                                    "emptyTab": true,
+                                                                                    "wchildren": [{
+                                                                                            "type": "GameDataTable",
+                                                                                            "dataSource": "PublicGames",
+                                                                                            "dataTableCfg": {
+                                                                                                "columns": [{
+                                                                                                        "key": "iconCSS",
+                                                                                                        "formatter": "icon",
+                                                                                                        "label": " ",
+                                                                                                        "sortable": false,
+                                                                                                        "width": "22px"
+                                                                                                    }, {
+                                                                                                        "key": "name",
+                                                                                                        "label": "Name"
+                                                                                                    }, {
+                                                                                                        "key": "createdBy",
+                                                                                                        "label": "Created by",
+                                                                                                        "width": "150px"
+                                                                                                    }, {
+                                                                                                        "key": "createdTime",
+                                                                                                        "label": "Created",
+                                                                                                        "width": "140px",
+                                                                                                        "formatter3": "date"
+                                                                                                    }
+                                                                                                ]
+                                                                                            },
+                                                                                            "emptyMessage": "No game is available to play.",
+                                                                                            "plugins": [{
+                                                                                                    "fn": "EditorDTMenu",
+                                                                                                    "cfg": {
+                                                                                                        "children": [{
+                                                                                                                "type": "Button",
+                                                                                                                "label": "Join game",
+                                                                                                                "plugins": [{
+                                                                                                                        "fn": "OpenTabAction",
+                                                                                                                        "cfg": {
+                                                                                                                            "tabSelector": "#rightTabView",
+                                                                                                                            "emptyTab": true,
+                                                                                                                            "wchildren": [{
+                                                                                                                                    "type": "JoinTeam",
+                                                                                                                                    "customEvent": true
+                                                                                                                                }]
+                                                                                                                        }
+                                                                                                                    }]
+                                                                                                            }]
+                                                                                                    }
+                                                                                                }]
+                                                                                        }]
+                                                                                }
+                                                                            }]
+                                                                    }]
+                                                            }
+                                                        }]
+                                                }, {
+                                                    "type": "Button",
+                                                    "cssClass": "wegas-advanced-feature",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join game",
                                                     "plugins": [{
                                                             "fn": "OpenTabAction",
                                                             "cfg": {
-                                                                "label": "Public games",
+                                                                "label": "Available games",
                                                                 "tabSelector": "#rightTabView",
                                                                 "emptyTab": true,
                                                                 "wchildren": [{
@@ -210,20 +291,37 @@
                                                                                 }, {
                                                                                     "key": "createdBy",
                                                                                     "label": "Created by",
-                                                                                    "width": "150px"
+                                                                                    "width": "120px"
                                                                                 }, {
                                                                                     "key": "createdTime",
                                                                                     "label": "Created",
-                                                                                    "width": "140px",
-                                                                                    "formatter3": "date"
-                                                                                }
-                                                                            ]
+                                                                                    "width": "120px",
+                                                                                    "formatter": "date"
+                                                                                }, {
+                                                                                    "key": "access",
+                                                                                    "label": "Requires key",
+                                                                                    "width": "90px"
+                                                                                }]
                                                                         },
                                                                         "emptyMessage": "No game is available to play.",
                                                                         "plugins": [{
                                                                                 "fn": "EditorDTMenu",
                                                                                 "cfg": {
                                                                                     "children": [{
+                                                                                            "type": "Button",
+                                                                                            "label": "Join game",
+                                                                                            "plugins": [{
+                                                                                                    "fn": "OpenTabAction",
+                                                                                                    "cfg": {
+                                                                                                        "tabSelector": "#rightTabView",
+                                                                                                        "emptyTab": true,
+                                                                                                        "wchildren": [{
+                                                                                                                "type": "PasswordJoin"
+                                                                                                            }]
+                                                                                                    }
+                                                                                                }]
+                                                                                        }],
+                                                                                    "children_old": [{
                                                                                             "type": "Button",
                                                                                             "label": "Join game",
                                                                                             "plugins": [{
@@ -250,7 +348,7 @@
                     }, {
                         "id": "gamesTreeViewTab",
                         "type": "Tab",
-                        "label": "Created games",
+                        "label": "Host",
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "Game",
@@ -295,7 +393,7 @@
                     }, {
                         "type": "Tab",
                         "id": "gameModelsTab",
-                        "label": "Game models",
+                        "label": "Create",
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "GameModel",

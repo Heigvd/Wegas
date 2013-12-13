@@ -66,9 +66,10 @@
     margin: 0;
     margin-left: 0.3em;
     font-size:11px;
+    padding: .4em 0.8em .3em 0.6em;
 }
 .wegas-toolbar .yui3-button .wegas-icon {
-    margin: -3px 2px 0 0;
+    margin: -4px 2px 0 0;
 }
 .wegas-toolbar .wegas-selectbutton {
     display:inline-block;
