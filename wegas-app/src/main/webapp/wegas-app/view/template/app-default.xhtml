@@ -11,10 +11,10 @@
         <ui:define name="page">
             <h:body class="yui3-skin-sam wegas-stdmode wegas-loading-overlay #{requestController.currentRoles}"> <!-- @fixme currentRoles should not be display on all pages, since login page does not provide for an account nor any role -->
 
-                <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
+                <!-- <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">-->
                     <!-- Muscula error tracking -->
-                    <ui:include src="muscula-tracker.xhtml" />
-                </ui:fragment>
+                    <!--<ui:include src="muscula-tracker.xhtml" />-->
+                <!--</ui:fragment>-->
 
                 <!-- YUI Base -->
                 <ui:fragment rendered="#{wegasConfig.useYUICDN}">
