@@ -13,7 +13,6 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameAccess;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
