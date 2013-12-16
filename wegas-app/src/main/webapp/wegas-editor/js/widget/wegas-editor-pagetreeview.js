@@ -44,9 +44,10 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     return;
                 }
                 this.showOverlay();
-                Y.soon(Y.bind(function(id) {
-                    this.get("pageLoader").set("pageId", id);
-                }, this, pageId));
+                this.get("pageLoader").set("pageId", pageId);
+//                Y.soon(Y.bind(function(id) {
+//                    this.get("pageLoader").set("pageId", id);
+//                }, this, pageId));
             }, this);
             this.on("*:newPage", function(e) {
                 DATASOURCE.createPage(PageTreeview.DEFAULT_NEWPAGE, Y.bind(function(page, id) {
@@ -65,7 +66,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     }
                 }, this);
             }
-            this.treeView.on("treenode:click", function(e) {
+            this.treeView.on(["treenode:click", "treenode:nodeExpanded"], function(e) {
                 var node = e.node;
                 if (!node.get("data")) {
                     return;
@@ -73,7 +74,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 if (node.get("data").page) {
                     bindChangePage(node.get("data").page);
                     // node.get("rightWidget").menu.getMenu().item(0).fire("click");// Fire 1st menu item action on page click
-                } else if (node.get("data.widget")) {
+                } else if (node.get("data.widget") && e._type === "treenode:click") {
                     node.get("data.widget").get(BOUNDING_BOX).scrollIntoView();
                     if (DATASOURCE.editable) {
                         node.get("rightWidget").simulate("click");
@@ -94,15 +95,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         node.get("rightWidget").menu.getMenu().item(0).fire("click");
                         node.get("rightWidget").menu.menu.hide();
                     }
-                }
-            }, this);
-            this.treeView.on("treenode:nodeExpanded", function(e) {
-                var node = e.node;
-                if (!node.get("data")) {
-                    return;
-                }
-                if (node.get("data").page) {
-                    bindChangePage(node.get("data").page);
                 }
             }, this);
             this.treeView.get(CONTENT_BOX).delegate("mouseenter", function(e) {
@@ -135,7 +127,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }, ".content-header", this);
             this.dsEvent = DATASOURCE.after("pageUpdated", function(e) {
                 this.showOverlay();
-                Y.soon(Y.bind(this.getIndex, this));
+                this.getIndex();
             }, this);
             //if (this.get("pageLoader")) {
             //    this.get("pageLoader").after("pageIdChange", this.syncUI, this);
@@ -155,7 +147,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             var treeNode, button = new Y.Node.create("<span class=\"wegas-treeview-editmenubutton\"></span>"),
                     menuCfg;
             if (!widget || typeof widget.getMenuCfg !== "function") {
-                if(widget){
+                if (widget) {
                     Y.log(widget + " not editable", "warn", "Y.Wegas.PageEditorTreeView");
                 }
                 return;
@@ -348,9 +340,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 setter: function(v) {
                     if (Y.Wegas.PageLoader.find(v)) {
                         if (this.get("previewPageLoader")) {
-                            Y.Wegas.PageLoader.find(this.get("previewPageLoader")).detach("contentUpdated", this.getIndex, this);
+                            Y.Wegas.PageLoader.find(this.get("previewPageLoader")).detach(["contentUpdated", "pageIdChange"], this.getIndex, this);
                         }
-                        Y.Wegas.PageLoader.find(v).after("contentUpdated", this.getIndex, this);
+                        Y.Wegas.PageLoader.find(v).after(["contentUpdated", "pageIdChange"], this.getIndex, this);
                     }
                     return v;
                 }
