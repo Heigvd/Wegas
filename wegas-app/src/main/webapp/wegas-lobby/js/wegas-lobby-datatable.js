@@ -297,6 +297,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         case "Duplicate":
                         case "Open in editor":
                         case "Open":
+                        case "View":
                             i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                     }
                 });

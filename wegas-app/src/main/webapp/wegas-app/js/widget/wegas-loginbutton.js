@@ -37,6 +37,8 @@ YUI.add("wegas-loginbutton", function(Y) {
         bindUI: function() {
             Y.Wegas.LoginButton.superclass.bindUI.apply(this, arguments);
             Y.Wegas.Facade.User.after("update", this.syncUI, this);
+            if (Y.Wegas.Facade.VariableDescriptor)
+                Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
 
             if (this.menu) {                                                    // Don't add the plugin if it already exist.
                 return;
@@ -97,7 +99,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                 if (cTeam) {
                     name = cTeam.get("name") + " : " + name;
                 }
-                if (gameModel && gameModel.get("properties.freeForAll")){
+                if (gameModel && gameModel.get("properties.freeForAll")) {
                     name = cPlayer.get("name");
                 }
             }

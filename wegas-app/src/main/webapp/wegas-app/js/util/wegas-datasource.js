@@ -36,6 +36,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         initializer: function() {
             this.after("sourceChange", this.sendInitialRequest);
+            //this.afterHostEvent("sourceChange", this.clear, this);              // When the source changes, clear the cache
 
             //this.on("error",function(e) {
             //    //console.log("WegasCache._failureHandler", e);
@@ -162,8 +163,7 @@ YUI.add('wegas-datasource', function(Y) {
                 bubbles: false
             });
 
-//            this.doBefore("data", this.onData, this);                           // When the host receives some data, we parse the result
-            this.afterHostEvent("sourceChange", this.clear, this);              // When the source changes, clear the cache
+            //this.doBefore("data", this.onData, this);                           // When the host receives some data, we parse the result
         },
         /**
          * Server requests methods

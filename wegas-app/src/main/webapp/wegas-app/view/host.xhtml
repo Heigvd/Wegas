@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets" >
+
+    <ui:composition template="editor.xhtml">
+
+        <ui:define name="editorHeader">
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host.css" />
+        </ui:define>
+
+        <ui:define name="editorFooter">
+            Y.Wegas.app.on("render", function(e) {
+                Y.Widget.getByNode(".editor-players").set("selected", 2);
+            });
+        </ui:define>
+    </ui:composition>
+</html>

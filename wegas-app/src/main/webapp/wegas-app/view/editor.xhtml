@@ -11,7 +11,7 @@
 
             <meta name="google-translate-customization" content="#editorGameController.currentGameModel.getProperty('googleTranslateId')" />
 
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
 
             <style type="text/css">
                 .yui3-skin-sam .yui3-button.wegas-title,
@@ -47,6 +47,8 @@
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o}?#{wegasConfig.timestamp}" />
             </ui:repeat>
 
+            <ui:insert name="editorHeader"></ui:insert>
+
         </ui:define>
         <ui:define name="body">
 
@@ -68,13 +70,6 @@
                                 initialRequest: "/#{editorGameController.currentGameModel.id}",
                                 plugins: [{
                                         fn: "GameModelCache"
-                                    }]
-                            },
-                            "GameIndex": {
-                                source: "rest/Index/GameModel/#{editorGameController.currentGameModel.id}/Game",
-                                initialRequest: "/",
-                                plugins: [{
-                                        fn: "GameCache"
                                     }]
                             },
                             "Game": {
@@ -213,10 +208,22 @@
                         } catch (e) {
                             Y.log("Error running footer scripts.", "error");
                         }
+
+                        Y.Widget.getByNode(".editor-players").witem(0).on("*:click", function(e) {                      // Listen to click events on the first child (treeview)
+                            var entity = e.target.get("data.entity"),
+                                    player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
+
+                            if (!player) {
+                                this.showMessageBis("error", "This team is empty", 4000);
+                                return;
+                            }
+
+                            Y.Wegas.app.set('currentPlayer', player.get("id"));
+                        });
                     });
 
-                    app.after('currentPlayerChange', function(e) {             // Whenever the current player changes
-                        //"rest/Private/xx/GameModel/xx/VariableDescriptor",
+                    app.after('currentPlayerChange', function(e) {              // Whenever the current player changes
+
                         this.set('currentTeam',
                                 Y.Wegas.Facade.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
 
@@ -224,14 +231,21 @@
                                 this.get("base") + "rest/EditorPrivate/" + e.newVal + "/GameModel/"
                                 + this.get("currentGameModel") + "/VariableDescriptor");
 
-                        //Y.Wegas.Facade.VariableDescriptor.fire("update");      // Fire an update event on the variable datasource
-                        Y.Wegas.Facade.User.fire("update");                      // Fire an update event on the variable datasource
+                        var preview = Y.Widget.getByNode(".editor-preview");
+                        preview.showOverlay();
+                        Y.Wegas.Facade.VariableDescriptor.once("response", preview.hideOverlay, preview);
+
+                        //Y.Wegas.Facade.VariableDescriptor.fire("update");     // Fire an update event on the variable datasource
+                        //Y.Wegas.Facade.User.fire("update");                   // Fire an update event on the variable datasource
                     });
 
                     app.render();                                               // Render app
 
+                    <ui:insert name = "editorFooter" /> // Footer script (for host.html)
+
                 });
             </script>
+
         </ui:define>
     </ui:composition>
 </html>
