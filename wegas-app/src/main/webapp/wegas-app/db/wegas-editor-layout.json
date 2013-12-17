@@ -17,45 +17,11 @@
                         }
                     }]
             }, {
-                "type": "SelectGameButton",
-                "cssClass": "editor-game-button wegas-advanced-feature"
-            }, {
                 "type": "SelectPlayerButton",
                 "cssClass": "editor-player-button wegas-advanced-feature"
             }, {
                 "type": "Button",
-                "label": "Developer",
-                "cssClass": "editor-developer-button",
-                "plugins": [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "children": [{
-                                    "type": "OpenTabButton",
-                                    "label": "Console",
-                                    "wchildren": [{
-                                            "type": "Console",
-                                            "cssClass": "wegas-console",
-                                            "plugins": [{
-                                                    "fn": "WidgetToolbar",
-                                                    "cfg": {
-                                                        "children": [{
-                                                                "type": "SelectPlayerButton"
-                                                            }]
-                                                    }
-                                                }]
-                                        }]
-                                }, {
-                                    "type": "OpenTabButton",
-                                    "label": "Log",
-                                    "wchildren": [{
-                                            "type": "Log"
-                                        }]
-                                }]
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Administrator",
+                "label": "Admin",
                 "cssClass": "editor-administrator-button",
                 "plugins": [{
                         "fn": "WidgetMenu",
@@ -107,14 +73,29 @@
                     }]
             }, {
                 "type": "Button",
-                "label": "Scenarist",
+                "label": "Tools",
                 "cssClass": "editor-scenarist-button",
                 "plugins": [{
                         "fn": "WidgetMenu",
                         "cfg": {
                             "children": [{
+                                    "type": "OpenTabButton",
+                                    "label": "Impact game",
+                                    "wchildren": [{
+                                            "type": "WysiwygConsole",
+                                            "cssClass": "wegas-console",
+                                            "plugins": [{
+                                                    "fn": "WidgetToolbar",
+                                                    "cfg": {
+                                                        "children": [{
+                                                                "type": "SelectPlayerButton"
+                                                            }]
+                                                    }
+                                                }]
+                                        }]
+                                }, {
                                     "type": "Button",
-                                    "label": "Properties",
+                                    "label": "Model properties",
                                     "plugins": [{
                                             "fn": "EditEntityAction",
                                             "cfg": {
@@ -160,28 +141,12 @@
                                             "cssClass": "editor-help",
                                             "content": "<iframe src=\"https://docs.google.com/document/d/16S3uGvSGkweay9Dng6mIus3ERdq5D1_GJIwMynTMcuo/pub?embedded=true\"></iframe>"
                                         }]
-                                }]
-                        }
-                    }]
-            }, {
-                "type": "Button",
-                "label": "Animator",
-                "cssClass": "editor-animator-button",
-                "plugins": [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "children": [{
-                                    "type": "OpenTabButton",
-                                    "label": "Players",
-                                    "wchildren": [{
-                                            "type": "EditorTreeView",
-                                            "dataSource": "Game"
-                                        }]
                                 }, {
                                     "type": "OpenTabButton",
-                                    "label": "Impact game",
+                                    "label": "Console",
+                                    "cssClass": "wegas-advanced-feature",
                                     "wchildren": [{
-                                            "type": "WysiwygConsole",
+                                            "type": "Console",
                                             "cssClass": "wegas-console",
                                             "plugins": [{
                                                     "fn": "WidgetToolbar",
@@ -192,11 +157,16 @@
                                                     }
                                                 }]
                                         }]
+                                }, {
+                                    "type": "OpenTabButton",
+                                    "cssClass": "wegas-advanced-feature",
+                                    "label": "Log",
+                                    "wchildren": [{
+                                            "type": "Log"
+                                        }]
                                 }]
                         }
                     }]
-            }, {
-                "type": "GoogleTranslate"
             }, {
                 "type": "LoginButton",
                 "cssClass": "editor-login-button",
@@ -246,6 +216,7 @@
                 "children": [{
                         "type": "Tab",
                         "label": "Variables",
+                        "cssClass": "editor-variables",
                         "children": [{
                                 "type": "VariableTreeView",
                                 "dataSource": "VariableDescriptor",
@@ -266,8 +237,23 @@
                     }, {
                         "type": "Tab",
                         "label": "Pages",
+                        "cssClass": "editor-pages",
                         "children": [{
                                 "type": "PageTreeview"
+                            }]
+                    }, {
+                        "type": "Tab",
+                        "label": "Players",
+                        "cssClass": "editor-players",
+                        "children": [{
+                                "type": "TeamTreeViewEditor",
+                                "dataSource": "Game",
+                                "plugins": [{
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": []
+                                        }
+                                    }]
                             }]
                     }]
             }]

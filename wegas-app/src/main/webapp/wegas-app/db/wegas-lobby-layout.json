@@ -7,7 +7,7 @@
                 "cssClass": "wegas-title"
             }, {
                 "type": "Button",
-                "label": "Administrator",
+                "label": "Admin",
                 "cssClass": "editor-administrator-button",
                 "plugins": [{
                         "fn": "WidgetMenu",
@@ -100,7 +100,7 @@
                 "children": [{
                         "type": "Tab",
                         "id": "joinedGamesTab",
-                        "label": "Play",
+                        "label": "Player",
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "RegisteredGames",
@@ -334,7 +334,7 @@
                     }, {
                         "id": "gamesTreeViewTab",
                         "type": "Tab",
-                        "label": "Host",
+                        "label": "Teacher",
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "Game",
@@ -379,7 +379,7 @@
                     }, {
                         "type": "Tab",
                         "id": "gameModelsTab",
-                        "label": "Create",
+                        "label": "Scenarist",
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "GameModel",

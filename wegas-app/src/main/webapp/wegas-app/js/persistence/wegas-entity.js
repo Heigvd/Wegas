@@ -244,7 +244,7 @@ YUI.add('wegas-entity', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Open",
+                label: "Open in editor",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -320,6 +320,7 @@ YUI.add('wegas-entity', function(Y) {
             description: {
                 type: STRING,
                 format: HTML,
+                optional: true,
                 _inputex: {
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
@@ -337,11 +338,11 @@ YUI.add('wegas-entity', function(Y) {
             updatedTime: {
                 "transient": true
             },
-            shareLink: {
-                "transient": true,
-                type: "STRING",
-                value: "http://wegas.albasim.ch/game.html?token=fmie92if"
-            },
+//            shareLink: {
+//                "transient": true,
+//                type: "STRING",
+//                value: "http://wegas.albasim.ch/game.html?token=fmie92if"
+//            },
             visibility: {
                 "transient": true,
                 type: STRING,
@@ -451,8 +452,40 @@ YUI.add('wegas-entity', function(Y) {
         EDITMENU: [{
                 type: BUTTON,
                 label: "Edit",
-                plugins: [{
-                        fn: "EditEntityAction"
+                plugins: [
+//                    {
+//                        fn: "EditEntityAction"
+//                    }                    ,
+                    {
+                        fn: "OpenTabAction",
+                        cfg: {
+                            label: "Edit game",
+                            tabSelector: '#rightTabView',
+                            wchildren: [{
+                                    type: "EditEntityForm"
+                                }, {
+                                    type: "ShareRole",
+                                    cssClass: "wegas-advanced-feature",
+                                    permsList: [
+                                        //{
+                                        //    name: "Public",
+                                        //    value: "Game:View"
+                                        //},
+                                        {
+                                            name: "Link",
+                                            value: "Game:Token"
+                                        }, {
+                                            name: "TeamToken",
+                                            value: "Game:TeamToken"
+                                        }]
+                                }
+//                                , {
+//                                    type: "Text",
+//                                    cssClass: "wegas-editor-treeview-team",
+//                                    content: "<div class=\"message\"></div><div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
+//                                }
+                            ]
+                        }
                     }, {
                         fn: "OpenTabAction",
                         cfg: {
@@ -460,7 +493,13 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "TeamTreeView"
-                                }]
+                                }
+//                                , {
+//                                    type: "Text",
+//                                    cssClass: "wegas-editor-treeview-team",
+//                                    content: "<div class=\"message\"></div><div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
+//                                }
+                            ]
                         }
                     }, {
                         fn: "OpenTabActionSec",
@@ -469,6 +508,7 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareRole",
+                                    cssClass: "wegas-advanced-feature",
                                     permsList: [{
                                             name: "Public",
                                             value: "Game:View"
@@ -481,6 +521,12 @@ YUI.add('wegas-entity', function(Y) {
                                         }]
                                 }, {
                                     type: "ShareUser",
+                                    "plugins": [{
+                                            "fn": "WidgetToolbar",
+                                            "cfg": {
+                                                "children": [{type: "Text"}]
+                                            }
+                                        }],
                                     permsList: [{
                                             rightLabel: "Play",
                                             value: "Game:View"
@@ -498,9 +544,12 @@ YUI.add('wegas-entity', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Open",
+                label: "View",
                 plugins: [{
-                        fn: "OpenGameAction"
+                        fn: "OpenGameAction",
+                        cfg: {
+                            editorUrl: "wegas-app/view/host.html?"
+                        }
                     }]
             }, {
                 type: "DeleteEntityButton",
@@ -590,17 +639,20 @@ YUI.add('wegas-entity', function(Y) {
             gameId: IDATTRDEF
         },
         EDITMENU: [{
+                type: BUTTON,
+                label: "View",
+                plugins: [{
+                        fn: "OpenGameAction",
+                        cfg: {
+                            editorUrl: "wegas-app/view/host.html?"
+                        }
+                    }]
+            }, {
                 type: "EditEntityButton",
                 label: "Edit"
-            },
-            {
-                type: BUTTON,
-                label: "Open",
-                plugins: [{
-                        fn: "OpenGameAction"
-                    }]
-            },
-            //{
+            }, {
+                type: "DeleteEntityButton"
+            }, //{
             //    type: "JoinOrResumeButton",
             //    label: "Join"
             //},
@@ -624,11 +676,11 @@ YUI.add('wegas-entity', function(Y) {
                             targetClass: "Player"
                         }
                     }]
-            }, {
-                type: "DeleteEntityButton"
-            }, {
-                type: "Linkwidget"
-            }]
+            }
+            //, {
+            //    type: "Linkwidget"
+            //}
+        ]
     });
 
     /**
@@ -648,7 +700,10 @@ YUI.add('wegas-entity', function(Y) {
                 type: BUTTON,
                 label: "View",
                 plugins: [{
-                        fn: "OpenGameAction"
+                        fn: "OpenGameAction",
+                        cfg: {
+                            editorUrl: "wegas-app/view/host.html?"
+                        }
                     }]
             }, {
                 type: "EditEntityButton",
@@ -696,6 +751,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING
             },
             description: {
+                "transient": true,
                 type: STRING,
                 format: TEXT,
                 optional: true
@@ -984,7 +1040,7 @@ YUI.add('wegas-entity', function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "Duplicate",
+                label: "Copy",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
@@ -1432,14 +1488,14 @@ YUI.add('wegas-entity', function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "Add",
+                label: "New",
                 plugins: [{
                         "fn": "WidgetMenu",
                         "cfg": {
-                            "menuCfg": {
-                                points: ["tl", "tr"]
-                            },
-                            "event": "mouseenter",
+                            //"menuCfg": {
+                            //    points: ["tl", "tr"]
+                            //},
+                            //"event": "mouseenter",
                             "children": [{
                                     type: "AddEntityChildButton",
                                     label: "Number",
@@ -1494,7 +1550,7 @@ YUI.add('wegas-entity', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Duplicate",
+                label: "Copy",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]

@@ -160,7 +160,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Duplicate",
+                label: "Copy",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
@@ -339,7 +339,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
 
             }, {
                 type: BUTTON,
-                label: "Duplicate",
+                label: "Copy",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
@@ -422,7 +422,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Duplicate",
+                label: "Copy",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
