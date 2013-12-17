@@ -535,13 +535,13 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         },
         bindUI: function() {
             if (!this.get(LABEL)) {
-                this.set(LABEL, "Delete"); // @fixme hack because the ATTR's value is not taken into account
+                this.set(LABEL, "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete"); // @fixme hack because the ATTR's value is not taken into account
             }
         }
     }, {
         ATTRS: {
             label: {
-                value: "Delete"
+                value: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete"
             }
         }
     });

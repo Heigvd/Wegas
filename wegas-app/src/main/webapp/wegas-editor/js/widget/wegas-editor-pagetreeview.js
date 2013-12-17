@@ -269,7 +269,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                                 }
                             }, {
                                 type: "Button",
-                                label: "Duplicate",
+                                label: "Copy",
                                 on: {
                                     click: Y.bind(duplicatePage, this, i)
                                 }

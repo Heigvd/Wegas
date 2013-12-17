@@ -98,14 +98,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "Add",
+                label: "New",
                 plugins: [{
                         "fn": "WidgetMenu",
                         "cfg": {
-                            "menuCfg": {
-                                points: ["tl", "tr"]
-                            },
-                            "event": "mouseenter",
+                            //"menuCfg": {
+                            //    points: ["tl", "tr"]
+                            //},
+                            //"event": "mouseenter",
                             "children": [{
                                     type: BUTTON,
                                     label: "Add a choice",

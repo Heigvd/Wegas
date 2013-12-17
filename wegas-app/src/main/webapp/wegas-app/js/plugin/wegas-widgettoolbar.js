@@ -78,6 +78,10 @@ YUI.add('wegas-widgettoolbar', function(Y) {
          * @return {Y.Widget} the newly created widget
          */
         add: function(widget) {
+            if (Y.Lang.isArray(widget)) {
+                Y.Array.each(widget, this.add, this);
+                return;
+            }
             if (!(widget instanceof Y.Widget)) {
                 widget = Y.Wegas.Widget.create(widget);
             }
@@ -101,6 +105,12 @@ YUI.add('wegas-widgettoolbar', function(Y) {
         remove: function(index) {
             this.children[index].destroy();
             this.children.splice(index, 1);
+        },
+        removeAll: function() {
+            Y.Array.each(this.children, function(c) {
+                c.destroy();
+            });
+            this.children = [];
         },
         /**
          * @function
