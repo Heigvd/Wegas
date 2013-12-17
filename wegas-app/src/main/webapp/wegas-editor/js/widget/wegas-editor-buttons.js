@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-editor-buttons', function (Y) {
+YUI.add('wegas-editor-buttons', function(Y) {
     "use strict";
 
     var SelectGameButton, SelectPlayerButton;
@@ -32,27 +32,26 @@ YUI.add('wegas-editor-buttons', function (Y) {
          *  @function
          *  @private
          */
-        bindUI: function () {
+        bindUI: function() {
             SelectPlayerButton.superclass.bindUI.apply(this, arguments);
             this.plug(Y.Plugin.WidgetMenu);
 
-            this.menu.on("button:click", function (e) {
+            this.menu.on("button:click", function(e) {
                 Y.Wegas.app.set('currentPlayer', e.target.get("data").get("id"));
             });
 
             Y.Wegas.Facade.Game.after("response", this.syncUI, this);
             Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
         },
-
         /**
          *  @function
          *  @private
          */
-        syncUI: function () {
+        syncUI: function() {
             SelectPlayerButton.superclass.bindUI.apply(this, arguments);
             var j, k, cTeam, menuItems = [],
-            cGame = Y.Wegas.Facade.Game.cache.getCurrentGame(),
-            cPlayer = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
+                    cGame = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+                    cPlayer = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
 
             this.set("label", "Current player: " + cPlayer.get("name"));      // Update the label
 
@@ -92,27 +91,26 @@ YUI.add('wegas-editor-buttons', function (Y) {
      * A button that display all current game's player and that sets the
      * Y.Wegas.app.set("currentPlayer") on click.
      *
+     *  @deprecated It should load game list on demand.
      * @class Y.Wegas.SelectGameButton
      * @constructor
      * @extends Y.Wegas.Button
      * @param {Object} cfg The button config object
      */
-    SelectGameButton= Y.Base.create("button", Y.Wegas.Button, [], {
-
+    SelectGameButton = Y.Base.create("button", Y.Wegas.Button, [], {
         /** @lends Y.Wegas.SelectGameButton# */
-        bindUI: function () {
+        bindUI: function() {
             SelectGameButton.superclass.bindUI.apply(this, arguments);
             this.plug(Y.Plugin.WidgetMenu);
 
             Y.Wegas.Facade.GameIndex.after("response", this.syncUI, this);
         },
-
-        syncUI: function () {
+        syncUI: function() {
             SelectGameButton.superclass.syncUI.apply(this, arguments);
 
             var j, menuItems = [],
-            cGame = Y.Wegas.Facade.Game.cache.getCurrentGame(),
-            games = Y.Wegas.Facade.GameIndex.cache.findAll();
+                    cGame = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+                    games = Y.Wegas.Facade.GameIndex.cache.findAll();
 
             this.set("label", "Current game: " + cGame.get("name"));      // Update the label
 
@@ -121,17 +119,17 @@ YUI.add('wegas-editor-buttons', function (Y) {
                     "type": "Button",
                     "label": games[j].get("name"),
                     plugins: [{
-                        fn: "OpenGameAction",
-                        cfg: {
-                            target: "self",
-                            entity: games[j]
-                        }
-                    }]
+                            fn: "OpenGameAction",
+                            cfg: {
+                                target: "self",
+                                entity: games[j]
+                            }
+                        }]
                 });
             }
             this.menu.set("children", menuItems);
         }
     });
     Y.namespace("Wegas").SelectGameButton = SelectGameButton;
-
+    
 });

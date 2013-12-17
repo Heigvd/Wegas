@@ -187,7 +187,6 @@ YUI.add('treeview', function(Y) {
          * @function
          */
         initializer: function() {
-            this.eventInstances = {};
             this._childStore = [];
             this.publish("toggleClick", {
                 bubbles: false,
@@ -256,17 +255,17 @@ YUI.add('treeview', function(Y) {
                     e.target.get(BOUNDING_BOX).removeClass("selected");
                 }
             });
-            this.eventInstances.click = this.toggleNode.on("click", function(e) {
+            this.toggleNode.on("click", function(e) {
                 e.stopPropagation();
                 this.fire("toggleClick", {
                     node: this
                 });
             }, this);
-            this.eventInstances.dblfullClick = this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).before("dblclick", function(e) {
+            this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).before("dblclick", function(e) {
                 e.halt(true);
                 this.toggleTree();
             }, this);
-            this.eventInstances.fullClick = this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).on("click", function(e) {
+            this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).on("click", function(e) {
                 var node = e.target;
                 e.stopPropagation();
                 if (node.hasClass(this.getClassName("content", "icon"))) {
@@ -333,14 +332,8 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         destructor: function() {
-            var event;
             this.blur(); //remove a focused node generates some errors
             this.set("selected", 0);
-            for (event in this.eventInstances) {
-                if (this.eventInstances.hasOwnProperty(event)) {
-                    this.eventInstances[event].detach();
-                }
-            }
             if (this.get("rightWidget")) {
                 this.get("rightWidget").destroy();
             }

@@ -18,7 +18,6 @@ body {
 /** Hide all advanced feature while in std mode */
 .wegas-stdmode .wegas-advanced-feature,
 .wegas-stdmode .editor-administrator-button,
-.wegas-stdmode .editor-developer-button,
 .wegas-stdmode .editor-playerProperties-button {
     display: none;
 }
@@ -573,13 +572,17 @@ body {
         url(../../wegas-app/images/wegas-app-sprite.png) no-repeat -3px -1289px;
     height: 19px;
 }
+.wegas-icon-edit {
+    background-position: 1px -1110px;
+}
 .wegas-icon-delete {
     background-position: 1px -944px;
 }
-/*.wegas-icon-open-in-editor {
+.wegas-icon-open,
+.wegas-icon-open-in-editor {
     background-position: 0 -943px;
-}*/
-.wegas-icon-open {
-/*    background-position: 1px -709px;     Goggles */
-    background-position: 0 -943px;
+}
+.wegas-icon-view {
+    /*background-position: 1px -709px;     Goggles */
+    background-position: 0 -1432px;
 }
