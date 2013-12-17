@@ -67,9 +67,6 @@
     overflow:visible;
     max-height: 600px;
     box-shadow: 1px 2px 4px #6D6D6D;
-
-
-
     border: 1px solid grey;
     transition: max-height 0.3s linear;
     -webkit-transition: max-height 0.3s linear;
