@@ -240,7 +240,7 @@ body {
     margin-top: 12px;
 }
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-widgetmenu-hassubmenu:after {
-    background: url("../../wegas-app/images/wegas-submenuindicator.png") 0 -40px;
+    background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 -40px;
     top: 11px;
 }
 .yui3-skin-sam .wegas-layout-hd .wegas-login {

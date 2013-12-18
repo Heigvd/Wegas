@@ -25,14 +25,14 @@
     display: inline-block;
     width: 14px;
     height: 14px;
-    background-image: url(../images/tree_view_icons_blue_01_arrow_beside_folders.gif);
+    background-image: url(../../wegas-app/images/wegas-icon-toggle.png);
     background-repeat: no-repeat;
-    background-position: -0px -41px;
+    background-position: -0px -112px;
     cursor:pointer;
     margin-left: -3px;
 }
 .yui3-treenode-collapsed .yui3-treenode-content-toggle{
-    background-position: 0px -3px;
+    background-position: 0px -74px;
 }
 .yui3-treenode-content-icon,
 .yui3-treeleaf-content-icon{
@@ -44,12 +44,12 @@
     margin: -4px 0 -6px;
 }
 .yui3-treenode-default-icon{
-    background-image: url(../images/tree_view_icons_blue_01_arrow_beside_folders.gif);
+    background-image: url(../../wegas-app/images/wegas-app-sprite.png);
     background-repeat: no-repeat;
-    background-position: -14px -38px;
+    background-position: 0px -1508px;
 }
 .yui3-treenode-collapsed .yui3-treenode-default-icon {
-    background-position: -14px 2px;
+    background-position: 0px -1468px;
 }
 
 .yui3-treenode-loading > div > .yui3-treenode-content-icon,
@@ -60,8 +60,8 @@
 }
 
 .yui3-treeleaf-default-icon {
-    background-image: url(../images/tree_view_icons_blue_01_arrow_beside_folders.gif);
-    background-position: -14px -162px;
+    background-image: url(../../wegas-app/images/wegas-app-sprite.png);
+    background-position: 0px -1290px;
     text-decoration: none;
 }
 
