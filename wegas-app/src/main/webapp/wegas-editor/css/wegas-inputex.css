@@ -241,8 +241,9 @@ img.inputEx-ListField-delButton {
     width: 130px;
     padding: 0.2em 0.5em 0 0;
 }
-.wegas-form .inputEx-label + .inputEx-ListField{
-    padding-top:1.5em;
+.wegas-form /*.inputEx-label + */  .inputEx-ListField {
+    /*padding-top:1.5em;*/
+    padding-top: 0.3em;
 }
 /*.wegas-form legend.inputEx-Group-legend span {
     text-align: right;

@@ -25,7 +25,7 @@ YUI.add('wegas-sharerole', function(Y) {
                     //gameModel = (e instanceof Y.Wegas.persistence.Game) ? Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e,
                     visibilityChoices = [
                 //{value: 'Private', label: 'Only people in the list can join'},
-                {value: 'Link', label: 'Anyone with the link can join.'},
+                {value: 'Link', label: 'Anyone with the link can join'},
                 {value: 'Public', label: 'Everybody can join'}
             ];
 

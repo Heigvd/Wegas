@@ -142,6 +142,7 @@ YUI.add('wegas-editentityform', function(Y) {
                                 this.form.destroy();
                             }
                             this.form = inputEx(cfg);                           // Initialize and render form
+                            this.form.parentWidget = this;
                             this.form.setValue(this.get("value"), false);       // Sync form with "value" ATTR
 
                             this.form.on("updated", function(e) {

@@ -338,11 +338,6 @@ YUI.add('wegas-entity', function(Y) {
             updatedTime: {
                 "transient": true
             },
-//            shareLink: {
-//                "transient": true,
-//                type: "STRING",
-//                value: "http://wegas.albasim.ch/game.html?token=fmie92if"
-//            },
             visibility: {
                 "transient": true,
                 type: STRING,
@@ -359,13 +354,14 @@ YUI.add('wegas-entity', function(Y) {
                 value: "ENROLMENTKEY",
                 choices: [{
                         value: "OPEN",
-                        label: "Everybody can join"
+                        label: "Anyone with the link can join"
                     }, {
                         value: "ENROLMENTKEY",
                         label: "Players need an enrolment key to join"
                     }, {
                         value: "SINGLEUSAGEENROLMENTKEY",
-                        label: "Each players/team need an individual enrolment key"
+                        label: "Each player/team needs an unique enrolment key to join",
+//                        label: "Player needs an individual enrolment key to join"
                     }, {
                         value: "CLOSE",
                         label: "Game does not accept new players"
@@ -404,7 +400,9 @@ YUI.add('wegas-entity', function(Y) {
                 optional: true,
                 _inputex: {
                     label: "Enrolment key", // @fixme Temporary
-                    description: "Leave blank for automatic generation"
+                    description: "Player can join this game by using the enrolment key in the lobby or using <br />the link below.<br />"
+                            + "The key can be used to join multiple times."
+                            //description: "Leave blank for automatic generation"
                 }
             },
             key: {
@@ -418,24 +416,12 @@ YUI.add('wegas-entity', function(Y) {
             },
             keys: {
                 type: ARRAY,
+                value: [],
                 _inputex: {
                     label: "Enrolment keys",
-                    elementType: {
-                        type: GROUP,
-                        label: "",
-                        required: true,
-                        fields: [{
-                                name: "@class",
-                                type: HIDDEN,
-                                value: "GameEnrolmentKey"
-                            }, {
-                                name: "key"
-                            }, {
-                                name: "used",
-                                value: false,
-                                type: HIDDEN
-                            }]
-                    }
+                    _type: "enrolementkeylist",
+                    description: "Player can join this game using an enrolment key as user name/password<br /> on the log in screen or by entering it in the lobby.<br />"
+                            + "Each key can be used by only one team/player."
                 }
             },
             playersCount: {
@@ -453,41 +439,42 @@ YUI.add('wegas-entity', function(Y) {
                 type: BUTTON,
                 label: "Edit",
                 plugins: [
-//                    {
-//                        fn: "EditEntityAction"
-//                    }                    ,
+                    //{
+                    //    fn: "EditEntityAction"
+                    //},
                     {
                         fn: "OpenTabAction",
                         cfg: {
-                            label: "Edit game",
+                            label: "Game",
+                            emptyTab: true,
                             tabSelector: '#rightTabView',
                             wchildren: [{
-                                    type: "EditEntityForm"
-                                }, {
-                                    type: "ShareRole",
-                                    cssClass: "wegas-advanced-feature",
-                                    permsList: [
-                                        //{
-                                        //    name: "Public",
-                                        //    value: "Game:View"
-                                        //},
-                                        {
-                                            name: "Link",
-                                            value: "Game:Token"
+                                    type: "List",
+                                    children: [{
+                                            type: "EditEntityForm"
                                         }, {
-                                            name: "TeamToken",
-                                            value: "Game:TeamToken"
-                                        }]
+                                            type: "ShareRole",
+                                            permsList: [{
+                                                    name: "Public",
+                                                    value: "Game:View"
+                                                }, {
+                                                    name: "Link",
+                                                    value: "Game:Token"
+                                                }
+                                                //, {
+                                                //    name: "TeamToken",
+                                                //    value: "Game:TeamToken"
+                                                //}
+                                            ]
+                                        }
+                                    ]
                                 }
-//                                , {
-//                                    type: "Text",
-//                                    cssClass: "wegas-editor-treeview-team",
-//                                    content: "<div class=\"message\"></div><div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
-//                                }
                             ]
+
                         }
-                    }, {
-                        fn: "OpenTabAction",
+                    },
+                    {
+                        fn: "OpenTabActionThi",
                         cfg: {
                             label: "Teams",
                             tabSelector: '#rightTabView',
@@ -501,25 +488,13 @@ YUI.add('wegas-entity', function(Y) {
 //                                }
                             ]
                         }
-                    }, {
+                    },
+                    {
                         fn: "OpenTabActionSec",
                         cfg: {
                             label: "Share",
                             tabSelector: '#rightTabView',
                             wchildren: [{
-                                    type: "ShareRole",
-                                    cssClass: "wegas-advanced-feature",
-                                    permsList: [{
-                                            name: "Public",
-                                            value: "Game:View"
-                                        }, {
-                                            name: "Link",
-                                            value: "Game:Token"
-                                        }, {
-                                            name: "TeamToken",
-                                            value: "Game:TeamToken"
-                                        }]
-                                }, {
                                     type: "ShareUser",
                                     "plugins": [{
                                             "fn": "WidgetToolbar",
@@ -544,7 +519,7 @@ YUI.add('wegas-entity', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "View",
+                label: "Open",
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
@@ -648,15 +623,16 @@ YUI.add('wegas-entity', function(Y) {
                         }
                     }]
             }, {
-                type: "EditEntityButton",
-                label: "Edit"
-            }, {
                 type: "DeleteEntityButton"
-            }, //{
-            //    type: "JoinOrResumeButton",
-            //    label: "Join"
-            //},
-            {// We allow the player to open its pages with the widget
+            }, {
+                type: "JoinOrResumeButton",
+                cssClass: "wegas-advanced-feature",
+                label: "Join"
+            }, {
+                type: "EditEntityButton",
+                label: "Edit",
+                cssClass: "wegas-advanced-feature"
+            }, {// We allow the player to open its pages with the widget
                 type: BUTTON,
                 label: "View as",
                 cssClass: "wegas-advanced-feature",
@@ -706,12 +682,12 @@ YUI.add('wegas-entity', function(Y) {
                         }
                     }]
             }, {
-                type: "EditEntityButton",
-                label: "Properties",
-                cssClass: "editor-playerProperties-button"
-            }, {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deletePlayer-button"
+            }, {
+                type: "EditEntityButton",
+                label: "Edit",
+                cssClass: "editor-playerProperties-button"
             }]
     });
 
