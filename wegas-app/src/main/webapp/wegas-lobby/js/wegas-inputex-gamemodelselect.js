@@ -119,24 +119,24 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             //    return;
             //}
 
-            for (i = 0; i < total; i++) {
+            for (i = 0; i < total; i += 1) {
                 var e = this.addElement({
                     key: game.get("name") + "-" + teamCount
                 });                                                             // Add a field
                 (new Y.Node(e.divEl)).all(".inputEx-Field").each(function(n) {
                     n.setContent("<span>" + n.getContent() + "</span>,&nbsp;");
                 });
-                teamCount++;
+                teamCount += 1;
             }
             (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true);
             (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyles({
-                float: "left"
+                "float": "left"
             });
 
             //for (i = 0; i < this.subFields.length; i++) {
             //    this.subFields[i].disable();
             //}
-            for (i = 0; i < 2; i++) {
+            for (i = 0; i < 2; i += 1) {
                 (new Y.Node(this.subFields[i].divEl)).all("input").setStyle("textDecoration", "line-through");
                 (new Y.Node(this.subFields[i].divEl)).all(".inputEx-Field span").setStyle("textDecoration", "line-through");
             }
