@@ -392,8 +392,7 @@ YUI().use(function(Y) {
                 'wegas-inputex': {
                     path: "css/wegas-inputex-min.css",
                     type: 'css',
-                    //path: 'wegas-editor/js/inputex/wegas-inputex-min.js',
-                    requires: ['inputex'/*, 'wegas-inputexcss'*/]
+                    requires: ['inputex']
                 },
                 "wegas-inputex-object": {
                     path: 'js/inputex/wegas-inputex-object-min.js',
@@ -531,6 +530,11 @@ YUI().use(function(Y) {
                     path: 'js/plugin/wegas-editor-entityaction-min.js',
                     requires: ['wegas-action', 'inputex-jsonschema', 'wegas-form'],
                     ws_provides: ['NewEntityAction', 'EditEntityAction', "NewEntityButton"]
+                },
+                'wegas-editentityform': {
+                    path: 'js/widget/wegas-editentityform-min.js',
+                    requires: ['wegas-form'],
+                    ws_provides: ['EditEntityForm']
                 },
                 'wegas-editor-widgetaction': {
                     path: 'js/plugin/wegas-editor-widgetaction-min.js',
@@ -913,8 +917,8 @@ YUI().use(function(Y) {
                     ws_provides: 'RolePermissionList'
                 },
                 'wegas-inputex-gamemodelselect': {
-                    requires: ['inputex-select'],
-                    ix_provides: 'gamemodelselect'
+                    requires: ['inputex-select', 'inputex-list', "inputex-uneditable"],
+                    ix_provides: ['gamemodelselect', "enrolementkeylist"]
                 },
                 'wegas-inputex-roleselect': {
                     requires: ['inputex-select'],
