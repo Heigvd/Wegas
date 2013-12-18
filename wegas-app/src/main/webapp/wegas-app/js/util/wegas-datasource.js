@@ -17,9 +17,9 @@ YUI.add('wegas-datasource', function(Y) {
             GameModelCache, GameCache, PageCache,
             Lang = Y.Lang,
             DEFAULTHEADERS = {
-        'Content-Type': 'application/json;charset=ISO-8859-1',
-        'Managed-Mode': 'true'
-    };
+                'Content-Type': 'application/json;charset=ISO-8859-1',
+                'Managed-Mode': 'true'
+            };
 
     /**
      * @name Y.Wegas.DataSource
@@ -97,22 +97,22 @@ YUI.add('wegas-datasource', function(Y) {
             Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
 
-                if (payload.cfg.initialRequest) {
-                    this.cache.clear(false);
-                }
+                        if (payload.cfg.initialRequest) {
+                            this.cache.clear(false);
+                        }
 
-                payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                if (payload.serverResponse.get
-                        && payload.serverResponse.get("entities")
-                        && payload.serverResponse.get("entities").length > 0) {
-                    payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
-                    payload.response.entities = payload.serverResponse.get("entities");
-                }
-                if (this.cache && payload.cfg.updateCache !== false) {
-                    this.cache.onResponseRevived(payload);
-                }
-                this.fire("response", payload);
-            }, this, payload));
+                        payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
+                        if (payload.serverResponse.get
+                                && payload.serverResponse.get("entities")
+                                && payload.serverResponse.get("entities").length > 0) {
+                            payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
+                            payload.response.entities = payload.serverResponse.get("entities");
+                        }
+                        if (this.cache && payload.cfg.updateCache !== false) {
+                            this.cache.onResponseRevived(payload);
+                        }
+                        this.fire("response", payload);
+                    }, this, payload));
         }
     }, {
         /** @lends Y.Wegas.DataSource */
@@ -318,14 +318,14 @@ YUI.add('wegas-datasource', function(Y) {
                 // Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.WegasCache');
                 var ret = [],
                         doFind = function(stack) {
-                    return Y.Array.find(stack, function(item, index, array) {
-                        if (this.testEntity(item, key, needle)) {                   // We check the current element if it's a match
-                            ret.push(item);
-                        }
-                        this.walkEntity(item, doFind);
-                        return false;
-                    }, this);
-                };
+                            return Y.Array.find(stack, function(item, index, array) {
+                                if (this.testEntity(item, key, needle)) {                   // We check the current element if it's a match
+                                    ret.push(item);
+                                }
+                                this.walkEntity(item, doFind);
+                                return false;
+                            }, this);
+                        };
                 doFind.call(this, this.getCache());
                 return ret;
             }
@@ -1025,6 +1025,7 @@ YUI.add('wegas-datasource', function(Y) {
                 return str.indexOf(suffix, str.length - suffix.length) !== -1;
             };
             this.get(HOST).data = {};
+            this.index = null;
             this.editable = endsWith(this.get("host").get("source"), "/");
             this.pageQuery = {};
             this.doBefore("_defResponseFn", this.beforeResponse, this);
@@ -1071,6 +1072,8 @@ YUI.add('wegas-datasource', function(Y) {
             } else if (page !== "index") {
                 this.pageQuery[page] = false;
                 this.setCache(page, result);
+            } else if (page === "index") {
+                this.index = result;
             }
         },
         /**
@@ -1124,17 +1127,20 @@ YUI.add('wegas-datasource', function(Y) {
         createPage: function(entity, callback) {
             var pe = Y.clone(entity);
             delete pe["@pageId"];
+            this.index = null;
             this.sendRequest({
                 request: "",
                 cfg: {
                     method: PUT,
                     data: Y.JSON.stringify(pe)
                 },
-                on: {success: Y.bind(function(e) {
+                on: {
+                    success: Y.bind(function(e) {
                         if (callback instanceof Function) {
                             callback(e.response.results, e.data.getResponseHeader("Page"));
                         }
-                    }, this)}
+                    }, this)
+                }
             });
         },
         /**
@@ -1169,6 +1175,7 @@ YUI.add('wegas-datasource', function(Y) {
             });
         },
         editMeta: function(pageId, meta, callback) {
+            this.index = null;
             this.sendRequest({
                 request: "" + pageId + "/meta",
                 cfg: {
@@ -1185,6 +1192,7 @@ YUI.add('wegas-datasource', function(Y) {
             });
         },
         duplicate: function(pageId, callback) {
+            this.index = null;
             this.sendRequest({
                 request: "" + pageId + "/duplicate",
                 cfg: {
@@ -1201,6 +1209,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          */
         deletePage: function(pageId) {
+            this.index = null;
             this.sendRequest({
                 request: "" + pageId,
                 cfg: {
@@ -1249,12 +1258,17 @@ YUI.add('wegas-datasource', function(Y) {
         },
         getIndex: function(callback) {
             var cfg = {request: "index", on: {}};
-            if (callback instanceof Function) {
-                cfg.on.success = function(e) {
-                    callback(e.response.results);
-                };
+            if (this.index && callback instanceof Function) {
+                callback(this.index);
+            } else {
+                if (callback instanceof Function) {
+                    cfg.on.success = function(e) {
+                        callback(e.response.results);
+                    };
+                }
+                this.sendRequest(cfg);
             }
-            this.sendRequest(cfg);
+
         },
         _successHandler: function(e) {
             Y.log("PageDatasource reply:" + e.response, "log", "Y.Plugin.PageCache");
@@ -1281,15 +1295,15 @@ YUI.add('wegas-datasource', function(Y) {
             // Strip the ["string keys"] and [1] array indexes
             locator = locator.
                     replace(/\[(['"])(.*?)\1\]/g,
-                    function(x, $1, $2) {
-                        keys[i] = $2;
-                        return '.@' + (i++);
-                    }).
+                            function(x, $1, $2) {
+                                keys[i] = $2;
+                                return '.@' + (i++);
+                            }).
                     replace(/\[(\d+)\]/g,
-                    function(x, $1) {
-                        keys[i] = parseInt($1, 10) | 0;
-                        return '.@' + (i++);
-                    }).
+                            function(x, $1) {
+                                keys[i] = parseInt($1, 10) | 0;
+                                return '.@' + (i++);
+                            }).
                     replace(/^\./, ''); // remove leading dot
 
             // Validate against problematic characters.
@@ -1316,13 +1330,13 @@ YUI.add('wegas-datasource', function(Y) {
                 defIOConfig = this.get("ioConfig"),
                 request = e.request,
                 cfg = Y.merge(defIOConfig, e.cfg, {
-            on: Y.merge(defIOConfig, {
-                success: this.successHandler,
-                failure: this.failureHandler
-            }),
-            context: this,
-            "arguments": e
-        });
+                    on: Y.merge(defIOConfig, {
+                        success: this.successHandler,
+                        failure: this.failureHandler
+                    }),
+                    context: this,
+                    "arguments": e
+                });
 
         // Support for POST transactions
         if (Lang.isString(cfg.fullUri)) {

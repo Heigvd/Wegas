@@ -17,7 +17,22 @@ YUI.add('wegas-fileexplorer', function(Y) {
             DEFAULTHEADERS = {
                 'Content-Type': 'application/json; charset=ISO-8859-1',
                 'Managed-Mode': false
-            },
+            }, BASEMENU = [{
+            label: "Refresh",
+            cssClass: "wegas-icon wegas-icon-refresh",
+//            tooltip: "Refresh",
+            data: "refresh"
+        }, {
+            label: "Add directory",
+            cssClass: "wegas-icon wegas-icon-newdir",
+//            tooltip: "Add a directory",
+            data: "add dir"
+        }, {
+            label: "Add file",
+            cssClass: "wegas-icon wegas-icon-newfile",
+//            tooltip: "Add a file",
+            data: "add file"
+        }],
     MAX_FILE_SIZE = 20000000, BOUNDING_BOX = "boundingBox";
 
     FileExplorer = Y.Base.create("wegas-fileexplorer", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
@@ -99,22 +114,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     collapsed: false,
                     label: "/",
                     rightWidget: new Y.Wegas.WegasMenu({
-                        items: [{
-                                label: "",
-                                cssClass: "wegas-icon wegas-icon-refresh",
-                                tooltip: "Refresh",
-                                data: "refresh"
-                            }, {
-                                label: "",
-                                cssClass: "wegas-icon wegas-icon-newdir",
-                                tooltip: "Add a directory",
-                                data: "add dir"
-                            }, {
-                                label: "",
-                                cssClass: "wegas-icon wegas-icon-newfile",
-                                tooltip: "Add a file",
-                                data: "add file"
-                            }],
+                        items: BASEMENU,
                         horizontal: true,
                         eventTarget: this,
                         params: {
@@ -130,22 +130,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.uploader.render();
             this.uploader.hide();
             this.rootMenu = new Y.Wegas.WegasMenu({
-                items: [{
-                        label: "",
-                        cssClass: "wegas-icon wegas-icon-refresh",
-                        tooltip: "Refresh",
-                        data: "refresh"
-                    }, {
-                        label: "",
-                        cssClass: "wegas-icon wegas-icon-newdir",
-                        tooltip: "Add a directory",
-                        data: "add dir"
-                    }, {
-                        label: "",
-                        cssClass: "wegas-icon wegas-icon-newfile",
-                        tooltip: "Add a file",
-                        data: "add file"
-                    }],
+                items: BASEMENU,
                 horizontal: true,
                 eventTarget: this,
                 params: {

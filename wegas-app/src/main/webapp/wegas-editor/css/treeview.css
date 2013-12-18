@@ -88,11 +88,11 @@
     font-style: normal;
     max-height: 50px;
     overflow: hidden;
-    transition: max-height 0.7s, padding 0.7s;
-    -o-transition: max-height 0.7s, padding 0.7s;
-    -moz-transition: max-height 0.7s, padding 0.7s;
-    -ms-transition: max-height 0.7s, padding 0.7s;
-    -webkit-transition: max-height 0.7s, padding 0.7s;
+    transition: max-height 0.15s, padding 0.15s;
+    -o-transition: max-height 0.15s, padding 0.15s;
+    -moz-transition: max-height 0.15s, padding 0.15s;
+    -ms-transition: max-height 0.15s, padding 0.15s;
+    -webkit-transition: max-height 0.15s, padding 0.15s;
 }
 .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget{
@@ -153,8 +153,15 @@
     box-shadow: 0px 0px 1px #6D6D6D;
     font-weight: bolder;
 }
-.yui3-treenode>ul:empty::before{
-    content:"empty";
+.yui3-treenode>ul:empty::before,
+.yui3-treeview>ul:empty::before{
+    content: "empty";
+    font-style: italic;
+    color: #a0a0a0;
+}
+.yui3-treeview>ul:empty::before{
+    display: block;
+    text-align: center;
 }
 .yui3-treenode-collapsed>ul:empty::before{
     content: "";
