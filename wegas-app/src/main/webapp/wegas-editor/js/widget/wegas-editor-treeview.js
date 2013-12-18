@@ -39,7 +39,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             this.treeView = new Y.TreeView();
             this.treeView.render(this.get(CONTENTBOX));
 
-            this.plug(Y.Plugin.EditorTVAdminMenu);
+            this.plug(Y.Plugin.EditorTVToolbarMenu);
             this.plug(Y.Plugin.RememberExpandedTreeView);
         },
         /**
@@ -138,8 +138,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                     data: {
                                         entity: el
                                     },
-                                    iconCSS: 'wegas-icon-game',
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                    iconCSS: 'wegas-icon-game'
+                                            //rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                             }
                             break;
@@ -162,8 +162,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                 data: {
                                     entity: el
                                 },
-                                iconCSS: 'wegas-icon-team',
-                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                iconCSS: 'wegas-icon-team'
+                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
                             });
                             break;
 
@@ -174,8 +174,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                 data: {
                                     entity: el
                                 },
-                                iconCSS: 'wegas-icon-player',
-                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                iconCSS: 'wegas-icon-player'
+                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
                             });
                             break;
 
@@ -188,8 +188,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                     data: {
                                         entity: el
                                     },
-                                    iconCSS: 'wegas-icon-gamemodel',
-                                    rightWidget: (el.get("canEdit")) ? Y.Node.create(EDITBUTTONTPL) : null
+                                    iconCSS: 'wegas-icon-gamemodel'
+                                            //rightWidget: (el.get("canEdit")) ? Y.Node.create(EDITBUTTONTPL) : null
                                 });
                             }
                             break;
@@ -201,8 +201,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                 data: {
                                     entity: el.getMainAccount()
                                 },
-                                iconCSS: 'wegas-icon-player',
-                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                iconCSS: 'wegas-icon-player'
+                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
                             });
                             break;
 
@@ -213,8 +213,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                 data: {
                                     entity: el
                                 },
-                                iconCSS: 'wegas-icon-team',
-                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                iconCSS: 'wegas-icon-team'
+                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
                             });
                             break;
 
@@ -284,7 +284,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + '<div class="yui3-u">Enrolment key</div></div>'
                 + '</div>'
                 + '<div class="treeview"></div>'
-                + "<div class=\"message\"></div><div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
+                + "<div class=\"message\"></div>"
+                + "<div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
                 + '</div>',
         renderUI: function() {
             this.treeView = new Y.TreeView();                                   // Render the treeview
@@ -297,7 +298,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 this.get("parent").set("label", "Players");
             }
 
-            this.plug(Y.Plugin.EditorTVAdminMenu, {
+            this.plug(Y.Plugin.EditorTVToolbarMenu, {
                 autoClick: false
             });
             this.plug(Y.Plugin.RememberExpandedTreeView);
@@ -383,8 +384,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                     data: {
                                         entity: el
                                     },
-                                    iconCSS: 'wegas-icon-team',
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                    iconCSS: 'wegas-icon-team'
+                                            //rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                             } else {
                                 ret = ret.concat(this.genTreeViewElements(el.get("players")));
@@ -398,8 +399,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                 data: {
                                     entity: el
                                 },
-                                iconCSS: 'wegas-icon-player',
-                                rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                iconCSS: 'wegas-icon-player'
+                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
                             });
                             break;
                     }
@@ -423,13 +424,106 @@ YUI.add('wegas-editor-treeview', function(Y) {
             dataSource: {
                 value: "Game"
             },
-            entity: {},
+            entity: {
+                getter: function(val) {
+                    if (!val)
+                        return Y.Wegas.Facade.Game.cache.getCurrentGame();
+                    else
+                        return val;
+                }
+            },
             emptyMessage: {
                 value: "No team created yet"
             }
         }
     });
     Y.namespace('Wegas').TeamTreeView = TeamTreeView;
+    /**
+     *
+     */
+    var TeamTreeViewEditor = Y.Base.create("wegas-editor-treeview", TeamTreeView, [], {
+        CONTENT_TEMPLATE: '<div class="wegas-editor-treeview-team">'
+                + '<div class="treeview"></div>'
+                + "<div class=\"message\"></div>"
+                + '</div>',
+        renderUI: function() {
+            this.treeView = new Y.TreeView();                                   // Render the treeview
+            this.treeView.addTarget(this);
+            this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
+
+            if (this.isFreeForAll()) {                                          // @hack Change the display if the gamemodel is freeforall
+                //this.get("parent").set("label", "Players");
+            }
+
+//            this.plug(Y.Plugin.EditorTVToolbarMenu, {
+//                autoClick: false
+//            });
+            this.plug(Y.Plugin.RememberExpandedTreeView);
+            //this.plug(Y.Plugin.EditorTVToggleClick);
+            this.plug(Y.Plugin.WidgetToolbar);
+            this.addButton = this.toolbar.add({
+                type: "Button",
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add teams"
+            });
+        },
+        genTreeViewElements: function(elements) {
+            var ret = [], i, el, elClass, collapsed, selected,
+                    freeForAll = this.isFreeForAll();
+
+            for (i in elements) {
+                if (elements.hasOwnProperty(i)) {
+                    el = elements[i];
+                    elClass = el.get(CLASS);
+                    collapsed = !this.isNodeExpanded(el);
+                    selected = (this.currentSelection === el.get(ID)) ? 2 : 0;
+
+                    switch (elClass) {
+                        case 'Team':
+                            if (!freeForAll) {
+                                var children = this.genTreeViewElements(el.get("players")),
+                                        expanded = Y.Array.find(children, function(p) {
+                                    return p.selected;
+                                }) || !collapsed
+
+                                ret.push({
+                                    type: 'TreeNode',
+                                    collapsed: !expanded,
+                                    selected: el.get("id") === Y.Wegas.app.get("currentTeam") ? 2 : 0,
+                                    //selected: selected,
+                                    label: el.get(NAME),
+                                    children: children,
+                                    data: {
+                                        entity: el
+                                    },
+                                    iconCSS: 'wegas-icon-team'
+                                            //rightWidget: Y.Node.create(EDITBUTTONTPL)
+                                });
+                            } else {
+                                ret = ret.concat(this.genTreeViewElements(el.get("players")));
+
+
+                            }
+                            break;
+
+                        case 'Player':
+                            ret.push({
+                                label: el.get(NAME),
+                                selected: el.get("id") === Y.Wegas.app.get("currentPlayer") ? 2 : 0,
+                                // selected: selected,
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-player'
+                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
+                            });
+                            break;
+                    }
+                }
+            }
+            return ret;
+        }
+    });
+    Y.namespace('Wegas').TeamTreeViewEditor = TeamTreeViewEditor;
 
     /**
      * @class To be plugged on a an EditorTreeview, keeps track of the
@@ -514,6 +608,67 @@ YUI.add('wegas-editor-treeview', function(Y) {
     }, {
         NS: "EditorTVMenu",
         NAME: "EditorTVAdminMenu",
+        ATTRS: {
+            children: {},
+            autoClick: {
+                value: true
+            }
+        }
+    });
+    /**
+     * @class Open a menu on click, containing the admin edition field
+     * @constructor
+     */
+    Y.Plugin.EditorTVToolbarMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
+        initializer: function() {
+            this.afterHostEvent(RENDER, function() {
+                this.get(HOST).treeView.on("*:click", this.onTreeViewClick, this);
+            });
+        },
+        onTreeViewClick: function(e) {
+            var menuItems = this.get("children"),
+                    data = e.node.get("data"),
+                    host = this.get(HOST);
+
+            if (data) {
+                host.currentSelection = data.entity.get(ID);
+                data.dataSource = host.get(DATASOURCE);
+
+                if (menuItems) {
+                    Y.Wegas.Editable.mixMenuCfg(this.get("children"), data);
+                } else {
+                    menuItems = data.entity.getMenuCfg(data);                   // If no menu is provided, use entity default
+                }
+
+                Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+                    switch (i.label) {
+                        case "Delete":
+                        case "New":
+                        case "Copy":
+                        case "Duplicate":
+                        case "View":
+                        case "Open in editor":
+                        case "Open":
+                        case "Edit":
+                            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                    }
+                });
+
+                host.toolbar.removeAll();
+                host.toolbar.add(menuItems);                                    // Populate the menu with the elements associated to the
+
+                if (this.get("autoClick")) {
+                    host.toolbar.item(0).set("visible", false).fire("click");      // Excute the actions associated to the first item of the menu
+                }
+            } else {
+                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
+                host.currentSelection = null;
+            }
+
+        }
+    }, {
+        NS: "EditorTVToolbarMenu",
+        NAME: "EditorTVToolbarMenu",
         ATTRS: {
             children: {},
             autoClick: {

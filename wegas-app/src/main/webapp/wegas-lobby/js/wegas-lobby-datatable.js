@@ -312,20 +312,24 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 //});
                 if (this.get("autoClick")) {                                    // If we are in autoclick,
 
-                    //Y.once("rightTabShown", function() {
-                    //    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
+                    Y.once("rightTabShown", function() {
+                        var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
 
-                    var target = host;
-                    if (target && target.toolbar) {
-                        this.buttons = Y.Array.map(menuItems, function(i) { // Add new buttons to the right tab's toolbar
-                            return target.toolbar.add(i);
-                        });
-                        this.buttons[0].set("visible", false)
-                        if (this.buttons[1])
-                            this.buttons[1].get(CONTENTBOX).setStyle("marginLeft", "15px");
-                    }
-                    //.fire("click");                                       // launch first button actionF
-                    //}, this);
+                        var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
+                        if (target && !target.toolbar) {
+                            target = target.item(0);
+                        }
+
+                        if (target && target.toolbar) {
+                            this.buttons = Y.Array.map(menuItems, function(i) { // Add new buttons to the right tab's toolbar
+                                return target.toolbar.add(i);
+                            });
+                            this.buttons[0].set("visible", false)
+                            if (this.buttons[1])
+                                this.buttons[1].get(CONTENTBOX).setStyle("marginLeft", "15px");
+                        }
+                        //.fire("click");                                       // launch first button actionF
+                    }, this);
 
                     var button = Wegas.Widget.create(menuItems[0]);
                     button.render().fire("click");

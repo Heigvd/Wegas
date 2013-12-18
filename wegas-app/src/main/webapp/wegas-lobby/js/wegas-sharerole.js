@@ -22,9 +22,9 @@ YUI.add('wegas-sharerole', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
                     e = this.get("entity"),
-                    gameModel = (e instanceof Y.Wegas.persistence.Game) ? Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e,
+                    //gameModel = (e instanceof Y.Wegas.persistence.Game) ? Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e,
                     visibilityChoices = [
-                {value: 'Private', label: 'Only people in the list can join'},
+                //{value: 'Private', label: 'Only people in the list can join'},
                 {value: 'Link', label: 'Anyone with the link can join.'},
                 {value: 'Public', label: 'Everybody can join'}
             ];
@@ -32,9 +32,9 @@ YUI.add('wegas-sharerole', function(Y) {
             //if (!gameModel.get("properties.freeForAll")) {
             //    this.set("visible", false);
             //}
-            if (!gameModel.get("properties.freeForAll")) {                      // For games with teams, add the team enorlement key option
-                visibilityChoices.splice(1, 0, {value: 'TeamToken', label: 'Anyone with a team specific enrolment key can join.'});
-            }
+            //if (!gameModel.get("properties.freeForAll")) {                      // For games with teams, add the team enorlement key option
+            //    visibilityChoices.splice(1, 0, {value: 'TeamToken', label: 'Anyone with a team specific enrolment key can join.'});
+            //}
 
             this.targetEntityId = (e instanceof Y.Wegas.persistence.GameModel) ? "gm" + e.get("id")
                     : "g" + e.get("id");
@@ -44,6 +44,7 @@ YUI.add('wegas-sharerole', function(Y) {
                 choices: visibilityChoices,
                 parentEl: cb
             });
+            (new Y.Node(this.visibility.divEl)).addClass("wegas-advanced-feature");// @fixme
 
             this.link = new Y.inputEx.StringField({
                 wrapperClassName: "inputEx-fieldWrapper wegas-link",
@@ -51,6 +52,7 @@ YUI.add('wegas-sharerole', function(Y) {
                 description: 'Using this link, player will access game directly',
                 value: Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token")
             });
+            //this.link.disable();
 
             this.syncLinkVisibility();
             this.requestPermissions();

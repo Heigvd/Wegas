@@ -309,13 +309,10 @@ body {
 }
 .wegas-gamedescription,
 .wegas-jointeam,
-.wegas-sharerole-content,
 .wegas-shareuser-content {
     padding: 10px 10px 20px;
 }
-
 .wegas-jointeam .title,
-.wegas-sharerole .title,
 .wegas-gamedescription .title {
     font-weight: bolder;
     border-bottom: 1px solid lightgray;
@@ -343,7 +340,16 @@ body {
     padding: 10px;
     background: #f6f6f6;
 }
-
+/* share role styles */
+.wegas-sharerole-content {
+    padding: 10px;
+    background: #f6f6f6;
+    margin: 0px 10px 10px;
+}
+.wegas-sharerole .title {
+    font-weight: bolder;
+    margin-bottom: 5px;
+}
 /* Join game/team styles */
 .yui3-tabview .wegas-join-token-content > .inputEx-fieldWrapper{
     padding-top: 30px;
@@ -578,11 +584,11 @@ body {
 .wegas-icon-delete {
     background-position: 1px -944px;
 }
-.wegas-icon-open,
+
 .wegas-icon-open-in-editor {
     background-position: 0 -943px;
 }
-.wegas-icon-view {
+.wegas-icon-view,.wegas-icon-open {
     /*background-position: 1px -709px;     Goggles */
     background-position: 0 -1432px;
 }

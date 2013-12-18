@@ -82,7 +82,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     }
                 });
             } else {
-                EditEntityAction.showUpdateForm(this.get(ENTITY), this.get("dataSource"));
+                EditEntityAction.showUpdateForm(entity, this.get("dataSource"));
             }
         }
     }, {
