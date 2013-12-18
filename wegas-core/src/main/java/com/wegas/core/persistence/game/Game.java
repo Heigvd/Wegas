@@ -29,7 +29,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @Table(uniqueConstraints =
-        @UniqueConstraint(columnNames = {"game_id", "name"}))
+        @UniqueConstraint(columnNames = {"name"}))
 public class Game extends NamedEntity {
 
     /**
@@ -97,6 +97,7 @@ public class Game extends NamedEntity {
     public enum GameAccess {
 
         OPEN,
+        URL,
         ENROLMENTKEY,
         SINGLEUSAGEENROLMENTKEY,
         CLOSE
@@ -105,7 +106,7 @@ public class Game extends NamedEntity {
      *
      */
     @Enumerated
-    private GameAccess access = GameAccess.ENROLMENTKEY;
+    private GameAccess access = GameAccess.URL;
     /**
      *
      */

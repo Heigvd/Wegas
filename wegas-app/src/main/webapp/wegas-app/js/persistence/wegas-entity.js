@@ -223,7 +223,7 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "EditEntityAction"
                     }, {
-                        fn: "OpenTabAction",
+                        fn: "OpenTabActionSec",
                         cfg: {
                             label: "Share",
                             tabSelector: '#rightTabView',
@@ -353,6 +353,9 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 value: "ENROLMENTKEY",
                 choices: [{
+                        value: "URL",
+                        label: "Public game"
+                    }, {
                         value: "OPEN",
                         label: "Anyone with the link can join"
                     }, {
@@ -360,8 +363,7 @@ YUI.add('wegas-entity', function(Y) {
                         label: "Players need an enrolment key to join"
                     }, {
                         value: "SINGLEUSAGEENROLMENTKEY",
-                        label: "Each player/team needs an unique enrolment key to join",
-//                        label: "Player needs an individual enrolment key to join"
+                        label: "Each player/team needs an unique enrolment key to join"
                     }, {
                         value: "CLOSE",
                         label: "Game does not accept new players"
@@ -372,37 +374,28 @@ YUI.add('wegas-entity', function(Y) {
                             valueTrigger: "OPEN", // this action will run when this field value is set to OPEN
                             actions: [
                                 {name: 'key', action: 'hide'},
-                                {name: 'token', action: 'hide'}, //@fixme temporary
+                                {name: 'keys', action: 'hide'}]
+                        }, {
+                            valueTrigger: "URL", // this action will run when this field value is set to OPEN
+                            actions: [
+                                {name: 'key', action: 'hide'},
                                 {name: 'keys', action: 'hide'}]
                         }, {
                             valueTrigger: "ENROLMENTKEY",
                             actions: [
                                 {name: 'key', action: 'show'},
-                                {name: 'token', action: 'show'}, //@fixme temporary
                                 {name: 'keys', action: 'hide'}]
                         }, {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
                             actions: [
                                 {name: 'key', action: 'hide'},
-                                {name: 'token', action: 'hide'}, //@fixme temporary
                                 {name: 'keys', action: 'show'}]
                         }, {
                             valueTrigger: "CLOSE",
                             actions: [
                                 {name: 'key', action: 'hide'},
-                                {name: 'token', action: 'hide'}, //@fixme temporary
                                 {name: 'keys', action: 'hide'}]
                         }]
-                }
-            },
-            token: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    label: "Enrolment key", // @fixme Temporary
-                    description: "Player can join this game by using the enrolment key in the lobby or using <br />the link below.<br />"
-                            + "The key can be used to join multiple times."
-                            //description: "Leave blank for automatic generation"
                 }
             },
             key: {
@@ -410,8 +403,8 @@ YUI.add('wegas-entity', function(Y) {
                 optional: true,
                 _inputex: {
                     label: "Enrolment key",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature', // @fixme Temporary
-                    description: "Leave blank for automatic generation"
+                    description: "Player can join this game by using the enrolment key in the lobby or using <br />the link below.<br />"
+                            + "The key can be used to join multiple times."
                 }
             },
             keys: {
@@ -422,6 +415,14 @@ YUI.add('wegas-entity', function(Y) {
                     _type: "enrolementkeylist",
                     description: "Player can join this game using an enrolment key as user name/password<br /> on the log in screen or by entering it in the lobby.<br />"
                             + "Each key can be used by only one team/player."
+                }
+            },
+            token: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    description: "Leave blank for automatic generation",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
             playersCount: {
@@ -468,9 +469,7 @@ YUI.add('wegas-entity', function(Y) {
                                             ]
                                         }
                                     ]
-                                }
-                            ]
-
+                                }]
                         }
                     },
                     {
@@ -480,13 +479,7 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "TeamTreeView"
-                                }
-//                                , {
-//                                    type: "Text",
-//                                    cssClass: "wegas-editor-treeview-team",
-//                                    content: "<div class=\"message\"></div><div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
-//                                }
-                            ]
+                                }]
                         }
                     },
                     {
@@ -562,9 +555,6 @@ YUI.add('wegas-entity', function(Y) {
                                                             }, {
                                                                 name: "Game:Edit",
                                                                 value: "Game:Edit,View"
-                                                            }, {
-                                                                name: "Game:Token",
-                                                                value: "Game:Token"
                                                             }]
                                                     }],
                                                 tabSelector: '#rightTabView'
@@ -596,14 +586,6 @@ YUI.add('wegas-entity', function(Y) {
             },
             name: {
                 type: STRING
-            },
-            token: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    label: "Enrolment key",
-                    description: "Leave blank for automatic generation"
-                }
             },
             players: {
                 value: [],
