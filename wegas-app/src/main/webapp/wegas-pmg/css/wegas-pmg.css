@@ -582,12 +582,12 @@ h2{
     border-bottom: 1px solid lightgray;
 }
 .resources-page .slidepanel-title{
-    background: url(../../wegas-app/images/wegas-icon-toggle.gif) no-repeat 7px -38px;
+    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat 7px -111px;
     padding-left: 16px;
     cursor:pointer;
 }
 .resources-page .wegas-slidepanel-toggled .slidepanel-title{
-    background: url(../../wegas-app/images/wegas-icon-toggle.gif) no-repeat 7px 2px;
+    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat 7px -71pxpx;
 }
 /*---------------------------- Cursor pointer ---------------------*/
 .gantt-plannification-page tbody .present, .gantt-plannification-page tbody .futur,

@@ -184,7 +184,7 @@ body > .wegas-pageloader > .wegas-pageloader-content{
     height: 24px;
 }
 .wegas-page-editor .yui3-treenode-content-icon {
-    background: url(../images/tree_view_icons_blue_01_arrow_beside_folders.gif) -14px 2px no-repeat;
+    background: url(../../wegas-app/images/wegas-app-sprite.png) 0px -1468px no-repeat;
 }
 .wegas-page-editor .wegas-icon-page {
     background: url(../../wegas-app/images/wegas-app-sprite.png) 0 -1239px no-repeat,
