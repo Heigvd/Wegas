@@ -90,8 +90,6 @@ public class StateMachineITest extends AbstractEJBTest {
 
         team4.setGame(game);
 
-        team4.setToken(TEAM4_TOKEN);
-
         teamFacade.create(team3);
 
         teamFacade.create(team4);

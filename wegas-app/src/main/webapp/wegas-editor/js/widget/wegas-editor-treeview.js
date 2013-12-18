@@ -280,21 +280,18 @@ YUI.add('wegas-editor-treeview', function(Y) {
         CONTENT_TEMPLATE: '<div class="wegas-editor-treeview-team">'
                 + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 255px">'
                 + '<div class="yui3-u yui3-u-col1">Name</div>'
-                + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
-                + '<div class="yui3-u">Enrolment key</div></div>'
+                //+ '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
+                //+ '<div class="yui3-u">Players</div></div>'
                 + '</div>'
                 + '<div class="treeview"></div>'
                 + "<div class=\"message\"></div>"
-                + "<div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
+                //+ "<div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
                 + '</div>',
         renderUI: function() {
             this.treeView = new Y.TreeView();                                   // Render the treeview
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
 
             if (this.isFreeForAll()) {                                          // @hack Change the display if the gamemodel is freeforall
-                // //this.set("visible", false);
-                //this.get("parent").set("visible", false);
-                this.get("contentBox").one(".wegas-editor-treeview-tablehd .yui3-u-col2 .yui3-u").hide();
                 this.get("parent").set("label", "Players");
             }
 
@@ -302,36 +299,36 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 autoClick: false
             });
             this.plug(Y.Plugin.RememberExpandedTreeView);
-            this.plug(Y.Plugin.EditorTVToggleClick);
+            //this.plug(Y.Plugin.EditorTVToggleClick);
             this.plug(Y.Plugin.WidgetToolbar);
-            this.addButton = this.toolbar.add({
-                type: "Button",
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add teams"
-            });
+            //this.addButton = this.toolbar.add({
+            //    type: "Button",
+            //    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add teams"
+            //});
         },
-        bindUI: function() {
-            TeamTreeView.superclass.bindUI.call(this);
-
-            this.addButton.on("click", function() {                             // When the "add teams" button is clicker
-                var i, name,
-                        entity = this.get("entity"),
-                        offset = entity.get("teams").length,
-                        teams = prompt("How many teams?", 1);
-
-                this.showOverlay();
-                this.teamsAcc = [];
-                for (i = 0; i < parseInt(teams); i += 1) {                      // add the number amount of teams
-                    name = entity.get("name") + "-" + (offset + i + 1);
-                    this.teamsAcc.push({
-                        "@class": "Team",
-                        name: name,
-                        token: name
-                    });
-                }
-                this.teamsAcc.reverse();
-                this.doCreateTeam();
-            }, this);
-        },
+        //bindUI: function() {
+        //    TeamTreeView.superclass.bindUI.call(this);
+        //
+        //    this.addButton.on("click", function() {                             // When the "add teams" button is clicker
+        //        var i, name,
+        //                entity = this.get("entity"),
+        //                offset = entity.get("teams").length,
+        //                teams = prompt("How many teams?", 1);
+        //
+        //        this.showOverlay();
+        //        this.teamsAcc = [];
+        //        for (i = 0; i < parseInt(teams); i += 1) {                      // add the number amount of teams
+        //            name = entity.get("name") + "-" + (offset + i + 1);
+        //            this.teamsAcc.push({
+        //                "@class": "Team",
+        //                name: name,
+        //                token: name
+        //            });
+        //        }
+        //        this.teamsAcc.reverse();
+        //        this.doCreateTeam();
+        //    }, this);
+        //},
         syncUI: function() {
             Y.log("sync()", "info", "Wegas.TeamTreeView");
 
@@ -374,18 +371,18 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                     type: 'TreeNode',
                                     collapsed: collapsed,
                                     selected: selected,
-                                    label: '<div class="yui3-g wegas-editor-treeview-table" style="padding-right: 255px">'
-                                            + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                            + '<div class="yui3-u yui3-u-col2 yui3-g"  style="margin-right:-250px;width:250px">'
-                                            + '<div class="yui3-u">' + el.get("token") + '</div>'
-                                            + '</div>'
-                                            + '</div>',
+                                    label: el.get(NAME),
+                                    //label: '<div class="yui3-g wegas-editor-treeview-table" style="padding-right: 255px">'
+                                    //        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                    //        + '<div class="yui3-u yui3-u-col2 yui3-g"  style="margin-right:-250px;width:250px">'
+                                    //        + '<div class="yui3-u">' + el.get("players").length + '</div>'
+                                    //        + '</div>'
+                                    //        + '</div>',
                                     children: this.genTreeViewElements(el.get("players")),
                                     data: {
                                         entity: el
                                     },
                                     iconCSS: 'wegas-icon-team'
-                                            //rightWidget: Y.Node.create(EDITBUTTONTPL)
                                 });
                             } else {
                                 ret = ret.concat(this.genTreeViewElements(el.get("players")));
@@ -400,7 +397,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
                                     entity: el
                                 },
                                 iconCSS: 'wegas-icon-player'
-                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
                             });
                             break;
                     }
@@ -408,17 +404,17 @@ YUI.add('wegas-editor-treeview', function(Y) {
             }
             return ret;
         },
-        doCreateTeam: function() {
-            var entity = this.get("entity"), team = this.teamsAcc.pop();
-
-            if (team) {
-                Y.Wegas.Facade.Game.cache.post(team, entity.toObject(), {
-                    success: Y.bind(this.doCreateTeam, this)
-                });
-            } else {
-                this.hideOverlay();
-            }
-        }
+        //doCreateTeam: function() {
+        //    var entity = this.get("entity"), team = this.teamsAcc.pop();
+        //
+        //    if (team) {
+        //        Y.Wegas.Facade.Game.cache.post(team, entity.toObject(), {
+        //            success: Y.bind(this.doCreateTeam, this)
+        //        });
+        //    } else {
+        //        this.hideOverlay();
+        //    }
+        //}
     }, {
         ATTRS: {
             dataSource: {
@@ -455,16 +451,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 //this.get("parent").set("label", "Players");
             }
 
-//            this.plug(Y.Plugin.EditorTVToolbarMenu, {
-//                autoClick: false
-//            });
             this.plug(Y.Plugin.RememberExpandedTreeView);
-            //this.plug(Y.Plugin.EditorTVToggleClick);
             this.plug(Y.Plugin.WidgetToolbar);
-            this.addButton = this.toolbar.add({
-                type: "Button",
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add teams"
-            });
+
         },
         genTreeViewElements: function(elements) {
             var ret = [], i, el, elClass, collapsed, selected,

@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.PlayerAction;
-import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -22,10 +21,8 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -45,6 +42,9 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     @EJB
     private GameFacade gameFacade;
+    /**
+     *
+     */
     @EJB
     private PlayerFacade playerFacade;
     /**
@@ -52,6 +52,9 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+    /**
+     *
+     */
     @Inject
     private Event<PlayerAction> playerActionEvent;
 
@@ -62,10 +65,6 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     public void create(Long gameId, Team t) {
         Game g = gameFacade.find(gameId);
-        if (gameFacade.findByToken(t.getToken()) != null
-                || this.findByToken(t.getToken()) != null) {
-            throw new WegasException("This token is already in use.");
-        }
         g.addTeam(t);
 
         this.addRights(g);              // @fixme Should only be done for a player
@@ -74,35 +73,10 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         g.getGameModel().propagateDefaultInstance(false);
     }
 
-    @Override
-    public Team update(final Long gameId, Team entity) {
-        if ((this.findByToken(entity.getToken()) != null && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)
-                || gameFacade.findByToken(entity.getToken()) != null) {
-            throw new WegasException("This token is already in use.");
-        }
-        return super.update(gameId, entity);
-    }
-
     private void addRights(Game game) {
         userFacade.getCurrentUser().getMainAccount().addPermission(
                 "Game:View:g" + game.getId(), // Add "View" right on game,
                 "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
-    }
-
-    /**
-     * Search for a team with token
-     *
-     * @param token
-     * @return first team found or null
-     */
-    public Team findByToken(final String token) {
-        final Query findByToken = em.createNamedQuery("findTeamByToken");
-        findByToken.setParameter("token", token);
-        try {
-            return (Team) findByToken.getSingleResult();
-        } catch (NoResultException ex) {
-            return null;
-        }
     }
 
     @Override

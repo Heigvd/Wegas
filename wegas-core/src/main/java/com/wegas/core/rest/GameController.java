@@ -11,7 +11,6 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
-import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
@@ -167,13 +166,7 @@ public class GameController {
     public Object tokenJoinGame(@PathParam("token") String token) throws Exception {
         Game game = gameFacade.findByToken(token);
         Team team = null;
-        if (game == null) {                                                     // We check if there is game with given token
-            team = teamFacade.findByToken(token);                               // we try to lookup for a team entity.
-            if (team == null) {
-                throw new WegasException("Could not find any game associated with this token.");
-            }
-            game = team.getGame();
-        }
+
         if (game.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll)) {   // If game is "freeForAll" (single team)
             if (game.getTeams().isEmpty()) {
                 team = new Team("Default");

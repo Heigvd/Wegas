@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,9 +26,9 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Table(uniqueConstraints =
         @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
 @Inheritance(strategy = InheritanceType.JOINED)
-@NamedQueries({
-    @NamedQuery(name = "findTeamByToken", query = "SELECT team FROM Team team WHERE team.token = :token")
-})
+//@NamedQueries({
+//    @NamedQuery(name = "findTeamByToken", query = "SELECT team FROM Team team WHERE team.token = :token")
+//})
 @JsonIgnoreProperties(ignoreUnknown = true)
 //@JsonSubTypes(value = {
 //    @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
@@ -55,8 +54,8 @@ public class Team extends AbstractEntity {
     /**
      *
      */
-    @NotNull
-    private String token;
+    //@NotNull
+    //private String token;
     /**
      *
      */
@@ -101,21 +100,20 @@ public class Team extends AbstractEntity {
     public void merge(AbstractEntity a) {
         Team t = (Team) a;
         this.setName(t.getName());
-        this.setToken(t.getToken());
+        //this.setToken(t.getToken());
     }
 
     /**
      *
      */
-    @PrePersist
-    @PreUpdate
-    public void prePersist() {
-        if (this.getToken() == null || this.getToken().equals("")) {
-            this.setToken(Helper.genToken(10));
-        }
-        //this.token = this.token.replace(" ", "-");
-    }
-
+    //@PrePersist
+    //@PreUpdate
+    //public void prePersist() {
+    //    if (this.getToken() == null || this.getToken().equals("")) {
+    //        this.setToken(Helper.genToken(10));
+    //    }
+    //    //this.token = this.token.replace(" ", "-");
+    //}
     /**
      * @return the gameModel
      */
@@ -196,20 +194,6 @@ public class Team extends AbstractEntity {
      */
     public Long getGameId() {
         return gameId;
-    }
-
-    /**
-     * @return the token
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
-     * @param token the token to set
-     */
-    public void setToken(String token) {
-        this.token = token;
     }
 
     /**
