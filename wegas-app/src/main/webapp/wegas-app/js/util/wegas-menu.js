@@ -5,21 +5,24 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-YUI.add('wegas-menu', function (Y) {
+/**
+ * @fileoverview
+ * @author Cyril Junod
+ */
+YUI.add('wegas-menu', function(Y) {
     'use strict';
 
     var WegasMenu,
-    CONTENT_BOX="contentBox",
-    tooltipTrigger = "wegas-tooltip-trigger";
+            CONTENT_BOX = "contentBox",
+            tooltipTrigger = "wegas-tooltip-trigger";
 
-    WegasMenu = Y.Base.create("wegas-menu", Y.Widget, [],{
+    WegasMenu = Y.Base.create("wegas-menu", Y.Widget, [], {
         BOUNDING_TEMPLATE: "<div></div>",
-        CONTENT_TEMPLATE:null,
+        CONTENT_TEMPLATE: null,
         nodeInstances: null,
         eventInstances: null,
         clickHandler: null,
-
-        initializer: function () {
+        initializer: function() {
             this.nodeInstances = [];
             this.eventInstances = [];
             this.publish("itemClick", {
@@ -27,39 +30,35 @@ YUI.add('wegas-menu', function (Y) {
                 bubbles: true
             });
         },
-
-        renderUI: function () {
+        renderUI: function() {
             this.buildMenu(this.get("items"), this.get(CONTENT_BOX));
 
         },
-
-        bindUI: function () {
+        bindUI: function() {
             this.clickHandler = this.get(CONTENT_BOX).delegate('click', function(e) {// Listen for click events on the table
                 e.stopImmediatePropagation();
                 this.fire("itemClick", {
-                    data:  e.currentTarget.item.data,
+                    data: e.currentTarget.item.data,
                     params: this.get("params")
                 });
             }, 'li', this);
-            if(this.get("eventTarget")){
+            if (this.get("eventTarget")) {
                 this.addTarget(this.get("eventTarget"));
             }
         },
-
-        destructor: function () {
+        destructor: function() {
             this.clickHandler.detach();
-            for(var n in this.nodeInstances){
+            for (var n in this.nodeInstances) {
                 this.nodeInstances[n].destroy();
             }
         },
-
-        buildMenu: function(items, node){
+        buildMenu: function(items, node) {
             var listItem, item, content = Y.Node.create("<ul></ul>");
-            for (var i in items){
+            for (var i in items) {
                 item = items[i];
 
                 listItem = this.itemCreator(item);
-                if(item.items){
+                if (item.items) {
                     this.buildMenu(item.items, listItem);
                 }
                 content.append(listItem);
@@ -67,36 +66,33 @@ YUI.add('wegas-menu', function (Y) {
             }
             node.append(content);
         },
-
-        itemCreator: function (item) {
+        itemCreator: function(item) {
             //TODO: Tooltip
-            var node = Y.Node.create("<li><div>" + (item.cssClass ? "<span class='menu-icon "+ item.cssClass +"'></span>" : "") + "<span>"+(item.label ? item.label : "")+"</span></div></li>"),
-            divNode = node.one("div");
+            var node = Y.Node.create("<li><div>" + (item.cssClass ? "<span class='menu-icon " + item.cssClass + "'></span>" : "") + "<span>" + (item.label ? item.label : "") + "</span></div></li>"),
+                    divNode = node.one("div");
             node.item = item;
             node.addClass(this.getClassName("itemlist", this.get("horizontal") ? "horizontal" : "vertical"));
-            if(item.tooltip){
+            if (item.tooltip) {
                 divNode.addClass(tooltipTrigger);
                 divNode.setAttribute("title", item.tooltip);
             }
             return node;
         }
 
-    },{
-        NAME:"wegas-menu",
-
+    }, {
+        NAME: "wegas-menu",
         CSS_PREFIX: "wegas-menu",
-
-        ATTRS:{
-            eventTarget:{
-                value:null
+        ATTRS: {
+            eventTarget: {
+                value: null
             },
-            items:{
+            items: {
                 validator: Y.Lang.isArray
             },
-            horizontal:{
-                value:false
+            horizontal: {
+                value: false
             },
-            params:{                                // Given input params returned with the click event, a reference for instance
+            params: {// Given input params returned with the click event, a reference for instance
                 value: null
             }
         }
