@@ -69,11 +69,12 @@
     display: block;
     position: absolute;
     right: 0px;
-    top: 5px;
+    top: 12px;
     width: 15px;
     height: 8px;
-    content: url("../images/wegas-submenuindicator.png");
+    content: "";
+    background: url("../images/wegas-submenuindicator.png");
 }
 .yui3-skin-sam .wegas-widgetmenu-hassubmenu.wegas-widgetmenu-hassubmenuright:after{
-    content: url("../images/wegas-submenuindicator-right.png");
+    background: url("../images/wegas-submenuindicator.png") 0 -20px;
 }

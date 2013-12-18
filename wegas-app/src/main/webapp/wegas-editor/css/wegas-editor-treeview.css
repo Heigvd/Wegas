@@ -62,9 +62,9 @@
     padding-top: 6px;
 }
 
-.yui3-u-selected {
+/*.yui3-u-selected {
     background: url("../../wegas-app/images/wegas-submenuindicator.png") no-repeat 56px 11px;
-}
+}*/
 
 /** Variable Treeview **/
 .wegas-editor-variabletreeview .yui3-dd-drop > div > .yui3-treenode-content-icon,
