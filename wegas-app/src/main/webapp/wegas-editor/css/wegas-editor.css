@@ -449,8 +449,11 @@ body {
     margin: 10px;
 }
 .wegas-shareuser .inputEx-ListField-childContainer > div {
-    border-bottom: 1px solid lightgray;
-    padding-top: 10px;
+    border-top: 1px solid lightgray;
+    padding-top: 5px;
+}
+.wegas-shareuser .inputEx-ListField-childContainer .inputEx-fieldWrapper {
+    margin-bottom: 0px;
 }
 .wegas-shareuser .permission-group fieldset div {
     float: left;

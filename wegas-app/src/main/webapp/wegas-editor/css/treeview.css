@@ -10,7 +10,7 @@
     zoom: 1;
 }
 .yui3-treeview-content {
-    padding: 3px 5px;
+    padding: 2px 5px;
 }
 
 .yui3-treeview :focus{
@@ -83,7 +83,7 @@
 .yui3-treenode-content-header,
 .yui3-treeleaf-content-header{
     position: relative;
-    padding:2px 27px 2px 2px;
+    padding: 3px 27px 3px 2px;
     white-space: nowrap;
     font-style: normal;
     max-height: 50px;

@@ -31,7 +31,7 @@
 }
 .wegas-editor-treeview-content .yui3-treeview > ul > li:last-child,
 .wegas-page-editor .yui3-treeview > ul > li:last-child{
-    box-shadow: 0px 1px 0px #f1f1f1;
+    box-shadow: 0px -1px 0px #f1f1f1, 0px 1px 0px #f1f1f1;
 }
 .wegas-editor-treeview-table {
     padding-right: 450px;
@@ -54,6 +54,7 @@
     font-weight: bolder;
     font-size: 90%;
     padding-left: 10px;
+    padding-bottom: 3px;
 }
 .wegas-editor-treeview-tablehd .yui3-u-col1 {
     padding-top: 6px;
