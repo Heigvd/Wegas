@@ -78,6 +78,9 @@ YUI.add('wegas-editor-action', function(Y) {
             var tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"),
                     {}, this.get("wchildren"));                                 // Forward plugin data to the target widget
 
+
+            tab.set("selected", this.get("selected"));
+
             if (this.get("emptyTab") || this.get("tabSelector") !== "#rightTabView") {// @hack
                 tab.set("selected", 2);
             }
@@ -111,6 +114,9 @@ YUI.add('wegas-editor-action', function(Y) {
             tabSelector: {
                 value: '#centerTabView'
             },
+            selected: {
+                value: 2
+            },
             wchildren: {
                 value: []
             }
@@ -127,7 +133,24 @@ YUI.add('wegas-editor-action', function(Y) {
     Y.extend(Plugin.OpenTabActionSec, Plugin.OpenTabAction, {}, {
         /** @lends Y.Plugin.OpenTabAction */
         NS: "OpenTabActionSec",
-        NAME: "OpenTabActionSec"
+        NAME: "OpenTabActionSec",
+        ATTRS: {
+            selected: {
+                value: 0
+            }
+        }
+    });
+    Plugin.OpenTabActionThi = function() {
+        Plugin.OpenTabActionThi.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(Plugin.OpenTabActionThi, Plugin.OpenTabAction, {}, {
+        NS: "OpenTabActionThi",
+        NAME: "OpenTabActionThi",
+        ATTRS: {
+            selected: {
+                value: 0
+            }
+        }
     });
 
     /**
