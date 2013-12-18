@@ -368,7 +368,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 this.fileUploader.addFile(file);
             } catch (e) {
                 this.showMessageBis("error", e.message);
-                // file.treeLeaf.destroy();
+                file.treeLeaf.remove();
             }
         },
         processMenuClick: function(action, node, params) {
