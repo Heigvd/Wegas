@@ -146,10 +146,10 @@ YUI.add('wegas-nodeformatter', function(Y) {
             Y.Wegas.Facade.VariableDescriptor.cache.getWithView(variable, "Extended", {// Retrieve the object from the server in Export view
                 on: Y.Wegas.superbind({
                     success: function(e) {
-                        cb.one("."+className).setContent(e.response.entity.get(value) || "No "+value);
+                        cb.one("." + className).setContent(e.response.entity.get(value) || "No " + value);
                     },
                     failure: function(e) {
-                        cb.one("."+className).setContent("No "+value);
+                        cb.one("." + className).setContent("No " + value);
                     }
                 }, this)
             });
