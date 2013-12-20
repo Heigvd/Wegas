@@ -585,22 +585,9 @@ YUI.add("wegas-widget", function(Y) {
         }
         return baseCreateChild.call(this, config);                              //reroute
     };
-    /*
-     * @hack Override so plugin host accepts string definition of classes and
-     * look it up in the Y.Wegas.* package.
-     */
-    Y.Widget.prototype.plug = function(Plugin, config) {
-        if (!Lang.isArray(Plugin)) {
-            if (Plugin && !Lang.isFunction(Plugin)) {
-                config = Plugin.cfg;
-                Plugin = Plugin.fn;
-            }
-            if (Plugin && !Lang.isFunction(Plugin)) {                           // @hacked
-                Plugin = Y.Plugin[Plugin];
-            }
-        }
-        basePlug.call(this, Plugin, config);                                    //reroute
-    };
+    
+    /** @Hack, use method defined in wegas-datasource.js */
+    Y.Widget.prototype.plug =     Y.DataSource.IO.prototype.plug;
 
     /**
      * Simulate a DOM Event bubbling up to a listener and stops.

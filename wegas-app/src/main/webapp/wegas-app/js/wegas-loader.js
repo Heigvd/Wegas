@@ -34,10 +34,8 @@ YUI().use(function(Y) {
                  */
                 'wegas-app': {
                     requires: [
-                        'wegas-helper', 'wegas-entity', 'wegas-datasource', // Required
-                        'wegas-pageloader', 'wegas-button', "wegas-panel", // Optimitation: since those are always used, load them right from the start
-                        "wegas-popuplistener", "wegas-layout",
-                        "event-key"
+                        'wegas-helper', 'wegas-entity', 'wegas-datasource',
+                        'base', 'plugin', "event-key"
                                 // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
                 },
@@ -47,26 +45,23 @@ YUI().use(function(Y) {
                 },
                 'wegas-helper': {
                     path: 'js/util/wegas-helper-min.js',
-                    requires: ['array-extras', 'base']
+                    requires: ['array-extras']
                 },
                 'wegas-editable': {
-                    path: 'js/util/wegas-editable-min.js',
-                    requires: ['base', 'json']
+                    path: 'js/util/wegas-editable-min.js'
                 },
                 'wegas-datasource': {
                     path: 'js/util/wegas-datasource-min.js',
-                    requires: ['plugin', 'json', 'array-extras', 'io-base',
-                        "datasource-io", "datasource-jsonschema", /*"datasource-cache",*/
-                        "wegas-widget"]
+                    requires: ['json', 'array-extras', 'io-base',
+                        "datasource-io", "datasource-jsonschema"]
                 },
                 'wegas-scripteval': {
                     path: 'js/plugin/wegas-scripteval-min.js',
-                    requires: ['plugin'],
                     ws_provides: 'ScriptEval'
                 },
                 'wegas-websocketlistener': {
                     path: 'js/util/wegas-websocketlistener-min.js',
-                    requires: ['plugin', 'wegas-pusher-connector'],
+                    requires: ['wegas-pusher-connector'],
                     ws_provides: "WebSocketListener"
                 },
                 "wegas-pusher-connector": {
@@ -76,7 +71,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-pdf": {
                     path: 'js/plugin/wegas-pdf-min.js',
-                    requires: ['jspdf', 'jspdfPlugin', 'plugin'],
+                    requires: ['jspdf', 'jspdfPlugin'],
                     ws_provides: 'PDF'
                 },
                 'event-mouse-startstop': {
@@ -152,7 +147,7 @@ YUI().use(function(Y) {
                     ws_provides: 'ResizableLayout'
                 },
                 'wegas-layout-resizablecss': {
-                    path: 'css/wegas-layout-resizable.css',
+                    path: 'css/wegas-layout-resizable-min.css',
                     type: 'css'
                 },
                 'wegas-pageloader': {
@@ -248,9 +243,8 @@ YUI().use(function(Y) {
                 },
                 'wegas-form': {
                     path: 'js/widget/wegas-form-min.js',
-                    requires: ['wegas-widget', 'wegas-inputex',
-                        'inputex-string', 'inputex-jsonschema', "inputex-group",
-                        'wegas-widgettoolbar', "wegas-button", "inputex-checkbox"],
+                    requires: ['wegas-widget', 'wegas-inputex', 'wegas-widgettoolbar', "wegas-button",
+                        'inputex-string', 'inputex-jsonschema', "inputex-group"],
                     ws_provides: "Form"
                 },
                 form: {
@@ -293,8 +287,7 @@ YUI().use(function(Y) {
                     ws_provides: "UserPreferences"
                 },
                 'wegas-action': {
-                    path: 'js/plugin/wegas-action-min.js',
-                    requires: ['plugin']
+                    path: 'js/plugin/wegas-action-min.js'
                 },
                 'wegas-tooltip': {
                     path: 'js/plugin/wegas-tooltip-min.js',
@@ -316,7 +309,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-widgetmenu': {
                     path: 'js/plugin/wegas-widgetmenu-min.js',
-                    requires: ['plugin', 'yui-later', 'event-mouseenter', 'event-outside',
+                    requires: ['yui-later', 'event-mouseenter', 'event-outside',
                         'widget', 'widget-parent', 'widget-child', 'widget-stack',
                         'widget-position', 'widget-position-align', 'widget-position-constrain',
                         'wegas-widgetmenucss']
@@ -363,12 +356,11 @@ YUI().use(function(Y) {
                 },
                 "wegas-visibilitytimer": {
                     path: 'js/plugin/wegas-visibilitytimer-min.js',
-                    requires: ["wegas-editable", "plugin", "wegas-action"],
+                    requires: ["wegas-editable", "wegas-action"],
                     ws_provides: ["ShowAfter", "HideAfter"]
                 },
                 'datatable-csv': {
                     path: 'js/plugin/datatableCSV-min.js',
-                    requires: ["plugin"],
                     ws_provides: ["DatatableCSV"]
                 },
                 'wegas-menu': {
@@ -501,12 +493,11 @@ YUI().use(function(Y) {
                 },
                 'treeview-filter': {
                     path: 'js/util/treeview-filter-min.js',
-                    requires: ['plugin'],
                     ws_provides: 'TreeViewFilter'
                 },
                 'treeview-sortable': {
                     path: 'js/util/treeview-sortable-min.js',
-                    requires: ['plugin', 'sortable', 'sortable-scroll'],
+                    requires: ['sortable', 'sortable-scroll'],
                     ws_provides: 'TreeViewSortable'
                 },
                 'wegas-panel-fileselect': {
@@ -533,7 +524,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editentityform': {
                     path: 'js/widget/wegas-editentityform-min.js',
-                    requires: ['wegas-form'],
+                    //requires: ['wegas-form'],
                     ws_provides: ['EditEntityForm']
                 },
                 'wegas-editor-widgetaction': {
@@ -565,8 +556,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-preview-fullscreen': {
                     path: 'js/plugin/wegas-preview-fullscreen-min.js',
-                    ws_provides: 'PreviewFullScreen',
-                    requires: ["plugin"]
+                    ws_provides: 'PreviewFullScreen'
                 },
                 'wegas-pageeditor-dragdrop': {
                     path: 'js/util/wegas-pageeditor-dragdrop-min.js',
@@ -595,7 +585,7 @@ YUI().use(function(Y) {
                     ws_provides: ['EditorTreeView', "TeamTreeView"]
                 },
                 'wegas-editor-treeviewcss': {
-                    path: 'css/wegas-editor-treeview.css',
+                    path: 'css/wegas-editor-treeview-min.css',
                     type: "css"
                 },
                 'wegas-editor-variabletreeview': {
@@ -679,7 +669,7 @@ YUI().use(function(Y) {
                  * Project Management Game
                  */
                 'wegas-pmgwidget-css': {
-                    path: 'css/wegas-pmgwidget.css',
+                    path: 'css/wegas-pmgwidget-min.css',
                     type: 'css'
                 },
                 'wegas-pmg-breadcrumb': {
@@ -900,7 +890,7 @@ YUI().use(function(Y) {
                 'wegas-teaching-rectangle': {},
                 'wegas-teaching-main': {
                     ws_provides: "TeachingMain",
-                    requires: ["plugin", "panel", "editor", "gallery-itsatoolbar",
+                    requires: ["panel", "editor", "gallery-itsatoolbar",
                         "autocomplete", "autocomplete-highlighters", "autocomplete-filters",
                         "dd-plugin", 'dd-drop', 'dd-proxy', 'dd-constrain', "button-group",
                         "wegas-teaching-arrow", "wegas-teaching-rectangle"]

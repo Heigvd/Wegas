@@ -6,7 +6,7 @@
     <ui:composition template="/wegas-app/view/template/app-default.xhtml">
 
         <ui:define name="head">
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
             <style type="text/css">
                 .yui3-skin-sam #centerTabView .yui3-tab-label {
                     min-width: 90px;
@@ -29,7 +29,6 @@
         <ui:define name="body">
             <script type="text/javascript">
                 YUI().use("wegas-app", function(Y) {
-
                     var app = new Y.Wegas.App({
                         layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
                         //debug: true,

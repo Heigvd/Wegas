@@ -139,7 +139,7 @@ body h6{
     right: 6px;
     width:18px;
     height:18px;
-    background: url(../../wegas-app/images/sprite_icons_white.png) no-repeat 5px 5px;
+    background: url(../images/sprite_icons_white.png) no-repeat 5px 5px;
 }
 .wegas-systemmessage  .icon {
     width: 55px;
