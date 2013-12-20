@@ -597,7 +597,7 @@ YUI.add('wegas-entity', function(Y) {
         },
         EDITMENU: [{
                 type: BUTTON,
-                label: "View",
+                label: "Open",
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
@@ -656,7 +656,7 @@ YUI.add('wegas-entity', function(Y) {
         },
         EDITMENU: [{
                 type: BUTTON,
-                label: "View",
+                label: "Open",
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {

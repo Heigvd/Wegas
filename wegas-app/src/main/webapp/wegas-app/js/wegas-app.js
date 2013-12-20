@@ -159,6 +159,23 @@ YUI.add('wegas-app', function(Y) {
 
             this.requestCounter = 1;
 
+            Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + Y.Wegas.Helper.genId(), {// No cache
+                context: this,
+                on: {
+                    success: function(id, o) {
+                        try {
+                            this.widgetCfg = Y.JSON.parse(o.responseText);      // Process the JSON data returned from the server
+                        } catch (e) {
+                            alert("Wegas.App.initUI(): Layout json parse failed failed!");
+                            Y.error("Layout parse failed", e, "Y.Wegas.App");
+                            return;
+                        }
+
+                        Y.Wegas.use(this.widgetCfg, Y.bind(onInitialRequest, this));// Load the subwidget dependencies
+                    }
+                }
+            });
+
             Y.Wegas.use(Y.Object.values(this.get('dataSources')), Y.bind(function(Y) {
                 var k, dataSource, dataSources = this.get('dataSources');
 
@@ -177,23 +194,6 @@ YUI.add('wegas-app', function(Y) {
                     }
                 }
             }, this));
-
-            Y.io(this.get('base') + this.get('layoutSrc') + '?id=' + Y.Wegas.Helper.genId(), {// No cache
-                context: this,
-                on: {
-                    success: function(id, o) {
-                        try {
-                            this.widgetCfg = Y.JSON.parse(o.responseText);      // Process the JSON data returned from the server
-                        } catch (e) {
-                            alert("Wegas.App.initUI(): Layout json parse failed failed!");
-                            Y.error("Layout parse failed", e, "Y.Wegas.App");
-                            return;
-                        }
-
-                        Y.Wegas.Widget.use(this.widgetCfg, Y.bind(onInitialRequest, this));// Load the subwidget dependencies
-                    }
-                }
-            });
         },
         /**
          * @function

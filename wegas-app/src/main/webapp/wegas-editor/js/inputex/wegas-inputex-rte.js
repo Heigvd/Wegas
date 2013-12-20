@@ -67,7 +67,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     autoresize_max_height: 500,
                     content_css: [
                         // "http://yui.yahooapis.com/combo?3.12.0/build/cssreset/cssreset-min.css&amp;3.12.0/build/cssfonts/cssfonts-min.css&amp;3.12.0/build/cssgrids/cssgrids-min.css",
-                        // Y.Wegas.app.get("base") + "wegas-app/css/wegas-app.css"
+                        // Y.Wegas.app.get("base") + "wegas-app/css/wegas-app-min.css"
                         Y.Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
                     ],
                     style_formats: [{// Style formats
