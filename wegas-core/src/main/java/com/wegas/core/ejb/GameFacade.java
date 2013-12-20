@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.*;
+import static com.wegas.core.persistence.game.Game.GameAccess.OPEN;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -125,23 +126,25 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     public void checkKey(final Game game, final String key) throws Exception {
         switch (game.getAccess()) {
             case CLOSE:
-                throw new Exception("This game does not accept new players.");    // There user is already registered to target game
+                throw new Exception("This game does not accept new players");   // There user is already registered to target game
 
             case OPEN:
+            case URL:
                 break;
 
             case ENROLMENTKEY:
-                if (!game.setKey().equals(key)) {
-                    throw new Exception("The provided key does not match.");    // There user is already registered to target game
+                if (!game.getKey().equals(key)) {
+                    throw new Exception("The provided key does not match");     // There user is already registered to target game
                 }
                 break;
+
             case SINGLEUSAGEENROLMENTKEY:
                 for (GameEnrolmentKey eKey : game.getKeys()) {
                     if (eKey.getKey().equals(key)) {
                         break;
                     }
                 }
-                throw new Exception("The provided key does not match.");    // There user is already registered to target game
+                throw new Exception("The provided key does not match");         // There user is already registered to target game
         }
     }
 

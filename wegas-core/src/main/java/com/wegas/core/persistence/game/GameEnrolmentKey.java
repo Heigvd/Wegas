@@ -8,13 +8,10 @@
 package com.wegas.core.persistence.game;
 
 import com.wegas.core.Helper;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
-import java.io.Serializable;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -23,10 +20,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @Table(name = "gameenrolementkey")
-@XmlRootElement
-@XmlType(name = "")                                                             // This forces to use Class's short name as contentType
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class GameEnrolmentKey implements Serializable {
+public class GameEnrolmentKey extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,10 +35,27 @@ public class GameEnrolmentKey implements Serializable {
      *
      */
     private Boolean used = false;
+    /**
+     *
+     */
     @ManyToOne(optional = false)
     @XmlTransient
     private Game game;
 
+    /**
+     *
+     * @param other
+     */
+    @Override
+    public void merge(AbstractEntity other) {
+        GameEnrolmentKey newKey = (GameEnrolmentKey) other;
+        this.setKey(newKey.getKey());
+        //this.setUsed(key.getUsed());
+    }
+
+    /**
+     *
+     */
     @PreUpdate
     public void preUpdate() {
         if (this.getKey() == null || this.getKey().equals("")) {
@@ -55,6 +66,7 @@ public class GameEnrolmentKey implements Serializable {
     /**
      * @return the id
      */
+    @Override
     public Long getId() {
         return id;
     }
