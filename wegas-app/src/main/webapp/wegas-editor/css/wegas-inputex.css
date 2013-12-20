@@ -260,6 +260,6 @@ img.inputEx-ListField-delButton {
 
 /* Color field styles */
 div.inputEx-ColorField button {
-    background-image: url(../images/palette.png);
+    background-image: url(../,,/wegas-app/images/wegas-app-sprite.png) 0px -684px;
     cursor: pointer;
 }

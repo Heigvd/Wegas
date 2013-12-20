@@ -128,7 +128,7 @@
 }
 .state-initial{
     display: inline-block;
-    background:url(../images/start_flag.png);
+    background: url(../../wegas-app/images/wegas-app-sprite.png) 0 -368px;
     width: 16px;
     height: 16px;
 }
