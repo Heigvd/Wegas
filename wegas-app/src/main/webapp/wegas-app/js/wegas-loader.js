@@ -109,11 +109,11 @@ YUI().use(function(Y) {
                 },
                 'wegas-layout': {
                     path: 'js/widget/wegas-layout-min.js',
-                    requires: ['wegas-widget', 'widget-parent']
+                    requires: 'wegas-widget'
                 },
                 'wegas-layout-panel': {
                     path: 'js/widget/wegas-layout-panel-min.js',
-                    requires: ['panel'],
+                    requires: 'panel',
                     ws_provides: "PanelWidget"
                 },
                 'wegas-layout-list': {
@@ -249,7 +249,7 @@ YUI().use(function(Y) {
                 },
                 form: {
                     path: 'js/util/form-min.js',
-                    requires: ['widget', 'widget-parent', 'widget-child', 'formcss', 'wegas-widget']
+                    requires: ['formcss', 'wegas-widget']
                 },
                 formcss: {
                     path: 'css/form-min.css',
@@ -502,7 +502,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-panel-fileselect': {
                     path: 'js/util/wegas-panel-fileselect-min.js',
-                    requires: ['widget-base', 'panel', 'wegas-fileexplorer'],
+                    requires: ['widget', 'panel', 'wegas-fileexplorer'],
                     ws_provides: 'FileSelect'
                 },
                 /**

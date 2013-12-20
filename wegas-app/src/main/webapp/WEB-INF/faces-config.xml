@@ -30,7 +30,7 @@
         </resource-bundle>
 
     </application>
-<!--
+    <!--
     <navigation-rule>
         <from-view-id>/wegas-app/view/lobby-selectteam.xhtml</from-view-id>
         <navigation-case>

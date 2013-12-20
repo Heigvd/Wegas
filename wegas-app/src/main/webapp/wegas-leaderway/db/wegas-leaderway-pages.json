@@ -326,14 +326,14 @@
         "cssClass": "leaderway-tasklist",
         "pickingMode": "false",
         "dialoguePageId": "7"
-    }, 
+    },
     "14": {
         "label": "TaskList",
         "type": "TaskList",
         "cssClass": "leaderway-tasklist",
         "pickingMode": "true",
         "dialoguePageId": "7"
-    }, 
+    },
     "5": {
         "label": "Inbox",
         "type": "InboxDisplay",

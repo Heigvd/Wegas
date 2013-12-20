@@ -8,25 +8,22 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-YUI.add('wegas-leaderway-score', function (Y) {
+YUI.add('wegas-leaderway-score', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', Score = Y.Base.create("wegas-score", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
-
         // *** Fields *** /
         table: null,
         data: null,
-
         // *** Lifecycle Methods *** //
-        initializer: function () {
+        initializer: function() {
             this.data = [];
         },
-
         /**
          * Render the widget.
          * Create the child widget "table"
          */
-        renderUI: function () {
+        renderUI: function() {
             var cb = this.get(CONTENTBOX);
             this.table = new Y.DataTable({
                 columns: [
@@ -49,11 +46,10 @@ YUI.add('wegas-leaderway-score', function (Y) {
                 <div class="datatable"></div>');
             this.table.render(cb.one(".datatable"));
         },
-
         /**
          * Synchronise the content of this widget.
          */
-        syncUI: function () {
+        syncUI: function() {
             this.data.length = 0;
             this.getTeamScore(this.get('maxRows'));
             this.table.addRows(this.data);
@@ -64,20 +60,18 @@ YUI.add('wegas-leaderway-score', function (Y) {
             }
             this.goToFinalPage();// ! hack function
         },
-
         /*
          * Destroy all child widget
          */
-        destructor: function () {
+        destructor: function() {
             this.table.destroy();
         },
-
         //*** Particular Methods ***/
         /**
          * Add rows to the datatable. Create the hall of fame from team of all time.
          * @param Integer rows, number of wanted rows.
          */
-        getTeamScore: function (maxRows) {
+        getTeamScore: function(maxRows) {
             var i, j, k, allScore, team = [], score = [], sortedScore = [], sortedTeam = [], exist = false;
             allScore = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "score").get("scope").get("variableInstances");
             for (i in allScore) {
@@ -120,11 +114,11 @@ YUI.add('wegas-leaderway-score', function (Y) {
          * if current week > max value of week value, then
          * change the current widget to go on the "dialogue" widget.
          */
-        goToFinalPage: function () {
+        goToFinalPage: function() {
             var currentWeek = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week"),
                     targetPageLoader = Y.Wegas.PageLoader.find("maindisplayarea");
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
-                targetPageLoader.once("widgetChange", function (e) {
+                targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue("dialogueFinal");
                 });
                 targetPageLoader.set("pageId", this.get('dialoguePageId'));
@@ -134,19 +128,19 @@ YUI.add('wegas-leaderway-score', function (Y) {
         ATTRS: {
             title: {
                 value: 'Top 5 des meilleurs entreprises.',
-                validator: function (s) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             },
             maxRows: {
                 value: 5,
-                validator: function (i) {
+                validator: function(i) {
                     return i === null || Y.Lang.isNumber(i);
                 }
             },
             dialoguePageId: {
                 value: null,
-                validator: function (s) {
+                validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 }
             }
