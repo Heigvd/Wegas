@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.Helper;
 import javax.persistence.Entity;
 
 /**
@@ -19,7 +20,7 @@ public class DebugGame extends Game {
     public final static String DEBUGGAMENAME = "Test game";
 
     public DebugGame() {
-        super(DEBUGGAMENAME);                                                 // Name is fixed
+        super(DEBUGGAMENAME + "-" + Helper.genToken(10));                       // Name is fixed (with a suffix so it wont break unique name constraint)
         Team t = new Team("Test team 1");                                       // Add a default team
         t.addPlayer(new Player("Test player 1"));
         this.addTeam(t);
