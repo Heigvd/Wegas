@@ -9,6 +9,7 @@ package com.wegas.core.persistence.game;
 
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
@@ -162,11 +163,10 @@ public class Game extends NamedEntity {
         if (this.getToken() == null || this.getToken().equals("")) {
             this.setToken(Helper.genToken(10));
         }
-        if (this.setKey() == null || this.setKey().equals("")) {
-            this.setKey(Helper.genToken(10));
+        if (this.getKey() == null || this.getKey().equals("")) {
+            this.setKey(this.getName());
         }
-        //this.token = this.token.replace(" ", "-");
-
+        this.key = this.key.toLowerCase().replace(" ", "-");
         // Done on join game
         //if (this.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll) && this.teams.isEmpty()) {
         //Team t = new Team("Default");
@@ -183,7 +183,8 @@ public class Game extends NamedEntity {
         super.merge(a);
         this.setAccess(other.getAccess());
         this.setToken(other.getToken());
-        this.setKey(other.setKey());
+        this.setKey(other.getKey());
+        ListUtils.mergeLists(this.getKeys(), other.getKeys());
     }
 
     /**
@@ -369,7 +370,7 @@ public class Game extends NamedEntity {
     /**
      * @return the enrolmentKey
      */
-    public String setKey() {
+    public String getKey() {
         return key;
     }
 
