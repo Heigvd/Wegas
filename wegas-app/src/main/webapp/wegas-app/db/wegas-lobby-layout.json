@@ -379,7 +379,7 @@
                     }, {
                         "type": "Tab",
                         "id": "gameModelsTab",
-                        "label": "Scenarist",
+                        "label": "Game designer",
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "GameModel",

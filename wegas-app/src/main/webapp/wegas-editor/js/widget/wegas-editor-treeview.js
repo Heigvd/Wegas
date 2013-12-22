@@ -14,7 +14,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
     var CONTENTBOX = 'contentBox', DATASOURCE = "dataSource", ID = "id",
             CLASS = "@class", NAME = "name", HOST = "host", RENDER = "render",
-            EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>",
+            //EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>",
             Wegas = Y.Wegas,
             EditorTreeView;
 
@@ -544,70 +544,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
      * @class Open a menu on click, containing the admin edition field
      * @constructor
      */
-    Y.Plugin.EditorTVAdminMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
-        initializer: function() {
-
-            this.menu = new Wegas.Menu();
-
-            this.afterHostEvent(RENDER, function() {
-                var host = this.get(HOST);
-                this.menu.addTarget(host);
-                host.treeView.on("*:click", this.onTreeViewClick, this);
-            });
-        },
-        onTreeViewClick: function(e) {
-            //Y.log(e.target.get("label") + " label was clicked", "info", "Wegas.EditorTreeView");
-
-            var menuItems = this.get("children"),
-                    data = e.node.get("data"),
-                    domTarget = e.domEvent.target,
-                    host = this.get(HOST);
-
-            if (data) {
-                host.currentSelection = data.entity.get(ID);
-                data.dataSource = host.get(DATASOURCE);
-
-                if (menuItems) {
-                    Y.Wegas.Editable.mixMenuCfg(this.get("children"), data);
-                } else {
-                    menuItems = data.entity.getMenuCfg(data);                   // If no menu is provided, use entity default
-                }
-
-                if (menuItems.length === 0) {
-                    return;
-                }
-
-                this.menu.removeAll();                                  // Populate the menu with the elements associated to the
-                this.menu.add(menuItems);
-                if (this.get("autoClick")) {
-                    this.menu.item(0).set("visible", false);
-                }
-
-                if (domTarget.hasClass("wegas-treeview-editmenubutton")) {      // If user clicked on the edit button
-                    this.menu.attachTo(domTarget);                              // Display the edit button next to it
-                } else if (this.get("autoClick")) {                             // Otherwise the user clicked on the node
-                    this.menu.item(0).fire("click");             // Excute the actions associated to the first item of the menu
-                }
-            } else {
-                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");
-                host.currentSelection = null;
-            }
-
-        }
-    }, {
-        NS: "EditorTVMenu",
-        NAME: "EditorTVAdminMenu",
-        ATTRS: {
-            children: {},
-            autoClick: {
-                value: true
-            }
-        }
-    });
-    /**
-     * @class Open a menu on click, containing the admin edition field
-     * @constructor
-     */
     Y.Plugin.EditorTVToolbarMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {
@@ -615,8 +551,23 @@ YUI.add('wegas-editor-treeview', function(Y) {
             });
         },
         onTreeViewClick: function(e) {
+            var menuItems = this.getMenuItems(e.node.get("data")),
+                    host = this.get(HOST);
+
+            if (menuItems) {
+                host.toolbar.removeAll();
+                host.toolbar.add(menuItems);                                    // Populate the menu with the elements associated to the
+
+                if (this.get("autoClick")) {
+                    host.toolbar.item(0).set("visible", false).fire("click");   // Excute the actions associated to the first item of the menu
+                }
+            } else {
+                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
+                host.currentSelection = null;
+            }
+        },
+        getMenuItems: function(data) {
             var menuItems = this.get("children"),
-                    data = e.node.get("data"),
                     host = this.get(HOST);
 
             if (data) {
@@ -642,18 +593,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                             i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                     }
                 });
-
-                host.toolbar.removeAll();
-                host.toolbar.add(menuItems);                                    // Populate the menu with the elements associated to the
-
-                if (this.get("autoClick")) {
-                    host.toolbar.item(0).set("visible", false).fire("click");      // Excute the actions associated to the first item of the menu
-                }
-            } else {
-                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
-                host.currentSelection = null;
             }
-
+            return menuItems;
         }
     }, {
         NS: "EditorTVToolbarMenu",
@@ -665,6 +606,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             }
         }
     });
+
     Y.Plugin.EditorTVToggleClick = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {

@@ -12,10 +12,10 @@
 YUI.add('wegas-editor-variabletreeview', function(Y) {
     "use strict";
 
-    var ID = "id",
+    var ID = "id", CONTENTBOX = "contentBox",
             CLASS = "@class",
             NAME = "name",
-            EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>",
+            //EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>",
             Wegas = Y.Wegas,
             VariableTreeView;
 
@@ -31,7 +31,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         CONTENT_TEMPLATE: "<div class=\"wegas-editor-variabletreeview\"></div>",
         // ** Lifecycle methods ** //
         renderUI: function() {
-            VariableTreeView.superclass.renderUI.apply(this);
+            //VariableTreeView.superclass.renderUI.apply(this);
+
+            this.treeView = new Y.TreeView();
+            this.treeView.render(this.get(CONTENTBOX));
+
+            this.plug(Y.Plugin.VariableTVToolbarMenu);
+            this.plug(Y.Plugin.RememberExpandedTreeView);
 
             this.treeView.plug(Y.Plugin.TreeViewSortable, {
                 nodeGroups: [{
@@ -87,7 +93,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
-                                tooltip:tooltip,
+                                tooltip: tooltip,
                                 children: els,
                                 //children: (els.length >= 1) ? els : null, //no children now, loaded on expands
                                 //children: null, //no children now, loaded on expands
@@ -96,7 +102,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 },
                                 collapsed: collapsed,
                                 selected: selected,
-                                rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                //rightWidget: Y.Node.create(EDITBUTTONTPL),
                                 iconCSS: "wegas-icon-variabledescriptor wegas-icon-" + elClass.toLowerCase(),
                                 cssClass: "wegas-editor-listitem"
                                         //iconCSS: "wegas-icon-" + el.get(CLASS)
@@ -107,14 +113,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
-                                tooltip:tooltip,
+                                tooltip: tooltip,
                                 collapsed: collapsed,
                                 selected: selected,
                                 children: (!collapsed) ? this.genTreeViewElements(el.get("items")) : [],
                                 data: {
                                     entity: el
                                 },
-                                rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                //rightWidget: Y.Node.create(EDITBUTTONTPL),
                                 cssClass: "wegas-editor-listitem wegas-editor-list"
                             });
                             break;
@@ -123,7 +129,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
-                                tooltip:tooltip,
+                                tooltip: tooltip,
                                 collapsed: collapsed,
                                 selected: selected,
                                 children: (!collapsed) ? this.genTreeViewElements(el.get("items")) : [],
@@ -131,7 +137,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                     entity: el
                                 },
                                 iconCSS: "wegas-icon-questiondescriptor",
-                                rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                //rightWidget: Y.Node.create(EDITBUTTONTPL),
                                 cssClass: "wegas-editor-listitem wegas-editor-question"
                             });
                             break;
@@ -148,7 +154,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                         entity: result,
                                         parentEntity: el
                                     },
-                                    rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                    //rightWidget: Y.Node.create(EDITBUTTONTPL),
                                     iconCSS: "wegas-icon-variabledescriptor"
                                 });
                             }
@@ -156,14 +162,14 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeNode',
                                 label: text,
-                                tooltip:tooltip,
+                                tooltip: tooltip,
                                 children: children,
                                 data: {
                                     entity: el
                                 },
                                 collapsed: collapsed,
                                 selected: selected,
-                                rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                //rightWidget: Y.Node.create(EDITBUTTONTPL),
                                 iconCSS: "wegas-icon-choicedescriptor",
                                 cssClass: "wegas-editor-questionitem"
                             });
@@ -173,12 +179,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             ret.push({
                                 type: 'TreeLeaf',
                                 label: text,
-                                tooltip:tooltip,
+                                tooltip: tooltip,
                                 selected: selected,
                                 data: {
                                     entity: el
                                 },
-                                rightWidget: Y.Node.create(EDITBUTTONTPL),
+                                //rightWidget: Y.Node.create(EDITBUTTONTPL),
                                 iconCSS: "wegas-icon-choicedescriptor",
                                 cssClass: "wegas-editor-questionitem"
                             });
@@ -188,7 +194,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                             text = el.get(CLASS) + ': ' + el.get(NAME);
                             ret.push({
                                 label: text,
-                                tooltip:tooltip,
+                                tooltip: tooltip,
                                 data: el
                             });
                             break;
@@ -354,6 +360,52 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
     }, {
         NS: "EditorTVNodeLoader",
         NAME: "EditorTVNodeLoader"
+    });
+    Y.Plugin.VariableTVToolbarMenu = Y.Base.create("admin-menu", Y.Plugin.EditorTVToolbarMenu, [], {
+        onTreeViewClick: function(e) {
+            var menuItems = Y.clone(this.getMenuItems(e.node.get("data"))),
+                    host = this.get("host"), firstButton;
+
+            if (menuItems) {
+                if (this.get("autoClick")) {
+                    firstButton = menuItems[0];
+                    menuItems.splice(0, 1);
+                    //host.toolbar.item(0).set("visible", false).fire("click"); // Excute the actions associated to the first item of the menu
+                }
+
+                if (menuItems[0].label.indexOf("New") > -1) {
+                    host.toolbar.removeAll();
+                    host.toolbar.add(menuItems[0]);                             // Populate the menu with the elements associated to the
+                    menuItems.splice(0, 1);
+                } else {
+                    host.toolbar.item(0).disable();
+                }
+
+                Y.once("rightTabShown", function() {
+                    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
+                    if (target && !target.toolbar) {
+                        target = target.item(0);
+                    }
+
+                    if (target && target.toolbar) {
+                        var buttons = target.toolbar.add(menuItems);            // Add new buttons to the right tab's toolbar
+                        buttons[0].get(CONTENTBOX).setStyle("marginLeft", "15px");
+                    }
+                }, this);
+
+                if (this.get("autoClick")) {
+                    var button = Wegas.Widget.create(firstButton);
+                    button.render().fire("click");
+                    button.destroy();
+                }
+            } else {
+                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
+                host.currentSelection = null;
+            }
+        }
+    }, {
+        NS: "VariableTVToolbarMenu",
+        NAME: "VariableTVToolbarMenu"
     });
 
 });
