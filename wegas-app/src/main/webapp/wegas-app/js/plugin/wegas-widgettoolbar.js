@@ -79,8 +79,7 @@ YUI.add('wegas-widgettoolbar', function(Y) {
          */
         add: function(widget) {
             if (Y.Lang.isArray(widget)) {
-                Y.Array.each(widget, this.add, this);
-                return;
+                return Y.Array.map(widget, this.add, this);
             }
             if (!(widget instanceof Y.Widget)) {
                 widget = Y.Wegas.Widget.create(widget);
