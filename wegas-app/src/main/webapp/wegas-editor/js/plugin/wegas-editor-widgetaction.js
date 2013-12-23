@@ -122,7 +122,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                         var tw = new Y.Wegas.Text();
                         Plugin.EditEntityAction.showFormMessage("success", "Element has been saved");
                         Plugin.EditEntityAction.hideEditFormOverlay();
-                        tw.plug(Plugin.EditWidgetAction, {"widget": this});
+                        tw.plug(Plugin.EditWidgetAction, {widget: this});
                         tw.EditWidgetAction.execute();
                     }, widget));
                 }, this));

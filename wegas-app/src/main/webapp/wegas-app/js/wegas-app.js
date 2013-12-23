@@ -242,9 +242,6 @@ YUI.add('wegas-app', function(Y) {
             currentGame: {},
             currentTeam: {},
             currentPlayer: {},
-            /**
-             * Object litteral representing current user.
-             */
             currentUser: {},
             /**
              *

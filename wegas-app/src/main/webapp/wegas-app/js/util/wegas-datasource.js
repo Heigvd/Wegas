@@ -992,7 +992,7 @@ YUI.add('wegas-datasource', function(Y) {
         ATTRS: {
             currentUser: {
                 getter: function() {
-                    return this.findById(Wegas.app.get("currentUser").id);
+                    return this.findById(Wegas.app.get("currentUser"));
                 }
             }
         }

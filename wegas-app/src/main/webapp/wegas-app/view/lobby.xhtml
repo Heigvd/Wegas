@@ -32,7 +32,7 @@
                     var app = new Y.Wegas.App({
                         layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
                         //debug: true,
-                        currentUser: #{requestController.getCurrentUser().toJson()},
+                        currentUser: #{requestController.currentUser.id},
                         dataSources: {
                             GameModel: {
                                 source: "rest/Public/GameModel",
@@ -70,7 +70,7 @@
                             },
                             User: {
                                 source: "rest/Extended/User",
-                                initialRequest: "/#{requestController.getCurrentUser().id}",
+                                initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
                                         fn: "UserCache"
                                     }]

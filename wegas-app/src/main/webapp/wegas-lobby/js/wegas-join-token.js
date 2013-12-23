@@ -175,7 +175,7 @@ YUI.add('wegas-join-token', function(Y) {
             });
 
             Y.Wegas.Facade.PublicGames.sendRequest({//                          // Retrieve the list of public games from the server
-                request: "/" + Y.Wegas.app.get('currentUser').id,
+                request: "/" + Y.Wegas.app.get('currentUser'),
                 on: {
                     success: Y.bind(function(e) {
                         var data = e.response.results.entities;

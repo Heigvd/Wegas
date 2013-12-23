@@ -78,8 +78,8 @@ YUI.add('wegas-loginwidget', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
                     cUser = Y.Wegas.app.get("currentUser");
-
-            if (cUser && cUser.getMainAccount() instanceof Y.Wegas.persistence.GuestJpaAccount) {
+            if (Y.Lang.isNumber(cUser)) {
+                //if (cUser && cUser.getMainAccount() instanceof Y.Wegas.persistence.GuestJpaAccount) {
                 this.showMessage("success", "You are already logged in.");
                 this.redirect();
             }

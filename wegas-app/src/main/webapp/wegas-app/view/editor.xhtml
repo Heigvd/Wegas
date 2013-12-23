@@ -63,7 +63,7 @@
                         currentGame: #{editorGameController.currentGame.id},
                         currentTeam: #{editorGameController.currentPlayer.team.id},
                         currentPlayer: #{editorGameController.currentPlayer.id},
-                        currentUser: #{requestController.getCurrentUser().toJson()},
+                        currentUser: #{requestController.currentUser.id},
                         dataSources: {
                             "GameModel": {
                                 source: "rest/Editor/GameModel",
@@ -109,7 +109,7 @@
                             },
                             "User": {
                                 source: "rest/Extended/User",
-                                initialRequest: "/#{requestController.getCurrentUser().id}",
+                                initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
                                         fn: "UserCache"
                                     }]

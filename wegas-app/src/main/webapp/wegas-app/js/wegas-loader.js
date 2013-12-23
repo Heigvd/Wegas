@@ -52,8 +52,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-datasource': {
                     path: 'js/util/wegas-datasource-min.js',
-                    requires: ['json', 'array-extras', 'io-base',
-                        "datasource-io", "datasource-jsonschema"]
+                    requires: ['array-extras', "datasource-io", "datasource-jsonschema"]
                 },
                 'wegas-scripteval': {
                     path: 'js/plugin/wegas-scripteval-min.js',
@@ -632,7 +631,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'js/widget/wegas-editor-pagetreeview-min.js',
-                    requires: ['wegas-datasource', "timers"],
+                    requires: ["timers"],
                     ws_provides: "PageTreeview"
                 },
                 'gallery-colorpickercss': {

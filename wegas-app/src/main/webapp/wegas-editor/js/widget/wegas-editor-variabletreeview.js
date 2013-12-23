@@ -361,6 +361,10 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         NS: "EditorTVNodeLoader",
         NAME: "EditorTVNodeLoader"
     });
+
+    /**
+     *
+     */
     Y.Plugin.VariableTVToolbarMenu = Y.Base.create("admin-menu", Y.Plugin.EditorTVToolbarMenu, [], {
         onTreeViewClick: function(e) {
             var menuItems = Y.clone(this.getMenuItems(e.node.get("data"))),

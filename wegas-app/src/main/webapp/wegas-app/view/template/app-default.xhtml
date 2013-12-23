@@ -12,8 +12,8 @@
             <h:body class="yui3-skin-sam wegas-stdmode wegas-loading-overlay #{requestController.currentRoles}"> <!-- @fixme currentRoles should not be display on all pages, since login page does not provide for an account nor any role -->
 
                 <!-- <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">-->
-                    <!-- Muscula error tracking -->
-                    <!--<ui:include src="muscula-tracker.xhtml" />-->
+                <!-- Muscula error tracking -->
+                <!--<ui:include src="muscula-tracker.xhtml" />-->
                 <!--</ui:fragment>-->
 
                 <!-- YUI Base -->
@@ -96,7 +96,7 @@
                                 currentGame: #{gameController.currentGame.id},
                                 currentTeam: #{gameController.currentPlayer.team.id},
                                 currentPlayer: #{gameController.currentPlayer.id},
-                                currentUser: #{requestController.getCurrentUser().toJson()},
+                                currentUser: #{requestController.currentUser.id},
                                 /**
                                  * This field is used to override Entities edition menus.
                                  * Use the target class name as the key.

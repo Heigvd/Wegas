@@ -21,7 +21,7 @@
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-logincss", function(Y) {
                     var app = new Y.Wegas.App({
-                        currentUser: #{requestController.getCurrentUser().toJson()},
+                        currentUser: #{requestController.currentUser.id},
                         layoutSrc: 'wegas-app/db/wegas-lobby-singlegame-layout.json',
                         dataSources: {
                             GameModel: {
@@ -33,7 +33,7 @@
                             },
                             User: {
                                 source: "rest/Extended/User",
-                                initialRequest: "/#{requestController.getCurrentUser().id}",
+                                initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
                                         fn: "UserCache"
                                     }]
