@@ -25,14 +25,6 @@ YUI.add('wegas-app', function(Y) {
      *    <li>currentTeam {Number} current team id</li>
      *    <li>currentPlayer {Number} current player id</li>
      *    <li>currentUse {Number} current game model idObject litteral representing current user</li>
-     *    <li>editorMenus {Object[]}
-     *        This field is used to globally override Entities edition menus.
-     *        Use the target class name as the key.
-     *    </li>
-     *    <li>editorForms {Object[]}
-     *         This field is used to globally override Entities edition forms.
-     *        Use the target class name as the key.
-     *   </li>
      * </ul>
      *
      * @name Y.Wegas.App
@@ -261,20 +253,6 @@ YUI.add('wegas-app', function(Y) {
                         //}
                     }
                 }
-            },
-            /**
-             * This field is used to globally override Entities edition menus.
-             * Use the target class name as the key.
-             */
-            editorMenus: {
-                value: {}
-            },
-            /**
-             * This field is used to globally override Entities edition forms.
-             * Use the target class name as the key.
-             */
-            editorForms: {
-                value: {}
             }
         }
 

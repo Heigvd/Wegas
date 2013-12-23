@@ -65,21 +65,21 @@
                         currentPlayer: #{editorGameController.currentPlayer.id},
                         currentUser: #{requestController.currentUser.id},
                         dataSources: {
-                            "GameModel": {
+                            GameModel: {
                                 source: "rest/Editor/GameModel",
                                 initialRequest: "/#{editorGameController.currentGameModel.id}",
                                 plugins: [{
                                         fn: "GameModelCache"
                                     }]
                             },
-                            "Game": {
+                            Game: {
                                 source: "rest/Public/GameModel/#{editorGameController.currentGameModel.id}/Game",
                                 initialRequest: "/#{editorGameController.currentGame.id}",
                                 plugins: [{
                                         fn: "GameCache"
                                     }]
                             },
-                            "Page": {
+                            Page: {
                                 /* THIS IS NOT A COMMENT
                                  * <ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
                                  */
@@ -107,14 +107,14 @@
                                         fn: "PageCache"
                                     }]
                             },
-                            "User": {
+                            User: {
                                 source: "rest/Extended/User",
                                 initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
                                         fn: "UserCache"
                                     }]
                             },
-                            "Role": {
+                            Role: {
                                 source: "rest/Role",
                                 //initialRequest: "",
                                 plugins: [{
@@ -126,7 +126,7 @@
                              * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
                              */
                             ,
-                            "Pusher": {
+                            Pusher: {
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
                                 applicationKey: "#{editorGameController.currentGameModel.getProperty('websocket')}"
@@ -135,7 +135,7 @@
                              * </ui:fragment>
                              */
                             ,
-                            "VariableDescriptor": {
+                            VariableDescriptor: {
                                 /* THIS IS NOT A COMMENT
                                  * <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
                                  */
@@ -171,7 +171,7 @@
                                      */
                                 ]
                             },
-                            "File": {
+                            File: {
                                 source: "rest/File/GameModelId/#{editorGameController.currentGameModel.id}/",
                                 plugins: [
                                     {
@@ -186,17 +186,7 @@
                                 ]
                             }
 
-                        },
-                        /**
-                         * This field is used to override Entities edition menus.
-                         * Use the target class name as the key.
-                         */
-                        editorMenus: {},
-                        /**
-                         * This field is used to override Entities edition forms.
-                         * Use the target class name as the key.
-                         */
-                        editorForms: {}
+                        }
                     });
 
                     app.after("render", function() {
@@ -211,7 +201,6 @@
                     });
 
                     app.after('currentPlayerChange', function(e) {              // Whenever the current player changes
-
                         this.set('currentTeam',
                                 Y.Wegas.Facade.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
 

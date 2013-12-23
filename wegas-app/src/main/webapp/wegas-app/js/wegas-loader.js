@@ -1006,7 +1006,7 @@ YUI().use(function(Y) {
             }
         },
         /* Other libraries (that should not be combined) */
-        "libraries": {
+        libraries: {
             async: false,
             combine: false,
             base: "./lib/",

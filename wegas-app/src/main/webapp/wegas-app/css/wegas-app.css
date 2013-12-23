@@ -61,26 +61,6 @@ body h6{
     font-size: 1.1em;
 }
 
-/* YUI3 Button Widget styles redefinition */
-.yui3-button {
-    vertical-align: top;
-    padding: .1em 0.6em .1em;
-    min-height: 26px;
-    margin: 0;
-    box-shadow: none;
-    /*box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset, 0 2px 0 rgba(255,255,255,0.30) inset, 0 0px 0px rgba(0,0,0,0.15);*/
-    background-color: #e9e9e9;
-}
-.yui3-skin-sam .yui3-button-primary, .yui3-skin-sam .yui3-button-selected {
-    background-color: #0c3f71;
-}
-.yui3-button > * {
-    vertical-align: top;
-}
-.yui3-button .wegas-icon {
-    margin: -2px 2px 0 0;
-}
-
 /*  App styles */
 .yui3-skin-sam .wegas-title  {
     font-weight: 900;
@@ -188,12 +168,6 @@ body h6{
     margin-right: 5px;
     text-shadow: 1px 1px 0px #DDD;
     font-size: 11px;
-}
-
-/* YUI3 Buttons Styles */
-.yui3-skin-sam .yui3-button-hidden,
-.yui3-skin-sam .yui3-togglebutton-hidden{
-    display:none !important;
 }
 
 /* List styles */

@@ -85,9 +85,9 @@ YUI.add('wegas-editor-action', function(Y) {
                 tab.set("selected", 2);
             }
 
-            if (this.get("tabSelector") !== "#rightTabView") {                          // @hack
+            //if (this.get("tabSelector") !== "#rightTabView") {                          // @hack
                 tab.plug(Y.Plugin.Removeable);
-            }
+            //}
         }
 
     }, {

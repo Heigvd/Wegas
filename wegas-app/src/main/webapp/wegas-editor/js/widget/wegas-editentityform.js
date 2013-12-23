@@ -8,7 +8,6 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-editentityform', function(Y) {
 
     var inputEx = Y.inputEx, Lang = Y.Lang,
@@ -217,42 +216,10 @@ YUI.add('wegas-editentityform', function(Y) {
             this.set("cfg", this.get("cfg") || entity.getFormCfg());
 
             Y.fire("rightTabShown");// @fixme @hack
-
-            //if (EditEntityAction.cancelCallback) {                            // A cancel action was defined. By changing form, assume cancel
-            //    try {
-            //        EditEntityAction.cancelCallback(EditEntityAction.currentEntity);
-            //    } finally {
-            //        EditEntityAction.cancelCallback = null;
-            //    }
-            //}
-            //EditEntityAction.callback = callback;
-            //EditEntityAction.currentEntity = entity;
-            //EditEntityAction.cancelCallback = cancelCallback;
-
-            //var tab = EditEntityAction.getEditionTab(),
-            //        prefix = (entity.get("id")) ? "Edit " : "New ";           // No id -> new entity
-            //tab.setAttrs({
-            //    label: prefix + entity.getType().replace("Descriptor", "").replace("Instance", "").toLowerCase(),
-            //    selected: 2
-            //});
-            // tab.form.toolbar.setStatusMessage("");
-            //tab.form.saveButton.set("disabled", false);
-
-
-//            EditEntityAction.showEditForm(entity, function(cfg) {           // Display the edit form
-//                // entity.setAttrs(cfg);
-//            });
         }
     }, {
         ATTRS: {
-            entity: {
-                //getter: function(val) {
-                //    if (val === "currentGameModel") {
-                //        return Wegas.Facade.GameModel.cache.getCurrentGameModel();
-                //    }
-                //    return val;
-                //}
-            },
+            entity: {},
             dataSource: {
                 getter: function(val) {
                     if (Lang.isString(val)) {
