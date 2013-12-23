@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('app-base', function (Y, NAME) {
 
 /**
@@ -562,6 +555,24 @@ AppBase = Y.Base.create('app', Y.Base, [View, Router, PjaxBase], {
     },
 
     /**
+    Gets a request object that can be passed to a route handler.
+
+    This delegates to `Y.Router`'s `_getRequest()` method and adds a reference
+    to this app instance at `req.app`.
+
+    @method _getRequest
+    @param {String} src What initiated the URL change and need for the request.
+    @return {Object} Request object.
+    @protected
+    @see Router._getRequest
+    **/
+    _getRequest: function () {
+        var req = Router.prototype._getRequest.apply(this, arguments);
+        req.app = this;
+        return req;
+    },
+
+    /**
     Getter for the `viewContainer` attribute.
 
     @method _getViewContainer
@@ -1102,4 +1113,4 @@ Default `serverRouting` attribute value for all apps.
 **/
 
 
-}, '3.12.0', {"requires": ["classnamemanager", "pjax-base", "router", "view"]});
+}, '@VERSION@', {"requires": ["classnamemanager", "pjax-base", "router", "view"]});

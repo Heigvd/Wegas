@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datasource-jsonschema', function (Y, NAME) {
 
 /**
@@ -18,7 +11,7 @@ YUI.add('datasource-jsonschema', function (Y, NAME) {
  * Adds schema-parsing to the DataSource Utility.
  * @class DataSourceJSONSchema
  * @extends Plugin.Base
- */    
+ */
 var DataSourceJSONSchema = function() {
     DataSourceJSONSchema.superclass.constructor.apply(this, arguments);
 };
@@ -92,7 +85,7 @@ Y.extend(DataSourceJSONSchema, Y.Plugin.Base, {
         var data = e.data && (e.data.responseText || e.data),
             schema = this.get('schema'),
             payload = e.details[0];
-        
+
         payload.response = Y.DataSchema.JSON.apply.call(this, schema, data) || {
             meta: {},
             results: data
@@ -103,8 +96,8 @@ Y.extend(DataSourceJSONSchema, Y.Plugin.Base, {
         return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
     }
 });
-    
+
 Y.namespace('Plugin').DataSourceJSONSchema = DataSourceJSONSchema;
 
 
-}, '3.12.0', {"requires": ["datasource-local", "plugin", "dataschema-json"]});
+}, '@VERSION@', {"requires": ["datasource-local", "plugin", "dataschema-json"]});

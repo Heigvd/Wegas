@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('sortable', function (Y, NAME) {
 
 
@@ -77,7 +70,7 @@ YUI.add('sortable', function (Y, NAME) {
                 groups: del.dd.get('groups')
             });
             this.drop.on('drop:enter', Y.bind(this._onDropEnter, this));
-            
+
             del.on({
                 'drag:start': Y.bind(this._onDragStart, this),
                 'drag:end': Y.bind(this._onDragEnd, this),
@@ -161,7 +154,7 @@ YUI.add('sortable', function (Y, NAME) {
                         Y.log('No delegate parent found', 'error', 'sortable');
                         return;
                     }
-                    
+
                     Y.DD.DDM.getDrop(e.drag.get(NODE)).addToGroup(dropsort.get(ID));
 
                     //Same List
@@ -275,7 +268,7 @@ YUI.add('sortable', function (Y, NAME) {
             if (this[method]) {
                 this[method](sel);
             }
-            
+
             return this;
         },
         /**
@@ -536,4 +529,4 @@ YUI.add('sortable', function (Y, NAME) {
 
 
 
-}, '3.12.0', {"requires": ["dd-delegate", "dd-drop-plugin", "dd-proxy"]});
+}, '@VERSION@', {"requires": ["dd-delegate", "dd-drop-plugin", "dd-proxy"]});

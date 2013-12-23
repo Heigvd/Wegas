@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('jsonp', function (Y, NAME) {
 
 var isFunction = Y.Lang.isFunction;
@@ -201,7 +194,7 @@ JSONPRequest.prototype = {
         // Temporary un-sandboxed function alias
         // TODO: queuing
         YUI.Env.JSONP[proxy] = wrap(config.on.success);
-        
+
         // Y.Get transactions block each other by design, but can easily
         //  be made non-blocking by just calling execute() on the transaction.
         // https://github.com/yui/yui3/pull/393#issuecomment-11961608
@@ -260,4 +253,4 @@ if (!YUI.Env.JSONP) {
 }
 
 
-}, '3.12.0', {"requires": ["get", "oop"]});
+}, '@VERSION@', {"requires": ["get", "oop"]});

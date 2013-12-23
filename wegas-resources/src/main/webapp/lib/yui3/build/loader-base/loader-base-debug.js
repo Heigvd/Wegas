@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('loader-base', function (Y, NAME) {
 
 /**
@@ -18,7 +11,7 @@ YUI.add('loader-base', function (Y, NAME) {
         BUILD = '/build/',
         ROOT = VERSION + '/',
         CDN_BASE = Y.Env.base,
-        GALLERY_VERSION = 'gallery-2013.08.22-21-03',
+        GALLERY_VERSION = 'gallery-2013.12.12-21-06',
         TNT = '2in3',
         TNT_VERSION = '4',
         YUI2_VERSION = '2.9.0',

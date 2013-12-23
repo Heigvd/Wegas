@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('series-combospline', function (Y, NAME) {
 
 /**
@@ -64,4 +57,4 @@ Y.ComboSplineSeries = Y.Base.create("comboSplineSeries", Y.ComboSeries, [Y.Curve
 });
 
 
-}, '3.12.0', {"requires": ["series-combo", "series-curve-util"]});
+}, '@VERSION@', {"requires": ["series-combo", "series-curve-util"]});

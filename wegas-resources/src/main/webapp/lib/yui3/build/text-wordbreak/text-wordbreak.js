@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('text-wordbreak', function (Y, NAME) {
 
 /**
@@ -143,7 +136,7 @@ WordBreak = {
 
             // If there's a word boundary between the current character and the
             // next character, append the current word to the words array and
-            // start building a new word. 
+            // start building a new word.
             if (WordBreak._isWordBoundary(map, i)) {
                 word = word.join(EMPTY_STRING);
 
@@ -366,4 +359,4 @@ WordBreak = {
 Text.WordBreak = WordBreak;
 
 
-}, '3.12.0', {"requires": ["array-extras", "text-data-wordbreak"]});
+}, '@VERSION@', {"requires": ["array-extras", "text-data-wordbreak"]});

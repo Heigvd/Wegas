@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('button-group', function (Y, NAME) {
 
 /**
@@ -55,8 +48,11 @@ Y.ButtonGroup = Y.extend(ButtonGroup, Y.Widget, {
         group.after('disabledChange', group._afterDisabledChange);
     },
 
-    _afterDisabledChange: function () {
-        this.getButtons().each(Y.ButtonCore.prototype.disable);
+    _afterDisabledChange: function (e) {
+        this.getButtons().each(e.newVal
+            ? Y.ButtonCore.prototype.disable
+            : Y.ButtonCore.prototype.enable
+        );
     },
 
     /**
@@ -185,7 +181,7 @@ Y.ButtonGroup = Y.extend(ButtonGroup, Y.Widget, {
      * @static
      */
     CLASS_NAMES: CLASS_NAMES,
-    
+
     /**
      * Selector used to find buttons inside a ButtonGroup
      * @property BUTTON_SELECTOR
@@ -195,4 +191,4 @@ Y.ButtonGroup = Y.extend(ButtonGroup, Y.Widget, {
 });
 
 
-}, '3.12.0', {"requires": ["button-plugin", "cssbutton", "widget"]});
+}, '@VERSION@', {"requires": ["button-plugin", "cssbutton", "widget"]});

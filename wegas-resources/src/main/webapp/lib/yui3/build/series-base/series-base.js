@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('series-base', function (Y, NAME) {
 
 /**
@@ -133,10 +126,22 @@ Y.SeriesBase = Y.Base.create("seriesBase", Y.Base, [Y.Renderer], {
             markers = this.get("markers");
         if(this.get("rendered"))
         {
-            this._stylesChangeHandle.detach();
-            this._widthChangeHandle.detach();
-            this._heightChangeHandle.detach();
-            this._visibleChangeHandle.detach();
+            if(this._stylesChangeHandle)
+            {
+                this._stylesChangeHandle.detach();
+            }
+            if(this._widthChangeHandle)
+            {
+                this._widthChangeHandle.detach();
+            }
+            if(this._heightChangeHandle)
+            {
+                this._heightChangeHandle.detach();
+            }
+            if(this._visibleChangeHandle)
+            {
+                this._visibleChangeHandle.detach();
+            }
         }
         while(markers && markers.length > 0)
         {
@@ -400,4 +405,4 @@ Y.SeriesBase = Y.Base.create("seriesBase", Y.Base, [Y.Renderer], {
 });
 
 
-}, '3.12.0', {"requires": ["graphics", "axis-base"]});
+}, '@VERSION@', {"requires": ["graphics", "axis-base"]});

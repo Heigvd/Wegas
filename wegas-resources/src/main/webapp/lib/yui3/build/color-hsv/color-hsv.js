@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('color-hsv', function (Y, NAME) {
 
 /**
@@ -186,4 +179,4 @@ Y.Color.TYPES = Y.mix(Y.Color.TYPES, {'HSV':'hsv', 'HSVA':'hsva'});
 Y.Color.CONVERTS = Y.mix(Y.Color.CONVERTS, {'hsv': 'toHSV', 'hsva': 'toHSVA'});
 
 
-}, '3.12.0', {"requires": ["color-base"]});
+}, '@VERSION@', {"requires": ["color-base"]});

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('event-custom-complex', function (Y, NAME) {
 
 
@@ -509,6 +502,7 @@ CEProto.halt = function(immediate) {
  * Included in the event-custom-complex submodule.
  *
  * @method addTarget
+ * @chainable
  * @param o {EventTarget} the target to add
  * @for EventTarget
  */
@@ -521,6 +515,8 @@ ETProto.addTarget = function(o) {
 
     etState.targets[Y.stamp(o)] = o;
     etState.hasTargets = true;
+
+    return this;
 };
 
 /**
@@ -536,6 +532,7 @@ ETProto.getTargets = function() {
 /**
  * Removes a bubble target
  * @method removeTarget
+ * @chainable
  * @param o {EventTarget} the target to remove
  * @for EventTarget
  */
@@ -549,6 +546,8 @@ ETProto.removeTarget = function(o) {
             this._yuievt.hasTargets = false;
         }
     }
+
+    return this;
 };
 
 /**
@@ -668,4 +667,4 @@ for (key in FACADE) {
 }
 
 
-}, '3.12.0', {"requires": ["event-custom-base"]});
+}, '@VERSION@', {"requires": ["event-custom-base"]});

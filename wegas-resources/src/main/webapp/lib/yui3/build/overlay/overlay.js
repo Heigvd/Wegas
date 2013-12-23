@@ -1,15 +1,8 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('overlay', function (Y, NAME) {
 
 /**
  * Provides a basic Overlay widget, with Standard Module content support. The Overlay widget
- * provides Page XY positioning support, alignment and centering support along with basic 
+ * provides Page XY positioning support, alignment and centering support along with basic
  * stackable support (z-index and shimming).
  *
  * @module overlay
@@ -33,7 +26,7 @@ YUI.add('overlay', function (Y, NAME) {
 Y.Overlay = Y.Base.create("overlay", Y.Widget, [Y.WidgetStdMod, Y.WidgetPosition, Y.WidgetStack, Y.WidgetPositionAlign, Y.WidgetPositionConstrain]);
 
 
-}, '3.12.0', {
+}, '@VERSION@', {
     "requires": [
         "widget",
         "widget-stdmod",

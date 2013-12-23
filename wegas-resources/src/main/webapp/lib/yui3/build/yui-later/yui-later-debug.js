@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('yui-later', function (Y, NAME) {
 
 /**
@@ -23,7 +16,7 @@ var NO_ARGS = [];
  * single time unless periodic is set to true.
  * @for YUI
  * @method later
- * @param when {int} the number of milliseconds to wait until the fn
+ * @param when {Number} the number of milliseconds to wait until the fn
  * is executed.
  * @param o the context object.
  * @param fn {Function|String} the function to execute or the name of
@@ -82,4 +75,4 @@ Y.Lang.later = Y.later;
 
 
 
-}, '3.12.0', {"requires": ["yui-base"]});
+}, '@VERSION@', {"requires": ["yui-base"]});

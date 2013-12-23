@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('axis-numeric', function (Y, NAME) {
 
 /**
@@ -13,7 +6,7 @@ YUI.add('axis-numeric', function (Y, NAME) {
  * @module charts
  * @submodule axis-numeric
  */
-Y_Lang = Y.Lang;
+var Y_Lang = Y.Lang;
 /**
  * NumericAxis draws a numeric axis.
  *
@@ -144,4 +137,4 @@ Y.NumericAxis = Y.Base.create("numericAxis", Y.Axis, [Y.NumericImpl], {
 
 
 
-}, '3.12.0', {"requires": ["axis", "axis-numeric-base"]});
+}, '@VERSION@', {"requires": ["axis", "axis-numeric-base"]});

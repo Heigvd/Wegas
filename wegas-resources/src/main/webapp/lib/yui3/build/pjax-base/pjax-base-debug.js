@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('pjax-base', function (Y, NAME) {
 
 /**
@@ -83,22 +76,6 @@ PjaxBase.prototype = {
     @protected
     @since 3.5.0
     **/
-
-    /**
-    Regex used to break up a URL string around the URL's path.
-
-    Subpattern captures:
-
-      1. Origin, everything before the URL's path-part.
-      2. The URL's path-part.
-      3. Suffix, everything after the URL's path-part.
-
-    @property _regexURL
-    @type RegExp
-    @protected
-    @since 3.5.0
-    **/
-    _regexURL: /^((?:[^\/#?:]+:\/\/|\/\/)[^\/]*)?([^?#]*)(\?[^#]*)?(#.*)?$/,
 
     // -- Lifecycle Methods ----------------------------------------------------
     initializer: function () {
@@ -444,4 +421,4 @@ PjaxBase.ATTRS = {
 Y.PjaxBase = PjaxBase;
 
 
-}, '3.12.0', {"requires": ["classnamemanager", "node-event-delegate", "router"]});
+}, '@VERSION@', {"requires": ["classnamemanager", "node-event-delegate", "router"]});

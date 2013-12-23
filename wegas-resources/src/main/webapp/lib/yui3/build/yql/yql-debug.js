@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('yql', function (Y, NAME) {
 
 /**
@@ -12,7 +5,7 @@ YUI.add('yql', function (Y, NAME) {
  * @module yql
  */
 /**
- * Utility Class used under the hood my the YQL class
+ * Utility Class used under the hood by the YQL class
  * @class YQLRequest
  * @constructor
  * @param {String} sql The SQL statement to execute
@@ -172,4 +165,4 @@ Y.YQL = function (sql, callback, params, opts) {
 };
 
 
-}, '3.12.0', {"requires": ["oop"]});
+}, '@VERSION@', {"requires": ["oop"]});

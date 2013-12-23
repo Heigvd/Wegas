@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('graphics-group', function (Y, NAME) {
 
 /**
@@ -314,4 +307,4 @@ EllipseGroup.ATTRS = Y.ShapeGroup.ATTRS;
 Y.EllipseGroup = EllipseGroup;
 
 
-}, '3.12.0', {"requires": ["graphics"]});
+}, '@VERSION@', {"requires": ["graphics"]});

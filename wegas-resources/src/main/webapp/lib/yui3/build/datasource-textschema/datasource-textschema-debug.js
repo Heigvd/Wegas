@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datasource-textschema', function (Y, NAME) {
 
 /**
@@ -18,7 +11,7 @@ YUI.add('datasource-textschema', function (Y, NAME) {
  * Adds schema-parsing to the DataSource Utility.
  * @class DataSourceTextSchema
  * @extends Plugin.Base
- */    
+ */
 var DataSourceTextSchema = function() {
     DataSourceTextSchema.superclass.constructor.apply(this, arguments);
 };
@@ -102,8 +95,8 @@ Y.extend(DataSourceTextSchema, Y.Plugin.Base, {
         return new Y.Do.Halt("DataSourceTextSchema plugin halted _defDataFn");
     }
 });
-    
+
 Y.namespace('Plugin').DataSourceTextSchema = DataSourceTextSchema;
 
 
-}, '3.12.0', {"requires": ["datasource-local", "plugin", "dataschema-text"]});
+}, '@VERSION@', {"requires": ["datasource-local", "plugin", "dataschema-text"]});

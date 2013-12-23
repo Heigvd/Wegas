@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('attribute-complex', function (Y, NAME) {
 
     /**
@@ -60,4 +53,4 @@ YUI.add('attribute-complex', function (Y, NAME) {
     Y.AttributeComplex = Attribute.Complex;
 
 
-}, '3.12.0', {"requires": ["attribute-base"]});
+}, '@VERSION@', {"requires": ["attribute-base"]});

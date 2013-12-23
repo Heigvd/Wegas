@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('yui-log', function (Y, NAME) {
 
 /**
@@ -37,7 +30,7 @@ var INSTANCE = Y,
  * @for YUI
  * @param  {String}  msg  The message to log.
  * @param  {String}  cat  The log category for the message.  Default
- *                        categories are "info", "warn", "error", time".
+ *                        categories are "info", "warn", "error", "debug".
  *                        Custom categories can be used as well. (opt).
  * @param  {String}  src  The source of the the message (opt).
  * @param  {boolean} silent If true, the log event won't fire.
@@ -113,7 +106,7 @@ INSTANCE.log = function(msg, cat, src, silent) {
  * @for YUI
  * @param  {String}  msg  The message to log.
  * @param  {String}  cat  The log category for the message.  Default
- *                        categories are "info", "warn", "error", time".
+ *                        categories are "info", "warn", "error", "debug".
  *                        Custom categories can be used as well. (opt).
  * @param  {String}  src  The source of the the message (opt).
  * @param  {boolean} silent If true, the log event won't fire.
@@ -124,4 +117,4 @@ INSTANCE.message = function() {
 };
 
 
-}, '3.12.0', {"requires": ["yui-base"]});
+}, '@VERSION@', {"requires": ["yui-base"]});

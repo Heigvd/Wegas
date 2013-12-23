@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('paginator', function (Y, NAME) {
 
 /**
@@ -74,8 +67,9 @@ YUI.add('paginator', function (Y, NAME) {
  */
 
 Y.Paginator = Y.mix(
-    Y.Base.create('pagiantor', Y.Base, [Y.Paginator.Core]),
+    Y.Base.create('paginator', Y.Base, [Y.Paginator.Core]),
     Y.Paginator
 );
 
-}, '3.12.0', {"requires": ["paginator-core"]});
+
+}, '@VERSION@', {"requires": ["paginator-core"]});

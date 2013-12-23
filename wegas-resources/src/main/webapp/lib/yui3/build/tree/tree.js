@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('tree', function (Y, NAME) {
 
 /*jshint boss:true, expr:true, onevar:false */
@@ -932,4 +925,4 @@ var Tree = Y.Base.create('tree', Y.Base, [], {
 Y.Tree = Y.mix(Tree, Y.Tree);
 
 
-}, '3.12.0', {"requires": ["base-build", "tree-node"]});
+}, '@VERSION@', {"requires": ["base-build", "tree-node"]});

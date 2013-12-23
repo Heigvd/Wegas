@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('resize-base', function (Y, NAME) {
 
 /**
@@ -1652,4 +1645,4 @@ Y.each(Y.Resize.prototype.ALL_HANDLES, function(handle) {
 });
 
 
-}, '3.12.0', {"requires": ["base", "widget", "event", "oop", "dd-drag", "dd-delegate", "dd-drop"], "skinnable": true});
+}, '@VERSION@', {"requires": ["base", "widget", "event", "oop", "dd-drag", "dd-delegate", "dd-drop"], "skinnable": true});

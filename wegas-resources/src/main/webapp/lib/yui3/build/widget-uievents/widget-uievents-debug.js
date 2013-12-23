@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('widget-uievents', function (Y, NAME) {
 
 /**
@@ -231,4 +224,4 @@ Y.mix(Widget.prototype, {
 }, true); // overwrite existing EventTarget methods
 
 
-}, '3.12.0', {"requires": ["node-event-delegate", "widget-base"]});
+}, '@VERSION@', {"requires": ["node-event-delegate", "widget-base"]});

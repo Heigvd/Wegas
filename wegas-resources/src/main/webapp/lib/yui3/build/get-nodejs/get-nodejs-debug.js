@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('get', function (Y, NAME) {
 
     /**
@@ -72,7 +65,9 @@ YUI.add('get', function (Y, NAME) {
         if (typeof YUI._getLoadHook === 'function') {
             data = YUI._getLoadHook(data, url);
         }
-        mod._compile('module.exports = function (YUI) {' + data + '\n;return YUI;};', url);
+        mod._compile('module.exports = function (YUI) {' +
+            'return (function () {'+ data + '\n;return YUI;}).apply(global);' +
+        '};', url);
 
         /*global YUI:true */
         YUI = mod.exports(YUI);
@@ -181,7 +176,7 @@ YUI.add('get', function (Y, NAME) {
                 }
             });
         }
-        
+
         //Keeping Signature in the browser.
         return {
             execute: function() {}

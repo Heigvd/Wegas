@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datatable-base', function (Y, NAME) {
 
 /**
@@ -688,7 +681,7 @@ Y.DataTable = Y.mix(
     Y.DataTable); // Migrate static and namespaced classes
 
 
-}, '3.12.0', {
+}, '@VERSION@', {
     "requires": [
         "datatable-core",
         "datatable-table",

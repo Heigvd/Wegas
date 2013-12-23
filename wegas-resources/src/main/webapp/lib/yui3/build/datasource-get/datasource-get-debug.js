@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datasource-get', function (Y, NAME) {
 
 /**
@@ -19,12 +12,12 @@ YUI.add('datasource-get', function (Y, NAME) {
  * @class DataSource.Get
  * @extends DataSource.Local
  * @constructor
- */    
+ */
 var DSGet = function() {
     DSGet.superclass.constructor.apply(this, arguments);
 };
-    
-    
+
+
 Y.DataSource.Get = Y.extend(DSGet, Y.DataSource.Local, {
     /**
      * Passes query string to Get Utility. Fires <code>response</code> event when
@@ -136,7 +129,7 @@ Y.DataSource.Get = Y.extend(DSGet, Y.DataSource.Local, {
      *
      * @property NAME
      * @type String
-     * @static     
+     * @static
      * @final
      * @value "dataSourceGet"
      */
@@ -213,8 +206,8 @@ Y.DataSource.Get = Y.extend(DSGet, Y.DataSource.Local, {
         }
     }
 });
-  
+
 YUI.namespace("Env.DataSource.callbacks");
 
 
-}, '3.12.0', {"requires": ["datasource-local", "get"]});
+}, '@VERSION@', {"requires": ["datasource-local", "get"]});

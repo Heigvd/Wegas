@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('autocomplete-list', function (Y, NAME) {
 
 /**
@@ -620,8 +613,8 @@ List = Y.Base.create('autocompleteList', Y.Widget, [
         var boundingBox = this._boundingBox,
             target      = e.target;
 
-        if(target !== this._inputNode && target !== boundingBox &&
-                target.ancestor('#' + boundingBox.get('id'), true)){
+        if (target !== this._inputNode && target !== boundingBox &&
+                !target.ancestor('#' + boundingBox.get('id'), true)){
             this.hide();
         }
     },
@@ -892,7 +885,7 @@ for API docs.
 Y.AutoComplete = List;
 
 
-}, '3.12.0', {
+}, '@VERSION@', {
     "lang": [
         "en",
         "es",

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('calendar', function (Y, NAME) {
 
 /**
@@ -402,6 +395,7 @@ Y.Calendar = Y.extend(Calendar, Y.CalendarBase, {
             maxDate = this.get('maximumDate'),
             dates = [],
             i, l,
+            paneDate,
             paneNum;
 
         if (!minDate && !maxDate) {
@@ -612,4 +606,5 @@ Y.Calendar = Y.extend(Calendar, Y.CalendarBase, {
     }
 });
 
-}, '3.12.0', {"requires": ["calendar-base", "calendarnavigator"], "skinnable": true});
+
+}, '@VERSION@', {"requires": ["calendar-base", "calendarnavigator"], "skinnable": true});

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datatype-date-parse', function (Y, NAME) {
 
 /**
@@ -40,4 +33,4 @@ Y.namespace("DataType");
 Y.DataType.Date = Y.Date;
 
 
-}, '3.12.0');
+}, '@VERSION@');

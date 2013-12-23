@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('clickable-rail', function (Y, NAME) {
 
 /**
@@ -57,7 +50,7 @@ Y.ClickableRail = Y.mix(ClickableRail, {
             this.on('destroy', this._unbindClickableRail);
         },
 
-        /** 
+        /**
          * Attaches DOM event subscribers to support rail interaction.
          *
          * @method _bindClickableRail
@@ -119,7 +112,7 @@ Y.ClickableRail = Y.mix(ClickableRail, {
                 thumb,
                 thumbSize,
                 xy;
-                
+
             if (dd) {
                 thumb = dd.get('dragNode');
                 thumbSize = parseFloat(thumb.getStyle(this._key.dim), 10);
@@ -216,4 +209,4 @@ Y.ClickableRail = Y.mix(ClickableRail, {
 }, true);
 
 
-}, '3.12.0', {"requires": ["slider-base"]});
+}, '@VERSION@', {"requires": ["slider-base"]});

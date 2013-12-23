@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('widget-base', function (Y, NAME) {
 
 /**
@@ -189,7 +182,7 @@ ATTRS[RENDERED] = {
  * @writeOnce
  */
 ATTRS[BOUNDING_BOX] = {
-    value:null,
+    valueFn:"_defaultBB",
     setter: "_setBB",
     writeOnce: TRUE
 };
@@ -779,6 +772,25 @@ Y.extend(Widget, Y.Base, {
     },
 
     /**
+     * Returns the default value for the boundingBox attribute.
+     *
+     * For the Widget class, this will most commonly be null (resulting in a new
+     * boundingBox node instance being created), unless a srcNode was provided
+     * and CONTENT_TEMPLATE is null, in which case it will be srcNode.
+     * This behavior was introduced in @VERSION@ to accomodate single-box widgets
+     * whose BB & CB both point to srcNode (e.g. Y.Button).
+     *
+     * @method _defaultBB
+     * @protected
+     */
+    _defaultBB : function() {
+        var node = this.get(SRC_NODE),
+            nullCT = (this.CONTENT_TEMPLATE === null);
+
+        return ((node && nullCT) ? node : null);
+    },
+
+    /**
      * Returns the default value for the contentBox attribute.
      *
      * For the Widget class, this will be the srcNode if provided, otherwise null (resulting in
@@ -1263,7 +1275,7 @@ Y.extend(Widget, Y.Base, {
 Y.Widget = Widget;
 
 
-}, '3.12.0', {
+}, '@VERSION@', {
     "requires": [
         "attribute",
         "base-base",

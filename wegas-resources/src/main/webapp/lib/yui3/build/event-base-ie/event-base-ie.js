@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 (function() {
 
 var stateChangeListener,
@@ -307,4 +300,4 @@ if (imp && (!imp.hasFeature('Events', '2.0'))) {
 }
 
 
-}, '3.12.0', {"requires": ["node-base"]});
+}, '@VERSION@', {"requires": ["node-base"]});

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('json-stringify-shim', function (Y, NAME) {
 
 // All internals kept private for security reasons
@@ -103,7 +96,7 @@ function _string(s) {
         chr = _COMMON[i];
         s = s.replace(chr[0], chr[1]);
     }
-    
+
     // original function replace for the not-as-common set of chars
     return QUOTE + s.replace(_SPECIAL, _char) + QUOTE;
 }
@@ -236,4 +229,5 @@ Y.JSON.stringify = function _stringify(o,w,space) {
 // is native or a shim
 Y.JSON.stringify.isShim = true;
 
-}, '3.12.0', {"requires": ["json-stringify"]});
+
+}, '@VERSION@', {"requires": ["json-stringify"]});

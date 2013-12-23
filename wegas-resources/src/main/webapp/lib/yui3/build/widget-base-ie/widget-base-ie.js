@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('widget-base-ie', function (Y, NAME) {
 
 /**
@@ -53,4 +46,4 @@ Y.Widget.prototype._uiSizeCB = function(expand) {
 };
 
 
-}, '3.12.0', {"requires": ["widget-base"]});
+}, '@VERSION@', {"requires": ["widget-base"]});

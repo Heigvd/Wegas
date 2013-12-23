@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datatable-paginator', function (Y, NAME) {
 
 /**
@@ -386,7 +379,25 @@ View = Y.Base.create('dt-pg-view', Y.View, [], {
         // Not a valueFn because other class extensions may want to add to it
         this.set('strings', Y.mix((this.get('strings') || {}),
             Y.Intl.get('datatable-paginator')));
+    },
+
+
+    /**
+     Returns an Array with default values for the Rows Per Page select option.
+     We had to use a valueFn to enable language string replacement.
+
+     @protected
+     @method _defPageSizeVal
+     @since 3.13.0
+     */
+    _defPageSizeVal: function () {
+        this._initStrings();
+
+        var str = this.get('strings');
+
+        return [10, 50, 100, { label: str.showAll, value: -1 }]
     }
+
 }, {
     ATTRS: {
         /**
@@ -397,7 +408,7 @@ View = Y.Base.create('dt-pg-view', Y.View, [], {
          @since 3.11.0
          */
         pageSizes: {
-            value: [ 10, 50, 100, { label: 'Show All', value: -1 } ]
+            valueFn: '_defPageSizeVal'
         },
 
         /**
@@ -435,7 +446,7 @@ Controller.ATTRS = {
      A pointer to a Model object to be instantiated, or a String off of the
      `Y` namespace.
 
-     This is only used if the `pagiantorModel` is a configuration object or
+     This is only used if the `paginatorModel` is a configuration object or
      is null.
      @attribute paginatorModelType
      @type {Y.Model | String}
@@ -474,8 +485,10 @@ Controller.ATTRS = {
      */
     pageSizes: {
         setter: '_setPageSizesFn',
-        value: [10, 50, 100, { label: 'Show All', value: -1 }]
+        valueFn: '_defPageSizeVal'
     },
+
+    paginatorStrings: {},
 
     /**
      Number of rows to display per page. As the UI changes the number of pages
@@ -558,6 +571,7 @@ Y.mix(Controller.prototype, {
      */
     initializer: function () {
         // allow DT to use paged data
+        this._initPaginatorStrings();
         this._augmentData();
 
         if (!this._eventHandles.paginatorRender) {
@@ -578,6 +592,7 @@ Y.mix(Controller.prototype, {
         model.after('change', this._afterPaginatorModelChange, this);
         this.after('dataChange', this._afterDataChangeWithPaginator, this);
         this.after('rowsPerPageChange', this._afterRowsPerPageChange, this);
+        this.data.after(['add', 'remove', 'change'], this._afterDataUpdatesWithPaginator, this);
 
         // ensure our model has the correct totalItems set
         model.set('itemsPerPage', this.get('rowsPerPage'));
@@ -595,6 +610,8 @@ Y.mix(Controller.prototype, {
         var data = this.get('data'),
             model = this.get('paginatorModel');
 
+        model.set('totalItems', data.size());
+
         if (model.get('page') !== 1) {
             this.firstPage();
         } else {
@@ -605,6 +622,21 @@ Y.mix(Controller.prototype, {
                 models: data._items.concat()
             });
         }
+    },
+
+    /**
+     After data has changed due to a model being added, removed, or changed,
+     update paginator model totalItems to reflect the changes.
+     @protected
+     @method _afterDataUpdatesWithPaginator
+     @param {EventFacade} e
+     @since 3.13.0
+    */
+    _afterDataUpdatesWithPaginator: function () {
+        var model = this.get('paginatorModel'),
+            data = this.get('data');
+
+        model.set('totalItems', data.size());
     },
 
     /**
@@ -906,6 +938,34 @@ Y.mix(Controller.prototype, {
         return typeof type === 'string' ?
             Y.Object.getValue(Y, type.split('.')) :
             type;
+    },
+
+    /**
+     Initializes paginatorStrings used for internationalization
+     @protected
+     @method _initPaginatorStrings
+     @since 3.13.0
+     */
+    _initPaginatorStrings: function () {
+        // Not a valueFn because other class extensions may want to add to it
+        this.set('paginatorStrings', Y.mix((this.get('paginatorStrings') || {}),
+            Y.Intl.get('datatable-paginator')));
+    },
+
+    /**
+     Returns an Array with default values for the Rows Per Page select option.
+     We had to use a valueFn to enable language string replacement.
+
+     @protected
+     @method _defPageSizeVal
+     @since 3.13.0
+     */
+    _defPageSizeVal: function () {
+        this._initPaginatorStrings();
+
+        var str = this.get('paginatorStrings');
+
+        return [10, 50, 100, { label: str.showAll, value: -1 }]
     }
 }, true);
 
@@ -917,7 +977,7 @@ Y.DataTable.Paginator.View = View;
 Y.Base.mix(Y.DataTable, [Y.DataTable.Paginator]);
 
 
-}, '3.12.0', {
+}, '@VERSION@', {
     "requires": [
         "model",
         "view",
@@ -926,7 +986,8 @@ Y.Base.mix(Y.DataTable, [Y.DataTable.Paginator]);
         "datatable-paginator-templates"
     ],
     "lang": [
-        "en"
+        "en",
+        "fr"
     ],
     "skinnable": true
 });

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('node-pluginhost', function (Y, NAME) {
 
 /**
@@ -58,11 +51,11 @@ Y.Object.each(Y.Node._instances, function (node) {
  * This will instantiate the plugin and attach it to the configured namespace on each node
  * @method plug
  * @for NodeList
- * @param P {Function | Object |Array} Accepts the plugin class, or an 
- * object with a "fn" property specifying the plugin class and 
+ * @param P {Function | Object |Array} Accepts the plugin class, or an
+ * object with a "fn" property specifying the plugin class and
  * a "cfg" property specifying the configuration for the Plugin.
  * <p>
- * Additionally an Array can also be passed in, with the above function or 
+ * Additionally an Array can also be passed in, with the above function or
  * object values, allowing the user to add multiple plugins in a single call.
  * </p>
  * @param config (Optional) If the first argument is the plugin class, the second argument
@@ -78,8 +71,8 @@ Y.NodeList.prototype.plug = function() {
 };
 
 /**
- * Removes a plugin from all nodes in the NodeList. This will destroy the 
- * plugin instance and delete the namespace each node. 
+ * Removes a plugin from all nodes in the NodeList. This will destroy the
+ * plugin instance and delete the namespace each node.
  * @method unplug
  * @for NodeList
  * @param {String | Function} plugin The namespace of the plugin, or the plugin class with the static NS namespace property defined. If not provided,
@@ -95,4 +88,4 @@ Y.NodeList.prototype.unplug = function() {
 };
 
 
-}, '3.12.0', {"requires": ["node-base", "pluginhost"]});
+}, '@VERSION@', {"requires": ["node-base", "pluginhost"]});

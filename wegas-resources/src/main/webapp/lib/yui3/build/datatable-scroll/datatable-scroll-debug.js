@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datatable-scroll', function (Y, NAME) {
 
 /**
@@ -1390,4 +1383,4 @@ Y.mix(Scrollable.prototype, {
 Y.Base.mix(Y.DataTable, [Scrollable]);
 
 
-}, '3.12.0', {"requires": ["datatable-base", "datatable-column-widths", "dom-screen"], "skinnable": true});
+}, '@VERSION@', {"requires": ["datatable-base", "datatable-column-widths", "dom-screen"], "skinnable": true});

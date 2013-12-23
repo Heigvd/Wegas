@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datatable-foot', function (Y, NAME) {
 
 /**
@@ -116,4 +109,4 @@ Y.namespace('DataTable').FooterView = Y.Base.create('tableFooter', Y.View, [], {
 });
 
 
-}, '3.12.0', {"requires": ["datatable-core", "view"]});
+}, '@VERSION@', {"requires": ["datatable-core", "view"]});

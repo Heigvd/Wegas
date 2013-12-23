@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datasource-polling', function (Y, NAME) {
 
 /**
@@ -13,12 +6,12 @@ YUI.add('datasource-polling', function (Y, NAME) {
  * @module datasource
  * @submodule datasource-polling
  */
-    
+
 /**
  * Adds polling to the DataSource Utility.
  * @class Pollable
  * @extends DataSource.Local
- */    
+ */
 function Pollable() {
     this._intervals = {};
 }
@@ -93,8 +86,8 @@ Pollable.prototype = {
         Y.each(this._intervals, this.clearInterval, this);
     }
 };
-    
+
 Y.augment(Y.DataSource.Local, Pollable);
 
 
-}, '3.12.0', {"requires": ["datasource-local"]});
+}, '@VERSION@', {"requires": ["datasource-local"]});

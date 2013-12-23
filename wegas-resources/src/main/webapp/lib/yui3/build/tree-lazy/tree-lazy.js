@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('tree-lazy', function (Y, NAME) {
 
 /*jshint expr:true, maxlen:200, onevar:false */
@@ -179,4 +172,4 @@ Y.namespace('Plugin.Tree').Lazy = Y.Base.create('lazyTreePlugin', Y.Plugin.Base,
 });
 
 
-}, '3.12.0', {"requires": ["base-pluginhost", "plugin", "tree"]});
+}, '@VERSION@', {"requires": ["base-pluginhost", "plugin", "tree"]});

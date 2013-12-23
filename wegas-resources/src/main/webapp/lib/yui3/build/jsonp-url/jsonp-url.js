@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('jsonp-url', function (Y, NAME) {
 
 var JSONPRequest = Y.JSONPRequest,
@@ -136,4 +129,4 @@ Y.mix(JSONPRequest.prototype, {
 }, true);
 
 
-}, '3.12.0', {"requires": ["jsonp"]});
+}, '@VERSION@', {"requires": ["jsonp"]});

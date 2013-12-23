@@ -1,16 +1,9 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('range-slider', function (Y, NAME) {
 
 /**
  * Create a sliding value range input visualized as a draggable thumb on a
  * background rail element.
- * 
+ *
  * @module slider
  * @main slider
  * @submodule range-slider
@@ -32,4 +25,4 @@ Y.Slider = Y.Base.build( 'slider', Y.SliderBase,
     [ Y.SliderValueRange, Y.ClickableRail ] );
 
 
-}, '3.12.0', {"requires": ["slider-base", "slider-value-range", "clickable-rail"]});
+}, '@VERSION@', {"requires": ["slider-base", "slider-value-range", "clickable-rail"]});

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('button-plugin', function (Y, NAME) {
 
 /**
@@ -26,7 +19,7 @@ function ButtonPlugin() {
 }
 
 Y.extend(ButtonPlugin, Y.ButtonCore, {
-    
+
     /**
     * @method _afterNodeGet
     * @param name {string}
@@ -36,7 +29,7 @@ Y.extend(ButtonPlugin, Y.ButtonCore, {
         // TODO: point to method (_uiSetLabel, etc) instead of getter/setter
         var ATTRS = this.constructor.ATTRS,
             fn = ATTRS[name] && ATTRS[name].getter && this[ATTRS[name].getter];
-            
+
         if (fn) {
             return new Y.Do.AlterReturn('get ' + name, fn.call(this));
         }
@@ -51,7 +44,7 @@ Y.extend(ButtonPlugin, Y.ButtonCore, {
     _afterNodeSet: function (name, val) {
         var ATTRS = this.constructor.ATTRS,
             fn = ATTRS[name] && ATTRS[name].setter && this[ATTRS[name].setter];
-            
+
         if (fn) {
             fn.call(this, val);
         }
@@ -65,7 +58,7 @@ Y.extend(ButtonPlugin, Y.ButtonCore, {
     _initNode: function(config) {
         var node = config.host;
         this._host = node;
-        
+
         Y.Do.after(this._afterNodeGet, node, 'get', this);
         Y.Do.after(this._afterNodeSet, node, 'set', this);
     },
@@ -77,9 +70,9 @@ Y.extend(ButtonPlugin, Y.ButtonCore, {
     destroy: function(){
         // Nothing to do, but things are happier with it here
     }
-    
+
 }, {
-    
+
     /**
     * Attribute configuration.
     *
@@ -89,7 +82,7 @@ Y.extend(ButtonPlugin, Y.ButtonCore, {
     * @static
     */
     ATTRS: Y.merge(Y.ButtonCore.ATTRS),
-    
+
     /**
     * Name of this component.
     *
@@ -98,7 +91,7 @@ Y.extend(ButtonPlugin, Y.ButtonCore, {
     * @static
     */
     NAME: 'buttonPlugin',
-    
+
     /**
     * Namespace of this component.
     *
@@ -107,7 +100,7 @@ Y.extend(ButtonPlugin, Y.ButtonCore, {
     * @static
     */
     NS: 'button'
-    
+
 });
 
 /**
@@ -138,4 +131,4 @@ ButtonPlugin.createNode = function(node, config) {
 Y.namespace('Plugin').Button = ButtonPlugin;
 
 
-}, '3.12.0', {"requires": ["button-core", "cssbutton", "node-pluginhost"]});
+}, '@VERSION@', {"requires": ["button-core", "cssbutton", "node-pluginhost"]});

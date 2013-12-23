@@ -1,13 +1,6 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('sortable-scroll', function (Y, NAME) {
 
-    
+
     /**
      * Plugin for sortable to handle scrolling lists.
      * @module sortable
@@ -20,7 +13,7 @@ YUI.add('sortable-scroll', function (Y, NAME) {
      * @constructor
      * @namespace Plugin
      */
-    
+
     var SortScroll = function() {
         SortScroll.superclass.constructor.apply(this, arguments);
     };
@@ -71,4 +64,4 @@ YUI.add('sortable-scroll', function (Y, NAME) {
 
 
 
-}, '3.12.0', {"requires": ["dd-scroll", "sortable"]});
+}, '@VERSION@', {"requires": ["dd-scroll", "sortable"]});

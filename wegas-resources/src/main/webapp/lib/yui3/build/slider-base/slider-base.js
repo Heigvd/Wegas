@@ -1,16 +1,9 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('slider-base', function (Y, NAME) {
 
 /**
  * Create a sliding value range input visualized as a draggable thumb on a
  * background element.
- * 
+ *
  * @module slider
  * @submodule slider-base
  */
@@ -189,7 +182,7 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
                 thumbAriaLabelId: this.getClassName( 'label', Y.guid()) // get unique id for specifying a label for ARIA
             } ) );
     },
-    
+
     /**
      * Gives focus to the thumb enabling keyboard access after clicking thumb
      *
@@ -199,8 +192,8 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
     _onThumbClick : function(e){
         this.thumb.focus();
     },
-    
-    
+
+
     /**
      * Creates the Y.DD.Drag instance used to handle the thumb movement and
      * binds Slider interaction to the configured value model.
@@ -209,11 +202,11 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
      * @protected
      */
     bindUI : function () {
-    
+
         // Begin keyboard listeners ///////////////////////////////
         var boundingBox = this.get("boundingBox"), //Y.one('body'),
         // Looking for a key event which will fire continously across browsers while the key is held down.
-        keyEvent = (!Y.UA.opera) ? "down:" : "press:",            
+        keyEvent = (!Y.UA.opera) ? "down:" : "press:",
         // 38, 40 = arrow up/down, 33, 34 = page up/down,  35 , 36 = end/home
         keyEventSpec = keyEvent + "38,40,33,34,35,36",
         // 37 , 39 = arrow left/right
@@ -234,9 +227,9 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
 
         this.after( 'disabledChange', this._afterDisabledChange );
         this.after( 'lengthChange',   this._afterLengthChange );
-        
+
     },
-                      
+
     /**
      * increments Slider value by a minor increment
      *
@@ -246,7 +239,7 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
     _incrMinor : function(){
         this.set('value', (this.get('value') + this.get('minorStep')));
     },
-    
+
     /**
      * decrements Slider value by a minor increment
      *
@@ -256,7 +249,7 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
     _decrMinor : function(){
         this.set('value', (this.get('value') - this.get('minorStep')));
     },
-        
+
     /**
      * increments Slider value by a major increment
      *
@@ -266,7 +259,7 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
     _incrMajor : function(){
         this.set('value', (this.get('value') + this.get('majorStep')));
     },
-    
+
     /**
      * decrements Slider value by a major increment
      *
@@ -278,7 +271,7 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
     },
 
     /**
-     * sets the Slider value to the min value. 
+     * sets the Slider value to the min value.
      *
      * @method _setToMin
      * @protected
@@ -288,7 +281,7 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
     },
 
     /**
-     * sets the Slider value to the max value. 
+     * sets the Slider value to the max value.
      *
      * @method _setToMax
      * @protected
@@ -299,7 +292,7 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
 
     /**
      * sets the Slider's value in response to key events.
-     * Left and right keys are in a separate method 
+     * Left and right keys are in a separate method
      * in case an implementation wants to increment values
      * but needs left and right arrow keys for other purposes.
      *
@@ -387,11 +380,11 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
      */
     _bindThumbDD: function () {
         var config = { constrain: this.rail };
-        
+
         // { constrain: rail, stickX: true }
         config[ 'stick' + this.axis.toUpperCase() ] = true;
 
-        /** 
+        /**
          * The DD.Drag instance linked to the thumb node.
          *
          * @property _dd
@@ -590,7 +583,7 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
         return ( v === 'x' || v === 'y' ) ? v : INVALID_VALUE;
     },
 
-    /** 
+    /**
      * <p>Ensures the stored length value is a string with a quantity and unit.
      * Unit will be defaulted to &quot;px&quot; if not included.  Rejects
      * values less than or equal to 0 and those that don't at least start with
@@ -764,4 +757,4 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
 });
 
 
-}, '3.12.0', {"requires": ["widget", "dd-constrain", "event-key"], "skinnable": true});
+}, '@VERSION@', {"requires": ["widget", "dd-constrain", "event-key"], "skinnable": true});
