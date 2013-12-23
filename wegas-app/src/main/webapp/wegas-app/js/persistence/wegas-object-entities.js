@@ -12,14 +12,14 @@
 YUI.add('wegas-object-entities', function(Y) {
     "use strict";
 
-    var STRING = "string", HIDDEN = "hidden", NAME = "name",
-            HTML = "html", VALUE = "value", HASHLIST = "hashlist",
-            COMBINE = "combine";
+    var STRING = "string", HIDDEN = "hidden", NAME = "name", HTML = "html",
+            VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
+            Wegas = Y.Wegas;
 
     /**
      * ObjectDescriptor mapper
      */
-    Y.Wegas.persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+    Wegas.persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", Wegas.persistence.VariableDescriptor, [], {
         getProperty: function(player, key) {
             return this.getInstance(player).get("properties." + key);
         }
@@ -91,7 +91,7 @@ YUI.add('wegas-object-entities', function(Y) {
                 label: "size",
                 returns: "number",
                 arguments: [{
-                        type: "hidden",
+                        type: HIDDEN,
                         value: "self"
                     }]
             },
@@ -99,7 +99,7 @@ YUI.add('wegas-object-entities', function(Y) {
                 label: "property equals",
                 returns: "string",
                 arguments: [{
-                        type: "hidden",
+                        type: HIDDEN,
                         value: "self"
                     }, {
                         value: "property name",
@@ -109,13 +109,13 @@ YUI.add('wegas-object-entities', function(Y) {
             setProperty: {
                 label: "set property",
                 arguments: [{
-                        type: "hidden",
+                        type: HIDDEN,
                         value: "self"
                     }, {
                         value: "property name",
                         scriptType: STRING
                     }, {
-                        value: "value",
+                        value: VALUE,
                         scriptType: STRING
                     }]
             }
@@ -125,7 +125,7 @@ YUI.add('wegas-object-entities', function(Y) {
     /**
      * ObjectInstance mapper
      */
-    Y.Wegas.persistence.ObjectInstance = Y.Base.create("ObjectInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+    Wegas.persistence.ObjectInstance = Y.Base.create("ObjectInstance", Wegas.persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "ObjectInstance"
