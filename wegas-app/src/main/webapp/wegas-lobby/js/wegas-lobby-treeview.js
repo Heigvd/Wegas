@@ -37,7 +37,7 @@ YUI.add('wegas-lobby-treeview', function(Y) {
             this.treeView.on("*:click", function(e) {
                 var entity = e.node.get("data.entity");
                 //sourceUri = "rest/GameModel//Game", // If click on "All game models" node
-                //registeredGamesUri = "rest/RegisteredGames/" + Wegas.app.get("currentUser.id");
+                //registeredGamesUri = "rest/RegisteredGames/" + Wegas.app.get("currentUser");
 
                 //if (entity) {                                                   // If click on a particular game model
                 //sourceUri = "rest/GameModel/" + entity.get(ID) + "/Game";
