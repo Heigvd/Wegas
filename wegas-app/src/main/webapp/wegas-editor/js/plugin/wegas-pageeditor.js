@@ -54,7 +54,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.designButton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Edit page"
                 }).render(el);
-                this.fixedHandlers.push(this.designButton.after("pressedChange", function(e) {
+                this.designButton.after("pressedChange", function(e) {
                     host.get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
                             e.newVal);
                     if (e.newVal) {
@@ -81,7 +81,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                         this.refreshButton.hide();
                         this.addButton.hide();
                     }
-                }, this));
+                }, this);
 
                 /* New button */
                 this.addButton = new Y.Button({/*@HACK */
@@ -106,18 +106,18 @@ YUI.add('wegas-pageeditor', function(Y) {
                     label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
                     visible: false
                 }).render(el);
-                this.fixedHandlers.push(this.refreshButton.after("click", function(e) {
+                this.refreshButton.after("click", function(e) {
                     this.get("host").reload();
-                }, this));
+                }, this);
 
                 this.layoutButton = new Y.ToggleButton({// Layout
                     label: "<span class=\"wegas-icon wegas-icon-showregions\"></span>Draw elements</span>",
                     visible: false
                 }).render(el);
-                this.fixedHandlers.push(this.layoutButton.after("pressedChange", function(e) {
+                this.layoutButton.after("pressedChange", function(e) {
                     this.get("host").get(BOUNDINGBOX).toggleClass("wegas-pageeditor-layoutmode",
                             e.newVal);
-                }, this));
+                }, this);
 
                 /** Source view**/
                 this.sourceButton = new Y.ToggleButton({

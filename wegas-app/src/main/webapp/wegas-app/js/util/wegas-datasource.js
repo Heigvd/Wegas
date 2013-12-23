@@ -17,10 +17,10 @@ YUI.add('wegas-datasource', function(Y) {
             GameModelCache, GameCache, PageCache,
             Lang = Y.Lang,
             DEFAULTHEADERS = {
-                'Content-Type': 'application/json;charset=ISO-8859-1',
-                'Managed-Mode': 'true'
-            },
-            basePlug = Y.DataSource.IO.prototype.plug;
+        'Content-Type': 'application/json;charset=ISO-8859-1',
+        'Managed-Mode': 'true'
+    },
+    basePlug = Y.DataSource.IO.prototype.plug;
 
     /**
      * @name Y.Wegas.DataSource
@@ -84,37 +84,6 @@ YUI.add('wegas-datasource', function(Y) {
             }
             return Y.Wegas.DataSource.superclass.sendRequest.call(this, request);
         },
-        _defDataFn: function(e) {
-            var response, data = e.data && (e.data.responseText || e.data),
-                    payload = e.details[0];
-
-            response = Y.DataSchema.JSON.apply.call(this, {
-                resultListLocator: "."
-            }, data);
-            response.data = this.data;                                          // Provides with a pointer to the datasource current content
-            payload.response = response;
-            Y.log("Response received: " + this.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
-
-            Wegas.Editable.use(payload.response.results, // Lookup dependencies
-                    Y.bind(function(payload) {
-
-                if (payload.cfg.initialRequest) {
-                    this.cache.clear(false);
-                }
-
-                payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                if (payload.serverResponse.get
-                        && payload.serverResponse.get("entities")
-                        && payload.serverResponse.get("entities").length > 0) {
-                    payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
-                    payload.response.entities = payload.serverResponse.get("entities");
-                }
-                if (this.cache && payload.cfg.updateCache !== false) {
-                    this.cache.onResponseRevived(payload);
-                }
-                this.fire("response", payload);
-            }, this, payload));
-        }
     }, {
         /** @lends Y.Wegas.DataSource */
 
@@ -128,28 +97,17 @@ YUI.add('wegas-datasource', function(Y) {
         abort: function(tId) {
             if (Y.DataSource.Local.transactions[tId]) {
                 Y.DataSource.Local.transactions[tId].abort();
-
                 Y.DataSource.Local.transactions[tId] = null;                    // @hack Remove reference since Yui won't do it
             }
         }
     });
-
     /**
      *  @name Y.Plugin.WegasCache
      *  @class Plugin that add cache management for entites from wegas server.
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    WegasCache = function() {
-        WegasCache.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.mix(WegasCache, {
-        NS: "cache",
-        NAME: "WegasCache"
-    });
-
-    Y.extend(WegasCache, Y.Plugin.Base, {
+    WegasCache = Y.Base.create("WegasCache", Y.Plugin.Base, [], {
         /** @lends Y.Plugin.WegasCache# */
         /**
          * @function
@@ -163,8 +121,42 @@ YUI.add('wegas-datasource', function(Y) {
                 broadcast: true,
                 bubbles: false
             });
+            this.doBefore("_defDataFn", this._beforeDefDataFn);                 // When the host receives some data, we parse the result
+        },
+        _beforeDefDataFn: function(e) {
+            var response, data = e.data && (e.data.responseText || e.data),
+                    host = this.get("host"),
+                    payload = e.details[0];
 
-            //this.doBefore("data", this.onData, this);                           // When the host receives some data, we parse the result
+            response = {
+                results: Y.JSON.parse(data),
+                meta: {}
+            };
+            response.data = host.data;                                          // Provides with a pointer to the datasource current content
+            payload.response = response;
+            Y.log("Response received: " + host.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
+
+            Wegas.Editable.use(payload.response.results, // Lookup dependencies
+                    Y.bind(function(payload) {
+
+                if (payload.cfg.initialRequest) {
+                    this.clear(false);
+                }
+
+                payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
+                if (payload.serverResponse.get
+                        && payload.serverResponse.get("entities")
+                        && payload.serverResponse.get("entities").length > 0) {
+                    payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
+                    payload.response.entities = payload.serverResponse.get("entities");
+                }
+                if (payload.cfg.updateCache !== false) {
+                    this.onResponseRevived(payload);
+                }
+                host.fire("response", payload);
+            }, this, payload));
+
+            return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         },
         /**
          * Server requests methods
@@ -175,39 +167,6 @@ YUI.add('wegas-datasource', function(Y) {
             //Y.log("sendRequest is depreacted, use host.sendrequest instead", "warn");
             return this.get(HOST).sendRequest(request);
         },
-        /**
-         * @function
-         * @private
-         */
-//        onData: function(e) {
-//            var data = e.data && (e.data.responseText || e.data),
-//                    schema = this.get('schema'),
-//                    payload = e.details[0];
-//
-//            payload.response = Y.DataSchema.JSON.apply.call(this, schema, data) || {
-//                meta: {},
-//                results: data
-//            };
-//            payload.response.data = this.getCache();                            // Provides with a pointer to the datasource current content
-//
-//            Y.log("Response received from " + this.get(HOST).get('source')/* + e.cfg.request*/, "log", "Wegas.WegasCache");
-//
-//            Wegas.Editable.use(payload.response.results, // Lookup dependencies
-//                    Y.bind(function(payload) {
-//                payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-//                if (payload.serverResponse.get
-//                        && payload.serverResponse.get("entities")
-//                        && payload.serverResponse.get("entities").length > 0) {
-//                    payload.response.entity = payload.serverResponse.get("entities")[0];                                 // Shortcut, useful if there is only one instance
-//                }
-//                if (payload.cfg.updateCache !== false) {
-//                    this.onResponseRevived(payload);
-//                }
-//                this.get(HOST).fire("response", payload);
-//            }, this, payload));
-//            e.halt(true);
-//            return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
-//        },
         /**
          * @function
          * @private
@@ -508,14 +467,10 @@ YUI.add('wegas-datasource', function(Y) {
         }
 
     }, {
+        NS: "cache",
+        NAME: "WEGASCACHE",
         /** @lends Y.Plugin.WegasCache */
         ATTRS: {
-            schema: {
-                value: {
-                    resultListLocator: "."
-                            //resultFields: ["name", ID, "@class"]
-                }
-            },
             testFn: {
                 value: function(entity, key, needle) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
@@ -1021,7 +976,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        initializer: function(cfg) {
+        initializer: function() {
             var endsWith = function(str, suffix) {
                 return str.indexOf(suffix, str.length - suffix.length) !== -1;
             };
@@ -1087,7 +1042,7 @@ YUI.add('wegas-datasource', function(Y) {
             if (Y.JSON.stringify(object) !== old) {
                 this.get(HOST).data["" + pageId] = object;
                 this.fire("pageUpdated", {
-                    "page": this.getPage(pageId)
+                    page: this.getPage(pageId)
                 });
             }
         },
@@ -1280,48 +1235,6 @@ YUI.add('wegas-datasource', function(Y) {
     });
     Y.namespace('Plugin').PageCache = PageCache;
 
-    /**
-     * @FIXME We redefine this so we can use a "." selector and a "@..." field name
-     */
-    Y.DataSchema.JSON.getPath = function(locator) {
-        var path = null,
-                keys = [],
-                i = 0;
-
-        if (locator) {
-            if (locator === '.') {
-                return [];					// MODIFIED !!
-            }
-
-            // Strip the ["string keys"] and [1] array indexes
-            locator = locator.
-                    replace(/\[(['"])(.*?)\1\]/g,
-                    function(x, $1, $2) {
-                        keys[i] = $2;
-                        return '.@' + (i++);
-                    }).
-                    replace(/\[(\d+)\]/g,
-                    function(x, $1) {
-                        keys[i] = parseInt($1, 10) | 0;
-                        return '.@' + (i++);
-                    }).
-                    replace(/^\./, ''); // remove leading dot
-
-            // Validate against problematic characters.
-            if (!/[^\w\.\$@]/.test(locator)) {
-                path = locator.split('.');
-                for (i = path.length - 1; i >= 0; --i) {
-                    /*if (path[i].charAt(0) === '@') {				// MODIFIED !!
-                     path[i] = keys[parseInt(path[i].substr(1),10)];
-                     }*/
-                }
-            }
-            else {
-            }
-        }
-        return path;
-    };
-
     /*
      * @fixme hack on yui apis
      */
@@ -1355,56 +1268,33 @@ YUI.add('wegas-datasource', function(Y) {
     };
 
     /*
-     * @FIXME We rewrite this function, should be overriden
+     *
      */
-    Y.DataSchema.JSON._parseResults = function(schema, json_in, data_out) {
-        var results = [],
-                path,
-                error;
+    Y.Plugin.JSONSchema = Y.Base.create("wegas-jsoncache", Y.Plugin.Base, [], {
+        /**
+         * Internal init() handler.
+         *
+         * @method initializer
+         * @param config {Object} Config object.
+         * @private
+         */
+        initializer: function() {
+            this.doBefore("_defDataFn", this._beforeDefDataFn);
+        },
+        _beforeDefDataFn: function(e) {
+            var data = e.data && (e.data.responseText || e.data),
+                    payload = e.details[0];
+            payload.response = {
+                meta: {},
+                results: Y.JSON.parse(data)
+            };
+            this.get("host").fire("response", payload);
 
-        if (schema.resultListLocator) {
-            path = Y.DataSchema.JSON.getPath(schema.resultListLocator);
-            if (path) {
-                results = Y.DataSchema.JSON.getLocationValue(path, json_in);
-                if (results === undefined) {
-                    data_out.results = [];
-                    error = new Error("JSON results retrieval failure");
-                }
-                else {
-                    if (Lang.isArray(results)) {
-                        // if no result fields are passed in, then just take the results array whole-hog
-                        // Sometimes you're getting an array of strings, or want the whole object,
-                        // so resultFields don't make sense.
-                        if (Lang.isArray(schema.resultFields)) {
-                            data_out = Y.DataSchema.JSON._getFieldValues.call(this, schema.resultFields, results, data_out);
-                        }
-                        else {
-                            data_out.results = results;
-                        }
-                    } else if (Lang.isObject(results)) {			// Added
-                        if (Lang.isArray(schema.resultFields)) {
-                            data_out = Y.DataSchema.JSON._getFieldValues.call(this, schema.resultFields, [results], data_out);
-                        }
-                        else {
-                            data_out.results = results;
-                        }
-                    } else {
-                        data_out.results = [];
-                        error = new Error("JSON Schema fields retrieval failure");
-                    }
-                }
-            }
-            else {
-                error = new Error("JSON Schema results locator failure");
-            }
-
-            if (error) {
-                data_out.error = error;
-            }
-
+            return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         }
-        return data_out;
-    };
+    }, {
+        NS: "jsonschema"
+    });
 
     /*
      * @hack Override so plugin host accepts string definition of classes and

@@ -52,7 +52,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-datasource': {
                     path: 'js/util/wegas-datasource-min.js',
-                    requires: ['array-extras', "datasource-io", "datasource-jsonschema"]
+                    requires: ['array-extras', "datasource-io", "json"]
                 },
                 'wegas-scripteval': {
                     path: 'js/plugin/wegas-scripteval-min.js',

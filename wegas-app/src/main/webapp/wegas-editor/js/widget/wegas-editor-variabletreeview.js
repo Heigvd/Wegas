@@ -137,7 +137,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                     entity: el
                                 },
                                 iconCSS: "wegas-icon-questiondescriptor",
-                                //rightWidget: Y.Node.create(EDITBUTTONTPL),
                                 cssClass: "wegas-editor-listitem wegas-editor-question"
                             });
                             break;
@@ -247,8 +246,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          * @private
          */
         genVariableInstanceElements: function(label, el) {
-            var l,
-                    selected = (this.currentSelection == el.get(ID)) ? 2 : 0;
+            var selected = (this.currentSelection == el.get(ID)) ? 2 : 0;
 
             switch (el.get(CLASS)) {
                 case 'StringInstance':
@@ -264,9 +262,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     };
 
                 case 'QuestionInstance':
-                    l = label + ((el.get("replies").length > 0) ? ': ' + el.get("replies").get(NAME) : ': unanswered');
                     return {
-                        label: l,
+                        label: label + ((el.get("replies").length > 0) ? ': ' + el.get("replies").get(NAME) : ': unanswered'),
                         selected: selected,
                         data: {
                             entity: el
