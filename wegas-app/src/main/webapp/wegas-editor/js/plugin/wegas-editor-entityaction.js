@@ -160,13 +160,13 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 });
                 EditEntityAction.tab.form = EditEntityAction.form = form;
                 EditEntityAction.tab.add(form);
-                if (!Y.Wegas.App.hideRightPanelCloseButton) {
-                    form.addButton({
-                        type: "Button",
-                        action: "cancel",
-                        label: "<span class=\"wegas-icon wegas-icon-cancel\" ></span>Close"
-                    });
-                }
+                //if (!Y.Wegas.App.hideRightPanelCloseButton) {
+                //    form.addButton({
+                //        type: "Button",
+                //        action: "cancel",
+                //        label: "<span class=\"wegas-icon wegas-icon-cancel\" ></span>Close"
+                //    });
+                //}
             }
             return EditEntityAction.tab;
         },

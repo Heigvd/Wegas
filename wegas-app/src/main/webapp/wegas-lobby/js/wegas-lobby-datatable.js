@@ -246,13 +246,30 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         }
     });
     Y.namespace('Wegas').GameDataTable = GameDataTable;
+
+    /**
+     *  Request current user on host widget loaded
+     * @constructor
+     */
+    Y.Plugin.RequestDT = Y.Base.create("RequestDT", Y.Plugin.Base, [], {
+        initializer: function() {
+            this.afterHostEvent(RENDER, function() {
+                var host = this.get("host");
+                host.showOverlay();
+                host.get(DATASOURCE).sendRequest({
+                    request: "/" + Y.Wegas.app.get("currentUser")
+                });
+            });
+        }
+    }, {
+        NS: "RequestDT"
+    });
     /**
      * @class Open a menu on click, containing the admin edition field
      * @constructor
      */
     Y.Plugin.EditorDTMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
         initializer: function() {
-
             this.buttons = [];
 
             this.afterHostEvent(RENDER, function() {
@@ -319,7 +336,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         }
 
                         if (target && target.toolbar) {
-                            this.buttons = target.toolbar.add(i);               // Add new buttons to the right tab's toolbar
+                            this.buttons = target.toolbar.add(menuItems);       // Add new buttons to the right tab's toolbar
 
                             this.buttons[0].set("visible", false);
                             if (this.buttons[1])
