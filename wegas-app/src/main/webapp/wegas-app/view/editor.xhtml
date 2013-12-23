@@ -94,16 +94,9 @@
                                         /* THIS IS NOT A COMMENT
                                          * </ui:fragment>
                                          */
-
-                                        plugins: [{
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                        //resultFields: ["name", "id", "@class"]
-                                            }
-                                        }
-                                    }, {
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                        },{
                                         fn: "PageCache"
                                     }]
                             },
@@ -173,17 +166,9 @@
                             },
                             File: {
                                 source: "rest/File/GameModelId/#{editorGameController.currentGameModel.id}/",
-                                plugins: [
-                                    {
-                                        fn: "DataSourceJSONSchema",
-                                        cfg: {
-                                            schema: {
-                                                resultListLocator: "."
-                                                        //resultFields: ["name", "id", "@class"]
-                                            }
-                                        }
-                                    }
-                                ]
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                    }]
                             }
 
                         }
