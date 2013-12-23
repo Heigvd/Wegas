@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('widget-position-align', function (Y, NAME) {
 
 /**
@@ -656,4 +649,4 @@ PositionAlign.prototype = {
 Y.WidgetPositionAlign = PositionAlign;
 
 
-}, '3.12.0', {"requires": ["widget-position"]});
+}, '@VERSION@', {"requires": ["widget-position"]});

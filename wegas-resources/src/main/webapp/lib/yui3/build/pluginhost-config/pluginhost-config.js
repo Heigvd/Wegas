@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('pluginhost-config', function (Y, NAME) {
 
     /**
@@ -18,10 +11,10 @@ YUI.add('pluginhost-config', function (Y, NAME) {
     /**
      * A protected initialization method, used by the host class to initialize
      * plugin configurations passed the constructor, through the config object.
-     * 
+     *
      * Host objects should invoke this method at the appropriate time in their
      * construction lifecycle.
-     * 
+     *
      * @method _initConfigPlugins
      * @param {Object} config The configuration object passed to the constructor
      * @protected
@@ -65,9 +58,9 @@ YUI.add('pluginhost-config', function (Y, NAME) {
             this.plug(config.plugins);
         }
     };
-    
+
     /**
-     * Registers plugins to be instantiated at the class level (plugins 
+     * Registers plugins to be instantiated at the class level (plugins
      * which should be plugged into every instance of the class by default).
      *
      * @method plug
@@ -81,17 +74,17 @@ YUI.add('pluginhost-config', function (Y, NAME) {
     PluginHost.plug = function(hostClass, plugin, config) {
         // Cannot plug into Base, since Plugins derive from Base [ will cause infinite recurrsion ]
         var p, i, l, name;
-    
+
         if (hostClass !== Y.Base) {
             hostClass._PLUG = hostClass._PLUG || {};
-    
+
             if (!L.isArray(plugin)) {
                 if (config) {
                     plugin = {fn:plugin, cfg:config};
                 }
                 plugin = [plugin];
             }
-    
+
             for (i = 0, l = plugin.length; i < l;i++) {
                 p = plugin[i];
                 name = p.NAME || p.fn.NAME;
@@ -113,14 +106,14 @@ YUI.add('pluginhost-config', function (Y, NAME) {
      */
     PluginHost.unplug = function(hostClass, plugin) {
         var p, i, l, name;
-    
+
         if (hostClass !== Y.Base) {
             hostClass._UNPLUG = hostClass._UNPLUG || {};
-    
+
             if (!L.isArray(plugin)) {
                 plugin = [plugin];
             }
-    
+
             for (i = 0, l = plugin.length; i < l; i++) {
                 p = plugin[i];
                 name = p.NAME;
@@ -134,4 +127,4 @@ YUI.add('pluginhost-config', function (Y, NAME) {
     };
 
 
-}, '3.12.0', {"requires": ["pluginhost-base"]});
+}, '@VERSION@', {"requires": ["pluginhost-base"]});

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('calendar-base', function (Y, NAME) {
 
 /**
@@ -418,6 +411,7 @@ Y.CalendarBase = Y.extend( CalendarBase, Y.Widget, {
      * @private
      */
     _addDateToSelection : function (oDate, index) {
+        oDate.setHours(12);
 
         if (this._canBeSelected(oDate)) {
 
@@ -1673,7 +1667,6 @@ Y.CalendarBase = Y.extend( CalendarBase, Y.Widget, {
          * customizing specific calendar cells.
          *
          * @attribute customRenderer
-         * @readOnly
          * @type Object
          * @default {}
          */
@@ -1690,7 +1683,7 @@ Y.CalendarBase = Y.extend( CalendarBase, Y.Widget, {
 });
 
 
-}, '3.12.0', {
+}, '@VERSION@', {
     "requires": [
         "widget",
         "datatype-date",

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datasource-local', function (Y, NAME) {
 
 /**
@@ -14,7 +7,7 @@ YUI.add('datasource-local', function (Y, NAME) {
  * @module datasource
  * @main datasource
  */
-    
+
 /**
  * Provides the base DataSource implementation, which can be extended to
  * create DataSources for specific data protocols, such as the IO Utility, the
@@ -29,13 +22,13 @@ YUI.add('datasource-local', function (Y, NAME) {
  * @class DataSource.Local
  * @extends Base
  * @constructor
- */    
+ */
 var LANG = Y.Lang,
 
 DSLocal = function() {
     DSLocal.superclass.constructor.apply(this, arguments);
 };
-    
+
     /////////////////////////////////////////////////////////////////////////////
     //
     // DataSource static properties
@@ -47,7 +40,7 @@ Y.mix(DSLocal, {
      *
      * @property NAME
      * @type String
-     * @static     
+     * @static
      * @final
      * @value "dataSourceLocal"
      */
@@ -64,7 +57,7 @@ Y.mix(DSLocal, {
         * @attribute source
         * @description Pointer to live data.
         * @type MIXED
-        * @default null        
+        * @default null
         */
         source: {
             value: null
@@ -117,14 +110,14 @@ Y.mix(DSLocal, {
         }
     }
 });
-    
+
 Y.extend(DSLocal, Y.Base, {
     /**
     * Internal init() handler.
     *
     * @method initializer
     * @param config {Object} Config object.
-    * @private        
+    * @private
     */
     initializer: function(config) {
         this._initEvents();
@@ -133,7 +126,7 @@ Y.extend(DSLocal, Y.Base, {
     /**
     * This method creates all the events for this module.
     * @method _initEvents
-    * @private        
+    * @private
     */
     _initEvents: function() {
         /**
@@ -141,7 +134,7 @@ Y.extend(DSLocal, Y.Base, {
          *
          * @event request
          * @param e {Event.Facade} Event Facade with the following properties:
-         * <dl>                          
+         * <dl>
          * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
          * <dt>request (Object)</dt> <dd>The request.</dd>
          * <dt>callback (Object)</dt> <dd>The callback object
@@ -153,7 +146,7 @@ Y.extend(DSLocal, Y.Base, {
          * @preventable _defRequestFn
          */
         this.publish("request", {defaultFn: Y.bind("_defRequestFn", this), queuable:true});
-         
+
         /**
          * Fired when raw data is received.
          *
@@ -272,7 +265,7 @@ Y.extend(DSLocal, Y.Base, {
     _defRequestFn: function(e) {
         var data = this.get("source"),
             payload = e.details[0];
-        
+
         // Problematic data
         if(LANG.isUndefined(data)) {
             payload.error = new Error("Local source undefined");
@@ -350,7 +343,7 @@ Y.extend(DSLocal, Y.Base, {
         // Send the response back to the callback
         DSLocal.issueCallback(e, this);
     },
-    
+
     /**
      * Generates a unique transaction ID and fires <code>request</code> event.
      * <strong>Note</strong>: the property <code>callback</code> is a
@@ -398,8 +391,8 @@ Y.extend(DSLocal, Y.Base, {
         return tId;
     }
 });
-    
+
 Y.namespace("DataSource").Local = DSLocal;
 
 
-}, '3.12.0', {"requires": ["base"]});
+}, '@VERSION@', {"requires": ["base"]});

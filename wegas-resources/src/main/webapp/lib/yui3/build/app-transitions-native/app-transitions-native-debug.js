@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('app-transitions-native', function (Y, NAME) {
 
 /**
@@ -357,4 +350,4 @@ Y.App.TransitionsNative = AppTransitionsNative;
 Y.Base.mix(Y.App, [AppTransitionsNative]);
 
 
-}, '3.12.0', {"requires": ["app-transitions", "app-transitions-css", "parallel", "transition"]});
+}, '@VERSION@', {"requires": ["app-transitions", "app-transitions-css", "parallel", "transition"]});

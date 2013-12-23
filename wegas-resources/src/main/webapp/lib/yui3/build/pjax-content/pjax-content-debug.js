@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('pjax-content', function (Y, NAME) {
 
 /**
@@ -285,4 +278,4 @@ PjaxContent.ATTRS = {
 Y.PjaxContent = PjaxContent;
 
 
-}, '3.12.0', {"requires": ["io-base", "node-base", "router"]});
+}, '@VERSION@', {"requires": ["io-base", "node-base", "router"]});

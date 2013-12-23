@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('axis-time-base', function (Y, NAME) {
 
 /**
@@ -356,4 +349,4 @@ Y.TimeImpl = TimeImpl;
 Y.TimeAxisBase = Y.Base.create("timeAxisBase", Y.AxisBase, [Y.TimeImpl]);
 
 
-}, '3.12.0', {"requires": ["axis-base"]});
+}, '@VERSION@', {"requires": ["axis-base"]});

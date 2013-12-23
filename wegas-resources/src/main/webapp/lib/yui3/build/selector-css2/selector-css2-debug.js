@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('selector-css2', function (Y, NAME) {
 
 /**
@@ -37,7 +30,7 @@ var PARENT_NODE = 'parentNode',
         }()),
 
         /**
-         * Mapping of shorthand tokens to corresponding attribute selector 
+         * Mapping of shorthand tokens to corresponding attribute selector
          * @property shorthand
          * @type object
          */
@@ -47,7 +40,7 @@ var PARENT_NODE = 'parentNode',
         },
 
         /**
-         * List of operators and corresponding boolean functions. 
+         * List of operators and corresponding boolean functions.
          * These functions are passed the attribute and the current node's value of the attribute.
          * @property operators
          * @type object
@@ -59,9 +52,9 @@ var PARENT_NODE = 'parentNode',
         },
 
         pseudos: {
-           'first-child': function(node) { 
-                return Y.DOM._children(node[PARENT_NODE])[0] === node; 
-            } 
+           'first-child': function(node) {
+                return Y.DOM._children(node[PARENT_NODE])[0] === node;
+            }
         },
 
         _bruteQuery: function(selector, root, firstOnly) {
@@ -102,7 +95,7 @@ var PARENT_NODE = 'parentNode',
                     while (child) {
                         while (child) {
                             // IE 6-7 considers comment nodes as element nodes, and gives them the tagName "!".
-                            // We can filter them out by checking if its tagName is > "@". 
+                            // We can filter them out by checking if its tagName is > "@".
                             // This also avoids a superflous nodeType === 1 check.
                             if (child.tagName > "@" && (isUniversal || child.tagName === tagName)) {
                                 nodes.push(child);
@@ -127,7 +120,7 @@ var PARENT_NODE = 'parentNode',
 
             return ret;
         },
-        
+
         _filterNodes: function(nodes, tokens, firstOnly) {
             var i = 0,
                 j,
@@ -149,7 +142,7 @@ var PARENT_NODE = 'parentNode',
             for (i = 0; (tmpNode = node = nodes[i++]);) {
                 n = len - 1;
                 path = null;
-                
+
                 testLoop:
                 while (tmpNode && tmpNode.tagName) {
                     token = tokens[n];
@@ -163,7 +156,7 @@ var PARENT_NODE = 'parentNode',
                             } else {
                                 value = tmpNode[test[0]];
                                 if (test[0] === 'tagName' && !Selector._isXML) {
-                                    value = value.toUpperCase();    
+                                    value = value.toUpperCase();
                                 }
                                 if (typeof value != 'string' && value !== undefined && value.toString) {
                                     value = value.toString(); // coerce for comparison
@@ -185,7 +178,7 @@ var PARENT_NODE = 'parentNode',
                                         (!tmpNode.tagName ||
                                             (token.tagName && token.tagName !== tmpNode.tagName))
                                     ) {
-                                        tmpNode = tmpNode[path]; 
+                                        tmpNode = tmpNode[path];
                                     }
                                 }
                                 continue testLoop;
@@ -201,11 +194,11 @@ var PARENT_NODE = 'parentNode',
 
                         // skip non element nodes
                         while (tmpNode && !tmpNode.tagName) {
-                            tmpNode = tmpNode[path]; 
+                            tmpNode = tmpNode[path];
                         }
 
                         if (combinator.direct) { // one pass only
-                            path = null; 
+                            path = null;
                         }
 
                     } else { // success if we made it this far
@@ -256,7 +249,7 @@ var PARENT_NODE = 'parentNode',
                         token.prefilter = match[1];
 
 
-                        match[3] = escVal; 
+                        match[3] = escVal;
 
                         // escape all but ID for prefilter, which may run through QSA (via Dom.allById)
                         token[match[1]] = (match[1] === 'id') ? match[3] : escVal;
@@ -312,7 +305,7 @@ var PARENT_NODE = 'parentNode',
                         if (match[2]) {
                             match[2] = match[2].replace(/\\/g, '');
                         }
-                        return [match[2], test]; 
+                        return [match[2], test];
                     } else { // selector token not supported (possibly missing CSS3 module)
                         return false;
                     }
@@ -337,7 +330,7 @@ var PARENT_NODE = 'parentNode',
          */
         _tokenize: function(selector) {
             selector = selector || '';
-            selector = Selector._parseSelector(Y.Lang.trim(selector)); 
+            selector = Selector._parseSelector(Y.Lang.trim(selector));
             var token = Selector._getToken(),     // one token per simple selector (left selector holds combinator)
                 query = selector, // original query for debug report
                 tokens = [],    // array of tokens
@@ -464,4 +457,4 @@ if (Y.Selector.useNative && Y.config.doc.querySelector) {
 }
 
 
-}, '3.12.0', {"requires": ["selector-native"]});
+}, '@VERSION@', {"requires": ["selector-native"]});

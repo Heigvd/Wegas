@@ -1,28 +1,21 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('classnamemanager', function (Y, NAME) {
 
 /**
-* Contains a singleton (ClassNameManager) that enables easy creation and caching of 
+* Contains a singleton (ClassNameManager) that enables easy creation and caching of
 * prefixed class names.
 * @module classnamemanager
 */
 
 /**
- * A singleton class providing: 
- * 
+ * A singleton class providing:
+ *
  * <ul>
  *    <li>Easy creation of prefixed class names</li>
  *    <li>Caching of previously created class names for improved performance.</li>
  * </ul>
- * 
+ *
  * @class ClassNameManager
- * @static 
+ * @static
  */
 
 // String constants
@@ -61,14 +54,14 @@ Y.ClassNameManager = function () {
 	return {
 
 		/**
-		 * Returns a class name prefixed with the the value of the 
+		 * Returns a class name prefixed with the the value of the
 		 * <code>Y.config.classNamePrefix</code> attribute + the provided strings.
-		 * Uses the <code>Y.config.classNameDelimiter</code> attribute to delimit the 
+		 * Uses the <code>Y.config.classNameDelimiter</code> attribute to delimit the
 		 * provided strings. E.g. Y.ClassNameManager.getClassName('foo','bar'); // yui-foo-bar
 		 *
 		 * @method getClassName
 		 * @param {String}+ classnameSection one or more classname sections to be joined
-		 * @param {Boolean} skipPrefix If set to true, the classname will not be prefixed with the default Y.config.classNameDelimiter value.  
+		 * @param {Boolean} skipPrefix If set to true, the classname will not be prefixed with the default Y.config.classNameDelimiter value.
 		 */
 		getClassName: Y.cached(function () {
 
@@ -88,4 +81,4 @@ Y.ClassNameManager = function () {
 }();
 
 
-}, '3.12.0', {"requires": ["yui-base"]});
+}, '@VERSION@', {"requires": ["yui-base"]});

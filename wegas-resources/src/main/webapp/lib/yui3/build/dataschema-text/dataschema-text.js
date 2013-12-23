@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('dataschema-text', function (Y, NAME) {
 
 /**
@@ -93,7 +86,7 @@ var Lang = Y.Lang,
             response = Y.DataSchema.Text.apply(schema, data);
 
             // response.results[0] is { fruit: "BANANA", color: "yellow" }
-         
+
         @method apply
         @param {Object} schema Schema to apply.  Supported configuration
             properties are:
@@ -186,4 +179,4 @@ var Lang = Y.Lang,
 Y.DataSchema.Text = Y.mix(SchemaText, Y.DataSchema.Base);
 
 
-}, '3.12.0', {"requires": ["dataschema-base"]});
+}, '@VERSION@', {"requires": ["dataschema-base"]});

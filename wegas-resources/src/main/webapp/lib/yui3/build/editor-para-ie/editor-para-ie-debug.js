@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('editor-para-ie', function (Y, NAME) {
 
 
@@ -25,6 +18,15 @@ YUI.add('editor-para-ie', function (Y, NAME) {
 
 
     Y.extend(EditorParaIE, Y.Plugin.EditorParaBase, {
+        /**
+        * Resolves the ROOT editor element.
+        * @method _getRoot
+        * @private
+        */
+        _getRoot: function() {
+            return this.get(HOST).getInstance().EditorSelection.ROOT;
+        },
+
         /**
         * nodeChange handler to handle fixing an empty document.
         * @private
@@ -129,4 +131,4 @@ YUI.add('editor-para-ie', function (Y, NAME) {
 
 
 
-}, '3.12.0', {"requires": ["editor-para-base"]});
+}, '@VERSION@', {"requires": ["editor-para-base"]});

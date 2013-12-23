@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('uploader-html5', function (Y, NAME) {
 
 /**
@@ -285,6 +278,9 @@ Y.UploaderHTML5 = Y.extend( UploaderHTML5, Y.Widget, {
             this.get("selectFilesButton").set("tabIndex", this.get("tabIndex"));
         }, this);
         this._fileInputField.on("change", this._updateFileList, this);
+        this._fileInputField.on("click", function(event) {
+            event.stopPropagation();
+        }, this);
 
         this.get("selectFilesButton").set("tabIndex", this.get("tabIndex"));
     },
@@ -1007,4 +1003,4 @@ Y.UploaderHTML5.Queue = UploaderQueue;
 
 
 
-}, '3.12.0', {"requires": ["widget", "node-event-simulate", "file-html5", "uploader-queue"]});
+}, '@VERSION@', {"requires": ["widget", "node-event-simulate", "file-html5", "uploader-queue"]});

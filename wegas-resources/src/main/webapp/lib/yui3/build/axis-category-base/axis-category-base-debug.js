@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('axis-category-base', function (Y, NAME) {
 
 /**
@@ -239,4 +232,4 @@ Y.CategoryImpl = CategoryImpl;
 Y.CategoryAxisBase = Y.Base.create("categoryAxisBase", Y.AxisBase, [Y.CategoryImpl]);
 
 
-}, '3.12.0', {"requires": ["axis-base"]});
+}, '@VERSION@', {"requires": ["axis-base"]});

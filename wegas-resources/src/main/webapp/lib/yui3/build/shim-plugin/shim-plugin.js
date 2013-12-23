@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('shim-plugin', function (Y, NAME) {
 
     /**
@@ -36,7 +29,7 @@ YUI.add('shim-plugin', function (Y, NAME) {
 
     /**
      * Default markup template used to generate the shim element.
-     * 
+     *
      * @property TEMPLATE
      * @type String
      * @static
@@ -57,7 +50,7 @@ YUI.add('shim-plugin', function (Y, NAME) {
         initEvents: function() {
             this._resizeHandle = this._host.on('resize', this.sync, this);
         },
-        
+
         getShim: function() {
             return this._shim || (
                 this._shim = Y.Node.create(
@@ -110,4 +103,4 @@ YUI.add('shim-plugin', function (Y, NAME) {
     Y.Plugin.Shim = Shim;
 
 
-}, '3.12.0', {"requires": ["node-style", "node-pluginhost"]});
+}, '@VERSION@', {"requires": ["node-style", "node-pluginhost"]});

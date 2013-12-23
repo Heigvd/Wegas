@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('tree-openable', function (Y, NAME) {
 
 /*jshint expr:true, onevar:false */
@@ -245,4 +238,4 @@ NodeOpenable.prototype = {
 Y.Tree.Node.Openable = NodeOpenable;
 
 
-}, '3.12.0', {"requires": ["tree"]});
+}, '@VERSION@', {"requires": ["tree"]});

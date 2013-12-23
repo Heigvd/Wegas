@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('tabview', function (Y, NAME) {
 
 /**
@@ -430,7 +423,7 @@ Y.Tab = Y.Base.create('tab', Y.Widget, [Y.WidgetChild], {
 });
 
 
-}, '3.12.0', {
+}, '@VERSION@', {
     "requires": [
         "widget",
         "widget-parent",

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('graphics-svg', function (Y, NAME) {
 
 var IMPLEMENTATION = "svg",
@@ -996,7 +989,6 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
         }
         else
         {
-            render = Y.one(render);
             graphic = new Y.SVGGraphic({
                 render: render
             });
@@ -1070,7 +1062,8 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	 */
 	contains: function(needle)
 	{
-		return needle === Y.one(this.node);
+		var node = needle instanceof Y.Node ? needle._node : needle;
+        return node === this.node;
 	},
 
 	/**
@@ -1169,8 +1162,9 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 		}
         if(!host.get("visible"))
         {
-            Y.one(node).setStyle("visibility", "hidden");
+            Y.DOM.setStyle(node, "visibility", "hidden");
         }
+        Y.DOM.setAttribute(this.node, "shape-rendering", this.get("shapeRendering"));
 	},
 
 
@@ -1187,7 +1181,7 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 	{
 		if(Y.Node.DOM_EVENTS[type])
 		{
-			return Y.one("#" +  this.get("id")).on(type, fn);
+            return Y.on(type, fn, "#" + this.get("id"));
 		}
 		return Y.on.apply(this, arguments);
 	},
@@ -1681,12 +1675,9 @@ Y.extend(SVGShape, Y.GraphicBase, Y.mix({
 			x = type === "path" ? 0 : this._x,
 			y = type === "path" ? 0 : this._y,
             wt = 0;
-        if(type !== "path")
+        if(stroke && stroke.weight)
         {
-            if(stroke && stroke.weight)
-            {
-                wt = stroke.weight;
-            }
+            wt = stroke.weight;
             w = (x + w + wt) - (x - wt);
             h = (y + h + wt) - (y - wt);
             x -= wt;
@@ -1972,6 +1963,41 @@ SVGShape.ATTRS = {
 			return val;
 		}
 	},
+
+    /**
+     * Only implemented in SVG implementation.
+     * Applies the SVG shape-rendering attribute to the shape.
+     *  <dl>
+     *      <dt>auto</dt>
+     *      <dd>Indicates that the user agent shall make appropriate tradeoffs to balance speed,
+     *      crisp edges and geometric precision, but with geometric precision given more importance than speed and crisp edges.</dd>
+     *      <dt>optimizeSpeed</dt>
+     *      <dd>Indicates that the user agent shall emphasize rendering speed over geometric precision and crisp edges.
+     *      This option will sometimes cause the user agent to turn off shape anti-aliasing.</dd>
+     *      <dt>crispEdges</dt>
+     *      <dd>Indicates that the user agent shall attempt to emphasize the contrast between clean edges of artwork over rendering
+     *      speed and geometric precision. To achieve crisp edges, the user agent might turn off anti-aliasing for all lines and curves
+     *      or possibly just for straight lines which are close to vertical or horizontal. Also, the user agent might adjust line
+     *      positions and line widths to align edges with device pixels.</dd>
+     *      <dt>geometricPrecision</dt>
+     *      <dd>Indicates that the user agent shall emphasize geometric precision over speed and crisp edges.</dd>
+     *  </dl>
+     *
+     *  @config shapeRendering
+     *  @type String
+     */
+    shapeRendering: {
+        value: "auto",
+
+        setter: function(val) {
+            if(this.node)
+            {
+                Y.DOM.setAttribute(this.node, "shape-rendering", val);
+            }
+            return val;
+        }
+    },
+
 
 	/**
 	 * Contains information about the fill of the shape.
@@ -2939,11 +2965,11 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
      */
     getXY: function()
     {
-        var node = Y.one(this._node),
+        var node = this._node,
             xy;
         if(node)
         {
-            xy = node.getXY();
+            xy = Y.DOM.getXY(node);
         }
         return xy;
     },
@@ -2987,17 +3013,25 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
      * @param {HTMLElement} parentNode node in which to render the graphics node into.
      */
     render: function(render) {
-        var parentNode = Y.one(render),
-            w = this.get("width") || parseInt(parentNode.getComputedStyle("width"), 10),
-            h = this.get("height") || parseInt(parentNode.getComputedStyle("height"), 10);
-        parentNode = parentNode || Y.one(DOCUMENT.body);
-        parentNode.append(this._node);
-        this.parentNode = parentNode;
+        var parentNode = render || DOCUMENT.body,
+            w,
+            h;
+        if(render instanceof Y.Node)
+        {
+            parentNode = render._node;
+        }
+        else if(Y.Lang.isString(render))
+        {
+            parentNode = Y.Selector.query(render, DOCUMENT.body, true);
+        }
+        w = this.get("width") || parseInt(Y.DOM.getComputedStyle(parentNode, "width"), 10);
+        h = this.get("height") || parseInt(Y.DOM.getComputedStyle(parentNode, "height"), 10);
+        parentNode.appendChild(this._node);
         this.set("width", w);
         this.set("height", h);
         return this;
     },
-
+    
     /**
      * Removes all nodes.
      *
@@ -3018,7 +3052,10 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
         if(this._node)
         {
             this._removeChildren(this._node);
-            Y.one(this._node).remove(true);
+            if(this._node.parentNode)
+            {
+                this._node.parentNode.removeChild(this._node);
+            }
             this._node = null;
         }
     },
@@ -3274,9 +3311,9 @@ Y.extend(SVGGraphic, Y.GraphicBase, {
         {
             if(autoSize === "sizeContentToGraphic")
             {
-                node = Y.one(this._node);
-                computedWidth = parseFloat(node.getComputedStyle("width"));
-                computedHeight = parseFloat(node.getComputedStyle("height"));
+                node = this._node;
+                computedWidth = parseFloat(Y.DOM.getComputedStyle(node, "width"));
+                computedHeight = parseFloat(Y.DOM.getComputedStyle(node, "height"));
                 computedLeft = computedTop = 0;
                 this._contentNode.setAttribute("preserveAspectRatio", preserveAspectRatio);
             }
@@ -3517,4 +3554,4 @@ Y.SVGGraphic = SVGGraphic;
 
 
 
-}, '3.12.0', {"requires": ["graphics"]});
+}, '@VERSION@', {"requires": ["graphics"]});

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('anim-shape', function (Y, NAME) {
 
 /**
@@ -15,7 +8,7 @@ YUI.add('anim-shape', function (Y, NAME) {
  * @deprecated Use anim-shape instead.
  */
 /**
- * Adds support for the <code>transform</code> and <code>fill</code> attributes of <code>Graphic</code> 
+ * Adds support for the <code>transform</code> and <code>fill</code> attributes of <code>Graphic</code>
  * and <code>Shape</code> instances. The <code>anim-shape</code> submodule can be used for all animations
  * involving <code>Graphic</code> <code>Shape</code> attributes.
  *
@@ -189,4 +182,4 @@ YUI.add('anim-shape', function (Y, NAME) {
 
 
 
-}, '3.12.0', {"requires": ["anim-base", "anim-easing", "anim-color", "matrix"]});
+}, '@VERSION@', {"requires": ["anim-base", "anim-easing", "anim-color", "matrix"]});

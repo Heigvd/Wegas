@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('template-base', function (Y, NAME) {
 
 /**
@@ -173,6 +166,7 @@ example, the registered template can be used in the following way:
 The template can now be used without having to know which specific rendering
 engine generated it.
 
+@method render
 @param {String} templateName The abstracted name to reference the template.
 @param {Object} [data] The data to be interpolated into the template.
 @param {Object} [options] Any additional options to be passed into the template.
@@ -275,4 +269,4 @@ Template.prototype = {
 Y.Template = Y.Template ? Y.mix(Template, Y.Template) : Template;
 
 
-}, '3.12.0', {"requires": ["yui-base"]});
+}, '@VERSION@', {"requires": ["yui-base"]});

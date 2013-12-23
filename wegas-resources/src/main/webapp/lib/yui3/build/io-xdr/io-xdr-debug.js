@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('io-xdr', function (Y, NAME) {
 
 /**
@@ -13,6 +6,7 @@ cross-domain requests.
 @module io
 @submodule io-xdr
 @for IO
+@deprecated
 **/
 
 // Helpful resources when working with the mess that is XDomainRequest:
@@ -321,4 +315,4 @@ event is fired, this value will be set to 0.
 Y.io.xdr = { delay : 100 };
 
 
-}, '3.12.0', {"requires": ["io-base", "datatype-xml-parse"]});
+}, '@VERSION@', {"requires": ["io-base", "datatype-xml-parse"]});

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('series-area-stacked', function (Y, NAME) {
 
 /**
@@ -64,4 +57,4 @@ Y.StackedAreaSeries = Y.Base.create("stackedAreaSeries", Y.AreaSeries, [Y.Stacki
 });
 
 
-}, '3.12.0', {"requires": ["series-stacked", "series-area"]});
+}, '@VERSION@', {"requires": ["series-stacked", "series-area"]});

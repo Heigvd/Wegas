@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('dataschema-base', function (Y, NAME) {
 
 /**
@@ -16,7 +9,7 @@ YUI.add('dataschema-base', function (Y, NAME) {
  */
 
 /**
- * Provides the base DataSchema implementation, which can be extended to 
+ * Provides the base DataSchema implementation, which can be extended to
  * create DataSchemas for specific data formats, such XML, JSON, text and
  * arrays.
  *
@@ -43,7 +36,7 @@ var LANG = Y.Lang,
     apply: function(schema, data) {
         return data;
     },
-    
+
     /**
      * Applies field parser, if defined
      *
@@ -71,4 +64,4 @@ Y.namespace("DataSchema").Base = SchemaBase;
 Y.namespace("Parsers");
 
 
-}, '3.12.0', {"requires": ["base"]});
+}, '@VERSION@', {"requires": ["base"]});

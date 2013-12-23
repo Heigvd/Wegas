@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('yui-throttle', function (Y, NAME) {
 
 /**
@@ -31,7 +24,7 @@ to the `Y` object and is <a href="../classes/YUI.html#method_throttle">documente
  * @method throttle
  * @for YUI
  * @param fn {function} The function call to throttle.
- * @param ms {int} The number of milliseconds to throttle the method call.
+ * @param ms {Number} The number of milliseconds to throttle the method call.
  * Can set globally with Y.config.throttleTime or by call. Passing a -1 will
  * disable the throttle. Defaults to 150.
  * @return {function} Returns a wrapped function that calls fn throttled.
@@ -58,4 +51,4 @@ Y.throttle = function(fn, ms) {
 };
 
 
-}, '3.12.0', {"requires": ["yui-base"]});
+}, '@VERSION@', {"requires": ["yui-base"]});

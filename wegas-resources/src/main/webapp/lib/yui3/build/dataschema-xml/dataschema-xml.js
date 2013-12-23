@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('dataschema-xml', function (Y, NAME) {
 
 /**
@@ -72,7 +65,7 @@ SchemaXML = {
     The keys are the field identifier `key`s, and the values are the data
     values extracted from the nodes or attributes found by the field `locator`
     (or `key` fallback).
-    
+
     To extract additional information from the XML, include an array of
     XPath locators in _schema.metaFields_.  The collected values will be
     stored in `response.meta` with the XPath locator as keys.
@@ -105,7 +98,7 @@ SchemaXML = {
         var response = Y.DataSchema.JSON.apply(schema, data);
 
         // response.results[0] is { name: "Banana", color: "YELLOW" }
-     
+
     @method apply
     @param {Object} schema Schema to apply.  Supported configuration
         properties are:
@@ -175,7 +168,7 @@ SchemaXML = {
     /**
      * Fetches the XPath-specified result for a given location in an XML node
      * or document.
-     * 
+     *
      * @method _getXPathResult
      * @param locator {String} The XPath location.
      * @param context {Object} XML node or document to search within.
@@ -188,19 +181,19 @@ SchemaXML = {
         // Standards mode
         if (! Lang.isUndefined(xmldoc.evaluate)) {
             return xmldoc.evaluate(locator, context, xmldoc.createNSResolver(context.ownerDocument ? context.ownerDocument.documentElement : context.documentElement), 0, null);
-          
+
         }
         // IE mode
         else {
             var values=[], locatorArray = locator.split(/\b\/\b/), i=0, l=locatorArray.length, location, subloc, m, isNth;
-            
+
             // XPath is supported
             try {
                 // this fixes the IE 5.5+ issue where childnode selectors begin at 0 instead of 1
                 try {
                    xmldoc.setProperty("SelectionLanguage", "XPath");
                 } catch (e) {}
-                
+
                 values = context.selectNodes(locator);
             }
             // Fallback for DOM nodes and fragments
@@ -237,7 +230,7 @@ SchemaXML = {
                         }
                     }
                 }
-                
+
                 if (context) {
                     // attribute
                     if (Lang.isString(context)) {
@@ -257,7 +250,7 @@ SchemaXML = {
             // returning a mock-standard object for IE
             return {
                 index: 0,
-                
+
                 iterateNext: function() {
                     if (this.index >= this.values.length) {return undefined;}
                     var result = this.values[this.index];
@@ -359,7 +352,7 @@ SchemaXML = {
 
             if (schema.resultListLocator.match(/^[:\-\w]+$/)) {
                 nodeList = context.getElementsByTagName(schema.resultListLocator);
-                
+
                 // loop through each result node
                 for (i = nodeList.length - 1; i >= 0; --i) {
                     results[i] = SchemaXML._parseResult(fields, nodeList[i]);
@@ -387,4 +380,4 @@ SchemaXML = {
 Y.DataSchema.XML = Y.mix(SchemaXML, Y.DataSchema.Base);
 
 
-}, '3.12.0', {"requires": ["dataschema-base"]});
+}, '@VERSION@', {"requires": ["dataschema-base"]});

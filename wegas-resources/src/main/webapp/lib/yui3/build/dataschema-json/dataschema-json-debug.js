@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('dataschema-json', function (Y, NAME) {
 
 /**
@@ -32,7 +25,7 @@ var LANG = Y.Lang,
     Base       = Y.DataSchema.Base,
 
     SchemaJSON;
-    
+
 SchemaJSON = {
 
 /////////////////////////////////////////////////////////////////////////////
@@ -135,7 +128,7 @@ SchemaJSON = {
             functions are passed the value as input and are expected to
             return a value.
 
-    If no value parsing is needed, you can use path locators (strings) 
+    If no value parsing is needed, you can use path locators (strings)
     instead of field identifiers (objects) -- see example below.
 
     If no processing of the result list array is needed, _schema.resultFields_
@@ -174,7 +167,7 @@ SchemaJSON = {
 
         // response.results[0] is { name: "Banana", color: "yellow" }
 
-        
+
         // Process array of objects + some metadata
         schema.metaFields = [ 'lastInventory' ];
 
@@ -211,7 +204,7 @@ SchemaJSON = {
 
         // Note price was converted from a numeric string to a number
         // response.results[0] looks like { fruit: "BANANA", price: 1.96 }
-     
+
     @method apply
     @param {Object} [schema] Schema to apply.  Supported configuration
         properties are:
@@ -447,4 +440,4 @@ SchemaJSON = {
 Y.DataSchema.JSON = Y.mix(SchemaJSON, Base);
 
 
-}, '3.12.0', {"requires": ["dataschema-base", "json"]});
+}, '@VERSION@', {"requires": ["dataschema-base", "json"]});

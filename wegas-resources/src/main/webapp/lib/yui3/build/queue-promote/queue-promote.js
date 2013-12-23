@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('queue-promote', function (Y, NAME) {
 
 /**
@@ -17,7 +10,7 @@ YUI.add('queue-promote', function (Y, NAME) {
 Y.mix(Y.Queue.prototype, {
     /**
      * Returns the current index in the queue of the specified item
-     * 
+     *
      * @method indexOf
      * @param needle {MIXED} the item to search for
      * @return {Number} the index of the item or -1 if not found
@@ -57,4 +50,4 @@ Y.mix(Y.Queue.prototype, {
 });
 
 
-}, '3.12.0', {"requires": ["yui-base"]});
+}, '@VERSION@', {"requires": ["yui-base"]});

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('dataschema-array', function (Y, NAME) {
 
 /**
@@ -85,7 +78,7 @@ var LANG = Y.Lang,
 
             // response.results[0] is { fruit: "Banana", color: "yellow" }
 
-            
+
             // Process array of objects
             data = [
                 { fruit: 'Banana', color: 'yellow', price: '1.96' },
@@ -114,7 +107,7 @@ var LANG = Y.Lang,
 
             // Note price was converted from a numeric string to a number
             // response.results[0] looks like { fruit: "BANANA", price: 1.96 }
-         
+
         @method apply
         @param {Object} [schema] Schema to apply.  Supported configuration
             properties are:
@@ -193,4 +186,4 @@ var LANG = Y.Lang,
 Y.DataSchema.Array = Y.mix(SchemaArray, Y.DataSchema.Base);
 
 
-}, '3.12.0', {"requires": ["dataschema-base"]});
+}, '@VERSION@', {"requires": ["dataschema-base"]});

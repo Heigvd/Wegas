@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('recordset-filter', function (Y, NAME) {
 
 /**
@@ -21,7 +14,7 @@ Lang = Y.Lang;
 
 /**
  * Plugin that provides the ability to filter through a recordset.
- * Uses the filter methods available on Y.Array (see arrayextras submodule) to filter the recordset. 
+ * Uses the filter methods available on Y.Array (see arrayextras submodule) to filter the recordset.
  * @class RecordsetFilter
  */
 function RecordsetFilter(config) {
@@ -45,7 +38,7 @@ Y.extend(RecordsetFilter, Y.Plugin.Base, {
     /**
     Filter through the recordset with a custom filter function, or a key-value
     pair.
-    
+
     @method filter
     @param {Function|String} filter A custom filter function or a string
         representing the key to filter by.
@@ -109,4 +102,4 @@ Y.extend(RecordsetFilter, Y.Plugin.Base, {
 Y.namespace("Plugin").RecordsetFilter = RecordsetFilter;
 
 
-}, '3.12.0', {"requires": ["recordset-base", "array-extras", "plugin"]});
+}, '@VERSION@', {"requires": ["recordset-base", "array-extras", "plugin"]});

@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('datasource-xmlschema', function (Y, NAME) {
 
 /**
@@ -18,7 +11,7 @@ YUI.add('datasource-xmlschema', function (Y, NAME) {
  * Adds schema-parsing to the DataSource Utility.
  * @class DataSourceXMLSchema
  * @extends Plugin.Base
- */    
+ */
 var DataSourceXMLSchema = function() {
     DataSourceXMLSchema.superclass.constructor.apply(this, arguments);
 };
@@ -102,8 +95,8 @@ Y.extend(DataSourceXMLSchema, Y.Plugin.Base, {
         return new Y.Do.Halt("DataSourceXMLSchema plugin halted _defDataFn");
     }
 });
-    
+
 Y.namespace('Plugin').DataSourceXMLSchema = DataSourceXMLSchema;
 
 
-}, '3.12.0', {"requires": ["datasource-local", "plugin", "datatype-xml", "dataschema-xml"]});
+}, '@VERSION@', {"requires": ["datasource-local", "plugin", "datatype-xml", "dataschema-xml"]});

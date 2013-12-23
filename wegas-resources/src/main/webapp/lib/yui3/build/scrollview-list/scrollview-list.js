@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('scrollview-list', function (Y, NAME) {
 
 /**
@@ -32,7 +25,7 @@ function ListPlugin() {
     ListPlugin.superclass.constructor.apply(this, arguments);
 }
 
- 
+
 /**
  * The identity of the plugin
  *
@@ -42,7 +35,7 @@ function ListPlugin() {
  * @static
  */
 ListPlugin.NAME = 'pluginList';
-    
+
 /**
  * The namespace on which the plugin will reside.
  *
@@ -62,7 +55,7 @@ ListPlugin.NS = 'list';
  * @static
  */
 ListPlugin.ATTRS = {
-    
+
     /**
      * Specifies whether the list elements (the immediate <ul>'s and the
      *  immediate <li>'s inside those <ul>'s) have class names attached to
@@ -112,7 +105,7 @@ Y.namespace("Plugin").ScrollViewList = Y.extend(ListPlugin, Y.Plugin.Base, {
                 });
 
                 this.set('isAttached', true);
-                
+
                 // We need to call this again, since sv-list
                 //  relies on the "-vert" class, to apply padding.
                 //  [ 1st syncUI pass applies -vert, 2nd pass re-calcs dims ]
@@ -134,4 +127,4 @@ Y.namespace("Plugin").ScrollViewList = Y.extend(ListPlugin, Y.Plugin.Base, {
 
 
 
-}, '3.12.0', {"requires": ["plugin", "classnamemanager"], "skinnable": true});
+}, '@VERSION@', {"requires": ["plugin", "classnamemanager"], "skinnable": true});

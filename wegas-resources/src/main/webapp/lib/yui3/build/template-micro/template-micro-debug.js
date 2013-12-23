@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('template-micro', function (Y, NAME) {
 
 /*jshint expr:true */
@@ -253,4 +246,4 @@ Micro.revive = function (precompiled) {
 };
 
 
-}, '3.12.0', {"requires": ["escape"]});
+}, '@VERSION@', {"requires": ["escape"]});

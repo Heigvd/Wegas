@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('history-html5', function (Y, NAME) {
 
 /**
@@ -68,7 +61,13 @@ function HistoryHTML5() {
 Y.extend(HistoryHTML5, HistoryBase, {
     // -- Initialization -------------------------------------------------------
     _init: function (config) {
-        var bookmarkedState = win.history.state;
+        var bookmarkedState;
+
+        try {
+            bookmarkedState = win.history.state;
+        } catch(e) {
+            bookmarkedState = null;
+        }
 
         // Treat empty state objects as `null` so they're not processed further.
         if (Y.Object.isEmpty(bookmarkedState)) {
@@ -113,7 +112,7 @@ Y.extend(HistoryHTML5, HistoryBase, {
             win.history[src === SRC_REPLACE ? 'replaceState' : 'pushState'](
                 newState,
                 options.title || Y.config.doc.title || '',
-                options.url || null
+                options.url || Y.config.doc.URL
             );
         }
 
@@ -187,4 +186,4 @@ if (useHistoryHTML5 === true || (useHistoryHTML5 !== false &&
 }
 
 
-}, '3.12.0', {"optional": ["json"], "requires": ["event-base", "history-base", "node-base"]});
+}, '@VERSION@', {"optional": ["json"], "requires": ["event-base", "history-base", "node-base"]});

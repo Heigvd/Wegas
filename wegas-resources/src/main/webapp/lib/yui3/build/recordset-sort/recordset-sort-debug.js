@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('recordset-sort', function (Y, NAME) {
 
 /**
@@ -126,8 +119,8 @@ Y.extend(RecordsetSort, Y.Plugin.Base, {
         },
 
     /**
-     * @description Method that all sort calls go through. 
-     * Sets up the lastSortProperties object with the details of the sort, and passes in parameters 
+     * @description Method that all sort calls go through.
+     * Sets up the lastSortProperties object with the details of the sort, and passes in parameters
      * to the "defaultSorter" or a custom specified sort function.
      *
      * @method _defSortFn
@@ -138,7 +131,7 @@ Y.extend(RecordsetSort, Y.Plugin.Base, {
         this.get("host")._items.sort(function(a, b) {
             return (e.sorter)(a, b, e.field, e.desc);
         });
-        
+
         this.set('lastSortProperties', e);
     },
 
@@ -210,4 +203,4 @@ Y.namespace("Plugin").RecordsetSort = RecordsetSort;
 
 
 
-}, '3.12.0', {"requires": ["arraysort", "recordset-base", "plugin"]});
+}, '@VERSION@', {"requires": ["arraysort", "recordset-base", "plugin"]});

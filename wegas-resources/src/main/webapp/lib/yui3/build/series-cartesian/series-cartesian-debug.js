@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('series-cartesian', function (Y, NAME) {
 
 /**
@@ -945,4 +938,4 @@ Y.CartesianSeries = Y.Base.create("cartesianSeries", Y.SeriesBase, [], {
 });
 
 
-}, '3.12.0', {"requires": ["series-base"]});
+}, '@VERSION@', {"requires": ["series-base"]});

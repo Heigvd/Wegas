@@ -1,15 +1,8 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('cache-offline', function (Y, NAME) {
 
 /**
  * Provides a Cache subclass which uses HTML5 `localStorage` for persistence.
- * 
+ *
  * @module cache
  * @submodule cache-offline
  */
@@ -337,4 +330,4 @@ Y.extend(CacheOffline, Y.Cache, localStorage ? {
 Y.CacheOffline = CacheOffline;
 
 
-}, '3.12.0', {"requires": ["cache-base", "json"]});
+}, '@VERSION@', {"requires": ["cache-base", "json"]});

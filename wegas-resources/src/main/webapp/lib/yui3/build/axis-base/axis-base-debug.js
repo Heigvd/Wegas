@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('axis-base', function (Y, NAME) {
 
 /**
@@ -117,6 +110,36 @@ Renderer.prototype = {
             }
         }, this);
         return newstyles;
+    },
+
+    /**
+     * Copies an object literal.
+     *
+     * @method _copyObject
+     * @param {Object} obj Object literal to be copied.
+     * @return Object
+     * @private
+     */
+    _copyObject: function(obj) {
+        var newObj = {},
+            key,
+            val;
+        for(key in obj)
+        {
+            if(obj.hasOwnProperty(key))
+            {
+                val = obj[key];
+                if(typeof val === "object" && !Y_Lang.isArray(val))
+                {
+                    newObj[key] = this._copyObject(val);
+                }
+                else
+                {
+                    newObj[key] = val;
+                }
+            }
+        }
+        return newObj;
     },
 
     /**
@@ -875,4 +898,4 @@ Y.AxisBase = Y.Base.create("axisBase", Y.Base, [Y.Renderer], {
 });
 
 
-}, '3.12.0', {"requires": ["classnamemanager", "datatype-number", "datatype-date", "base", "event-custom"]});
+}, '@VERSION@', {"requires": ["classnamemanager", "datatype-number", "datatype-date", "base", "event-custom"]});

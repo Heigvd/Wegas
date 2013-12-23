@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('editor-para-base', function (Y, NAME) {
 
 
@@ -20,11 +13,20 @@ YUI.add('editor-para-base', function (Y, NAME) {
 
     var EditorParaBase = function() {
         EditorParaBase.superclass.constructor.apply(this, arguments);
-    }, HOST = 'host', BODY = 'body',
-    FIRST_P = BODY + ' > p', P = 'p', BR = '<br>';
+    }, HOST = 'host',
+    FIRST_P = '> p', P = 'p', BR = '<br>';
 
 
     Y.extend(EditorParaBase, Y.Base, {
+        /**
+        * Resolves the ROOT editor element.
+        * @method _getRoot
+        * @private
+        */
+        _getRoot: function() {
+            return this.get(HOST).getInstance().EditorSelection.ROOT;
+        },
+
         /**
         * Utility method to create an empty paragraph when the document is empty.
         * @private
@@ -32,8 +34,8 @@ YUI.add('editor-para-base', function (Y, NAME) {
         */
         _fixFirstPara: function() {
             var host = this.get(HOST), inst = host.getInstance(), sel, n,
-                body = inst.config.doc.body,
-                html = body.innerHTML,
+                root = this._getRoot(),
+                html = root.getHTML(),
                 col = ((html.length) ? true : false);
 
             if (html === BR) {
@@ -41,9 +43,9 @@ YUI.add('editor-para-base', function (Y, NAME) {
                 col = false;
             }
 
-            body.innerHTML = '<' + P + '>' + html + inst.EditorSelection.CURSOR + '</' + P + '>';
+            root.setHTML('<' + P + '>' + html + inst.EditorSelection.CURSOR + '</' + P + '>');
 
-            n = inst.one(FIRST_P);
+            n = root.one(FIRST_P);
             sel = new inst.EditorSelection();
 
             sel.selectNode(n, true, col);
@@ -58,7 +60,7 @@ YUI.add('editor-para-base', function (Y, NAME) {
             if (inst) {
                 inst.EditorSelection.filterBlocks();
                 btag = inst.EditorSelection.DEFAULT_BLOCK_TAG;
-                FIRST_P = BODY + ' > ' + btag;
+                FIRST_P = '> ' + btag;
                 P = btag;
             }
         },
@@ -126,4 +128,4 @@ YUI.add('editor-para-base', function (Y, NAME) {
 
 
 
-}, '3.12.0', {"requires": ["editor-base"]});
+}, '@VERSION@', {"requires": ["editor-base"]});

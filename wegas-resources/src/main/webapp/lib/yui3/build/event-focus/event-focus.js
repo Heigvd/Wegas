@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('event-focus', function (Y, NAME) {
 
 /**
@@ -223,7 +216,14 @@ function define(type, proxy, directEvent) {
                             ret = notifier.fire(e);
                         }
 
-                        if (ret === false || e.stopped === 2) {
+                        if (ret === false || e.stopped === 2 ||
+                            // If e.stopPropagation() is called, notify any
+                            // delegate subs from the same container, but break
+                            // once the container changes. This emulates
+                            // delegate() behavior for events like 'click' which
+                            // won't notify delegates higher up the parent axis.
+                            (e.stopped && delegates[i+1] &&
+                             delegates[i+1].container !== notifier.container)) {
                             break;
                         }
                     }
@@ -277,4 +277,4 @@ if (useActivate) {
 }
 
 
-}, '3.12.0', {"requires": ["event-synthetic"]});
+}, '@VERSION@', {"requires": ["event-synthetic"]});

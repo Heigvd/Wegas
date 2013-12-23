@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('series-pie', function (Y, NAME) {
 
 /**
@@ -135,7 +128,7 @@ Y.PieSeries = Y.Base.create("pieSeries", Y.SeriesBase, [Y.Plots], {
         }
         this.after("categoryAxisChange", this.categoryAxisChangeHandler);
         this.after("valueAxisChange", this.valueAxisChangeHandler);
-        this.after("stylesChange", this._updateHandler);
+        this._stylesChangeHandle = this.after("stylesChange", this._updateHandler);
         this._visibleChangeHandle = this.after("visibleChange", this._handleVisibleChange);
     },
 
@@ -500,7 +493,7 @@ Y.PieSeries = Y.Base.create("pieSeries", Y.SeriesBase, [Y.Plots], {
     {
         var graphic = this.get("graphic"),
             marker,
-            cfg = Y.clone(styles);
+            cfg = this._copyObject(styles);
         marker = graphic.addShape(cfg);
         marker.addClass(SERIES_MARKER);
         return marker;
@@ -728,4 +721,4 @@ Y.PieSeries = Y.Base.create("pieSeries", Y.SeriesBase, [Y.Plots], {
 });
 
 
-}, '3.12.0', {"requires": ["series-base", "series-plot-util"]});
+}, '@VERSION@', {"requires": ["series-base", "series-plot-util"]});

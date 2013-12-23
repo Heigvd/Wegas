@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('editor-br', function (Y, NAME) {
 
 
@@ -61,13 +54,21 @@ YUI.add('editor-br', function (Y, NAME) {
         * @method _afterEditorReady
         */
         _afterEditorReady: function() {
-            var inst = this.get(HOST).getInstance();
+            var inst = this.get(HOST).getInstance(),
+                container;
+
             try {
                 inst.config.doc.execCommand('insertbronreturn', null, true);
             } catch (bre) {}
 
             if (Y.UA.ie || Y.UA.webkit) {
-                inst.on('keydown', Y.bind(this._onKeyDown, this), inst.config.doc);
+                container = inst.EditorSelection.ROOT;
+
+                if (container.test('body')) {
+                    container = inst.config.doc;
+                }
+
+                inst.on('keydown', Y.bind(this._onKeyDown, this), container);
             }
         },
         /**
@@ -133,4 +134,4 @@ YUI.add('editor-br', function (Y, NAME) {
 
 
 
-}, '3.12.0', {"requires": ["editor-base"]});
+}, '@VERSION@', {"requires": ["editor-base"]});

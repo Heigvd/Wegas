@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('arraylist-add', function (Y, NAME) {
 
 /**
@@ -91,4 +84,4 @@ Y.mix(Y.ArrayList.prototype, {
 });
 
 
-}, '3.12.0', {"requires": ["arraylist"]});
+}, '@VERSION@', {"requires": ["arraylist"]});

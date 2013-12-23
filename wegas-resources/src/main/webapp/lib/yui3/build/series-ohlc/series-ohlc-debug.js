@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('series-ohlc', function (Y, NAME) {
 
 /**
@@ -145,7 +138,10 @@ Y.extend(OHLCSeries, Y.RangeSeries, {
             right,
             leftPadding = styles.padding.left,
             marker,
-            up;
+            up,
+            cx,
+            i,
+            height;
         upmarker.set(styles.upmarker);
         downmarker.set(styles.downmarker);
         upmarker.clear();
@@ -238,4 +234,4 @@ Y.extend(OHLCSeries, Y.RangeSeries, {
 Y.OHLCSeries = OHLCSeries;
 
 
-}, '3.12.0', {"requires": ["series-range"]});
+}, '@VERSION@', {"requires": ["series-range"]});

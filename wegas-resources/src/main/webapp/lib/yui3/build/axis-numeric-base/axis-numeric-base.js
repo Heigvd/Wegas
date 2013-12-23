@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('axis-numeric-base', function (Y, NAME) {
 
 /**
@@ -650,7 +643,7 @@ NumericImpl.prototype = {
         nearest = nearest || 1;
         return Math.floor(this._roundToPrecision(number / nearest, 10)) * nearest;
     },
-    
+
     /**
      * Returns a coordinate corresponding to a data values.
      *
@@ -725,4 +718,4 @@ Y.NumericImpl = NumericImpl;
 Y.NumericAxisBase = Y.Base.create("numericAxisBase", Y.AxisBase, [Y.NumericImpl]);
 
 
-}, '3.12.0', {"requires": ["axis-base"]});
+}, '@VERSION@', {"requires": ["axis-base"]});

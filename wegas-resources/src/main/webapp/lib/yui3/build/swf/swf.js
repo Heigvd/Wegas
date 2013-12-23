@@ -1,16 +1,11 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('swf', function (Y, NAME) {
 
 /**
  * Embed a Flash applications in a standard manner and communicate with it
  * via External Interface.
  * @module swf
+ * @deprecated The swf module is deprecated and will not be replaced. YUI has
+ * no plans for providing a utility for embedding Flash into HTML pages. 
  */
 
     var Event = Y.Event,
@@ -39,6 +34,7 @@ YUI.add('swf', function (Y, NAME) {
          * Creates the SWF instance and keeps the configuration data
          *
          * @class SWF
+         * @deprecated
          * @uses Y.Event.Target
          * @constructor
          * @param {String|HTMLElement} id The id of the element, or the element itself that the SWF will be inserted into.
@@ -55,7 +51,6 @@ YUI.add('swf', function (Y, NAME) {
          *              tabindex, wmode.</code> event from the thumb</dd>
          *        </dl>
          */
-
 function SWF (p_oElement /*:String*/, swfURL /*:String*/, p_oAttributes /*:Object*/ ) {
 
     this._id = Y.guid("yuiswf");
@@ -63,7 +58,7 @@ function SWF (p_oElement /*:String*/, swfURL /*:String*/, p_oAttributes /*:Objec
 
     var _id = this._id;
     var oElement = Node.one(p_oElement);
-    
+
     var p_oAttributes = p_oAttributes || {};
 
     var flashVersion = p_oAttributes.version || FLASH_VER;
@@ -115,7 +110,7 @@ function SWF (p_oElement /*:String*/, swfURL /*:String*/, p_oAttributes /*:Objec
         objstring += "</object>";
         //using innerHTML as setHTML/setContent causes some issues with ExternalInterface for IE versions of the player
         oElement.set("innerHTML", objstring);
-        
+
         this._swf = Node.one("#" + _id);
     } else {
         /**
@@ -176,19 +171,19 @@ SWF.prototype = {
      * @param func {String} the name of the function to call
      * @param args {Array} the set of arguments to pass to the function.
      */
-    
+
     callSWF: function (func, args)
     {
-    if (!args) { 
-          args= []; 
-    }   
+    if (!args) {
+          args= [];
+    }
         if (this._swf._node[func]) {
         return(this._swf._node[func].apply(this._swf._node, args));
         } else {
         return null;
         }
     },
-    
+
     /**
      * Public accessor to the unique name of the SWF instance.
      *
@@ -206,4 +201,4 @@ Y.augment(SWF, Y.EventTarget);
 Y.SWF = SWF;
 
 
-}, '3.12.0', {"requires": ["event-custom", "node", "swfdetect", "escape"]});
+}, '@VERSION@', {"requires": ["event-custom", "node", "swfdetect", "escape"]});

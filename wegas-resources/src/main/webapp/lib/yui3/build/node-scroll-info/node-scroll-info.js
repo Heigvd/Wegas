@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('node-scroll-info', function (Y, NAME) {
 
 /*jshint onevar:false */
@@ -367,10 +360,11 @@ Y.Plugin.ScrollInfo = Y.Base.create('scrollInfoPlugin', Y.Plugin.Base, [], {
     refreshDimensions: function () {
         var docEl = doc.documentElement;
 
-        // On iOS devices, documentElement.clientHeight/Width aren't reliable,
-        // but window.innerHeight/Width are. The dom-screen module's viewport
-        // size methods don't account for this, which is why we do it here.
-        if (Y.UA.ios) {
+        // On iOS devices and on Chrome for Android,
+        // documentElement.clientHeight/Width aren't reliable, but
+        // window.innerHeight/Width are. The dom-screen module's viewport size
+        // methods don't account for this, which is why we do it here.
+        if (Y.UA.ios || (Y.UA.android && Y.UA.chrome)) {
             this._winHeight = win.innerHeight;
             this._winWidth  = win.innerWidth;
         } else {
@@ -451,6 +445,7 @@ Y.Plugin.ScrollInfo = Y.Base.create('scrollInfoPlugin', Y.Plugin.Base, [], {
         this query. Defaults to the value of the `scrollMargin` attribute.
     @return {Boolean} `true` if _el_ is at least partially onscreen within the
         host node, `false` otherwise.
+    @protected
     @since 3.11.0
     **/
     _isElementOnscreen: function (el, margin) {
@@ -658,4 +653,4 @@ Y.Plugin.ScrollInfo = Y.Base.create('scrollInfoPlugin', Y.Plugin.Base, [], {
 });
 
 
-}, '3.12.0', {"requires": ["array-extras", "base-build", "event-resize", "node-pluginhost", "plugin", "selector"]});
+}, '@VERSION@', {"requires": ["array-extras", "base-build", "event-resize", "node-pluginhost", "plugin", "selector"]});

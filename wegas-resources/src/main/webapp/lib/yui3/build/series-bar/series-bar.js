@@ -1,10 +1,3 @@
-/*
-YUI 3.12.0 (build 8655935)
-Copyright 2013 Yahoo! Inc. All rights reserved.
-Licensed under the BSD License.
-http://yuilibrary.com/license/
-*/
-
 YUI.add('series-bar', function (Y, NAME) {
 
 /**
@@ -67,7 +60,7 @@ Y.BarSeries = Y.Base.create("barSeries", Y.MarkerSeries, [Y.Histogram], {
     {
         if(this._markers && this._markers[i])
         {
-            var styles = Y.clone(this.get("styles").marker),
+            var styles = this._copyObject(this.get("styles").marker),
                 markerStyles,
                 state = this._getState(type),
                 xcoords = this.get("xcoords"),
@@ -75,7 +68,7 @@ Y.BarSeries = Y.Base.create("barSeries", Y.MarkerSeries, [Y.Histogram], {
                 marker = this._markers[i],
                 markers,
                 seriesCollection = this.get("seriesTypeCollection"),
-                seriesLen = seriesCollection.length,
+                seriesLen = seriesCollection ? seriesCollection.length : 0,
                 seriesStyles,
                 seriesSize = 0,
                 offset = 0,
@@ -173,4 +166,4 @@ Y.BarSeries = Y.Base.create("barSeries", Y.MarkerSeries, [Y.Histogram], {
 });
 
 
-}, '3.12.0', {"requires": ["series-marker", "series-histogram-base"]});
+}, '@VERSION@', {"requires": ["series-marker", "series-histogram-base"]});
