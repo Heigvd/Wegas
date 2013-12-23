@@ -90,7 +90,6 @@ YUI.add('wegas-editable', function(Y) {
         getFormCfg: function(fieldsToIgnore) {
             var i, form, schemaMap, attrCfgs, builder;
             fieldsToIgnore = (fieldsToIgnore || []);
-            // forms = Y.Wegas.app.get('editorForms'),                          // Select first server defined forms, based on the @class or the type attribute
             // form = forms[this.get('@class')] || forms[this.get("type")]
 
             form = form || this.constructor.EDITFORM;                           // And if no form is defined we check if there is a default one defined in the entity
@@ -134,13 +133,7 @@ YUI.add('wegas-editable', function(Y) {
          * @function
          */
         getMenuCfg: function(data) {
-            var menu, menus = Y.Wegas.app.get('editorMenus');
-            //    staticMenus =
-
-            if (menus) {
-                menu = menus[this.get('@class')] || menus[this.get("type")];    // Select first server defined forms, based on the @class or the type attribute
-            }
-            menu = menu || this.getStatic("EDITMENU", true)[0] || [];                // And if no form is defined we return the default one defined in the entity
+            var menu = this.getStatic("EDITMENU", true)[0] || [];                // And if no form is defined we return the default one defined in the entity
 
             Editable.mixMenuCfg(menu, data);
             return menu;
