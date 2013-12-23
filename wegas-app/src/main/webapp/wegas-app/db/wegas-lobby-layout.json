@@ -128,8 +128,7 @@
                                             "key": "gameModelName",
                                             "label": "Game model",
                                             "width": "150px"
-                                        }
-                                    ]
+                                        }]
                                 },
                                 "plugins": [{
                                         "fn": "EditorDTMenu",

@@ -208,18 +208,6 @@
                         } catch (e) {
                             Y.log("Error running footer scripts.", "error");
                         }
-
-                        Y.Widget.getByNode(".editor-players").witem(0).on("*:click", function(e) {                      // Listen to click events on the first child (treeview)
-                            var entity = e.target.get("data.entity"),
-                                    player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
-
-                            if (!player) {
-                                this.showMessageBis("error", "This team is empty", 4000);
-                                return;
-                            }
-
-                            Y.Wegas.app.set('currentPlayer', player.get("id"));
-                        });
                     });
 
                     app.after('currentPlayerChange', function(e) {              // Whenever the current player changes

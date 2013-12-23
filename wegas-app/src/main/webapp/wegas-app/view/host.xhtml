@@ -11,7 +11,36 @@
 
         <ui:define name="editorFooter">
             Y.Wegas.app.on("render", function(e) {
-                Y.Widget.getByNode(".editor-players").set("selected", 2);
+                var cfg = {                                                     // Add player selection tab
+                        "type": "Tab",
+                        "label": "Players",
+                        "cssClass": "editor-players",
+                        "children": [{
+                                "type": "TeamTreeViewEditor",
+                                "dataSource": "Game",
+                                "plugins": [{
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": []
+                                        }
+                                    }]
+                            }]
+                    };
+                Y.Wegas.use(cfg, function (Y) {
+                    var tab = Y.Widget.getByNode("#leftTabView").add(cfg).item(0);
+                    tab.set("selected", 2);
+                    tab.witem(0).on("*:click", function(e) {                    // Listen to click events on the first child (treeview)
+                        var entity = e.target.get("data.entity"),
+                                player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
+
+                        if (!player) {
+                            this.showMessageBis("error", "This team is empty", 4000);
+                            return;
+                        }
+
+                        Y.Wegas.app.set('currentPlayer', player.get("id"));
+                    });
+                });
             });
         </ui:define>
     </ui:composition>
