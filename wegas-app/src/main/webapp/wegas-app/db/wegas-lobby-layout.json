@@ -226,6 +226,8 @@
                                                                                             },
                                                                                             "emptyMessage": "No game is available to play.",
                                                                                             "plugins": [{
+                                                                                                    "fn": "RequestDT"
+                                                                                                }, {
                                                                                                     "fn": "EditorDTMenu",
                                                                                                     "cfg": {
                                                                                                         "children": [{
