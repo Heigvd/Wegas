@@ -238,20 +238,6 @@
                         "children": [{
                                 "type": "PageTreeview"
                             }]
-                    }, {
-                        "type": "Tab",
-                        "label": "Players",
-                        "cssClass": "editor-players",
-                        "children": [{
-                                "type": "TeamTreeViewEditor",
-                                "dataSource": "Game",
-                                "plugins": [{
-                                        "fn": "WidgetToolbar",
-                                        "cfg": {
-                                            "children": []
-                                        }
-                                    }]
-                            }]
                     }]
             }]
     },
