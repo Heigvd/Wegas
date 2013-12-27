@@ -55,6 +55,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-scripteval': {
                     path: 'js/plugin/wegas-scripteval-min.js',
+                    requires: "wegas-variabledescriptor-entities",
                     ws_provides: 'ScriptEval'
                 },
                 'wegas-websocketlistener': {
@@ -67,15 +68,6 @@ YUI().use(function(Y) {
                     requires: 'pusher',
                     ws_provides: "PusherDataSource"
                 },
-                "wegas-pdf": {
-                    path: 'js/plugin/wegas-pdf-min.js',
-                    requires: ['jspdf', 'jspdfPlugin'],
-                    ws_provides: 'PDF'
-                },
-                'event-mouse-startstop': {
-                    path: "js/util/event-mouse-startstop-min.js",
-                    requires: "event-base"
-                },
                 /**
                  * Persistence
                  */
@@ -83,6 +75,11 @@ YUI().use(function(Y) {
                     path: 'js/persistence/wegas-entity-min.js',
                     requires: 'wegas-editable',
                     ws_provides: ['Entity', 'GameModel']
+                },
+                'wegas-variabledescriptor-entities': {
+                    path: 'js/persistence/wegas-variabledescriptor-entities-min.js',
+                    requires: 'wegas-entity',
+                    ws_provides: ['NumberDescriptor', 'TextDescriptor']
                 },
                 'wegas-statemachine-entities': {
                     path: 'js/persistence/wegas-statemachine-entities-min.js',
@@ -358,6 +355,15 @@ YUI().use(function(Y) {
                 'wegas-menucss': {
                     path: 'css/wegas-menu-min.css',
                     type: 'css'
+                },
+                "wegas-pdf": {
+                    path: 'js/plugin/wegas-pdf-min.js',
+                    requires: ['jspdf', 'jspdfPlugin'],
+                    ws_provides: 'PDF'
+                },
+                'event-mouse-startstop': {
+                    path: "js/util/event-mouse-startstop-min.js",
+                    requires: "event-base"
                 }
             }
         },
