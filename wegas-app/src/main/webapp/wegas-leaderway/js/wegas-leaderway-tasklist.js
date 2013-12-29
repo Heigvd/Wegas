@@ -258,8 +258,8 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                         method: "POST",
                         data: Y.JSON.stringify({
                             "@class": "Script",
-                            "language": "JavaScript",
-                            "content": "importPackage(com.wegas.core.script);\nactions.value -= 1"
+                            language: "JavaScript",
+                            content: "importPackage(com.wegas.core.script);\nactions.value -= 1"
                         })
                     }
                 });
@@ -273,8 +273,8 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                         method: "POST",
                         data: Y.JSON.stringify({
                             "@class": "Script",
-                            "language": "JavaScript",
-                            "content": "importPackage(com.wegas.core.script);\nassignTask(" + resourceDescriptor.get('id') + "," + taskDescriptor.get('id') + ");"
+                            language: "JavaScript",
+                            content: "importPackage(com.wegas.core.script);\nassignTask(" + resourceDescriptor.get('id') + "," + taskDescriptor.get('id') + ");"
                         })
                     },
                     on: {

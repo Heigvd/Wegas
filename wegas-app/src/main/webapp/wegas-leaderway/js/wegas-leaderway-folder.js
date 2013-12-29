@@ -95,8 +95,8 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), 'nameOfCurrentEmployee').getInstance(self).setValue('" + currentRes + "');"
+                        language: "JavaScript",
+                        content: "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), 'nameOfCurrentEmployee').getInstance(self).setValue('" + currentRes + "');"
                     })
                 }
             });
@@ -111,8 +111,8 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                         method: "POST",
                         data: Y.JSON.stringify({
                             "@class": "Script",
-                            "language": "JavaScript",
-                            "content": "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
+                            language: "JavaScript",
+                            content: "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
                         })
                     }
                 });
@@ -230,8 +230,8 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "importPackage(com.Wegas.Facade.core.script);var i, listRes, resInst;\nlistRes = VariableDescriptor.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '" + this.currentResourceDescriptor.get('name') + "'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);"
+                        language: "JavaScript",
+                        content: "importPackage(com.Wegas.Facade.core.script);var i, listRes, resInst;\nlistRes = VariableDescriptor.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '" + this.currentResourceDescriptor.get('name') + "'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);"
                     })
                 }
             });

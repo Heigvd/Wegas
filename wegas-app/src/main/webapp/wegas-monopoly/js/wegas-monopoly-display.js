@@ -11,20 +11,20 @@
  */
 YUI.add( "wegas-monopoly-display", function ( Y ) {
     "use strict";
-    
+
     var Monopolydisplay;
-    
+
     Monopolydisplay = Y.Base.create( "wegas-monopoly-display", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable ], {
-                
+
         initializer: function() {
-           this.handlers = []; 
+           this.handlers = [];
         },
-        
+
         bindUI: function() {
             this.handlers.push(
-                Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));  
+                Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
         },
-        
+
         renderUI: function(){
             var i;
             // dice
@@ -34,31 +34,31 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
             // next button
             this.next = this.get("parent").item(2);
             // state
-            this.state = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "state").getInstance().get("value");  
-            
+            this.state = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "state").getInstance().get("value");
+
             // create box
             for (i = 1; i <= 40; i++){
                 this.get("boundingBox").append("<div class='box"+i +"' />")
             }
         },
-        
+
         syncUI: function () {
             var i, descriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position"),
             game, team, t, ret = [];
-        
+
             if (descriptor.get("scope") instanceof Y.Wegas.persistence.TeamScope){ //@fixme when game scope works
                 game = Y.Wegas.Facade.Game.cache.getCurrentGame();
-                
+
                 for (i = 0; i < game.get("teams").length; i += 1) {
                     t = game.get("teams")[i];
-                    ret.push([t, 
+                    ret.push([t,
                         descriptor.get("scope").get("variableInstances")[t.get("id")]]);
                 }
             } else if (descriptor.get("scope") instanceof Y.Wegas.persistence.TeamScope) {
                 team = Y.Wegas.Facade.Game.cache.getCurrentTeam()
                 for (i = 0; i < team.get("players").length; i += 1) {
                     t = team.get("players")[i];
-                    ret.push([t, 
+                    ret.push([t,
                         descriptor.get("scope").get("variableInstances")[t.get("id")]]);
                 }
             }
@@ -68,7 +68,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
             this.state = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "state").getInstance().get("value");
             this.checkState();
         },
-        
+
         doDraw: function (data) {
             var i;
             for (i = 0; i < data.length; i += 1) {
@@ -76,19 +76,19 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                 Y.one('.box'+data[i][1].get("value")).append("<div class='pion"+[i+1]+"'></div>");
             }
         },
-        
+
         removePions: function(){
             var i;
             for (i = 1; i <= 40; i += 1) {
               Y.one('.box'+[i]).get('childNodes').remove();
             }
         },
-        
+
         setPion: function(value){
             var position;
-            
+
             this.dice.rollButton.enable();
-           
+
             position = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position").getInstance().get("value");
             position = value + position;
             if (this.position > 40){
@@ -100,14 +100,14 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "importPackage(com.wegas.core.script);\nposition.value ="+ position +";"
+                        language: "JavaScript",
+                        content: "importPackage(com.wegas.core.script);\nposition.value ="+ position +";"
                     })
-                }                
+                }
             });
-            
+
         },
-        
+
         checkCurrentPlayer: function(){
             var turn = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "turnOf"),
                 id;
@@ -116,7 +116,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
             } else if (turn.get("scope") instanceof Y.Wegas.persistence.TeamScope) {
                 id = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id");
             }
-            
+
             if (id == turn.get("scope").getInstance().get("value")){
                 if (this.state == "wait"){
                     this.setState("roll");
@@ -125,7 +125,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                 this.checkState();
             }
         },
-        
+
         setCurrentPlayer: function(id){
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
@@ -133,19 +133,19 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "importPackage(com.wegas.core.script);\nturnOf.value ="+ id +";"
+                        language: "JavaScript",
+                        content: "importPackage(com.wegas.core.script);\nturnOf.value ="+ id +";"
                     })
-                }                
+                }
             });
         },
-        
+
         payPlayer: function (){
         // TODO
         // Check if box belong a palyer
-        // then: pay and disable buy button 
+        // then: pay and disable buy button
         },
-        
+
         checkState: function (){
             switch (this.state){
                 case "roll" :
@@ -163,7 +163,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                     this.next.disable();
             }
         },
-        
+
         checkPropertyBuyable : function(){
             var position = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position").getInstance().get("value"),
             boxValue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "boxValue").getAttrs().items;
@@ -175,7 +175,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                 this.buy.enable();
             }
         },
-        
+
         setState: function (newState){
             this.state = newState;
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
@@ -184,8 +184,8 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "importPackage(com.wegas.core.script);\nstate.value ='"+ this.state +"';"
+                        language: "JavaScript",
+                        content: "importPackage(com.wegas.core.script);\nstate.value ='"+ this.state +"';"
                     })
                 },
                 on: {
@@ -194,8 +194,8 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                     }, this)
                 }
             }, this);
-        }            
+        }
     });
-    
+
     Y.namespace( "Wegas" ).Monopolydisplay = Monopolydisplay;
 });

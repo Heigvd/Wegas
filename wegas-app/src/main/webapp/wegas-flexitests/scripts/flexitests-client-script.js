@@ -7,7 +7,7 @@
  */
 
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 /*global Y */
@@ -23,22 +23,22 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             ]
         }, {
             type: "Button",
-            label: "Add",
+            label: "New element",
             cssClass: "editor-exploreGameModel-button",
             plugins: [{
-                    "fn": "WidgetMenu",
-                    "cfg": {
-                        "menuCfg": {
-                            points: ["tl", "tr"]
-                        },
-                        "event": "mouseenter",
-                        "children": [{
+                    fn: "WidgetMenu",
+                    cfg: {
+                        //menuCfg: {
+                        //    points: ["tl", "tr"]
+                        //},
+                        //event: "mouseenter",
+                        children: [{
                                 type: "Button",
                                 label: "Single choice list",
                                 plugins: [{
                                         fn: "AddChildWidgetAction",
                                         cfg: {
-                                            "childType": "ChoiceList"
+                                            childType: "ChoiceList"
                                         }
                                     }
                                 ]
@@ -48,17 +48,17 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
                                 plugins: [{
                                         fn: "AddChildWidgetAction",
                                         cfg: {
-                                            "childCfg": {
-                                                "type": "Image",
-                                                "cssClass": "fix-point",
-                                                "url": "/fix-point/fix_red.png",
-                                                "plugins": [{
-                                                        "fn": "CSSPosition",
-                                                        "cfg": {
-                                                            "styles": {
-                                                                "position": "absolute",
-                                                                "top": "344px",
-                                                                "left": "472px"
+                                            childCfg: {
+                                                type: "Image",
+                                                cssClass: "fix-point",
+                                                url: "/fix-point/fix_red.png",
+                                                plugins: [{
+                                                        fn: "CSSPosition",
+                                                        cfg: {
+                                                            styles: {
+                                                                position: "absolute",
+                                                                top: "344px",
+                                                                left: "472px"
                                                             }
                                                         }
                                                     }]
@@ -83,22 +83,22 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             ]
         }, {
             type: "Button",
-            label: "Add",
+            label: "New element",
             cssClass: "editor-exploreGameModel-button",
             plugins: [{
-                    "fn": "WidgetMenu",
-                    "cfg": {
-                        "menuCfg": {
+                    fn: "WidgetMenu",
+                    cfg: {
+                        menuCfg: {
                             points: ["tl", "tr"]
                         },
-                        "event": "mouseenter",
-                        "children": [{
+                        event: "mouseenter",
+                        children: [{
                                 type: "Button",
                                 label: "Text",
                                 plugins: [{
                                         fn: "AddChildWidgetAction",
                                         cfg: {
-                                            "childType": "Text"
+                                            childType: "Text"
                                         }
                                     }
                                 ]
@@ -108,7 +108,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
                                 plugins: [{
                                         fn: "AddChildWidgetAction",
                                         cfg: {
-                                            "childType": "Image"
+                                            childType: "Image"
                                         }
                                     }
                                 ]
@@ -144,22 +144,22 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             ]
         }, {
             type: "Button",
-            label: "Add",
+            label: "New element",
             cssClass: "editor-exploreGameModel-button",
             plugins: [{
-                    "fn": "WidgetMenu",
-                    "cfg": {
-                        "menuCfg": {
+                    fn: "WidgetMenu",
+                    cfg: {
+                        menuCfg: {
                             points: ["tl", "tr"]
                         },
-                        "event": "mouseenter",
-                        "children": [{
+                        event: "mouseenter",
+                        children: [{
                                 type: "Button",
                                 label: "Text",
                                 plugins: [{
                                         fn: "AddChildWidgetAction",
                                         cfg: {
-                                            "childType": "Text"
+                                            childType: "Text"
                                         }
                                     }
                                 ]
@@ -169,7 +169,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
                                 plugins: [{
                                         fn: "AddChildWidgetAction",
                                         cfg: {
-                                            "childType": "Form"
+                                            childType: "Form"
                                         }
                                     }
                                 ]
@@ -179,7 +179,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
                                 plugins: [{
                                         fn: "AddChildWidgetAction",
                                         cfg: {
-                                            "childType": "FlexitestsResults"
+                                            childType: "FlexitestsResults"
                                         }
                                     }
                                 ]

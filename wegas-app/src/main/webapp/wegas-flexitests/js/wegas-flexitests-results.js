@@ -47,8 +47,8 @@ YUI.add("wegas-flexitests-results", function(Y) {
                         method: "POST",
                         data: Y.JSON.stringify({
                             "@class": "Script",
-                            "language": "JavaScript",
-                            "content": script
+                            language: "JavaScript",
+                            content: script
                         })
                     },
                     on: {
@@ -122,7 +122,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     o = demographics[i].properties;
                     j = Y.Array.filter(Y.Object.keys(o), UNWANTED_PROPS);
                     for (k = 0; k < j.length; k++) {
-                        j[k] = {"key": j[k], sortable: true};
+                        j[k] = {key: j[k], sortable: true};
                     }
                     if (this.resultTable) {
                         this.resultTable.destroy();

@@ -216,8 +216,8 @@ YUI.add('wegas-itemselector', function(Y) {
                         case 'image' :
                             child = this.makeNodeImage({
                                 "data-file": value,
-                                "width": obj['height'],
-                                "height": obj['width']
+                                width: obj['height'],
+                                height: obj['width']
                             }, className);
                             break;
                         case 'position' :

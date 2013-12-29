@@ -92,7 +92,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             this._resize.on("drag:end", function(e) {
                 var widget = this.shownOverlay._widget, bb = widget.get(BOUNDINGBOX);
                 widget.CSSSize.setAttrs({
-                    "styles": {
+                    styles: {
                         width: bb.getComputedStyle(WIDTH),
                         height: bb.getComputedStyle(HEIGHT)
                     }

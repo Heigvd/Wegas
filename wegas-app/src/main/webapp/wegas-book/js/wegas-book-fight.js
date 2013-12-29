@@ -87,8 +87,8 @@ YUI.add("wegas-book-fight", function(Y) {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "importPackage(com.wegas.core.script);\nstamina.value =" + stamina + ";"
+                        language: "JavaScript",
+                        content: "importPackage(com.wegas.core.script);\nstamina.value =" + stamina + ";"
                     })
                 }
             });
@@ -115,23 +115,23 @@ YUI.add("wegas-book-fight", function(Y) {
             });
             if (this.get("success")) {
                 this.success = new Y.Wegas.List({
-                    "label": "success",
-                    "cssClass": "success-list",
-                    "children": this.get("success")
+                    label: "success",
+                    cssClass: "success-list",
+                    children: this.get("success")
                 });
             }
             if (this.get("failure")) {
                 this.failure = new Y.Wegas.List({
-                    "label": "failure",
-                    "cssClass": "failure-list",
-                    "children": this.get("failure")
+                    label: "failure",
+                    cssClass: "failure-list",
+                    children: this.get("failure")
                 });
             }
             if (this.get("alternative")) {
                 this.alternative = new Y.Wegas.List({
-                    "label": "alternative",
-                    "cssClass": "alternative-list",
-                    "children": this.get("alternative")
+                    label: "alternative",
+                    cssClass: "alternative-list",
+                    children: this.get("alternative")
                 });
             }
             this.opponentStamina = this.get("stamina");

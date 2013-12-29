@@ -119,7 +119,7 @@ YUI.add('treeview', function(Y) {
         saveState: function() {
             var State = {}, getChildsState = function(o, item, index) {
                 if (item instanceof Y.TreeNode) {
-                    o[index] = {"expanded": !item.get(BOUNDING_BOX).hasClass(classNames.collapsed)};
+                    o[index] = {expanded: !item.get(BOUNDING_BOX).hasClass(classNames.collapsed)};
                     item.each(Y.bind(getChildsState, item, o[index]));
                 }
             };

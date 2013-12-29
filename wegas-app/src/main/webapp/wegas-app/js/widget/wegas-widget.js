@@ -13,8 +13,7 @@ YUI.add("wegas-widget", function(Y) {
     "use strict";
     var Lang = Y.Lang,
             BOUNDING_BOX = "boundingBox",
-            baseCreateChild = Y.WidgetParent.prototype._createChild,
-            basePlug = Y.Widget.prototype.plug;
+            baseCreateChild = Y.WidgetParent.prototype._createChild;
 
     /**
      * @name Y.Wegas.Widget
@@ -399,8 +398,8 @@ YUI.add("wegas-widget", function(Y) {
                         plg = this[this._plugins[i].NS];
                         if (plg.toObject) {
                             p.push({
-                                "fn": Y.Wegas.Plugin.getPluginFromName(this._plugins[i].NAME), //TODO: find an other referencing way
-                                "cfg": plg.toObject("type")
+                                fn: Y.Wegas.Plugin.getPluginFromName(this._plugins[i].NAME), //TODO: find an other referencing way
+                                cfg: plg.toObject("type")
                             });
                         }
                     }
@@ -585,9 +584,9 @@ YUI.add("wegas-widget", function(Y) {
         }
         return baseCreateChild.call(this, config);                              //reroute
     };
-    
+
     /** @Hack, use method defined in wegas-datasource.js */
-    Y.Widget.prototype.plug =     Y.DataSource.IO.prototype.plug;
+    Y.Widget.prototype.plug = Y.DataSource.IO.prototype.plug;
 
     /**
      * Simulate a DOM Event bubbling up to a listener and stops.

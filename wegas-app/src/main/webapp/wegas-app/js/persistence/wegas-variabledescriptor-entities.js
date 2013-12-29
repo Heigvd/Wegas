@@ -570,13 +570,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 type: BUTTON,
                 label: "New",
                 plugins: [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            //"menuCfg": {
-                            //    points: ["tl", "tr"]
-                            //},
-                            //"event": "mouseenter",
-                            "children": [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: [{
                                     type: "AddEntityChildButton",
                                     label: "Number",
                                     targetClass: "NumberDescriptor"

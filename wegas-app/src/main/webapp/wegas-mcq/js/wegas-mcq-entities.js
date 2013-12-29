@@ -100,13 +100,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: BUTTON,
                 label: "New",
                 plugins: [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            //"menuCfg": {
+                        fn: "WidgetMenu",
+                        cfg: {
+                            //menuCfg: {
                             //    points: ["tl", "tr"]
                             //},
-                            //"event": "mouseenter",
-                            "children": [{
+                            //event: "mouseenter",
+                            children: [{
                                     type: BUTTON,
                                     label: "Add a choice",
                                     plugins: [{
@@ -129,7 +129,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Duplicate",
+                label: "Copy",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]
@@ -467,7 +467,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "Duplicate",
+                label: "Copy",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]

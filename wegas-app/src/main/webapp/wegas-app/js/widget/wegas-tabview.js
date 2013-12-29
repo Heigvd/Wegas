@@ -108,7 +108,7 @@ YUI.add('wegas-tabview', function(Y) {
                 plugins: [{
                         fn: "AddChildWidgetAction",
                         cfg: {
-                            "childType": "Tab"
+                            childType: "Tab"
                         }
                     }
                 ]

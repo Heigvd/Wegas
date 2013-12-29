@@ -144,7 +144,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 return;
             }
             this.mask();
-            this.set("currentLoading", {"left": true, "center": true, "right": true});
+            this.set("currentLoading", {left: true, center: true, right: true});
             this.currentQuestionId = this.generateNextId();
             this.centerElement.set("element", +this.currentQuestionId);
             this.leftElement.set("element", +this.currentQuestionId);
@@ -338,7 +338,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         NAME: "flexiresponse",
         EDITORNAME: "Flexitest Response",
         ATTRS: {
-            "value": {
+            value: {
                 value: "",
                 type: "string",
                 _inputex: {
@@ -378,7 +378,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         NAME: "swapzone",
         EDITORNAME: "Flexitest swap zone",
         ATTRS: {
-            "after": {
+            after: {
                 value: 1,
                 type: "number",
                 _inputex: {

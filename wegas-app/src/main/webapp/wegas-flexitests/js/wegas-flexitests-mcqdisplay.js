@@ -16,7 +16,7 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
 
     Y.namespace('Wegas').FlexitestsMCQ = Y.Base.create("wegas-flexitests-mcqdisplay", Y.Widget,
             [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-                
+
         /**
          * Lifecycle method
          * @function
@@ -132,8 +132,8 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "store(" + this.get("variable.evaluated").get("name") + ",'" + id + "','" + Y.JSON.stringify(el) + "');"
+                        language: "JavaScript",
+                        content: "store(" + this.get("variable.evaluated").get("name") + ",'" + id + "','" + Y.JSON.stringify(el) + "');"
                     })
                 },
                 on: {
