@@ -919,7 +919,7 @@ YUI.add('wegas-datasource', function(Y) {
             if (data["@class"] === "JpaAccount") {                              // Allow user creation based on a Jpa Account
                 data = {
                     "@class": "User",
-                    "accounts": [data]
+                    accounts: [data]
                 };
             }
 

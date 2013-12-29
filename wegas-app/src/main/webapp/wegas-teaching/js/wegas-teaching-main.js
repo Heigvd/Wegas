@@ -188,8 +188,8 @@ YUI.add("wegas-teaching-main", function(Y) {
                     method: "POST",
                     data: {
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "importPackage(com.wegas.core.script);\n" +
+                        language: "JavaScript",
+                        content: "importPackage(com.wegas.core.script);\n" +
                                 "\nfleche" + this.currentArrow.get("id") + ".properties.put('value','" + this.currentArrow.get("val") + "');" +
                                 "\nfleche" + this.currentArrow.get("id") + ".properties.put('text','" + this.currentArrow.get("text") + "');"
                     }

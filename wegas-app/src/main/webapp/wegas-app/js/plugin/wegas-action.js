@@ -265,8 +265,8 @@ YUI.add('wegas-action', function(Y) {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": script
+                        language: "JavaScript",
+                        content: script
                     })
                 },
                 on: {

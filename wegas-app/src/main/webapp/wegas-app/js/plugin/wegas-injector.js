@@ -56,7 +56,7 @@ YUI.add("wegas-injector", function(Y) {
                 if (!Injector.GALLERY) {
                     Y.use("wegas-gallery", function() {
                         Injector.GALLERY = new Y.Wegas.WegasGallery({
-                            "lightGallery": true
+                            lightGallery: true
                         });
                     });
                 }

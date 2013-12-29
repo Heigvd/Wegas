@@ -57,7 +57,7 @@ YUI.add("wegas-image", function(Y) {
                 this.getEvent("load").fired = true;
                 this.getEvent("render").fired = true;
                 if (!this.CSSSize) { // adapt only without plugin
-                    this.get("boundingBox").setStyles({"width": this.image.width, height: this.image.height});
+                    this.get("boundingBox").setStyles({width: this.image.width, height: this.image.height});
                 }
                 this.fire("load");
                 this.fire("render");

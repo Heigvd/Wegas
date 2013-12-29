@@ -27,11 +27,11 @@ YUI.add('wegas-progressbar', function(Y) {
                 position: "relative",
                 whiteSpace: "nowrap"});
             this.labelNode.setStyles({
-                "backgroundColor": "transparent",
-                "position": "absolute",
-                "top": "0px",
-                "left": "0px",
-                "width": "100%"
+                backgroundColor: "transparent",
+                position: "absolute",
+                top: "0px",
+                left: "0px",
+                width: "100%"
             });
             this.get(BOUNDING_BOX).append(this.labelNode);
         },

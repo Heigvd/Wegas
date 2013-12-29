@@ -416,7 +416,7 @@ YUI.add('wegas-editor-action', function(Y) {
                 tabSelector: "#rightTabView",
                 emptyTab: true,
                 wchildren: [{
-                        "type": "JoinTeam",
+                        type: "JoinTeam",
                         entity: this.get("entity")
                     }]
             });

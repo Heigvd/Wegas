@@ -205,13 +205,11 @@ YUI.add('wegas-chart', function(Y) {
             },
             width: {
                 type: "string",
-                value: "250px",
-                "transient": false
+                value: "250px"
             },
             height: {
                 type: "string",
-                value: "200px",
-                "transient": false
+                value: "200px"
             },
             numberOfValue: {
                 type: "Number",

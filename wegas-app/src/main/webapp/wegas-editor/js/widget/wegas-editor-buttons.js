@@ -63,8 +63,8 @@ YUI.add('wegas-editor-buttons', function(Y) {
                 // }
 
                 menuItems.push({
-                    "type": "Text",
-                    "content": "<b>" + cTeam.get("name") + "</b>"
+                    type: "Text",
+                    content: "<b>" + cTeam.get("name") + "</b>"
                 });
 
                 for (k = 0; k < cTeam.get("players").length; k = k + 1) {
@@ -116,8 +116,8 @@ YUI.add('wegas-editor-buttons', function(Y) {
 
             for (j = 0; j < games.length; j = j + 1) {
                 menuItems.push({
-                    "type": "Button",
-                    "label": games[j].get("name"),
+                    type: "Button",
+                    label: games[j].get("name"),
                     plugins: [{
                             fn: "OpenGameAction",
                             cfg: {
@@ -131,5 +131,5 @@ YUI.add('wegas-editor-buttons', function(Y) {
         }
     });
     Y.namespace("Wegas").SelectGameButton = SelectGameButton;
-    
+
 });

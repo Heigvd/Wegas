@@ -130,7 +130,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             }
             (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true);
             (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyles({
-                "float": "left"
+                float: "left"
             });
 
             //for (i = 0; i < this.subFields.length; i++) {

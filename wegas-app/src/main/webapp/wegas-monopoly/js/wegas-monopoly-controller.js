@@ -30,35 +30,35 @@ YUI.add('wegas-monopoly-controller', function(Y) {
             this.afterHostEvent("render", function(){
                 this.dice = this.get("host").item(0);
                 this.diceAfter();
-               
+
                 this.buy = this.get("host").item(1);
                 this.boxValue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "boxValue").getAttrs().items;
                 this.buyProperty();
-               
+
                 this.display = this.get("host").item(5);
                 this.display.checkState();
-               
+
                 this.restart = this.get("host").item(3);
                 this.checkRestart();
                 this.clickRestart();
-                
+
                 this.next = this.get("host").item(2);
                 this.clickNext();
             });
         },
-        
+
         diceAfter: function(){
             this.dice.after("diceRolling",function(){
                 this.dice.rollButton.disable();
             }, this);
             this.dice.after("diceRolled", this.setPion, this);
         },
-        
+
         setPion : function(e){
             this.display.setPion(e.target.result);
             this.display.setState("afterRoll");
         },
-        
+
         clickNext: function(){
             var turn = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "turnOf"),
                 id, player;
@@ -72,7 +72,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                 }
             }, this);
         },
-        
+
         nextPlayer: function (scope, turn, player){
             var i;
             for (i = 0; i < player.length; i++){
@@ -85,9 +85,9 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                     }
                 }
             }
-            this.display.setState("wait"); 
+            this.display.setState("wait");
         },
-        
+
         checkRestart : function(){
             this.restartValue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "restart").getInstance().get("value");
             if (this.restartValue == "true"){
@@ -96,17 +96,17 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                 Y.one('.game .yui3-togglebutton').removeClass('yui3-button-selected');
             }
         },
-        
+
         clickRestart : function (e){
             this.restart.on("click", function(){
                 // check if all player have true TODO
-                
+
                 // change restart status
                 if (this.restartValue == "true"){
                     this.restartValue = "false";
                 } else {
                     this.restartValue = "true";
-                } 
+                }
                 Y.Wegas.Facade.VariableDescriptor.sendRequest({
                     request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
                     headers:{
@@ -117,14 +117,14 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                         method: "POST",
                         data: Y.JSON.stringify({
                             "@class": "Script",
-                            "language": "JavaScript",
-                            "content": "importPackage(com.wegas.core.script);\nrestart.value ="+ this.restartValue +";"
+                            language: "JavaScript",
+                            content: "importPackage(com.wegas.core.script);\nrestart.value ="+ this.restartValue +";"
                         })
                     }
                 });
             })
         },
-        
+
         buyProperty: function(){
             this.buy.on("click", function(){
                 var position, money;
@@ -136,7 +136,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                     alert("this property is not buyable");
                     return;
                 }
-                // check if have enough money               
+                // check if have enough money
                 money = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "money").getInstance().get("value");
                 if (this.boxValue[position].getInstance().get("properties").value <= money){
                     this.setMoney(money - this.boxValue[position].getInstance().get("properties").value);
@@ -162,9 +162,9 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                     alert("You have not enought money");
                 }
             }, this);
-            
+
         },
-        
+
         setMoney: function(value){
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
@@ -176,13 +176,13 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                     method: "POST",
                     data: Y.JSON.stringify({
                         "@class": "Script",
-                        "language": "JavaScript",
-                        "content": "importPackage(com.wegas.core.script);\nmoney.value ="+ value +";"
+                        language: "JavaScript",
+                        content: "importPackage(com.wegas.core.script);\nmoney.value ="+ value +";"
                     })
                 }
             });
         }
-        
+
     }, {
         NS: "MonopolyController",
         NAME: "MonopolyController"
