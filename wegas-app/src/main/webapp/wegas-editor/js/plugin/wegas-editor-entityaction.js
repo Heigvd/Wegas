@@ -86,18 +86,37 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         showUpdateForm: function(entity, dataSource) {
             var dataSource = dataSource,
                     doShow = function(entity, dataSource) {
-                EditEntityAction.showEditForm(entity, function(data) {          // Display the edit form
+                var form = EditEntityAction.showEditForm(entity, function(data) {          // Display the edit form
                     // entity.setAttrs(cfg);
                     dataSource.cache.put(data, {
                         on: {
                             success: function() {
-                                EditEntityAction.showFormMessage("success", "Item has been updated");
+                                EditEntityAction.showFormMessage("success", "Item updated");
                                 EditEntityAction.hideEditFormOverlay();
                             },
                             failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                         }
                     });
                 });
+
+                //var menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
+                //    return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+                //});                                                             // Retrieve menu and remove the first item
+                //
+                //Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+                //    switch (i.label) {
+                //        case "Delete":
+                //        case "New":
+                //        case "New element":
+                //        case "Copy":
+                //        case "View":
+                //        case "Open in editor":
+                //        case "Open":
+                //        case "Edit":
+                //            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                //    }
+                //});
+                //form.toolbar.add(menuItems);
             };
             EditEntityAction.getEditionTab();                                   // Create the edition tab (and the left panel won't pop in and out)
 
@@ -158,7 +177,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 cfg: formCfg || entity.getFormCfg()
             });
             tab.form.toolbar.setStatusMessage("");
-            //tab.form.saveButton.set("disabled", false);
 
             Y.fire("rightTabShown");
 
@@ -244,9 +262,9 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             EditEntityAction.showEditForm(entity, function(newVal) {
                 dataSource.cache.post(newVal, null, {
                     success: function(e) {
-                        EditEntityAction.hideEditFormOverlay();
+                        //EditEntityAction.hideEditFormOverlay();
                         EditEntityAction.showUpdateForm(e.response.entity, dataSource);
-//                        EditEntityAction.showFormMessage("success", "Item has been added");
+                        EditEntityAction.showFormMessage("success", "Item created");
                     },
                     failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                 });
