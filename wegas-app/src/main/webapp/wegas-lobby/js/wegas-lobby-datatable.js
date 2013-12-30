@@ -319,7 +319,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     return;
                 }
                 if (this.buttons) {
-                    this.buttons.each(function(b) {                        // Remove existing buttons,
+                    this.buttons.each(function(b) {                             // Remove existing buttons,
                         b.destroy();
                     });
                 }
