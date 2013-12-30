@@ -77,7 +77,7 @@
                         "cfg": {
                             "children": [{
                                     "type": "OpenTabButton",
-                                    "label": "Impact game",
+                                    "label": "Impact",
                                     "wchildren": [{
                                             "type": "WysiwygConsole",
                                             "cssClass": "wegas-console",
@@ -93,6 +93,7 @@
                                 }, {
                                     "type": "Button",
                                     "label": "Model properties",
+                                    "cssClass": "wegas-advanced-feature",
                                     "plugins": [{
                                             "fn": "EditEntityAction",
                                             "cfg": {

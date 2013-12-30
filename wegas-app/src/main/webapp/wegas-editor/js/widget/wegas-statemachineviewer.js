@@ -45,7 +45,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
 
             this.btnNew = this.toolbar.add(new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-new\"></span>New"
-            }));
+            })).item(0);
 
             this.toolbar.get('header').append('<div style="width:10px;display:inline-block;"></div>');// Add a separator
 
@@ -53,11 +53,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 min: StateMachineViewer.MIN_ZOOM * StateMachineViewer.FACTOR_ZOOM,
                 max: StateMachineViewer.MAX_ZOOM * StateMachineViewer.FACTOR_ZOOM,
                 value: StateMachineViewer.FACTOR_ZOOM // default zoom
-            }));
+            })).item(0);
 
             this.btnZoomValue = this.toolbar.add(new Y.Button({
                 label: "100%"
-            }));
+            })).item(0);
 
             this.scrollView = new Y.ScrollView({
                 srcNode: '.scrollable',
@@ -425,7 +425,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             jp.draggable(this.get(BOUNDING_BOX), {
                 containment: this.get("parent").get("boundingBox").one(".sm-zoom").getDOMNode(),
                 after: {
-                    "end": Y.bind(this.dragEnd, this)
+                    end: Y.bind(this.dragEnd, this)
                 }/* TODO : FIX
                  plugins:[{
                  fn:Y.Plugin.DDConstrained,

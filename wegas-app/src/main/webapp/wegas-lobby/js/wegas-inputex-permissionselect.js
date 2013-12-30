@@ -31,7 +31,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             this.bNew = this.toolbar.add({
                 type: "Button",
                 label: "<span class=\"wegas-icon wegas-icon-new\"></span>New"
-            });
+            }).item(0);
         },
         bindUI: function() {
             this.bNew.on('click', function(e) {

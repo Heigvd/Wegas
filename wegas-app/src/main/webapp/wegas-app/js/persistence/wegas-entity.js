@@ -232,7 +232,7 @@ YUI.add('wegas-entity', function(Y) {
                                             rightLabel: "Edit",
                                             value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
                                         }, {
-                                            rightLabel: "Duplicate",
+                                            rightLabel: "Copy",
                                             value: "GameModel:Duplicate"
                                         }, {
                                             rightLabel: "Host",
@@ -257,9 +257,6 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
-                            menuCfg: {
-                                //points: ["tr", "br"]
-                            },
                             children: [{
                                     type: BUTTON,
                                     label: "Make a copy",
@@ -488,10 +485,10 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareUser",
-                                    "plugins": [{
-                                            "fn": "WidgetToolbar",
-                                            "cfg": {
-                                                "children": [{type: "Text"}]
+                                    plugins: [{
+                                            fn: "WidgetToolbar",
+                                            cfg: {
+                                                children: [{type: "Text"}]
                                             }
                                         }],
                                     permsList: [{
@@ -528,9 +525,6 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
-                            menuCfg: {
-                                //points: ["tr", "br"]
-                            },
                             children: [{
                                     type: BUTTON,
                                     label: "Create a model based on this game",
@@ -753,12 +747,7 @@ YUI.add('wegas-entity', function(Y) {
      */
     Wegas.persistence.JpaAccount = Y.Base.create("JpaAccount", Wegas.persistence.Entity, [], {
         getPublicName: function() {
-            if (this.get("firstname") || this.get("lastname")) {
-                return this.get("firstname") + " " + (this.get("lastname") || "");
-
-            } else {
-                return this.get("email");
-            }
+            return this.get("name");
         }
 
     }, {
@@ -768,6 +757,16 @@ YUI.add('wegas-entity', function(Y) {
                 value: "JpaAccount",
                 _inputex: {
                     _type: HIDDEN
+                }
+            },
+            name: {
+                getter: function(val) {
+                    if (this.get("firstname") || this.get("lastname")) {
+                        return this.get("firstname") + " " + (this.get("lastname") || "");
+
+                    } else {
+                        return this.get("email");
+                    }
                 }
             },
             firstname: {

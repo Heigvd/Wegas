@@ -56,7 +56,9 @@
     background: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));
     background: linear-gradient(transparent,rgba(0, 0, 0, 0.05) 40%,rgba(0, 0, 0, 0.15));
 }
-
+.yui3-menu .yui3-button .wegas-icon {
+    display: none;
+}
 /* Proxy styles */
 .yui3-skin-sam .wegas-widgetmenu-hassubmenu{
     position: relative;

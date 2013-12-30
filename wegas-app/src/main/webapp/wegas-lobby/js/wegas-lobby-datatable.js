@@ -124,7 +124,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
                 case 'Game':
                     var createdBy = entity.get("createdBy"),
-                            gameModel = Wegas.Facade.GameModel.cache.findById(entity.get("gameModelId"))
+                            gameModel = Wegas.Facade.GameModel.cache.findById(entity.get("gameModelId"));
 
                     if (!gameModel) {
                         Y.log("Unable to find game model for game: " + entity.get(NAME) + "(" + entity.get("gameModelId") + ")", "error");
@@ -156,7 +156,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         return {
                             name: entity.get(NAME),
                             createdByName: entity.get("createdByName"),
-                            createdTime: entity.get("createdTime"),
+                            createdTime: entity.get("createdTime")
                         };
                     }
                     break;
@@ -270,8 +270,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      */
     Y.Plugin.EditorDTMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
         initializer: function() {
-            this.buttons = [];
-
             this.afterHostEvent(RENDER, function() {
                 var host = this.get(HOST);
                 host.dataTable.addAttr("selectedRow", {value: null});
@@ -295,7 +293,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 dataSource: host.get(DATASOURCE)
             };
 
-            Y.Plugin.EditorDTMenu.currentGameModel = entity;                  // @hack so game model creation will work
+            Y.Plugin.EditorDTMenu.currentGameModel = entity;                    // @hack so game model creation will work
 
             if (last_tr) {
                 last_tr.removeClass("wegas-datatable-selected");
@@ -311,7 +309,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
                     switch (i.label) {
                         case "Delete":
-                        case "Duplicate":
                         case "Open in editor":
                         case "Open":
                         case "View":
@@ -321,9 +318,11 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 if (menuItems.length === 0) {
                     return;
                 }
-                Y.Array.each(this.buttons, function(b) {                        // Remove existing buttons,
-                    b.destroy();
-                });
+                if (this.buttons) {
+                    this.buttons.each(function(b) {                        // Remove existing buttons,
+                        b.destroy();
+                    });
+                }
                 //this.buttons = Y.Array.map(menuItems, function(i) {           // Add new buttons to the toolbar
                 //    return host.toolbar.add(i);
                 //});
@@ -338,9 +337,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         if (target && target.toolbar) {
                             this.buttons = target.toolbar.add(menuItems);       // Add new buttons to the right tab's toolbar
 
-                            this.buttons[0].set("visible", false);
-                            if (this.buttons[1])
-                                this.buttons[1].get(CONTENTBOX).setStyle("marginLeft", "15px");
+                            this.buttons.item(0).set("visible", false);
+                            if (this.buttons.item(1))
+                                this.buttons.item(1).get(CONTENTBOX).setStyle("marginLeft", "15px");
                         }
                     }, this);
 

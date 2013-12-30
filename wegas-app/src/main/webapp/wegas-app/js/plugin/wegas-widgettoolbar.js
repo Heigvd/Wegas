@@ -12,14 +12,16 @@
 YUI.add('wegas-widgettoolbar', function(Y) {
     "use strict";
 
+    var BOUNDINGBOX = "boundingBox", HOST = "host",
+            WidgetToolbar;
+
     /**
      *  @name Y.Wegas.WidgetToolbar
      *  @class Adds a toolbar to target Y.Widget
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var BOUNDINGBOX = "boundingBox", HOST = "host",
-            WidgetToolbar = function() {
+    WidgetToolbar = function() {
         WidgetToolbar.superclass.constructor.apply(this, arguments);
     };
 
@@ -48,10 +50,7 @@ YUI.add('wegas-widgettoolbar', function(Y) {
          * @private
          */
         destructor: function() {
-            var i;
-            for (i = 0; i < this.children.length; i = i + 1) {
-                this.children[i].destroy();
-            }
+            this.menuBar.destroy();
         },
         // *** Private methods *** //
         /**
@@ -59,15 +58,22 @@ YUI.add('wegas-widgettoolbar', function(Y) {
          * @private
          */
         render: function() {
-            var i, host = this.get(HOST),
-                    children = this.get("children");
-            host.get(BOUNDINGBOX).addClass("wegas-hastoolbar")
-                    .prepend('<div class="wegas-toolbar"><div class="wegas-toolbar-header"></div><div class="wegas-toolbar-panel"></div></div>');
+            var host = this.get(HOST),
+                    bb = host.get(BOUNDINGBOX);
+
+            bb.addClass("wegas-hastoolbar").prepend('<div class="wegas-toolbar"></div>');
             host.get('contentBox').addClass("wegas-toolbar-sibling");
 
-            for (i = 0; i < children.length; i = i + 1) {
-                this.add(children[i]);
-            }
+            this.menuBar = new Y.Wegas.MenuBar({
+                children: this.get("children")
+                        //srcNode: bb.one(".wegas-toolbar-header"),
+                        //render: true
+            });
+            this.menuBar.addTarget(host);
+            this.menuBar.render(bb.one(".wegas-toolbar"));
+            this.menuBar.get(BOUNDINGBOX).addClass("wegas-toolbar-header");
+
+            bb.one(".wegas-toolbar").append('<div class="wegas-toolbar-panel"></div>');
         },
         /**
          *
@@ -78,16 +84,7 @@ YUI.add('wegas-widgettoolbar', function(Y) {
          * @return {Y.Widget} the newly created widget
          */
         add: function(widget) {
-            if (Y.Lang.isArray(widget)) {
-                return Y.Array.map(widget, this.add, this);
-            }
-            if (!(widget instanceof Y.Widget)) {
-                widget = Y.Wegas.Widget.create(widget);
-            }
-            widget.render(this.get("header"));
-            widget.addTarget(this.get(HOST));
-            this.children.push(widget);
-            return widget;
+            return this.menuBar.add(widget);
         },
         /**
          * Returns a toolbar widget based on its index
@@ -96,20 +93,16 @@ YUI.add('wegas-widgettoolbar', function(Y) {
          * @returns {Y.Widget}
          */
         item: function(index) {
-            return this.children[index];
+            return this.menuBar.item(index);
         },
         size: function() {
-            return this.children.length;
+            return this.menuBar.size();
         },
         remove: function(index) {
-            this.children[index].destroy();
-            this.children.splice(index, 1);
+            return this.menuBar.remove(index);
         },
         removeAll: function() {
-            Y.Array.each(this.children, function(c) {
-                c.destroy();
-            });
-            this.children = [];
+            return this.menuBar.removeAll();
         },
         /**
          * @function
@@ -132,7 +125,6 @@ YUI.add('wegas-widgettoolbar', function(Y) {
         /**
          * @function
          * @private
-         * @param txt
          * @return Status node
          * @description get the status node of the message.
          * if 'wegas-status-message' doesn't exist, create and return it
@@ -144,7 +136,7 @@ YUI.add('wegas-widgettoolbar', function(Y) {
                 this.get("header").append(statusNode);
             }
             return statusNode;
-        },
+        }
     }, {
         /** @lends Y.Plugin.WidgetToolbar */
         NS: "toolbar",
