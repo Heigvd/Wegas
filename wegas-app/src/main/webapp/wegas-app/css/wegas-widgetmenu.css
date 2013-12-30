@@ -78,5 +78,6 @@
     background: url("../images/wegas-icon-toggle.png");
 }
 .yui3-skin-sam .wegas-widgetmenu-hassubmenu.wegas-widgetmenu-hassubmenuright:after{
+    top: 9px;
     background: url("../images/wegas-icon-toggle.png") 0 -20px;
 }

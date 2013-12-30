@@ -47,9 +47,9 @@ YUI.add('wegas-editable', function(Y) {
                 if (attrCfgs[k] && attrCfgs[k]["transient"]) {                  // Remove any transient attribute
                     delete ret[k];
                 }
-//                if(this.constructor.ATTRS[k] && this.constructor.ATTRS[k].value === ret[k]){ /* DEFAULT VALUE REMOVAL */
-//                    delete ret[k];
-//                }
+                //if(this.constructor.ATTRS[k] && this.constructor.ATTRS[k].value === ret[k]){ /* DEFAULT VALUE REMOVAL */
+                //    delete ret[k];
+                //}
             }
             return ret;                                                         // Return a copy of this's fields.
         },
@@ -131,9 +131,15 @@ YUI.add('wegas-editable', function(Y) {
          * Returns the edition menu associated to this object, to be used a an inputex object.
          *
          * @function
+         * @param {type} data
+         * @returns {Array}
          */
         getMenuCfg: function(data) {
             var menu = this.getStatic("EDITMENU", true)[0] || [];                // And if no form is defined we return the default one defined in the entity
+
+            data = data || {};
+            data.entity = data.entity || this;
+            data.widget = data.widget || this;
 
             Editable.mixMenuCfg(menu, data);
             return menu;
@@ -141,6 +147,8 @@ YUI.add('wegas-editable', function(Y) {
         /**
          * Returns the edition menu associated to this object, to be used a an wysiwyg editor.
          * @function
+         * @param {type} data
+         * @returns {unresolved}
          */
         getMethodCfgs: function(data) {
             var menu = this.getStatic("METHODS")[0] || {
@@ -157,8 +165,12 @@ YUI.add('wegas-editable', function(Y) {
             return this._aggregateAttrs(this.getStatic("ATTRS"));
         },
         /**
-         *  @function
-         *  @private
+         *
+         * @function
+         * @private
+         * @param {type} key
+         * @param {type} withExtensions
+         * @returns {Array}
          */
         getStatic: function(key, withExtensions) {
             var c = this.constructor, ret = [], i;
@@ -214,7 +226,12 @@ YUI.add('wegas-editable', function(Y) {
     });
     Y.mix(Editable, {
         /** @lends Y.Wegas.Editable */
-
+        /**
+         *
+         * @param {type} elts
+         * @param {type} data
+         * @returns {undefined}
+         */
         mixMenuCfg: function(elts, data) {
             var i, j;
             for (i = 0; i < elts.length; i += 1) {
@@ -239,13 +256,13 @@ YUI.add('wegas-editable', function(Y) {
                     }
                 }
             }
-
         },
         /**
          * Load the modules from an Wegas widget definition
+         *
          * @function
          * @static
-         * @param {Object}
+         * @param {Object} cfg
          * @param {Function} cb callback to be called when modules are loaded
          */
         use: function(cfg, cb) {
@@ -263,6 +280,8 @@ YUI.add('wegas-editable', function(Y) {
          * @function
          * @static
          * @private
+         * @param {type} cfg
+         * @returns {Array}
          */
         getRawModulesFromDefinition: function(cfg) {
             var i, props, type = cfg.type || cfg["@class"],
@@ -311,6 +330,7 @@ YUI.add('wegas-editable', function(Y) {
          * @function
          * @static
          * @private
+         * @param {Object} cfg
          */
         getModulesFromDefinition: function(cfg) {
             var modules = Editable.getRawModulesFromDefinition(cfg);
@@ -364,6 +384,8 @@ YUI.add('wegas-editable', function(Y) {
          *
          * @function
          * @static
+         * @param {type} cfg
+         * @param {type} cb
          */
         useAndRevive: function(cfg, cb) {
             Editable.use(cfg, Y.bind(function(cb) {                            // Load target class dependencies
