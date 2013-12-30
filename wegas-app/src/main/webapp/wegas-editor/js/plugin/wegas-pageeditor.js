@@ -67,7 +67,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                         this.bind();
                         this.layoutButton.show();
                         this.sourceButton.show();
-                        this.addButton.show();
+                        //this.addButton.show();
                         this.refreshButton.show();
                         host.get(CONTENTBOX).prepend(this.overlayMask);
                     } else {
@@ -79,27 +79,27 @@ YUI.add('wegas-pageeditor', function(Y) {
                         this.layoutButton.hide();
                         this.sourceButton.hide();
                         this.refreshButton.hide();
-                        this.addButton.hide();
+                        //this.addButton.hide();
                     }
                 }, this);
 
                 /* New button */
-                this.addButton = new Y.Button({/*@HACK */
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                    visible: false,
-                    on: {
-                        click: function(e) {
-                            var menu = host.get("widget").getMenuCfg({
-                                targetwidget: host.get("widget")
-                            }), addElement = Y.Array.find(menu, function(o) {   /* search "add" menu */
-                                return o.label === "Add";
-                            });
-
-                            this.menu.set("children", addElement.plugins[0].cfg.children);// And place it'
-                        }
-                    }
-                });
-                this.addButton.render(el).plug(Y.Plugin.WidgetMenu);            /* End @HACK */
+                //this.addButton = new Y.Button({/*@HACK */
+                //    label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                //    visible: false,
+                //    on: {
+                //        click: function(e) {
+                //            var menu = host.get("widget").getMenuCfg({
+                //                targetwidget: host.get("widget")
+                //            }), addElement = Y.Array.find(menu, function(o) {   /* search "add" menu */
+                //                return o.label === "New element";
+                //            });
+                //
+                //            this.menu.set("children", addElement.plugins[0].cfg.children);// And place it'
+                //        }
+                //    }
+                //});
+                //this.addButton.render(el).plug(Y.Plugin.WidgetMenu);            /* End @HACK */
 
                 /*Refresh*/
                 this.refreshButton = new Y.Button({
@@ -377,9 +377,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             if (this.designButton) {
                 this.designButton.destroy(true);
             }
-            if (this.addButton) {
-                this.addButton.destroy(true);
-            }
+            //if (this.addButton) {
+            //    this.addButton.destroy(true);
+            //}
             if (this.layoutButton) {
                 this.layoutButton.destroy(true);
             }
