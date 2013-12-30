@@ -82,38 +82,38 @@ YUI.add("wegas-layout", function(Y) {
                 ]
             }, {
                 type: "Button",
-                label: "Add",
+                label: "New element",
                 cssClass: "editor-exploreGameModel-button",
                 plugins: [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "menuCfg": {
-                                points: ["tl", "tr"]
-                            },
-                            "event": "mouseenter",
-                            "children": [{
-                                    "type": "Button",
-                                    "label": "Element",
+                        fn: "WidgetMenu",
+                        cfg: {
+                            //menuCfg: {
+                            //    points: ["tl", "tr"]
+                            //},
+                            //event: "mouseenter",
+                            children: [{
+                                    type: "Button",
+                                    label: "Element",
                                     plugins: [{
-                                            "fn": "WidgetMenu",
-                                            "cfg": {
-                                                "menuCfg": {
+                                            fn: "WidgetMenu",
+                                            cfg: {
+                                                menuCfg: {
                                                     points: ["tl", "tr"]
                                                 },
-                                                "event": "mouseenter",
-                                                "children": [{
+                                                event: "mouseenter",
+                                                children: [{
                                                         type: "Button",
                                                         label: "Box",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childCfg": {
+                                                                    childCfg: {
                                                                         type: "Box",
                                                                         plugins: [{
-                                                                                "fn": "CSSBackground",
-                                                                                "cfg": {
-                                                                                    "styles": {
-                                                                                        "backgroundColor": "#c8c8c8"
+                                                                                fn: "CSSBackground",
+                                                                                cfg: {
+                                                                                    styles: {
+                                                                                        backgroundColor: "#c8c8c8"
                                                                                     }
                                                                                 }
                                                                             }]
@@ -127,7 +127,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "Text"
+                                                                    childType: "Text"
                                                                 }
                                                             }
                                                         ]
@@ -137,7 +137,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "Image"
+                                                                    childType: "Image"
                                                                 }
                                                             }
                                                         ]
@@ -147,7 +147,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "Button"
+                                                                    childType: "Button"
                                                                 }
                                                             }
                                                         ]
@@ -157,7 +157,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "Form"
+                                                                    childType: "Form"
                                                                 }
                                                             }
                                                         ]
@@ -165,22 +165,22 @@ YUI.add("wegas-layout", function(Y) {
                                             }
                                         }
                                     ]}, {
-                                    "type": "Button",
-                                    "label": "Variable display",
+                                    type: "Button",
+                                    label: "Variable display",
                                     plugins: [{
-                                            "fn": "WidgetMenu",
-                                            "cfg": {
-                                                "menuCfg": {
+                                            fn: "WidgetMenu",
+                                            cfg: {
+                                                menuCfg: {
                                                     points: ["tl", "tr"]
                                                 },
-                                                "event": "mouseenter",
-                                                "children": [{
+                                                event: "mouseenter",
+                                                children: [{
                                                         type: "Button",
                                                         label: "Template",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "Template"
+                                                                    childType: "Template"
                                                                 }
                                                             }
                                                         ]
@@ -190,7 +190,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "GaugeDisplay"
+                                                                    childType: "GaugeDisplay"
                                                                 }
                                                             }
                                                         ]
@@ -200,7 +200,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "MCQTabView"
+                                                                    childType: "MCQTabView"
                                                                 }
                                                             }
                                                         ]
@@ -210,7 +210,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "InboxDisplay"
+                                                                    childType: "InboxDisplay"
                                                                 }
                                                             }
                                                         ]
@@ -220,7 +220,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "Chart"
+                                                                    childType: "Chart"
                                                                 }
                                                             }]
                                                     }
@@ -232,20 +232,20 @@ YUI.add("wegas-layout", function(Y) {
                                     type: "Button",
                                     label: "Layouts",
                                     plugins: [{
-                                            "fn": "WidgetMenu",
-                                            "cfg": {
-                                                "menuCfg": {
+                                            fn: "WidgetMenu",
+                                            cfg: {
+                                                menuCfg: {
                                                     points: ["tl", "tr"]
                                                 },
-                                                "event": "mouseenter",
-                                                "children": [{
+                                                event: "mouseenter",
+                                                children: [{
                                                         type: "Button",
                                                         label: "SlideShow",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childCfg": {
-                                                                        "type": "ChoiceList",
+                                                                    childCfg: {
+                                                                        type: "ChoiceList",
                                                                         plugins: [{
                                                                                 fn: "SlideShow"
                                                                             }]
@@ -260,7 +260,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "TabView"
+                                                                    childType: "TabView"
                                                                 }
                                                             }
                                                         ]
@@ -270,7 +270,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "PageLoader"
+                                                                    childType: "PageLoader"
                                                                 }
                                                             }
                                                         ]
@@ -281,7 +281,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "List"
+                                                                    childType: "List"
                                                                 }
                                                             }
                                                         ]
@@ -292,7 +292,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "ChoiceList"
+                                                                    childType: "ChoiceList"
                                                                 }
                                                             }
                                                         ]
@@ -303,7 +303,7 @@ YUI.add("wegas-layout", function(Y) {
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    "childType": "AbsoluteLayout"
+                                                                    childType: "AbsoluteLayout"
                                                                 }
                                                             }
                                                         ]

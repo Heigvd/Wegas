@@ -6,6 +6,7 @@
  * Licensed under the MIT License
  */
 /**
+ * @deprecated Not in use anymore
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */

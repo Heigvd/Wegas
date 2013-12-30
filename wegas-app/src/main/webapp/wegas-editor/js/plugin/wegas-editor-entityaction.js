@@ -12,7 +12,7 @@
 YUI.add('wegas-editor-entityaction', function(Y) {
     "use strict";
     var ENTITY = "entity", LABEL = "label",
-            Plugin = Y.Plugin, Action = Y.Plugin.Action, Wegas = Y.Wegas, Lang = Y.Lang,
+            Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas, Lang = Y.Lang,
             EntityAction, EditFSMAction;
     /**
      * @class
@@ -63,14 +63,14 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         execute: function() {
             var entity = this.get(ENTITY);
 
-            EditEntityAction.hideRightTabs();                                   // Destroy all tabs in the right panel
             EditEntityAction.getEditionTab();                                   // Create the edition tab (and the left panel won't pop in and out)
 
-            if (entity instanceof Y.Wegas.persistence.VariableDescriptor
-                    || entity instanceof Y.Wegas.persistence.JpaAccount
-                    || entity instanceof Y.Wegas.persistence.GameModel
-                    || entity instanceof Y.Wegas.persistence.Game
-                    || entity instanceof Y.Wegas.persistence.VariableInstance) {// @fixme we may get extended mode for every entities,
+            if ((Wegas.persistence.VariableDescriptor &&
+                    (entity instanceof Wegas.persistence.VariableDescriptor     // Those classes may not be loaded
+                            || entity instanceof Wegas.persistence.VariableInstance))
+                    || entity instanceof Wegas.persistence.JpaAccount
+                    || entity instanceof Wegas.persistence.GameModel
+                    || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for every entities
                 EditEntityAction.showEditFormOverlay();
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
@@ -104,6 +104,9 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          * Show edition form in the target div
          */
         showEditForm: function(entity, callback, cancelCallback, formCfg) {
+
+            EditEntityAction.hideRightTabs();                                   // Hide all active tabs
+
             if (EditEntityAction.cancelCallback) {                              // A cancel action was defined. By changing form, assume cancel
                 try {
                     EditEntityAction.cancelCallback(EditEntityAction.currentEntity);
@@ -160,7 +163,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 });
                 EditEntityAction.tab.form = EditEntityAction.form = form;
                 EditEntityAction.tab.add(form);
-                //if (!Y.Wegas.App.hideRightPanelCloseButton) {
+                //if (!Wegas.App.hideRightPanelCloseButton) {
                 //    form.addButton({
                 //        type: "Button",
                 //        action: "cancel",
@@ -203,7 +206,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         showUpdateForm: function(entity, dataSource) {
             var dataSource = dataSource;
 
-            EditEntityAction.showEditForm(entity, function(cfg) {           // Display the edit form
+            EditEntityAction.showEditForm(entity, function(cfg) {               // Display the edit form
                 // entity.setAttrs(cfg);
                 dataSource.cache.put(cfg, {
                     success: function() {
@@ -228,7 +231,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(NewEntityAction, EditEntityAction, {
         showAddForm: function(entity) {
             var dataSource = this.get("dataSource");
-            EditEntityAction.hideRightTabs();
             EditEntityAction.showEditForm(entity, function(newVal) {
                 dataSource.cache.post(newVal, null, {
                     success: function(e) {
@@ -280,7 +282,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         execute: function() {
             var entity = (this.get("method").toLowerCase() === "post") ? this.get(ENTITY) : this.get("parentEntity");
 
-            if (entity instanceof Y.Wegas.persistence.VariableDescriptor) {
+            if (entity instanceof Wegas.persistence.VariableDescriptor) {
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {
                         success: Y.bind(function(e) {
@@ -377,7 +379,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(AddEntityChildAction, NewEntityAction, {
         showAddForm: function(entity, parentData) {
             var dataSource = this.get("dataSource");
-            EditEntityAction.hideRightTabs();                                   // Hide all active tabs
 
             EditEntityAction.showEditForm(entity, function(newVal) {
                 //@Hack since the server return the parent list,
@@ -392,7 +393,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         EditEntityAction.hideEditFormOverlay();
 
                         var newDescriptor = e.response.entity;
-                        if (newDescriptor instanceof Y.Wegas.persistence.VariableDescriptor
+                        if (newDescriptor instanceof Wegas.persistence.VariableDescriptor
                                 && newDescriptor.get("items")) {                // If the parent list of the edited item was returned,
                             newDescriptor = Y.Array.find(newDescriptor.get("items"), function(e) {// need to look up for the edited entity
                                 return idBack.indexOf(e.get("id")) === -1;

@@ -192,11 +192,12 @@ YUI.add('wegas-editentityform', function(Y) {
         syncUI: function() {
             var entity = this.get("entity");
 
-            if (entity instanceof Wegas.persistence.VariableDescriptor
+            if ((Wegas.persistence.VariableDescriptor &&
+                    (entity instanceof Wegas.persistence.VariableDescriptor
+                            || entity instanceof Wegas.persistence.VariableInstance))// Those classes may not be loaded
                     || entity instanceof Wegas.persistence.JpaAccount
                     || entity instanceof Wegas.persistence.GameModel
-                    || entity instanceof Wegas.persistence.Game
-                    || entity instanceof Wegas.persistence.VariableInstance) {// @fixme we may get extended mode for every entities,
+                    || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for every entities
                 this.showOverlay();
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
                     on: {

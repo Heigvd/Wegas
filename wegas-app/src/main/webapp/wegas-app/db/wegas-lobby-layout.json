@@ -380,7 +380,7 @@
                     }, {
                         "type": "Tab",
                         "id": "gameModelsTab",
-                        "label": "Game designer",
+                        "label": "Designer",
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "GameModel",

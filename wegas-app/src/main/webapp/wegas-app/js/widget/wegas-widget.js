@@ -584,6 +584,7 @@ YUI.add("wegas-widget", function(Y) {
         }
         return baseCreateChild.call(this, config);                              //reroute
     };
+    
 
     /** @Hack, use method defined in wegas-datasource.js */
     Y.Widget.prototype.plug = Y.DataSource.IO.prototype.plug;

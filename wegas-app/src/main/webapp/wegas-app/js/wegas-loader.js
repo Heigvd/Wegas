@@ -296,7 +296,7 @@ YUI().use(function(Y) {
                     requires: ['yui-later', 'event-mouseenter', 'event-outside',
                         'widget', 'widget-parent', 'widget-child', 'widget-stack',
                         'widget-position', 'widget-position-align', 'widget-position-constrain',
-                        'wegas-widgetmenucss']
+                        "wegas-button", 'wegas-widgetmenucss']
                 },
                 'wegas-widgetmenucss': {
                     path: 'css/wegas-widgetmenu-min.css',

@@ -11,6 +11,9 @@
 YUI.add('wegas-widgetmenu', function(Y) {
     "use strict";
 
+    var HOST = "host", BOUNDINGBOX = "boundingBox",
+            WidgetMenu, Menu, MenuBar;
+
     /**
      * @name Y.Plugin.WidgetMenu
      * @extends Y.Plugin.Base
@@ -19,8 +22,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
      *  a Y.Wegas.Menu to display the menu.
      * @constructor
      */
-    var HOST = "host", BOUNDINGBOX = "boundingBox",
-            WidgetMenu = function() {
+    WidgetMenu = function() {
         WidgetMenu.superclass.constructor.apply(this, arguments);
     };
 
@@ -159,6 +161,19 @@ YUI.add('wegas-widgetmenu', function(Y) {
     Y.namespace('Plugin').WidgetMenu = WidgetMenu;
 
     /**
+     *
+     */
+    MenuBar = Y.Base.create("menubar", Y.Widget, [Y.WidgetParent], {
+        CONTENT_TEMPLATE: null
+    }, {
+        ATTRS: {
+            defaultChildType: {
+                value: Y.Wegas.Button
+            }
+        }
+    });
+    Y.namespace('Wegas').MenuBar = MenuBar;
+    /**
      * @name Y.Wegas.Menu
      * @class Menu Widget, an positionnalbe overlay, intendend to be used by the menu plugin.
      * @contstructor
@@ -169,16 +184,21 @@ YUI.add('wegas-widgetmenu', function(Y) {
      * @augments Y.WidgetParent
      * @augments Y.WidgetPositionConstrain
      */
-    var Menu = Y.Base.create("menu", Y.Widget, [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetParent, Y.WidgetPositionConstrain], {
+    Menu = Y.Base.create("menu", MenuBar, [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetPositionConstrain, Y.WidgetStack], {
         /** @lends Y.Wegas.Menu# */
-
-        // *** private fields *** //
-        timer: null,
         // *** Lifecycle methods *** //
         initializer: function() {
             this.publish("cancelMenuTimer", {
                 emitFacade: true
             });
+        },
+        renderUI: function() {
+            var bb = this.get(BOUNDINGBOX);
+
+            bb.on("clickoutside", this.clickOutside, this);
+            bb.on("click", this.hide, this);
+            bb.on("mouseenter", this.cancelMenuTimer, this);
+            bb.on("mouseleave", this.startMenuHideTimer, this);
         },
         hide: function() {
             this.get("boundingBox").transition({
@@ -195,14 +215,6 @@ YUI.add('wegas-widgetmenu', function(Y) {
                 opacity: 1
             });
         },
-        renderUI: function() {
-            var bb = this.get(BOUNDINGBOX);
-
-            bb.on("clickoutside", this.clickOutside, this);
-            bb.on("click", this.menuClick, this);
-            bb.on("mouseenter", this.cancelMenuTimer, this);
-            bb.on("mouseleave", this.startMenuHideTimer, this);
-        },
         // *** Public methods *** //
         /**
          *
@@ -212,8 +224,6 @@ YUI.add('wegas-widgetmenu', function(Y) {
          * @function
          */
         attachTo: function(node) {
-            //node.on("mouseenter", this.show, this);
-            //node.on("mouseleave", this.hide, this);
             this.currentNode = node;
 
             this.set("align", {
@@ -222,11 +232,11 @@ YUI.add('wegas-widgetmenu', function(Y) {
             });
             this.cancelMenuTimer();
             this.show();
+
+            //node.on("mouseenter", this.show, this);
+            //node.on("mouseleave", this.hide, this);
         },
         // *** Private methods *** //
-        menuClick: function() {
-            this.hide();
-        },
         clickOutside: function(e) {
             if (this.currentNode !== e.target) {
                 this.hide();
@@ -235,7 +245,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
         startMenuHideTimer: function(fireEvent) {
             //console.log("startMenuHideTimer",this.get("contentBox").one("button").getHTML());
             this.cancelMenuTimer();
-            this.timer = Y.later(500, this, this.hide);
+            this.timer = Y.later(200, this, this.hide);
 
             if (!!fireEvent) {
                 this.fire("timerStarted");
@@ -269,9 +279,6 @@ YUI.add('wegas-widgetmenu', function(Y) {
             },
             visible: {
                 value: false
-            },
-            defaultChildType: {
-                value: "Button"
             }
         }
     });
