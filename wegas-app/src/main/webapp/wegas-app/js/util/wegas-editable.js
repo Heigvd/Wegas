@@ -112,9 +112,9 @@ YUI.add('wegas-editable', function(Y) {
                 };
 
                 builder = new Y.inputEx.JsonSchema.Builder({
-                    'schemaIdentifierMap': schemaMap,
-                    'defaultOptions': {
-                        'showMsg': true
+                    schemaIdentifierMap: schemaMap,
+                    defaultOptions: {
+                        showMsg: true
                     }
                 });
                 form = builder.schemaToInputEx(schemaMap.Entity);

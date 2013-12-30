@@ -262,9 +262,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.showOverlay();
                 entity = Y.JSON.parse(Y.JSON.stringify(entity));
                 if (entity.id) {
-                    Y.Wegas.Facade.VariableDescriptor.cache.put(entity, DEFAULTCB);
+                    Y.Wegas.Facade.VariableDescriptor.cache.put(entity, {on: DEFAULTCB});
                 } else {
-                    Y.Wegas.Facade.VariableDescriptor.cache.post(entity, DEFAULTCB);
+                    Y.Wegas.Facade.VariableDescriptor.cache.post(entity, {on: DEFAULTCB});
                 }
             }
             this.highlightUnusedStates();
