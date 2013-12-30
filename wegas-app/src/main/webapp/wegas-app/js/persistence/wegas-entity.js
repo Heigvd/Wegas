@@ -248,23 +248,24 @@ YUI.add('wegas-entity', function(Y) {
                         fn: "OpenGameAction"
                     }]
             }, {
+                type: BUTTON,
+                label: "Copy",
+                cssClass: "editor-duplicateGameModel-button",
+                plugins: [{
+                        fn: "DuplicateEntityAction"
+                    }]
+            }, {
                 type: "DeleteEntityButton",
                 label: "Delete",
                 cssClass: "editor-deleteGameModel-button"
             }, {
                 type: BUTTON,
                 label: "More",
+                cssClass: "wegas-advanced-feature",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
                             children: [{
-                                    type: BUTTON,
-                                    label: "Make a copy",
-                                    cssClass: "editor-duplicateGameModel-button",
-                                    plugins: [{
-                                            fn: "DuplicateEntityAction"
-                                        }]
-                                }, {
                                     type: BUTTON,
                                     label: "Permissions",
                                     cssClass: "wegas-advanced-feature",
