@@ -211,16 +211,12 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.handlers.push(this.overlayMask.menu.on("menuOpen", function(e) {
                 if (PageEditor.inRegion(this.shownOverlay.get(CONTENTBOX).one(".wegas-editmenubutton-icon"), [e.domEvent.clientX, e.domEvent.clientY])) { /* Clicked editmenu */
                     this.targetWidget = this.shownOverlay._widget;
-                    this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
-                        widget: this.targetWidget
-                    }));
+                    this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg());
                     this.overlayMask.menu.menu.set("xy", [e.domEvent.clientX, e.domEvent.clientY]);
                     e.halt(true);
                 } else if (e.domEvent.type === "contextmenu") {
                     this.targetWidget = this.overlayWidget;
-                    this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg({
-                        widget: this.targetWidget
-                    }));
+                    this.overlayMask.menu.set("children", this.targetWidget.getMenuCfg());
                     if (this.overlayMask.menu.getMenu().size() > 0) {
                         this.overlayMask.menu.getMenu().item(0).fire("click");
                     }
