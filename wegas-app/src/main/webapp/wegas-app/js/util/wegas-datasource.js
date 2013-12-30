@@ -420,42 +420,53 @@ YUI.add('wegas-datasource', function(Y) {
             return this.sendRequest(cfg);
         },
         /**
+         *
          * @function
          * @private
+         * @param {type} data
+         * @param {type} cfg
+         * @returns {undefined}
          */
-        put: function(data, callback) {
-            this.sendRequest({
+        put: function(data, cfg) {
+            this.sendRequest(Y.mix({
                 request: this.generateRequest(data),
                 cfg: {
                     method: "PUT",
                     data: Y.JSON.stringify(data)
-                },
-                on: callback
-            });
+                }
+            }, cfg));
         },
         /**
+         *
          * @function
          * @private
+         * @param {type} entity
+         * @param {type} cfg
+         * @returns {undefined}
          */
-        duplicateObject: function(entity) {
-            this.sendRequest({
+        duplicateObject: function(entity, cfg) {
+            this.sendRequest(Y.mix({
                 request: this.generateRequest(entity.toObject()) + "/Duplicate/",
                 cfg: {
                     method: POST
                 }
-            });
+            }, cfg));
         },
         /**
+         *
          * @function
          * @private
+         * @param {type} entity
+         * @param {type} cfg
+         * @returns {undefined}
          */
-        deleteObject: function(entity) {
-            this.sendRequest({
+        deleteObject: function(entity, cfg) {
+            this.sendRequest(Y.mix({
                 request: this.generateRequest(entity.toObject()),
                 cfg: {
                     method: "DELETE"
                 }
-            });
+            }, cfg));
         },
         /**
          * @function
@@ -597,19 +608,18 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @function
          */
-        put: function(data, callback) {
+        put: function(data, cfg) {
             if (data['@class'].indexOf("Instance") !== -1) {
-                this.sendRequest({
+                this.sendRequest(Y.mix({
                     request: '/1/VariableInstance/' + data.id,
                     cfg: {
                         method: "PUT",
                         data: Y.JSON.stringify(data)
-                    },
-                    on: callback
-                });
+                    }
+                }, cfg));
                 return;
             } else {
-                VariableDescriptorCache.superclass.put.call(this, data, callback);
+                VariableDescriptorCache.superclass.put.call(this, data, cfg);
             }
         },
         post: function(data, parentData, callback) {

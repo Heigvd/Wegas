@@ -170,17 +170,18 @@ YUI.add('wegas-editentityform', function(Y) {
     });
     //Y.namespace("Wegas").Form = Form;
 
-
     EditEntityForm = Y.Base.create("wegas-form", Form, [], {
         bindUI: function() {
             this.on("submit", function(e) {
                 this.showOverlay();
                 this.get("dataSource").cache.put(e.value, {
-                    success: Y.bind(function() {
-                        this.showMessageBis("success", "Item has been updated");
-                        this.hideOverlay();
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    on: {
+                        success: Y.bind(function() {
+                            this.showMessageBis("success", "Item has been updated");
+                            this.hideOverlay();
+                        }, this),
+                        failure: Y.bind(this.defaultFailureHandler, this)
+                    }
                 });
             });
         },
