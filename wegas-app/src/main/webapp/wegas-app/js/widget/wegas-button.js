@@ -115,16 +115,15 @@ YUI.add("wegas-button", function(Y) {
     });
     Y.namespace('Wegas').Button = Button;
 
-
     /* @fixme @hack So we can display html tag inside a button */
-    Y.ButtonCore.prototype._setLabel = function(label, name, opts) {
+    Y.Button.prototype._setLabel = function(label, name, opts) {
         if (!opts || opts.src !== 'internal') {
             this.set('labelHTML', label, {src: 'internal'});
         }
 
         return label;
     };
-    
+
     /**
      * Plugin which adds an unread message counter to a widget.
      *
