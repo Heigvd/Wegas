@@ -13,10 +13,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', DATASOURCE = "dataSource", ID = "id",
-            CLASS = "@class", NAME = "name", HOST = "host", RENDER = "render",
-            //EDITBUTTONTPL = "<span class=\"wegas-treeview-editmenubutton\"></span>",
-            Wegas = Y.Wegas,
-            EditorTreeView;
+            CLASS = "@class", NAME = "name", HOST = "host",
+            Plugin = Y.Plugin, Wegas = Y.Wegas, EditorTreeView;
 
     /**
      * @name Y.Wegas.EditorTreeView
@@ -30,7 +28,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
     EditorTreeView = Y.Base.create("wegas-editor-treeview", Y.Widget, [Y.WidgetChild, Wegas.Widget], {
         /** @lends Y.Wegas.EditorTreeView# */
         // *** Private fields ** //
-        treeView: null,
         // ** Lifecycle methods ** //
         /**
          *
@@ -39,8 +36,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
             this.treeView = new Y.TreeView();
             this.treeView.render(this.get(CONTENTBOX));
 
-            this.plug(Y.Plugin.EditorTVToolbarMenu);
-            this.plug(Y.Plugin.RememberExpandedTreeView);
+            this.plug(Plugin.EditorTVToolbarMenu);
+            this.plug(Plugin.EditorTVContextMenu);
+            this.plug(Plugin.RememberExpandedTreeView);
         },
         /**
          * @function
@@ -50,8 +48,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
             var ds = this.get(DATASOURCE),
                     request = this.get("request");
             if (ds) {
-                this.updateHandler = ds.after("update", this.syncUI, this);                          // Listen updates on the target datasource
-                this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);          // GLOBAL error message
+                this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
+                this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);// GLOBAL error message
 
                 if (request) {
                     ds.sendRequest(request);
@@ -76,8 +74,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll(),
                     treeNodes = this.genTreeViewElements(entities);
 
-
-            this.treeView.removeAll();
+            this.treeView.removeAll();                                          // @FIXME is this enough, or should we destroy the nodes
             cb.all(".wegas-smallmessage").remove();
 
             if (treeNodes.length === 0) {
@@ -100,135 +97,27 @@ YUI.add('wegas-editor-treeview', function(Y) {
          * @private
          */
         genTreeViewElements: function(elements) {
-            var ret = [], i, el, elClass, text, collapsed, selected;
+            return Y.Array.map(elements, this.genTreeViewElement, this);
+        },
+        genTreeViewElement: function(entity) {
+            var children = entity.get("players");                               // @hack so it works for team
 
-            for (i in elements) {
-                if (elements.hasOwnProperty(i)) {
-                    el = elements[i];
-                    elClass = el.get(CLASS);
-                    collapsed = !this.isNodeExpanded(el);
-                    selected = (this.currentSelection === el.get(ID)) ? 2 : 0;
-
-                    switch (elClass) {
-
-                        case 'DebugGame':
-                            break;
-
-                        case 'Game':
-                            var createdBy = el.get("createdBy"),
-                                    gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
-                            if (!gameModel) {
-                                Y.log("Unable to find game model for game: " + el.get("name"), "error");
-                            } else {
-                                ret.push({
-                                    type: 'TreeNode',
-                                    label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                            + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                            + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                            + '<div class="yui3-u-1-4">'
-                                            + Wegas.Helper.smartDate(el.get("createdTime"))
-                                            + '</div>'
-                                            + '<div class="yui3-u-1-4">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
-                                            + '<div class="yui3-u-1-4">' + (gameModel.get("properties.freeForAll") ? el.get("token") : "") + '</div>'
-                                            + '<div class="yui3-u-1-4">' + gameModel.get(NAME) + '</div></div>'
-                                            + '</div>',
-                                    collapsed: collapsed,
-                                    selected: selected,
-                                    children: this.genTreeViewElements(el.get("teams")),
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-game'
-                                            //rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                            }
-                            break;
-
-                        case 'Team':
-                            text = 'Team: ' + el.get(NAME);
-                            ret.push({
-                                type: 'TreeNode',
-                                collapsed: collapsed,
-                                selected: selected,
-                                label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                        + '<div class="yui3-u yui3-u-col1">Team: ' + el.get(NAME) + '</div>'
-                                        + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                        + '<div class="yui3-u-1-4"></div>'
-                                        + '<div class="yui3-u-1-4"></div>'
-                                        + '<div class="yui3-u-1-4">' + el.get("token") + '</div>'
-                                        + '<div class="yui3-u-1-4"></div></div>'
-                                        + '</div>',
-                                children: this.genTreeViewElements(el.get("players")),
-                                data: {
-                                    entity: el
-                                },
-                                iconCSS: 'wegas-icon-team'
-                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
-                            });
-                            break;
-
-                        case 'Player':
-                            ret.push({
-                                label: 'Player: ' + el.get(NAME),
-                                selected: selected,
-                                data: {
-                                    entity: el
-                                },
-                                iconCSS: 'wegas-icon-player'
-                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
-                            });
-                            break;
-
-                        case 'GameModel':
-                            if (el.get("canEdit")) {
-                                text = el.get(NAME) || "no name";
-                                ret.push({
-                                    label: text,
-                                    selected: selected,
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-gamemodel'
-                                            //rightWidget: (el.get("canEdit")) ? Y.Node.create(EDITBUTTONTPL) : null
-                                });
-                            }
-                            break;
-
-                        case 'User':
-                            ret.push({
-                                label: el.get(NAME),
-                                selected: selected,
-                                data: {
-                                    entity: el.getMainAccount()
-                                },
-                                iconCSS: 'wegas-icon-player'
-                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
-                            });
-                            break;
-
-                        case 'Role':
-                            ret.push({
-                                label: 'Group:' + el.get(NAME),
-                                selected: selected,
-                                data: {
-                                    entity: el
-                                },
-                                iconCSS: 'wegas-icon-team'
-                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
-                            });
-                            break;
-
-                        default:
-                            text = el.get(CLASS) + ': ' + el.get(NAME);
-                            ret.push({
-                                label: text,
-                                data: el
-                            });
-                            break;
-                    }
-                }
+            if (entity instanceof Wegas.persistence.User) {                     // @hack
+                entity = entity.getMainAccount();
             }
-            return ret;
+
+            return {
+                type: (children) ? "TreeNode" : "TreeLeaf",
+                label: entity.get(NAME),
+                //label: el.get(CLASS) + ': ' + el.get(NAME),
+                selected: (this.currentSelection === entity.get(ID)) ? 2 : 0,
+                collapsed: !this.isNodeExpanded(entity),
+                children: (children) ? this.genTreeViewElements(children) : [],
+                data: {
+                    entity: entity
+                },
+                iconCSS: 'wegas-icon-' + entity.get(CLASS).toLowerCase()
+            };
         },
         /**
          * @function
@@ -289,46 +178,20 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + '</div>',
         renderUI: function() {
             this.treeView = new Y.TreeView();                                   // Render the treeview
+            this.treeView.addTarget(this);
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
 
-            if (this.isFreeForAll()) {                                          // @hack Change the display if the gamemodel is freeforall
-                this.get("parent").set("label", "Players");
-            }
-
-            this.plug(Y.Plugin.EditorTVToolbarMenu, {
+            this.plug(Plugin.EditorTVToolbarMenu, {
                 autoClick: false
             });
-            this.plug(Y.Plugin.RememberExpandedTreeView);
-            //this.plug(Y.Plugin.EditorTVToggleClick);
-            this.plug(Y.Plugin.WidgetToolbar);
-            //this.addButton = this.toolbar.add({
-            //    type: "Button",
-            //    label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add teams"
-            //});
+            this.plug(Plugin.EditorTVContextMenu);
+            this.plug(Plugin.RememberExpandedTreeView);
+            this.plug(Plugin.WidgetToolbar);
+            //this.plug(Plugin.EditorTVToggleClick);
+            //if (this.isFreeForAll()) {                                          // @hack Change the display if the gamemodel is freeforall
+            //    this.get("parent").set("label", "Players");
+            //}
         },
-        //bindUI: function() {
-        //    TeamTreeView.superclass.bindUI.call(this);
-        //
-        //    this.addButton.on("click", function() {                             // When the "add teams" button is clicker
-        //        var i, name,
-        //                entity = this.get("entity"),
-        //                offset = entity.get("teams").length,
-        //                teams = prompt("How many teams?", 1);
-        //
-        //        this.showOverlay();
-        //        this.teamsAcc = [];
-        //        for (i = 0; i < parseInt(teams); i += 1) {                      // add the number amount of teams
-        //            name = entity.get("name") + "-" + (offset + i + 1);
-        //            this.teamsAcc.push({
-        //                "@class": "Team",
-        //                name: name,
-        //                token: name
-        //            });
-        //        }
-        //        this.teamsAcc.reverse();
-        //        this.doCreateTeam();
-        //    }, this);
-        //},
         syncUI: function() {
             Y.log("sync()", "info", "Wegas.TeamTreeView");
 
@@ -350,71 +213,18 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
             this.hideOverlay();
         },
-        isFreeForAll: function() {
-            return Y.Wegas.Facade.GameModel.cache.findById(this.get("entity").get("gameModelId")).get("properties.freeForAll");
-        },
-        genTreeViewElements: function(elements) {
-            var ret = [], i, el, elClass, collapsed, selected,
-                    freeForAll = this.isFreeForAll();
+        genTreeViewElements: function(entities) {
+            var isFreeForAll = Wegas.Facade.GameModel.cache.findById(this.get("entity").get("gameModelId")).get("properties.freeForAll"),
+                    ret = TeamTreeView.superclass.genTreeViewElements.call(this, entities);
 
-            for (i in elements) {
-                if (elements.hasOwnProperty(i)) {
-                    el = elements[i];
-                    elClass = el.get(CLASS);
-                    collapsed = !this.isNodeExpanded(el);
-                    selected = (this.currentSelection === el.get(ID)) ? 2 : 0;
-
-                    switch (elClass) {
-                        case 'Team':
-                            if (!freeForAll) {
-                                ret.push({
-                                    type: 'TreeNode',
-                                    collapsed: collapsed,
-                                    selected: selected,
-                                    label: el.get(NAME),
-                                    //label: '<div class="yui3-g wegas-editor-treeview-table" style="padding-right: 255px">'
-                                    //        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                    //        + '<div class="yui3-u yui3-u-col2 yui3-g"  style="margin-right:-250px;width:250px">'
-                                    //        + '<div class="yui3-u">' + el.get("players").length + '</div>'
-                                    //        + '</div>'
-                                    //        + '</div>',
-                                    children: this.genTreeViewElements(el.get("players")),
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-team'
-                                });
-                            } else {
-                                ret = ret.concat(this.genTreeViewElements(el.get("players")));
-                            }
-                            break;
-
-                        case 'Player':
-                            ret.push({
-                                label: el.get(NAME),
-                                selected: selected,
-                                data: {
-                                    entity: el
-                                },
-                                iconCSS: 'wegas-icon-player'
-                            });
-                            break;
-                    }
-                }
+            if (isFreeForAll) {                                                 // Do not display teams in free for all game
+                Y.Array.flatten(Y.Array.map(ret, function(node) {
+                    return node.get("children");
+                }));
+            } else {
+                return ret;
             }
-            return ret;
-        },
-        //doCreateTeam: function() {
-        //    var entity = this.get("entity"), team = this.teamsAcc.pop();
-        //
-        //    if (team) {
-        //        Y.Wegas.Facade.Game.cache.post(team, entity.toObject(), {
-        //            success: Y.bind(this.doCreateTeam, this)
-        //        });
-        //    } else {
-        //        this.hideOverlay();
-        //    }
-        //}
+        }
     }, {
         ATTRS: {
             dataSource: {
@@ -423,7 +233,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             entity: {
                 getter: function(val) {
                     if (!val)
-                        return Y.Wegas.Facade.Game.cache.getCurrentGame();
+                        return Wegas.Facade.Game.cache.getCurrentGame();
                     else
                         return val;
                 }
@@ -447,69 +257,45 @@ YUI.add('wegas-editor-treeview', function(Y) {
             this.treeView.addTarget(this);
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
 
-            if (this.isFreeForAll()) {                                          // @hack Change the display if the gamemodel is freeforall
-                //this.get("parent").set("label", "Players");
-            }
-
-            this.plug(Y.Plugin.RememberExpandedTreeView);
-            this.plug(Y.Plugin.WidgetToolbar);
-
+            this.plug(Plugin.RememberExpandedTreeView);
+            this.plug(Plugin.WidgetToolbar);
         },
-        genTreeViewElements: function(elements) {
-            var ret = [], i, el, elClass, collapsed, selected,
-                    freeForAll = this.isFreeForAll();
+        genTreeViewElement: function(entity) {
+            var elClass = entity.get(CLASS),
+                    collapsed = !this.isNodeExpanded(entity),
+                    selected = (this.currentSelection === entity.get(ID)) ? 2 : 0;
 
-            for (i in elements) {
-                if (elements.hasOwnProperty(i)) {
-                    el = elements[i];
-                    elClass = el.get(CLASS);
-                    collapsed = !this.isNodeExpanded(el);
-                    selected = (this.currentSelection === el.get(ID)) ? 2 : 0;
+            switch (elClass) {
+                case 'Team':
+                    var children = this.genTreeViewElements(entity.get("players")),
+                            expanded = Y.Array.find(children, function(p) {
+                        return p.selected;
+                    }) || !collapsed;
 
-                    switch (elClass) {
-                        case 'Team':
-                            if (!freeForAll) {
-                                var children = this.genTreeViewElements(el.get("players")),
-                                        expanded = Y.Array.find(children, function(p) {
-                                    return p.selected;
-                                }) || !collapsed
+                    return {
+                        type: 'TreeNode',
+                        collapsed: !expanded,
+                        selected: entity.get("id") === Wegas.app.get("currentTeam") ? 2 : 0,
+                        //selected: selected,
+                        label: entity.get(NAME),
+                        children: children,
+                        data: {
+                            entity: entity
+                        },
+                        iconCSS: 'wegas-icon-team'
+                    };
 
-                                ret.push({
-                                    type: 'TreeNode',
-                                    collapsed: !expanded,
-                                    selected: el.get("id") === Y.Wegas.app.get("currentTeam") ? 2 : 0,
-                                    //selected: selected,
-                                    label: el.get(NAME),
-                                    children: children,
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-team'
-                                            //rightWidget: Y.Node.create(EDITBUTTONTPL)
-                                });
-                            } else {
-                                ret = ret.concat(this.genTreeViewElements(el.get("players")));
-
-
-                            }
-                            break;
-
-                        case 'Player':
-                            ret.push({
-                                label: el.get(NAME),
-                                selected: el.get("id") === Y.Wegas.app.get("currentPlayer") ? 2 : 0,
-                                // selected: selected,
-                                data: {
-                                    entity: el
-                                },
-                                iconCSS: 'wegas-icon-player'
-                                        //rightWidget: Y.Node.create(EDITBUTTONTPL)
-                            });
-                            break;
-                    }
-                }
+                case 'Player':
+                    return {
+                        label: entity.get(NAME),
+                        selected: entity.get("id") === Wegas.app.get("currentPlayer") ? 2 : 0,
+                        // selected: selected,
+                        data: {
+                            entity: entity
+                        },
+                        iconCSS: 'wegas-icon-player'
+                    };
             }
-            return ret;
         }
     });
     Y.namespace('Wegas').TeamTreeViewEditor = TeamTreeViewEditor;
@@ -519,36 +305,28 @@ YUI.add('wegas-editor-treeview', function(Y) {
      * collapsed nodes.
      * @constructor
      */
-    Y.Plugin.RememberExpandedTreeView = Y.Base.create("wegas-rememberexpandedtreeview", Y.Plugin.Base, [], {
+    Plugin.RememberExpandedTreeView = Y.Base.create("wegas-rememberexpandedtreeview", Plugin.Base, [], {
         expandedIds: null,
         initializer: function() {
             this.expandedIds = {};
-            this.afterHostEvent(RENDER, function() {
-                var host = this.get(HOST);
-
-                host.treeView.before("*:nodeExpanded", function(e) {
-                    this.expandedIds[e.node.get("data").entity.get(ID)] = true;
-                }, this);
-
-                host.treeView.before("*:nodeCollapsed", function(e) {
-                    delete this.expandedIds[e.node.get("data").entity.get(ID)];
-                }, this);
+            this.onHostEvent("*:nodeExpanded", function(e) {
+                this.expandedIds[e.node.get("data").entity.get(ID)] = true;
+            });
+            this.onHostEvent("*:nodeCollapsed", function(e) {
+                delete this.expandedIds[e.node.get("data").entity.get(ID)];
             });
         }
     }, {
-        NS: "RememberExpandedTreeView",
-        NAME: "RememberExpandedTreeView"
+        NS: "RememberExpandedTreeView"
     });
 
     /**
      * @class Open a menu on click, containing the admin edition field
      * @constructor
      */
-    Y.Plugin.EditorTVToolbarMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
+    Plugin.EditorTVToolbarMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
-            this.afterHostEvent(RENDER, function() {
-                this.get(HOST).treeView.on("*:click", this.onTreeViewClick, this);
-            });
+            this.onHostEvent(["treenode:click", "treeleaf:click"], this.onTreeViewClick);
         },
         onTreeViewClick: function(e) {
             var menuItems = this.getMenuItems(e.node.get("data")),
@@ -567,25 +345,28 @@ YUI.add('wegas-editor-treeview', function(Y) {
             }
         },
         getMenuItems: function(data) {
-            var menuItems = this.get("children"),
+            var menuItems = this.get("children"), entity,
                     host = this.get(HOST);
 
             if (data) {
-                host.currentSelection = data.entity.get(ID);
+                entity = data.entity || data.widget;
+                if (entity) {
+                    host.currentSelection = entity.get(ID);
+                }
                 data.dataSource = host.get(DATASOURCE);
 
                 if (menuItems) {
-                    Y.Wegas.Editable.mixMenuCfg(this.get("children"), data);
+                    Wegas.Editable.mixMenuCfg(menuItems, data);
                 } else {
-                    menuItems = data.entity.getMenuCfg(data);                   // If no menu is provided, use entity default
+                    menuItems = entity.getMenuCfg(data).slice(0);               // If no menu is provided, use a clone of the entity default value
                 }
 
                 Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
                     switch (i.label) {
                         case "Delete":
                         case "New":
+                        case "New element":
                         case "Copy":
-                        case "Duplicate":
                         case "View":
                         case "Open in editor":
                         case "Open":
@@ -597,8 +378,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             return menuItems;
         }
     }, {
-        NS: "EditorTVToolbarMenu",
-        NAME: "EditorTVToolbarMenu",
+        NS: "menu",
         ATTRS: {
             children: {},
             autoClick: {
@@ -606,18 +386,70 @@ YUI.add('wegas-editor-treeview', function(Y) {
             }
         }
     });
-
-    Y.Plugin.EditorTVToggleClick = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
+    /**
+     * @class Open a menu on right click, containing the admin edition field
+     * @constructor
+     */
+    Plugin.EditorTVContextMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
-            this.afterHostEvent(RENDER, function() {
-                this.get(HOST).treeView.on("treenode:click", function(e) {
-                    //this.collapseAll();
-                    e.target.toggleTree();
+            this.onHostEvent("contextmenu", this.onTreeViewClick, this);
+
+            this.menu = new Wegas.Menu();
+            this.menu.addTarget(this.get(HOST));
+            this.menu.render();
+        },
+        onTreeViewClick: function(e) {
+            var targetWidget = Y.Widget.getByNode(e.domEvent.target),
+                    menuItems = this.getMenuItems(targetWidget.get("data"), targetWidget);    // Fetch menu items
+
+            menuItems.splice(0, 1);                                             // Remove "Edit" button
+
+            Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning
+                Y.Array.each(i.plugins, function(p, index) {
+                    if (p.fn === "WidgetMenu") {
+                        menuItems[itemIndex] = Y.mix({}, menuItems[itemIndex]);
+                        menuItems[itemIndex].plugins = menuItems[itemIndex].plugins.slice(0);
+                        menuItems[itemIndex].plugins[index] = {
+                            fn: "WidgetMenu",
+                            cfg: Y.mix({
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter"
+                            }, p.cfg)
+                        };
+                    }
                 });
+            });
+
+            if (menuItems) {
+                e.domEvent.preventDefault();
+                this.menu.removeAll();
+                this.menu.add(menuItems);                                       // Populate the menu with the elements associated to the
+                this.menu.show();                                               // Move the right click position
+                this.menu.set("xy", [e.domEvent.pageX, e.domEvent.pageY]);
+            } else {
+                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
+            }
+        },
+        getMenuItems: function(data) {
+            return Plugin.EditorTVToolbarMenu.prototype.getMenuItems.call(this, data);
+        }
+    }, {
+        NS: "contextmenu",
+        ATTRS: {
+            children: {}
+        }
+    });
+
+    Plugin.EditorTVToggleClick = Y.Base.create("EditorTVToggleClick", Plugin.Base, [], {
+        initializer: function() {
+            this.onHostEvent("treenode:click", function(e) {
+                //this.collapseAll();
+                e.target.toggleTree();
             });
         }
     }, {
-        NS: "EditorTVToggleClick",
-        NAME: "EditorTVToggleClick"
+        NS: "EditorTVToggleClick"
     });
 });

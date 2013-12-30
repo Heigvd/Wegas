@@ -190,6 +190,7 @@ body {
 }
 .wegas-scriptlibrary .ace_editor {
     height: 100%;
+    width: 100%;
 }
 
 /* Panel Widget Styles */
@@ -255,7 +256,7 @@ body {
 .wegas-pageloader > .inputEx-fieldWrapper  {
     position: absolute;
     top: 31px;
-    bottom: 26px;
+    bottom: 0px;
     left: 0px;
     right: 0px;
     overflow: auto;
@@ -267,6 +268,7 @@ body {
 }
 .wegas-pageloader > .inputEx-fieldWrapper .ace_editor {
     height: 100%;
+    width: 100%;
 }
 .lobbyOr {
     margin-left: 135px;
@@ -539,10 +541,13 @@ body {
 .yui3-skin-sam .wegas-icon-game,
 .yui3-skin-sam .wegas-icon-gamemodel,
 .yui3-skin-sam .wegas-icon-team,
+.yui3-skin-sam .wegas-icon-role,
 .yui3-skin-sam .wegas-icon-player,
+.yui3-skin-sam .wegas-icon-user,
 .yui3-skin-sam .wegas-icon-variabledescriptor,
 .yui3-skin-sam .wegas-icon-questiondescriptor,
-.yui3-skin-sam .wegas-icon-triggerdescriptor {
+.yui3-skin-sam .wegas-icon-triggerdescriptor,
+.yui3-skin-sam .wegas-icon-jpaaccount {
     margin: -6px 0 -8px;
     height: 24px;
 }
@@ -552,10 +557,13 @@ body {
 .yui3-skin-sam .wegas-icon-game {
     background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -552px no-repeat;
 }
-.yui3-skin-sam .wegas-icon-team {
+.yui3-skin-sam .wegas-icon-team,
+.yui3-skin-sam .wegas-icon-role {
     background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -621px no-repeat;
 }
-.yui3-skin-sam .wegas-icon-player {
+.yui3-skin-sam .wegas-icon-player,
+.yui3-skin-sam .wegas-icon-user,
+.yui3-skin-sam .wegas-icon-jpaaccount {
     background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 0 -590px no-repeat;
 }
 .wegas-icon-variabledescriptor {
