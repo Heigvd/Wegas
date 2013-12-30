@@ -22,7 +22,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      * @description Allows just to join a team
      */
     var CONTENTBOX = "contentBox", DATASOURCE = "dataSource", NAME = "name",
-            RENDER = "render", HOST = "host", Wegas = Y.Wegas,
+            RENDER = "render", HOST = "host", Wegas = Y.Wegas, Plugin = Y.Plugin,
             GameDataTable;
 
     GameDataTable = Y.Base.create("wegas-lobby-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
@@ -50,7 +50,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.dataTable = new Y.DataTable(cfg);                              // Render datatable
             this.dataTable.render(this.get(CONTENTBOX));
             this.dataTable.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "<br /><br /><br /></center></em>");
-            this.plug(Y.Plugin.EditorDTMenu);
+            this.plug(Plugin.EditorDTMenu);
 
             this.get(CONTENTBOX).addClass("yui3-skin-wegas");
         },
@@ -251,7 +251,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      *  Request current user on host widget loaded
      * @constructor
      */
-    Y.Plugin.RequestDT = Y.Base.create("RequestDT", Y.Plugin.Base, [], {
+    Plugin.RequestDT = Y.Base.create("RequestDT", Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {
                 var host = this.get("host");
@@ -264,11 +264,40 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     }, {
         NS: "RequestDT"
     });
+
+    Y.DataTable.BodyView.Formatters.icon = function(col) {
+        col.className = 'wegas-lobby-datatable-icon';
+        col.sortable = false;
+        return function(o) {
+            return '<span class="wegas-icon ' + o.value + '"></span>';
+        };
+    };
+    Y.DataTable.BodyView.Formatters.menu = function(col) {
+        col.className = 'wegas-datatable-menu';
+        col.label = " ";
+        col.sortable = false;
+        return function(o) {
+            return '<span class="wegas-icon-menu"></span>';
+        };
+    };
+    Y.DataTable.BodyView.Formatters.date = function() {
+        return function(o) {
+            return Wegas.Helper.smartDate(o.value);
+        };
+    };
+    Y.DataTable.BodyView.Formatters.count = function(col) {
+        col.className = "wegas-datatable-center";
+        return function(o) {
+            return (o.value === 0) ? o.value : (o.value === -1) ? "" : o.value;
+        };
+    };
+
+
     /**
      * @class Open a menu on click, containing the admin edition field
      * @constructor
      */
-    Y.Plugin.EditorDTMenu = Y.Base.create("admin-menu", Y.Plugin.Base, [], {
+    Plugin.EditorDTMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {
                 var host = this.get(HOST);
@@ -293,7 +322,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 dataSource: host.get(DATASOURCE)
             };
 
-            Y.Plugin.EditorDTMenu.currentGameModel = entity;                    // @hack so game model creation will work
+            Plugin.EditorDTMenu.currentGameModel = entity;                    // @hack so game model creation will work
 
             if (last_tr) {
                 last_tr.removeClass("wegas-datatable-selected");
@@ -363,30 +392,63 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         }
     });
 
-    Y.DataTable.BodyView.Formatters.icon = function(col) {
-        col.className = 'wegas-lobby-datatable-icon';
-        col.sortable = false;
-        return function(o) {
-            return '<span class="wegas-icon ' + o.value + '"></span>';
-        };
-    };
-    Y.DataTable.BodyView.Formatters.menu = function(col) {
-        col.className = 'wegas-datatable-menu';
-        col.label = " ";
-        col.sortable = false;
-        return function(o) {
-            return '<span class="wegas-icon-menu"></span>';
-        };
-    };
-    Y.DataTable.BodyView.Formatters.date = function() {
-        return function(o) {
-            return Wegas.Helper.smartDate(o.value);
-        };
-    };
-    Y.DataTable.BodyView.Formatters.count = function(col) {
-        col.className = "wegas-datatable-center";
-        return function(o) {
-            return (o.value === 0) ? o.value : (o.value === -1) ? "" : o.value;
-        };
-    };
+    /**
+     * @class Open a menu on right click, containing the admin edition field
+     * @constructor
+     */
+    Plugin.EditorDTContextMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
+        initializer: function() {
+            this.onHostEvent("contextmenu", this.onTreeViewClick, this);
+
+            this.menu = new Wegas.Menu();
+            this.menu.addTarget(this.get(HOST));
+            this.menu.render();
+        },
+        onTreeViewClick: function(e) {
+            var host = this.get(HOST),
+                    tr = e.domEvent.target.ancestor("tr"), // the Node for the TR clicked ...
+                    rec = host.dataTable.getRecord(tr), // the current Record for the clicked TR
+                    menuItems = this.get("children"),
+                    entity = rec.get("entity"),
+                    data = {
+                entity: entity,
+                dataSource: host.get(DATASOURCE)
+            },
+            menuItems = entity.getMenuCfg(data).slice(1);                       // Fetch menu items
+
+
+            Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning
+                Y.Array.each(i.plugins, function(p, index) {
+                    if (p.fn === "WidgetMenu") {
+                        menuItems[itemIndex] = Y.mix({}, menuItems[itemIndex]);
+                        menuItems[itemIndex].plugins = menuItems[itemIndex].plugins.slice(0);
+                        menuItems[itemIndex].plugins[index] = {
+                            fn: "WidgetMenu",
+                            cfg: Y.mix({
+                                menuCfg: {
+                                    points: ["tl", "tr"]
+                                },
+                                event: "mouseenter"
+                            }, p.cfg)
+                        };
+                    }
+                });
+            });
+
+            if (menuItems) {
+                e.domEvent.preventDefault();
+                this.menu.removeAll();
+                this.menu.add(menuItems);                                       // Populate the menu with the elements associated to the
+                this.menu.show();                                               // Move the right click position
+                this.menu.set("xy", [e.domEvent.pageX, e.domEvent.pageY]);
+            } else {
+                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorDTContextMenu");
+            }
+        }
+    }, {
+        NS: "contextmenu",
+        ATTRS: {
+            children: {}
+        }
+    });
 });

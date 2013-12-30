@@ -375,6 +375,8 @@
                                                     }
                                                 }]
                                         }
+                                    }, {
+                                        "fn": "EditorDTContextMenu"
                                     }]
                             }]
                     }, {
@@ -442,6 +444,8 @@
                                                     }
                                                 }]
                                         }
+                                    }, {
+                                        "fn": "EditorDTContextMenu"
                                     }]
                             }]
                     }]
