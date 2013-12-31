@@ -221,9 +221,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
             var isFreeForAll = Wegas.Facade.GameModel.cache.findById(this.get("entity").get("gameModelId")).get("properties.freeForAll"),
                     ret = TeamTreeView.superclass.genTreeViewElements.call(this, entities);
 
-            if (isFreeForAll) {                                                 // Do not display teams in free for all game
-                Y.Array.flatten(Y.Array.map(ret, function(node) {
-                    return node.get("children");
+            if (isFreeForAll && entities[0]
+                    && entities[0] instanceof Wegas.persistence.Team) {      // Do not display teams in free for all game
+                return Y.Array.flatten(Y.Array.map(ret, function(node) {
+                    return node.children || [];
                 }));
             } else {
                 return ret;

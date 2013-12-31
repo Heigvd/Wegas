@@ -174,7 +174,7 @@ YUI.add('wegas-join', function(Y) {
 
             if (this.showTeamCreation) {                                        // If entity is a game token which allows team creation,
                 Y.Wegas.Facade.Game.sendRequest({//                             // create the team
-                    request: "/" + entity.get("id") + "/CreateTeam/" + name + "/",
+                    request: "/" + entity.get("id") + "/CreateTeam/" + name,
                     cfg: {
                         method: "POST",
                         updateCache: false
