@@ -8,7 +8,7 @@
 /**
  * Wegas loader, contains module definitions.
  *
- * @fileoverview
+ * @fifleoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI().use(function(Y) {
@@ -515,8 +515,8 @@ YUI().use(function(Y) {
                     requires: ['wegas-action', 'inputex-jsonschema', 'wegas-form'],
                     ws_provides: ['NewEntityAction', 'EditEntityAction', "NewEntityButton"]
                 },
-                'wegas-editentityform': {
-                    path: 'js/widget/wegas-editentityform-min.js',
+                'wegas-editor-form': {
+                    path: 'js/widget/wegas-editor-form-min.js',
                     //requires: 'wegas-form',
                     ws_provides: 'EditEntityForm'
                 },
