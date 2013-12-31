@@ -152,7 +152,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         showEditForm: function(entity, callback, cancelCallback, formCfg) {
 
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
-
             EditEntityAction.currentEntity = entity;
 
             var tab = EditEntityAction.getEditionTab(),
@@ -161,21 +160,20 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             tab.setAttrs({
                 label: prefix + entity.getType().replace("Descriptor", "").replace("Instance", "").toLowerCase(),
                 selected: 2
-            });
+            });                                                                 // Update tab attrs
             tab.form.setAttrs({
                 values: entity.toObject(),
                 cfg: formCfg || entity.getFormCfg()
-            });
+            });                                                                 // Update form attrs
             tab.form.toolbar.setStatusMessage("");
 
-            tab.form.detach("submit");
-            tab.form.on("submit", function(e) {
+            tab.form.on("submit", function(e) {                                 // Attach submit callback
                 this.showOverlay();
-                //EditEntityAction.form.saveButton.set("disabled", true);
                 callback(e.value, entity);
+                //EditEntityAction.form.saveButton.set("disabled", true);
             });
 
-            tab.on("destroy", function() {
+            tab.on("destroy", function() {                                      // and destroy callback
                 EditEntityAction.currentEntity = null;
                 if (cancelCallback) {
                     cancelCallback(entity);
@@ -193,13 +191,13 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         },
         getEditionTab: function() {
             if (!EditEntityAction.tab || EditEntityAction.tab.get("destroyed")) {// First make sure the edit tab does not exist
-                var tab = Wegas.TabView.createTab("Edit", '#rightTabView', {}, 0),
-                        form = new Wegas.Form();
+                var tab = Wegas.TabView.createTab("Edit", '#rightTabView', {}, 0), // Create a tab,
+                        form = new Wegas.Form();                                // and a form
 
-                tab.plug(Plugin.Removeable);
+                tab.plug(Plugin.Removeable);                                    // make it closeable
                 tab.add(form);
 
-                tab.form = EditEntityAction.form = form;
+                tab.form = EditEntityAction.form = form;                        // Set up global references for singleton pattern
                 EditEntityAction.tab = tab;
                 //form.before("updated", function(e) {
                 //    EditEntityAction.form.toolbar.setStatusMessage("*");
@@ -482,26 +480,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         NAME: "DuplicateEntityAction"
     });
     Plugin.DuplicateEntityAction = DuplicateEntityAction;
-    /**
-     * @class
-     * @name Y.Plugin.PublishEntityAction
-     * @extends Y.Plugin.EntityAction
-     * @constructor
-     */
-    //var PublishGameModelAction = function() {
-    //    PublishGameModelAction.superclass.constructor.apply(this, arguments);
-    //};
-    //Y.extend(PublishGameModelAction, EntityAction, {
-    //    execute: function() {
-    //        if (confirm("Are your sure your want to publish this item ?")) {
-    //            //this.get("dataSource").rest.publishObject(this.get("entity"));
-    //        }
-    //    }
-    //}, {
-    //    NS: "PublishGameModelAction",
-    //    NAME: "PublishGameModelAction"
-    //});
-    //Plugin.PublishGameModelAction = PublishGameModelAction;
     /**
      * @class
      * @name Y.Plugin.DeleteEntityAction
