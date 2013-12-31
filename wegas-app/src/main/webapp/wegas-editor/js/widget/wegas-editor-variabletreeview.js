@@ -72,6 +72,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     text = entity.getEditorLabel(), /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/
                     tooltip = "Type: " + entity.getType().replace("Descriptor", "");
 
+            if (entity.get("items")) {
+                collapsed = collapsed && !Y.Array.find(entity.get("items"), function(e) {
+                    return this.currentSelection === e.get(ID);
+                }, this);
+            }
+
             switch (elClass) {
                 case 'StringDescriptor':
                 case 'TextDescriptor':
@@ -359,17 +365,17 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     host.toolbar.item(host.toolbar.size() - 1).disable();
                 }
 
-                Y.once("rightTabShown", function() {
-                    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
-                    if (target && !target.toolbar) {
-                        target = target.item(0);
-                    }
-
-                    if (target && target.toolbar && menuItems.length > 0) {
-                        var buttons = target.toolbar.add(menuItems);            // Add new buttons to the right tab's toolbar
-                        buttons.item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
-                    }
-                }, this);
+                //Y.once("rightTabShown", function() {
+                //    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
+                //    if (target && !target.toolbar) {
+                //        target = target.item(0);
+                //    }
+                //
+                //    if (target && target.toolbar && menuItems.length > 0) {
+                //        var buttons = target.toolbar.add(menuItems);            // Add new buttons to the right tab's toolbar
+                //        buttons.item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
+                //    }
+                //}, this);
 
                 if (this.get("autoClick")) {
                     var button = Wegas.Widget.create(firstButton);

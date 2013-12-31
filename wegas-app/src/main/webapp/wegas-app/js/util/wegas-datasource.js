@@ -224,10 +224,19 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                     break;
                 default:
-                    if (this.find(ID, entity, function(entity, needle) {
+                    if (this.find(ID, entity, Y.bind(function(entity, needle) {
                         entity.setAttrs(needle.getAttrs());
+                        if (this.oldIds) {
+                            var newEntity = Y.Array.find(entity.get("items"), function(i) {
+                                return this.oldIds.indexOf(i.get("id")) < 0;
+                            }, this);
+                            this.get("host").fire("added", {
+                                entity: newEntity
+                            });
+                            this.oldIds = null;
+                        }
                         return true;
-                    })) {
+                    }, this))) {
                         return true;
                     }
                     break;
@@ -241,7 +250,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         addToCache: function(entity) {
             this.getCache().push(entity);
-            this.fire("added", {
+            this.get("host").fire("added", {
                 entity: entity
             });
         },
@@ -393,14 +402,14 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          * @private
          */
-        post: function(data, parentData, callback) {
-            var request = (parentData) ? "/" + parentData.id + "/" + data["@class"] : "/";
+        post: function(data, parent, callback) {
+            var request = (parent) ? "/" + parent.get("id") + "/" + data["@class"] : "/";
 
             this.sendRequest({
                 request: request,
                 cfg: {
                     method: POST,
-                    data: Y.JSON.stringify(data)
+                    data: data
                 },
                 on: callback
             });
@@ -432,7 +441,7 @@ YUI.add('wegas-datasource', function(Y) {
                 request: this.generateRequest(data),
                 cfg: {
                     method: "PUT",
-                    data: Y.JSON.stringify(data)
+                    data: data
                 }
             }, cfg));
         },
@@ -614,7 +623,7 @@ YUI.add('wegas-datasource', function(Y) {
                     request: '/1/VariableInstance/' + data.id,
                     cfg: {
                         method: "PUT",
-                        data: Y.JSON.stringify(data)
+                        data: data
                     }
                 }, cfg));
                 return;
@@ -622,24 +631,19 @@ YUI.add('wegas-datasource', function(Y) {
                 VariableDescriptorCache.superclass.put.call(this, data, cfg);
             }
         },
-        post: function(data, parentData, callback) {
+        post: function(data, parent, callback) {
             var request = "";
-            if (parentData) {
-                switch (parentData["@class"]) {
-                    case "ListDescriptor":
-                    case "QuestionDescriptor":
-                        request = "/" + parentData.id;
-                        break;
-                    default:
-                        request = "/" + parentData.id + "/VariableInstance/";
-                        break;
-                }
+            if (parent) {
+                this.oldIds = Y.Array.map(parent.get("items"), function(i) {
+                    return i.get("id");
+                });
+                request = "/" + parent.get("id");
             }
             this.sendRequest({
                 request: request,
                 cfg: {
                     method: POST,
-                    data: Y.JSON.stringify(data)
+                    data: data
                 },
                 on: callback
             });
@@ -745,7 +749,7 @@ YUI.add('wegas-datasource', function(Y) {
                     request: "/" + data.templateId,
                     cfg: {
                         method: POST,
-                        data: Y.JSON.stringify(data)
+                        data: data
                     },
                     on: callback
                 });
@@ -805,7 +809,7 @@ YUI.add('wegas-datasource', function(Y) {
                 //this.getCache().push(entity);
                 this.getCache().splice(0, 0, entity);                           // Add in first position
             }
-            this.fire("added", {
+            this.get("host").fire("added", {
                 entity: entity
             });
         },
@@ -829,7 +833,7 @@ YUI.add('wegas-datasource', function(Y) {
                             + "/Team/" + parentData.id + "/Player",
                     cfg: {
                         method: POST,
-                        data: Y.JSON.stringify(entity)
+                        data: entity
                     },
                     on: callback
                 });
@@ -838,7 +842,7 @@ YUI.add('wegas-datasource', function(Y) {
                     request: "/" + entity.gameModelId,
                     cfg: {
                         method: POST,
-                        data: Y.JSON.stringify(entity)
+                        data: entity
                     },
                     on: callback
                 });
@@ -937,7 +941,7 @@ YUI.add('wegas-datasource', function(Y) {
                 request: "",
                 cfg: {
                     method: POST,
-                    data: Y.JSON.stringify(data)
+                    data: data
                 },
                 on: callback
             });

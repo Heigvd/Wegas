@@ -51,6 +51,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
                 this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);// GLOBAL error message
 
+                this.addedHandler = ds.after("added", function(e) {
+                    this.currentSelection = e.entity.get("id");
+                }, this);
+
                 if (request) {
                     ds.sendRequest(request);
                 }
