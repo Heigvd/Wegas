@@ -907,8 +907,9 @@ YUI().use(function(Y) {
                     ws_provides: "TokenJoin"
                 },
                 'wegas-loginwidget': {
-                    requires: ['wegas-widget', 'inputex-group', 'inputex-password', 'inputex-string',
-                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button', 'wegas-logincss'],
+                    requires: ['inputex-group', 'inputex-password', 'inputex-string',
+                        "inputex-hidden", "inputex-email", "inputex-checkbox", 'button',
+                        'wegas-widget', 'wegas-button', 'wegas-logincss'],
                     ws_provides: "LoginWidget"
                 },
                 'wegas-logincss': {

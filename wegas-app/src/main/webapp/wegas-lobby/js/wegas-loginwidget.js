@@ -283,7 +283,7 @@ YUI.add('wegas-loginwidget', function(Y) {
         /**
          * @function
          * @private
-         * @param showAskForm, a boolean
+         * @param {boolean} showAskForm 
          * @description if showAskForm is true, hide "signup" form and "forgot Password" <p/> and show "ask password" form
          * do the opposite else.
          */
