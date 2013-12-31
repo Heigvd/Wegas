@@ -92,12 +92,14 @@ YUI.add('wegas-tabview', function(Y) {
             },
             listNode: {
                 "transient": true
+            },
+            defaultChildType: {
+                value: Tab
             }
         },
         EDITMENU: [{
                 type: "Button",
                 label: "Edit",
-                cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "EditWidgetAction"
                     }
@@ -115,7 +117,6 @@ YUI.add('wegas-tabview', function(Y) {
             }, {
                 type: "Button",
                 label: "Delete",
-                cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "DeleteLayoutWidgetAction"
                     }
@@ -141,6 +142,7 @@ YUI.add('wegas-tabview', function(Y) {
          * @param id
          * @param tabViewSelector
          * @param tabCfg
+         * @param {number} tabIndex
          * @return the new tab
          * @description create and return a tab based on a given id, the
          *  tabview reference and the configuration of the new tab.
@@ -194,6 +196,7 @@ YUI.add('wegas-tabview', function(Y) {
      * @modified from original WidgetParent module
      *
      * @module widget-parent
+     * @param {Object} config
      */
     function Parent(config) {
         //Y.WidgetParent.call(this, config);
@@ -260,6 +263,7 @@ YUI.add('wegas-tabview', function(Y) {
         /**
          * @function
          * @private
+         * @param cfg
          * @description Set variables with initials values.
          * call explicitly initializer method of widget parent.
          * assign this tab in owner TabView.
@@ -412,11 +416,10 @@ YUI.add('wegas-tabview', function(Y) {
         /**
          * @function
          * @private
-         * @param config
          * @description Create a clickable node (in host's bounding box).
          * If this node is clicked, remove host (Tab) and this plugin.
          */
-        initializer: function(config) {
+        initializer: function() {
             var tab = this.get('host'),
                     //cb = tab.get("parent").get("contentBox"),
                     bb = tab.get("boundingBox");
@@ -472,10 +475,6 @@ YUI.add('wegas-tabview', function(Y) {
 
         // *** Private fields *** //
         /**
-         * Html template added in host's contentbox
-         */
-        REMOVE_TEMPLATE: '<a class="yui3-tab-remove" title="remove tab">x</a>',
-        /**
          * @function
          * @private
          * @description if "removeChild" is fired by host, hide tab.
@@ -500,7 +499,6 @@ YUI.add('wegas-tabview', function(Y) {
         NAME: "LayoutToggleTab"
     });
     Y.namespace("Plugin").LayoutToggleTab = LayoutToggleTab;
-
 
     /**
      * Override to add support for disabled tabs

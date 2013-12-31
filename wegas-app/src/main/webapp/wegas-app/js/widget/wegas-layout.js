@@ -75,7 +75,6 @@ YUI.add("wegas-layout", function(Y) {
         EDITMENU: [{
                 type: "Button",
                 label: "Edit",
-                cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "EditWidgetAction"
                     }
@@ -83,7 +82,6 @@ YUI.add("wegas-layout", function(Y) {
             }, {
                 type: "Button",
                 label: "New element",
-                cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
@@ -321,7 +319,6 @@ YUI.add("wegas-layout", function(Y) {
             }, {
                 type: "Button",
                 label: "Delete",
-                cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "DeleteLayoutWidgetAction"
                     }

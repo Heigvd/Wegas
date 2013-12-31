@@ -218,7 +218,6 @@ YUI.add('wegas-entity', function(Y) {
         EDITMENU: [{
                 type: BUTTON,
                 label: "Edit",
-                cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "EditEntityAction"
                     }, {
