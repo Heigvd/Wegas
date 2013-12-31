@@ -127,7 +127,6 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                     }, widget));
                 }, this));
             }, this));
-
         }
     }, {
         NS: "AddChildWidgetAction",

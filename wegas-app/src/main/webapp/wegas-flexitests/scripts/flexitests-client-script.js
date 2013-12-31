@@ -16,7 +16,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
     Y.Wegas.FlexitestsController.EDITMENU = [{
             type: "Button",
             label: "Properties",
-            cssClass: "editor-exploreGameModel-button",
             plugins: [{
                     fn: "EditWidgetAction"
                 }
@@ -24,7 +23,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
         }, {
             type: "Button",
             label: "New element",
-            cssClass: "editor-exploreGameModel-button",
             plugins: [{
                     fn: "WidgetMenu",
                     cfg: {
@@ -76,7 +74,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
     Y.Wegas.ChoiceList.EDITMENU = [{
             type: "Button",
             label: "Properties",
-            cssClass: "editor-exploreGameModel-button",
             plugins: [{
                     fn: "EditWidgetAction"
                 }
@@ -84,7 +81,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
         }, {
             type: "Button",
             label: "New element",
-            cssClass: "editor-exploreGameModel-button",
             plugins: [{
                     fn: "WidgetMenu",
                     cfg: {
@@ -127,7 +123,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
         }, {
             type: "Button",
             label: "Delete",
-            cssClass: "editor-exploreGameModel-button",
             plugins: [{
                     fn: "DeleteLayoutWidgetAction"
                 }
@@ -137,7 +132,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
     Y.Wegas.List.EDITMENU = [{
             type: "Button",
             label: "Properties",
-            cssClass: "editor-exploreGameModel-button",
             plugins: [{
                     fn: "EditWidgetAction"
                 }
@@ -145,7 +139,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
         }, {
             type: "Button",
             label: "New element",
-            cssClass: "editor-exploreGameModel-button",
             plugins: [{
                     fn: "WidgetMenu",
                     cfg: {
@@ -192,7 +185,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
         }, {
             type: "Button",
             label: "Delete",
-            cssClass: "editor-exploreGameModel-button",
             plugins: [{
                     fn: "DeleteLayoutWidgetAction"
                 }

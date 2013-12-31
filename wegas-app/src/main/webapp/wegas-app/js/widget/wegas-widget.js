@@ -43,7 +43,7 @@ YUI.add("wegas-widget", function(Y) {
         this.publish("AttributesChange", {
             defaultFn: function() {
                 var widget = this.rebuild();
-                if (Y.Plugin.EditEntityAction.currentEntity === this) {
+                if (Y.Plugin.EditEntityAction.currentEntity === this) {         // @FIXME @fx wtf?
                     Y.Plugin.EditEntityAction.currentEntity = widget;
                 }
             }
@@ -145,14 +145,12 @@ YUI.add("wegas-widget", function(Y) {
         EDITMENU: [{
                 type: "Button",
                 label: "Edit",
-                cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "EditWidgetAction"
                     }]
             }, {
                 type: "Button",
                 label: "Delete",
-                cssClass: "editor-exploreGameModel-button",
                 plugins: [{
                         fn: "DeleteWidgetAction"
                     }]
@@ -584,7 +582,7 @@ YUI.add("wegas-widget", function(Y) {
         }
         return baseCreateChild.call(this, config);                              //reroute
     };
-    
+
 
     /** @Hack, use method defined in wegas-datasource.js */
     Y.Widget.prototype.plug = Y.DataSource.IO.prototype.plug;
