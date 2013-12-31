@@ -8,9 +8,10 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-editentityform', function(Y) {
+YUI.add('wegas-editor-form', function(Y) {
+    "use strict";
 
-    var inputEx = Y.inputEx, Lang = Y.Lang,
+    var CONTENTBOX = "contentBox", inputEx = Y.inputEx, Lang = Y.Lang,
             Wegas = Y.Wegas,
             Form, EditEntityForm;
 
@@ -132,7 +133,7 @@ YUI.add('wegas-editentityform', function(Y) {
                     if (val) {
                         var cfg = Y.clone(val);                                 // Duplicate so val will be untouched while serializing
                         Y.mix(cfg, {
-                            parentEl: this.get("contentBox"),
+                            parentEl: this.get(CONTENTBOX),
                             className: "wegas-form-ix",
                             type: "group"
                         });
@@ -213,10 +214,28 @@ YUI.add('wegas-editentityform', function(Y) {
             }
         },
         showUpdateForm: function(entity) {
-            var dataSource = dataSource;
             this.set("value", entity.toObject());
             this.set("cfg", this.get("cfg") || entity.getFormCfg());
 
+            var menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1), function(i) {
+                return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+            });                                                             // Retrieve menu and remove the first item
+
+            Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+                switch (i.label) {
+                    case "Delete":
+                    case "New":
+                    case "New element":
+                    case "Copy":
+                    case "View":
+                    case "Open in editor":
+                    case "Open":
+                    case "Edit":
+                        i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                }
+            });
+            this.toolbar.add(menuItems).item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
+            
             Y.fire("rightTabShown");// @fixme @hack
         }
     }, {
