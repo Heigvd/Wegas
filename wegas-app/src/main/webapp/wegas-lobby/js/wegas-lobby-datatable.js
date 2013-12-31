@@ -357,20 +357,20 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 //});
                 if (this.get("autoClick")) {                                    // If we are in autoclick,
 
-                    Y.once("rightTabShown", function() {
-                        var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
-                        if (target && !target.toolbar) {
-                            target = target.item(0);
-                        }
-
-                        if (target && target.toolbar) {
-                            this.buttons = target.toolbar.add(menuItems);       // Add new buttons to the right tab's toolbar
-
-                            this.buttons.item(0).set("visible", false);
-                            if (this.buttons.item(1))
-                                this.buttons.item(1).get(CONTENTBOX).setStyle("marginLeft", "15px");
-                        }
-                    }, this);
+                    //Y.once("rightTabShown", function() {
+                    //    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
+                    //    if (target && !target.toolbar) {
+                    //        target = target.item(0);
+                    //    }
+                    //
+                    //    if (target && target.toolbar) {
+                    //        this.buttons = target.toolbar.add(menuItems);       // Add new buttons to the right tab's toolbar
+                    //
+                    //        this.buttons.item(0).set("visible", false);
+                    //        if (this.buttons.item(1))
+                    //            this.buttons.item(1).get(CONTENTBOX).setStyle("marginLeft", "15px");
+                    //    }
+                    //}, this);
 
                     var button = Wegas.Widget.create(menuItems[0]);
                     button.render().fire("click");                              // launch first button action
@@ -414,8 +414,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 entity: entity,
                 dataSource: host.get(DATASOURCE)
             },
-            menuItems = entity.getMenuCfg(data).slice(1);                       // Fetch menu items
-
+            menuItems = entity.getMenuCfg(data).slice(0);                       // Fetch menu items
 
             Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning
                 Y.Array.each(i.plugins, function(p, index) {

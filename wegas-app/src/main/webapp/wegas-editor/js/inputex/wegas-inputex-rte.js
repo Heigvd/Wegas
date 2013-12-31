@@ -126,7 +126,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
          * @param {String} value The html string
          * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
          */
-        setValue: function(value) {
+        setValue: function(value, sendUpdatedEvent) {
             var tmceI = tinyMCE.get(this.el.id);
 
             if (value) {
@@ -135,7 +135,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         "src=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\""
                         + " href=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\"");// @hack Place both href and src so it will work for both <a> and <img> elements
             }
-            RTEField.superclass.setValue.call(this, value);
+            RTEField.superclass.setValue.call(this, value, sendUpdatedEvent);
 
             if (tmceI) {
                 tmceI.setContent(value);
