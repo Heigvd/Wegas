@@ -86,7 +86,7 @@ YUI.add('wegas-editor-action', function(Y) {
             }
 
             //if (this.get("tabSelector") !== "#rightTabView") {                          // @hack
-                tab.plug(Y.Plugin.Removeable);
+            tab.plug(Y.Plugin.Removeable);
             //}
         }
 
@@ -368,7 +368,9 @@ YUI.add('wegas-editor-action', function(Y) {
          * @static
          */
         ATTRS: {
-            entity: {}
+            entity: {
+                "transient": true
+            }
         }
     });
     Y.namespace("Wegas").Linkwidget = Linkwidget;

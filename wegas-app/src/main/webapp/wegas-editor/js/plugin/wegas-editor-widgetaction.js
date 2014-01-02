@@ -56,13 +56,15 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
          * @private
          */
         execute: function() {
-            Plugin.EditEntityAction.showEditForm(this.get("widget"), Y.bind(function(val, entity) {
+            Plugin.EditEntityAction.hideRightTabs();
+            var widget = this.get("widget"),
+                    form = Plugin.EditEntityAction.showEditForm(widget, Y.bind(function(val, entity) {
                 Plugin.EditEntityAction.showEditFormOverlay();
                 var i, plugins = {}, plugin, cfg, oldCfg = entity.get("root").toObject();
                 entity.setAttrs(val);
                 for (i = 0; i < val.plugins.length; i += 1) {
                     plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
-                    if (!Y.Lang.isUndefined(entity._plugins[plugin.NS])) { //that plugin exists on target
+                    if (!Y.Lang.isUndefined(entity._plugins[plugin.NS])) {      //that plugin exists on target
                         entity[plugin.NS].setAttrs(val.plugins[i].cfg);
                         plugins[plugin.NS] = true;                              //store namespace as treated
                     } else {
@@ -70,8 +72,8 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                         plugins[plugin.NS] = true;                              //store namespace as treated
                     }
                 }
-                for (i in entity._plugins) {                                 // remove
-                    if (Y.Lang.isUndefined(plugins[i])) {                           //An inexistant namespace
+                for (i in entity._plugins) {                                    // remove
+                    if (Y.Lang.isUndefined(plugins[i])) {                       //An inexistant namespace
                         entity.unplug(i);
                     }
                 }
@@ -89,9 +91,20 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 if (entity && !entity.get("destroyed")) {
                     entity.highlight(false);
                 }
-            });
+            }),
+                    menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
 
-            this.get("widget").highlight(true);
+                switch (i.label) {                                              // @hack add icons to some buttons
+                    case "Delete":
+                    case "Edit":
+                        i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                }
+
+                return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+            });                                                                 // Retrieve menu and remove the first item
+
+            widget.highlight(true);
+            form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "15px");
         }
     }, {
         NS: "EditWidgetAction",
