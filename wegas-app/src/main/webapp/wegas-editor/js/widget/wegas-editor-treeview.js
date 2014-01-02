@@ -407,7 +407,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             var targetWidget = Y.Widget.getByNode(e.domEvent.target),
                     menuItems = this.getMenuItems(targetWidget.get("data"), targetWidget);    // Fetch menu items
 
-            menuItems.splice(0, 1);                                             // Remove "Edit" button
+            //menuItems.splice(0, 1);                                             // Remove "Edit" button
 
             Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning
                 Y.Array.each(i.plugins, function(p, index) {

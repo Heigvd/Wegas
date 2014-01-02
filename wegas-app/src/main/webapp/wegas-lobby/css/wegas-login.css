@@ -116,7 +116,7 @@ h1, .title{
 .signupgroup div{
     float:left;
     width:165px;
-    margin-bottom: 5px
+    margin-bottom: 5px;
 }
 
 .signupgroup .email input{
@@ -134,8 +134,9 @@ h1, .title{
     margin: 0 2px 0 0;
 }
 .main .signup {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     border-bottom: 1px solid lightgray;
+    padding-bottom: 5px;
 }
 .main .signup .yui3-button,
 .main .guestlogin .yui3-button {
@@ -149,7 +150,7 @@ h1, .title{
 }
 
 .yui3-skin-sam  button.yui3-button{
-    background-color: #072644;
+    background: #072644;
     color:white;
 }
 

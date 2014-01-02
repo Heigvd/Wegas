@@ -97,9 +97,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                         }
                     });
-                });
-
-                var menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
+                }), menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
                     return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
                 });                                                             // Retrieve menu and remove the first item
 
@@ -118,6 +116,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 });
                 form.toolbar.add(menuItems).item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
             };
+            EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.getEditionTab();                                   // Create the edition tab (and the left panel won't pop in and out)
 
             if ((Wegas.persistence.VariableDescriptor &&
@@ -151,14 +150,16 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         showEditForm: function(entity, callback, cancelCallback, formCfg) {
 
-            EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.currentEntity = entity;
 
             var tab = EditEntityAction.getEditionTab(),
-                    prefix = (entity.get("id") || entity instanceof Y.Widget) ? "Edit " : "New ";// No id -> new entity
+                    name = entity.getType().replace("Descriptor", "").replace("Instance", "");
 
+            if (!entity.get("id") || entity instanceof Y.Widget) {              // No id -> new entity
+                name = "New " + name.toLowerCase()
+            }
             tab.setAttrs({
-                label: prefix + entity.getType().replace("Descriptor", "").replace("Instance", "").toLowerCase(),
+                label: name,
                 selected: 2
             });                                                                 // Update tab attrs
             tab.form.setAttrs({
@@ -247,6 +248,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(NewEntityAction, EditEntityAction, {
         showAddForm: function(entity) {
             var dataSource = this.get("dataSource");
+            EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.showEditForm(entity, function(newVal) {
                 dataSource.cache.post(newVal, null, {
                     success: function(e) {
@@ -325,6 +327,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         return i.get("id") === entity.get("id");
                     });
 
+                    EditEntityAction.hideRightTabs();                           // Hide all active tabs
                     EditEntityAction.showEditForm(child, function(newVal) {
                         child.setAttrs(newVal);
                         dataSource.cache.put(descriptor.toObject(), {
@@ -342,6 +345,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     newEntity = Wegas.Editable.revive({
                         "@class": this.get("targetClass")
                     });
+                    EditEntityAction.hideRightTabs();                           // Hide all active tabs
                     EditEntityAction.showEditForm(newEntity, Y.bind(function(newVal) {
                         newEntity.setAttrs(newVal);
                         descriptor.get(this.get("attributeKey")).push(newEntity);
@@ -410,7 +414,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(AddEntityChildAction, NewEntityAction, {
         showAddForm: function(entity, parentData) {
             var dataSource = this.get("dataSource");
-
+            EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.showEditForm(entity, function(newVal) {
                 //@Hack since the server return the parent list,
                 // and we have no way to identify the newly created descriptor
