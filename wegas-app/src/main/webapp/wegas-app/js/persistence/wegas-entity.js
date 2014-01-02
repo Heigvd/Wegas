@@ -13,15 +13,15 @@ YUI.add('wegas-entity', function(Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
-            BUTTON = "Button", TEXT = "text", HTML = "html",
-            GROUP = "group",
+            BUTTON = "Button", TEXT = "text", HTML = "html", GROUP = "group",
+            Wegas = Y.namespace("Wegas"), Base = Y.Base, Entity,
             IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
         _inputex: {
             _type: HIDDEN
         }
-    }, Wegas = Y.namespace("Wegas"), Entity;
+    };
 
     /**
      * @class Entity is used to represent db objects
@@ -30,7 +30,7 @@ YUI.add('wegas-entity', function(Y) {
      * @augments Y.Wegas.Editable
      * @constructor
      */
-    Entity = Y.Base.create("Entity", Y.Base, [Wegas.Editable], {}, {
+    Entity = Base.create("Entity", Base, [Wegas.Editable], {}, {
         _buildCfg: {
             //statics: ["EDITMENU"],
             custom: {
@@ -95,7 +95,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      *
      */
-    Wegas.persistence.DefaultEntity = Y.Base.create("DefaultEntity", Entity, [], {
+    Wegas.persistence.DefaultEntity = Base.create("DefaultEntity", Entity, [], {
         initializer: function(cfg) {
             this.set("val", cfg);
         },
@@ -112,7 +112,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * Page response mapper
      */
-    Wegas.persistence.WidgetEntity = Y.Base.create("WidgetEntity", Entity, [], {
+    Wegas.persistence.WidgetEntity = Base.create("WidgetEntity", Entity, [], {
         initializer: function(cfg) {
             Wegas.persistence.WidgetEntity.superclass.initializer.apply(this, arguments);
             this.__cfg = cfg;
@@ -125,7 +125,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * ServerResponse mapper
      */
-    Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Y.Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
+    Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
         ATTRS: {
             entities: {
                 value: []
@@ -135,7 +135,7 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     });
-    Wegas.persistence.EntityUpdatedEvent = Y.Base.create("EntityUpdatedEvent", Wegas.persistence.Entity, [], {}, {
+    Wegas.persistence.EntityUpdatedEvent = Base.create("EntityUpdatedEvent", Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             updatedEntities: {
                 value: []
@@ -146,7 +146,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * GameModel mapper
      */
-    Wegas.persistence.GameModel = Y.Base.create("GameModel", Wegas.persistence.Entity, [], {}, {
+    Wegas.persistence.GameModel = Base.create("GameModel", Wegas.persistence.Entity, [], {}, {
         EDITORNAME: "Game model",
         ATTRS: {
             name: {
@@ -299,7 +299,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * Game mapper
      */
-    Wegas.persistence.Game = Y.Base.create("Game", Wegas.persistence.Entity, [], {}, {
+    Wegas.persistence.Game = Base.create("Game", Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             gameModelId: {
                 type: STRING,
@@ -463,12 +463,10 @@ YUI.add('wegas-entity', function(Y) {
                                                 //    value: "Game:TeamToken"
                                                 //}
                                             ]
-                                        }
-                                    ]
+                                        }]
                                 }]
                         }
-                    },
-                    {
+                    }, {
                         fn: "OpenTabActionThi",
                         cfg: {
                             label: "Teams",
@@ -477,8 +475,7 @@ YUI.add('wegas-entity', function(Y) {
                                     type: "TeamTreeView"
                                 }]
                         }
-                    },
-                    {
+                    }, {
                         fn: "OpenTabActionSec",
                         cfg: {
                             label: "Share",
@@ -566,13 +563,12 @@ YUI.add('wegas-entity', function(Y) {
             }
         ]
     });
-
     Wegas.persistence.DebugGame = Wegas.persistence.Game;
 
     /**
      * Team mapper
      */
-    Wegas.persistence.Team = Y.Base.create("Team", Wegas.persistence.Entity, [], {}, {
+    Wegas.persistence.Team = Base.create("Team", Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             '@class': {
                 value: "Team"
@@ -589,6 +585,10 @@ YUI.add('wegas-entity', function(Y) {
             gameId: IDATTRDEF
         },
         EDITMENU: [{
+                type: "EditEntityButton",
+                label: "Edit",
+                cssClass: "wegas-advanced-feature"
+            }, {
                 type: BUTTON,
                 label: "Open",
                 plugins: [{
@@ -603,10 +603,6 @@ YUI.add('wegas-entity', function(Y) {
                 type: "JoinOrResumeButton",
                 cssClass: "wegas-advanced-feature",
                 label: "Join"
-            }, {
-                type: "EditEntityButton",
-                label: "Edit",
-                cssClass: "wegas-advanced-feature"
             }, {// We allow the player to open its pages with the widget
                 type: BUTTON,
                 label: "View as",
@@ -628,16 +624,13 @@ YUI.add('wegas-entity', function(Y) {
                         }
                     }]
             }
-            //, {
-            //    type: "Linkwidget"
-            //}
         ]
     });
 
     /**
      * Player mapper
      */
-    Wegas.persistence.Player = Y.Base.create("Player", Wegas.persistence.Entity, [], {}, {
+    Wegas.persistence.Player = Base.create("Player", Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: STRING
@@ -648,6 +641,10 @@ YUI.add('wegas-entity', function(Y) {
             }
         },
         EDITMENU: [{
+                type: "EditEntityButton",
+                label: "Edit",
+                cssClass: "editor-playerProperties-button"
+            }, {
                 type: BUTTON,
                 label: "Open",
                 plugins: [{
@@ -659,17 +656,13 @@ YUI.add('wegas-entity', function(Y) {
             }, {
                 type: "DeleteEntityButton",
                 cssClass: "editor-deletePlayer-button"
-            }, {
-                type: "EditEntityButton",
-                label: "Edit",
-                cssClass: "editor-playerProperties-button"
             }]
     });
 
     /**
      * User mapper
      */
-    Wegas.persistence.User = Y.Base.create("User", Wegas.persistence.Entity, [], {
+    Wegas.persistence.User = Base.create("User", Wegas.persistence.Entity, [], {
         getMainAccount: function() {
             return this.get("accounts")[0];
         }
@@ -693,10 +686,11 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     });
+
     /**
      * Role mapper
      */
-    Wegas.persistence.Role = Y.Base.create("Role", Wegas.persistence.Entity, [], {}, {
+    Wegas.persistence.Role = Base.create("Role", Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: STRING
@@ -742,14 +736,14 @@ YUI.add('wegas-entity', function(Y) {
                 type: "DeleteEntityButton"
             }]
     });
+
     /**
      * JpaAccount mapper
      */
-    Wegas.persistence.JpaAccount = Y.Base.create("JpaAccount", Wegas.persistence.Entity, [], {
+    Wegas.persistence.JpaAccount = Base.create("JpaAccount", Wegas.persistence.Entity, [], {
         getPublicName: function() {
             return this.get("name");
         }
-
     }, {
         ATTRS: {
             "@class": {
@@ -785,7 +779,6 @@ YUI.add('wegas-entity', function(Y) {
             email: {
                 type: STRING,
                 _inputex: {
-                    label: "Email",
                     _type: "email"
                 }
             },
@@ -876,7 +869,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * JpaAccount mapper
      */
-    Wegas.persistence.GuestJpaAccount = Y.Base.create("JpaAccount", Wegas.persistence.Entity, [], {
+    Wegas.persistence.GuestJpaAccount = Base.create("JpaAccount", Wegas.persistence.Entity, [], {
         getPublicName: function() {
             return "Guest";
         }

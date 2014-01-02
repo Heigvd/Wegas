@@ -12,6 +12,8 @@
  */
 YUI.add("wegas-layout", function(Y) {
     "use strict";
+
+    var BUTTON = "Button";
     /**
      * @extends Y.Wegas.Widget
      * @constructor
@@ -73,14 +75,13 @@ YUI.add("wegas-layout", function(Y) {
             }
         }, Y.Wegas.Widget.ATTRS),
         EDITMENU: [{
-                type: "Button",
+                type: BUTTON,
                 label: "Edit",
                 plugins: [{
                         fn: "EditWidgetAction"
-                    }
-                ]
+                    }]
             }, {
-                type: "Button",
+                type: BUTTON,
                 label: "New element",
                 plugins: [{
                         fn: "WidgetMenu",
@@ -90,8 +91,8 @@ YUI.add("wegas-layout", function(Y) {
                             //},
                             //event: "mouseenter",
                             children: [{
-                                    type: "Button",
-                                    label: "Element",
+                                    type: BUTTON,
+                                    label: "Basic",
                                     plugins: [{
                                             fn: "WidgetMenu",
                                             cfg: {
@@ -100,7 +101,7 @@ YUI.add("wegas-layout", function(Y) {
                                                 },
                                                 event: "mouseenter",
                                                 children: [{
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Box",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
@@ -117,53 +118,47 @@ YUI.add("wegas-layout", function(Y) {
                                                                             }]
                                                                     }
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Text",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
                                                                     childType: "Text"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Image",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
                                                                     childType: "Image"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
-                                                        label: "Button",
+                                                        type: BUTTON,
+                                                        label: BUTTON,
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    childType: "Button"
+                                                                    childType: BUTTON
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Form",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
                                                                     childType: "Form"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }]
                                             }
-                                        }
-                                    ]}, {
-                                    type: "Button",
+                                        }]}, {
+                                    type: BUTTON,
                                     label: "Variable display",
                                     plugins: [{
                                             fn: "WidgetMenu",
@@ -173,47 +168,43 @@ YUI.add("wegas-layout", function(Y) {
                                                 },
                                                 event: "mouseenter",
                                                 children: [{
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Template",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
                                                                     childType: "Template"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Gauge",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
                                                                     childType: "GaugeDisplay"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Question list",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
                                                                     childType: "MCQTabView"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Inbox",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
                                                                     childType: "InboxDisplay"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Chart",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
@@ -221,13 +212,11 @@ YUI.add("wegas-layout", function(Y) {
                                                                     childType: "Chart"
                                                                 }
                                                             }]
-                                                    }
-                                                ]
+                                                    }]
                                             }
-                                        }
-                                    ]
+                                        }]
                                 }, {
-                                    type: "Button",
+                                    type: BUTTON,
                                     label: "Layouts",
                                     plugins: [{
                                             fn: "WidgetMenu",
@@ -237,7 +226,7 @@ YUI.add("wegas-layout", function(Y) {
                                                 },
                                                 event: "mouseenter",
                                                 children: [{
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "SlideShow",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
@@ -249,10 +238,9 @@ YUI.add("wegas-layout", function(Y) {
                                                                             }]
                                                                     }
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Tabview",
                                                         cssClass: "wegas-advanced-feature",
                                                         plugins: [{
@@ -260,20 +248,18 @@ YUI.add("wegas-layout", function(Y) {
                                                                 cfg: {
                                                                     childType: "TabView"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Page display",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
                                                                     childType: "PageLoader"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "List",
                                                         cssClass: "wegas-advanced-feature",
                                                         plugins: [{
@@ -281,10 +267,9 @@ YUI.add("wegas-layout", function(Y) {
                                                                 cfg: {
                                                                     childType: "List"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Choice list",
                                                         cssClass: "wegas-advanced-feature",
                                                         plugins: [{
@@ -292,10 +277,9 @@ YUI.add("wegas-layout", function(Y) {
                                                                 cfg: {
                                                                     childType: "ChoiceList"
                                                                 }
-                                                            }
-                                                        ]
+                                                            }]
                                                     }, {
-                                                        type: "Button",
+                                                        type: BUTTON,
                                                         label: "Absolute layout",
                                                         cssClass: "wegas-advanced-feature",
                                                         plugins: [{
@@ -303,26 +287,19 @@ YUI.add("wegas-layout", function(Y) {
                                                                 cfg: {
                                                                     childType: "AbsoluteLayout"
                                                                 }
-                                                            }
-                                                        ]
-                                                    }
-
-                                                ]
+                                                            }]
+                                                    }]
                                             }
-                                        }
-                                    ]
-                                }
-                            ]
+                                        }]
+                                }]
                         }
-                    }
-                ]
+                    }]
             }, {
-                type: "Button",
+                type: BUTTON,
                 label: "Delete",
                 plugins: [{
                         fn: "DeleteLayoutWidgetAction"
-                    }
-                ]
+                    }]
             }],
         _buildCfg: {
             aggregate: ["EDITMENU"]

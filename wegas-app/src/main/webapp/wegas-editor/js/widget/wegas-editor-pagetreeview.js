@@ -47,6 +47,12 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }
         },
         bindUI: function() {
+            this.on("treenode:nodeExpanded", function(e) {                      // Change the current page whenever a page node is expanded
+                if (e.node.get("data.page")) {
+                    this.changePage(e.node.get("data.page"));
+                }
+            });
+
             if (DATASOURCE.editable) {
                 this.treeView.sortable.on("sort", function(e) {
                     if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
@@ -258,13 +264,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
     Y.namespace("Wegas").PageTreeview = PageTreeview;
 
     var PageTreeviewToolbarMenu = Y.Base.create("wegas-editor-page", Plugin.VariableTVToolbarMenu, [], {
-        initializer: function() {
-            this.onHostEvent("treenode:nodeExpanded", function(e) {             // Change the current page whenever a page node is expanded
-                if (e.node.get("data.page")) {
-                    this.get(HOST).changePage(e.node.get("data.page"));
-                }
-            });
-        },
         onTreeViewClick: function(e) {
             var data = e.node.get("data"),
                     page = e.node.get("data.page"),
