@@ -56,7 +56,7 @@
 
                 YUI().use("wegas-app", "wegas-scripteval", function(Y) {
                     var app = new Y.Wegas.App({
-                        //layoutSrc: 'rest/Page/#{editorGameController.currentGameModel.id}/EditorLayout',
+                        //layoutSrc: 'rest/GameModel/#{editorGameController.currentGameModel.id}/Page/EditorLayout',
                         layoutSrc: 'wegas-app/db/wegas-editor-layout.json',
                         //debug: true,
                         currentGameModel: #{editorGameController.currentGameModel.id},
@@ -83,7 +83,7 @@
                                 /* THIS IS NOT A COMMENT
                                  * <ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
                                  */
-                                source: "rest/Page/#{editorGameController.currentGameModel.id}/",
+                                source: "rest/GameModel/#{editorGameController.currentGameModel.id}/Page/",
                                 /* THIS IS NOT A COMMENT
                                  * </ui:fragment>
                                  */

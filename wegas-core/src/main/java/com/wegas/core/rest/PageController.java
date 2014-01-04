@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
-@Path("Page/{gameModelId : [0-9]+}")
+@Path("GameModel/{gameModelId : [0-9]+}/Page")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class PageController {
