@@ -247,7 +247,7 @@
                 "height": 35,
                 "width": 35
             }, {
-                "name": "name",
+                "name": "label",
                 "label": "Prénom : "
             }
         ],
