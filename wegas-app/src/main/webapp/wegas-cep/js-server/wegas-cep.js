@@ -16,10 +16,11 @@ function lookupBean (name) {
 }
 
 function passPeriod () {
-    var currentTime = phases.descriptor.items.get(phases.value),
+    var currentTime = phases.descriptor.items.get(currentPhase.value - 1),
     currentTimeInstance = currentTime.getInstance(self);
     if (currentTimeInstance.value == currentTime.maxValue) {
         phases.value += 1;
+        currentPhase.value += 1;
     } else {
         currentTimeInstance.value += 1;
     }
