@@ -176,7 +176,11 @@ YUI.add('wegas-proggame-level', function(Y) {
          */
         toJSON: function() {
             var ret = Y.Wegas.Editable.prototype.toJSON.apply(this, arguments);
-            ret.plugins.pop();
+
+            ret.plugins = Y.Array.reject(ret.plugins, function(i) {
+                return i.fn === "OpenPageAction";
+            });
+//            ret.plugins.pop();
             return ret;
         },
         setState: function(nextState) {

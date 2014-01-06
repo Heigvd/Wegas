@@ -159,19 +159,23 @@ YUI.add('wegas-cssstyles', function(Y) {
                                 type: "colorpicker",
                                 palette: 3
                             }, {
-                                type: "string",
                                 name: "fontSize"
                             }, {
                                 type: "select",
                                 name: "fontStyle",
                                 choices: ["", "normal", "italic", "oblique", "inherit"]
                             }, {
+                                name: "fontFamily",
+                            }, {
                                 type: "select",
                                 name: "textAlign",
                                 choices: ["", "left", "right", "center", "justify", "inherit"]
                             }, {
-                                type: "string",
                                 name: "minWidth"
+                            }, {
+                                name: "lineHeight"
+                            }, {
+                                name: "padding"
                             }]
                     }
                 }
