@@ -16,12 +16,12 @@ YUI.add('wegas-entity', function(Y) {
             BUTTON = "Button", TEXT = "text", HTML = "html", GROUP = "group",
             Wegas = Y.namespace("Wegas"), Base = Y.Base, Entity,
             IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
+                type: STRING,
+                optional: true,                                                 // The id is optional for entites that have not been persisted
+                _inputex: {
+                    _type: HIDDEN
+                }
+            };
 
     /**
      * @class Entity is used to represent db objects
@@ -112,15 +112,15 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * Page response mapper
      */
-    Wegas.persistence.WidgetEntity = Base.create("WidgetEntity", Entity, [], {
-        initializer: function(cfg) {
-            Wegas.persistence.WidgetEntity.superclass.initializer.apply(this, arguments);
-            this.__cfg = cfg;
-        },
-        toJSON: function() {
-            return this.__cfg;
-        }
-    });
+    //Wegas.persistence.WidgetEntity = Base.create("WidgetEntity", Entity, [], {
+    //    initializer: function(cfg) {
+    //        Wegas.persistence.WidgetEntity.superclass.initializer.apply(this, arguments);
+    //        this.__cfg = cfg;
+    //    },
+    //    toJSON: function() {
+    //        return this.__cfg;
+    //    }
+    //});
 
     /**
      * ServerResponse mapper
@@ -173,11 +173,13 @@ YUI.add('wegas-entity', function(Y) {
                 value: {},
                 getter: function(value, name) {
                     var key = name.split(".")[1];
-                    if (Y.Lang.isString(value[key]) &&
-                            (key === "freeForAll"
-                                    || key === "allowCreateTeam"
-                                    || key === "allowJoinTeam")) {
-                        value[key] = (value[key] === "true") ? true : false;
+                    if (Y.Lang.isString(value[key])) {
+                        switch (key) {
+                            case "freeForAll":
+                            case "allowCreateTeam":
+                            case "allowJoinTeam":
+                                value[key] = (value[key] === "true") ? true : false;
+                        }
                     }
                     return value;
                 },
@@ -304,7 +306,7 @@ YUI.add('wegas-entity', function(Y) {
             gameModelId: {
                 type: STRING,
                 _inputex: {
-                    _type: "hidden"
+                    _type: HIDDEN
                 }
             },
             gameModel: {//                                                      // Extended-view only

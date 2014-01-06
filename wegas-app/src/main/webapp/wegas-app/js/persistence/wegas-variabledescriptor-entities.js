@@ -29,8 +29,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      * VariableDescriptor mapper
      */
     Wegas.persistence.VariableDescriptor = Base.create("VariableDescriptor", Wegas.persistence.Entity, [], {
-        getInstance: function(playerId) {
-            playerId = playerId || Wegas.app.get('currentPlayer');
+        getInstance: function(player) {
+            var playerId = player instanceof Wegas.persistence.Player ? player.get("id") : player || Wegas.app.get('currentPlayer');
             return this.get("scope").getInstance(playerId);
         },
         getLabel: function() {
@@ -236,9 +236,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      * Meant to augment primitive Descriptors (Number, Text, String) with some functions
      */
     Wegas.persistence.PrimitiveDescriptor = Base.create("Primitive", Wegas.persistence.Entity, [], {
-        getValue: function(playerId) {
-            playerId = playerId instanceof Wegas.persistence.Player ? playerId.get("id") : playerId;
-            return this.getInstance(playerId).get(VALUE);
+        getValue: function(player) {
+            return this.getInstance(player).get(VALUE);
         }
     });
     /**
@@ -648,9 +647,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
 
 
     Wegas.persistence.InboxDescriptor = Base.create("InboxDescriptor", Wegas.persistence.VariableDescriptor, [], {
-        isEmpty: function(playerId) {
-            playerId = playerId instanceof Wegas.persistence.Player ? playerId.get("id") : playerId;
-            return this.getInstance(playerId).get("messages").length < 1;
+        isEmpty: function(player) {
+            return this.getInstance(player).get("messages").length < 1;
         }
     }, {
         ATTRS: {

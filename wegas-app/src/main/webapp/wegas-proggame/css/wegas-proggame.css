@@ -69,6 +69,17 @@ html, .editor-preview .layout > div {
     background: url(../../wegas-proggame/images/proggame-menu-buttons.png) no-repeat -199px 0px;
     box-shadow: none;
 }
+
+.menu-loginbutton, .menu-loginbutton:hover {
+    background: url(../../wegas-proggame/images/proggame-button-empty.png) no-repeat;
+    box-shadow: none;
+    padding-top: 15px;
+    font-family: Ravie;
+    font-size: 19px;
+    color: rgba(163, 184, 89, 1);
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
 .battle-button:hover::before,
 .proggame-button-shop:hover::before,
 .mails-button:hover::before,
@@ -98,16 +109,6 @@ html, .editor-preview .layout > div {
     background-color: transparent;
     color: rgba(163, 184, 89, 1);
 }
-/*.menu-loginbutton, .menu-loginbutton:hover{
-    background: url(../../wegas-proggame/images/proggame-button-empty.png) no-repeat;
-    box-shadow: none;
-    background-color: transparent;
-    padding-top: 15px;
-    font-family: Ravie;
-    font-size: 19px;
-    color: rgba(163, 184, 89, 1);
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-}*/
 
 /* objective api and file styles */
 /*.apiTab {
