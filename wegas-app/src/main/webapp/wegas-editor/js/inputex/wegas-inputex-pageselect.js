@@ -30,10 +30,9 @@ YUI.add("wegas-inputex-pageselect", function(Y) {
     };
 
     Y.extend(inputEx.Wegas.PageSelect, inputEx.SelectField, {
-        setOptions: function(options) {
-            inputEx.Wegas.PageSelect.superclass.setOptions.call(this, options);
+        renderComponent: function(options) {
+            inputEx.Wegas.PageSelect.superclass.renderComponent.call(this, options);
             Y.Wegas.Facade.Page.cache.getIndex(Y.bind(this.buildList, this));
-
         },
         setValue: function(val) {
             inputEx.Wegas.PageSelect.superclass.setValue.apply(this, arguments);

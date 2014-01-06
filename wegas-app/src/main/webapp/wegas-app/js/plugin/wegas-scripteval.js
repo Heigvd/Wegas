@@ -69,12 +69,12 @@ YUI.add('wegas-scripteval', function(Y) {
                         content: script
                     }),
                     on: {
-                        success: Y.bind(function(id, req_id, response) {
+                        success: function(id, response) {
                             if (cb && cb.success instanceof Function) {
                                 cb.success(Y.JSON.parse(response.responseText));
                             }
-                        }, this),
-                        failure: Y.bind(function(id, req_id, response) {
+                        },
+                        failure: function(id, response) {
                             var result;
                             try {
                                 result = Y.JSON.parse(response.responseText);
@@ -84,7 +84,7 @@ YUI.add('wegas-scripteval', function(Y) {
                             if (cb && cb.failure instanceof Function) {
                                 cb.failure(result);
                             }
-                        }, this)
+                        }
                     }
                 });
             }

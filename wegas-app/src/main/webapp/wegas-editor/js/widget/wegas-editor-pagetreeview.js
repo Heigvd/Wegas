@@ -271,6 +271,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 
             if (page) {
                 this.get(HOST).changePage(page);
+                //return;
                 widget = data.widget = e.node.item(0) && e.node.item(0).get("data.widget");// There may be no child widget when the widget is empty
             }
             if (widget) {
@@ -317,6 +318,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     page = targetWidget.get("data.page");
 
             if (page) {
+                //return;
                 this.get(HOST).changePage(page);
                 targetWidget.get("data").widget = targetWidget.item(0) && targetWidget.item(0).get("data.widget");// There may be no child widget when the widget is empty
             }
