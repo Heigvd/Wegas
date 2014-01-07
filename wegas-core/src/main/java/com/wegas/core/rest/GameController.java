@@ -18,6 +18,7 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -101,7 +102,17 @@ public class GameController {
      * @return
      */
     @POST
-    public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) {
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
+        SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
+
+        gameFacade.publishAndCcreate(gameModelId, entity);
+        //gameFacade.create(gameModelId, entity);
+        return entity;
+    }
+
+    @POST
+    @Path("ShadowCreate")
+    public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
         gameFacade.create(gameModelId, entity);
@@ -117,7 +128,7 @@ public class GameController {
      */
     @POST
     @Path("{gmId : [1-9][0-9]*}")
-    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) {
+    public Game createBis(@PathParam("gmId") Long gameModelId, Game entity) throws IOException {
         return this.create(gameModelId, entity);
     }
 

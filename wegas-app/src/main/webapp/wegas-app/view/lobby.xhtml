@@ -106,17 +106,17 @@
                         });
                         refreshTabs();
 
-                        Y.Wegas.Facade.Game.cache.on("added", function(e) {     // After a game is created
-                            if (e.entity instanceof Y.Wegas.persistence.Game) {
-                                var gm = Y.Wegas.Facade.GameModel.cache.findById(e.entity.get("gameModelId"));
-                                if (!gm || !gm.get("canView")) {
-                                    Y.Wegas.Facade.GameModel.sendInitialRequest();// To refresh game model list
-                                }
-
-                                //Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2).set("visible", true);// select the hosted games tab
-                                //Y.Wegas.Facade.PublicGames.sendInitialRequest();  // Refresh available game list
-                            }
-                        });
+                        //Y.Wegas.Facade.Game.cache.on("added", function(e) {     // After a game is created
+                        //    if (e.entity instanceof Y.Wegas.persistence.Game) {
+                        //        var gm = Y.Wegas.Facade.GameModel.cache.findById(e.entity.get("gameModelId"));
+                        //        if (!gm || !gm.get("canView")) {
+                        //            Y.Wegas.Facade.GameModel.sendInitialRequest();// To refresh game model list
+                        //        }
+                        //
+                        //        //Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2).set("visible", true);// select the hosted games tab
+                        //        //Y.Wegas.Facade.PublicGames.sendInitialRequest();  // Refresh available game list
+                        //    }
+                        //});
                     });
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined

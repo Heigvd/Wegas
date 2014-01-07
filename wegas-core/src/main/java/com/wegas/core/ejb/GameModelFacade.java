@@ -161,6 +161,16 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         return getEntityManager().createQuery(query).getResultList();
     }
 
+    public List<GameModel> findTemplates() {
+        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        final CriteriaQuery query = criteriaBuilder.createQuery();
+        Root e = query.from(entityClass);
+        query.select(e)
+                .where(criteriaBuilder.isTrue(e.get("template")))
+                .orderBy(criteriaBuilder.asc(e.get("name")));
+        return getEntityManager().createQuery(query).getResultList();
+    }
+
     /**
      *
      * @param name

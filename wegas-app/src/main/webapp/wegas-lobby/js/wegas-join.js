@@ -359,16 +359,17 @@ YUI.add('wegas-join', function(Y) {
             var cb = this.get(CONTENTBOX),
                     entity = this.get("entity"),
                     game = (entity instanceof Y.Wegas.persistence.Team) ? Y.Wegas.Facade.Game.cache.findById(entity.get("gameId"))
-                    : entity,
-                    gameModel = Y.Wegas.Facade.GameModel.cache.findById(game.get("gameModelId"));
+                    : entity;
 
-            cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name")); // Add title
             cb.one(".subtitle").setHTML("Created by " + game.get("createdBy").get("name") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
 
             Y.Wegas.Facade.GameModel.cache.getWithView(game, "Extended", {/// Get the game model full description
                 on: {
                     success: Y.bind(function(e) {
-                        cb.one(".description").setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")
+                        var gameModel = e.response.entity;
+                        cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name")); // Add title
+                        cb.one(".description").setHTML(gameModel.get("description"))
+                                //|| "<em><center>No description available</em></center>")
                                 .removeClass("wegas-loading-div");
                     }, this)
                 }
