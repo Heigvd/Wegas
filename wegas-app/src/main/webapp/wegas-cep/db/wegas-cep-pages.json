@@ -128,7 +128,7 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "expr": "questions.items[phases.value].items[phases.items[phases.value].value - 1].descriptorId"
+                                                "expr": "questions.items[currentPhase.value - 1].items[phases.items[currentPhase.value - 1].value - 1].descriptorId"
                                             }
                                         }
                                     }
@@ -150,7 +150,7 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "expr": "actions.items[phases.value].items[phases.items[phases.value].value - 1].descriptorId"
+                                                "expr": "actions.items[currentPhase.value - 1].items[phases.items[currentPhase.value - 1].value - 1].descriptorId"
                                             }
                                         }
                                     }
@@ -247,7 +247,7 @@
                 "height": 35,
                 "width": 35
             }, {
-                "name": "name",
+                "name": "label",
                 "label": "Prénom : "
             }
         ],
@@ -293,14 +293,14 @@
         "id": 4,
         "type": "MCQTabView",
         "variable": {
-            "expr": "questions.items[phases.value].items[phases.items[phases.value].value - 1].descriptorId"
+            "expr": "questions.items[currentPhase.value - 1].items[phases.items[currentPhase.value - 1].value - 1].descriptorId"
         }
     },
     "5": {
         "id": 5,
         "type": "MCQTabView",
         "variable": {
-            "expr": "actions.items[phases.value].items[phases.items[phases.value].value - 1].descriptorId"
+            "expr": "actions.items[currentPhase.value - 1].items[phases.items[currentPhase.value - 1].value - 1].descriptorId"
         }
     },
     "6": {
