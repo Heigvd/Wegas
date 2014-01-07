@@ -666,15 +666,7 @@
         "maxTurns": 2,
         "winningCondition": "level.objects[0].life===0",
         "onWin": "currentLevel.value=7;money.value+=500;",
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "left"
-            }, {
-                "name": "right"
-            }, {
-                "name": "fire"
-            }],
+        "api": ["move", "left","right","fire"],
         "objects": [{
                 "id": "Enemy",
                 "components": "NPC",
@@ -986,24 +978,14 @@
                 }
             }]
     },
-    "8": {
+    "999": {
         "label": "Level 4",
         "type": "ProgGameLevel",
         "winningCondition": "said.indexOf(\"Hello \" + getArgs().name) >= 0",
         "onWin": "currentLevel.value=4",
         "onStart": "var names= [\"Romuald\", \"Pete\", \"Roger\", \"Gandalf\", \"Jo\"], name = names[Math.floor((Math.random()*5))];pushArg(\"name\", name);log(\"My name is \" + name);",
         "arguments": ["String name"],
-        "api": [{
-                "name": "move"
-            }, {
-                "name": "left"
-            }, {
-                "name": "right"
-            }, {
-                "name": "fire"
-            }, {
-                "name": "say"
-            }],
+        "api": [ "move","left","right", "fire","say"],
         "objects": [{
                 "id": "Player",
                 "components": "PC",

@@ -139,12 +139,11 @@ public class GameModelController {
      */
     @GET
     public Collection<GameModel> index() {
-
         Collection<GameModel> games = new ArrayList<>();
         Subject s = SecurityUtils.getSubject();
         //String r =  (requestManager.getView() == Views.Index.class) ? "View": "Edit";
 
-        for (GameModel gm : gameModelFacade.findAll()) {
+        for (GameModel gm : gameModelFacade.findTemplates()) {
             //if (s.isPermitted("GameModel:" + r +":gm" + aGm.getId())) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
                     || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())

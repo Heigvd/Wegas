@@ -16,6 +16,7 @@ import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlID;
@@ -393,5 +394,19 @@ public class Game extends NamedEntity {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getGameModelName() {
+        return this.getGameModel().getName();
+    }
+
+    public void setGameModelName() {
+    }
+
+    public Map<String, String> getProperties() {
+        return this.getGameModel().getProperties();
+    }
+
+    public void setProperties() {
     }
 }
