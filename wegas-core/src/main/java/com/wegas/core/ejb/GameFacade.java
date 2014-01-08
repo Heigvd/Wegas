@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class GameFacade extends AbstractFacadeImpl<Game> {
-
+    
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GameFacade.class);
     /**
      *
@@ -83,19 +83,19 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         gm.setTemplate(false);
         this.create(gm.getId(), game);
     }
-
+    
     public void create(final Long gameModelId, final Game game) {
         if (this.findByToken(game.getToken()) != null) {
             //  || teamFacade.findByToken(game.getToken()) != null) {
             throw new WegasException("This token is already in use.");
         }
-
+        
         final User currentUser = userFacade.getCurrentUser();
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         gameModel.addGame(game);
-        em.flush();                                                             // To retrieve game id
+        gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
         userFacade.addAccountPermission(currentUser.getMainAccount(),
                 "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
@@ -108,7 +108,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             logger.error("Unable to find Role: Public", ex);
         }
     }
-
+    
     @Override
     public Game update(final Long entityId, final Game entity) {
         if ((this.findByToken(entity.getToken()) != null
@@ -118,18 +118,21 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
         return super.update(entityId, entity);
     }
-
+    
     @Override
     public void remove(final Game entity) {
+        if (entity.getGameModel().getGames().size() <= 1) {
+            gameModelFacade.remove(entity.getGameModel());
+        }
         for (Team t : entity.getTeams()) {
             teamFacade.remove(t);
         }
         super.remove(entity);
-
+        
         userFacade.deleteAccountPermissionByInstance("g" + entity.getId());
         userFacade.deleteRolePermissionsByInstance("g" + entity.getId());
     }
-
+    
     public void checkKey(final Game game, final String key) throws Exception {
         switch (game.getAccess()) {
             case CLOSE:
@@ -138,13 +141,13 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             case OPEN:
             case URL:
                 break;
-
+            
             case ENROLMENTKEY:
                 if (!game.getKey().equals(key)) {
                     throw new Exception("The provided key does not match");     // There user is already registered to target game
                 }
                 break;
-
+            
             case SINGLEUSAGEENROLMENTKEY:
                 for (GameEnrolmentKey eKey : game.getKeys()) {
                     if (eKey.getKey().equals(key)) {
@@ -173,12 +176,12 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             return null;
         }
     }
-
+    
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         final Query getByGameId =
                 em.createQuery("SELECT game FROM Game game "
                 + "WHERE game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC");
-
+        
         GameModel gm = new GameModel();
         gm.getGames();
         getByGameId.setParameter("gameModelId", gameModelId);
@@ -195,7 +198,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         //getByGameId.setParameter("orderBy", orderBy);
         return getByGameId.getResultList();
     }
-
+    
     public List<Game> findRegisteredGames(final Long userId) {
         final Query getByGameId =
                 em.createQuery("SELECT game, p FROM Game game "
@@ -204,10 +207,10 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
                 + "AND p.user.id = :userId "
                 + "ORDER BY p.joinTime ASC");
         getByGameId.setParameter("userId", userId);
-
+        
         return this.findRegisterdGames(getByGameId);
     }
-
+    
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
         final Query getByGameId =
                 em.createQuery("SELECT game, p FROM Game game "
@@ -216,10 +219,10 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
                 + "ORDER BY p.joinTime ASC");
         getByGameId.setParameter("userId", userId);
         getByGameId.setParameter("gameModelId", gameModelId);
-
+        
         return this.findRegisterdGames(getByGameId);
     }
-
+    
     private List<Game> findRegisterdGames(final Query q) {
         final List<Game> games = new ArrayList<>();
         for (Object ret : q.getResultList()) {                                // @hack Replace created time by player joined time

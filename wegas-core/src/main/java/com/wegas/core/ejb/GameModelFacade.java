@@ -86,11 +86,16 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
         this.em.flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
-        this.reset(entity);                                                     // Reset the game model
+        //this.reset(entity);                                                   // Reset the game model
 
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Duplicate:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Instantiate:gm" + entity.getId());
+    }
+
+    public void addGame(final GameModel gameModel, final Game game) {
+        gameModel.addGame(game);
+        this.reset(gameModel);                                                     // Reset the game model
     }
 
     @Override
@@ -108,14 +113,14 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
 
-        final GameModel oldEntity = this.find(entityId);                              // Retrieve the entity to duplicate
-        final GameModel newEntity = (GameModel) oldEntity.duplicate();
+        final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
+        final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
 
         boolean added = false;
         int suffix = 1;
         String newName = null;
         while (!added) {
-            newName = oldEntity.getName() + "(" + suffix + ")";
+            newName = srcGameModel.getName() + "(" + suffix + ")";
             try {
                 this.findByName(newName);
                 suffix++;
@@ -124,26 +129,27 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
             }
         }
 
-        newEntity.setName(newName);
-        this.create(newEntity);                                                 // store it db
+        newGameModel.setName(newName);
+        this.create(newGameModel);                                              // store it db
         em.flush();
 
         try {                                                                   //Clone jcr FILES
-            ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newEntity.getId());
-            connector.cloneWorkspace(oldEntity.getId());
-            newEntity.setPages(oldEntity.getPages());
+            ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
+            connector.cloneWorkspace(srcGameModel.getId());
+            newGameModel.setPages(srcGameModel.getPages());
         } catch (RepositoryException ex) {
             System.err.println(ex);
         }
 
-        return newEntity;
+        return newGameModel;
     }
 
     @Override
     public void remove(final GameModel gameModel) {
         super.remove(gameModel);
         //Remove jcr repo.
-        // @TODO : in fact, removes all files but not the workspace. @fx Why remove files? The may be referenced in other workspaces
+        // @TODO : in fact, removes all files but not the workspace. 
+        // @fx Why remove files? The may be referenced in other workspaces
         try {
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId());
             connector.deleteWorkspace();
@@ -194,7 +200,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         this.reset(this.find(gameModelId));
     }
 
-    private void reset(final GameModel gameModel) {
+    public void reset(final GameModel gameModel) {
         gameModel.propagateDefaultInstance(true);                               // Propagate default instances
         em.flush();
         em.refresh(gameModel);
