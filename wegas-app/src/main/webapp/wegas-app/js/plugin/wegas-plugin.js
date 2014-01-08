@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-action', function(Y) {
+YUI.add('wegas-plugin', function(Y) {
     "use strict";
     var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas");
     /**
@@ -18,10 +18,11 @@ YUI.add('wegas-action', function(Y) {
      *  @extends Y.Plugin
      *  @constructor
      */
-    function WPlugin() {
-    }
-    Y.mix(WPlugin.prototype, {});
-    Y.mix(WPlugin, {
+
+    Wegas.Plugin = function() {
+    };
+    Y.mix(Wegas.Plugin.prototype, {});
+    Y.mix(Wegas.Plugin, {
         ATTRS: {
             host: {
                 "transient": true
@@ -51,7 +52,6 @@ YUI.add('wegas-action', function(Y) {
             return undefined;
         }
     });
-    Wegas.Plugin = WPlugin;
     /**
      *  @name Y.Plugin.Action
      *  @extends Y.Plugin.Base
@@ -178,8 +178,8 @@ YUI.add('wegas-action', function(Y) {
                 _inputex: {
                     label: "Target zone",
                     //_type: "pageloaderselect",//@fixme There a bug with this widget when the target page is not loaded
-                     value: "maindisplayarea",
-                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    value: "maindisplayarea",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
             subpageVariable: {
