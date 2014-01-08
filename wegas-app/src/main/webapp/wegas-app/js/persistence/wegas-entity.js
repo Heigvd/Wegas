@@ -337,6 +337,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             properties: {
                 "transient": true,
+                value: {},
                 getter: Wegas.persistence.GameModel.ATTRS.properties.getter
             },
             teams: {
