@@ -151,7 +151,7 @@ public class Game extends NamedEntity {
     public void prePersist() {
         this.setCreatedTime(new Date());
         if (this.teams.isEmpty()) {
-            //this.addTeam(new DebugTeam());
+            this.addTeam(new DebugTeam());
         }
         this.preUpdate();
     }

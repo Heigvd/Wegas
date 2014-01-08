@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  *
@@ -25,14 +26,10 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Entity
 @Table(uniqueConstraints =
         @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
-@Inheritance(strategy = InheritanceType.JOINED)
-//@NamedQueries({
-//    @NamedQuery(name = "findTeamByToken", query = "SELECT team FROM Team team WHERE team.token = :token")
-//})
 @JsonIgnoreProperties(ignoreUnknown = true)
-//@JsonSubTypes(value = {
-//    @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
-//})
+@JsonSubTypes(value = {
+    @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
+})
 public class Team extends AbstractEntity {
 
     /**
@@ -103,17 +100,6 @@ public class Team extends AbstractEntity {
         //this.setToken(t.getToken());
     }
 
-    /**
-     *
-     */
-    //@PrePersist
-    //@PreUpdate
-    //public void prePersist() {
-    //    if (this.getToken() == null || this.getToken().equals("")) {
-    //        this.setToken(Helper.genToken(10));
-    //    }
-    //    //this.token = this.token.replace(" ", "-");
-    //}
     /**
      * @return the gameModel
      */

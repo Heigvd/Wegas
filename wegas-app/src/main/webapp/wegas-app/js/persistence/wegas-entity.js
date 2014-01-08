@@ -110,19 +110,6 @@ YUI.add('wegas-entity', function(Y) {
     Wegas.persistence.RestException = Wegas.persistence.DefaultEntity;
 
     /**
-     * Page response mapper
-     */
-    //Wegas.persistence.WidgetEntity = Base.create("WidgetEntity", Entity, [], {
-    //    initializer: function(cfg) {
-    //        Wegas.persistence.WidgetEntity.superclass.initializer.apply(this, arguments);
-    //        this.__cfg = cfg;
-    //    },
-    //    toJSON: function() {
-    //        return this.__cfg;
-    //    }
-    //});
-
-    /**
      * ServerResponse mapper
      */
     Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
@@ -135,6 +122,9 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     });
+    /**
+     * 
+     */
     Wegas.persistence.EntityUpdatedEvent = Base.create("EntityUpdatedEvent", Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             updatedEntities: {
@@ -436,7 +426,9 @@ YUI.add('wegas-entity', function(Y) {
                 getter: function() {
                     var count = 0;
                     Y.Array.each(this.get("teams"), function(t) {
-                        count += t.get("players").length;
+                        if (!(t instanceof Wegas.persistence.DebugTeam)) {
+                            count += t.get("players").length;
+                        }
                     });
                     return count;
                 }
@@ -636,6 +628,10 @@ YUI.add('wegas-entity', function(Y) {
             }
         ]
     });
+    /**
+     * 
+     */
+    Wegas.persistence.DebugTeam = Base.create("DebugTeam", Wegas.persistence.Team, [], {}, {});
 
     /**
      * Player mapper

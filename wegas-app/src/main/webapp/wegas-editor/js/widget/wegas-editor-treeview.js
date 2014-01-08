@@ -101,7 +101,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
          * @private
          */
         genTreeViewElements: function(elements) {
-            return Y.Array.map(elements, this.genTreeViewElement, this);
+            return Y.Array.filter(Y.Array.map(elements, this.genTreeViewElement, this), Y.Lang.isObject);
         },
         genTreeViewElement: function(entity) {
             var children = entity.get("players");                               // @hack so it works for team
