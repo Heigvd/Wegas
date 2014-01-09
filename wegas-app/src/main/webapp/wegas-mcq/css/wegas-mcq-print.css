@@ -1,0 +1,27 @@
+@media print {
+    .wegas-mcqtabview-content .yui3-tabview-list {
+        display:none !important;
+    }
+
+    .wegas-mcqtabview-content .yui3-tabview-panel .title,
+    .wegas-mcqtabview-content .yui3-tabview-panel .subtitle{
+        font-size: 13pt;
+        font-weight: bold;
+    }
+
+    .wegas-mcqtabview-content .yui3-tabview-panel .content {
+        font-size: 10pt;
+        width: 21cm;
+    }
+
+    .wegas-mcqtabview-content .yui3-tabview-panel .name {
+        font-size: 10pt;
+        font-weight: bold !important;
+    }
+
+    .wegas-layout-center {
+        display: block !important;
+        top: 0 !important;
+        left: 0 !important;
+    }
+}
