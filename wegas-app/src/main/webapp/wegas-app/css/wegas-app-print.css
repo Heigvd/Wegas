@@ -1,0 +1,15 @@
+@media print {
+    body, .body, #centerTabView {
+        width: 21cm !important;
+    }
+
+    #leftTabView, #centerTabView .yui3-tabview-list {
+        display:none !important;
+    }
+    
+    .wegas-layout-center {
+        position: absolute !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+}
