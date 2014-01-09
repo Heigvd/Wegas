@@ -113,29 +113,23 @@ YUI.add('wegas-lobby-treeview', function(Y) {
 
                     switch (el.get(CLASS)) {
                         case 'Game':
-                            var createdBy = el.get("createdBy"),
-                                    gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
-
-                            if (gameModel) {
-                                ret.push({
-                                    //label: el.get(NAME),
-                                    label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                            + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                            + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                            + '<div class="yui3-u-1-3">'
-                                            + Wegas.Helper.smartDate(el.get("createdTime"))
-                                            + '</div>'
-                                            + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
-                                            + '<div class="yui3-u-1-3">' + gameModel.get(NAME) + '</div></div>'
-                                            + '</div>',
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-game'
-                                });
-                            } else {
-                                Y.log("Unable to find game model associated with game:" + el.get(NAME), "error", "Wegas.EditorTreeView");
-                            }
+                            var createdBy = el.get("createdBy");
+                            ret.push({
+                                //label: el.get(NAME),
+                                label: '<div class="yui3-g wegas-editor-treeview-table">'
+                                        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                        + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                        + '<div class="yui3-u-1-3">'
+                                        + Wegas.Helper.smartDate(el.get("createdTime"))
+                                        + '</div>'
+                                        + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
+                                        + '<div class="yui3-u-1-3">' + el.get("gameModelName") + '</div></div>'
+                                        + '</div>',
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-game'
+                            });
                             break;
                     }
                 }
@@ -159,29 +153,24 @@ YUI.add('wegas-lobby-treeview', function(Y) {
 
                     switch (el.get(CLASS)) {
                         case 'Game':
-                            var createdBy = el.get("createdBy"),
-                                    gameModel = Wegas.Facade.GameModel.cache.findById(el.get("gameModelId"));
+                            var createdBy = el.get("createdBy");
 
-                            if (gameModel) {
-                                ret.push({
-                                    //label: el.get(NAME),
-                                    label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                            + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                            + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                            + '<div class="yui3-u-1-3">'
-                                            + Wegas.Helper.smartDate(el.get("createdTime"))
-                                            + '</div>'
-                                            + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
-                                            + '<div class="yui3-u-1-3">' + gameModel.get(NAME) + '</div></div>'
-                                            + '</div>',
-                                    data: {
-                                        entity: el
-                                    },
-                                    iconCSS: 'wegas-icon-game'
-                                });
-                            } else {
-                                Y.log("Unable to find game model associated with game:" + el.get(NAME), "error", "Wegas.EditorTreeView");
-                            }
+                            ret.push({
+                                //label: el.get(NAME),
+                                label: '<div class="yui3-g wegas-editor-treeview-table">'
+                                        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                        + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                        + '<div class="yui3-u-1-3">'
+                                        + Wegas.Helper.smartDate(el.get("createdTime"))
+                                        + '</div>'
+                                        + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
+                                        + '<div class="yui3-u-1-3">' + el.get("gameModelName") + '</div></div>'
+                                        + '</div>',
+                                data: {
+                                    entity: el
+                                },
+                                iconCSS: 'wegas-icon-game'
+                            });
                             break;
                     }
                 }

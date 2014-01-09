@@ -35,12 +35,11 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints =
-        @UniqueConstraint(columnNames = "name"))
+//@Table(uniqueConstraints =
+//        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> {
 
-    //private static final Pattern p = Pattern.compile("(^get\\()([a-zA-Z0-9_\"]+)(\\)$)");
     public enum PROPERTY {
 
         websocket,
@@ -80,6 +79,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @XmlTransient
     @JsonIgnore
     private User createdBy;
+    /**
+     *
+     */
+    @XmlTransient
+    @JsonIgnore
+    private Boolean template = true;
     /**
      *
      */
@@ -565,5 +570,19 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             return this.getCreatedBy().getName();
         }
         return null;
+    }
+
+    /**
+     * @return the template
+     */
+    public Boolean getTemplate() {
+        return template;
+    }
+
+    /**
+     * @param template the template to set
+     */
+    public void setTemplate(Boolean template) {
+        this.template = template;
     }
 }

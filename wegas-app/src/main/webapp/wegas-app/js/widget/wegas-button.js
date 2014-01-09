@@ -72,6 +72,9 @@ YUI.add("wegas-button", function(Y) {
         renderUI: function() {
             Button.superclass.renderUI.apply(this, arguments);
             this.get(BOUNDINGBOX).addClass("wegas-button");
+        },
+        _getLabel: function(value) {
+            return value;
         }
     }, {
         /**
@@ -94,7 +97,11 @@ YUI.add("wegas-button", function(Y) {
          */
         ATTRS: {
             label: {
-                type: "string"
+                type: "string",
+                optional: true
+            },
+            labelHTML: {
+                "transient": true
             },
             data: {},
             tooltip: {
@@ -120,7 +127,6 @@ YUI.add("wegas-button", function(Y) {
         if (!opts || opts.src !== 'internal') {
             this.set('labelHTML', label, {src: 'internal'});
         }
-
         return label;
     };
 
@@ -135,10 +141,6 @@ YUI.add("wegas-button", function(Y) {
         /** @lends Y.Plugin.UnreadCount# */
 
         // *** Private fields *** //
-        /**
-         * Reference to each used functions
-         */
-        handlers: null,
         // *** Lifecycle methods *** //
         /**
          * @function

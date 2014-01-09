@@ -156,7 +156,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             var tab = EditEntityAction.getEditionTab(),
                     name = entity.getType().replace("Descriptor", "").replace("Instance", "");
 
-            if (!entity.get(ID) || !(entity instanceof Y.Widget)) {           // No id -> new entity
+            if (!entity.get(ID) && !(entity instanceof Y.Widget)) {           // No id -> new entity
                 name = "New " + name.toLowerCase();
             }
             tab.setAttrs({

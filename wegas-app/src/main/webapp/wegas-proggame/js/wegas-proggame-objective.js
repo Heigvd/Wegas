@@ -18,7 +18,6 @@ YUI.add('wegas-proggame-objective', function(Y) {
      *  @constructor
      */
     var Objective = Y.Base.create("wegas-proggame-objective", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
-        popupContent: null,
         initializer: function() {
             var fullObjective = this.get("fullObjective"),
                     globalObjective = this.get("globalObjective");

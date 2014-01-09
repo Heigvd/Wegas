@@ -12,8 +12,6 @@
 YUI.add("wegas-loginbutton", function(Y) {
     "use strict";
 
-    var LoginButton;
-
     /**
      * @name Y.Wegas.LoginButton
      * @extends Y.Wegas.Button
@@ -22,7 +20,7 @@ YUI.add("wegas-loginbutton", function(Y) {
      * @description Button with special label and menu with two
      * options : set user preferences or logout
      */
-    LoginButton = Y.Base.create("wegas-login", Y.Wegas.Button, [], {
+    var LoginButton = Y.Base.create("wegas-login", Y.Wegas.Button, [], {
         /** @lends Y.Wegas.LoginButton# */
 
         // *** Lifecycle Methods *** //
@@ -36,9 +34,10 @@ YUI.add("wegas-loginbutton", function(Y) {
          */
         bindUI: function() {
             Y.Wegas.LoginButton.superclass.bindUI.apply(this, arguments);
-            Y.Wegas.Facade.User.after("update", this.syncUI, this);
+            this.handlers = {};
+            this.handlers.userUpdate = Y.Wegas.Facade.User.after("update", this.syncUI, this);
             if (Y.Wegas.Facade.VariableDescriptor)
-                Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+                this.handlers.variableUpdate = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
 
             if (this.menu) {                                                    // Don't add the plugin if it already exist.
                 return;
@@ -104,6 +103,11 @@ YUI.add("wegas-loginbutton", function(Y) {
                 }
             }
             this.set("label", name);
+        },
+        destructor: function() {
+            for (var k in this.handlers) {
+                this.handlers[k].detach();
+            }
         }
     }, {
         /** @lends Y.Wegas.LoginButton */

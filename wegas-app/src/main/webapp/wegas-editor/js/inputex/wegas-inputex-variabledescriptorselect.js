@@ -532,7 +532,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         setOptions: function(options) {
             VariableDescriptorCondition.superclass.setOptions.call(this, options);
             this.argsOffset = 1;
-            this.options.returnsFilter = ["number", "boolean"];
+            this.options.returnsFilter = ["number", "boolean", "string"];
             this.options.operator = options.operator;
             this.options.rightValue = options.rightValue || 0;
         },
@@ -540,7 +540,14 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             var value = VariableDescriptorCondition.superclass.getValue.call(this);
 
             if (this.argsOffset > 1) {
-                value += this.inputs[this.inputs.length - 1].getValue().join("");
+                var i = this.inputs[this.inputs.length - 1],
+                        values = i.getValue();
+
+                if (i.inputs[1] instanceof inputEx.StringField) {
+                    values[1] = '"' + values[1] + '"';
+                }
+
+                value += values.join("");
             }
             return value;
         },
@@ -554,7 +561,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             VariableDescriptorCondition.superclass.syncUI.call(this);
 
             var methods = this.getMethods(this.currentEntity),
-                    cMethod = methods[this.options.method];
+                    cMethod = this.options.methodCfg;
 
             if (!cMethod && methods.length > 0) {
                 cMethod = methods[0];                                           // By default select the first method available
@@ -585,6 +592,25 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                 }]
                         }, {
                             type: "number",
+                            value: this.options.rightValue
+                        }]
+                });
+            } else if (cMethod && cMethod.returns === "string") {
+                this.argsOffset = 2;
+                this.addField({
+                    type: "combine",
+                    fields: [{
+                            type: "select",
+                            value: this.options.operator,
+                            choices: [{
+                                    value: "===",
+                                    label: "equals"
+                                }, {
+                                    value: "!==",
+                                    label: "is different than"
+                                }]
+                        }, {
+                            type: "string",
                             value: this.options.rightValue
                         }]
                 });
