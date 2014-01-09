@@ -46,7 +46,7 @@ import org.xml.sax.SAXException;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
-@Path("File/GameModelId/{gameModelId : ([1-9][0-9]*)?}")
+@Path("GameModel/{gameModelId : ([1-9][0-9]*)?}/File")
 public class FileController {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);

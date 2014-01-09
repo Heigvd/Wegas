@@ -147,10 +147,11 @@ YUI.add("wegas-inputex-rte", function(Y) {
          */
         getValue: function() {
             //var path = Y.Plugin.CRDataSource.getFullpath("")
-            var reg = new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"); // Replace absolute path with injector style path
             tinyMCE.triggerSave();
             //return RTEField.superclass.getValue.call(this).replace(reg, "data-file=\"$3\" $1");
-            return RTEField.superclass.getValue.call(this).replace(reg, "data-file=\"$3\"");
+            return RTEField.superclass.getValue.call(this)
+                    .replace(new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"), "data-file=\"$3\"")// Replace absolute path with injector style path
+                    .replace(new RegExp("((src|href)=\".*/rest/GameModel/.*/File/read([^\"]*)\")", "gi"), "data-file=\"$3\"");// Replace absolute path with injector style path
         },
         /**
          * @static

@@ -521,8 +521,8 @@ YUI.add('wegas-datasource', function(Y) {
         ATTRS: {
         },
         getFullpath: function(relativePath) {
-            return Wegas.app.get("base") + "rest/File/GameModelId/" + Wegas.app.get("currentGameModel") +
-                    "/read" + relativePath;
+            return Wegas.app.get("base") + "rest/GameModel/" + Wegas.app.get("currentGameModel") +
+                    "/File/read" + relativePath;
         },
         getFilename: function(path) {
             return path.replace(/^.*[\\\/]/, '');

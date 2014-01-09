@@ -15,6 +15,7 @@ import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.User;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -42,7 +43,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      *
      */
     @EJB
-    private GameModelFacade gameModelEntityFacade;
+    private GameModelFacade gameModelFacade;
     /**
      *
      */
@@ -76,8 +77,14 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param gameModelId
      * @param game
      */
-    public void create(final Long gameModelId, final Game game) {
+    public void publishAndCcreate(final Long gameModelId, final Game game) throws IOException {
+        GameModel gm = gameModelFacade.duplicate(gameModelId);
+        gm.setName(gameModelFacade.find(gameModelId).getName());// @HACK Set name back to the original
+        gm.setTemplate(false);
+        this.create(gm.getId(), game);
+    }
 
+    public void create(final Long gameModelId, final Game game) {
         if (this.findByToken(game.getToken()) != null) {
             //  || teamFacade.findByToken(game.getToken()) != null) {
             throw new WegasException("This token is already in use.");
@@ -86,7 +93,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         final User currentUser = userFacade.getCurrentUser();
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
-        GameModel gameModel = gameModelEntityFacade.find(gameModelId);
+        GameModel gameModel = gameModelFacade.find(gameModelId);
         gameModel.addGame(game);
         em.flush();                                                             // To retrieve game id
 

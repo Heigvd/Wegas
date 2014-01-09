@@ -230,6 +230,7 @@ body > .wegas-pageloader > .wegas-pageloader-content{
 .wegas-page-editor .page-node> ul.yui3-treenode-content{
     margin-left:0px;
 }
-.wegas-page-editor .page-node> ul.yui3-treenode-content>li>div.content-header{
+.wegas-page-editor .page-node> ul.yui3-treenode-content>li>div.content-header,
+.wegas-page-editor .page-node> ul.yui3-treeleaf-content>div.content-header{
     display:none;
 }

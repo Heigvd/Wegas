@@ -16,12 +16,12 @@ YUI.add('wegas-entity', function(Y) {
             BUTTON = "Button", TEXT = "text", HTML = "html", GROUP = "group",
             Wegas = Y.namespace("Wegas"), Base = Y.Base, Entity,
             IDATTRDEF = {
-                type: STRING,
-                optional: true,                                                 // The id is optional for entites that have not been persisted
-                _inputex: {
-                    _type: HIDDEN
-                }
-            };
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
 
     /**
      * @class Entity is used to represent db objects
@@ -309,9 +309,6 @@ YUI.add('wegas-entity', function(Y) {
                     _type: HIDDEN
                 }
             },
-            gameModel: {//                                                      // Extended-view only
-                "transient": true
-            },
             name: {
                 type: STRING
             },
@@ -326,15 +323,26 @@ YUI.add('wegas-entity', function(Y) {
             createdBy: {
                 "transient": true
             },
-            teams: {
-                "transient": true,
-                value: []
-            },
             createdTime: {
                 "transient": true
             },
             updatedTime: {
                 "transient": true
+            },
+            gameModel: {//                                                      // Extended view only
+                "transient": true
+            },
+            gameModelName: {
+                "transient": true
+            },
+            properties: {
+                "transient": true,
+                value: {},
+                getter: Wegas.persistence.GameModel.ATTRS.properties.getter
+            },
+            teams: {
+                "transient": true,
+                value: []
             },
             visibility: {
                 "transient": true,
@@ -471,7 +479,7 @@ YUI.add('wegas-entity', function(Y) {
                     }, {
                         fn: "OpenTabActionThi",
                         cfg: {
-                            label: "Teams",
+                            label: "Players",
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "TeamTreeView"
