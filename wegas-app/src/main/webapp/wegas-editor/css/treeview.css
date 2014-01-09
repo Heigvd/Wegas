@@ -148,8 +148,14 @@
     opacity: 1;
 }
 .selected > div > .yui3-treeleaf-content-header,
-.selected > .yui3-treenode-content-header{
+.selected > .yui3-treenode-content-header,
+.yui3-treeview-multiselect .sub-fully-selected > .yui3-treenode-content-header{
     background-color:#EDEDED;
+    box-shadow: 0px 0px 1px #6D6D6D;
+    font-weight: bolder;
+}
+.yui3-treeview-multiselect .sub-partially-selected > .yui3-treenode-content-header{
+    background-color: transparent;
     box-shadow: 0px 0px 1px #6D6D6D;
     font-weight: bolder;
 }
@@ -184,5 +190,3 @@
     padding-bottom: 0;
     max-height: 0;
 }
-
-
