@@ -35,7 +35,7 @@ YUI.add('wegas-cssloader', function(Y) {
 
             for (i = 0; i < customSheets.length; i += 1) {                      // Load sheet reference provided through game model properties
 
-                this.loadSheet("custom" + i, Wegas.app.get('base') + customSheets[i] + '?id=' + Wegas.Helper.genId());
+                this.loadSheet("custom" + i, Wegas.app.get('base') + Y.Lang.trim(customSheets[i]) + '?id=' + Wegas.Helper.genId());
             }
 
             return;
