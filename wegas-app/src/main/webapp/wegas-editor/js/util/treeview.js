@@ -20,7 +20,8 @@ YUI.add('treeview', function(Y) {
             classNames = {
                 loading: getClassName(TREENODE, "loading"),
                 collapsed: getClassName(TREENODE, "collapsed"),
-                visibleRightWidget: getClassName(TREEVIEW, "visible-right")
+                visibleRightWidget: getClassName(TREEVIEW, "visible-right"),
+                multiSelect: getClassName(TREEVIEW, "multiselect")
             },
     RIGHTWIDGETSETTERFN = function(v) {
         var rightWidget = this.get("rightWidget"),
@@ -71,11 +72,24 @@ YUI.add('treeview', function(Y) {
          * @function
          * @returns {undefined}
          */
+        initializer: function() {
+            this.publish("nodeClick", {
+                defaultFn: function(e) {
+                    this.deselectAll();
+                    e.node.set("selected", 2);
+                }
+            });
+        },
+        /**
+         * Lifecycle method
+         * @private
+         * @function
+         * @returns {undefined}
+         */
         bindUI: function() {
             this.on("*:click", function(e) {
                 if (e.node && e.node !== this) {
-                    this.deselectAll();
-                    e.node.set("selected", 2);
+                    this.fire("nodeClick", {node: e.node, domEvent: e.domEvent});
                 }
             });
         },
@@ -157,7 +171,8 @@ YUI.add('treeview', function(Y) {
                 value: "TreeLeaf"
             },
             multiple: {
-                value: false
+                value: true,
+                readOnly: true
             }
         }
     });
@@ -237,24 +252,6 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            /*
-             * Force event firing for an exisiting and none 0 attribute
-             * "selected" on initialization
-             */
-            this.onceAfter("renderedChange", function() {
-                var val = this.get("selected");
-                if (val && !this.get("selection")) {                            /* check for last selected node */
-                    this.set("selected", 0);
-                    this.set("selected", val);
-                }
-            });
-            this.after("selectedChange", function(e) {
-                if (e.newVal && !e.target.get("selection")) {
-                    e.target.get(BOUNDING_BOX).addClass("selected");
-                } else if (e.target.get(BOUNDING_BOX)._node) {
-                    e.target.get(BOUNDING_BOX).removeClass("selected");
-                }
-            });
             this.toggleNode.on("click", function(e) {
                 e.stopPropagation();
                 this.fire("toggleClick", {
@@ -442,6 +439,23 @@ YUI.add('treeview', function(Y) {
                     return v;
                 }
             },
+            selected: {
+                setter: function(v) {
+                    if (this.get(BOUNDING_BOX)._node) {
+                        this.get(BOUNDING_BOX).removeClass("selected")
+                                .removeClass("sub-partially-selected")
+                                .removeClass("sub-fully-selected");
+                    }
+                    if (v && !this.get("selection")) {
+                        this.get(BOUNDING_BOX).addClass("selected");
+                    } else if (v === 2) {
+                        this.get(BOUNDING_BOX).addClass("sub-partially-selected");
+                    } else if (v === 1) {
+                        this.get(BOUNDING_BOX).addClass("sub-fully-selected");
+                    }
+                    return v;
+                }
+            },
             tooltip: {
                 value: "",
                 validator: Y.Lang.isString,
@@ -504,9 +518,6 @@ YUI.add('treeview', function(Y) {
             },
             defaultChildType: {
                 value: "TreeLeaf"
-            },
-            multiple: {
-                value: false
             },
             data: {}
         }
@@ -582,20 +593,6 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.onceAfter("renderedChange", function(e) {
-                var val = this.get("selected");
-                if (val) {
-                    this.set("selected", 0);
-                    this.set("selected", val);
-                }
-            });
-            this.after("selectedChange", function(e) {
-                if (e.newVal && !e.target.get("selection")) {
-                    e.target.get(BOUNDING_BOX).addClass("selected");
-                } else {
-                    e.target.get(BOUNDING_BOX).removeClass("selected");
-                }
-            });
             this.events.fullClick = this.get(CONTENT_BOX).one("." + this.getClassName("content", "header")).on("click", function(e) {
                 var node = e.target;
                 e.stopImmediatePropagation();
@@ -669,6 +666,16 @@ YUI.add('treeview', function(Y) {
                     return this.labelNode.getContent();
                 }
             },
+            selected: {
+                setter: function(v) {
+                    if (v) {
+                        this.get(BOUNDING_BOX).addClass("selected");
+                    } else {
+                        this.get(BOUNDING_BOX).removeClass("selected");
+                    }
+                    return v;
+                }
+            },
             tooltip: {
                 value: "",
                 validator: Y.Lang.isString,
@@ -740,4 +747,55 @@ YUI.add('treeview', function(Y) {
             data: {}
         }
     });
+    /**
+     * TreeView plugin, nodes will react like checkboxes.
+     * Toggle selection on click
+     */
+    Y.Plugin.CheckBoxTV = Y.Base.create("CheckBoxTv", Y.Plugin.Base, [], {
+        initializer: function() {
+            this.onHostEvent("nodeClick", function(e) {
+                e.preventDefault();
+                if (e.node && e.node !== this) {
+                    if (e.node.get("selected")) {
+                        e.node.set("selected", 0);
+                    } else {
+                        e.node.set("selected", 1);
+                    }
+                }
+            }, this.get("host"));
+            this.get("host").get(BOUNDING_BOX).addClass(classNames.multiSelect);
+        },
+        destructor: function() {
+            this.get("host").get(BOUNDING_BOX).removeClass(classNames.multiSelect);
+        }
+    }, {
+        NS: "treeviewselect"
+    });
+    /**
+     * Treeview plugin, hold CTRL key to select multiple nodes
+     */
+    Y.Plugin.CTRLSelectTV = Y.Base.create("CTRLSelectTV", Y.Plugin.Base, [], {
+        initializer: function() {
+            this.onHostEvent("nodeClick", function(e) {
+                e.preventDefault();
+                if (!e.domEvent.ctrlKey) {
+                    this.deselectAll();
+                }
+                if (e.node && e.node !== this) {
+                    if (e.node.get("selected")) {
+                        e.node.set("selected", 0);
+                    } else {
+                        e.node.set("selected", 1);
+                    }
+                }
+            }, this.get("host"));
+            this.get("host").get(BOUNDING_BOX).addClass(classNames.multiSelect);
+        },
+        destructor: function() {
+            this.get("host").get(BOUNDING_BOX).removeClass(classNames.multiSelect);
+        }
+    }, {
+        NS: "treeviewselect"
+    });
+
 });
