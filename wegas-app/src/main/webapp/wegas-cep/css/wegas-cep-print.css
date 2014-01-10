@@ -1,0 +1,34 @@
+@media print {
+    .header, .editor-scenarist-button, .wegas-layout-hd,
+    .wegas-toolbar, .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview-content .yui3-tabview-list {
+        display: none;
+    }
+
+    #centerTabView .yui3-tabview-content {
+        margin-top: -35pt;
+    }
+
+    .wegas-mcqtabview-content .yui3-tabview-content .yui3-tabview-panel .yui3-tab-panel {
+        border: none;
+    }
+
+    .wegas-mcqtabview .content .title:before {
+        content: "Current selected question / action";
+        display: block;
+        margin-bottom: 20px;
+        font-size: 18pt;
+    }
+
+    .yui3-skin-sam .editor-tab>div>div>div>.panel-inner>.wegas-hastoolbar>.wegas-toolbar-sibling,
+    .yui3-skin-sam .wegas-layout-resizable>.wegas-layout-resizable-content>div>div>div>.yui3-tabview>.yui3-tabview-content>.yui3-tabview-panel{
+        overflow: initial !important;
+    }
+
+    .header > .wegas-list-content {
+        width: initial !important;
+    }
+
+    .body > .wegas-pageloader-content {
+        width: initial !important;
+    }
+}

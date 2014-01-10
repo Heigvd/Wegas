@@ -640,11 +640,15 @@ YUI().use(function(Y) {
                     ws_provides: "QuestionDescriptor"
                 },
                 'wegas-mcq-tabview': {
-                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcq-tabviewcss'],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcq-tabviewcss', 'wegas-mcq-printcss'],
                     ws_provides: "MCQTabView"
                 },
                 'wegas-mcq-tabviewcss': {
                     path: 'css/wegas-mcq-tabview-min.css',
+                    type: 'css'
+                },
+                'wegas-mcq-printcss': {
+                    path: 'css/wegas-mcq-print-min.css',
                     type: 'css'
                 }}
         },

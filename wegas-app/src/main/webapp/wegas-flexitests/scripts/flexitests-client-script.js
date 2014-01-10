@@ -84,10 +84,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             plugins: [{
                     fn: "WidgetMenu",
                     cfg: {
-                        menuCfg: {
-                            points: ["tl", "tr"]
-                        },
-                        event: "mouseenter",
                         children: [{
                                 type: "Button",
                                 label: "Text",
@@ -142,10 +138,6 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             plugins: [{
                     fn: "WidgetMenu",
                     cfg: {
-                        menuCfg: {
-                            points: ["tl", "tr"]
-                        },
-                        event: "mouseenter",
                         children: [{
                                 type: "Button",
                                 label: "Text",
