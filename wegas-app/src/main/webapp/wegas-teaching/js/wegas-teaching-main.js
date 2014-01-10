@@ -22,7 +22,6 @@ YUI.add("wegas-teaching-main", function(Y) {
         // Editors (modal form)
         arrowEditor: null,
         rectangleEditor: null,
-        editor: null,
         renderUI: function() {
             this.graphic = new Y.Graphic({
                 render: this.get(CONTENTBOX).one(".layer"),
@@ -63,8 +62,12 @@ YUI.add("wegas-teaching-main", function(Y) {
         destructor: function() {
             this.buttonGroup.destroy();
             this.arrowEditor.destroy();
-            this.editor.destroy();
             this.rectangleEditor.destroy();
+            try {
+                this.editor.destroy();
+            } catch (e) {
+                // @FIXME Editor do throw errors on destruction
+            }
         },
         showRectangleEditor: function(e, rectangle) {
             if (e.domEvent.target.hasClass("label"))                            // Clicks on label dont show editor
