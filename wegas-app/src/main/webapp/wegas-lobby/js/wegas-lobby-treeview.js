@@ -113,7 +113,6 @@ YUI.add('wegas-lobby-treeview', function(Y) {
 
                     switch (el.get(CLASS)) {
                         case 'Game':
-                            var createdBy = el.get("createdBy");
                             ret.push({
                                 //label: el.get(NAME),
                                 label: '<div class="yui3-g wegas-editor-treeview-table">'
@@ -122,7 +121,7 @@ YUI.add('wegas-lobby-treeview', function(Y) {
                                         + '<div class="yui3-u-1-3">'
                                         + Wegas.Helper.smartDate(el.get("createdTime"))
                                         + '</div>'
-                                        + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
+                                        + '<div class="yui3-u-1-3">' + (el.get("createdByName") || "undefined") + '</div>'
                                         + '<div class="yui3-u-1-3">' + el.get("gameModelName") + '</div></div>'
                                         + '</div>',
                                 data: {
@@ -153,8 +152,6 @@ YUI.add('wegas-lobby-treeview', function(Y) {
 
                     switch (el.get(CLASS)) {
                         case 'Game':
-                            var createdBy = el.get("createdBy");
-
                             ret.push({
                                 //label: el.get(NAME),
                                 label: '<div class="yui3-g wegas-editor-treeview-table">'
@@ -163,7 +160,7 @@ YUI.add('wegas-lobby-treeview', function(Y) {
                                         + '<div class="yui3-u-1-3">'
                                         + Wegas.Helper.smartDate(el.get("createdTime"))
                                         + '</div>'
-                                        + '<div class="yui3-u-1-3">' + ((createdBy) ? createdBy.get(NAME) : "undefined") + '</div>'
+                                        + '<div class="yui3-u-1-3">' + (el.get("createdByName") || "undefined") + '</div>'
                                         + '<div class="yui3-u-1-3">' + el.get("gameModelName") + '</div></div>'
                                         + '</div>',
                                 data: {

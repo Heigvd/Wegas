@@ -310,7 +310,7 @@ YUI.add('wegas-entity', function(Y) {
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
-            createdBy: {
+            createdByName: {
                 "transient": true
             },
             createdTime: {
@@ -349,10 +349,10 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 value: "ENROLMENTKEY",
                 choices: [{
-                        value: "URL",
+                        value: "OPEN",
                         label: "Public game"
                     }, {
-                        value: "OPEN",
+                        value: "URL",
                         label: "Anyone with the link can join"
                     }, {
                         value: "ENROLMENTKEY",

@@ -74,7 +74,7 @@ YUI.add('wegas-join', function(Y) {
                     : game.get("name") + "-" + (game.get("teams").length + 1);
 
             cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name"));// Set game name
-            cb.one(".subtitle").setHTML("Created by " + game.get("createdBy").get("name") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
+            cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
             cb.one(".description").setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")
                     .removeClass("wegas-loading-div");
 
@@ -361,7 +361,7 @@ YUI.add('wegas-join', function(Y) {
                     game = (entity instanceof Y.Wegas.persistence.Team) ? Y.Wegas.Facade.Game.cache.findById(entity.get("gameId"))
                     : entity;
 
-            cb.one(".subtitle").setHTML("Created by " + game.get("createdBy").get("name") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
+            cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
 
             Y.Wegas.Facade.GameModel.cache.getWithView(game, "Extended", {/// Get the game model full description
                 on: {
