@@ -114,7 +114,8 @@ YUI.add('wegas-inbox', function(Y) {
 
             this.isSyncing = true;
 
-            this.tabView.removeAll();
+            this.tabView.destroyAll();
+            
             for (i = messages.length - 1; i >= 0; i -= 1) {
                 msg = messages[i];
                 from = msg.get("from") || "<i>No sender</i>";

@@ -430,7 +430,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
             if (menuItems) {
                 e.domEvent.preventDefault();
-                this.menu.removeAll();
+                this.menu.destroyAll();
                 this.menu.add(menuItems);                                       // Populate the menu with the elements associated to the
                 this.menu.show();                                               // Move the right click position
                 this.menu.set("xy", [e.domEvent.pageX, e.domEvent.pageY]);

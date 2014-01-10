@@ -447,7 +447,7 @@ YUI.add('wegas-proggame-level', function(Y) {
 //                }
 //            });
             nodes = nodes.concat(Y.Object.values(packages));
-            treeView.treeView.removeAll();
+            treeView.treeView.destroyAll();
             treeView.treeView.add(nodes);
         },
         addEditorTab: function(label, code) {
@@ -592,10 +592,10 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             watches = genItems(watches).children;                               // Generate tree items and remove level 0 (do not show a tree node for the context)
 
-            Y.Array.each(watches, function(i) {                                // First level nodes are editables
-//                i.editable = false;
-            });
-            this.variableTreeView.removeAll();                                  // Update treeview (set("children", items) does not seem to work)
+            //Y.Array.each(watches, function(i) {                                 // First level nodes are editables
+            //    i.editable = false;
+            //});
+            this.variableTreeView.destroyAll();                                 // Update treeview (set("children", items) does not seem to work)
             this.variableTreeView.add(watches);
         },
         updateUI: function(object, el) {

@@ -78,7 +78,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll(),
                     treeNodes = this.genTreeViewElements(entities);
 
-            this.treeView.removeAll();                                          // @FIXME is this enough, or should we destroy the nodes
+            this.treeView.destroyAll();                                         // @FIXME is this enough, or should we destroy the nodes
             cb.all(".wegas-smallmessage").remove();
 
             if (treeNodes.length === 0) {
@@ -211,7 +211,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             if (treeNodes.length === 0) {
                 cb.one(".message").setHTML('<center><em><br />' + this.get("emptyMessage") + '<br /><br /></em></center');
             }
-            this.treeView.removeAll();
+            this.treeView.destroyAll();
             this.treeView.add(treeNodes);
             this.treeView.syncUI();
 
@@ -337,7 +337,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     host = this.get(HOST);
 
             if (menuItems) {
-                host.toolbar.removeAll();
+                host.toolbar.destroyAll();
                 host.toolbar.add(menuItems);                                    // Populate the menu with the elements associated to the
 
                 if (this.get("autoClick")) {
@@ -428,7 +428,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
 
             if (menuItems) {
                 e.domEvent.preventDefault();
-                this.menu.removeAll();
+                this.menu.destroyAll();
                 this.menu.add(menuItems);                                       // Populate the menu with the elements associated to the
                 this.menu.show();                                               // Move the right click position
                 this.menu.set("xy", [e.domEvent.pageX, e.domEvent.pageY]);

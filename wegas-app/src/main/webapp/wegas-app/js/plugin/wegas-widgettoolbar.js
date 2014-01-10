@@ -104,6 +104,9 @@ YUI.add('wegas-widgettoolbar', function(Y) {
         removeAll: function() {
             return this.menuBar.removeAll();
         },
+        destroyAll: function() {
+            return this.menuBar.destroyAll();
+        },
         /**
          * @function
          * @private

@@ -65,11 +65,6 @@ YUI.add('wegas-tabview', function(Y) {
                 this.handlers[k].detach();
             }
         },
-        destroyAll: function() {
-            this.removeAll().each(function(w) {
-                w.destroy();
-            });
-        },
         /**
          * Override WidgetParent method. Otherwise when a sibling of the tabview is
          * selected (with selection level 2), it's children tab are unselected
@@ -179,11 +174,10 @@ YUI.add('wegas-tabview', function(Y) {
         findTabAndLoadWidget: function(id, tabViewSelector, tabCfg, widgetCfg, fn) {
             var nTab = TabView.createTab(id, tabViewSelector, tabCfg);          // create a new one
 
-            nTab.removeAll().each(function(i) {
-                i.destroy();                                                    // Empty it
-            });
-            nTab.get("panelNode").one("div").empty();                           // @fixme since the above method is not enough
+            nTab.destroyAll();                                                  // Empty it
+            //nTab.get("panelNode").one("div").empty();                         // @FIXME since the above method is not enough
             nTab.load(widgetCfg, fn);                                           // Load target widget
+            
             return nTab;
         }
 

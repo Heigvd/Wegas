@@ -191,21 +191,18 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             jp.setSuspendDrawing(true);
             this.stateId = 1;
             this.nodes = {};
-            states = this.removeAll();
-            states.each(function(item) {
-                item.destroy();
-            });
+            states = this.destroyAll();
             if (this.get("entity")) {
                 for (state in sm.get("states")) {
                     this.addState(sm.get("states")[state].get("editorPosition") ? sm.get("states")[state].get("editorPosition").get("x") || 30 : 30, sm.get("states")[state].get("editorPosition") ? sm.get("states")[state].get("editorPosition").get("y") || 30 : 30, parseInt(state), sm.get("states")[state]);
                 }
 
                 this.each(function() {
-//                    try {
+                // try {
                     this.makeAllOutgoingTransitions();
-//                    } catch (e) {
-//                        Y.error("Failed creating transition", e, "Y.Wegas.StateMachineViewer");
-//                    }
+                //} catch (e) {
+                //    Y.error("Failed creating transition", e, "Y.Wegas.StateMachineViewer");
+                //}
                 });
             }
             this.highlightUnusedStates();
