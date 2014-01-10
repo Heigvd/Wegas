@@ -95,7 +95,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
-        this.reset(gameModel);                                                     // Reset the game model
+        this.reset(gameModel);                                                  // Reset the game model
     }
 
     @Override
@@ -201,6 +201,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     }
 
     public void reset(final GameModel gameModel) {
+        em.flush();
         gameModel.propagateDefaultInstance(true);                               // Propagate default instances
         em.flush();
         em.refresh(gameModel);
