@@ -47,7 +47,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }
         },
         bindUI: function() {
-            this.on("treenode:nodeExpanded", function(e) {                      // Change the current page whenever a page node is expanded
+            this.on(["treenode:click", "treenode:nodeExpanded", "treeleaf:click"], function(e) {// Change the current page whenever a page node is expanded
                 if (e.node.get("data.page")) {
                     this.changePage(e.node.get("data.page"));
                 }
