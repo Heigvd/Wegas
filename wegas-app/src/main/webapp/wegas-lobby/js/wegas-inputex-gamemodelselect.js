@@ -27,21 +27,21 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
 
     Y.extend(GameModelSelect, Y.inputEx.SelectField, {
         setOptions: function(options) {
-            var i, gameModels = Y.Wegas.Facade.GameModel.cache.findAll();
+            var gameModels = Y.Wegas.Facade.GameModel.cache.findAll();
 
             options.choices = [];
             options.filters = options.filters || {};
 
-            for (i = 0; i < gameModels.length; i += 1) {
+            Y.Array.each(gameModels, function(gm) {
                 if (Y.Object.some(options.filters, function(value, key) {
-                    return this.get(key) === value;
-                }, gameModels[i])) {                                            // If the game model does not match any filter
+                    return gm.get(key) === value;
+                })) {                                                           // If the game model does not match any filter
                     options.choices.push({// add it to available games
-                        label: gameModels[i].get("name"),
-                        value: gameModels[i].get("id")
+                        label: gm.get("name"),
+                        value: gm.get("id")
                     });
                 }
-            }
+            });
             GameModelSelect.superclass.setOptions.call(this, options);
         },
         setValue: function(value, fireUpdateEvent) {
@@ -52,7 +52,6 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             GameModelSelect.superclass.setValue.call(this, value, fireUpdateEvent);
         }
     });
-
     Y.inputEx.registerType("gamemodelselect", GameModelSelect);                 // Register this class
     Y.namespace("inputEx.Wegas").GameModelSelect = GameModelSelect;
 
@@ -82,8 +81,8 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                         value: "GameEnrolmentKey"
                     }, {
                         name: "key",
-//                        type: "string"
                         type: "uneditable"
+                                //type: "string"
                     }, {
                         name: "used",
                         value: false,
@@ -93,15 +92,22 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
 
             EnrolementKeyList.superclass.setOptions.call(this, options);
         },
-        renderComponent: function() {
-            EnrolementKeyList.superclass.renderComponent.call(this);
-            var i;
-            (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true);
+        addElement: function(value) {
+            var subfield = EnrolementKeyList.superclass.addElement.call(this, value),
+                    node = new Y.Node(subfield.divEl);
 
-            for (i = 0; i < this.subFields.length; i++) {
-                this.subFields[i].disable();
-                (new Y.Node(this.subFields[i])).all(".inputEx-ListField-delButton").remove(true);
+            node.all(".inputEx-Field").each(function(n) {
+                n.setContent("<span>" + n.getContent() + "</span>,&nbsp;");
+            });
+            (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
+            (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyle("float", "left");
+
+            if (value.used) {
+                node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens
+                //f.disable();
+                //(new Y.Node(this.subFields[i].divEl)).all("input").setStyle("textDecoration", "line-through");
             }
+            return subfield;
         },
         /**
          * Add a new element to the list and fire updated event
@@ -110,39 +116,21 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
          */
         onAddButton: function(e) {
             e.halt();
-            var i, total = prompt("How many key do you want to generate?"),
+            var i, total = prompt("How many keys do you want to generate?"),
                     game = this.parentField.parentWidget.get("entity"),
-                    //teamCount = game.get("teams").length,
-                    teamCount = Math.max(this.subFields.length, 1);
+                    //teamCount = game.get("teams").length+1,
+                    teamCount = this.subFields.length + 1,
+                    prefix = game.get("name").toLowerCase().replace(" ", "-");
 
-            //if (lang.isNumber(this.options.maxItems) && this.subFields.length >= this.options.maxItems) {// Prevent adding a new field if already at maxItems
-            //    return;
-            //}
-
-            for (i = 0; i < total; i += 1) {
-                var e = this.addElement({
-                    key: game.get("name") + "-" + teamCount
-                });                                                             // Add a field
-                (new Y.Node(e.divEl)).all(".inputEx-Field").each(function(n) {
-                    n.setContent("<span>" + n.getContent() + "</span>,&nbsp;");
-                });
+            for (i = 0; i < total; i += 1) {                                    // Add key fields
+                this.addElement({
+                    key: prefix + "-" + teamCount
+                });                                                             
                 teamCount += 1;
-            }
-            (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true);
-            (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyles({
-                "float": "left"
-            });
-
-            //for (i = 0; i < this.subFields.length; i++) {
-            //    this.subFields[i].disable();
-            //}
-            for (i = 0; i < 2; i += 1) {
-                (new Y.Node(this.subFields[i].divEl)).all("input").setStyle("textDecoration", "line-through");
-                (new Y.Node(this.subFields[i].divEl)).all(".inputEx-Field span").setStyle("textDecoration", "line-through");
             }
             this.fireUpdatedEvt();                                              // Fire updated !
         }
     });
-
-    Y.inputEx.registerType("enrolementkeylist", EnrolementKeyList);                 // Register this class
+    Y.inputEx.registerType("enrolementkeylist", EnrolementKeyList);             // Register this class
+    
 });
