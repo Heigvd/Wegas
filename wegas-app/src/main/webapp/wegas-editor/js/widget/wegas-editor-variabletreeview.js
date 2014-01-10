@@ -328,7 +328,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
                     return;
                 }
-                node.removeAll();
+                node.destroyAll();
                 node.set("loading", true);
 
                 Wegas.Facade.VariableDescriptor.sendRequest({
@@ -357,7 +357,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 }
 
                 if (menuItems[0] && menuItems[0].label.indexOf("New") > -1) {
-                    //host.toolbar.removeAll();
+                    //host.toolbar.destroyAll();
                     host.toolbar.item(host.toolbar.size() - 1).destroy();
                     host.toolbar.add(menuItems[0]);                             // Populate the menu with the elements associated to the
                     menuItems.splice(0, 1);

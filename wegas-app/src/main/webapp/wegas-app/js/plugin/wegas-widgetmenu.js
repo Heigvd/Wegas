@@ -45,7 +45,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
 
             this.after("childrenChange", function() {                           // On children attribute update
                 if (this.menu) {
-                    this.menu.removeAll();
+                    this.menu.destroyAll();
                     this.menu.add(this.get("children"));                        // update menu items
                 }
             });

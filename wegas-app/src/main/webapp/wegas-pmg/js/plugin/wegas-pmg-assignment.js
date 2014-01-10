@@ -133,7 +133,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
 
                 this.handlers.assignTask = this.menu.on("button:click", this.onTaskMenuClick, this);
             }
-            this.menu.removeAll();
+            this.menu.destroyAll();
             tasks = this.getTasks(resourceDesc);
             if (!tasks || tasks.lenght <= 0) {
                 return;

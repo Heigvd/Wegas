@@ -393,25 +393,6 @@ YUI.add('treeview', function(Y) {
             });
         },
         /**
-         * Destroy subtree
-         * @public
-         * @function
-         * @returns {undefined}
-         */
-        destroyChildren: function() {
-            this.removeAll().each(this.destroyChild, this);
-        },
-        /**
-         * Destroy a specific child and it's subchild
-         * @private
-         * @function
-         * @param {TreeNode|TreeLeaf} item to destroy
-         * @returns {undefined}
-         */
-        destroyChild: function(item) {
-            item.destroy();
-        },
-        /**
          * @private
          * @override Y.WidgetParent.prototype._add
          * @param {type} child

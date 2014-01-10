@@ -582,6 +582,19 @@ YUI.add("wegas-widget", function(Y) {
         }
         return baseCreateChild.call(this, config);                              //reroute
     };
+    /**
+     * 
+     */
+    Y.WidgetParent.prototype.destroyAll = function() {
+        Y.soon(Y.bind(function(widgets) {
+            widgets.each(function() {
+                this.destroy();
+            });
+        }, this, this.removeAll()));
+        //this.removeAll().each(function() {
+        //    this.destroy();
+        //});
+    };
 
 
     /** @Hack, use method defined in wegas-datasource.js */

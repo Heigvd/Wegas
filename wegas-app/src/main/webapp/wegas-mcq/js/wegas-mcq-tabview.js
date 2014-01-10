@@ -110,7 +110,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     lastSelection = (selectedTab) ? selectedTab.get('index') : 0;
 
             this.isRemovingTabs = true;
-            this.tabView.removeAll();                                           // Empty the tabview
+            this.tabView.destroyAll();                                          // Empty the tabview
             this.isRemovingTabs = false;
 
             if (this.gallery) {

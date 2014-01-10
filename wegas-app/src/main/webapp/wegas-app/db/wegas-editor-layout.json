@@ -18,58 +18,6 @@
                     }]
             }, {
                 "type": "Button",
-                "label": "Admin",
-                "cssClass": "editor-administrator-button",
-                "plugins": [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "children": [{
-                                    "type": "OpenTabButton",
-                                    "label": "Users",
-                                    "wchildren": [{
-                                            "type": "EditorTreeView",
-                                            "dataSource": "User",
-                                            "request": {
-                                                "request": "/?view=Public"
-                                            },
-                                            "plugins": [{
-                                                    "fn": "WidgetToolbar",
-                                                    "cfg": {
-                                                        "children": [{
-                                                                "type": "NewEntityButton",
-                                                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                                                "targetClass": "JpaAccount",
-                                                                "dataSource": "User"
-                                                            }]
-                                                    }
-                                                }]
-                                        }]
-                                }, {
-                                    "type": "OpenTabButton",
-                                    "label": "Groups",
-                                    "wchildren": [{
-                                            "type": "EditorTreeView",
-                                            "dataSource": "Role",
-                                            "request": {
-                                                "request": "/"
-                                            },
-                                            "plugins": [{
-                                                    "fn": "WidgetToolbar",
-                                                    "cfg": {
-                                                        "children": [{
-                                                                "type": "NewEntityButton",
-                                                                "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
-                                                                "targetClass": "Role",
-                                                                "dataSource": "Role"
-                                                            }]
-                                                    }
-                                                }]
-                                        }]
-                                }]
-                        }
-                    }]
-            }, {
-                "type": "Button",
                 "label": "Tools",
                 "cssClass": "editor-scenarist-button",
                 "plugins": [{

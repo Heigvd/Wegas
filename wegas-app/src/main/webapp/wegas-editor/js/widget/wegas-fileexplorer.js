@@ -461,9 +461,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             if (this.editNode) {
                 this.editNode.set("rightWidget", null);
             }
-            e.cfg.node.removeAll().each(function(item) {
-                item.destroy();
-            });
+            e.cfg.node.destroyAll();
             for (i = 0; i < e.response.results.length; i += 1) {
                 e.cfg.node.add(this.createNode(e.response.results[i]));
             }

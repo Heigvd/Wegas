@@ -109,9 +109,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         buildWidgetTree: function(node) {
             var widget = this.get("pageLoader").get("widget");
             this.cleanAllChildren();
-            node.removeAll().each(function() {
-                Y.soon(Y.bind(this.destroy, this));
-            });
+            node.destroyAll();
             this.buildSubTree(node, widget);
             node.expand(false);
         },
@@ -159,7 +157,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 }
                 node.set("selected", 2);
                 for (i in twState) {
-                    if (twState.hasOwnProperty(i)) {                    // don't care about first level.
+                    if (twState.hasOwnProperty(i)) {                            // don't care about first level.
                         delete twState[i].expanded;
                     }
                 }
@@ -168,9 +166,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             };
 
             this.showOverlay();
-            this.treeView.removeAll().each(function() {                         // @FIXM destroy or removeAll should be enough on treeview??
-                Y.soon(Y.bind(this.destroy, this));
-            });
+            this.treeView.destroyAll();
+            
             for (i in index) {
                 if (index.hasOwnProperty(i)) {
                     node = new Y.TreeNode({

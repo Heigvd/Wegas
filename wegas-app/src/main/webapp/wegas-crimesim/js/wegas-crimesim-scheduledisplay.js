@@ -88,8 +88,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                         startTime = +e.target.ancestor("td").getAttribute("data-startTime"),
                         question = Y.Wegas.Facade.VariableDescriptor.cache.findById(questionId);
 
-                this.menu.removeAll();                                          // Populate the menu
-                this.menu.add(this.genMenuItems(question, startTime));
+                this.menu.destroyAll();
+                this.menu.add(this.genMenuItems(question, startTime));          // Populate the menu
                 this.menu.attachTo(e.target);                                   // Display the menu button next to the arrow
             }, ".schedule-available .icon", this);
 
