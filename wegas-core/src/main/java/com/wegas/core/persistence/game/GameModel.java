@@ -553,6 +553,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the createdBy
      */
+    @JsonIgnore
     public User getCreatedBy() {
         return createdBy;
     }
