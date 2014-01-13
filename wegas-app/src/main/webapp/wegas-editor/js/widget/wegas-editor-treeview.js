@@ -101,7 +101,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
          * @private
          */
         genTreeViewElements: function(elements) {
-            return Y.Array.map(elements, this.genTreeViewElement, this);
+            return Y.Array.filter(Y.Array.map(elements, this.genTreeViewElement, this), Y.Lang.isObject);
         },
         genTreeViewElement: function(entity) {
             var children = entity.get("players");                               // @hack so it works for team
@@ -273,8 +273,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 case 'Team':
                     var children = this.genTreeViewElements(entity.get("players")),
                             expanded = Y.Array.find(children, function(p) {
-                        return p.selected;
-                    }) || !collapsed;
+                                return p.selected;
+                            }) || !collapsed;
 
                     return {
                         type: 'TreeNode',
@@ -330,10 +330,20 @@ YUI.add('wegas-editor-treeview', function(Y) {
      */
     Plugin.EditorTVToolbarMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
-            this.onHostEvent(["treenode:click", "treeleaf:click"], this.onTreeViewClick);
+            this.afterHostEvent("treeview:selectionChange", function(e) {
+                if (e.prevVal === e.newVal || 
+                        (e.prevVal && e.newVal && e.prevVal._items === e.newVal._items)) {
+                    return;
+                }
+                this.onTreeViewSelection(e);
+            }, this);
         },
-        onTreeViewClick: function(e) {
-            var menuItems = this.getMenuItems(e.node.get("data")),
+        onTreeViewSelection: function(e) {
+            if (!e.target.getSelection()) {
+                //deselect
+                return;
+            }
+            var menuItems = this.getMenuItems(e.target.getSelection().item(0).get("data")),
                     host = this.get(HOST);
 
             if (menuItems) {

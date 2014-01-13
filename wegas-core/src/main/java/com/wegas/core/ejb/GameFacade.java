@@ -81,10 +81,14 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         GameModel gm = gameModelFacade.duplicate(gameModelId);
         gm.setName(gameModelFacade.find(gameModelId).getName());// @HACK Set name back to the original
         gm.setTemplate(false);
-        this.create(gm.getId(), game);
+        this.create(gm, game);
     }
 
     public void create(final Long gameModelId, final Game game) {
+        this.create(gameModelFacade.find(gameModelId), game);
+    }
+
+    public void create(final GameModel gameModel, final Game game) {
         if (this.findByToken(game.getToken()) != null) {
             //  || teamFacade.findByToken(game.getToken()) != null) {
             throw new WegasException("This token is already in use.");
@@ -92,10 +96,9 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
         final User currentUser = userFacade.getCurrentUser();
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
-
-        GameModel gameModel = gameModelFacade.find(gameModelId);
         gameModel.addGame(game);
-        em.flush();                                                             // To retrieve game id
+        
+        gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
         userFacade.addAccountPermission(currentUser.getMainAccount(),
                 "Game:View,Edit:g" + game.getId());                             // Grant permission to creator
@@ -121,6 +124,9 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     @Override
     public void remove(final Game entity) {
+        if (entity.getGameModel().getGames().size() <= 1) {
+            gameModelFacade.remove(entity.getGameModel());
+        }
         for (Team t : entity.getTeams()) {
             teamFacade.remove(t);
         }

@@ -215,24 +215,26 @@ html, .editor-preview .layout > div {
     background: url(../../wegas-proggame/images/proggame-right-level.png) no-repeat;
     height: 699px;
 }
-
 .game-area {
     /*background: url(../../wegas-proggame/images/proggame-right.png) no-repeat;*/
     height: 699px;
 }
 
+/* Inbox styles */
 .wegas-inbox .horizontal-tabview {
     margin-left: 15px;
-    height: 641px;
+    height: 654px;
     overflow: auto;
-    width: 911px;
+    width: 906px;
+    margin: 0;
 }
-
-.wegas-inbox ul {
-    background-color: white;
+.wegas-inbox .yui3-tab-label ,
+.wegas-inbox .yui3-tab-selected .yui3-tab-label,
+.wegas-inbox .yui3-tab-selected .yui3-tab-label:focus,
+.wegas-inbox .yui3-tab-selected .yui3-tab-label:hover {
+    color: white;
 }
-
-/* play style */
+/* Play style */
 .ui h1 {
     /*font-family: Myriad Pro;*/
     font-size: 12pt;

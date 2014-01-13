@@ -12,6 +12,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -40,6 +41,7 @@ public class GameEnrolmentKey extends AbstractEntity {
      */
     @ManyToOne(optional = false)
     @XmlTransient
+    @JsonIgnore
     private Game game;
 
     /**
@@ -61,6 +63,7 @@ public class GameEnrolmentKey extends AbstractEntity {
         if (this.getKey() == null || this.getKey().equals("")) {
             this.setKey(Helper.genToken(10));
         }
+        this.key = this.key.toLowerCase().replace(" ", "-");
     }
 
     /**
@@ -109,6 +112,7 @@ public class GameEnrolmentKey extends AbstractEntity {
     /**
      * @return the game
      */
+    @JsonIgnore
     public Game getGame() {
         return game;
     }
