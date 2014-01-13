@@ -153,19 +153,19 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     twState = this.treeView.saveState(),
                     pageFound = false,
                     buildSub = function(node, widget) {
-                this.buildSubTree(node, widget);
-                if (node.item(0) && node.item(0).expand) {
-                    node.item(0).expand(false);
-                }
-                node.set("selected", 2);
-                for (i in twState) {
-                    if (twState.hasOwnProperty(i)) {                    // don't care about first level.
-                        delete twState[i].expanded;
-                    }
-                }
-                this.treeView.applyState(twState);
-                this.hideOverlay();
-            };
+                        this.buildSubTree(node, widget);
+                        if (node.item(0) && node.item(0).expand) {
+                            node.item(0).expand(false);
+                        }
+                        //     node.set("selected", 2); // Will open edition on page load
+                        for (i in twState) {
+                            if (twState.hasOwnProperty(i)) {                    // don't care about first level.
+                                delete twState[i].expanded;
+                            }
+                        }
+                        this.treeView.applyState(twState);
+                        this.hideOverlay();
+                    };
 
             this.showOverlay();
             this.treeView.removeAll().each(function() {                         // @FIXM destroy or removeAll should be enough on treeview??
@@ -264,21 +264,25 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
     Y.namespace("Wegas").PageTreeview = PageTreeview;
 
     var PageTreeviewToolbarMenu = Y.Base.create("wegas-editor-page", Plugin.VariableTVToolbarMenu, [], {
-        onTreeViewClick: function(e) {
-            var data = e.node.get("data"),
-                    page = e.node.get("data.page"),
-                    widget = e.node.get("data.widget");
+        onTreeViewSelection: function(e) {
+            if (!e.target.getSelection()) {
+                //deselect
+                return;
+            }
+            var selection = e.target.getSelection().item(0), data = selection.get("data"),
+                    page = data.page,
+                    widget = data.widget;
 
             if (page) {
                 this.get(HOST).changePage(page);
                 //return;
-                widget = data.widget = e.node.item(0) && e.node.item(0).get("data.widget");// There may be no child widget when the widget is empty
+                widget = data.widget = selection.item(0) && selection.item(0).get("data.widget");// There may be no child widget when the widget is empty
             }
-            if (widget) {
+            if (widget && !widget.get("destroyed")) {
                 widget.get(BOUNDING_BOX).scrollIntoView();
+                PageTreeviewToolbarMenu.superclass.onTreeViewSelection.call(this, e);
             }
 
-            PageTreeviewToolbarMenu.superclass.onTreeViewClick.call(this, e);
         },
         getMenuItems: function(data, node) {
             var menuItems = PageTreeviewToolbarMenu.superclass.getMenuItems.call(this, data),
