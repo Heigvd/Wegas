@@ -92,6 +92,10 @@ YUI.add('treeview', function(Y) {
                     this.fire("nodeClick", {node: e.node, domEvent: e.domEvent});
                 }
             });
+            /* Selection is not updated if a child with selected attribute is added, force it. */
+            this.after("*:addChild", function(e) {
+                e.target._set("selection", e.target.get("selection"));
+            });
         },
         /**
          * Lifecycle method
@@ -129,6 +133,15 @@ YUI.add('treeview', function(Y) {
                     item.collapseAll();
                 }
             });
+        },
+        getSelection: function() {
+            var selection = this.get("selection");
+            if (selection) {
+                while (selection.item(0).get("selection")) {
+                    selection = selection.item(0).get("selection");
+                }
+            }
+            return selection;
         },
         saveState: function() {
             var State = {}, getChildsState = function(o, item, index) {
@@ -202,7 +215,6 @@ YUI.add('treeview', function(Y) {
          * @function
          */
         initializer: function() {
-            this._childStore = [];
             this.publish("toggleClick", {
                 bubbles: false,
                 broadcast: false,
@@ -284,10 +296,11 @@ YUI.add('treeview', function(Y) {
                 e.stopPropagation();
             });
             this.before("collapsedChange", function(e) {
+                var renderTo = this._childrenContainer;
                 if (!e.newVal && e.target === this) {
-                    while (this._childStore.length) {
-                        Y.WidgetParent.prototype._add.apply(this, this._childStore.shift());
-                    }
+                    this.each(function(child) {
+                        child.render(renderTo);
+                    });
                 }
             });
             this.after("collapsedChange", function(e) {
@@ -412,18 +425,32 @@ YUI.add('treeview', function(Y) {
             item.destroy();
         },
         /**
+         * Only render Child on opened tree
          * @private
-         * @override Y.WidgetParent.prototype._add
+         * @override Y.WidgetParent.prototype._uiAddChild
          * @param {type} child
-         * @param {type} index
-         * @return {Array} description
+         * @param {type} parentNode
          */
-        _add: function(child, index) {
-            if (this.get("collapsed")) {
-                this._childStore.push([child, index]);
-                return null;
+        _uiAddChild: function(child, parentNode) {
+            if (!this.get("collapsed")) {
+                Y.WidgetParent.prototype._uiAddChild.call(this, child, parentNode);
             }
-            return Y.WidgetParent.prototype._add.call(this, child, index);
+        },
+        /**
+         * Only render Children on opened tree
+         * @private
+         * @override Y.WidgetParent.prototype._renderChildren
+         */
+        _renderChildren: function() {
+            var renderTo = this._childrenContainer || this.get("contentBox");
+
+            this._childrenContainer = renderTo;
+            if (!this.get("collapsed")) {
+                this.each(function(child) {
+                    child.render(renderTo);
+                });
+            }
+
         }
     }, {
         /** @lends Y.TreeNode */
@@ -646,8 +673,8 @@ YUI.add('treeview', function(Y) {
                 } catch (e) {
                 }
             }
-            this.iconNode.remove(true);
-            this.labelNode.remove(true);
+//            this.iconNode.remove(true);
+//            this.labelNode.remove(true);
         }
     }, {
         /** @lends Y.TreeLeaf */

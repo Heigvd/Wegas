@@ -134,7 +134,7 @@ YUI.add("treeview-sortable", function(Y) {
                 //this.sortable.delegate.dd.after('drag:over', this.sync, this);
             });
             this.afterHostMethod("syncUI", this.sync);
-            this.afterHostEvent("*:addChild", this.sync);                       //@fixme : addChild is frequent smooth it (Timeout?)
+            this.afterHostEvent(["*:collapsedChange"], this.sync);
         },
         sync: function() {
             var cb = this.get(HOST).get(CONTENTBOX), i,
