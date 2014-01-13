@@ -345,8 +345,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
      *
      */
     Plugin.VariableTVToolbarMenu = Y.Base.create("admin-menu", Plugin.EditorTVToolbarMenu, [], {
-        onTreeViewClick: function(e) {
-            var menuItems = this.getMenuItems(e.node.get("data"), e.node),
+        onTreeViewSelection: function(e) {
+         if (!e.target.getSelection()) {
+                //deselect
+                return;
+            }
+            var menuItems = this.getMenuItems(e.target.getSelection().item(0).get("data"), e.node),
                     host = this.get("host"), firstButton;
 
             if (menuItems) {
@@ -379,7 +383,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
 
                 if (this.get("autoClick")) {
                     var button = Wegas.Widget.create(firstButton);
-                    button.render().fire("click");
+                    button.fire("click");
                     button.destroy();
                 }
             } else {

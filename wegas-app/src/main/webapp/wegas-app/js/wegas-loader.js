@@ -115,7 +115,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-layout-absolute': {
                     path: 'js/widget/wegas-layout-absolute-min.js',
-                    requires: ["wegas-action", "wegas-layout-absolutecss", "wegas-cssposition",
+                    requires: ["wegas-plugin", "wegas-layout-absolutecss", "wegas-cssposition",
                         "wegas-csssize", "wegas-layout"],
                     ws_provides: ['AbsoluteLayout', "Position"]
                 },
@@ -166,7 +166,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-button': {
                     path: 'js/widget/wegas-button-min.js',
-                    requires: ['wegas-widget', 'wegas-action', 'button', 'wegas-tooltip', 'wegas-button-css'],
+                    requires: ['wegas-widget', 'wegas-plugin', 'button', 'wegas-tooltip', 'wegas-button-css'],
                     ws_provides: 'Button'
                 },
                 'wegas-button-css': {
@@ -265,17 +265,17 @@ YUI().use(function(Y) {
                     lang: ["fr"]
                 },
                 /** Plugins **/
+                'wegas-plugin': {
+                    path: 'js/plugin/wegas-plugin-min.js'
+                },
                 'wegas-userpreferences': {
                     path: 'js/plugin/wegas-userpreferences-min.js',
-                    requires: ["wegas-form", "wegas-action"],
+                    requires: ["wegas-form", "wegas-plugin"],
                     ws_provides: "UserPreferences"
-                },
-                'wegas-action': {
-                    path: 'js/plugin/wegas-action-min.js'
                 },
                 'wegas-tooltip': {
                     path: 'js/plugin/wegas-tooltip-min.js',
-                    requires: ["wegas-action", "event-mouseenter", "widget", "widget-stack",
+                    requires: ["wegas-plugin", "event-mouseenter", "widget", "widget-stack",
                         "widget-position", 'widget-position-constrain'],
                     ws_provides: 'Tooltip'
                 },
@@ -318,7 +318,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-slideshow': {
                     path: "js/plugin/wegas-slideshow-min.js",
-                    requires: "wegas-action",
+                    requires: "wegas-plugin",
                     ws_provides: "SlideShow"
                 },
                 "wegas-cssstyles": {
@@ -340,7 +340,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-visibilitytimer": {
                     path: 'js/plugin/wegas-visibilitytimer-min.js',
-                    requires: "wegas-action",
+                    requires: "wegas-plugin",
                     ws_provides: ["ShowAfter", "HideAfter"]
                 },
                 'datatable-csv': {
@@ -507,12 +507,12 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-action': {
                     path: 'js/plugin/wegas-editor-action-min.js',
-                    requires: ["wegas-button", 'wegas-action'],
+                    requires: ["wegas-button", 'wegas-plugin'],
                     ws_provides: ["OpenTabAction", "Linkwidget"]
                 },
                 'wegas-editor-entityaction': {
                     path: 'js/plugin/wegas-editor-entityaction-min.js',
-                    requires: ['wegas-action', 'inputex-jsonschema', 'wegas-form'],
+                    requires: ['wegas-plugin', 'inputex-jsonschema', 'wegas-form'],
                     ws_provides: ['NewEntityAction', 'EditEntityAction', "NewEntityButton"]
                 },
                 'wegas-editor-form': {
@@ -859,7 +859,7 @@ YUI().use(function(Y) {
                     ws_provides: "FlexitestsResults"
                 },
                 'wegas-addimages-action': {
-                    requires: ["wegas-action", "wegas-panel-fileselect"],
+                    requires: ["wegas-plugin", "wegas-panel-fileselect"],
                     ws_provides: "AddImagesWidgetAction"
                 }
             }

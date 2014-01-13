@@ -397,7 +397,7 @@
                                             "key": "name",
                                             "label": "Name"
                                         }, {
-                                            "key": "createdByName",
+                                            "key": "createdBy",
                                             "label": "Created by",
                                             "width": "150px"
                                         }, {

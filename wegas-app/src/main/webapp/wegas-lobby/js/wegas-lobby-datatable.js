@@ -123,12 +123,11 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     break;
 
                 case 'Game':
-                    var createdBy = entity.get("createdBy");
                     return {
                         name: entity.get(NAME),
                         createdTime: entity.get("createdTime"),
                         gameModelName: entity.get("gameModelName") || "",
-                        createdBy: createdBy ? createdBy.get(NAME) : "undefined",
+                        createdBy: entity.get("createdByName") || "undefined",
                         playersCount: entity.get("playersCount")
                                 //teamsCount: gameModel && gameModel.get("properties.freeForAll") ? -1 : entity.get("teams").length,
                                 //token: entity.get("properties.freeForAll") ? entity.get("token") : "",
@@ -150,7 +149,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     if (entity.get("canEdit")) {
                         return {
                             name: entity.get(NAME),
-                            createdByName: entity.get("createdByName"),
+                            createdBy: entity.get("createdByName"),
                             createdTime: entity.get("createdTime")
                         };
                     }

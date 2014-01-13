@@ -75,6 +75,8 @@ public class Game extends NamedEntity {
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
+    @XmlTransient
+    @JsonIgnore
     private User createdBy;
     /**
      *
@@ -120,6 +122,7 @@ public class Game extends NamedEntity {
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
     private List<GameEnrolmentKey> keys = new ArrayList<>();
 
@@ -151,7 +154,7 @@ public class Game extends NamedEntity {
     public void prePersist() {
         this.setCreatedTime(new Date());
         if (this.teams.isEmpty()) {
-            //this.addTeam(new DebugTeam());
+            this.addTeam(new DebugTeam());
         }
         this.preUpdate();
     }
@@ -315,6 +318,7 @@ public class Game extends NamedEntity {
     /**
      * @return the creator
      */
+    @JsonIgnore
     public User getCreatedBy() {
         return createdBy;
     }
@@ -324,6 +328,13 @@ public class Game extends NamedEntity {
      */
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getCreatedByName() {
+        if (this.getCreatedBy() != null) {
+            return this.getCreatedBy().getName();
+        }
+        return null;
     }
 
     /**
@@ -366,6 +377,9 @@ public class Game extends NamedEntity {
      */
     public void setKeys(List<GameEnrolmentKey> keys) {
         this.keys = keys;
+        for (GameEnrolmentKey k : this.keys) {
+            k.setGame(this);
+        }
     }
 
     /**

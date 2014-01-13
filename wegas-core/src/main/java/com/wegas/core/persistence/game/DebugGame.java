@@ -21,11 +21,11 @@ public class DebugGame extends Game {
 
     public DebugGame() {
         super(DEBUGGAMENAME + "-" + Helper.genToken(10));                       // Name is fixed (with a suffix so it wont break unique name constraint)
-        Team t = new Team("Test team 1");                                       // Add a default team
-        t.addPlayer(new Player("Test player 1"));
-        this.addTeam(t);
-        Team t2 = new Team("Test team 2");                                      // Add a default team
-        t2.addPlayer(new Player("Test player 2"));
-        this.addTeam(t2);
+        //Team t = new Team("Test team 1");                                       // Add a default team
+        //t.addPlayer(new Player("Test player 1"));
+        //this.addTeam(t);
+        //Team t2 = new Team("Test team 2");                                      // Add a default team
+        //t2.addPlayer(new Player("Test player 2"));
+        //this.addTeam(t2);
     }
 }

@@ -13,15 +13,15 @@ import javax.persistence.*;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-//@Entity
+@Entity
 public class DebugTeam extends Team {
 
     /**
      *
      */
     public DebugTeam() {
-        this.setName("Animators");                                              // Name is fixed
-        this.addPlayer(new Player("Animator 1"));
+        this.setName("Test team");                                              // Name is fixed
+        this.addPlayer(new Player("Test player"));
     }
 
     /**

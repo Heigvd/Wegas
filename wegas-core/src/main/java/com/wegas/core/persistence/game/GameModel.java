@@ -215,7 +215,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @PrePersist
     public void prePersist() {
         this.setCreatedTime(new Date());
-        this.addGame(new DebugGame());                                          // Every game has a debug game
     }
 
     /**
@@ -554,6 +553,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the createdBy
      */
+    @JsonIgnore
     public User getCreatedBy() {
         return createdBy;
     }

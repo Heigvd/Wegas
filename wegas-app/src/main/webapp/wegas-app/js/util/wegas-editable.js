@@ -374,7 +374,7 @@ YUI.add('wegas-editable', function(Y) {
             if (o["@class"]) {
                 return new (Y.Wegas.persistence[o["@class"]] || Y.Wegas.persistence.DefaultEntity)(o);
             } else if (o.type) {
-                return new (Y.Wegas.persistence[o.type] || Y.Wegas.persistence.WidgetEntity)(o);
+                return new (Y.Wegas.persistence[o.type] || Y.Wegas.persistence.DefaultEntity)(o);
             }
             return o;
         },

@@ -9,6 +9,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ public class GameModelController {
         // logger.info(Level.INFO, "POST GameModel");
         SecurityUtils.getSubject().checkPermission("GameModel:Create");
         gameModelFacade.create(gm);
+        gameModelFacade.addGame(gm, new DebugGame());
 
         return gm;
     }
@@ -66,8 +68,8 @@ public class GameModelController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
         GameModel duplicate = gameModelFacade.duplicate(templateGameModelId);
-
         duplicate.setName(gm.getName());
+        gameModelFacade.addGame(gm, new DebugGame());
         //duplicate.merge(gm);
 
         return duplicate;
@@ -153,16 +155,4 @@ public class GameModelController {
         }
         return games;
     }
-    /**
-     *
-     * @param entityId
-     * @return
-     * @throws IOException
-     */
-//    @POST
-//    @Path("{entityId: [1-9][0-9]*}/Publish")
-//    public GameModel publish(@PathParam("entityId") Long entityId) throws IOException {
-//        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + entityId);
-//        return gameModelFacade.publish(entityId);
-//    }
 }
