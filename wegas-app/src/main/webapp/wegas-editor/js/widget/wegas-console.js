@@ -31,10 +31,13 @@ YUI.add('wegas-console', function(Y) {
 
             this.runButton();
         },
-        executeScript: function(scriptEntity) {
-            this.showOverlay();
+        executeScript: function(scriptEntity, request) {                        // After @fixme from line 60 remove second parameter
+            this.showOverlay();                                                 // and the condtion. Then put line 37 in request line 40
+            if (typeof(request) === 'undefined') {
+                request = "/Script/Run/" + Y.Wegas.app.get('currentPlayer');
+            }
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: request,
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify(scriptEntity)
@@ -53,6 +56,14 @@ YUI.add('wegas-console', function(Y) {
                 }
             });
 
+        },
+        multiExecuteScript: function(scriptEntity, playerList) {                // @fixme Do not a request for each player
+            var i, request;
+            for (i = 0; i < playerList.length; i++) {
+                this.showOverlay();
+                request = "/Script/Run/" + playerList[i];
+                this.executeScript(scriptEntity, request);
+            }
         },
         runButton: function() {
             var el = this.toolbar.get('header');
