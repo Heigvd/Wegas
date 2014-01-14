@@ -582,6 +582,16 @@ YUI.add("wegas-widget", function(Y) {
         }
         return baseCreateChild.call(this, config);                              //reroute
     };
+    Y.WidgetParent.ATTRS.defaultChildType = {
+        setter: function(val) {
+            var returnVal = Y.Attribute.INVALID_VALUE,
+                    FnConstructor = Lang.isString(val) ? Y.Wegas[val] || Y[val] : val;
+            if (Lang.isFunction(FnConstructor)) {
+                returnVal = FnConstructor;
+            }
+            return returnVal;
+        }
+    };
     /**
      * 
      */

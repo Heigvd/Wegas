@@ -232,13 +232,6 @@
 
                                 ]
                             }]
-                    }, {
-                        "type": "Tab",
-                        "label": "Impact",
-                        "children": [{
-                                "type": "WysiwygConsole",
-                                "cssClass": "wegas-console"
-                            }]
                     }]
             }]
     },

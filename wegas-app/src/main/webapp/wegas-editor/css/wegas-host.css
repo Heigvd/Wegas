@@ -17,8 +17,28 @@
 .wegas-stdmode .editor-restart-button {
     display: none;
 }
-
+.wegas-editmode .editor-variables,
+.wegas-editmode .editor-pages,
+.wegas-editmode .editor-scenarist-button {
+/*.wegas-editmode .editor-restart-button { */ 
+    display: inline-block;
+}
+ 
 .wegas-editor-treeview-team .description,
 .wegas-editor-treeview-tablehd {
     display: none;
+}
+
+/* Header toggle button */
+.yui3-skin-sam .wegas-layout-hd .yui3-togglebutton {
+    margin-right: 10px;
+    padding: 3px 10px 3px 10px;
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    line-height: 0.5em; 
+}
+.yui3-skin-sam .wegas-layout-hd .yui3-togglebutton.yui3-button-selected {
+    background: white;
+    color: #072644;
 }
