@@ -159,8 +159,9 @@ div.inputEx-fieldWrapper {
     width: 400px;
 }
 
-.inputEx-WysiwigScript .inputEx-ListField .wegas-addbutton {
-    left: -50px;
+.yui3-skin-sam .inputEx-WysiwigScript .inputEx-ListField .wegas-addbutton {
+    /*left: -50px;*/
+    top: -25px;
 }
 .inputEx-WysiwigScript .inputEx-ListField .wegas-removebutton {
     left: -32px;
