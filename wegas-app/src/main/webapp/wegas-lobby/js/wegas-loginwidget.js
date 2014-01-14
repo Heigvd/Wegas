@@ -422,16 +422,17 @@ YUI.add('wegas-loginwidget', function(Y) {
      * Change color property (in grey) when input is not focused (black else)
      */
     Y.inputEx.StringField.prototype.updateTypeInvite = function() {
+        var divEl = Y.one(this.divEl);
 
         // field not focused
-        if (!Y.one(this.divEl).hasClass("inputEx-focused")) {
+        if (!divEl.hasClass("inputEx-focused")) {
 
             // show type invite if field is empty
             if (this.isEmpty()) {
-                Y.one(this.divEl).addClass("inputEx-typeInvite");
-                Y.one(this.divEl).one("input").setStyle("color", "#888");
+                divEl.addClass("inputEx-typeInvite")
+                        .one("input").setStyle("color", "#888");
                 if (this.fieldContainer.className.indexOf("password") > -1) {
-                    this.el.setAttribute("type", "");
+                    Y.one(this.el).setAttribute("type", "");
                 }
                 this.el.value = this.options.typeInvite;
 
@@ -440,22 +441,22 @@ YUI.add('wegas-loginwidget', function(Y) {
                 if (this.fieldContainer.className.indexOf("password") > -1) {
                     this.el.setAttribute("type", "password");
                 }
-                Y.one(this.divEl).one("input").setStyle("color", "#000");
-                Y.one(this.divEl).removeClass("inputEx-typeInvite");
+                divEl.removeClass("inputEx-typeInvite")
+                        .one("input").setStyle("color", "#000");
             }
 
             // field focused : remove type invite
         } else {
-            if (Y.one(this.divEl).hasClass("inputEx-typeInvite")) {
+            if (divEl.hasClass("inputEx-typeInvite")) {
                 // remove text
                 this.el.value = "";
                 // remove the "empty" state and class
                 this.previousState = null;
                 if (this.fieldContainer.className.indexOf("password") > -1) {
-                    this.el.setAttribute("type", "password");
+                    Y.one(this.el).setAttribute("type", "password");
                 }
-                Y.one(this.divEl).one("input").setStyle("color", "#000");
-                Y.one(this.divEl).removeClass("inputEx-typeInvite");
+                divEl.one("input").setStyle("color", "#000");
+                divEl.removeClass("inputEx-typeInvite");
             }
         }
     };
