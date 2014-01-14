@@ -320,6 +320,9 @@ YUI.add('wegas-pageeditor', function(Y) {
         },
         fixedOverlay: function(widget) {
             var targetNode = widget.get(BOUNDINGBOX);
+            if (!targetNode.getDOMNode()) {
+                return;
+            }
             this.shownOverlay.get(BOUNDINGBOX).setXY(targetNode.getXY());
             this.shownOverlay.get(BOUNDINGBOX).setStyles({
                 width: targetNode.getDOMNode().offsetWidth,
