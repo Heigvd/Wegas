@@ -94,7 +94,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @param p
      * @return
      */
-    public Boolean isActive(Player p) {
+    public boolean isActive(Player p) {
         QuestionInstance instance = (QuestionInstance) this.getInstance(p);
         return instance.getActive();
     }
@@ -170,7 +170,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      * @param p
      * @return
      */
-    public Boolean isReplied(Player p) {
+    public boolean isReplied(Player p) {
         QuestionInstance instance = (QuestionInstance) this.getInstance(p);
         return !instance.getReplies().isEmpty();
     }

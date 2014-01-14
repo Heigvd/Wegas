@@ -85,7 +85,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param p
      * @return
      */
-    public Boolean isEmpty(Player p) {
+    public boolean isEmpty(Player p) {
         return this.getInstance(p).getMessages().isEmpty();
     }
 }

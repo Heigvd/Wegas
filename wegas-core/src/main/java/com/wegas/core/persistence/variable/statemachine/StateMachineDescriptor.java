@@ -96,15 +96,16 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      * @param p
      * @return
      */
-    public Boolean isEnabled(Player p) {
+    public boolean isEnabled(Player p) {
         return this.getInstance(p).getEnabled();
     }
-     /**
+
+    /**
      *
      * @param p
      * @return
      */
-    public Boolean isDisabled(Player p) {
+    public boolean isDisabled(Player p) {
         return !this.getInstance(p).getEnabled();
     }
 
