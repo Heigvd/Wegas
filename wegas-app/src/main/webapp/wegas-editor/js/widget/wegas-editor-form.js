@@ -235,8 +235,6 @@ YUI.add('wegas-editor-form', function(Y) {
                 }
             });
             this.toolbar.add(menuItems).item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
-            
-            Y.fire("rightTabShown");// @fixme @hack
         }
     }, {
         ATTRS: {

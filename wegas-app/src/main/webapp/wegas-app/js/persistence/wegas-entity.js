@@ -122,6 +122,7 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     });
+    
     /**
      * 
      */
@@ -182,7 +183,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             description: {
                 type: STRING,
-                format: HTML,
+                format: TEXT,
                 optional: true,
                 _inputex: {
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
@@ -304,7 +305,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             description: {
                 type: STRING,
-                format: HTML,
+                format: TEXT,
                 optional: true,
                 _inputex: {
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
@@ -368,28 +369,23 @@ YUI.add('wegas-entity', function(Y) {
                     value: "ENROLMENTKEY",
                     interactions: [{
                             valueTrigger: "OPEN", // this action will run when this field value is set to OPEN
-                            actions: [
-                                {name: 'key', action: 'hide'},
+                            actions: [{name: 'key', action: 'hide'},
                                 {name: 'keys', action: 'hide'}]
                         }, {
                             valueTrigger: "URL", // this action will run when this field value is set to OPEN
-                            actions: [
-                                {name: 'key', action: 'hide'},
+                            actions: [{name: 'key', action: 'hide'},
                                 {name: 'keys', action: 'hide'}]
                         }, {
                             valueTrigger: "ENROLMENTKEY",
-                            actions: [
-                                {name: 'key', action: 'show'},
+                            actions: [{name: 'key', action: 'show'},
                                 {name: 'keys', action: 'hide'}]
                         }, {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
-                            actions: [
-                                {name: 'key', action: 'hide'},
+                            actions: [{name: 'key', action: 'hide'},
                                 {name: 'keys', action: 'show'}]
                         }, {
                             valueTrigger: "CLOSE",
-                            actions: [
-                                {name: 'key', action: 'hide'},
+                            actions: [{name: 'key', action: 'hide'},
                                 {name: 'keys', action: 'hide'}]
                         }]
                 }
