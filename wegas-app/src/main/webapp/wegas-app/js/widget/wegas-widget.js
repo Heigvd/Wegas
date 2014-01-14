@@ -586,14 +586,15 @@ YUI.add("wegas-widget", function(Y) {
      * 
      */
     Y.WidgetParent.prototype.destroyAll = function() {
-        Y.soon(Y.bind(function(widgets) {
-            widgets.each(function() {
-                this.destroy();
-            });
-        }, this, this.removeAll()));
-        //this.removeAll().each(function() {
-        //    this.destroy();
-        //});
+        this.removeAll().each(function() {
+            this.destroy();
+        });
+        // Optim delay object destruction
+        //Y.soon(Y.bind(function(widgets) {
+        //    widgets.each(function() {
+        //        this.destroy();
+        //    });
+        //}, this, this.removeAll()));
     };
 
 

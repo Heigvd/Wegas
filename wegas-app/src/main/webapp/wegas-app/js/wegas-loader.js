@@ -34,7 +34,7 @@ YUI().use(function(Y) {
                  */
                 'wegas-app': {
                     requires: [
-                        'base', 'plugin', "event-key", "array-extras",
+                        'base', 'plugin', "event-key", "array-extras", 'timers',
                         'wegas-helper', 'wegas-entity', 'wegas-datasource',
                                 // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
@@ -145,7 +145,7 @@ YUI().use(function(Y) {
                 'wegas-pageloader': {
                     path: 'js/widget/wegas-pageloader-min.js',
                     ws_provides: 'PageLoader',
-                    requires: ["wegas-widget", "timers"]
+                    requires: "wegas-widget"
                 },
                 'wegas-panel': {
                     path: 'js/util/wegas-panel-min.js',
@@ -620,7 +620,6 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-pagetreeview': {
                     path: 'js/widget/wegas-editor-pagetreeview-min.js',
-                    requires: "timers",
                     ws_provides: "PageTreeview"
                 },
                 'gallery-colorpickercss': {
@@ -847,7 +846,7 @@ YUI().use(function(Y) {
             root: '/wegas-flexitests/',
             modules: {
                 'wegas-flexitests-controller': {
-                    requires: ["wegas-layout-absolute", "timers"],
+                    requires: "wegas-layout-absolute",
                     ws_provides: ["FlexitestsController", "FlexiResponse"]
                 },
                 'wegas-flexitests-mcqdisplay': {
