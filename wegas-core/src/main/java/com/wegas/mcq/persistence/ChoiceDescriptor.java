@@ -203,11 +203,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      * @param p
      * @return
      */
-    public Boolean isActive(Player p) {
+    public boolean isActive(Player p) {
         return this.getInstance(p).getActive();
     }
 
-    public Boolean hasBeenSelected(Player p) {
+    public boolean hasBeenSelected(Player p) {
         for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
             if (r.getResult().getChoiceDescriptor().equals(this)) {
                 return true;
