@@ -70,6 +70,13 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>",
                 tooltip: "View source"
             });
+            this.viewSrc.get("boundingBox").setStyles({
+                background: "transparent",
+                boxShadow: "none",
+                marginLeft: "16px",
+                padding: "2px"
+            });
+
             this.viewSrc.after("click", function() {
                 if (!this.viewSrc.get("disabled")) {
                     if (this.options.mode === "wysiwyg") {                      // If current mode is wysiwyg
@@ -156,6 +163,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 addType: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline" //variabledescriptorsetter"
             });
 
+
             if (this.options.mode !== "wysiwyg") {
                 this.exprList.hide();
             }
@@ -179,7 +187,6 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
 
                 case "ObjectExpression":
                     var args = {};
-
                     Y.Array.each(expression.properties, function(i) {
                         args[i.key.value] = this.generateExpression(i.value);
                     }, this);

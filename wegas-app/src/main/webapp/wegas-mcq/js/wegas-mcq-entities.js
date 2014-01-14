@@ -417,13 +417,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             optional: true,
                             format: HTML,
                             _inputex: {
-                                label: "Result"
+                                label: "Impact"
                             }
                         },
                         impact: {
                             optional: true,
                             _inputex: {
-                                _type: SCRIPT
+                                _type: SCRIPT,
+                                label: null
                             }
                         },
                         choiceDescriptorId: {

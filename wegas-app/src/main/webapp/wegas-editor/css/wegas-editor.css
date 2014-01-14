@@ -90,28 +90,22 @@ body {
     background: rgb(248, 220, 220);
 }
 
-/* style for Animator -> impact game */
+/* Styles for Animator -> impact game */
 .editor-animator-impactlist {
     margin-top: 10px;
     margin-left: 65px;
 }
-
 .editor-animator-impactlist .inputEx-ListField{
     float: none;
     margin-top: 10px;
 }
-
 .editor-animator-impactlist textarea{
     margin-top: 10px;
 }
-
 .editor-animator-impactlist .inputEx-ListField .wegas-removebutton{
     margin-left: 90px;
 }
 
-.editor-animator-impactlist .inputEx-ListField .wegas-addbutton {
-    margin-left: -50px;
-}
 
 /* YUI3: Console style */
 .yui3-console-hd {
