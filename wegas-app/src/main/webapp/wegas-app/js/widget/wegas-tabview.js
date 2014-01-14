@@ -12,7 +12,8 @@
 YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
-    var TabView, Tab;
+    var Plugin = Y.Plugin, Wegas = Y.Wegas,
+            TabView, Tab;
     /**
      * @name Y.Wegas.TabView
      * @extends Y.TabView
@@ -21,14 +22,12 @@ YUI.add('wegas-tabview', function(Y) {
      * @class Manage a tabview specific to Wegas
      * @constructor
      */
-    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Layout], {
+    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Wegas.Editable, Wegas.Layout], {
         /** @lends Y.Wegas.TabView# */
-
         // *** Private fields *** //
         /**
          * Reference to each used functions
          */
-        handlers: null,
         /**
          * @function
          * @private
@@ -36,7 +35,6 @@ YUI.add('wegas-tabview', function(Y) {
          * init widget parent.
          */
         initializer: function() {
-            this.handlers = {};
             TabView.superclass.initializer.apply(this, arguments);
             //this.plug(Removeable);
         },
@@ -51,19 +49,14 @@ YUI.add('wegas-tabview', function(Y) {
 
             // @fixme we notify the editor for any change, so widget can be updated
             // this should be done through wiget-parent, widget-child event bubbling
-            this.handlers.selectionChange = this.after("selectionChange", function() {
-                Y.Wegas.app.fire("layout:resize");
+            this.after("selectionChange", function() {
+                Wegas.app.fire("layout:resize");
             });
         },
-        /**
-         * Detach all functions created by this widget.
-         * @function
-         * @private
-         */
-        destructor: function() {
-            for (var k in this.handlers) {
-                this.handlers[k].detach();
-            }
+        useAndAdd: function(cfg) {
+            Y.Wegas.use(cfg, Y.bind(function() {
+                this.add(cfg);
+            }, this));
         },
         /**
          * Override WidgetParent method. Otherwise when a sibling of the tabview is
@@ -89,7 +82,7 @@ YUI.add('wegas-tabview', function(Y) {
                 "transient": true
             },
             defaultChildType: {
-                value: Tab
+                value: "Tab"
             }
         },
         EDITMENU: [{
@@ -147,7 +140,6 @@ YUI.add('wegas-tabview', function(Y) {
                 var tabs, tabView = Y.Widget.getByNode(tabViewSelector);        // Look for the parent
                 tabCfg = tabCfg || {};
                 Y.mix(tabCfg, {
-                    type: "Tab",
                     label: id,
                     id: id
                 });
@@ -175,12 +167,10 @@ YUI.add('wegas-tabview', function(Y) {
             var nTab = TabView.createTab(id, tabViewSelector, tabCfg);          // create a new one
 
             nTab.destroyAll();                                                  // Empty it
-            //nTab.get("panelNode").one("div").empty();                         // @FIXME since the above method is not enough
             nTab.load(widgetCfg, fn);                                           // Load target widget
-            
+
             return nTab;
         }
-
     });
     Y.namespace('Wegas').TabView = TabView;
 
@@ -245,14 +235,10 @@ YUI.add('wegas-tabview', function(Y) {
      * @constructor
      * @description Manage a tabspecific to Wegas
      */
-    Tab = Y.Base.create("tab", Y.Tab, [Parent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Layout], {
+    Tab = Y.Base.create("tab", Y.Tab, [Parent, Y.WidgetChild, Wegas.Editable, Wegas.Layout], {
         /** @lends Y.Wegas.Tab# */
         PANEL_TEMPLATE: '<div><div class=\"panel-inner\"></div></div>',
         // *** Private Fields *** //
-        /**
-         * Array of widget items.
-         */
-        _witems: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -271,7 +257,7 @@ YUI.add('wegas-tabview', function(Y) {
             });
 
             //this.plug(Closable);
-            this.plug(Y.Plugin.PopupListener, {
+            this.plug(Plugin.PopupListener, {
                 targetAttr: "panelNode",
                 alignAttr: "panelNode"
             });
@@ -324,7 +310,7 @@ YUI.add('wegas-tabview', function(Y) {
          */
         load: function(cfg, callback) {
             this.showOverlay();
-            Y.Wegas.Widget.use(cfg, Y.bind(function(cfg, callback) {            // Load the subpage dependencies
+            Wegas.Widget.use(cfg, Y.bind(function(cfg, callback) {            // Load the subpage dependencies
                 this.hideOverlay();
                 var widgets = this.add(cfg);                                    // Render the subpage
                 if (callback) {
@@ -400,7 +386,7 @@ YUI.add('wegas-tabview', function(Y) {
         Removeable.superclass.constructor.apply(this, arguments);
     };
 
-    Y.extend(Removeable, Y.Plugin.Base, {
+    Y.extend(Removeable, Plugin.Base, {
         /** @lends Y.Wegas.Removeable# */
         // *** Private fields *** //
         /**
@@ -464,7 +450,7 @@ YUI.add('wegas-tabview', function(Y) {
     var LayoutToggleTab = function() {
         LayoutToggleTab.superclass.constructor.apply(this, arguments);
     };
-    Y.extend(LayoutToggleTab, Y.Plugin.Base, {
+    Y.extend(LayoutToggleTab, Plugin.Base, {
         /** @lends Y.Wegas.LayoutToggleTab# */
 
         // *** Private fields *** //
@@ -478,13 +464,13 @@ YUI.add('wegas-tabview', function(Y) {
             this.afterHostEvent("removeChild", function() {
                 Y.later(100, this, function() {
                     if (this.get("host").isEmpty()) {
-                        Y.Wegas.app.widget.hidePosition("right");
+                        Wegas.app.widget.hidePosition("right");
                     }
                 });
             });
             this.onHostEvent("addChild", function() {
                 if (this.get("host").isEmpty()) {
-                    Y.Wegas.app.widget.showPosition("right");
+                    Wegas.app.widget.showPosition("right");
                 }
             });
         }
