@@ -27,7 +27,8 @@ YUI.add("wegas-inputex-rte", function(Y) {
 
     Y.extend(RTEField, inputEx.Textarea, {
         destroy: function() {
-            tinymce.execCommand('mceRemoveEditor', false, this.el.id);
+            tinymce.remove("#" + this.el.id);
+            //tinymce.execCommand('mceRemoveEditor', false, this.el.id);
             RTEField.superclass.destroy.call(this);
         },
         /**
@@ -49,10 +50,8 @@ YUI.add("wegas-inputex-rte", function(Y) {
                 RTEField.init = true;
                 tinymce.init({
                     plugins: [
-                        "autolink autoresize link image lists ",
-                        "code media table contextmenu paste"
-                                //textcolor
-                                //wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
+                        "autolink autoresize link image lists code media table contextmenu paste"
+                                //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
                     ],
                     toolbar1: "bold italic bullist | link image media | code",
                     // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselectspellchecker template
@@ -88,6 +87,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         }]});
             }
             Y.once("domready", function() {
+                //tinymce.createEditor(this.el.id, {});
                 tinymce.execCommand('mceAddEditor', false, this.el.id);
             }, this);
         },

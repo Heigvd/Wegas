@@ -122,7 +122,7 @@ YUI.add('wegas-entity', function(Y) {
             }
         }
     });
-    
+
     /**
      * 
      */
