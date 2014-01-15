@@ -55,8 +55,7 @@ public class GameModelController {
     public GameModel create(GameModel gm) {
         // logger.info(Level.INFO, "POST GameModel");
         SecurityUtils.getSubject().checkPermission("GameModel:Create");
-        gameModelFacade.create(gm);
-        gameModelFacade.addGame(gm, new DebugGame());
+        gameModelFacade.createWithDebugGame(gm);
 
         return gm;
     }
@@ -116,7 +115,7 @@ public class GameModelController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + entityId);
 
-        return gameModelFacade.duplicate(entityId);
+        return gameModelFacade.duplicateWithDebugGame(entityId);
     }
 
     /**

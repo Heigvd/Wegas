@@ -110,7 +110,7 @@ public class Game extends NamedEntity {
      *
      */
     @Enumerated
-    private GameAccess access = GameAccess.URL;
+    private GameAccess access = GameAccess.ENROLMENTKEY;
     /**
      *
      */
