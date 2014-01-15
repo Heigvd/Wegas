@@ -573,6 +573,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     }
 
     /**
+     *
+     */
+    public void setCreatedByName(String createdByName) {
+        // Here so game deserialization works
+    }
+
+    /**
      * @return the template
      */
     public Boolean getTemplate() {

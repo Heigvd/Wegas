@@ -97,7 +97,6 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         final User currentUser = userFacade.getCurrentUser();
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
-        
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
         userFacade.addAccountPermission(currentUser.getMainAccount(),

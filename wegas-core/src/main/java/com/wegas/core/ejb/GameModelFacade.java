@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.event.ResetEvent;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
+import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel_;
@@ -93,6 +94,11 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Instantiate:gm" + entity.getId());
     }
 
+    public void createWithDebugGame(final GameModel gm) {
+        this.create(gm);
+        this.addGame(gm, new DebugGame());
+    }
+
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
         this.reset(gameModel);                                                  // Reset the game model
@@ -112,7 +118,6 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
-
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
         final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
 
@@ -131,7 +136,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
         newGameModel.setName(newName);
         this.create(newGameModel);                                              // store it db
-        em.flush();
+        //em.flush();
 
         try {                                                                   //Clone jcr FILES
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
@@ -142,6 +147,12 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         }
 
         return newGameModel;
+    }
+
+    public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
+        GameModel gm = this.duplicate(gameModelId);
+        this.addGame(gm, new DebugGame());
+        return gm;
     }
 
     @Override
@@ -202,9 +213,9 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
     public void reset(final GameModel gameModel) {
         em.flush();
-        gameModel.propagateDefaultInstance(true);                               // Propagate default instances
-        em.flush();
         em.refresh(gameModel);
+        gameModel.propagateDefaultInstance(true);                               // Propagate default instances
+        em.flush();  
         resetEvent.fire(new ResetEvent(gameModel));                             // Send an reset event (for the state machine and other)
     }
 }

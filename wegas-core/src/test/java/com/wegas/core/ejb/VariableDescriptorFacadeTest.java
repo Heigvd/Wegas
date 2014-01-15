@@ -397,7 +397,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         duplicate = (DescriptorListI) vdf.duplicate(list3.getId());             // Duplicate a sub child variable
         Assert.assertEquals(10.0, ((NumberDescriptor) ((DescriptorListI) duplicate.item(0)).item(0)).getInstance(player).getValue());
 
-        GameModel duplicateGm = gameModelFacade.duplicate(gameModel.getId());
+        GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(gameModel.getId());
         DescriptorListI find = (DescriptorListI) vdf.find(duplicateGm, LISTNAME1);
         Assert.assertEquals(10.0, ((NumberInstance) ((NumberDescriptor) ((DescriptorListI) ((DescriptorListI) find.item(1)).item(0)).item(0)).getScope().getVariableInstances().values().iterator().next()).getValue());
     }
