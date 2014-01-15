@@ -262,7 +262,7 @@
                 "width": "150",
                 "className": "picture"
             }, {
-                "name": "name",
+                "name": "label",
                 "label": "Nom : "
             }, {
                 "name": "salary",
