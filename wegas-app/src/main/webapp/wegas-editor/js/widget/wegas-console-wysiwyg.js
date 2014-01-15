@@ -38,7 +38,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                 if (e.newVal !== 1) {
                     treeView.unplug(Plugin.CheckBoxTV);
                     for (i = 0; i < treeView.size(); i++) {
-                        if (treeView.item(i).get("selected")){
+                        if (treeView.item(i).get("selected")) {
                             selected = i;
                             break;
                         }
@@ -55,7 +55,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                 } else {
                     treeView.plug(Plugin.CheckBoxTV);
                 }
-                
+
             });
         },
         runButton: function() {
@@ -74,15 +74,15 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                 }
             }).render(el);
         },
-        playerList: function() {
+        __playerList: function() {
             var cGameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                     treenodes = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team .yui3-treeview-content")._items,
-                    playerList = [], i, playerId;          
-            
+                    playerList = [], i, playerId;
+
             if (cGameModel.get("properties.freeForAll")) {
                 // all selected player
                 for (i = 0; i < treenodes.length; i++) {
-                    if (treenodes[i].get("selected")){
+                    if (treenodes[i].get("selected")) {
                         playerId = treenodes[i].get("data").entity.get("id");
                         playerList.push(playerId);
                     }
@@ -95,6 +95,24 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                         playerList.push(playerId);
                     }
                 }
+            }
+            return playerList;
+        },
+        playerList: function() {
+            var treeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team .yui3-treeview-content"),
+                    playerList = [], selection = treeview.get("selection") || new Y.ArrayList();
+            
+            if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
+                selection.each(function(item) {
+                    playerList.push(item.get("data.entity").get("id"));
+                });
+            } else {
+                selection.each(function(item) {
+                    var entity = item.get("data.entity");
+                    if (entity.get("players").length > 0) {
+                        playerList.push(entity.get("players")[0].get("id"));
+                    }
+                });
             }
             return playerList;
         }
