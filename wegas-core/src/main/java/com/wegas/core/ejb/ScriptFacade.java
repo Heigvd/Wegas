@@ -94,50 +94,53 @@ public class ScriptFacade implements Serializable {
         if (scripts.isEmpty()) {
             return null;
         }
+        ScriptEngine engine = requestManager.getCurrentEngine();
+        if (engine == null) {
+            ScriptEngineManager mgr = new ScriptEngineManager();                    // Instantiate the corresponding script engine
 
-        ScriptEngineManager mgr = new ScriptEngineManager();                    // Instantiate the corresponding script engine
-        ScriptEngine engine;
-        try {
-            engine = mgr.getEngineByName(scripts.get(0).getLanguage());
-        } catch (NullPointerException ex) {
-            logger.error("Wrong language ?", ex.getMessage(), ex.getStackTrace());
-            return null;
-        }
-        // Invocable invocableEngine = (Invocable) engine;
-
-        engine.put("self", requestManager.getPlayer());                         // Inject current player
-        engine.put("gameModel", requestManager.getPlayer().getGameModel());     // Inject current gameModel
-        Object result = null;
-        try {
-            engineInvocationEvent.fire(
-                    new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
-        } catch (ObserverException ex) {
-            throw (WegasException) ex.getCause();
-        } finally {                                                             //Try finishing evaluation
-            for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
-                engine.put(arg.getKey(), arg.getValue());
-            }
-
-            // @fixme test the most performant version
-            StringBuilder buf = new StringBuilder();
-            for (Script s : scripts) {                                          // Evaluate each script
-                try {
-                    buf.append(s.getContent());
-                    buf.append(";");
-                } catch (NullPointerException ex) {
-                    //script does not exist
-                }
-                //result = engine.eval(s.getContent());
-            }
             try {
-                result = engine.eval(buf.toString());
-            } catch (ScriptException ex) {
-                logger.warn("{} in\n{}", ex.getMessage(), buf.toString());
-                requestManager.addException(
-                        new com.wegas.core.exception.ScriptException(buf.toString(), ex.getLineNumber(), ex.getMessage()));
-                throw new ScriptException(ex.getMessage(), buf.toString(), ex.getLineNumber());
+                engine = mgr.getEngineByName(scripts.get(0).getLanguage());
+            } catch (NullPointerException ex) {
+                logger.error("Wrong language ?", ex.getMessage(), ex.getStackTrace());
+                return null;
             }
+
+            // Invocable invocableEngine = (Invocable) engine;
+            engine.put("self", requestManager.getPlayer());                         // Inject current player
+            engine.put("gameModel", requestManager.getPlayer().getGameModel());     // Inject current gameModel
+            try {
+                engineInvocationEvent.fire(
+                        new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
+
+            } catch (ObserverException ex) {
+                throw (WegasException) ex.getCause();
+            }
+            requestManager.setCurrentEngine(engine);
         }
+        Object result = null;                                               
+        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
+            engine.put(arg.getKey(), arg.getValue());
+        }
+        // @fixme test the most performant version
+        StringBuilder buf = new StringBuilder();
+        for (Script s : scripts) {                                          // Evaluate each script
+            try {
+                buf.append(s.getContent());
+                buf.append(";");
+            } catch (NullPointerException ex) {
+                //script does not exist
+            }
+            //result = engine.eval(s.getContent());
+        }
+        try {
+            result = engine.eval(buf.toString());
+        } catch (ScriptException ex) {
+            logger.warn("{} in\n{}", ex.getMessage(), buf.toString());
+            requestManager.addException(
+                    new com.wegas.core.exception.ScriptException(buf.toString(), ex.getLineNumber(), ex.getMessage()));
+            throw new ScriptException(ex.getMessage(), buf.toString(), ex.getLineNumber());
+        }
+
         return result;
     }
 

@@ -38,7 +38,6 @@ public class ScriptFacadeTest extends AbstractEJBTest {
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
         final ScriptFacade sm = lookupBy(ScriptFacade.class);
 
-
         final NumberDescriptor numberDescriptor = new NumberDescriptor("inttest");
         numberDescriptor.setDefaultInstance(new NumberInstance(1));
         numberDescriptor.setScope(new TeamScope());

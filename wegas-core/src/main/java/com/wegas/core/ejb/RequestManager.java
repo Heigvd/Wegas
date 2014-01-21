@@ -24,6 +24,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.script.ScriptEngine;
 
 /**
  *
@@ -58,6 +59,10 @@ public class RequestManager implements Serializable {
      *
      */
     private Locale locale;
+    /**
+     *
+     */
+    private ScriptEngine currentEngine = null;
 
     /**
      *
@@ -81,6 +86,7 @@ public class RequestManager implements Serializable {
      */
     public void setPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
+        this.setCurrentEngine(null); // Player change, reinit engine.
     }
 
     /**
@@ -89,6 +95,14 @@ public class RequestManager implements Serializable {
      */
     public GameModel getCurrentGameModel() {
         return this.getPlayer().getGameModel();
+    }
+
+    public ScriptEngine getCurrentEngine() {
+        return currentEngine;
+    }
+
+    public void setCurrentEngine(ScriptEngine currentEngine) {
+        this.currentEngine = currentEngine;
     }
 
     /**
