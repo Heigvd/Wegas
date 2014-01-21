@@ -67,6 +67,11 @@ public class ScriptFacade implements Serializable {
      *
      */
     @Inject
+    private ScriptEvent event;
+    /**
+     *
+     */
+    @Inject
     Event<EngineInvocationEvent> engineInvocationEvent;
 
     /**
@@ -117,7 +122,7 @@ public class ScriptFacade implements Serializable {
             }
             requestManager.setCurrentEngine(engine);
         }
-        Object result = null;                                               
+        Object result = null;
         for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
             engine.put(arg.getKey(), arg.getValue());
         }
@@ -155,6 +160,8 @@ public class ScriptFacade implements Serializable {
     public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException, WegasException {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
         evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
+        evt.getEngine().put("Event", event);                  // Inject the Event manager
+        event.setEngine(evt.getEngine());
 
         List<String> errorVariable = new ArrayList<>();
 
