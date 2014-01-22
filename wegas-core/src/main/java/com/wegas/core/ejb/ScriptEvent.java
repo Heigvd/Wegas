@@ -50,7 +50,6 @@ public class ScriptEvent {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
             for (Object cb : callbacks) {
                 engine.invokeMethod(((Object[]) cb)[0], "call", ((Object[]) cb)[1], params);
-
             }
         }
     }
