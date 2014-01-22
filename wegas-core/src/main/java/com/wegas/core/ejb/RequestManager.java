@@ -85,8 +85,10 @@ public class RequestManager implements Serializable {
      * @param currentPlayer the currentPlayer to set
      */
     public void setPlayer(Player currentPlayer) {
-        this.currentPlayer = currentPlayer;
-        this.setCurrentEngine(null); // Player change, reinit engine.
+        if (this.currentPlayer.getId() != currentPlayer.getId()) {
+            this.currentPlayer = currentPlayer;
+            this.setCurrentEngine(null); // Player change, reinit engine.
+        }
     }
 
     /**
