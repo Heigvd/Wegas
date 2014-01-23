@@ -161,7 +161,7 @@ public class ScriptFacade implements Serializable {
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
         evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
         evt.getEngine().put("Event", event);                  // Inject the Event manager
-        event.setEngine(evt.getEngine());
+        event.detachAll();
 
         List<String> errorVariable = new ArrayList<>();
 
