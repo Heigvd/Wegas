@@ -8,10 +8,13 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.AbstractEJBTest;
+import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.ScriptEvent;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -98,7 +101,6 @@ public class StateMachineITest extends AbstractEJBTest {
 
         playerFacade.create(team.getId(), testPlayer0);
         playerFacade.create(team4.getId(), testPlayer1);
-
 
         NumberDescriptor number = (NumberDescriptor) descriptorFacade.find(testNumber.getId());
         /* CONTEXT? */
@@ -208,5 +210,30 @@ public class StateMachineITest extends AbstractEJBTest {
         rf.commit();
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
         Assert.assertEquals(10, ((NumberInstance) instanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
+    }
+
+    @Test
+    public void testEvent() throws NamingException, ScriptException, NoSuchMethodException {
+        final ScriptFacade sf = lookupBy(ScriptFacade.class);
+        final Integer ENDVAL = 5;
+
+        // Create a number
+        NumberDescriptor number = new NumberDescriptor();
+        number.setName("testnumber");
+        number.setDefaultInstance(new NumberInstance(0));
+        number.setScope(new TeamScope());
+        descriptorFacade.create(gameModel.getId(), number);
+
+        // Create a trigger
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setScope(new TeamScope());
+        trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
+        trigger.setPostTriggerEvent(new Script("function(e){println('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, e);}"));
+        descriptorFacade.create(gameModel.getId(), trigger);
+        
+        sf.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){println('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"));
+        lookupBy(RequestFacade.class).commit();
+        Assert.assertEquals(ENDVAL, ((NumberInstance) instanceFacade.find(number.getId(), player.getId())).getValue(), 0);
     }
 }
