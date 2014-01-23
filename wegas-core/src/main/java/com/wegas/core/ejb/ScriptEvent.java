@@ -9,8 +9,8 @@ package com.wegas.core.ejb;
 
 import java.util.Collection;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.script.Invocable;
-import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import org.apache.commons.collections.map.MultiValueMap;
 
@@ -23,16 +23,24 @@ public class ScriptEvent {
 
     private final MultiValueMap eventsFired;
     private final MultiValueMap registeredEvents;
-    private Invocable engine;
+    private Boolean eventFired;
+    @Inject
+    private RequestManager requestManager;
 
     public ScriptEvent() {
+        this.eventFired = false;
         this.eventsFired = new MultiValueMap();
         this.registeredEvents = new MultiValueMap();
     }
 
-    public void setEngine(ScriptEngine engine) {
-        this.engine = (Invocable) engine;
+    public void detachAll() {
+        this.eventFired = false;
+        this.eventsFired.clear();
         this.registeredEvents.clear();
+    }
+
+    public Boolean isEventFired() {
+        return eventFired;
     }
 
     public void fire(String eventName, Object param) throws ScriptException, NoSuchMethodException {
@@ -41,15 +49,16 @@ public class ScriptEvent {
     }
 
     public void fire(String eventName) throws ScriptException, NoSuchMethodException {
-        this.eventsFired.put(eventName, new Object());
+        this.eventsFired.put(eventName, new EmptyObject());
         this.doFire(eventName, null);
     }
 
     private void doFire(String eventName, Object params) throws ScriptException, NoSuchMethodException {
+        this.eventFired = true;
         if (this.registeredEvents.containsKey(eventName)) {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
             for (Object cb : callbacks) {
-                engine.invokeMethod(((Object[]) cb)[0], "call", ((Object[]) cb)[1], params);
+                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(((Object[]) cb)[0], "call", ((Object[]) cb)[1], params);
             }
         }
     }
@@ -78,5 +87,11 @@ public class ScriptEvent {
 
     public void on(String eventName, Object func) throws ScriptException, NoSuchMethodException {
         this.registeredEvents.put(eventName, new Object[]{func, func});
+    }
+
+    public static class EmptyObject {
+
+        public EmptyObject() {
+        }
     }
 }
