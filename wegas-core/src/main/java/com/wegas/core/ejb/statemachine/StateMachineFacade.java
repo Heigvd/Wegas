@@ -8,6 +8,7 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.ScriptEvent;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -23,11 +24,14 @@ import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.resourceManagement.persistence.DialogueTransition;
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.script.Invocable;
 import javax.script.ScriptException;
 import org.slf4j.LoggerFactory;
 
@@ -51,10 +55,8 @@ public class StateMachineFacade implements Serializable {
      */
     @Inject
     private RequestManager requestManager;
-    /**
-     * Stores passed transitions
-     */
-    private final Map<Player, HashSet<Transition>> playerTransitions = new HashMap<>();
+    @Inject
+    private ScriptEvent scriptEvent;
 
     /**
      *
@@ -106,22 +108,22 @@ public class StateMachineFacade implements Serializable {
         for (VariableDescriptor sm : stateMachineDescriptors) {
             validTransition = false;
             smi = (StateMachineInstance) sm.getInstance(player);
-            if (!smi.getEnabled()) {
+            if (!smi.getEnabled() || smi.getCurrentState() == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
                 continue;
             }
             transitions = smi.getCurrentState().getTransitions();
             for (Transition transition : transitions) {
                 if (transition instanceof DialogueTransition) {                   //Dialogue, don't eval
                     continue;
-                } else if (transition.getTriggerCondition() == null
-                        || transition.getTriggerCondition().getContent() == null
-                        || transition.getTriggerCondition().getContent().equals("")) {
+                } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;
+                } else if (transition.getTriggerCondition().getContent().contains("Event.fired")) {
+                    this.eventTransition(transition, smi);
                 } else {
-                    requestManager.setPlayer(player);
                     try {
-                        validTransition = (Boolean) scriptManager.eval(transition.getTriggerCondition());
+                        validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition());
                     } catch (ScriptException ex) {
+                        //validTransition still false
                     }
                 }
                 if (validTransition == null) {
@@ -150,8 +152,7 @@ public class StateMachineFacade implements Serializable {
             variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
             preImpacts.addAll(impacts);
             try {
-                requestManager.setPlayer(player);
-                scriptManager.eval(preImpacts);
+                scriptManager.eval(player, preImpacts);
             } catch (ScriptException | WegasException ex) {
                 logger.warn("Script failed ", ex);
             }
@@ -160,5 +161,47 @@ public class StateMachineFacade implements Serializable {
         }
         return steps;
 
+    }
+
+    /**
+     * manage event transition
+     *
+     * @param transition
+     */
+    private Boolean eventTransition(Transition transition, StateMachineInstance smi) {
+        String script = transition.getTriggerCondition().getContent();
+        String[] tokens = script.split("[\'\"]");
+        Object[] fired = scriptEvent.fired(tokens[1]);
+        if (fired.length > 0) {
+            smi.setCurrentStateId(transition.getNextStateId());
+            try {
+                if (!this.isNotDefined(transition.getPreStateImpact())) {
+                    final Object preImpactFunc = scriptManager.eval(transition.getPreStateImpact());
+                    if (fired[0] instanceof ScriptEvent.EmptyObject) {
+                        ((Invocable) requestManager.getCurrentEngine()).invokeMethod(preImpactFunc, "call", preImpactFunc);
+                    } else {
+                        ((Invocable) requestManager.getCurrentEngine()).invokeMethod(preImpactFunc, "call", preImpactFunc, fired[0]);
+                    }
+                }
+                if (!this.isNotDefined(smi.getCurrentState().getOnEnterEvent())) {
+                    final Object impactFunc = scriptManager.eval(smi.getCurrentState().getOnEnterEvent());
+                    if (fired[0] instanceof ScriptEvent.EmptyObject) {
+                        ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc);
+                    } else {
+                        ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc, fired[0]);
+                    }
+                }
+            } catch (ScriptException | NoSuchMethodException ex) {
+                Logger.getLogger(StateMachineFacade.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private Boolean isNotDefined(Script script) {
+        return script == null || script.getContent() == null
+                || script.getContent().equals("");
     }
 }
