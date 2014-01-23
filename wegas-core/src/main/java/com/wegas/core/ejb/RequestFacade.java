@@ -43,6 +43,11 @@ public class RequestFacade {
     /**
      *
      */
+    @Inject
+    private ScriptEvent scriptEvent;
+    /**
+     *
+     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
     /**
@@ -123,7 +128,7 @@ public class RequestFacade {
      */
     public void commit() {
         em.flush();
-        if (this.getUpdatedInstances().size() > 0) {
+        if (this.getUpdatedInstances().size() > 0 || scriptEvent.isEventFired()) {
             if (this.getPlayer() != null) {
                 // RequestManager.PlayerAction action = new RequestManager.PlayerAction();
                 //action.setPlayer(this.getPlayer());

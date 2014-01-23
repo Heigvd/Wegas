@@ -61,7 +61,7 @@ public class ScriptFacadeTest extends AbstractEJBTest {
         Assert.assertEquals(VALUE2, instance.getValue());
 
         //Test with events
-        final Script testEvent = new Script("Event.on('testEvent', function(o){" + VARIABLENAME + ".value=o.value;});\nEvent.fire('testEvent', {'value':'" + VALUE + "'});");
+        final Script testEvent = new Script("Event.on('testEvent', function(o){VariableDescriptorFacade.findByName(gameModel,'" + VARIABLENAME + "').getInstance(self).setValue(o.value);});\nEvent.fire('testEvent', {'value':'" + VALUE + "'});");
         testEvent.setLanguage("JavaScript");
         sm.eval(player.getId(), testEvent);
         Assert.assertEquals(VALUE, ((StringInstance) vif.find(stringDescriptor.getId(), player.getId())).getValue());
