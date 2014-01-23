@@ -52,7 +52,6 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         final RequestFacade rm = lookupBy(RequestFacade.class);
 
         // rm.setPlayer(player.getId());  //uncomment to make the test fail ...
-
         // Create a number
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
@@ -186,15 +185,15 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), sm);
         gmf.reset(gameModel.getId());
         //Test for all players.
-        for(Game g : gameModel.getGames()){
-            for(Team t : g.getTeams()){
-                for(Player p : t.getPlayers()){
+        for (Game g : gameModel.getGames()) {
+            for (Team t : g.getTeams()) {
+                for (Player p : t.getPlayers()) {
                     assertEquals(INITIALVALUE + 1 + 5 + 2 + 10, ((NumberInstance) vif.find(number.getId(), p)).getValue(), .1);
                     assertEquals(3L, ((StateMachineInstance) vif.find(sm.getId(), p)).getCurrentStateId(), .1);
                 }
             }
         }
-        
+
         // Clean up
         vdf.remove(number.getId());
         vdf.remove(sm.getId());
