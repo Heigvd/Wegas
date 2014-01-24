@@ -24,8 +24,6 @@ import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.resourceManagement.persistence.DialogueTransition;
 import java.io.Serializable;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -58,6 +56,8 @@ public class StateMachineFacade implements Serializable {
     @Inject
     private ScriptEvent scriptEvent;
 
+    private InternalStateMachineEventCounter stateMachineEventsCounter;
+
     /**
      *
      */
@@ -75,23 +75,20 @@ public class StateMachineFacade implements Serializable {
             player = variableInstanceFacade.findAPlayer(requestManager.getUpdatedInstances().get(0));
         }
         this.runForPlayer(player);
-//         this.playerUpdated(playerAction.getPlayer());
-//        this.playerTransitions.clear();
     }
 
     public void resetEventListener(@Observes ResetEvent resetEvent) {
         logger.debug("Received Reset event");
         System.out.println("ResetEvent");
         for (Player player : resetEvent.getConcernedPlayers()) {
-//            this.playerUpdated(player);
             this.runForPlayer(player);
         }
-//        this.playerTransitions.clear();
     }
 
     private void runForPlayer(Player player) {
         List<StateMachineDescriptor> statemachines = variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
         List<Transition> passed = new ArrayList<>();
+        stateMachineEventsCounter = new InternalStateMachineEventCounter();
         Integer steps = this.doSteps(player, passed, statemachines, 0);
         logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
     }
@@ -117,8 +114,20 @@ public class StateMachineFacade implements Serializable {
                     continue;
                 } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;
-                } else if (transition.getTriggerCondition().getContent().contains("Event.fired")) {
-                    this.eventTransition(transition, smi);
+                } else if (transition.getTriggerCondition().getContent().contains("Event.fired")) { //TODO: better way to find out which are event transition.
+                    if (passedTransitions.contains(transition)) {
+                        /*
+                         * Loop prevention : that player already passed through
+                         * this transiton
+                         */
+                        logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                    } else {
+                        if (this.eventTransition(transition, smi)) {
+                            passedTransitions.add(transition);
+                            transitionPassed = true;
+                        }
+                    }
+
                 } else {
                     try {
                         validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition());
@@ -169,11 +178,12 @@ public class StateMachineFacade implements Serializable {
      * @param transition
      */
     private Boolean eventTransition(Transition transition, StateMachineInstance smi) {
-        String script = transition.getTriggerCondition().getContent();
-        String[] tokens = script.split("[\'\"]");
-        Object[] fired = scriptEvent.fired(tokens[1]);
-        if (fired.length > 0) {
+        String script = transition.getTriggerCondition().getContent();          //@TODO: To test, till I imagine a better way to define events.
+        String event = script.split("[\'\"]")[1];
+        Object[] fired = scriptEvent.fired(event);
+        if (fired.length > stateMachineEventsCounter.count(smi, event)) {
             smi.setCurrentStateId(transition.getNextStateId());
+            stateMachineEventsCounter.increase(smi, event);
             try {
                 if (!this.isNotDefined(transition.getPreStateImpact())) {
                     final Object preImpactFunc = scriptManager.eval(transition.getPreStateImpact());
@@ -192,7 +202,7 @@ public class StateMachineFacade implements Serializable {
                     }
                 }
             } catch (ScriptException | NoSuchMethodException ex) {
-                Logger.getLogger(StateMachineFacade.class.getName()).log(Level.SEVERE, null, ex);
+                logger.debug("Event transition script failed", ex);
             }
             return true;
         } else {
@@ -203,5 +213,36 @@ public class StateMachineFacade implements Serializable {
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
                 || script.getContent().equals("");
+    }
+
+    /**
+     * Used to store Events during run.
+     */
+    private class InternalStateMachineEventCounter {
+
+        private final Map<StateMachineInstance, Map<String, Integer>> smEvents;
+
+        private InternalStateMachineEventCounter() {
+            this.smEvents = new HashMap<>();
+        }
+
+        private Integer count(StateMachineInstance instance, String event) {
+            if (!smEvents.containsKey(instance)) {
+                smEvents.put(instance, new HashMap<String, Integer>());
+            }
+            if (smEvents.get(instance).containsKey(event)) {
+                return smEvents.get(instance).get(event);
+            } else {
+                return 0;
+            }
+        }
+
+        private void increase(StateMachineInstance instance, String event) {
+            if (!smEvents.containsKey(instance)) {
+                smEvents.put(instance, new HashMap<String, Integer>());
+            }
+            smEvents.get(instance).put(event, this.count(instance, event) + 1);
+        }
+
     }
 }
