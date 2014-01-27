@@ -12,6 +12,7 @@ import com.sun.jersey.multipart.FormDataParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.jcr.content.*;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -180,7 +181,7 @@ public class FileController {
             return response.build();
         }
         if (fileDescriptor instanceof FileDescriptor) {
-            response = Response.ok(((FileDescriptor) fileDescriptor).getBase64Data());
+            response = Response.ok(new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512));
             response.header("Content-Type", fileDescriptor.getMimeType());
             response.header("Description", fileDescriptor.getDescription());
             CacheControl cc = new CacheControl();
@@ -189,15 +190,10 @@ public class FileController {
             response.cacheControl(cc);
             response.lastModified(((FileDescriptor) fileDescriptor).getDataLastModified().getTime());
 
-            try {
-                ((FileDescriptor) fileDescriptor).getBase64Data().close();
-            } catch (IOException ex) {
-                logger.error(null, ex);
-            } finally {
-                if (connector != null) {
-                    connector.save();
-                }
+            if (connector != null) {
+                connector.save();
             }
+
         }
         return response.build();
     }
