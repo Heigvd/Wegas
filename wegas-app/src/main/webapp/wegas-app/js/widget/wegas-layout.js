@@ -82,7 +82,7 @@ YUI.add("wegas-layout", function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "New element",
+                label: "Add",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
@@ -159,7 +159,7 @@ YUI.add("wegas-layout", function(Y) {
                                             }
                                         }]}, {
                                     type: BUTTON,
-                                    label: "Variable display",
+                                    label: "Variable",
                                     plugins: [{
                                             fn: "WidgetMenu",
                                             cfg: {

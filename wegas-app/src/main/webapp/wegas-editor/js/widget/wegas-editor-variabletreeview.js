@@ -366,7 +366,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     host.toolbar.add(menuItems[0]);                             // Populate the menu with the elements associated to the
                     menuItems.splice(0, 1);
                 } else {
-                    host.toolbar.item(host.toolbar.size() - 1).disable();
+                    //host.toolbar.item(host.toolbar.size() - 1).disable();
                 }
 
                 //Y.once("rightTabShown", function() {
