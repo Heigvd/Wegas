@@ -40,10 +40,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         }, this)
                     }
                 });
-                this.toolbar.add({
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>New element",
-                    disabled: true
-                });
             }
         },
         bindUI: function() {
