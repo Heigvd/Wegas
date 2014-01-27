@@ -10,11 +10,6 @@
  */
 importPackage(javax.naming);
 
-function lookupBean (name) {
-    var ctx = new InitialContext();
-    return ctx.lookup("java:module/" + name);
-}
-
 function passPeriod () {
     var currentTime = phases.descriptor.items.get(currentPhase.value - 1),
     currentTimeInstance = currentTime.getInstance(self);
