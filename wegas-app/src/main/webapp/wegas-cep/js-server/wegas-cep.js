@@ -35,6 +35,7 @@ function setTeamMotivation () {
             mSum = 0,
             mAverage,
             mGap = [],
+            tmpVal,
             SumOfSquareOfMGap = 0,
             standardDeviation,
             newTeamMotivation;
@@ -46,8 +47,14 @@ function setTeamMotivation () {
     for (i = 0; i < listEmployees.items.size(); i++) {
         employeeInstance = listEmployees.items.get(i).getInstance(self);
         if (employeeInstance.getActive() == true) {
-            morals.push(parseInt(employeeInstance.getMoral()));
-            mSum += parseInt(employeeInstance.getMoral());
+            tmpVal = parseInt(employeeInstance.getMoral());
+            //Bound moral between teamMotivation Min val and max val
+            if(boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue()) !== tmpVal){
+                tmpVal = boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue());
+                employeeInstance.setMoral(tmpVal);
+            }
+            morals.push(tmpVal);
+            mSum += tmpVal;
         }
     }
     mAverage = mSum / morals.length;
@@ -70,6 +77,10 @@ function setTeamMotivation () {
 
     //set teamMotivation
     teamMotivation.getInstance(self).setValue(Math.round(newTeamMotivation));
+}
+
+function boundConstrain(val, lowerBound, upperBound){
+    return Math.max(lowerBound, Math.min(val, upperBound));
 }
 
 /**
