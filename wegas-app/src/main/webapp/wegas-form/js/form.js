@@ -13,22 +13,20 @@
 YUI.add('form', function(Y) {
     "use strict";
 
-    var CONTENTBOX = "contentBox",
-            BOUNDINGBOX = "boundingBox",
-            Field = Y.Base.create("form-field", Y.Widget, [Y.WidgetChild], {
-        BOUNDING_TEMPLATE: "<div><label></label></div>",
+    var CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
+            Field;
+
+    Field = Y.Base.create("form-field", Y.Widget, [Y.WidgetChild], {
+        /**
+         * 
+         */
+        BOUNDING_TEMPLATE: "<div><div class=\"yui3-form-label\"></div></div>",
         /**
          *
          */
-        initializer: function() {
-            this.publish("updated", {emitFacade: true});
-        },
         renderUI: function() {
             this.get(BOUNDINGBOX).append("<div class=\"yui3-form-status\"></div>" +
                     "<div class=\"yui3-form-description\"></div>");
-        },
-        onInputUpdate: function(e) {
-            this.fire("updated", {});
         },
         /**
          *
@@ -43,15 +41,22 @@ YUI.add('form', function(Y) {
         }
     }, {
         ATTRS: {
+            value: {},
+            className: {},
+            name: {},
+            readonly: {},
+            required: {
+                value: false
+            },
+            validator: {},
             label: {
                 setter: function(value) {
                     if (value) {
-                        this.get(BOUNDINGBOX).one("label").setContent(value);
+                        this.get(BOUNDINGBOX).one(".yui3-form-label").setContent(value);
                     }
                     return value;
                 }
             },
-            value: {},
             description: {
                 setter: function(value) {
                     if (value) {
@@ -59,12 +64,7 @@ YUI.add('form', function(Y) {
                     }
                     return value;
                 }
-            },
-            className: {},
-            name: {}, readonly: {},
-            required: {
-                value: false
-            },
+            }
             //showMsg: {
             //    value: false
             //},
@@ -73,28 +73,17 @@ YUI.add('form', function(Y) {
 
         }
     });
-    Y.namespace("Wegas").Field = Field;
+    Y.Field = Field;
 
     var String = Y.Base.create("form-string", Field, [], {
         CONTENT_TEMPLATE: "<div><input type=\"text\"></div>",
-        renderUI: function() {
-            String.superclass.renderUI.call(this);
-            var input = this.get(CONTENTBOX).one("input");
-
-            input.setAttribute("autocomplete", this.get("autocomplete") ? "on" : "off");
-
-            if (this.get("readonly")) {
-                input.setAttributes("readonly", "readonly");
-            }
-            if (this.get("maxLength")) {
-                input.setAttributes("maxLength", this.get("maxLength"));
-            }
-            // + 'name="' +this.get()
-            // + 'size='
-            // attributes.id = this.divEl.id?this.divEl.id+'-field':Y.guid();
-        },
+        /**
+         * 
+         */
         bindUI: function() {
-            this.get("contentBox").one("input").on("change", this.onInputUpdate, this);
+            this.get("inputNode").on("change", function(e) {
+                this.set("value", this.get("value"), {internal: true});
+            }, this);
 
             //if (Y.UA.ie > 0) { // refer to inputEx-95
             //    var field = this.el;
@@ -109,13 +98,20 @@ YUI.add('form', function(Y) {
             //Y.on("keypress", this.onKeyPress, this.el, this);
             //Y.on("keyup", this.onKeyUp, this.el, this);
         },
+        /**
+         * 
+         */
         syncUI: function() {
             String.superclass.syncUI.call(this);
+            this.set("readonly", this.get("readonly"));
+            this.set("maxLength", this.get("maxLength"));
+            this.set("autocomplete", this.get("maxLength"));
             this.set("placeholder", this.get("placeholder"));
         }
     }, {
         ATTRS: {
             inputNode: {
+                readonly: true,
                 getter: function() {
                     return this.get(CONTENTBOX).one("input");
                 }
@@ -124,12 +120,29 @@ YUI.add('form', function(Y) {
                 getter: function() {
                     return this.get("inputNode").get("value");
                 },
-                setter: function(value) {
-                    this.get("inputNode").set("value", value);
+                setter: function(value, name, cfg) {
+                    if (!cfg || !cfg.internal) {
+                        this.get("inputNode").set("value", value);
+                    }
                     return value;
                 }
             },
-            maxLength: {},
+            maxLength: {
+                value: false,
+                setter: function(value) {
+                    this.get("inputNode").setAttribute("maxLength", value);
+                    return value;
+                }
+            },
+            readonly: {
+                value: false,
+                setter: function(value) {
+                    if (value) {
+                        this.get("inputNode").setAttribute("readonly", "readonly");
+                    }
+                    return value;
+                }
+            },
             placeholder: {
                 setter: function(value) {
                     if (value) {
@@ -140,9 +153,7 @@ YUI.add('form', function(Y) {
             },
             autocomplete: {
                 setter: function(value) {
-                    if (value) {
-                        this.get("inputNode").set("placeholder", value);
-                    }
+                    this.get("inputNode").set("autocomplete", value ? "on" : "off");
                     return value;
                 }
             }
@@ -154,8 +165,29 @@ YUI.add('form', function(Y) {
             //}
         }
     });
-    Y.namespace("Wegas").String = String;
+    Y.String = String;
+    
+    /**
+     * 
+     */
+    var Textarea = Y.Base.create("form-textarea", String, [], {
+        CONTENT_TEMPLATE: "<div><textarea></textarea></div>"
+    }, {
+        ATTRS: {
+            inputNode: {
+                readonly: true,
+                getter: function() {
+                    return this.get(CONTENTBOX).one("textarea");
+                }
+            }
+        }
+    });
+    Y.Textarea = Textarea;
 
+    /**
+     * 
+     * @type @exp;Y@pro;Base@call;create
+     */
     var Checkbox = Y.Base.create("form-checkbox", Field, [], {
         CONTENT_TEMPLATE: "<div><input type=\"checkbox\"><div class=\"rightLabel\"</div>",
         bindUI: function() {
@@ -172,7 +204,7 @@ YUI.add('form', function(Y) {
             //        });
             //    }, this);
             //} else {
-            //input.on("change", this.fire, this, "updated");
+            //input.on("change", this.fire, this, "update");
             //}
 
             //Y.one(this.el).on("focus", this.onFocus, this, true);
@@ -198,32 +230,111 @@ YUI.add('form', function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").Checkbox = Checkbox;
+    Y.Checkbox = Checkbox;
 
-    var Select = Y.Base.create("form-select", Field, [], {
+    /*
+     * 
+     */
+    var Select = Y.Base.create("form-select", Field, [Y.WidgetParent], {
         CONTENT_TEMPLATE: "<div><select></select></div>",
+        initializer: function(cfg) {
+            if (cfg.children) {
+                cfg.children = Y.Array.map(cfg.children, function(i) {
+                    if (Y.Lang.isString(i)) {
+                        return {
+                            label: i,
+                            value: i
+                        };
+                    } else {
+                        return i;
+                    }
+                });
+            }
+        },
+        /**
+         * 
+         */
+        renderUI: function() {
+            Select.superclass.renderUI.call(this);
+            this._childrenContainer = this.get(CONTENTBOX).one("select");
+        },
+        /**
+         * 
+         */
         bindUI: function() {
-            input.on("change", this.fire, this, "updated");
+            this.get(CONTENTBOX).one("select").on("change", function(e) {
+                this.set("value", this.get("value"), {internal: true});
+            }, this);
             //Y.on("focus", this.onFocus, this.el, this);
             //Y.on("blur", this.onBlur, this.el, this);
         }
     }, {
         ATTRS: {
-            choices: {
-                value: [],
-                setter: function(value) {
-                    var i, selectNode = this.get(CONTENTBOX).one("select");
-                    for (var i = 0; i < value.length; i += 1) {
-                        selectNode.append('<option value="' + value[i].value + '">' + value[i].label + '</option>');
+            defaultChildType: {
+                value: "SelectOption"
+            },
+            selectNode: {
+                readonly: true,
+                getter: function() {
+                    return this.get(CONTENTBOX).one("select");
+                }
+            },
+            value: {
+                getter: function() {
+                    return this.get(CONTENTBOX).one("select").get("value");
+                },
+                setter: function(value, name, cfg) {
+                    if (value && (!cfg || !cfg.internal)) {
+                        this.get(CONTENTBOX).one("select").set("value", value);
                     }
                     return value;
                 }
             }
         }
     });
-    Y.namespace("Wegas").Select = Select;
+    Y.Select = Select;
+    /**
+     * 
+     * 
+     */
+    var SelectOption = Y.Base.create("form-selectoption", Y.Widget, [Y.WidgetChild], {
+        BOUNDING_TEMPLATE: "<option>blabla</option>",
+        CONTENT_TEMPLATE: null,
+        syncUI: function() {
+            this.set("label", this.get("label"));
+            this.set("value", this.get("value"));
+        }
+    }, {
+        ATTRS: {
+            value: {
+                setter: function(value) {
+                    this.get(BOUNDINGBOX).set("value", value);
+                    return value;
+                }
+            },
+            label: {
+                setter: function(value) {
+                    this.get(BOUNDINGBOX).setHTML(value);
+                    return value;
+                }
+            }
+        }
+    });
+    Y.SelectOption = SelectOption;
 
-    var Group = Y.Base.create("form-group", Field, [Y.WidgetParent], {}, {
+    var Group = Y.Base.create("form-group", Field, [Y.WidgetParent], {
+        bindUI: function() {
+            this.on("addCild", function(e) {
+                e.child.on("valueChange", this.onChildValueChange, this);
+            });
+            this.each(function(i) {
+                i.on("valueChange", this.onChildValueChange, this);
+            }, this);
+        },
+        onChildValueChange: function() {
+            this.set("value", this.get("value"), {internal: true});
+        }
+    }, {
         ATTRS: {
             value: {
                 getter: function() {
@@ -237,14 +348,17 @@ YUI.add('form', function(Y) {
                         return ret;
                     }
                 },
-                setter: function(value) {
-                    var i, j = 0;
-                    if (this.get("flatten")) {
-                        // TODO
-                    } else {
-                        this.each(function(item) {
-                            item.set("value", value[item.get("name")]);
-                        });
+                setter: function(value, name, cfg) {
+                    if (!cfg || !cfg.internal) {
+                        if (this.get("flatten")) {
+                            // TODO
+                        } else {
+                            this.each(function(item) {
+                                if (value.hasOwnProperty(item.get("name"))) {
+                                    item.set("value", value[item.get("name")]);
+                                }
+                            });
+                        }
                     }
                     return value;
                 }
@@ -254,5 +368,5 @@ YUI.add('form', function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").Group = Group;
+    Y.Group = Group;
 });

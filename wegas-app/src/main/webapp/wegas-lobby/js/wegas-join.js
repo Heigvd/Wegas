@@ -71,7 +71,7 @@ YUI.add('wegas-join', function(Y) {
                     teams = game.get("teams"),
                     gameModel = e.response.entity.get("gameModel"),
                     teamName = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("name")
-                    : game.get("name") + "-" + (game.get("teams").length + 1);
+                    : game.get("name") + "-" + (game.get("teams").length);
 
             cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name"));// Set game name
             cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
