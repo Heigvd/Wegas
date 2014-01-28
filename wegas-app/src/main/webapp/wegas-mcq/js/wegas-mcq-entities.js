@@ -41,6 +41,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
+                    label: "Label",
                     index: -1
                 }
             },
@@ -219,6 +220,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
+                    label: "Label",
                     index: -1
                 }
             },
