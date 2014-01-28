@@ -219,15 +219,16 @@ YUI.add('wegas-editor-treeview', function(Y) {
         },
         genTreeViewElements: function(entities) {
             var ret = TeamTreeView.superclass.genTreeViewElements.call(this, entities);
-
-            if (this.get("entity").get("properties.freeForAll")
-                    && entities[0] && entities[0] instanceof Wegas.persistence.Team) {// Do not display teams in free for all game
-                return Y.Array.flatten(Y.Array.map(ret, function(node) {
-                    return node.children || [];
-                }));
-            } else {
+            if (entities[0] && entities[0] instanceof Wegas.persistence.Team) {
+                if (this.get("entity").get("properties.freeForAll")) {// Do not display teams in free for all game
+                    return Y.Array.flatten(Y.Array.map(ret, function(node) {
+                        return node.children || [];
+                    })).slice(1);
+                } else {
+                    return ret.slice(1);
+                }
+            } else
                 return ret;
-            }
         }
     }, {
         ATTRS: {
@@ -273,8 +274,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 case 'Team':
                     var children = this.genTreeViewElements(entity.get("players")),
                             expanded = Y.Array.find(children, function(p) {
-                                return p.selected;
-                            }) || !collapsed;
+                        return p.selected;
+                    }) || !collapsed;
 
                     return {
                         type: 'TreeNode',
@@ -331,7 +332,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
     Plugin.EditorTVToolbarMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent("treeview:selectionChange", function(e) {
-                if (e.prevVal === e.newVal || 
+                if (e.prevVal === e.newVal ||
                         (e.prevVal && e.newVal && e.prevVal._items === e.newVal._items)) {
                     return;
                 }
@@ -379,7 +380,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     switch (i.label) {
                         case "Delete":
                         case "New":
-                        case "New element":
+                        case "Add":
                         case "Copy":
                         case "View":
                         case "Open in editor":

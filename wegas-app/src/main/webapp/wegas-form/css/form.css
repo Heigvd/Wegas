@@ -10,23 +10,13 @@
  */
 
 /* Override default browser styles */
-.yui3-form-field {
+.yui3-skin-sam .yui3-form-field {
     padding-left:100px;
     Webkit: collapse white-space between units;
     text-rendering: optimizespeed;
     /*Webkit: fixes text-rendering: optimizeLegibility;*/
 }
-.yui3-form-field label {
-    margin-left: -100px;
-    width: 100px;
-    display:inline-block;
-    zoom: 1;
-    letter-spacing: normal;
-    word-spacing: normal;
-    vertical-align: top;
-    text-rendering: auto;
-}
-.yui3-form-field > div {
+.yui3-skin-sam .yui3-form-field > div {
     width: 100%;
     display:inline-block;
     zoom: 1;
@@ -35,17 +25,28 @@
     vertical-align: top;
     text-rendering: auto;
 }
-.yui3-form-status:empty {
+.yui3-skin-sam .yui3-form-field .yui3-form-label {
+    margin: 3px 5px 2px -100px;
+    width: 95px;
+    text-align: right;
+}
+.yui3-skin-sam .yui3-form-field .yui3-form-description {
+    color: #505050;
+    font-size: 75%;
+    /*margin-top: 2px;*/
+}
+.yui3-skin-sam .yui3-form-status:empty {
     display:none;
 }
-.yui3-form-string input {
+/* String styles */
+.yui3-skin-sam .yui3-form-string input {
     width: 100%;
 }
 /* Group styles */
-.yui3-form-group {
+.yui3-skin-sam .yui3-form-group {
     padding: 0;
 }
-.yui3-form-group > label {
+.yui3-skin-sam .yui3-form-group > label {
     margin:0;
     width:auto;
     font-weight: bolder;

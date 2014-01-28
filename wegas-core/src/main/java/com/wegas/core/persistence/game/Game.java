@@ -171,12 +171,6 @@ public class Game extends NamedEntity {
             this.setKey(this.getName());
         }
         this.key = this.key.toLowerCase().replace(" ", "-");
-        // Done on join game
-        //if (this.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll) && this.teams.isEmpty()) {
-        //Team t = new Team("Default");
-        //t.addPlayer(new Player("Test player"));
-        //this.addTeam(t);
-        //}
         this.setUpdatedTime(new Date());
     }
 

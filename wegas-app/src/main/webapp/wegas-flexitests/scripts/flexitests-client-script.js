@@ -22,7 +22,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             ]
         }, {
             type: "Button",
-            label: "New element",
+            label: "Add",
             plugins: [{
                     fn: "WidgetMenu",
                     cfg: {
@@ -80,7 +80,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             ]
         }, {
             type: "Button",
-            label: "New element",
+            label: "Add",
             plugins: [{
                     fn: "WidgetMenu",
                     cfg: {
@@ -134,7 +134,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
             ]
         }, {
             type: "Button",
-            label: "New element",
+            label: "Add",
             plugins: [{
                     fn: "WidgetMenu",
                     cfg: {

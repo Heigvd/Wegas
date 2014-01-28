@@ -179,11 +179,12 @@ public class GameController {
         Team team = null;
 
         if (game.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll)) {   // If game is "freeForAll" (single team)
-            if (game.getTeams().isEmpty()) {
+            //if (game.getTeams().isEmpty()) {
+            if (game.getTeams().size() <= 1) {                                  // First team is debug team
                 team = new Team("Default");
                 teamFacade.create(game.getId(), team);
             } else {
-                team = game.getTeams().get(0);                                  // Join the first team available
+                team = game.getTeams().get(1);                                  // Join the first team available
             }
         }
 

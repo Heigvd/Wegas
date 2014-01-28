@@ -100,7 +100,8 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                         i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                 }
 
-                return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+                // return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+                return (!i.label || (i.label !== "New" && i.label.indexOf("Edit") < 0));
             });                                                                 // Retrieve menu and remove the first item
 
             widget.highlight(true);

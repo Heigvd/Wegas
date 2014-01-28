@@ -934,6 +934,23 @@ YUI().use(function(Y) {
                 }
             }
         },
+        "wegas-form": {
+            base: './wegas-form/',
+            root: '/wegas-form/',
+            modules: {
+                form: {
+                    requires: ["base", "widget", "widget-parent", "widget-child",
+                        "formcss"]
+                },
+                formcss: {
+                    path: "css/form.css",
+                    requires: ["base", "widget", "widget-parent", "widget-child"]
+                },
+                "form-rte": {
+                    requires: ["form", "tinymce"]
+                }
+            }
+        },
         "wegas-others": {
             base: './',
             root: '/',

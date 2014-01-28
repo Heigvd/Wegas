@@ -352,30 +352,36 @@ YUI.add('wegas-entity', function(Y) {
                 choices: [{
                         value: "OPEN",
                         label: "Public game"
-                    }, {
-                        value: "URL",
-                        label: "Anyone with the link can join"
-                    }, {
+                    },
+                    //{
+                    //    value: "URL",
+                    //    label: "Anyone with the link can join"
+                    //}, 
+                    {
                         value: "ENROLMENTKEY",
-                        label: "Players need an enrolment key to join"
+                        label: "Anyone with the link or the enrolment key can join"
                     }, {
                         value: "SINGLEUSAGEENROLMENTKEY",
-                        label: "Each player/team needs an unique enrolment key to join"
-                    }, {
-                        value: "CLOSE",
-                        label: "Game does not accept new players"
-                    }],
+                        label: "Each player needs its own enrolment key to join"
+                    }
+                    //, {
+                    //    value: "CLOSE",
+                    //    label: "Game does not accept new players"
+                    //}
+                ],
                 _inputex: {
                     value: "ENROLMENTKEY",
                     interactions: [{
                             valueTrigger: "OPEN", // this action will run when this field value is set to OPEN
                             actions: [{name: 'key', action: 'hide'},
                                 {name: 'keys', action: 'hide'}]
-                        }, {
-                            valueTrigger: "URL", // this action will run when this field value is set to OPEN
-                            actions: [{name: 'key', action: 'hide'},
-                                {name: 'keys', action: 'hide'}]
-                        }, {
+                        },
+                        //{
+                        //    valueTrigger: "URL", // this action will run when this field value is set to OPEN
+                        //    actions: [{name: 'key', action: 'hide'},
+                        //        {name: 'keys', action: 'hide'}]
+                        //}, 
+                        {
                             valueTrigger: "ENROLMENTKEY",
                             actions: [{name: 'key', action: 'show'},
                                 {name: 'keys', action: 'hide'}]
@@ -383,11 +389,13 @@ YUI.add('wegas-entity', function(Y) {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
                             actions: [{name: 'key', action: 'hide'},
                                 {name: 'keys', action: 'show'}]
-                        }, {
-                            valueTrigger: "CLOSE",
-                            actions: [{name: 'key', action: 'hide'},
-                                {name: 'keys', action: 'hide'}]
-                        }]
+                        }
+                        //, {
+                        //    valueTrigger: "CLOSE",
+                        //    actions: [{name: 'key', action: 'hide'},
+                        //        {name: 'keys', action: 'hide'}]
+                        //}
+                    ]
                 }
             },
             key: {
