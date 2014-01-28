@@ -77,7 +77,10 @@ YUI.add('datatable-csv', function(Y) {
             for (i = 0; i < data.length; i += 1) {
                 fields = [];
                 for (j = 0; j < keys.length; j += 1) {
-                    fields.push("\"" + (data[i].get(keys[j]) || "") + "\"");
+                    fields.push("\"" + (
+                            (data[i].get(keys[j]) === undefined || data[i].get(keys[j]) === null) ?
+                            "" : data[i].get(keys[j])
+                            ) + "\"");
                 }
                 records.push(fields);
 
@@ -92,10 +95,10 @@ YUI.add('datatable-csv', function(Y) {
          * @returns {undefined}
          */
         destructor: function() {
-            if (this.bcsv){
+            if (this.bcsv) {
                 this.bcsv.destroy();
             }
-            if (this.bdcsv){
+            if (this.bdcsv) {
                 this.bdcsv.destroy();
             }
         }
