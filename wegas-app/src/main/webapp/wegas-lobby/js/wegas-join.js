@@ -75,7 +75,9 @@ YUI.add('wegas-join', function(Y) {
 
             cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name"));// Set game name
             cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
-            cb.one(".description").setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")
+            cb.one(".description")
+                    //.setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")
+                    .setHTML(e.response.entity.get("description"))
                     .removeClass("wegas-loading-div");
 
             var showTeamSelection = false,

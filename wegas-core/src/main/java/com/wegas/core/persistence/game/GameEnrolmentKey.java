@@ -20,7 +20,8 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(name = "gameenrolementkey")
+@Table(name = "gameenrolementkey" //, uniqueConstraints = @UniqueConstraint(columnNames = {"wkey"})
+        )
 public class GameEnrolmentKey extends AbstractEntity {
 
     @Id

@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.game;
 
-import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.NamedEntity;
@@ -30,8 +29,10 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints =
-        @UniqueConstraint(columnNames = {"name"}))
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"name"}), //@UniqueConstraint(columnNames = {"token"}),
+//@UniqueConstraint(columnNames = {"wkey"})
+})
 public class Game extends NamedEntity {
 
     /**
@@ -165,12 +166,14 @@ public class Game extends NamedEntity {
     @PreUpdate
     public void preUpdate() {
         if (this.getToken() == null || this.getToken().equals("")) {
-            this.setToken(Helper.genToken(10));
+            //this.setToken(Helper.genToken(10));
+            this.setToken(this.getName());
         }
         if (this.getKey() == null || this.getKey().equals("")) {
             this.setKey(this.getName());
         }
         this.key = this.key.toLowerCase().replace(" ", "-");
+        this.token = this.token.toLowerCase().replace(" ", "-");
         this.setUpdatedTime(new Date());
     }
 
@@ -181,7 +184,7 @@ public class Game extends NamedEntity {
         super.merge(a);
         this.setAccess(other.getAccess());
         this.setToken(other.getToken());
-        this.setKey(other.getKey());
+        //this.setKey(other.getKey());
         ListUtils.mergeLists(this.getKeys(), other.getKeys());
     }
 
