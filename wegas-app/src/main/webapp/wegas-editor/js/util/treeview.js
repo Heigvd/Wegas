@@ -93,10 +93,10 @@ YUI.add('treeview', function(Y) {
                     this.fire("nodeClick", {node: e.node, domEvent: e.domEvent});
                 }
             });
-            this.after("*:addChild", function(e) {
-                /* Selection is not updated if a child with selected attribute is added, force it. */
-                e.target._set("selection", e.target.get("selection"));
-            });
+//            this.after("*:addChild", function(e) {
+//                /* Selection is not updated if a child with selected attribute is added, force it. */
+//                e.target._set("selection", e.target.get("selection"));
+//            });
             this.after("addChild", function(e) {
                 this.get(BOUNDING_BOX).all("." + classNames.emptyMSG).remove(true);
             });
@@ -362,7 +362,6 @@ YUI.add('treeview', function(Y) {
          */
         destructor: function() {
             this.blur(); //remove a focused node generates some errors
-            this.set("selected", 0);
             if (this.get("rightWidget")) {
                 this.get("rightWidget").destroy();
             }
