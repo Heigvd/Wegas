@@ -14,12 +14,12 @@ select {
     margin: 0;
 }
 
+input, input[type="text"], input[type="password"] {
+    padding: 2px;
+}
 input[type="submit"], input[type="reset"] {
     padding:2px 4px;
     cursor: pointer;
-}
-input[type=text], input[type=password] {
-    padding: 2px;
 }
 *:focus {
     outline: none; /* Remove chrome focus outline */
