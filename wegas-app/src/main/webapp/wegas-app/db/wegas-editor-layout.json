@@ -162,7 +162,7 @@
                 "cssClass": "editor-tab",
                 "children": [{
                         "type": "Tab",
-                        "label": "Variable",
+                        "label": "Variables",
                         "cssClass": "editor-variables",
                         "children": [{
                                 "type": "VariableTreeView",

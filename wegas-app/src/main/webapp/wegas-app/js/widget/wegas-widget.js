@@ -66,6 +66,8 @@ YUI.add("wegas-widget", function(Y) {
                 this.showMessageBis("error", "You don't have enough " + test[1] + ".");
             } else if (stringMessage) {
                 this.showMessageBis("error", stringMessage[1].split(" in <")[0]);
+            } else if (error.match(/ERROR: duplicate key value violates unique constraint "unq_game_0"/)) {
+                this.showMessageBis("error", "This name is already in use");
             } else {
                 this.showMessageBis("error", error);
             }
