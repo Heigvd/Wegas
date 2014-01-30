@@ -123,7 +123,8 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     @Override
     public void remove(final Game entity) {
-        if (entity.getGameModel().getGames().size() <= 1) {
+        if (entity.getGameModel().getGames().size() <= 1
+                && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
             gameModelFacade.remove(entity.getGameModel());
         }
         for (Team t : entity.getTeams()) {
@@ -177,6 +178,15 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         } catch (NoResultException ex) {
             return null;
         }
+    }
+
+    public GameEnrolmentKey findGameEnrolmentKey(final String key) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<GameEnrolmentKey> game = cq.from(GameEnrolmentKey.class);
+        cq.where(cb.equal(game.get(GameEnrolmentKey_.key), key));
+        Query q = em.createQuery(cq);
+        return (GameEnrolmentKey) q.getSingleResult();
     }
 
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
