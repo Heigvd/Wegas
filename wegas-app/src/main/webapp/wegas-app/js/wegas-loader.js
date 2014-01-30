@@ -304,7 +304,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-widgettoolbar': {
                     path: 'js/plugin/wegas-widgettoolbar-min.js',
-                    requires: 'wegas-widgettoolbarcss',
+                    requires: ['wegas-widgettoolbarcss', 'wegas-widgetmenu'],
                     ws_provides: 'WidgetToolbar'
                 },
                 'wegas-widgettoolbarcss': {

@@ -54,19 +54,19 @@ YUI.add("wegas-image", function(Y) {
          */
         bindUI: function() {
             this.handlers.push(this.get(CONTENTBOX).on("load", function(e) {
-                this.getEvent("load").fired = true;
-                this.getEvent("render").fired = true;
                 if (!this.CSSSize) { // adapt only without plugin
                     this.get("boundingBox").setStyles({width: this.image.width, height: this.image.height});
                 }
                 this.fire("load");
                 this.fire("render");
+                this.getEvent("load").fired = true;
+                this.getEvent("render").fired = true;
             }, this));
             this.handlers.push(this.get(CONTENTBOX).on("error", function(e) {
-                this.getEvent("error").fired = true;
-                this.getEvent("render").fired = true;
                 this.fire("error");
                 this.fire("render");
+                this.getEvent("error").fired = true;
+                this.getEvent("render").fired = true;
             }, this));
         },
         /**
