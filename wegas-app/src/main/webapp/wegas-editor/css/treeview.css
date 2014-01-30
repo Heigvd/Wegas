@@ -80,6 +80,12 @@
     right:5px;
     top: 2px;
 }
+.yui3-treenode {
+    padding: 2px 0;
+}
+.yui3-treenode .yui3-treenode {
+    padding: 0;
+}
 .yui3-treenode-content-header,
 .yui3-treeleaf-content-header{
     position: relative;

@@ -18,7 +18,7 @@ YUI.add('wegas-editor-form', function(Y) {
     /**
      * @name Y.Wegas.Form
      * @class  Class to submit a form, add a toolbar with buttons "submit" and
-     * "cancel" to mangae forms.
+     * "cancel" to manage forms.
      * @extends Y.Widget
      * @augments Y.WidgetChild
      * @augments Y.Wegas.Widget
@@ -95,7 +95,6 @@ YUI.add('wegas-editor-form', function(Y) {
             }
             this.toolbar.add(b);
         }
-
     }, {
         /** @lends Y.Wegas.Form */
         EDITORNAME: "Form",
@@ -160,7 +159,8 @@ YUI.add('wegas-editor-form', function(Y) {
                 }
             },
             buttons: {
-                value: [{
+                value: [
+                    {
                         type: "Button",
                         action: "submit",
                         label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save"
@@ -173,6 +173,8 @@ YUI.add('wegas-editor-form', function(Y) {
 
     EditEntityForm = Y.Base.create("wegas-form", Form, [], {
         bindUI: function() {
+            //this.timer = new Wegas.Helper.Timer(30);
+
             this.on("submit", function(e) {
                 this.showOverlay();
                 this.get("dataSource").cache.put(e.value, {
@@ -246,7 +248,10 @@ YUI.add('wegas-editor-form', function(Y) {
                     }
                     return val;
                 }
-            }
+            },
+            //buttons: {
+            //    value: []
+            //}
         }
     });
 
