@@ -83,7 +83,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     bottom: 0;
     left: 0;
     right: 0;
-    border-top: 1px solid lightgray;
+    border-top: 1px solid #f1f1f1;
 }
 .wegas-console .results .result {
     padding: 2px 4px;
@@ -275,7 +275,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     font-weight: bold;
 }
 
-
 /* Player link menu */
 .yui3-menu-content .wegas-playerlink-buttons {
     padding: 5px 10px;
@@ -318,8 +317,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     display: none;
 }
 .wegas-gamedescription,
-.wegas-jointeam,
-.wegas-shareuser-content {
+.wegas-jointeam {
     padding: 10px 10px 20px;
 }
 .wegas-jointeam .title,
@@ -423,10 +421,15 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     width: 100%;
 }
 /* Share user */
-.wegas-shareuser .wegas-shareuser-content > .title {
-    font-weight: bolder;
-    border-bottom: 1px solid lightgray;
+.wegas-shareuser-content {
+    padding: 6px 10px 20px;
 }
+.wegas-shareuser .wegas-shareuser-content > .title {
+    font-weight: bold;
+    font-size: 90%;
+    padding: 0px 8px 5px;
+}
+
 .wegas-shareuser .username-field .MarkupField-wrapper {
     width: 175px;
     margin-bottom: 5px;
@@ -459,7 +462,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     margin: 10px;
 }
 .wegas-shareuser .inputEx-ListField-childContainer > div {
-    border-top: 1px solid lightgray;
+    border-top: 1px solid #f1f1f1;
     padding-top: 5px;
 }
 .wegas-shareuser .inputEx-ListField-childContainer .inputEx-fieldWrapper {

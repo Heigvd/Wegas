@@ -225,6 +225,11 @@
                                                                                             },
                                                                                             "emptyMessage": "No game is available to play.",
                                                                                             "plugins": [{
+                                                                                                    "fn": "WidgetToolbar",
+                                                                                                    "cfg": {
+                                                                                                        "children": []
+                                                                                                    }
+                                                                                                }, {
                                                                                                     "fn": "RequestDT"
                                                                                                 }, {
                                                                                                     "fn": "EditorDTMenu",
@@ -452,7 +457,7 @@
             }]
     },
     "right": {
-        "width": 500,
+        "width": 530,
         "resize": true,
         "collapse": false,
         "scroll": true,

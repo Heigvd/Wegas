@@ -18,6 +18,9 @@ input[type="submit"], input[type="reset"] {
     padding:2px 4px;
     cursor: pointer;
 }
+input[type=text], input[type=password] {
+    padding: 2px;
+}
 *:focus {
     outline: none; /* Remove chrome focus outline */
 }
@@ -353,7 +356,7 @@ font{
     padding: 7px 5px 4px 5px;
 }
 .yui3-skin-wegas .yui3-datatable-cell {
-    padding: 3px 5px 3px 5px;
+    padding: 5px;
 }
 .yui3-skin-wegas .yui3-datatable-even .yui3-datatable-cell,
 .yui3-skin-wegas .yui3-datatable-odd .yui3-datatable-cell {

@@ -534,7 +534,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             this.argsOffset = 1;
             this.options.returnsFilter = ["number", "boolean", "string"];
             this.options.operator = options.operator;
-            this.options.rightValue = options.rightValue || 0;
+            this.options.rightValue = options.rightValue;
         },
         getValue: function() {
             var value = VariableDescriptorCondition.superclass.getValue.call(this);
@@ -543,7 +543,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 var i = this.inputs[this.inputs.length - 1],
                         values = i.getValue();
 
-                if (i.inputs[1] instanceof inputEx.StringField) {
+                if (!(i.inputs[1] instanceof inputEx.NumberField)) {
                     values[1] = '"' + values[1] + '"';
                 }
 
@@ -592,7 +592,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                 }]
                         }, {
                             type: "number",
-                            value: this.options.rightValue
+                            value: this.options.rightValue || 0
                         }]
                 });
             } else if (cMethod && cMethod.returns === "string") {

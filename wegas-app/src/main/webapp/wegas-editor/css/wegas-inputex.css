@@ -59,10 +59,25 @@ div.inputEx-fieldWrapper {
     float:none;
 }
 /*.wegas-form-centent .inputEx-Group,*/
-.wegas-form-content input[type=text],
 .wegas-form-content select,
 .wegas-form-content textarea {
     width: 100%;
+}
+.wegas-form-content input[type=text],
+.wegas-form-content input[type=password] {
+    width: 98%;
+    padding: 2px 1%;
+}
+.wegas-form input[type=checkbox] {
+    margin-top: .2em;
+}
+.wegas-form-content select{
+    width: 100%;
+    padding: 2px 0;
+}
+.wegas-form div.inputEx-label {
+    padding-top: 0.3em;
+    white-space: normal;
 }
 .wegas-form-content div.inputEx-StringField-wrapper {
     display: inline-block;
@@ -75,6 +90,9 @@ div.inputEx-fieldWrapper {
     margin-right: 7px;
     white-space: nowrap;
     position: relative;
+}
+div.inputEx-description {
+    white-space: normal;
 }
 .wegas-form div.wegas-form-ix >fieldset >div div.inputEx-label,
 .wegas-form div.inputEx-CombineField > div.inputEx-label,

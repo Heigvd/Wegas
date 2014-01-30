@@ -220,6 +220,12 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareUser",
+                                    plugins: [{
+                                            fn: "WidgetToolbar",
+                                            cfg: {
+                                                children: [{type: "Text"}]
+                                            }
+                                        }],
                                     permsList: [{
                                             rightLabel: "Edit",
                                             value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
@@ -349,11 +355,11 @@ YUI.add('wegas-entity', function(Y) {
             access: {
                 type: STRING,
                 value: "ENROLMENTKEY",
-                choices: [{
-                        value: "OPEN",
-                        label: "Public game"
-                    },
+                choices: [
                     //{
+                    //    value: "OPEN",
+                    //    label: "Public game"                    
+                    //},{
                     //    value: "URL",
                     //    label: "Anyone with the link can join"
                     //}, 
@@ -383,11 +389,11 @@ YUI.add('wegas-entity', function(Y) {
                         //}, 
                         {
                             valueTrigger: "ENROLMENTKEY",
-                            actions: [{name: 'key', action: 'show'},
+                            actions: [{name: 'token', action: 'show'},
                                 {name: 'keys', action: 'hide'}]
                         }, {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
-                            actions: [{name: 'key', action: 'hide'},
+                            actions: [{name: 'token', action: 'hide'},
                                 {name: 'keys', action: 'show'}]
                         }
                         //, {
@@ -398,22 +404,22 @@ YUI.add('wegas-entity', function(Y) {
                     ]
                 }
             },
-            key: {
-                type: STRING,
-                optional: true,
-                _inputex: {
-                    label: "Enrolment key",
-                    description: "Player can join this game by using the enrolment key in the lobby or using <br />the link below.<br />"
-                            + "The key can be used to join multiple times."
-                }
-            },
+            //key: {
+            //    type: STRING,
+            //    optional: true,
+            //    _inputex: {
+            //        label: "Enrolment key",
+            //        description: "Player can join this game by using the enrolment key in the lobby or using the link below.<br />"
+            //                + "The key can be used to join multiple times."
+            //    }
+            //},
             keys: {
                 type: ARRAY,
                 value: [],
                 _inputex: {
                     label: "Enrolment keys",
                     _type: "enrolementkeylist",
-                    description: "Player can join this game using an enrolment key as user name/password<br /> on the log in screen or by entering it in the lobby.<br />"
+                    description: "Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
                             + "Each key can be used by only one team/player."
                 }
             },
@@ -421,8 +427,11 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
-                    description: "Leave blank for automatic generation",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    label: "Enrolment key",
+                    description: "Player can join this game by using the enrolment key in the lobby or using the link below.<br />"
+                            + "The key can be used to join multiple times."
+                            //description: "Leave blank for automatic generation",
+                            //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
             playersCount: {
@@ -473,15 +482,6 @@ YUI.add('wegas-entity', function(Y) {
                                 }]
                         }
                     }, {
-                        fn: "OpenTabActionThi",
-                        cfg: {
-                            label: "Players",
-                            tabSelector: '#rightTabView',
-                            wchildren: [{
-                                    type: "TeamTreeView"
-                                }]
-                        }
-                    }, {
                         fn: "OpenTabActionSec",
                         cfg: {
                             label: "Share",
@@ -494,10 +494,12 @@ YUI.add('wegas-entity', function(Y) {
                                                 children: [{type: "Text"}]
                                             }
                                         }],
-                                    permsList: [{
-                                            rightLabel: "Play",
-                                            value: "Game:View"
-                                        }, {
+                                    permsList: [
+                                        //{
+                                        //    rightLabel: "Play",
+                                        //    value: "Game:View"
+                                        //},
+                                        {
                                             rightLabel: "Admin",
                                             value: "Game:View,Edit"
                                         }
@@ -508,10 +510,19 @@ YUI.add('wegas-entity', function(Y) {
                                     ]
                                 }]
                         }
+                    }, {
+                        fn: "OpenTabActionThi",
+                        cfg: {
+                            label: "Players",
+                            tabSelector: '#rightTabView',
+                            wchildren: [{
+                                    type: "TeamTreeView"
+                                }]
+                        }
                     }]
             }, {
                 type: BUTTON,
-                label: "Open",
+                label: "View",
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
@@ -596,7 +607,7 @@ YUI.add('wegas-entity', function(Y) {
                 cssClass: "wegas-advanced-feature"
             }, {
                 type: BUTTON,
-                label: "Open",
+                label: "View",
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
@@ -656,7 +667,7 @@ YUI.add('wegas-entity', function(Y) {
                 cssClass: "editor-playerProperties-button"
             }, {
                 type: BUTTON,
-                label: "Open",
+                label: "View",
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {

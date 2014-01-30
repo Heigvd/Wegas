@@ -19,7 +19,7 @@ YUI.add('wegas-shareuser', function(Y) {
          *
          */
         CONTENT_TEMPLATE: "<div>"
-                //+ "<div class=\"title\">Permissions</div>"
+                + "<div class=\"title\">Name<span style=\"width: 152px;display: inline-block;\"></span>Permissions</div>"
                 + "<div class=\"wegas-userlist\"></div>"
                 + "<div class=\"wegas-adduser\"><div class=\"title\">Add user</div></div></div>",
         /**
