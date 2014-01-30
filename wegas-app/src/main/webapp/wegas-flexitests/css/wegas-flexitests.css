@@ -2,13 +2,13 @@
 *
 **/
 body > .wegas-pageloader, html{
-    background-color: rgb(77, 77, 77);
+    /*background-color: rgb(77, 77, 77);*/
     margin:auto;
     font-weight: bold;
 }
 .flexitests{
-    background-color: rgb(77, 77, 77);
-    color: whitesmoke;
+/*    background-color: rgb(77, 77, 77);
+    color: whitesmoke;*/
     margin:auto;
     font-weight: bold;
 }
@@ -29,10 +29,11 @@ body > .wegas-pageloader, html{
     cursor: pointer;
 }
 .flexitests .wegas-button{
-    background-color: rgb(176, 176, 176);
+    /*background-color: rgb(176, 176, 176);*/
 }
 .wegas-pageloader .wegas-loading-overlay{
-    background-color: rgb(77, 77, 77);
+    /*background-color: rgb(77, 77, 77);*/
+    background-color: white;
     background-image: none;
     z-index: 20;
 }
@@ -53,7 +54,8 @@ body > .wegas-pageloader, html{
     /*    width:100%;
         height:100%;*/
     z-index: 19;
-    background-color: rgb(77, 77, 77);
+    /*background-color: rgb(77, 77, 77);*/
+    background-color: white;
     position: absolute;
 }
 .wegas-flexitests-controller-content > .feedback{
@@ -141,7 +143,7 @@ body > .wegas-pageloader, html{
     background:none
 }
 .flexitests .wegas-form-content div.inputEx-label label{
-    color: whitesmoke;
+    /*color: whitesmoke;*/
 }
 /*EDITION*/
 .wegas-pageeditor-layoutmode .fix-point{
