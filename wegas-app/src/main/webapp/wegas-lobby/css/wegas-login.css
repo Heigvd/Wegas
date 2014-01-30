@@ -60,15 +60,18 @@ div.inputEx-label{
 .logingroup .password input{
     width:90px;
 }
+.logingroup .password input {
+    padding: 2px;
+}
 .logingroup .remember {
     padding-top: 5px;
 }
 
 .wegas-login-header  .login .yui3-button {
     float:right;
-    margin: -41px 10px 0 0;
-    width: 55px;
-    min-height: 20px;
+    margin: -45px 10px 0 0;
+    width: 52px;
+    min-height: 25px;
     background-color: #DDDDDD;
     color:black;
 }

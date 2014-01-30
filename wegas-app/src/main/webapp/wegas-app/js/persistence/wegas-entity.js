@@ -404,15 +404,9 @@ YUI.add('wegas-entity', function(Y) {
                     ]
                 }
             },
-            //key: {
-            //    type: STRING,
-            //    optional: true,
-            //    _inputex: {
-            //        label: "Enrolment key",
-            //        description: "Player can join this game by using the enrolment key in the lobby or using the link below.<br />"
-            //                + "The key can be used to join multiple times."
-            //    }
-            //},
+            key: {
+                type: HIDDEN
+            },
             keys: {
                 type: ARRAY,
                 value: [],
