@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 public class StateMachineFacade implements Serializable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
+    static final private String EVENT_PARAMETER_NAME = "param";
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
     @EJB
@@ -181,32 +182,36 @@ public class StateMachineFacade implements Serializable {
         String script = transition.getTriggerCondition().getContent();          //@TODO: To test, till I imagine a better way to define events.
         String event = script.split("[\'\"]")[1];
         Object[] fired = scriptEvent.fired(event);
-        if (fired.length > stateMachineEventsCounter.count(smi, event)) {
+        final Integer instanceEventCount = stateMachineEventsCounter.count(smi, event);
+        if (fired.length > instanceEventCount) {
             smi.setCurrentStateId(transition.getNextStateId());
             stateMachineEventsCounter.increase(smi, event);
-            try {
-                if (!this.isNotDefined(transition.getPreStateImpact())) {
-                    final Object preImpactFunc = scriptManager.eval(transition.getPreStateImpact());
-                    if (fired[0] instanceof ScriptEvent.EmptyObject) {
-                        ((Invocable) requestManager.getCurrentEngine()).invokeMethod(preImpactFunc, "call", preImpactFunc);
-                    } else {
-                        ((Invocable) requestManager.getCurrentEngine()).invokeMethod(preImpactFunc, "call", preImpactFunc, fired[0]);
-                    }
-                }
-                if (!this.isNotDefined(smi.getCurrentState().getOnEnterEvent())) {
-                    final Object impactFunc = scriptManager.eval(smi.getCurrentState().getOnEnterEvent());
-                    if (fired[0] instanceof ScriptEvent.EmptyObject) {
-                        ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc);
-                    } else {
-                        ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc, fired[0]);
-                    }
-                }
-            } catch (ScriptException | NoSuchMethodException ex) {
-                logger.debug("Event transition script failed", ex);
+            if (!this.isNotDefined(transition.getPreStateImpact())) {
+                this.evalImpact(transition.getPreStateImpact(), fired[instanceEventCount]);
             }
+            if (!this.isNotDefined(smi.getCurrentState().getOnEnterEvent())) {
+                this.evalImpact(smi.getCurrentState().getOnEnterEvent(), fired[instanceEventCount]);
+            }
+
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void evalImpact(final Script script, final Object param) {
+        try {
+
+            final Object impactFunc = scriptManager.eval(new Script(script.getLanguage(),
+                    String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
+            ));
+            if (param instanceof ScriptEvent.EmptyObject) {
+                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc);
+            } else {
+                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc, param);
+            }
+        } catch (ScriptException | NoSuchMethodException ex) {
+            logger.debug("Event transition script failed", ex);
         }
     }
 
