@@ -11,10 +11,8 @@ import com.wegas.core.ejb.AbstractEJBTest;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.ScriptEvent;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -229,7 +227,7 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setScope(new TeamScope());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
-        trigger.setPostTriggerEvent(new Script("function(e){println('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, e);}"));
+        trigger.setPostTriggerEvent(new Script("println('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, param);"));
         descriptorFacade.create(gameModel.getId(), trigger);
         
         sf.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){println('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"));
