@@ -14,7 +14,13 @@
 body {
     overflow: hidden;
 }
-
+/*select, input, textarea*/
+body, button, .yui3-skin-sam .yui3-datatable-table {
+    font-family: Verdana, Geneva, sans-serif;
+}
+.editor-preview {
+    font-family: initial;
+}
 /** Hide all advanced feature while in std mode */
 .wegas-stdmode .wegas-advanced-feature,
 .wegas-stdmode .editor-administrator-button,
@@ -29,7 +35,7 @@ body {
 }
 .yui3-skin-sam .wegas-layout-resizable > .wegas-layout-resizable-content > div > div > div> .yui3-tabview > .yui3-tabview-content > .yui3-tabview-panel {
     position:absolute;
-    top: 34px;
+    top: 36px;
     bottom:0px;
     width:100%;
     overflow: auto;
@@ -47,7 +53,7 @@ body {
 }
 .yui3-skin-sam .editor-tab > div > div > div > .panel-inner > .wegas-hastoolbar > .wegas-toolbar-sibling {
     position: absolute;
-    top: 31px;
+    top: 36px;
     bottom: 0px;
     left: 0px;
     right: 0px;
@@ -77,7 +83,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    border-top: 1px solid lightgray;
+    border-top: 1px solid #f1f1f1;
 }
 .wegas-console .results .result {
     padding: 2px 4px;
@@ -269,7 +275,6 @@ body {
     font-weight: bold;
 }
 
-
 /* Player link menu */
 .yui3-menu-content .wegas-playerlink-buttons {
     padding: 5px 10px;
@@ -312,8 +317,7 @@ body {
     display: none;
 }
 .wegas-gamedescription,
-.wegas-jointeam,
-.wegas-shareuser-content {
+.wegas-jointeam {
     padding: 10px 10px 20px;
 }
 .wegas-jointeam .title,
@@ -417,10 +421,15 @@ body {
     width: 100%;
 }
 /* Share user */
-.wegas-shareuser .wegas-shareuser-content > .title {
-    font-weight: bolder;
-    border-bottom: 1px solid lightgray;
+.wegas-shareuser-content {
+    padding: 6px 10px 20px;
 }
+.wegas-shareuser .wegas-shareuser-content > .title {
+    font-weight: bold;
+    font-size: 90%;
+    padding: 0px 8px 5px;
+}
+
 .wegas-shareuser .username-field .MarkupField-wrapper {
     width: 175px;
     margin-bottom: 5px;
@@ -453,7 +462,7 @@ body {
     margin: 10px;
 }
 .wegas-shareuser .inputEx-ListField-childContainer > div {
-    border-top: 1px solid lightgray;
+    border-top: 1px solid #f1f1f1;
     padding-top: 5px;
 }
 .wegas-shareuser .inputEx-ListField-childContainer .inputEx-fieldWrapper {

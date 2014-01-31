@@ -677,15 +677,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         value: SELF
                     }, {
                         type: STRING,
-                        label: "from",
+                        label: "From",
                         scriptType: STRING
                     }, {
                         type: STRING,
-                        label: "title",
+                        label: "Subject",
                         scriptType: STRING
                     }, {
                         type: HTML,
-                        label: "Content",
+                        label: "Body",
                         scriptType: STRING
                     }, {
                         type: "list",

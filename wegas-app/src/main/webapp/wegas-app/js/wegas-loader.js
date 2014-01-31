@@ -304,7 +304,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-widgettoolbar': {
                     path: 'js/plugin/wegas-widgettoolbar-min.js',
-                    requires: 'wegas-widgettoolbarcss',
+                    requires: ['wegas-widgettoolbarcss', 'wegas-widgetmenu'],
                     ws_provides: 'WidgetToolbar'
                 },
                 'wegas-widgettoolbarcss': {
@@ -931,6 +931,23 @@ YUI().use(function(Y) {
                 'wegas-lobby-datatable': {
                     requires: 'datatable',
                     ws_provides: "GameDataTable"
+                }
+            }
+        },
+        "wegas-form": {
+            base: './wegas-form/',
+            root: '/wegas-form/',
+            modules: {
+                form: {
+                    requires: ["base", "widget", "widget-parent", "widget-child",
+                        "formcss"]
+                },
+                formcss: {
+                    path: "css/form.css",
+                    requires: ["base", "widget", "widget-parent", "widget-child"]
+                },
+                "form-rte": {
+                    requires: ["form", "tinymce"]
                 }
             }
         },

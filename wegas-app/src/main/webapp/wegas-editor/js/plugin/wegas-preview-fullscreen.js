@@ -20,11 +20,11 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
             var host = this.get('host');
 
             if (host.toolbar) {
-                this.swapNode = Y.Node.create("<span><span>");
+                this.swapNode = Y.Node.create("<span></span>");
                 Y.one("body").append(this.swapNode);
-//                this.fullScreenButton = host.toolbar.add(new Y.ToggleButton({
-//                    label: "<span class='wegas-icon wegas-icon-fullscreen'></span>Fullscreen"
-//                })).item(0);
+                //this.fullScreenButton = host.toolbar.add(new Y.ToggleButton({
+                //    label: "<span class='wegas-icon wegas-icon-fullscreen'></span>Fullscreen"
+                //})).item(0);
 
                 this.fullScreenButton = new Y.ToggleButton({
                     label: "<span class='wegas-icon wegas-icon-fullscreen'></span>Fullscreen"

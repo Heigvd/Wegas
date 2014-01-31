@@ -18,38 +18,12 @@
                     }]
             }, {
                 "type": "Button",
-                "label": "Tools",
+                "label": "Libraries",
                 "cssClass": "editor-scenarist-button",
                 "plugins": [{
                         "fn": "WidgetMenu",
                         "cfg": {
                             "children": [{
-                                    "type": "OpenTabButton",
-                                    "label": "Impact",
-                                    "wchildren": [{
-                                            "type": "WysiwygConsole",
-                                            "cssClass": "wegas-console",
-                                            "plugins": [{
-                                                    "fn": "WidgetToolbar",
-                                                    "cfg": {
-                                                        "children": [{
-                                                                "type": "SelectPlayerButton"
-                                                            }]
-                                                    }
-                                                }]
-                                        }]
-                                }, {
-                                    "type": "Button",
-                                    "label": "Model properties",
-                                    "cssClass": "wegas-advanced-feature",
-                                    "plugins": [{
-                                            "fn": "EditEntityAction",
-                                            "cfg": {
-                                                "entity": "currentGameModel",
-                                                "dataSource": "GameModel"
-                                            }
-                                        }]
-                                }, {
                                     "type": "OpenTabButton",
                                     "label": "Files",
                                     "wchildren": [{
@@ -81,11 +55,30 @@
                                         }]
                                 }, {
                                     "type": "OpenTabButton",
-                                    "label": "Help & FAQS",
+                                    "label": "Impact",
+                                    "cssClass": "wegas-advanced-feature",
                                     "wchildren": [{
-                                            "type": "Text",
-                                            "cssClass": "editor-help",
-                                            "content": "<iframe src=\"https://docs.google.com/document/d/16S3uGvSGkweay9Dng6mIus3ERdq5D1_GJIwMynTMcuo/pub?embedded=true\"></iframe>"
+                                            "type": "WysiwygConsole",
+                                            "cssClass": "wegas-console",
+                                            "plugins": [{
+                                                    "fn": "WidgetToolbar",
+                                                    "cfg": {
+                                                        "children": [{
+                                                                "type": "SelectPlayerButton"
+                                                            }]
+                                                    }
+                                                }]
+                                        }]
+                                }, {
+                                    "type": "Button",
+                                    "label": "Model properties",
+                                    "cssClass": "wegas-advanced-feature",
+                                    "plugins": [{
+                                            "fn": "EditEntityAction",
+                                            "cfg": {
+                                                "entity": "currentGameModel",
+                                                "dataSource": "GameModel"
+                                            }
                                         }]
                                 }, {
                                     "type": "OpenTabButton",
@@ -112,6 +105,14 @@
                                         }]
                                 }]
                         }
+                    }]
+            }, {
+                "type": "OpenTabButton",
+                "label": "Help",
+                "wchildren": [{
+                        "type": "Text",
+                        "cssClass": "editor-help",
+                        "content": "<iframe src=\"https://docs.google.com/document/d/16S3uGvSGkweay9Dng6mIus3ERdq5D1_GJIwMynTMcuo/pub?embedded=true\"></iframe>"
                     }]
             }, {
                 "type": "LoginButton",
@@ -161,7 +162,7 @@
                 "cssClass": "editor-tab",
                 "children": [{
                         "type": "Tab",
-                        "label": "Data",
+                        "label": "Variables",
                         "cssClass": "editor-variables",
                         "children": [{
                                 "type": "VariableTreeView",

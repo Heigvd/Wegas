@@ -107,7 +107,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     switch (i.label) {
                         case "Delete":
                         case "New":
-                        case "New element":
+                        case "Add":
                         case "Copy":
                         case "View":
                         case "Open in editor":

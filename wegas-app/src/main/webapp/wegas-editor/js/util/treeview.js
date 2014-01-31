@@ -21,7 +21,8 @@ YUI.add('treeview', function(Y) {
                 loading: getClassName(TREENODE, "loading"),
                 collapsed: getClassName(TREENODE, "collapsed"),
                 visibleRightWidget: getClassName(TREEVIEW, "visible-right"),
-                multiSelect: getClassName(TREEVIEW, "multiselect")
+                multiSelect: getClassName(TREEVIEW, "multiselect"),
+                emptyMSG: getClassName(TREEVIEW, "empty-msg")
             },
     RIGHTWIDGETSETTERFN = function(v) {
         var rightWidget = this.get("rightWidget"),
@@ -92,9 +93,17 @@ YUI.add('treeview', function(Y) {
                     this.fire("nodeClick", {node: e.node, domEvent: e.domEvent});
                 }
             });
-            /* Selection is not updated if a child with selected attribute is added, force it. */
-            this.after("*:addChild", function(e) {
-                e.target._set("selection", e.target.get("selection"));
+//            this.after("*:addChild", function(e) {
+//                /* Selection is not updated if a child with selected attribute is added, force it. */
+//                e.target._set("selection", e.target.get("selection"));
+//            });
+            this.after("addChild", function(e) {
+                this.get(BOUNDING_BOX).all("." + classNames.emptyMSG).remove(true);
+            });
+            this.after("removeChild", function(e) {
+                if (!this.size()) {
+                    this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMSG") + "</div>");
+                }
             });
         },
         /**
@@ -107,6 +116,18 @@ YUI.add('treeview', function(Y) {
             if (this.get("visibleRightWidget")) {
                 this.get(CONTENT_BOX).addClass(classNames.visibleRightWidget);
             }
+            if (!this.size()) {
+                this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMSG") + "</div>");
+            }
+        },
+        syncUI: function() {
+            this.each(function(child) {
+                var s = child.get("selected");
+                if (s) {
+                    this._updateSelection({target: child, newVal: s});
+                }
+
+            }, this);
         },
         /**
          * Expand all children
@@ -186,6 +207,13 @@ YUI.add('treeview', function(Y) {
             multiple: {
                 value: true,
                 readOnly: true
+            },
+            emptyMSG: {
+                value: 'empty',
+                setter: function(v) {
+                    this.get(BOUNDING_BOX).all("." + classNames.emptyMSG).setHTML(v);
+                    return v;
+                }
             }
         }
     });
@@ -334,6 +362,13 @@ YUI.add('treeview', function(Y) {
             this.set("rightWidget", this.get("rightWidget"));
             this.set("collapsed", this.get("collapsed"));
             this.set("cssClass", this.get("cssClass"));
+            this.each(function(child) {
+                var s = child.get("selected");
+                if (s) {
+                    this._updateSelection({target: child, newVal: s});
+                }
+
+            }, this);
         },
         /**
          * Lifecycle method
@@ -343,7 +378,6 @@ YUI.add('treeview', function(Y) {
          */
         destructor: function() {
             this.blur(); //remove a focused node generates some errors
-            this.set("selected", 0);
             if (this.get("rightWidget")) {
                 this.get("rightWidget").destroy();
             }
@@ -450,7 +484,6 @@ YUI.add('treeview', function(Y) {
                     child.render(renderTo);
                 });
             }
-
         }
     }, {
         /** @lends Y.TreeNode */
