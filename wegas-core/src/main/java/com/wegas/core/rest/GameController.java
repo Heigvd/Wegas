@@ -11,7 +11,9 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameEnrolmentKey;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
@@ -175,15 +177,31 @@ public class GameController {
     @GET
     @Path("/JoinGame/{token : .*}/")
     public Object tokenJoinGame(@PathParam("token") String token) throws Exception {
-        Game game = gameFacade.findByToken(token);
+        Game game = gameFacade.findByToken(token);                              // 1st case: game token
+        if (game != null && game.getAccess() == Game.GameAccess.ENROLMENTKEY) {
+            // Is ok
+        } else if (game == null) {                                              // 2nd case: single usage enrolement key
+            GameEnrolmentKey gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);
+            if (gameEnrolmentKey.getUsed()) {
+                throw new WegasException("This key has already been used");
+            }
+            gameEnrolmentKey.setUsed(true);
+            game = gameEnrolmentKey.getGame();
+
+            if (game.getAccess() != Game.GameAccess.SINGLEUSAGEENROLMENTKEY) {
+                throw new WegasException("This key has already been used");
+            }
+        }
+
         Team team = null;
 
         if (game.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll)) {   // If game is "freeForAll" (single team)
-            if (game.getTeams().isEmpty()) {
+            //if (game.getTeams().isEmpty()) {
+            if (game.getTeams().size() <= 1) {                                  // First team is debug team
                 team = new Team("Default");
                 teamFacade.create(game.getId(), team);
             } else {
-                team = game.getTeams().get(0);                                  // Join the first team available
+                team = game.getTeams().get(1);                                  // Join the first team available
             }
         }
 

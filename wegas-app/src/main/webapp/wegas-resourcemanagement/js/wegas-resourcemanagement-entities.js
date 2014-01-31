@@ -591,6 +591,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
+                    label: "Label",
                     index: -1
                 }
             },

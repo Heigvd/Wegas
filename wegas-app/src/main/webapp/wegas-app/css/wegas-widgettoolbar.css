@@ -12,8 +12,8 @@
 /** Toolbar styles **/
 .wegas-toolbar {
     vertical-align: top;
-    min-height: 25px;
-    padding: 4px 0 1px;
+    /*min-height: 25px;*/
+    padding: 5px 0 1px;
     /*border-bottom: 1px solid lightgray;*/
     width: 100%;
     /*box-shadow: 1px 2px 4px #6D6D6D;*/
@@ -28,7 +28,7 @@
 .wegas-toolbar-header{
     vertical-align: top;
     border: none;
-    min-height: 26px;
+    min-height: 30px;
     position:relative;
     overflow: hidden;
     padding: 0 5px;
@@ -63,9 +63,8 @@
     overflow-y: auto;
 }
 .wegas-toolbar .yui3-button {
-    margin: 0;
-    margin-left: 0.3em;
-    font-size:11px;
+    margin: 1px 0.3em 0 0;
+    font-size: 12px;
     padding: .4em 0.8em .3em 0.6em;
 }
 .wegas-toolbar .yui3-button .wegas-icon {

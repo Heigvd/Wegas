@@ -206,7 +206,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         }, {
                             key: "playersCount",
                             label: "Players",
-                            width: "65px",
+                            width: "70px",
                             formatter: "count"
                         }, {
                             key: "gameModelName",
@@ -225,7 +225,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 //                            formatter: "menu",
 //                            allowHTML: true,
 //                            emptyCellValue: "<em>(not set)</em>"
-//  formatter: function(o){
+//                  formatter: function(o){
 //                    // just retrieve the selected Master record and return the
 //                    // "aname" column
 //                    var parent_rec = dt_master.getRecord(
