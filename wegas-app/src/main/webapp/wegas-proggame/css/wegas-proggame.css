@@ -488,13 +488,21 @@ html, .editor-preview .layout > div {
 }
 
 .ace_gutter-cell.ace_breakpoint {
-    border-radius: 20px 0px 0px 20px;
-    box-shadow: 0px 0px 1px 1px red inset;
+    /*border-radius: 20px 0px 0px 20px;*/
+    /*box-shadow: 0px 0px 1px 1px red inset;*/
+    background: url(../../wegas-proggame/images/proggame-breakpoint.png) no-repeat 4px 2px !important;
 }
-.ace_gutter-cell.proggame-currentline {
-    background-color: green;
+.ace_gutter-cell.proggame-currentgutterline {
+    background: green;
 }
-
+.ace_gutter-cell.ace_breakpoint.proggame-currentgutterline {
+    background: green url(../../wegas-proggame/images/proggame-breakpoint.png) no-repeat 4px 2px !important;
+}
+.proggame-currentline {
+    background: green;
+    position: absolute;
+    z-index: 2;
+}
 /* crafty styles */
 #cr-stage > div {
     width: 400px;

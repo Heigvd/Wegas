@@ -423,6 +423,11 @@ Wegas.mix(ProgGameSimulation.prototype, {
                             //scope: this.genScope(scope)
                 });
                 this.doRecordCommands = false;
+            } else {
+                this.sendCommand({
+                    type: "line",
+                    line: line
+                });
             }
         }
         //this.currentStep = line;
