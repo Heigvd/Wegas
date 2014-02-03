@@ -24,6 +24,8 @@ import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.resourceManagement.persistence.DialogueTransition;
 import java.io.Serializable;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -34,6 +36,7 @@ import javax.script.ScriptException;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Run state machines.
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
@@ -42,6 +45,10 @@ import org.slf4j.LoggerFactory;
 public class StateMachineFacade implements Serializable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
+    /**
+     * Event parameter will be passed in a function with named parameter
+     * {@value #EVENT_PARAMETER_NAME}
+     */
     static final private String EVENT_PARAMETER_NAME = "param";
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
@@ -49,14 +56,14 @@ public class StateMachineFacade implements Serializable {
     private VariableInstanceFacade variableInstanceFacade;
     @EJB
     private ScriptFacade scriptManager;
-    /**
-     * Used to store each transition triggered by a specific player
-     */
+
     @Inject
     private RequestManager requestManager;
     @Inject
     private ScriptEvent scriptEvent;
-
+    /**
+     * Manage internal event transition.
+     */
     private InternalStateMachineEventCounter stateMachineEventsCounter;
 
     /**
@@ -123,10 +130,15 @@ public class StateMachineFacade implements Serializable {
                          */
                         logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
                     } else {
-                        if (this.eventTransition(transition, smi)) {
-                            passedTransitions.add(transition);
-                            transitionPassed = true;
+                        try {
+                            if (this.eventTransition(player, transition, smi)) {
+                                passedTransitions.add(transition);
+                                transitionPassed = true;
+                            }
+                        } catch (ScriptException ex) {
+                            //validTransition still false
                         }
+
                     }
 
                 } else {
@@ -174,23 +186,38 @@ public class StateMachineFacade implements Serializable {
     }
 
     /**
-     * manage event transition
+     * Manage event transition
      *
-     * @param transition
+     * @param player current {@link Player}
+     * @param transition the event transition
+     * @param smi current {@link StateMachineInstance} passing transition
+     * @return
+     * @throws ScriptException
      */
-    private Boolean eventTransition(Transition transition, StateMachineInstance smi) {
-        String script = transition.getTriggerCondition().getContent();          //@TODO: To test, till I imagine a better way to define events.
-        String event = script.split("[\'\"]")[1];
-        Object[] fired = scriptEvent.fired(event);
+    private Boolean eventTransition(Player player, Transition transition, StateMachineInstance smi) throws ScriptException {
+        String script = transition.getTriggerCondition().getContent();
+        Pattern pattern = Pattern.compile("Event\\.fired\\((['\"])(\\w+)\\1\\)");
+        Matcher matcher = pattern.matcher(script);
+        String event;
+        if (matcher.matches()) {
+            event = matcher.group(2);
+        } else {
+            return false;
+        }
+        Object[] firedParams = scriptEvent.getFiredParameters(event);
+        /* events and more ? */
+        if (!(Boolean) scriptManager.eval(player, transition.getTriggerCondition())) {
+            return false;
+        }
         final Integer instanceEventCount = stateMachineEventsCounter.count(smi, event);
-        if (fired.length > instanceEventCount) {
+        if (firedParams.length > instanceEventCount) {
             smi.setCurrentStateId(transition.getNextStateId());
             stateMachineEventsCounter.increase(smi, event);
             if (!this.isNotDefined(transition.getPreStateImpact())) {
-                this.evalImpact(transition.getPreStateImpact(), fired[instanceEventCount]);
+                this.evalEventImpact(transition.getPreStateImpact(), firedParams[instanceEventCount]);
             }
             if (!this.isNotDefined(smi.getCurrentState().getOnEnterEvent())) {
-                this.evalImpact(smi.getCurrentState().getOnEnterEvent(), fired[instanceEventCount]);
+                this.evalEventImpact(smi.getCurrentState().getOnEnterEvent(), firedParams[instanceEventCount]);
             }
 
             return true;
@@ -199,12 +226,24 @@ public class StateMachineFacade implements Serializable {
         }
     }
 
-    private void evalImpact(final Script script, final Object param) {
+    /**
+     * Run given script with given parameter. Script may use named parameter
+     * {@value #EVENT_PARAMETER_NAME} to access passed parameter.
+     *
+     * @param script the script to run
+     * @param param the parameter to pass to the script
+     * @see #EVENT_PARAMETER_NAME
+     */
+    private void evalEventImpact(final Script script, final Object param) {
         try {
-
-            final Object impactFunc = scriptManager.eval(new Script(script.getLanguage(),
-                    String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
-            ));
+            final Object impactFunc;
+            if (script.getLanguage().toLowerCase().equals("javascript")) {
+                impactFunc = scriptManager.eval(new Script(script.getLanguage(),
+                        String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
+                ));
+            } else {
+                return; // define other language here
+            }
             if (param instanceof ScriptEvent.EmptyObject) {
                 ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc);
             } else {
@@ -215,13 +254,21 @@ public class StateMachineFacade implements Serializable {
         }
     }
 
+    /**
+     * Test if a script is not defined, ie empty or null
+     *
+     * @param script to test
+     * @return
+     */
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
                 || script.getContent().equals("");
     }
 
     /**
-     * Used to store Events during run.
+     * Used to store Events during run. Prevent passing multiple event
+     * transitions with same event if less events where thrown.
+     * StateMachineInstance dependant.
      */
     private class InternalStateMachineEventCounter {
 

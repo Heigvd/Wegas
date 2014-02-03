@@ -69,7 +69,7 @@ public class ScriptEvent {
      * @return Object[] array of corresponding parameters fired. Length
      * correspond to number of times eventName has been fired.
      */
-    public Object[] fired(String eventName) {
+    public Object[] getFiredParameters(String eventName) {
         if (this.eventsFired.containsKey(eventName)) {
             return this.eventsFired.getCollection(eventName).toArray(new Object[]{});
         } else {
@@ -78,7 +78,11 @@ public class ScriptEvent {
     }
 
     public int firedCount(String eventName) {
-        return this.fired(eventName).length;
+        return this.getFiredParameters(eventName).length;
+    }
+
+    public boolean fired(String eventName) {
+        return this.firedCount(eventName) > 0;
     }
 
     public void on(String eventName, Object func, Object scope) throws ScriptException, NoSuchMethodException {
