@@ -120,6 +120,15 @@ YUI.add('treeview', function(Y) {
                 this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMSG") + "</div>");
             }
         },
+        syncUI: function() {
+            this.each(function(child) {
+                var s = child.get("selected");
+                if (s) {
+                    this._updateSelection({target: child, newVal: s});
+                }
+
+            }, this);
+        },
         /**
          * Expand all children
          * @public
@@ -353,6 +362,13 @@ YUI.add('treeview', function(Y) {
             this.set("rightWidget", this.get("rightWidget"));
             this.set("collapsed", this.get("collapsed"));
             this.set("cssClass", this.get("cssClass"));
+            this.each(function(child) {
+                var s = child.get("selected");
+                if (s) {
+                    this._updateSelection({target: child, newVal: s});
+                }
+
+            }, this);
         },
         /**
          * Lifecycle method
@@ -468,7 +484,6 @@ YUI.add('treeview', function(Y) {
                     child.render(renderTo);
                 });
             }
-
         }
     }, {
         /** @lends Y.TreeNode */
