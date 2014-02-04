@@ -560,7 +560,6 @@
         "type": "ProgGameLevel",
         "winningCondition": "objects[0].x===objects[1].x && objects[0].y===objects[1].y",
         "onWin": "currentLevel.value=12;money.value+=500",
-        "defaultCode": "// This is where you write code. Try running the code below \n\nmove();\nmove();",
         "map": [
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
@@ -587,7 +586,7 @@
                 "fn": "Objective",
                 "cfg": {
                     "fullObjective": "Votre avatar, le personnage de gauche, doit atteindre le personnage de droite. Pour ce faire, vous devez programmer la séquence d'instructions nécessaire au déplacement de votre avatar. Les instructions (fonctions) disponibles sont listées sous le bloque 'API' à gauche de l'écran. l'API (Application Programming Interface) de ce jeu vous proposera les fonctionnalités de base pour interagir avec votre avatar. Pour ce stage, il n'y en a qu'une, la fonction 'move' qui aura pour effet de déplacer votre avatar d'une case en avant dans le sens de marche. Il vous faut donc réaliser la séquence d'instructions complète afin d'atteindre l'autre personnage. Pour voir le résultat de l'exécution de votre code, cliquez sur la flèche verte.",
-                    "globalObjective": "Programmer la séquence d'instructions pour rejoindre Jaune"
+                    "globalObjective": "Programmer la séquence d'instructions pour déplacer votre avatar jusqu'au personnage de droite"
                 }
             }]
     },
