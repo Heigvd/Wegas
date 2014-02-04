@@ -33,7 +33,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
          *
          */
         renderUI: function() {
-            this.treeView = new Y.TreeView();
+            this.treeView = new Y.TreeView({
+                emptyMSG: this.get("emptyMessage")
+            });
             this.treeView.render(this.get(CONTENTBOX));
 
             this.plug(Plugin.EditorTVToolbarMenu);
@@ -81,10 +83,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
             this.treeView.destroyAll();                                         // @FIXME is this enough, or should we destroy the nodes
             cb.all(".wegas-smallmessage").remove();
 
-            if (treeNodes.length === 0) {
-                cb.append('<div class="wegas-smallmessage">' + this.get("emptyMessage") + '</div>');
-                return;
-            }
             this.treeView.add(treeNodes);
             this.treeView.syncUI();
 
@@ -177,11 +175,12 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 //+ '<div class="yui3-u">Players</div></div>'
                 + '</div>'
                 + '<div class="treeview"></div>'
-                + "<div class=\"message\"></div>"
                 //+ "<div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
                 + '</div>',
         renderUI: function() {
-            this.treeView = new Y.TreeView();                                   // Render the treeview
+            this.treeView = new Y.TreeView({
+                emptyMSG: this.get("emptyMessage")
+            });                                                                 // Render the treeview
             this.treeView.addTarget(this);
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
 
@@ -207,10 +206,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
             var cb = this.get(CONTENTBOX),
                     treeNodes = this.genTreeViewElements(this.get("entity").get("teams"));
 
-            cb.one(".message").setHTML("");
-            if (treeNodes.length === 0) {
-                cb.one(".message").setHTML('<center><em><br />' + this.get("emptyMessage") + '<br /><br /></em></center');
-            }
             this.treeView.destroyAll();
             this.treeView.add(treeNodes);
             this.treeView.syncUI();
@@ -244,7 +239,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 }
             },
             emptyMessage: {
-                value: "No team created yet"
+                value: "No player has joined yet"
             }
         }
     });
@@ -258,7 +253,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + "<div class=\"message\"></div>"
                 + '</div>',
         renderUI: function() {
-            this.treeView = new Y.TreeView();                                   // Render the treeview
+            this.treeView = new Y.TreeView({
+                emptyMSG: this.get("emptyMessage")
+            });                                                                 // Render the treeview
             this.treeView.addTarget(this);
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
 

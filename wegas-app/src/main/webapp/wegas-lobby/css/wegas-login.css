@@ -160,7 +160,7 @@ h1, .title{
 .content .inputEx-message, .capsLockWarning{
     font-size: 0.7em;
     position:absolute;
-    margin-top:20px;
+    margin-top:24px;
     width:300px;
 }
 
