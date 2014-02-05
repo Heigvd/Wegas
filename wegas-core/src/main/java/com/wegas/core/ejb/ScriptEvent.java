@@ -7,7 +7,11 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.exception.WegasException;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Script;
 import java.util.Collection;
+import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.script.Invocable;
@@ -24,6 +28,8 @@ public class ScriptEvent {
     private final MultiValueMap eventsFired;
     private final MultiValueMap registeredEvents;
     private Boolean eventFired;
+    @EJB
+    private ScriptFacade scriptFacace;
     @Inject
     private RequestManager requestManager;
 
@@ -43,18 +49,36 @@ public class ScriptEvent {
         return eventFired;
     }
 
+    public void fire(Player player, String eventName, Object param) throws ScriptException, NoSuchMethodException {
+        this.eventsFired.put(eventName, param);
+        this.doFire(player, eventName, param);
+    }
+
+    public void fire(Player player, String eventName) throws ScriptException, NoSuchMethodException {
+        this.eventsFired.put(eventName, new EmptyObject());
+        this.doFire(player, eventName, null);
+    }
+
     public void fire(String eventName, Object param) throws ScriptException, NoSuchMethodException {
         this.eventsFired.put(eventName, param);
-        this.doFire(eventName, param);
+        this.doFire(requestManager.getPlayer(), eventName, param);
     }
 
     public void fire(String eventName) throws ScriptException, NoSuchMethodException {
         this.eventsFired.put(eventName, new EmptyObject());
-        this.doFire(eventName, null);
+        this.doFire(requestManager.getPlayer(), eventName, null);
     }
 
-    private void doFire(String eventName, Object params) throws ScriptException, NoSuchMethodException {
+    private void doFire(Player player, String eventName, Object params) throws ScriptException, NoSuchMethodException {
         this.eventFired = true;
+        if (player == null && requestManager.getPlayer() == null) {
+            throw new WegasException("An event '" + eventName + "' has been fired without a player defined. A player has to be defined.");
+        }
+        if (requestManager.getCurrentEngine() == null) {
+            /* init script engine, declared eventListeners are not yet in memory */
+            scriptFacace.eval(player, new Script(""));
+        }
+
         if (this.registeredEvents.containsKey(eventName)) {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
             for (Object cb : callbacks) {
