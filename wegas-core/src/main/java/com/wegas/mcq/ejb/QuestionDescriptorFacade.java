@@ -9,6 +9,7 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.ScriptEvent;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.event.DescriptorRevivedEvent;
 import com.wegas.core.persistence.AbstractEntity;
@@ -21,6 +22,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -51,6 +53,8 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
     private ScriptFacade scriptManager;
     @EJB
     QuestionSingleton questionSingleton;
+    @Inject
+    private ScriptEvent scriptEvent;
 
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
         logger.debug("Received DescriptorRevivedEvent event");
@@ -125,17 +129,16 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
 //        em.refresh(reply);
 //        return reply;
 //    }
-
     public Reply selectChoice(Long choiceId, Player player, Long startTime) throws WegasException {
         Reply reply = questionSingleton.createReply(choiceId, player, startTime);
-
-        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Throw an event
-        arguments.put("selectedReply", reply);
+//        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Throw an event
+//        arguments.put("selectedReply", reply);
         try {
-            scriptManager.eval(player,
-                    new Script("eventManager.fire(\"replySelect\", {reply: selectedReply});"),
-                    arguments);
-        } catch (ScriptException e) {
+            scriptEvent.fire(player, "replySelect", new EventObject(reply));
+//            scriptManager.eval(player,
+//                    new Script("eventManager.fire(\"replySelect\", {reply: selectedReply});"),
+//                    arguments);
+        } catch (ScriptException | NoSuchMethodException e) {
             // GOTCHA no eventManager is instantiated
         }
 
@@ -177,16 +180,17 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      */
     public Reply cancelReply(Long playerId, Long replyId) {
 
-        Reply reply = em.find(Reply.class, replyId);
+        final Reply reply = em.find(Reply.class, replyId);
         em.remove(reply);
 
-        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Throw an event
-        arguments.put("selectedReply", reply);
+//        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Throw an event
+//        arguments.put("selectedReply", reply);
         try {
-            scriptManager.eval(playerFacade.find(playerId),
-                    new Script("eventManager.fire(\"replyCancel\", {reply: selectedReply});"),
-                    arguments);
-        } catch (ScriptException e) {
+            scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new EventObject(reply));
+//            scriptManager.eval(playerFacade.find(playerId),
+//                    new Script("eventManager.fire(\"replyCancel\", {reply: selectedReply});"),
+//                    arguments);
+        } catch (ScriptException | NoSuchMethodException e) {
             // GOTCHA no eventManager is instantiated
         }
 
@@ -196,24 +200,26 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
     /**
      *
      * @param player
-     * @param reply
+     * @param validateReply
      * @throws ScriptException
      * @throws WegasException
      */
-    public void validateReply(Player player, Reply reply) throws ScriptException, WegasException {
-        ChoiceDescriptor choiceDescriptor = reply.getResult().getChoiceDescriptor();
-        reply.setResult(choiceDescriptor.getInstance(player).getResult());       // Refresh the current result
+    public void validateReply(final Player player, final Reply validateReply) throws ScriptException, WegasException {
+        final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
+        validateReply.setResult(choiceDescriptor.getInstance(player).getResult());       // Refresh the current result
 
-        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Eval impacts
-        arguments.put("selectedReply", reply);
-        arguments.put("selectedChoice", choiceDescriptor.getInstance(player));
-        arguments.put("selectedQuestion", reply.getQuestionInstance());
-        scriptManager.eval(player, reply.getResult().getImpact(), arguments);
-        try {                                                                   // Throw a global event
-            scriptManager.eval(player,
-                    new Script("eventManager.fire(\"replyValidate\", {reply: selectedReply, choice:selectedChoice, question:selectedQuestion});"),
-                    arguments);
-        } catch (ScriptException e) {
+//        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Eval impacts
+//        arguments.put("selectedReply", validateReply);
+//        arguments.put("selectedChoice", choiceDescriptor.getInstance(player));
+//        arguments.put("selectedQuestion", validateReply.getQuestionInstance());
+        scriptManager.eval(player, validateReply.getResult().getImpact());
+        try {
+            scriptEvent.fire(player, "replyValidate", new EventObject(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance()));
+// Throw a global event
+//            scriptManager.eval(player,
+//                    new Script("eventManager.fire(\"replyValidate\", {reply: selectedReply, choice:selectedChoice, question:selectedQuestion});"),
+//                    arguments);
+        } catch (ScriptException | NoSuchMethodException e) {
             // GOTCHA no eventManager is instantiated
         }
     }
@@ -247,5 +253,23 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+
+    public static class EventObject {
+
+        public Reply reply;
+        public ChoiceInstance choice;
+        public QuestionInstance question;
+
+        public EventObject(Reply reply, ChoiceInstance choice, QuestionInstance question) {
+            this.reply = reply;
+            this.choice = choice;
+            this.question = question;
+        }
+
+        public EventObject(Reply reply) {
+            this.reply = reply;
+        }
+
     }
 }

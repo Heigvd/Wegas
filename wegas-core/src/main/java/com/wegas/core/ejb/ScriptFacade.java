@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.event.EngineInvocationEvent;
 import com.wegas.core.exception.WegasException;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -93,7 +92,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
+    public Object eval(List<Script> scripts, Map<String, Object> arguments) throws ScriptException, WegasException {
         while (scripts.remove(null)) {
         }                                           //remove null scripts
         if (scripts.isEmpty()) {
@@ -123,7 +122,7 @@ public class ScriptFacade implements Serializable {
             requestManager.setCurrentEngine(engine);
         }
         Object result = null;
-        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
+        for (Entry<String, Object> arg : arguments.entrySet()) {    // Inject the arguments
             engine.put(arg.getKey(), arg.getValue());
         }
         // @fixme test the most performant version
@@ -208,7 +207,7 @@ public class ScriptFacade implements Serializable {
      * @throws WegasException
      */
     public Object eval(List<Script> scripts) throws ScriptException, WegasException {
-        return this.eval(scripts, new HashMap<String, AbstractEntity>());
+        return this.eval(scripts, new HashMap<String, Object>());
     }
 
     /**
@@ -219,7 +218,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public Object eval(Script s, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
+    public Object eval(Script s, Map<String, Object> arguments) throws ScriptException, WegasException {
         List<Script> scripts = new ArrayList<>();
         scripts.add(s);
         return this.eval(scripts, arguments);
@@ -260,7 +259,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
+    public Object eval(Player player, Script s, Map<String, Object> arguments) throws ScriptException, WegasException {
         requestManager.setPlayer(player);
         return this.eval(s, arguments);
     }
@@ -274,7 +273,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
+    public Object eval(Player player, List<Script> scripts, Map<String, Object> arguments) throws ScriptException, WegasException {
         requestManager.setPlayer(player);                                       // Set up request's execution context
         return this.eval(scripts, arguments);
     }
@@ -301,6 +300,6 @@ public class ScriptFacade implements Serializable {
      * @throws WegasException
      */
     public Object eval(Script s) throws ScriptException, WegasException {
-        return this.eval(s, new HashMap<String, AbstractEntity>());
+        return this.eval(s, new HashMap<String, Object>());
     }
 }
