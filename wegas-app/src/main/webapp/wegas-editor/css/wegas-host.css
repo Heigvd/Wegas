@@ -20,10 +20,10 @@
 .wegas-editmode .editor-variables,
 .wegas-editmode .editor-pages,
 .wegas-editmode .editor-scenarist-button {
-/*.wegas-editmode .editor-restart-button { */ 
+    /*.wegas-editmode .editor-restart-button { */ 
     display: inline-block;
 }
- 
+
 .wegas-editor-treeview-team .description,
 .wegas-editor-treeview-tablehd {
     display: none;
@@ -41,4 +41,46 @@
 .yui3-skin-sam .wegas-layout-hd .yui3-togglebutton.yui3-button-selected {
     background: white;
     color: #072644;
+}
+
+/************************* leftTabView Checkbox plugin   **********************************/
+
+#leftTabView .wegas-toolbar .selectAll{
+    position: absolute;
+    margin-top: 8px;
+    margin-left: 190px;
+    width: 90px;
+    height: 25px;
+    cursor: pointer;
+    background: url(../images/checkbox.png) 57px -42px no-repeat;
+}
+
+#leftTabView .wegas-toolbar .yui3-treenode-selected{
+    background: url(../images/checkbox.png) 57px -8px no-repeat;
+}
+
+#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode .yui3-treenode-content-header,
+#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content{
+    background: url(../images/checkbox.png) 247px -38px no-repeat;
+}
+
+#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
+#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
+    background: url(../images/checkbox.png) 247px -4px no-repeat;
+    background-color: #EDEDED;
+    box-shadow: 0px 0px 1px #6D6D6D;
+    font-weight: bolder;
+}
+
+#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.noPlayer .yui3-treenode-content-header{
+    background: white;
+}
+
+#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content-header:hover {
+    background-color: transparent;
+    box-shadow: 0px 0px 1px #6D6D6D;
+}
+
+#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header:hover {
+    background-color: #EDEDED;
 }
