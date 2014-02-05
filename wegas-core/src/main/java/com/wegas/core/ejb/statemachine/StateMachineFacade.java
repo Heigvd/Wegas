@@ -136,6 +136,7 @@ public class StateMachineFacade implements Serializable {
                                 transitionPassed = true;
                             }
                         } catch (ScriptException ex) {
+                            //maybe throw a WegasException
                             //validTransition still false
                         }
 
@@ -214,10 +215,10 @@ public class StateMachineFacade implements Serializable {
             smi.setCurrentStateId(transition.getNextStateId());
             stateMachineEventsCounter.increase(smi, event);
             if (!this.isNotDefined(transition.getPreStateImpact())) {
-                this.evalEventImpact(transition.getPreStateImpact(), firedParams[instanceEventCount]);
+                this.evalEventImpact(player, transition.getPreStateImpact(), firedParams[instanceEventCount]);
             }
             if (!this.isNotDefined(smi.getCurrentState().getOnEnterEvent())) {
-                this.evalEventImpact(smi.getCurrentState().getOnEnterEvent(), firedParams[instanceEventCount]);
+                this.evalEventImpact(player, smi.getCurrentState().getOnEnterEvent(), firedParams[instanceEventCount]);
             }
 
             return true;
@@ -234,7 +235,7 @@ public class StateMachineFacade implements Serializable {
      * @param param the parameter to pass to the script
      * @see #EVENT_PARAMETER_NAME
      */
-    private void evalEventImpact(final Script script, final Object param) {
+    private void evalEventImpact(Player player, final Script script, final Object param) throws ScriptException {
         try {
             final Object impactFunc;
             if (script.getLanguage().toLowerCase().equals("javascript")) {
@@ -249,7 +250,7 @@ public class StateMachineFacade implements Serializable {
             } else {
                 ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc, param);
             }
-        } catch (ScriptException | NoSuchMethodException ex) {
+        } catch (NoSuchMethodException ex) {
             logger.debug("Event transition script failed", ex);
         }
     }
