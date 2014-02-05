@@ -7,18 +7,44 @@
  */
 
 /**
+ * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 
 YUI.add('wegas-console-wysiwyg', function(Y) {
+    'use strict';
+
+    /**
+     *  @class wysiwyg console for impacts 
+     *  @name Y.Wegas.WysiwygConsole
+     *  @extends Y.Wegas.Console
+     *  @constructor
+     */
     var CONTENTBOX = 'contentBox',
             WysiwygConsole, Plugin = Y.Plugin;
 
     WysiwygConsole = Y.Base.create("wegas-console-wysiwyg", Y.Wegas.Console, [Y.WidgetChild, Y.Wegas.Widget], {
+        /**
+         * @lends Y.Wegas.WysiwygConsole#
+         */
+        // ** Lifecycle Methods ** //
+        /**
+         * @function
+         * @private
+         * @description Set variables with initials values.
+         */
+        initializer: function() {
+            this.handlers = [];
+        },
+        /**
+         * @function
+         * @private
+         * @description create and render the Y.inputEx.WysiwygScript.
+         */
         renderUI: function() {
-            this.plug(Plugin.WidgetToolbar);
-
             var cb = this.get(CONTENTBOX);
+
+            this.plug(Plugin.WidgetToolbar);
 
             this.srcField = new Y.inputEx.WysiwygScript({
                 parentEl: cb,
@@ -30,20 +56,31 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
 
             this.runButton();
         },
+        /**
+         * @function
+         * @private
+         * @description bind function to events.
+         * When parent tab change plug or unplug multiple selection plugin.
+         */
         bindUI: function() {
-            var treeView, cGameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), i,
+            var treeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team").treeView,
+                    cGameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), i,
                     playerId, selected = 0;
-            this.get("parent").on("selectedChange", function(e) {
-                treeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team").treeView;
+            this.handlers.push(this.get("parent").on("selectedChange", function(e) {
                 if (e.newVal !== 1) {
                     treeView.unplug(Plugin.CheckBoxTV);
-                    for (i = 0; i < treeView.size(); i++) {
+                    this.removeCheckbox();
+                    for (i = 0; i < treeView.size(); i += 1) {
                         if (treeView.item(i).get("selected")) {
                             selected = i;
                             break;
                         }
                     }
                     treeView.deselectAll();
+                    // Check if a player or team is selected
+                    if (!treeView.size()) {
+                        return;
+                    }
                     treeView.item(selected).set("selected", 2);
                     // Select only first team or player
                     if (cGameModel.get("properties.freeForAll")) {
@@ -54,15 +91,21 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                     Y.Wegas.app.set('currentPlayer', playerId);
                 } else {
                     treeView.plug(Plugin.CheckBoxTV);
+                    this.addCheckbox();
                 }
+            }, this));
 
-            });
         },
+        /**
+         * @function
+         * @private
+         * @description Create and render the button for run the script.
+         */
         runButton: function() {
             var el = this.toolbar.get('header');
 
             this.runButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run script",
+                label: "<span class=\"wegas-icon wegas-icon-play\"></span>Apply",
                 on: {
                     click: Y.bind(function() {
                         this.multiExecuteScript({
@@ -74,39 +117,34 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                 }
             }).render(el);
         },
-        __playerList: function() {
-            var cGameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
-                    treenodes = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team .yui3-treeview-content")._items,
-                    playerList = [], i, playerId;
-
-            if (cGameModel.get("properties.freeForAll")) {
-                // all selected player
-                for (i = 0; i < treenodes.length; i++) {
-                    if (treenodes[i].get("selected")) {
-                        playerId = treenodes[i].get("data").entity.get("id");
-                        playerList.push(playerId);
-                    }
-                }
-            } else {
-                // select only the first player of the team
-                for (i = 0; i < treenodes.length; i++) {
-                    if (treenodes[i].get("selected") && treenodes[i].get("data").entity.get("players").length > 0) {
-                        playerId = treenodes[i].get("data").entity.get("players")[0].get("id");
-                        playerList.push(playerId);
-                    }
-                }
-            }
-            return playerList;
-        },
+        /**
+         * @function
+         * @private
+         * @description Gives the list of teams or player selected in the
+         * treeview. If no treeview, only the current player is added in the list.
+         */
         playerList: function() {
             var treeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team .yui3-treeview-content"),
-                    playerList = [], selection = treeview.get("selection") || new Y.ArrayList();
-            
+                    playerList = [], selection;
+
+            if (!treeview) {
+                playerList.push(Y.Wegas.app.get('currentPlayer'));
+                return playerList;
+            }
+
+            selection = treeview.get("selection") || new Y.ArrayList();
+
             if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
+                if (!selection.size()) {
+                    this.showMessageBis("info", "No player is selected.");
+                }
                 selection.each(function(item) {
                     playerList.push(item.get("data.entity").get("id"));
                 });
             } else {
+                if (!selection.size()) {
+                    this.showMessageBis("info", "No team is selected.");
+                }
                 selection.each(function(item) {
                     var entity = item.get("data.entity");
                     if (entity.get("players").length > 0) {
@@ -115,6 +153,77 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                 });
             }
             return playerList;
+        },
+        /**
+         * @function
+         * @private
+         * @description adds the necessary elements for display the checkbox 
+         * and a button for select or deselct all teams/player with the corresponding events.
+         */
+        addCheckbox: function() {
+            var editorTreeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team"), i;
+            this.addClassEmptyTeam();
+            this.selectAll = new Y.Node.create("<span class='emptyCheckbox selectAll'>Select all</span>");
+            editorTreeview.toolbar.get("header").append(this.selectAll);
+            this.selectAll.on("click", function(e, editorTreeview) {
+                if (this.selectAll.hasClass("yui3-treenode-selected")) {
+                    this.selectAll.removeClass("yui3-treenode-selected");
+                    editorTreeview.treeView.deselectAll();
+                } else {
+                    this.selectAll.addClass("yui3-treenode-selected");
+                    editorTreeview.treeView.selectAll();
+                    for (i = 0; i < this.emptyTeam.length; i += 1) {
+                        editorTreeview.treeView.item(this.emptyTeam[i]).set("selected", 0);
+                    }
+                }
+            }, this, editorTreeview);
+
+            this.nodeClick = editorTreeview.treeView.on("nodeClick", function(e) {
+                if (e.currentTarget.get("selection") && e.currentTarget.get("selection").size() >= (e.currentTarget.size() - this.emptyTeam.length)) {
+                    this.selectAll.addClass("yui3-treenode-selected");
+                } else {
+                    this.selectAll.removeClass("yui3-treenode-selected");
+                }
+                if (e.node.get("data").entity.get("players") && !e.node.get("data").entity.get("players").length) {
+                    e.node.deselectAll();
+                }
+            }, this);
+        },
+        /**
+         * @function
+         * @private
+         * @description removes all elements corresponding to checkboxes.
+         */
+        removeCheckbox: function() {
+            this.selectAll.remove();
+            this.nodeClick.detach();
+        },
+        /**
+         * @function
+         * @private
+         * @description checks if all teams has a player otherwise add a "noPlayer" class.
+         */
+        addClassEmptyTeam: function() {
+            var editorTreeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team"),
+                    i;
+            this.emptyTeam = [];
+            for (i = 0; i < editorTreeview.treeView.size(); i += 1) {
+                if (editorTreeview.treeView.item(i).get("data").entity.get("players") && !editorTreeview.treeView.item(i).get("data").entity.get("players").length) {
+                    editorTreeview.treeView.item(i).get("boundingBox").addClass("noPlayer");
+                    this.emptyTeam.push(i);
+                }
+            }
+        },
+        /**
+         * @function
+         * @private
+         * @description Detach all functions created by this widget.
+         */
+        destructor: function() {
+            var i;
+            for (i = 0; i < this.handlers.length; i += 1) {
+                this.handlers[i].detach();
+            }
         }
     });
 
