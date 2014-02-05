@@ -4,6 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets" >
 
     <ui:composition template="editor.xhtml">
+        
+        <ui:define name="title">#{editorGameController.currentGame.name}</ui:define>
 
         <ui:define name="editorHeader">
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host.css" />
@@ -11,6 +13,10 @@
 
         <ui:define name="editorFooter">
         Y.Wegas.app.on("render", function(e) {
+            //var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+            var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
+            Y.one(".wegas-title").setContent(g.get("name"));
+        
             Y.use("button-toggle", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
                 var tab = Y.Widget.getByNode("#leftTabView").add({              // Add player selection tab
                     label: "Players",

@@ -9,7 +9,6 @@ Y.use("wegas-layout", function(Y) {
                     childType: "ProgGameLevel"
                 }
             }
-
         ]
     });
 });
