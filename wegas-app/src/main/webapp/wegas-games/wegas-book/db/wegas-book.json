@@ -2,8 +2,8 @@
     "@class": "GameModel",
     "name": "Book",
     "properties": {
-        "cssUri":"wegas-book/css/wegas-book.css",
-        "pagesUri":"wegas-book/db/wegas-book-pages.json?"
+        "cssUri":"wegas-games/wegas-book/css/wegas-book.css",
+        "pagesUri":"wegas-games/wegas-book/db/wegas-book-pages.json?"
     },
     "childVariableDescriptors":[{
         "@class":"NumberDescriptor",

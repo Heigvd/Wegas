@@ -78,14 +78,14 @@ body > .wegas-pageloader, html{
     zoom: 1;
     width: 120px;
     height: 120px;
-    background: url(../../wegas-flexitests/images/Vrai.png) no-repeat;
+    background: url(wegas-flexitests/images/Vrai.png) no-repeat;
 }
 .wegas-flexitests-mcqdisplay-feedback > .flexitests-mcq-wrong{
     display: inline-block;
     zoom: 1;
     width: 120px;
     height: 130px;
-    background: url(../../wegas-flexitests/images/Faux.png) no-repeat;
+    background: url(wegas-flexitests/images/Faux.png) no-repeat;
 }
 .wegas-flexitests-mcqdisplay-input table{
     width:100%;

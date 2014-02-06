@@ -41,13 +41,13 @@
 }
 
 .dialogue .response li:hover{
-    list-style-image: url(../../wegas-simpledialogue/images/response.png);
+    list-style-image: url(wegas-games/wegas-simpledialogue/images/response.png);
     cursor: pointer;
     font-style: normal;
 }
 
 .icecream {
-    background: url(../../wegas-simpledialogue/images/icecream.png);
+    background: url(wegas-games/wegas-simpledialogue/images/icecream.png);
     background-repeat: no-repeat;
     padding: 0px 10px 20px 40px;
     top: 10px;

@@ -47,21 +47,21 @@ h3 {
     width: 100%;
     height: 100px;
     margin: 0 auto;
-    background: url(../../wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) top repeat-x;
+    background: url(wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) top repeat-x;
 }
 .header > .wegas-list-content {
     width: 980px;
     height: 100px;
     margin: 0 auto;
     padding: 0 10px;
-    background: url(../../wegas-cep/images/templatemo_site_title_bg.jpg) center top no-repeat;
+    background: url(wegas-cep/images/templatemo_site_title_bg.jpg) center top no-repeat;
     overflow: hidden;
 }
 .header .variables {
     height: 71px;
 }
 .variables .cep-title {
-    background: url(../../wegas-cep/images/ceplogo-75.png) left top no-repeat;
+    background: url(wegas-cep/images/ceplogo-75.png) left top no-repeat;
     width: 81px;
     height: 100px;
     /*background-size: 75px;*/
@@ -73,14 +73,14 @@ h3 {
     width: 100%;
     min-height: 280px;
     margin: 0 auto;
-    background: white url(../../wegas-cep/images/templatemo_banner_bg_wrapper.jpg) top repeat-x;
+    background: white url(wegas-cep/images/templatemo_banner_bg_wrapper.jpg) top repeat-x;
 }
 .body > div  {
     width: 980px;
     min-height: 250px;
     margin: 0 auto;
     padding: 10px;
-    background: url(../../wegas-cep/images/templatemo_banner_bg.jpg) center top no-repeat;
+    background: url(wegas-cep/images/templatemo_banner_bg.jpg) center top no-repeat;
 }
 .body .wegas-text-content {
     padding: 50px;
@@ -90,7 +90,7 @@ h3 {
 .footer {
     width: 100%;
     margin: 0 auto;
-    background: #c1c1c1 url(../../wegas-cep/images/templatemo_content_bg.jpg) top repeat-x;
+    background: #c1c1c1 url(wegas-cep/images/templatemo_content_bg.jpg) top repeat-x;
     min-height: 199px;
 }
 .footer > div {
@@ -229,7 +229,7 @@ h3 {
 .menu > div > .yui3-button > .wegas-icon {
     width: 20px;
     margin: -4px 4px 0 0;
-    background-image: url(../../wegas-cep/images/cep-icons.png);
+    background-image: url(wegas-cep/images/cep-icons.png);
 }
 .menu .cep-icon-questions {
     background-position:0 -86px;
@@ -446,7 +446,7 @@ h3 {
 .informations .nodeformatter-valuebox .box-unit{
     display:block;
     background-color:#6F89A2;
-    background-image:url(../../wegas-cep/images/gaugeFiller.png);
+    background-image:url(wegas-cep/images/gaugeFiller.png);
     background-repeat: repeat-x;
     float:left;
     width:2px;

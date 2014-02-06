@@ -947,22 +947,22 @@ YUI().use(function(Y) {
             modules: {
                 /**book CYOA**/
                 'wegas-book': {
-                    path: 'wegas-book/js/wegas-book-fight-min.js',
+                    path: 'wegas-games/wegas-book/js/wegas-book-fight-min.js',
                     requires: 'wegas-book-dice',
                     ws_provides: "Fight"
                 },
                 'wegas-book-dice': {
-                    path: 'wegas-book/js/wegas-book-dice-min.js',
+                    path: 'wegas-games/wegas-book/js/wegas-book-dice-min.js',
                     ws_provides: "Dice"
                 },
                 /**monopoly**/
                 'wegas-monopoly-controller': {
-                    path: 'wegas-monopoly/js/wegas-monopoly-controller-min.js',
+                    path: 'wegas-games/wegas-monopoly/js/wegas-monopoly-controller-min.js',
                     requires: ['wegas-monopoly-controller', 'wegas-book-dice', 'wegas-button'],
                     ws_provides: "MonopolyController"
                 },
                 'wegas-monopoly-display': {
-                    path: 'wegas-monopoly/js/wegas-monopoly-display-min.js',
+                    path: 'wegas-games/wegas-monopoly/js/wegas-monopoly-display-min.js',
                     requires: 'wegas-monopoly-display',
                     ws_provides: "Monopolydisplay"
                 },
@@ -974,12 +974,12 @@ YUI().use(function(Y) {
                 },
                 /* SimpleDialogue */
                 'wegas-simpledialogue': {
-                    path: "wegas-simpledialogue/js/wegas-simpledialogue-main.js",
+                    path: "wegas-games/wegas-simpledialogue/js/wegas-simpledialogue-main.js",
                     ws_provides: "SimpleDialogueMain"
                 }
                 /* Chess */
                 //'wegas-chess': {
-                //    path: "wegas-chess/js/wegas-chess-min.js",
+                //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",
                 //    ws_provides: "ChessBoard",
                 //    requires: "transition"
                 //}

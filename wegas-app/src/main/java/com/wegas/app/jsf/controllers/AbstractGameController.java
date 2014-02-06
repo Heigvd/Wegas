@@ -69,7 +69,6 @@ public class AbstractGameController implements Serializable {
 //        return locale;
     }
 
-
     public String getClientScripts() {
         String ret = "";
         for (GameModelContent c : this.getCurrentGameModel().getClientScriptLibrary().values()) {
@@ -79,11 +78,11 @@ public class AbstractGameController implements Serializable {
     }
 
     public String getStyleSheets() {
-        String ret = "";
+        StringBuilder ret = new StringBuilder();
         for (GameModelContent c : this.getCurrentGameModel().getCssLibrary().values()) {
-            ret += c.getContent();
+            ret.append(c.getContent());
         }
-        return ret;
+        return ret.toString();
     }
 
     /**

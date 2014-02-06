@@ -120,7 +120,7 @@
                     });
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
-                        window.open(app.get("base") + "wegas-app/view/play.html?gameId=" + e.gameId);// open the game in a new tab
+                        window.open(app.get("base") + "play.html?gameId=" + e.gameId);// open the game in a new tab
 
                         Y.Wegas.Facade.GameModel.sendInitialRequest({//         // Refresh game model list
                             on: {
