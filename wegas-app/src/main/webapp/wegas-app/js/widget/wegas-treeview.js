@@ -5,29 +5,31 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
- * @fileOverview
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @fileoverview
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-box", function(Y) {
+YUI.add("wegas-treeview", function(Y) {
     "use strict";
 
     /**
-     * @name Y.Wegas.Box
+     * @name Y.Wegas.TreeView
      * @extends Y.Widget
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
-     * @class Displays a box widget
+     * @class
      * @constructor
-     * @description  Display a simple box
+     * @description Displays a treeview widget
      */
-    var Box = Y.Base.create("wegas-box", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /** @lends Y.Wegas.Box# */
-        CONTENT_TEMPLATE: null
-    }, {
-        /** @lends Y.Wegas.Box */
-        EDITORNAME: "Box"
+    var TreeViewWidget = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        renderUI: function() {
+            this.treeView = new Y.TreeView({
+                render: this.get("contentBox")
+            });
+            this.treeView.on("treenode:click", function(e) {
+                e.target.toggleTree();
+            });
+            this.treeView.addTarget(this);
+        }
     });
-    Y.namespace("Wegas").Box = Box;
-
+    Y.namespace("Wegas").TreeViewWidget = TreeViewWidget;
 });

@@ -142,10 +142,10 @@ YUI.add('wegas-serialization-test', function(Y) {
         },
 //        'should instantiate and serialize book widget from an io request': function() {
 //            this.log("Book pages");
-//            this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-book/db/wegas-book-pages.json")
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-games/wegas-book/db/wegas-book-pages.json")
 //        },
 //        'should instantiate and serialize leaderway widget from an io request': function() {
-//            this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-leaderway/db/wegas-lobby-layout.json")
+//            this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-app/db/wegas-lobby-layout.json")
 //        },
 //        'should instantiate and serialize leaderway widget from an io request': function() {
 //            this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-app/db/wegas-login-layout.json")

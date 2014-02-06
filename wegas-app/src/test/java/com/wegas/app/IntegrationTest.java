@@ -74,7 +74,7 @@ public class IntegrationTest {
         //beginAt("test.htm");
         //assertTitleEquals("My Page");
         try {
-            beginAt("wegas-app/view/login.html?debug=true");
+            beginAt("login.html?debug=true");
         } catch (NullPointerException e) {  //@fixme error using xmlhttprequest from jwebunit
             System.out.println("Jweb unit encountered an exception");
             // e.printStackTrace();

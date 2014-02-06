@@ -138,7 +138,7 @@
                                                     "plugins": [{
                                                             "fn": "OpenGameAction",
                                                             "cfg": {
-                                                                "editorUrl": "wegas-app/view/play.html?"
+                                                                "editorUrl": "play.html?"
                                                             }
                                                         }]
                                                 }],
@@ -159,7 +159,7 @@
                                                                         "plugins": [{
                                                                                 "fn": "OpenGameAction",
                                                                                 "cfg": {
-                                                                                    "editorUrl": "wegas-app/view/play.html?"
+                                                                                    "editorUrl": "play.html?"
                                                                                 }
                                                                             }]
                                                                     }]
