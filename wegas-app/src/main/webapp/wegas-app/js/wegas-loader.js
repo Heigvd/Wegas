@@ -93,8 +93,8 @@ YUI().use(function(Y) {
                     path: 'js/widget/wegas-widget-min.js',
                     requires: ['widget', 'widget-child', 'widget-parent', 'wegas-editable']
                 },
-                'wegas-layout': {
-                    path: 'js/widget/wegas-layout-min.js',
+                'wegas-parent': {
+                    path: 'js/widget/wegas-parent-min.js',
                     requires: 'wegas-widget'
                 },
                 'wegas-layout-panel': {
@@ -104,13 +104,13 @@ YUI().use(function(Y) {
                 },
                 'wegas-layout-list': {
                     path: 'js/widget/wegas-layout-list-min.js',
-                    requires: 'wegas-layout',
+                    requires: 'wegas-parent',
                     ws_provides: 'List'
                 },
                 'wegas-layout-absolute': {
                     path: 'js/widget/wegas-layout-absolute-min.js',
                     requires: ["wegas-plugin", "wegas-layout-absolutecss", "wegas-cssposition",
-                        "wegas-csssize", "wegas-layout"],
+                        "wegas-csssize", "wegas-parent"],
                     ws_provides: ['AbsoluteLayout', "Position"]
                 },
                 'wegas-layout-absolutecss': {
@@ -190,7 +190,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-tabview': {
                     path: 'js/widget/wegas-tabview-min.js',
-                    requires: ['tabview', 'wegas-layout', 'wegas-tabviewcss', 'wegas-popuplistener'],
+                    requires: ['tabview', 'wegas-parent', 'wegas-tabviewcss', 'wegas-popuplistener'],
                     ws_provides: 'TabView'
                 },
                 'wegas-tabviewcss': {
