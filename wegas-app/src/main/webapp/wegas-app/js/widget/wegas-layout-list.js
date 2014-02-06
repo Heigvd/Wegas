@@ -19,12 +19,12 @@ YUI.add('wegas-layout-list', function(Y) {
     /**
      * @name Y.Wegas.List
      * @extends Y.Widget
-     * @borrows Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Layout
+     * @borrows Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent
      * @class class to serialize widgets
      * @constructor
      * @description class to serialize widgets
      */
-    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Layout], {
+    List = Y.Base.create("wegas-list", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
         /** @lends Y.Wegas.List# */
 
         // *** Private fields *** //
