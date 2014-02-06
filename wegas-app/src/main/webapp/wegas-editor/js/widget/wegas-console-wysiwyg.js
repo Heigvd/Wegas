@@ -63,9 +63,16 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * When parent tab change plug or unplug multiple selection plugin.
          */
         bindUI: function() {
-            var treeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team").treeView,
+            var treeView, editorTreeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team"),
                     cGameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), i,
                     playerId, selected = 0;
+            
+            if (!editorTreeView) {
+                return;
+            }
+            
+            treeView = editorTreeView.treeView;
+            
             this.handlers.push(this.get("parent").on("selectedChange", function(e) {
                 if (e.newVal !== 1) {
                     treeView.unplug(Plugin.CheckBoxTV);
@@ -102,17 +109,21 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * @description Create and render the button for run the script.
          */
         runButton: function() {
-            var el = this.toolbar.get('header');
+            var el = this.toolbar.get('header'), multiPlayerScript;
 
             this.runButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-play\"></span>Apply",
                 on: {
                     click: Y.bind(function() {
-                        this.multiExecuteScript({
-                            "@class": "Script",
-                            language: "JavaScript",
-                            content: this.srcField.getValue().content
-                        }, this.playerList());
+                        multiPlayerScript = {
+                            playerIdList: this.playerList(),
+                            script: {
+                                "@class": "Script",
+                                language: "JavaScript",
+                                content: this.srcField.getValue().content
+                            }
+                        };
+                        this.multiExecuteScript(multiPlayerScript);
                     }, this)
                 }
             }).render(el);
