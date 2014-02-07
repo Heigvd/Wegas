@@ -189,7 +189,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
      * @param {Object} options InputEx definition object
      */
     VariableDescriptorGetter = function(options) {
-        VariableDescriptorMethod.superclass.constructor.call(this, options);
+        VariableDescriptorGetter.superclass.constructor.call(this, options);
     };
 
     Y.extend(VariableDescriptorGetter, VariableDescriptorSelect, {
@@ -508,6 +508,21 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                 type: "html",
                                 scriptType: "string"
                             }],
+                        scriptType: "string"
+                    }]
+            },
+            "Event.fire": {
+                label: "Fire event",
+                arguments: [{
+                        type: "string",
+                        scriptType: "string"
+                    }]
+            },
+            "Event.fired": {
+                label: "On event",
+                returns: "boolean",
+                arguments: [{
+                        type: "string",
                         scriptType: "string"
                     }]
             }
