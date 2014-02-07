@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.sourceforge.jwebunit.junit.JWebUnit;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.glassfish.embeddable.*;
 import org.glassfish.embeddable.archive.ScatteredArchive;
@@ -86,5 +87,13 @@ public class IntegrationTest {
         //tester.setTextField("password", "test123");
         //tester.clickLink("login");
         //tester.submit();
+    }
+
+    @Test
+    public void testJs() {
+        JWebUnit.setScriptingEnabled(true);
+        // JWebUnit.setExpectedJavaScriptAlert("Test run success");
+        beginAt("wegas-app/tests/wegas-alltests.htm");
+        assertTitleEquals("Wegas Test Suite");
     }
 }
