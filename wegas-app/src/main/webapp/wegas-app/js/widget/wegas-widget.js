@@ -11,9 +11,8 @@
  */
 YUI.add("wegas-widget", function(Y) {
     "use strict";
-    var Lang = Y.Lang,
-            BOUNDING_BOX = "boundingBox",
-            baseCreateChild = Y.WidgetParent.prototype._createChild;
+    var Lang = Y.Lang, Wegas = Y.Wegas,
+            BOUNDING_BOX = "boundingBox";
 
     /**
      * @name Y.Wegas.Widget
@@ -232,7 +231,7 @@ YUI.add("wegas-widget", function(Y) {
                     index: 4,
                     wrapperClassName: "wegas-advanced-feature"
                 },
-                getter: Y.Wegas.Editable.removeNullValue
+                getter: Wegas.Editable.removeNullValue
             },
             /**
              * Informe if widget initialized. Transient
@@ -398,7 +397,7 @@ YUI.add("wegas-widget", function(Y) {
                         plg = this[this._plugins[i].NS];
                         if (plg.toObject) {
                             p.push({
-                                fn: Y.Wegas.Plugin.getPluginFromName(this._plugins[i].NAME), //TODO: find an other referencing way
+                                fn: Wegas.Plugin.getPluginFromName(this._plugins[i].NAME), //TODO: find an other referencing way
                                 cfg: plg.toObject("type")
                             });
                         }
@@ -507,7 +506,7 @@ YUI.add("wegas-widget", function(Y) {
         create: function(config) {
             var child, Fn, type = config.childType || config.type;
             if (type) {
-                Fn = Lang.isString(type) ? Y.Wegas[type] || Y[type] : type;
+                Fn = Lang.isString(type) ? Wegas[type] || Y[type] : type;
             }
 
             if (Lang.isFunction(Fn)) {
@@ -526,7 +525,7 @@ YUI.add("wegas-widget", function(Y) {
          * @description Load the modules from an Wegas widget definition
          */
         use: function(cfg, cb) {
-            Y.Wegas.Editable.use(cfg, cb);
+            Wegas.Editable.use(cfg, cb);
         },
         /**
          *
@@ -544,7 +543,7 @@ YUI.add("wegas-widget", function(Y) {
          *  or expr parameter.
          */
         VARIABLEDESCRIPTORGETTER: function(val, fullName) {
-            var ds = Y.Wegas.Facade.VariableDescriptor;
+            var ds = Wegas.Facade.VariableDescriptor;
             if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
 
                 if (val.name) {                                                 // Eval based on the name field
@@ -552,7 +551,7 @@ YUI.add("wegas-widget", function(Y) {
 
                 } else if (val.expr) {                                          // if absent evaluate the expr field
                     try {
-                        val.evaluated = ds.cache.findById(Y.Wegas.Facade.VariableDescriptor.script.localEval(val.expr));
+                        val.evaluated = ds.cache.findById(Wegas.Facade.VariableDescriptor.script.localEval(val.expr));
                     } catch (e) {
                         Y.log("Unable to read expression: " + val.expr, "error", "Wegas.Widget");
                         val.evaluated = null;
@@ -577,17 +576,18 @@ YUI.add("wegas-widget", function(Y) {
     /**
      * @hack We override this function so widget are looked for in Wegas ns.
      */
+    Y.WidgetParent.prototype.o_createChild = Y.WidgetParent.prototype._createChild;
     Y.WidgetParent.prototype._createChild = function(config) {
         var altType = config.childType || config.type;
         if (altType) {
-            config.childType = Y.Lang.isString(altType) ? Y.Wegas[altType] || Y[altType] : altType;
+            config.childType = Y.Lang.isString(altType) ? Wegas[altType] || Y[altType] : altType;
         }
-        return baseCreateChild.call(this, config);                              //reroute
+        return Y.WidgetParent.prototype.o_createChild.call(this, config);                              //reroute
     };
     Y.WidgetParent.ATTRS.defaultChildType = {
         setter: function(val) {
             var returnVal = Y.Attribute.INVALID_VALUE,
-                    FnConstructor = Lang.isString(val) ? Y.Wegas[val] || Y[val] : val;
+                    FnConstructor = Lang.isString(val) ? Wegas[val] || Y[val] : val;
             if (Lang.isFunction(FnConstructor)) {
                 returnVal = FnConstructor;
             }
@@ -611,7 +611,19 @@ YUI.add("wegas-widget", function(Y) {
 
 
     /** @Hack, use method defined in wegas-datasource.js */
-    Y.Widget.prototype.plug = Y.DataSource.IO.prototype.plug;
+    Y.Widget.prototype.oPlug = Y.Widget.prototype.plug;
+    Y.Widget.prototype.plug = function(Plugin, config) {
+        if (!Lang.isArray(Plugin)) {
+            if (Plugin && !Lang.isFunction(Plugin)) {
+                config = Plugin.cfg;
+                Plugin = Plugin.fn;
+            }
+            if (Plugin && !Lang.isFunction(Plugin)) {                           // @hacked
+                Plugin = Y.Plugin[Plugin];
+            }
+        }
+        Y.Widget.prototype.oPlug.call(this, Plugin, config);                    //reroute
+    };
 
     /**
      * Simulate a DOM Event bubbling up to a listener and stops.
