@@ -13,7 +13,6 @@ YUI.add('wegas-widgettoolbar-test', function(Y) {
 
     Y.Test.Runner.add(new Y.Test.Case({
         name: 'Y.Wegas.WidgetToolbar',
-
         'should plug a WidgetToolbar': function() {
 
             this.widget = new Y.Wegas.Text({
@@ -22,17 +21,16 @@ YUI.add('wegas-widgettoolbar-test', function(Y) {
             });
             this.widget.plug(Y.Plugin.WidgetToolbar, {
                 children: [{
-                    type: Y.Button,
-                    label: "test"
-                }]
+                        type: Y.Wegas.Button,
+                        label: "test"
+                    }]
             });
 
             Y.Assert.isTrue(this.widget.get("boundingBox").hasClass('wegas-hastoolbar'));
         },
-
-        "should add a button": function () {
+        "should add a button": function() {
             this.widget.toolbar.add({
-                type: Y.Button,
+                type: Y.Wegas.Button,
                 label: "test"
             });
             Y.Assert.areEqual(2, this.widget.toolbar.size());
@@ -46,7 +44,7 @@ YUI.add('wegas-widgettoolbar-test', function(Y) {
         //}
 
     }));
-}, '@VERSION@' ,{
-    requires:['wegas-widgettoolbar', 'wegas-text', 'wegas-button', 'test']
+}, '@VERSION@', {
+    requires: ['wegas-widgettoolbar', 'wegas-text', 'wegas-button', 'test']
 });
 

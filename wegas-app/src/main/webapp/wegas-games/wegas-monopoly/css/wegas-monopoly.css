@@ -8,32 +8,32 @@
 }
 
 .wegas-book-dice .result-value-1{
-    background-image:url(wegas-games/wegas-book/images/de1.png);
+    background-image:url(../../wegas-book/images/de1.png);
     background-color: black;
 }
 
 .wegas-book-dice .result-value-2{
-    background-image:url(wegas-games/wegas-book/images/de2.png);
+    background-image:url(../../wegas-book/images/de2.png);
 }
 
 .wegas-book-dice .result-value-3{
-    background-image:url(wegas-games/wegas-book/images/de3.png);
+    background-image:url(../../wegas-book/images/de3.png);
 }
 
 .wegas-book-dice .result-value-4{
-    background-image:url(wegas-games/wegas-book/images/de4.png);
+    background-image:url(../../wegas-book/images/de4.png);
 }
 
 .wegas-book-dice .result-value-5{
-    background-image:url(wegas-games/wegas-book/images/de5.png);
+    background-image:url(../../wegas-book/images/de5.png);
 }
 
 .wegas-book-dice .result-value-6{
-    background-image:url(wegas-games/wegas-book/images/de6.png);
+    background-image:url(../../wegas-book/images/de6.png);
 }
 /*
 .wegas-monopoly .wegas-list-vertical .header {
-    background-image:url(wegas-games/wegas-monopoly/images/plateau.jpg);
+    background-image:url(../../wegas-monopoly/images/plateau.jpg);
     background-repeat: no-repeat;
     background-position: 150px 20px;
     
@@ -52,7 +52,7 @@
 }
 
 .wegas-monopoly-display-content{
-    background-image:url(wegas-games/wegas-monopoly/images/plateau.jpg);
+    background-image:url(../../wegas-monopoly/images/plateau.jpg);
     background-repeat: no-repeat;
     /*background-position: 150px 0px;*/
     height: 600px;
@@ -76,7 +76,7 @@
 
 
 .pion1 {
-    background-image:url(wegas-games/wegas-monopoly/images/pion1.png);
+    background-image:url(../../wegas-monopoly/images/pion1.png);
     background-size: 30px 22px;
     float: left;
     width: 30px;
@@ -84,7 +84,7 @@
 }
 
 .pion2 {
-    background-image:url(wegas-games/wegas-monopoly/images/pion2.png);
+    background-image:url(../../wegas-monopoly/images/pion2.png);
     background-size: 30px 22px;
     float: left;
     width: 30px;

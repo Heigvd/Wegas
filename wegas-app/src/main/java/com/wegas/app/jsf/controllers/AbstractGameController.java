@@ -80,7 +80,8 @@ public class AbstractGameController implements Serializable {
     public String getStyleSheets() {
         StringBuilder ret = new StringBuilder();
         for (GameModelContent c : this.getCurrentGameModel().getCssLibrary().values()) {
-            ret.append(c.getContent());
+            ret.append(c.getContent().replaceAll("\\.\\./", null));
+            //ret.append(c.getContent());
         }
         return ret.toString();
     }

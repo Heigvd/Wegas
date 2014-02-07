@@ -62,7 +62,7 @@ public class JavaScriptTest {
     public void testJs() {
         JWebUnit.setScriptingEnabled(true);
         // JWebUnit.setExpectedJavaScriptAlert("Test run success");
-        beginAt("tests/wegas-alltests.htm");
+        beginAt("wegas-app/tests/wegas-alltests.htm");
         assertTitleEquals("Wegas Test Suite");
     }
 }
