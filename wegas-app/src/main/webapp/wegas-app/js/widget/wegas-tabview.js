@@ -22,7 +22,7 @@ YUI.add('wegas-tabview', function(Y) {
      * @class Manage a tabview specific to Wegas
      * @constructor
      */
-    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Wegas.Editable, Wegas.Layout], {
+    TabView = Y.Base.create("tabview", Y.TabView, [Y.WidgetChild, Wegas.Editable, Wegas.Parent], {
         /** @lends Y.Wegas.TabView# */
         // *** Private fields *** //
         /**
@@ -235,7 +235,7 @@ YUI.add('wegas-tabview', function(Y) {
      * @constructor
      * @description Manage a tabspecific to Wegas
      */
-    Tab = Y.Base.create("tab", Y.Tab, [Parent, Y.WidgetChild, Wegas.Editable, Wegas.Layout], {
+    Tab = Y.Base.create("tab", Y.Tab, [Parent, Y.WidgetChild, Wegas.Editable, Wegas.Parent], {
         /** @lends Y.Wegas.Tab# */
         PANEL_TEMPLATE: '<div><div class=\"panel-inner\"></div></div>',
         // *** Private Fields *** //

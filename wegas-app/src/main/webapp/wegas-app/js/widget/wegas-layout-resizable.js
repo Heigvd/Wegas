@@ -13,7 +13,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
     "use strict";
 
     /**
-     * @name Y.Wegas.Layout
+     * @name Y.Wegas.ResizableLayout
      * @extends Y.Widget
      * @borrows Y.Wegas.Widget, Y.WidgetChild, Y.WidgetStdMod
      * @class class to show/hide a page with a slid effect
@@ -30,7 +30,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 + '</div></div>'
                 + '<div class="wegas-layout-ft"></div>'
                 + '</div>',
-        /** @lends Y.Wegas.Layout# */
+        /** @lends Y.Wegas.ResizableLayout# */
 
         // *** Private fields *** //
         /**
@@ -247,7 +247,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
         }
     }, {
         /**
-         * @lends Y.Wegas.Layout#
+         * @lends Y.Wegas.ResizableLayout#
          */
 
         /**
