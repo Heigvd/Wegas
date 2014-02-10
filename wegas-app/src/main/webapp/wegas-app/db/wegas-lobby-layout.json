@@ -104,6 +104,7 @@
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "RegisteredGames",
+                                "cssClass": "wegas-joinedgamesdatatable",
                                 "emptyMessage": "You have not joined any game yet",
                                 "dataTableCfg": {
                                     "columns": [{
