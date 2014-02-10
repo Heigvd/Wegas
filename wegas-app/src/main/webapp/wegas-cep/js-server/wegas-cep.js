@@ -16,6 +16,7 @@ function passPeriod() {
     if (currentTimeInstance.value == currentTime.maxValue) {
         phases.value += 1;
         currentPhase.value += 1;
+        phases.descriptor.items.get(currentPhase.value - 1).getInstance(self).value += 1;
     } else {
         currentTimeInstance.value += 1;
     }

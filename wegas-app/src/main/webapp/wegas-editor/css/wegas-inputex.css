@@ -66,7 +66,7 @@ div.inputEx-fieldWrapper {
 .wegas-form-content input[type=text],
 .wegas-form-content input[type=password] {
     width: 98%;
-    padding: 2px 1%;
+    padding: 2px 0.5%;
 }
 .wegas-form input[type=checkbox] {
     margin-top: .2em;

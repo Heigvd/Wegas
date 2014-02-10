@@ -29,28 +29,28 @@ public class JavaScriptTest {
     private static GlassFish glassfish;
     private static String appName;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        GlassFishProperties glassfishProperties = new GlassFishProperties();
-        glassfishProperties.setPort("http-listener", 5353);
-        glassfishProperties.setPort("https-listener", 5252);
-
-        glassfish = GlassFishRuntime.bootstrap().newGlassFish(glassfishProperties);
-        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
-        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
-        glassfish.start();
-
-        ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR, new File("./src/main/webapp/wegas-app/"));
-        appName = glassfish.getDeployer().deploy(archive.toURI(), "--contextroot=wegas-app");
-
-        JWebUnit.setBaseUrl("http://localhost:5353/wegas-app/");
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        glassfish.getDeployer().undeploy(appName);
-        glassfish.dispose();
-    }
+//    @BeforeClass
+//    public static void setUpClass() throws Exception {
+//        GlassFishProperties glassfishProperties = new GlassFishProperties();
+//        glassfishProperties.setPort("http-listener", 5353);
+//        glassfishProperties.setPort("https-listener", 5252);
+//
+//        glassfish = GlassFishRuntime.bootstrap().newGlassFish(glassfishProperties);
+//        Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
+//        Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
+//        glassfish.start();
+//
+//        ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR, new File("./src/main/webapp/"));
+//        appName = glassfish.getDeployer().deploy(archive.toURI(), "--contextroot=Wegas");
+//
+//        JWebUnit.setBaseUrl("http://localhost:5353/Wegas/");
+//    }
+//
+//    @AfterClass
+//    public static void tearDownClass() throws Exception {
+//        glassfish.getDeployer().undeploy(appName);
+//        glassfish.dispose();
+//    }
 
 //    @Test
 //    public void testJs() throws GlassFishException, IOException {
@@ -58,11 +58,11 @@ public class JavaScriptTest {
 //        assertTitleEquals("Wegas Test Suite");
 //       //  beginAt("tests/widget/wegas-serialization-test.htm.htm");
 //    }
-    @Test
-    public void testJs() {
-        JWebUnit.setScriptingEnabled(true);
-        // JWebUnit.setExpectedJavaScriptAlert("Test run success");
-        beginAt("tests/wegas-alltests.htm");
-        assertTitleEquals("Wegas Test Suite");
-    }
+//    @Test
+//    public void testJs() {
+//        JWebUnit.setScriptingEnabled(true);
+//        // JWebUnit.setExpectedJavaScriptAlert("Test run success");
+//        beginAt("wegas-app/tests/wegas-alltests.htm");
+//        assertTitleEquals("Wegas Test Suite");
+//    }
 }

@@ -126,7 +126,7 @@ public class RequestFacade {
     /**
      *
      */
-    public void commit() {
+    public void commit(Player player) {
         em.flush();
         if (this.getUpdatedInstances().size() > 0 || scriptEvent.isEventFired()) {
             if (this.getPlayer() != null) {
@@ -134,12 +134,12 @@ public class RequestFacade {
                 //action.setPlayer(this.getPlayer());
                 //playerActionEvent.fire(action);
 
-                playerActionEvent.fire(new PlayerAction(this.getPlayer()));
+                playerActionEvent.fire(new PlayerAction(player));
                 //stateMachineRunner.playerUpdated(this.requestManager.getPlayer());
 
             } else {
                 //stateMachineRunner.playerUpdated(null);
-                playerActionEvent.fire(new PlayerAction(this.getPlayer()));
+                playerActionEvent.fire(new PlayerAction(player));
                 //PlayerAction action = new PlayerAction();
                 //playerActionEvent.fire(action);
 
@@ -160,6 +160,13 @@ public class RequestFacade {
             }
             em.flush();
         }
+    }
+    
+    /**
+     *
+     */
+    public void commit() {
+        this.commit(this.getPlayer());
     }
 
     /**

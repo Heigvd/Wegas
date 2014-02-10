@@ -189,7 +189,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
         label: "Flexitests, expected response",
         data: "FlexiResponse"
     });
-    Y.Wegas.Layout.EDITMENU[1].plugins[0].cfg.children.push({
+    Y.Wegas.Parent.EDITMENU[1].plugins[0].cfg.children.push({
         type: "Button",
         label: "Folder's images",
         plugins: [{

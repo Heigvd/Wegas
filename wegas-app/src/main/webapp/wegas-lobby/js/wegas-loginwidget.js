@@ -66,7 +66,7 @@ YUI.add('wegas-loginwidget', function(Y) {
         /**
          * Default link to redirect user
          */
-        defaultRedirect: "wegas-app/view/lobby.html",
+        defaultRedirect: "index.html",
         // *** Lifecycle Methods *** //
         /**
          * @function

@@ -7,7 +7,7 @@ body {
     top:0px;
     right:0;
     left:0;
-    background-image: url(../../wegas-pmg/images/header.png);
+    background-image: url(wegas-pmg/images/header.png);
     background-repeat: repeat-x;
     background-color:#353B41;
     color:white;
@@ -64,7 +64,7 @@ body {
 }
 
 .header .pmg-period .wegas-template-valuebox-selected{
-    background-image: url(../../wegas-pmg/images/next.png);
+    background-image: url(wegas-pmg/images/next.png);
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -111,7 +111,7 @@ body {
     top:90px;
     right:0;
     left:0;
-    background-image: url(../../wegas-pmg/images/nav_horizontal.png);
+    background-image: url(wegas-pmg/images/nav_horizontal.png);
     background-repeat: repeat-x;
     background-color:#ADADAE;
     height:30px;
@@ -189,7 +189,7 @@ body {
 }
 
 .title{
-    background-image: url(../../wegas-pmg/images/h2.png);
+    background-image: url(wegas-pmg/images/h2.png);
     background-repeat: repeat-x;
     background-color: white;
     height:26px;
@@ -233,26 +233,26 @@ h2{
 }
 
 .vertical-menu .actions, .vertical-menu .actions:hover{
-    background-image: url(../../wegas-pmg/images/available_action.png), url(../../wegas-pmg/images/nav_vertical.png);
+    background-image: url(wegas-pmg/images/available_action.png), url(wegas-pmg/images/nav_vertical.png);
     background-position: center;
     background-repeat: no-repeat, repeat-x;
     margin-top:0px;
 }
 
 .vertical-menu .questions, .vertical-menu .questions:hover{
-    background-image: url(../../wegas-pmg/images/question.png), url(../../wegas-pmg/images/nav_vertical.png);
+    background-image: url(wegas-pmg/images/question.png), url(wegas-pmg/images/nav_vertical.png);
     background-position: center;
     background-repeat: no-repeat, repeat-x;
 }
 
 .vertical-menu .inbox, .vertical-menu .inbox:hover{
-    background-image: url(../../wegas-pmg/images/messages.png), url(../../wegas-pmg/images/nav_vertical.png);
+    background-image: url(wegas-pmg/images/messages.png), url(wegas-pmg/images/nav_vertical.png);
     background-position: center;
     background-repeat: no-repeat, repeat-x;
 }
 
 .vertical-menu .history, .vertical-menu .history:hover{
-    background-image: url(../../wegas-pmg/images/clock.png), url(../../wegas-pmg/images/nav_vertical.png);
+    background-image: url(wegas-pmg/images/clock.png), url(wegas-pmg/images/nav_vertical.png);
     background-position: center;
     background-repeat: no-repeat, repeat-x;
 }
@@ -261,7 +261,7 @@ h2{
     display:none;
     border-width:0;
     background:none;
-    background-image: url(../../wegas-pmg/images/help.png);
+    background-image: url(wegas-pmg/images/help.png);
     background-position: center;
     background-repeat: no-repeat;
     position:absolute;
@@ -272,7 +272,7 @@ h2{
 }
 
 .unread-count .value{
-    background-image: url(../../wegas-pmg/images/unread-count.png);
+    background-image: url(wegas-pmg/images/unread-count.png);
     background-position: center;
     background-repeat: no-repeat;
     padding:20px;
@@ -423,7 +423,7 @@ h2{
 }
 
 .body .yui3-datatable-columns th{
-    background-image: url(../../wegas-pmg/images/h2.png);
+    background-image: url(wegas-pmg/images/h2.png);
     background-repeat: repeat-x;
 }
 
@@ -452,7 +452,7 @@ h2{
 }
 
 /*.body .yui3-datatable-data tr:hover td{
-    background-image:url(../../wegas-pmg/images/previous-week.png);
+    background-image:url(wegas-pmg/images/previous-week.png);
     background-repeat: repeat;
 }*/
 /*
@@ -533,7 +533,7 @@ h2{
 
 .gantt-page .yui3-datatable-columns .current-week,
 .resources-page .yui3-datatable-columns .current-week{
-    background-image: url(../../wegas-pmg/images/next.png), url(../../wegas-pmg/images/h2.png);
+    background-image: url(wegas-pmg/images/next.png), url(wegas-pmg/images/h2.png);
     background-repeat: no-repeat, repeat-x;
     background-position: left, center;
 }
@@ -547,7 +547,7 @@ h2{
 
 .resources-page .slidepanel-title,
 .project-page .slidepanel-title{
-    background-image: url(../../wegas-pmg/images/h2.png);
+    background-image: url(wegas-pmg/images/h2.png);
     background-repeat: repeat-x;
     background-color: white;
     height:27px;
@@ -634,7 +634,7 @@ h2{
 }
 
 .evm-page .slidepanel-title{
-    background-image: url(../../wegas-pmg/images/h2.png);
+    background-image: url(wegas-pmg/images/h2.png);
     background-repeat: repeat-x;
     background-color: white;
     height:26px;

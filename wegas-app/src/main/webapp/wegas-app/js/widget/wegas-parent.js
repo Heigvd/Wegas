@@ -10,7 +10,7 @@
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-YUI.add("wegas-layout", function(Y) {
+YUI.add("wegas-parent", function(Y) {
     "use strict";
 
     var BUTTON = "Button";
@@ -19,26 +19,26 @@ YUI.add("wegas-layout", function(Y) {
      * @constructor
      * @returns {undefined}
      */
-    function Layout() {
+    function Parent() {
         Y.Wegas.Widget.apply(this, arguments);
         /*Check for Y.WidgetParent*/
         if (!this._add) {
-            Y.log("Extension 'Y.WidgetParent' must be defined before Y.Wegas.Layout in " + this.constructor.NAME,
-                    "error", "Y.Wegas.Layout");
+            Y.log("Extension 'Y.WidgetParent' must be defined before Y.Wegas.Parent in " + this.constructor.NAME,
+                    "error", "Y.Wegas.Parent");
         }
         /*Check for Y.Wegas.Editable*/
         if (!this.toJSON) {
-            Y.log("Extension 'Y.Wegas.Editable' must be defined before Y.Wegas.Layout in " + this.constructor.NAME,
-                    "error", "Y.Wegas.Layout");
+            Y.log("Extension 'Y.Wegas.Editable' must be defined before Y.Wegas.Parent in " + this.constructor.NAME,
+                    "error", "Y.Wegas.Parent");
         }
         this.onceAfter("render", function() {
-            this.get("boundingBox").addClass("wegas-layout");
+            this.get("boundingBox").addClass("wegas-parent");
         });
     }
     /* Copy prototype , extension -> no proto chain copy // 'extends' */
-    Y.mix(Layout.prototype, Y.Wegas.Widget.prototype);
+    Y.mix(Parent.prototype, Y.Wegas.Widget.prototype);
     /* And override it */
-    Y.mix(Layout.prototype, {
+    Y.mix(Parent.prototype, {
         /**
          * @function
          * @public
@@ -58,7 +58,7 @@ YUI.add("wegas-layout", function(Y) {
             return;
         }
     }, true);
-    Y.mix(Layout, {
+    Y.mix(Parent, {
         ATTRS: Y.mix({
             defaultChildType: {
                 value: "Text",
@@ -305,5 +305,5 @@ YUI.add("wegas-layout", function(Y) {
             aggregate: ["EDITMENU"]
         }
     });
-    Y.namespace("Wegas").Layout = Layout;
+    Y.namespace("Wegas").Parent = Parent;
 });

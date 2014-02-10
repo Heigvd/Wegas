@@ -41,7 +41,7 @@ YUI.add('wegas-join', function(Y) {
                     game = this.getTargetGame();
 
             this.joinButton = new Y.Button({//                                  // Render the button
-                label: "Start playing",
+                label: "Join game",
                 render: cb,
                 visible: false
             });
@@ -262,11 +262,9 @@ YUI.add('wegas-join', function(Y) {
                         this.hideOverlay();
 
                         this.get("contentBox").empty();
-                        var parent = this.get("parent");
-                        if (parent) {
-                            parent.remove();
-                            parent.destroy();
-                        }
+                        
+                        var rightTab = Y.Widget.getByNode("#rightTabView");     // Empty right tab on join
+                        rightTab && rightTab.destroyAll();
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
@@ -295,24 +293,21 @@ YUI.add('wegas-join', function(Y) {
          * Create team button call rest url : rest/GameModel/{gameModelID}/Game/{gameID}/CreateTeam/{teamName}
          */
         onGameJoined: function(e) {
-            this.showMessage("success", "Game joined");
+            //this.showMessage("success", "Game joined");
 
             Y.fire("gameJoined", {
                 gameId: e.response.entity.get("id"),
                 game: e.response.entity
-//                gameId: this.getTargetGame().get("id"),
-//                game: this.getTargetGame()
+                        //gameId: this.getTargetGame().get("id"),
+                        //game: this.getTargetGame()
             });
             this.hideOverlay();
 
             this.destructor();
             this.get("contentBox").empty();
 
-            var parent = this.get("parent");
-            if (parent) {
-                parent.remove();
-                parent.destroy();
-            }
+            var rightTab = Y.Widget.getByNode("#rightTabView");
+            rightTab && rightTab.destroyAll();
         },
         sendTokenJoinGame: function(token) {
             this.showOverlay();

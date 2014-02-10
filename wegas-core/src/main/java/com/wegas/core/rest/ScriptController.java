@@ -7,11 +7,15 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.ejb.UserFacade;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.script.ScriptException;
@@ -39,6 +43,8 @@ public class ScriptController {
     private UserFacade userFacade;
     @EJB
     private RequestFacade requestFacade;
+    @EJB
+    private PlayerFacade playerFacadeFacade;
 
     /**
      *
@@ -64,5 +70,34 @@ public class ScriptController {
             throw new UnauthorizedException();
 
         }
+    }
+
+    /**
+     * @param gameModelId
+     * @param multiplayerScripts
+     * @return
+     * @throws ScriptException
+     * @throws WegasException 
+     */
+    @POST
+    @Path("Multirun")
+    public List<Object> multirun(@PathParam("gameModelId") Long gameModelId,
+            HashMap<String, Object> multiplayerScripts)
+            throws ScriptException, WegasException {
+        
+        Script script = new Script();
+        ArrayList<Integer> playerIdList = (ArrayList<Integer>) multiplayerScripts.get("playerIdList");
+        script.setLanguage(((HashMap<String, String>)multiplayerScripts.get("script")).get("language"));
+        script.setContent(((HashMap<String, String>)multiplayerScripts.get("script")).get("content"));
+        ArrayList<Object> results = new ArrayList();
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+
+        for (int i = 0; i < playerIdList.size(); i++) {
+            Object r = scriptManager.eval(playerIdList.get(i).longValue(), script);
+            results.add(r);
+            requestFacade.commit(playerFacadeFacade.find(playerIdList.get(i).longValue()));
+        }
+        return results;
     }
 }

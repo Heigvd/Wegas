@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.sourceforge.jwebunit.junit.JWebUnit;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.glassfish.embeddable.*;
 import org.glassfish.embeddable.archive.ScatteredArchive;
@@ -74,7 +75,7 @@ public class IntegrationTest {
         //beginAt("test.htm");
         //assertTitleEquals("My Page");
         try {
-            beginAt("wegas-app/view/login.html?debug=true");
+            beginAt("login.html?debug=true");
         } catch (NullPointerException e) {  //@fixme error using xmlhttprequest from jwebunit
             System.out.println("Jweb unit encountered an exception");
             // e.printStackTrace();
@@ -86,5 +87,13 @@ public class IntegrationTest {
         //tester.setTextField("password", "test123");
         //tester.clickLink("login");
         //tester.submit();
+    }
+
+    @Test
+    public void testJs() {
+        JWebUnit.setScriptingEnabled(true);
+        // JWebUnit.setExpectedJavaScriptAlert("Test run success");
+        beginAt("wegas-app/tests/wegas-alltests.htm");
+        assertTitleEquals("Wegas Test Suite");
     }
 }
