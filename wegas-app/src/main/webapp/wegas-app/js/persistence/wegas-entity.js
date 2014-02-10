@@ -769,6 +769,7 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             name: {
+                "transient": true,
                 getter: function(val) {
                     if (this.get("firstname") || this.get("lastname")) {
                         return this.get("firstname") + " " + (this.get("lastname") || "");

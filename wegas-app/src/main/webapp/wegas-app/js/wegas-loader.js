@@ -238,7 +238,7 @@ YUI().use(function(Y) {
                     ws_provides: "GoogleTranslate"
                 },
                 "wegas-jstranslator": {
-                    pkg: '',
+                    pkg: 'js/',
                     lang: ["fr"]
                 },
                 /** Plugins **/

@@ -93,14 +93,15 @@
                         //tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
                     };
 
+                    /* <![CDATA[ */
                     app.after("render", function() {
                         if (Y.Wegas.Facade.Game.data.length > 0) {              // If the user has already created a game
                             Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2);// select created games tab
                         }
                         Y.Widget.getByNode("#centerTabView").on("selectionChange", function(e) {
                             Y.Widget.getByNode("#rightTabView").destroyAll();   // Empty right widget
-                            var toolbar = e.newVal.witem(0).toolbar;            // and remove all buttons
-                            while (toolbar.size() > 1) {
+                            var toolbar = e.newVal.witem(0) && e.newVal.witem(0).toolbar;// and remove all buttons
+                            while (toolbar && toolbar.size() > 1) {
                                 toolbar.remove(toolbar.size() - 1);
                             }
                         });
@@ -118,6 +119,7 @@
                         //    }
                         //});
                     });
+                    /* ]]> */
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
                         window.open(app.get("base") + "play.html?gameId=" + e.gameId);// open the game in a new tab
@@ -131,7 +133,7 @@
                                     Y.Wegas.Facade.Game.sendInitialRequest({
                                         on: {
                                             success: function() {
-                                                Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game added to the list", 6000);
+                                                Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
                                             }
                                         }
                                     });
