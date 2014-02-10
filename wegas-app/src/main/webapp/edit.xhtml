@@ -94,11 +94,11 @@
                                         /* THIS IS NOT A COMMENT
                                          * </ui:fragment>
                                          */
-                                plugins: [{
-                                        fn: "JSONSchema"
-                                        },{
-                                        fn: "PageCache"
-                                    }]
+                                        plugins: [{
+                                                fn: "JSONSchema"
+                                            }, {
+                                                fn: "PageCache"
+                                            }]
                             },
                             User: {
                                 source: "rest/Extended/User",
@@ -179,7 +179,7 @@
                         Y.one(".wegas-title").setContent(gm.get("name"));
 
                         try {
-                            #{editorGameController.getClientScripts()}          // Display game model specific js footer
+                #{editorGameController.getClientScripts()}          // Display game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }
@@ -202,9 +202,16 @@
                     });
 
                     app.render();                                               // Render app
-
-                    <ui:insert name = "editorFooter" /> // Footer script (for host.html)
-
+                    // Footer script (for host.html)
+                    /**
+                     * THIS IS NOT A COMMENT !!!
+                     * Writen as a comment to avoid parsing problems.
+                     * Mixing JSF/JavaScript
+                     */
+                    ////<ui:insert name="editorFooter" />////
+                    /**
+                     * END THIS IS NOT A COMMENT !!!
+                     */
                 });
             </script>
 
