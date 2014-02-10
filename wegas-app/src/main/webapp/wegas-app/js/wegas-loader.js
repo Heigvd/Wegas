@@ -584,7 +584,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-scriptlibrary': {
                     path: 'js/widget/wegas-scriptlibrary-min.js',
-                    requires: ['button', 'wegas-inputex-ace', 'inputex-select'],
+                    requires: ['button', 'wegas-inputex-ace', 'inputex-select', 'wegas-cssloader'],
                     ws_provides: 'ScriptLibrary'
                 },
                 'wegas-fileexplorercss': {
