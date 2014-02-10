@@ -102,7 +102,7 @@ YUI.add('treeview', function(Y) {
             });
             this.after("removeChild", function(e) {
                 if (!this.size()) {
-                    this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMSG") + "</div>");
+                    this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMsg") + "</div>");
                 }
             });
         },
@@ -117,7 +117,7 @@ YUI.add('treeview', function(Y) {
                 this.get(CONTENT_BOX).addClass(classNames.visibleRightWidget);
             }
             if (!this.size()) {
-                this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMSG") + "</div>");
+                this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMsg") + "</div>");
             }
         },
         syncUI: function() {
@@ -208,7 +208,7 @@ YUI.add('treeview', function(Y) {
                 value: true,
                 readOnly: true
             },
-            emptyMSG: {
+            emptyMsg: {
                 value: 'empty',
                 setter: function(v) {
                     this.get(BOUNDING_BOX).all("." + classNames.emptyMSG).setHTML(v);
