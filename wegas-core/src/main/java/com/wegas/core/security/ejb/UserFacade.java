@@ -128,13 +128,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
-    public List<JpaAccount> findAccountByValue(String search) {
-        Query findByToken = em.createNamedQuery("findAccountByValue");
-        findByToken.setParameter("search", "%" + search.toLowerCase() + "%");
-        findByToken.setMaxResults(MAXRESULT);
-        return findByToken.getResultList();
-    }
-
     @Override
     public void create(User user) {
         AbstractAccount account = user.getMainAccount();

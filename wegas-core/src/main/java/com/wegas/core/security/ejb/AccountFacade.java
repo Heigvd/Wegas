@@ -13,6 +13,9 @@ import com.wegas.core.security.jparealm.JpaAccount_;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.AbstractAccount_;
 import com.wegas.core.security.persistence.Role;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +39,7 @@ import javax.persistence.criteria.Root;
 @LocalBean
 public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
 
+    private static final int MAXRESULT = 30;
     /**
      *
      */
@@ -93,12 +97,12 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
     public void create(AbstractAccount entity) {
         getEntityManager().persist(entity);
     }
+
     public List<JpaAccount> findAllRegistered() {
         final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
         query.select(query.from(JpaAccount.class));
         return getEntityManager().createQuery(query).getResultList();
     }
-
 
     /**
      * Return a user based on his principal.
@@ -129,5 +133,69 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
         cq.where(cb.equal(account.get(JpaAccount_.email), email));
         Query q = em.createQuery(cq);
         return (JpaAccount) q.getSingleResult();
+    }
+
+    public List<JpaAccount> findByNameOrEmail(String name, boolean withEmail) throws NoResultException {
+        ArrayList<JpaAccount> accounts = new ArrayList();
+        String splidedName[] = name.split(" ");
+        for (int i = 0; i < splidedName.length; i++) {
+            String firstname = "";
+            String lastname = "";
+            for (int ii = 0; ii <= i; ii++) {
+                firstname = firstname + splidedName[ii] + " ";
+            }
+            firstname = normalizeName(firstname);
+            if (i < splidedName.length - 1) {
+                for (int ii = i + 1; ii < splidedName.length; ii++) {
+                    lastname = lastname + splidedName[ii] + " ";
+                }
+            }
+            lastname = normalizeName(lastname);
+            List<JpaAccount> tempAccount = this.findByNameOrEmailQuery("name", firstname, lastname);
+            accounts = this.compareExistingAccount(tempAccount, accounts);
+            tempAccount = this.findByNameOrEmailQuery("name", lastname, firstname);
+            accounts = this.compareExistingAccount(tempAccount, accounts);
+            if (withEmail && splidedName.length == 1) {
+                tempAccount = this.findByNameOrEmailQuery("email", splidedName[i], null);
+                accounts = this.compareExistingAccount(tempAccount, accounts);
+            }
+        }
+        return accounts;
+    }
+
+    private String normalizeName(String name) {
+        if (name.equals("")) {
+            return "%";
+        } else {
+            return name.substring(0, name.length() - 1);
+        }
+    }
+
+    private List<JpaAccount> findByNameOrEmailQuery(final String type, String value1, String value2) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery cq = cb.createQuery();
+        Root<JpaAccount> account = cq.from(JpaAccount.class);
+
+        switch (type) {
+            case "name":
+                cq.where(cb.and(cb.like(cb.lower(account.get(JpaAccount_.firstname)), value1.toLowerCase()),
+                        cb.like(cb.lower(account.get(JpaAccount_.lastname)), value2.toLowerCase())));
+                break;
+            case "email":
+                cq.where(cb.like(cb.lower(account.get(JpaAccount_.email)), value1.toLowerCase()));
+                break;
+        }
+        Query q = em.createQuery(cq);
+        q.setMaxResults(MAXRESULT);
+        return (List<JpaAccount>) q.getResultList();
+    }
+
+    private ArrayList<JpaAccount> compareExistingAccount(List<JpaAccount> tempAccount, ArrayList<JpaAccount> accounts) {
+        for (int i = 0; i < tempAccount.size(); i++) {
+            if (!accounts.contains(tempAccount.get(i))) {
+                accounts.add(tempAccount.get(i));
+            }
+        }
+        return accounts;
     }
 }

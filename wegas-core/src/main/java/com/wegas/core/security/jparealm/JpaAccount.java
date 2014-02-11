@@ -26,9 +26,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 @Table(uniqueConstraints = {
     @UniqueConstraint(columnNames = "email")
 })
-@NamedQueries({
-    @NamedQuery(name = "findAccountByValue",
-            query = "SELECT DISTINCT abstractaccount FROM JpaAccount abstractaccount WHERE lower(abstractaccount.email) LIKE :search OR lower(abstractaccount.firstname) LIKE :search OR lower(abstractaccount.lastname) LIKE :search")})
 public class JpaAccount extends AbstractAccount {
 
     /**
