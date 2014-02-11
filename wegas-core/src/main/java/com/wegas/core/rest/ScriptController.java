@@ -77,18 +77,18 @@ public class ScriptController {
      * @param multiplayerScripts
      * @return
      * @throws ScriptException
-     * @throws WegasException 
+     * @throws WegasException
      */
     @POST
     @Path("Multirun")
     public List<Object> multirun(@PathParam("gameModelId") Long gameModelId,
             HashMap<String, Object> multiplayerScripts)
             throws ScriptException, WegasException {
-        
+
         Script script = new Script();
         ArrayList<Integer> playerIdList = (ArrayList<Integer>) multiplayerScripts.get("playerIdList");
-        script.setLanguage(((HashMap<String, String>)multiplayerScripts.get("script")).get("language"));
-        script.setContent(((HashMap<String, String>)multiplayerScripts.get("script")).get("content"));
+        script.setLanguage(((HashMap<String, String>) multiplayerScripts.get("script")).get("language"));
+        script.setContent(((HashMap<String, String>) multiplayerScripts.get("script")).get("content"));
         ArrayList<Object> results = new ArrayList();
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);

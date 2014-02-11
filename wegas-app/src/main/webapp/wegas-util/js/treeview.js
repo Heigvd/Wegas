@@ -336,15 +336,15 @@ YUI.add('treeview', function(Y) {
                     return;
                 }
                 if (e.newVal) {
+                    this.get(BOUNDING_BOX).addClass(classNames.collapsed);
                     if (e.fireEvent) {
                         this.fire("nodeCollapsed", {node: e.target});
                     }
-                    this.get(BOUNDING_BOX).addClass(classNames.collapsed);
                 } else {
+                    this.get(BOUNDING_BOX).removeClass(classNames.collapsed);
                     if (e.fireEvent) {
                         this.fire("nodeExpanded", {node: e.target});
                     }
-                    this.get(BOUNDING_BOX).removeClass(classNames.collapsed);
                 }
             });
         },

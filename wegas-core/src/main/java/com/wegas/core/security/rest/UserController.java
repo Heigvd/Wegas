@@ -7,6 +7,8 @@
  */
 package com.wegas.core.security.rest;
 
+import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.event.WarningEvent;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -58,6 +61,11 @@ public class UserController {
      */
     @EJB
     private AccountFacade accountFacade;
+    /**
+     *
+     */
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -100,11 +108,9 @@ public class UserController {
             throw new UnauthorizedException();
         }
         List<Map> returnValue = new ArrayList<>();
-        for (JpaAccount a : userFacade.findAccountByValue(value)) {
+        for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
             Map account = new HashMap<>();
             returnValue.add(account);
-//            if (a.getFirstname() != null && a.getLastname() != null) {
-//                account.put("label", a.getFirstname() + " " + a.getLastname());
             if (a.getFirstname() != null && a.getLastname() != null) {
                 account.put("label", a.getFirstname() + " " + a.getLastname());
             } else {
@@ -121,13 +127,14 @@ public class UserController {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
-        return userFacade.findAccountByValue(value);
+        return accountFacade.findByNameOrEmail("%" + value + "%", true);
     }
 
     @GET
-    @Path("FindAccountsByValues")
-    public List<Map> findAccountsByValues(@QueryParam("values") List<String> values) {
+    @Path("FindAccountsByEmailValues")
+    public List<Map> findAccountsByEmailValues(@QueryParam("values") List<String> values) {
         List<Map> returnValue = new ArrayList<>();
+        List<String> notValidValue = new ArrayList<>();
         for (String value : values) {
             try {
                 Map account = new HashMap<>();
@@ -140,11 +147,31 @@ public class UserController {
                 account.put("value", a.getId());
                 returnValue.add(account);
             } catch (PersistenceException e2) {
-                // GOTCHA
-                // for(String subtToken)
-                // Could not find token
+                notValidValue.add(value);
             }
         }
+        requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
+        return returnValue;
+    }
+
+    @GET
+    @Path("FindAccountsByName")
+    public List<JpaAccount> findAccountsByName(@QueryParam("values") List<String> values) {
+        if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
+            throw new UnauthorizedException();
+        }
+        List<JpaAccount> returnValue = new ArrayList<>();
+        List<String> notValidValue = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            String s = values.get(i);
+            List<JpaAccount> temps = accountFacade.findByNameOrEmail(s, false);
+            if (temps.size() == 1) {
+                returnValue.addAll(temps);
+            } else {
+                notValidValue.add(s);
+            }
+        }
+        requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
         return returnValue;
     }
 
