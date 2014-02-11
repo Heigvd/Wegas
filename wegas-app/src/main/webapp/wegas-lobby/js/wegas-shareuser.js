@@ -7,12 +7,11 @@
  */
 /**
  *
- * @TODO les showmessage en cas de failure des requêtes ne marchent pas
- *
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 
 YUI.add('wegas-shareuser', function(Y) {
+    'use strict';
     var CONTENTBOX = 'contentBox',
             ShareUser = Y.Base.create("wegas-shareuser", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
         /**
@@ -61,9 +60,10 @@ YUI.add('wegas-shareuser', function(Y) {
 
 
             this.autocompleteValue = [];
+            this.typeInviteValue = "e-mail, name or lastname";
             this.field = new Y.inputEx.AutoComplete({
                 parentEl: el.one(".wegas-adduser"),
-                typeInvite: "e-mail, name or lastname",
+                typeInvite: this.typeInviteValue,
                 // Format the hidden value (value returned by the form)
                 returnValue: Y.bind(function(oResultItem) {
                     if (!this.field.options.value) {
@@ -82,15 +82,12 @@ YUI.add('wegas-shareuser', function(Y) {
                     source: Y.Wegas.app.get("base") + "rest/User/AutoComplete/{query}",
                     enableCache: false,
                     resultListLocator: Y.bind(function(responses) {
-                        var i;
                         Y.Array.forEach(this.userList.subFields, function(user) {
-                            for (i = 0; i < responses.length; i++) {
-                                if (user.getValue().userId === responses[i].value) {
-                                    responses.splice(responses[i], 1);
-                                    break;
-                                }
-                            }
-                        });
+                            responses = this.resultListLocator(user.getValue().userId, responses);
+                        }, this);
+//                        Y.Array.forEach(this.field.options.value, function(fieldValue) {
+//                            responses = this.resultListLocator(fieldValue.value, responses);
+//                        }, this);
                         return responses;
                     }, this)
                 }
@@ -103,56 +100,133 @@ YUI.add('wegas-shareuser', function(Y) {
 
             this.loadPermissions();
         },
+        resultListLocator: function(id, responses) {
+            var i;
+            for (i = 0; i < responses.length; i += 1) {
+                if (id === responses[i].value) {
+                    responses.splice(i, 1);
+                    break;
+                }
+            }
+            return responses;
+        },
         bindUI: function() {
             this.saveButton.on("click", function() {
-                var values = [],
-                        fieldValue = this.field.yEl.get("value"),
+                var i, emailList = [], otherValueList = [],
+                        fieldValue = this.field.yEl.get("value"), notAdd,
                         userNames = fieldValue.split(",");
+                this.sendAddErrorMessage = false;
 
-                if (fieldValue === "") {                                        // Check the input element is not empty
+                if (fieldValue === this.typeInviteValue) {                                        // Check the input element is not empty
                     return;
                 }
-                //if (this.field.getValue() === "")
-                //    return;
 
-                Y.Array.each(userNames, function(value) {                       // Remove items that have
-                    if ((!this.field.options.value || !this.field.options.value.indexOf[value.trim()])
-                            && value.trim() !== "") {
-                        values.push(value);
+                //Add all accounts from "this.field" with an id (means selected with autocompletion)
+                Y.Array.each(this.field.options.value, function(account) {
+                    this.addToUserlist(account.value, account.label);
+                }, this);
+
+                Y.Array.each(userNames, function(value) {                       // Create the email list and other value list
+                    notAdd = true;
+                    for (i in this.field.options.value) {
+                        if (this.field.options.value.hasOwnProperty(i)) {
+                            if (this.field.options.value[i].label === value.trim()) {
+                                notAdd = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (notAdd && value.indexOf("@") !== -1) {
+                        emailList.push(value.trim());
+                    } else if (notAdd) {
+                        otherValueList.push(value.trim());
                     }
                 }, this);
-                if (values.length > 0) {
-                    Y.Wegas.Facade.User.sendRequest({
-                        request: "/FindAccountsByValues/",
-                        cfg: {
-                            data: {
-                                values: values
-                            }
-                        },
-                        on: {
-                            success: Y.bind(function(e) {
-                                Y.Array.each(e.response.results.entities, function(account) {
-                                    this.userList.addElement({
-                                        username: account.get("val.label"),
-                                        userId: account.get("val.value"),
-                                    });
-                                }, this);
-                            }, this),
-                            failure: Y.bind(this.defaultFailureHandler, this)
-                        }
-                    });
+
+                if (emailList.length > 0) {
+                    this.findAccountsByEmail(emailList);
                 }
 
-                Y.Array.each(this.field.options.value, function(account) {
-                    this.userList.addElement({
-                        username: account.label,
-                        userId: account.value
-                    });
-                }, this);
+                if (otherValueList.length > 0) {
+                    this.findAccountsByName(otherValueList);
+                }
 
                 this.field.options.value = [];
                 this.field.setValue("");
             }, this);
+        },
+        findAccountsByEmail: function(emailList) {
+            Y.Wegas.Facade.User.sendRequest({
+                request: "/FindAccountsByEmailValues/",
+                headers: {
+                    'Managed-Mode': 'false'
+                },
+                cfg: {
+                    data: {
+                        values: emailList
+                    }
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        var notAddedAccounts;
+                        Y.Array.each(e.response.results.entities, function(account) {
+                            this.addToUserlist(account.get("val.value"), account.get("val.label"));
+                        }, this);
+                        notAddedAccounts = Y.Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
+                        this.notAddedToUserlist(notAddedAccounts);
+                    }, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
+                }
+            });
+        },
+        findAccountsByName: function(valueList) {
+            Y.Wegas.Facade.User.sendRequest({
+                request: "/FindAccountsByName/",
+                headers: {
+                    'Managed-Mode': 'true'
+                },
+                cfg: {
+                    data: {
+                        values: valueList
+                    }
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        var notAddedAccounts;
+                        Y.Array.each(e.response.results.entities, function(account) {
+                            this.addToUserlist(account.get("id"), account.get("name"));
+                        }, this);
+                        notAddedAccounts = Y.Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
+                        this.notAddedToUserlist(notAddedAccounts);
+                    }, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
+                }
+            });
+        },
+        notAddedToUserlist: function(notAddedAccounts) {
+            var i;
+            for (i = 0; i < notAddedAccounts[0].length; i += 1) {
+                this.field.setValue(this.field.getValue() + notAddedAccounts[0][i] + ", ");
+            }
+            if (notAddedAccounts[0].length > 0 && !this.sendAddErrorMessage) {
+                this.sendAddErrorMessage = true;
+                this.showMessage("warn", "Some accounts couldn't be added");
+            }
+        },
+        addToUserlist: function(id, label) {
+            var accountFind;
+            accountFind = Y.Array.find(this.userList.getValue(), Y.bind(function(item) {
+                if (item.userId === id) {
+                    return true;
+                }
+            }), this);
+
+            if (!accountFind) {
+                this.userList.addElement({
+                    username: label,
+                    userId: id
+                });
+            }
         },
         destructor: function() {
             this.field.destroy();
@@ -175,7 +249,7 @@ YUI.add('wegas-shareuser', function(Y) {
                             });
 
                             Y.Array.forEach(newField.inputs, function(field) {
-                                for (i = 0; i < permissions.length; i++) {
+                                for (i = 0; i < permissions.length; i += 1) {
                                     splitedPerm = permissions[i].get("val").value.split(":");
                                     if (splitedPerm[2] === this.userList.targetEntityId) {
                                         if (field.options.value === splitedPerm[0] + ":" + splitedPerm[1]) {
@@ -215,9 +289,9 @@ YUI.add('wegas-shareuser', function(Y) {
         /** @lends Y.inputEx.Wegas.UserPermissionList# */
 
         onDelete: function(e) {
-            var elementDiv = e.target._node.parentNode,
+            var elementDiv = e.target._node.parentNode, i,
                     subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
-            for (var i = 0; i < this.subFields.length; i++) {
+            for (i = 0; i < this.subFields.length; i += 1) {
                 if (this.subFields[i].getEl() === subFieldEl) {
                     this.deletePermission(this.targetEntityId, this.subFields[i].getValue().userId); //param : entity Id, have userId
                     break;

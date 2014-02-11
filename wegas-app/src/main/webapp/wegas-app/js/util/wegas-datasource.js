@@ -317,6 +317,25 @@ YUI.add('wegas-datasource', function(Y) {
             return this.find(ID, id * 1);                                    // Cast to number
         },
         /**
+         * Retrives a server event with a key
+         * @param String key
+         * @param event || list<event> val
+         * @returns a list of events
+         */
+        findEvent: function(key, val) {
+            var eventsFound = [], i;
+            if (val.response.results) {
+                val = val.response.results.events;
+            }
+            
+            for(i=0; i<val.length; i++) {
+                if (val[i].get("val").type === key) {
+                    eventsFound.push(val[i].get("val.payload"));
+                }
+            }
+            return eventsFound;
+        },
+        /**
          * Retrieves a list of entities from the cache
          * @function
          * @private
