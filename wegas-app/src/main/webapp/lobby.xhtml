@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition template="/wegas-app/view/template/app-default.xhtml">
+
+        <ui:define name="head">
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            <style type="text/css">
+                .yui3-skin-sam #centerTabView .yui3-tab-label {
+                    min-width: 90px;
+                }
+                .yui3-skin-sam #gameModelsTab {
+                    padding-left: 15px;
+                }
+                #rightTabView .yui3-tab-remove {
+                    display: none;
+                }
+                #rightTabView .yui3-tabview-removeable .yui3-tab-label,
+                #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label:focus,
+                #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label:hover,
+                #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label {
+                    padding-right: 1.4em;
+                }
+                /* Move Uservoice widget so it does not overlap right tab */
+                #uvTab {
+                    border-bottom: 1px solid #FFF !important;
+                    border-radius: 4px 4px 4px 4px !important;
+                    right: 192px !important;
+                    top: -3px !important;
+                    bottom: auto !important;
+                    left: auto !important;
+                }
+            </style>
+        </ui:define>
+
+        <ui:define name="body">
+            <script type="text/javascript">
+                YUI().use("wegas-app", function(Y) {
+                    var app = new Y.Wegas.App({
+                        layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
+                        //debug: true,
+                        currentUser: #{requestController.currentUser.id},
+                        dataSources: {
+                            GameModel: {
+                                source: "rest/Public/GameModel",
+                                initialRequest: "",
+                                plugins: [{
+                                        fn: "GameModelCache"
+                                    }]
+                            },
+                            Game: {
+                                source: "rest/GameModel//Game",
+                                initialRequest: "",
+                                plugins: [{
+                                        fn: "GameCache"
+                                    }]
+                            },
+                            RegisteredGames: {
+                                source: "rest/RegisteredGames/#{requestController.currentUser.id}",
+                                initialRequest: "",
+                                plugins: [{
+                                        fn: "GameCache"
+                                    }]
+                            },
+                            PublicGames: {
+                                source: "rest/PublicGames",
+                                //initialRequest: "/#{requestController.currentUser.id}",
+                                plugins: [{
+                                        fn: "GameCache"
+                                    }]
+                            },
+                            Role: {
+                                source: "rest/Role",
+                                plugins: [{
+                                        fn: "WegasCache"
+                                    }]
+                            },
+                            User: {
+                                source: "rest/Extended/User",
+                                initialRequest: "/#{requestController.currentUser.id}",
+                                plugins: [{
+                                        fn: "UserCache"
+                                    }]
+                            }
+                        }
+                    });
+                    var refreshTabs = function() {
+                        var tab = Y.Widget.getByNode("#gameModelsTab");
+                        tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
+                        //tab = Y.Widget.getByNode("#gamesTreeViewTab");
+                        //tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
+                    };
+
+                    /* <![CDATA[ */
+                    app.after("render", function() {
+                        if (Y.Wegas.Facade.Game.data.length > 0) {              // If the user has already created a game
+                            Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2);// select created games tab
+                        }
+                        Y.Widget.getByNode("#centerTabView").on("selectionChange", function(e) {
+                            Y.Widget.getByNode("#rightTabView").destroyAll();   // Empty right widget
+                            var toolbar = e.newVal.witem(0) && e.newVal.witem(0).toolbar;// and remove all buttons
+                            while (toolbar && toolbar.size() > 1) {
+                                toolbar.remove(toolbar.size() - 1);
+                            }
+                        });
+                        refreshTabs();
+
+                        //Y.Wegas.Facade.Game.cache.on("added", function(e) {     // After a game is created
+                        //    if (e.entity instanceof Y.Wegas.persistence.Game) {
+                        //        var gm = Y.Wegas.Facade.GameModel.cache.findById(e.entity.get("gameModelId"));
+                        //        if (!gm || !gm.get("canView")) {
+                        //            Y.Wegas.Facade.GameModel.sendInitialRequest();// To refresh game model list
+                        //        }
+                        //
+                        //        //Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2).set("visible", true);// select the hosted games tab
+                        //        //Y.Wegas.Facade.PublicGames.sendInitialRequest();  // Refresh available game list
+                        //    }
+                        //});
+                    });
+                    /* ]]> */
+
+                    Y.on("gameJoined", function(e) {                            // As soon as a game is joined
+                        window.open(app.get("base") + "play.html?gameId=" + e.gameId);// open the game in a new tab
+
+                        Y.Wegas.Facade.GameModel.sendInitialRequest({//         // Refresh game model list
+                            on: {
+                                success: function() {
+                                    Y.Wegas.Facade.RegisteredGames.sendInitialRequest();// reload datasource
+                                    Y.Wegas.Facade.PublicGames.sendInitialRequest();
+
+                                    Y.Wegas.Facade.Game.sendInitialRequest({
+                                        on: {
+                                            success: function() {
+                                                Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    });
+
+                    app.render();                                               // Launch the editor
+                });
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>

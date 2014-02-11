@@ -34,6 +34,7 @@ YUI.add("wegas-loginbutton", function(Y) {
          */
         bindUI: function() {
             Y.Wegas.LoginButton.superclass.bindUI.apply(this, arguments);
+            
             this.handlers = {};
             this.handlers.userUpdate = Y.Wegas.Facade.User.after("update", this.syncUI, this);
             if (Y.Wegas.Facade.VariableDescriptor)

@@ -215,7 +215,7 @@ YUI.add('wegas-editor-action', function(Y) {
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
-         *    <li>editorUrl: url of the editor page<i>default: wegas-app/view/editor.html?</i></li>
+         *    <li>editorUrl: url of the editor page<i>default: edit.html?</i></li>
          *    <li>entity: the team, game, gamemodel or player entity that will be opened</li>
          * </ul>
          *
@@ -224,7 +224,7 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         ATTRS: {
             editorUrl: {
-                value: 'wegas-app/view/editor.html?'
+                value: 'edit.html?'
             },
             entity: {}
         }

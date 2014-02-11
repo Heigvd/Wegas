@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets" >
+
+    <ui:composition template="edit.xhtml">
+        
+        <ui:define name="title">#{editorGameController.currentGame.name}</ui:define>
+
+        <ui:define name="editorHeader">
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host.css" />
+        </ui:define>
+
+        <ui:define name="editorFooter">
+        Y.Wegas.app.on("render", function(e) {
+            //var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+            var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
+            Y.one(".wegas-title").setContent(g.get("name"));
+        
+            Y.use("button-toggle", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
+                var tab = Y.Widget.getByNode("#leftTabView").add({              // Add player selection tab
+                    label: "Players",
+                    cssClass: "editor-players",
+                    children: [{
+                            type: "TeamTreeViewEditor",
+                            dataSource: "Game",
+                            plugins: [{
+                                    fn: "WidgetToolbar",
+                                    cfg: {
+                                        "children": []
+                                    }
+                                }]
+                        }]
+                }, 0).item(0);
+                tab.set("selected", 2);
+                tab.witem(0).on(["treeleaf:click", "treenode:click"], function(e) {                        // Listen to click events on the first child (treeview)
+                    var entity = e.target.get("data.entity"),
+                            player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
+                    
+                    if (!player) {
+                        this.showMessageBis("info", "This team is empty", 4000);
+                        return;
+                    }
+                    
+                    //Check if click is whit multiselect plugin
+                    if (e.currentTarget.treeView.treeviewselect){
+                        return
+                    }
+
+                    Y.Wegas.app.set('currentPlayer', player.get("id"));
+                });
+                
+                Y.Widget.getByNode("#centerTabView").add({                      // Add impact tab
+                    label: "Impact",
+                    children: [{
+                            type: "WysiwygConsole",
+                            cssClass: "wegas-console"
+                        }]
+                });
+                
+                //var button = Y.Widget.getByNode(".wegas-layout-hd").add({}).item(0)
+                var button = new Y.ToggleButton({
+                    label: "Enable edition"
+                });
+                button.get("boundingBox").addClass("wegas-advanced-feature");
+                button.render();       
+                var menuEl = Y.one(".wegas-layout-hd");
+                menuEl.insertBefore(button.get("boundingBox"), menuEl.one(".wegas-widgetmenu-hassubmenu"));
+                button.after("pressedChange", function(e) {
+                    Y.one("body").toggleClass("wegas-editmode", e.newVal);
+                    //this.get("boundingBox").swap(this.swapNode);
+                });
+            });            
+        });
+        </ui:define>
+    </ui:composition>
+</html>
