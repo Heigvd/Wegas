@@ -34,8 +34,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
          */
         renderUI: function() {
             this.treeView = new Y.TreeView({
-                emptyMSG: this.get("emptyMessage")
+                emptyMsg: this.get("emptyMessage")
             });
+            this.treeView.addTarget(this);
             this.treeView.render(this.get(CONTENTBOX));
 
             this.plug(Plugin.EditorTVToolbarMenu);
@@ -179,7 +180,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + '</div>',
         renderUI: function() {
             this.treeView = new Y.TreeView({
-                emptyMSG: this.get("emptyMessage")
+                emptyMsg: this.get("emptyMessage")
             });                                                                 // Render the treeview
             this.treeView.addTarget(this);
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
@@ -254,7 +255,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 + '</div>',
         renderUI: function() {
             this.treeView = new Y.TreeView({
-                emptyMSG: this.get("emptyMessage")
+                emptyMsg: this.get("emptyMessage")
             });                                                                 // Render the treeview
             this.treeView.addTarget(this);
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));

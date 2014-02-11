@@ -128,13 +128,12 @@ YUI.add('wegas-form', function(Y) {
              */
             values: {
                 "transient": true,
-                value: {
-                    setter: function(val) {
-                        if (this.get("form")) {
-                            this.form.setValue(val, false);
-                        }
-                        return val;
+                value: {},
+                setter: function(val) {
+                    if (this.get("form")) {
+                        this.get("form").setValue(val, false);
                     }
+                    return val;
                 }
             },
             /**

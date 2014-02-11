@@ -34,16 +34,16 @@
     padding-left: 48px;
 }
 .wegas-panel-content .yui3-widget-bd .icon-error{
-    background-image: url(../images/wegas-icon-error-48.png)
+    background-image: url(../../wegas-app/images/wegas-icon-error-48.png)
 }
 .wegas-panel-content .yui3-widget-bd .icon-success{
-    background-image: url(../images/wegas-icon-success-48.png)
+    background-image: url(../../wegas-app/images/wegas-icon-success-48.png)
 }
 .wegas-panel-content .yui3-widget-bd .icon-info{
-    background-image: url(../images/wegas-icon-info-48.png)
+    background-image: url(../../wegas-app/images/wegas-icon-info-48.png)
 }
 .wegas-panel-content .yui3-widget-bd .icon-warn{
-    background-image: url(../images/wegas-icon-warning-48.png)
+    background-image: url(../../wegas-app/images/wegas-icon-warning-48.png)
 }
 .wegas-panel-hidden {
     display: none;

@@ -31,7 +31,7 @@
 }
 /* Chess board styles */
 .wegas-chessboard {
-    background: url(http://wegas.albasim.ch/wegas-chess/images/EmptyBoard.gif) no-repeat;
+    background: url(http://wegas.albasim.ch/wegas-games/wegas-chess/images/EmptyBoard.gif) no-repeat;
     background-size: 600px auto;
     width: 557px;
     height: 600px;
@@ -75,7 +75,7 @@
     position: absolute;
 }
 .chess-piece {
-    background: transparent url(http://wegas.albasim.ch/wegas-chess/images/pieces.png) no-repeat;
+    background: transparent url(http://wegas.albasim.ch/wegas-games/wegas-chess/images/pieces.png) no-repeat;
     background-size: 386px;
     background-position:2px -88px;
 }

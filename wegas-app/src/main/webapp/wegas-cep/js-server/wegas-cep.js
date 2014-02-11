@@ -10,23 +10,24 @@
  */
 importPackage(javax.naming);
 
-function passPeriod () {
+function passPeriod() {
     var currentTime = phases.descriptor.items.get(currentPhase.value - 1),
-    currentTimeInstance = currentTime.getInstance(self);
+            currentTimeInstance = currentTime.getInstance(self);
     if (currentTimeInstance.value == currentTime.maxValue) {
         phases.value += 1;
         currentPhase.value += 1;
+        phases.descriptor.items.get(currentPhase.value - 1).getInstance(self).value += 1;
     } else {
         currentTimeInstance.value += 1;
     }
     humanResources.value = humanResources.descriptor.defaultInstance.value;
 }
-function checkMoral () {
+function checkMoral() {
     this.setTeamMotivation();
     this.changePicture();
 }
 
-function setTeamMotivation () {
+function setTeamMotivation() {
     var i, gm = self.getGameModel(),
             listEmployees = VariableDescriptorFacade.findByName(gm, 'employees'),
             employeeInstance,
@@ -49,7 +50,7 @@ function setTeamMotivation () {
         if (employeeInstance.getActive() == true) {
             tmpVal = parseInt(employeeInstance.getMoral());
             //Bound moral between teamMotivation Min val and max val
-            if(boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue()) !== tmpVal){
+            if (boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue()) !== tmpVal) {
                 tmpVal = boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue());
                 employeeInstance.setMoral(tmpVal);
             }
@@ -79,14 +80,14 @@ function setTeamMotivation () {
     teamMotivation.getInstance(self).setValue(Math.round(newTeamMotivation));
 }
 
-function boundConstrain(val, lowerBound, upperBound){
+function boundConstrain(val, lowerBound, upperBound) {
     return Math.max(lowerBound, Math.min(val, upperBound));
 }
 
 /**
  * Set picture depending of resource's current moral.
  */
-function changePicture () {
+function changePicture() {
     var i, j, valueInst, valueDescr, gm = self.getGameModel(), oldImg, newImg, moral,
             listEmployees = VariableDescriptorFacade.findByName(gm, 'employees'),
             imgSuffixe = ['Triste', 'Neutre', 'Joie'];

@@ -37,9 +37,12 @@ import org.slf4j.LoggerFactory;
 @Path("combo")
 public class ComboController {
 
-    final static private String MediaTypeCss = "text/css; charset=ISO-8859-1";
-    final static private String MediaTypeJs = "text/javascript; charset=ISO-8859-1";
     private static final Logger logger = LoggerFactory.getLogger(ComboController.class);
+    /**
+     *
+     */
+    final static public String MediaTypeCss = "text/css; charset=ISO-8859-1";
+    final static public String MediaTypeJs = "text/javascript; charset=ISO-8859-1";
     /**
      *
      */

@@ -220,8 +220,8 @@
     "cssLibrary": {},
     "clientScriptLibrary": {},
     "properties": {
-        "cssUri": "wegas-monopoly/css/wegas-monopoly.css",
-        "pagesUri": "wegas-monopoly/db/wegas-monopoly-pages.json?",
+        "cssUri": "wegas-games/wegas-monopoly/css/wegas-monopoly.css",
+        "pagesUri": "wegas-games/wegas-monopoly/db/wegas-monopoly-pages.json?",
         "allGameVariables": "true",
         "websocket": "732a1df75d93d028e4f9"
     }

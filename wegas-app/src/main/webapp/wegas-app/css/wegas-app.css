@@ -273,7 +273,9 @@ font{
 /*
  * Image widget
  */
-.wegas-image-hidden{
+.wegas-image-hidden,
+.yui3-tabview-hidden,
+.wegas-text-hidden {
     display: none;
 }
 /*

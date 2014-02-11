@@ -67,7 +67,7 @@
             },
             "3": {
                 "@class": "DialogueState",
-                "text": "Prends une glace <img src='../../wegas-simpledialogue/images/icecream.png' />",
+                "text": "Prends une glace <img src='../../wegas-games/wegas-simpledialogue/images/icecream.png' />",
                 "transitions": [{
                     "@class": "DialogueTransition",
                     "actionText": "Merci",
@@ -103,7 +103,7 @@
             },
             "5": {
                 "@class": "DialogueState",
-                "text": "Reprends une glace ;-) <img src='../../wegas-simpledialogue/images/icecream.png' />",
+                "text": "Reprends une glace ;-) <img src='../../wegas-games/wegas-simpledialogue/images/icecream.png' />",
                 "transitions": [{
                     "@class": "DialogueTransition",
                     "actionText": "Merci",

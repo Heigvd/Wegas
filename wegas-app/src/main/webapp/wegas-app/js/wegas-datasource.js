@@ -13,14 +13,12 @@ YUI.add('wegas-datasource', function(Y) {
     "use strict";
 
     var HOST = "host", ID = "id", POST = "POST", PUT = "PUT",
-            Lang = Y.Lang, Wegas = Y.Wegas, WegasCache, VariableDescriptorCache,
-            GameModelCache, GameCache, PageCache,
-            Lang = Y.Lang,
+            Lang = Y.Lang, Wegas = Y.Wegas, IO = Y.DataSource.IO,
+            WegasCache, VariableDescriptorCache, GameModelCache, GameCache, PageCache,
             DEFAULTHEADERS = {
         'Content-Type': 'application/json;charset=ISO-8859-1',
         'Managed-Mode': 'true'
-    },
-    basePlug = Y.DataSource.IO.prototype.plug;
+    };
 
     /**
      * @name Y.Wegas.DataSource
@@ -28,7 +26,7 @@ YUI.add('wegas-datasource', function(Y) {
      * @class Custom implementation of a datasource,
      * @constructor
      */
-    Y.namespace("Wegas").DataSource = Y.Base.create("datasource", Y.DataSource.IO, [], {
+    Y.namespace("Wegas").DataSource = Y.Base.create("datasource", IO, [], {
         /** @lends Y.Wegas.DataSource# */
 
         /**
@@ -1271,7 +1269,7 @@ YUI.add('wegas-datasource', function(Y) {
     /*
      * @fixme hack on yui apis
      */
-    Y.DataSource.IO.prototype._defRequestFn = function(e) {
+    IO.prototype._defRequestFn = function(e) {
         var uri = this.get("source"),
                 io = this.get("io"),
                 defIOConfig = this.get("ioConfig"),
@@ -1333,7 +1331,8 @@ YUI.add('wegas-datasource', function(Y) {
      * @hack Override so plugin host accepts string definition of classes and
      * look it up in the Y.Wegas.* package.
      */
-    Y.DataSource.IO.prototype.plug = function(Plugin, config) {
+    IO.prototype.oplug = IO.prototype.plug;
+    IO.prototype.plug = function(Plugin, config) {
         if (!Lang.isArray(Plugin)) {
             if (Plugin && !Lang.isFunction(Plugin)) {
                 config = Plugin.cfg;
@@ -1343,6 +1342,6 @@ YUI.add('wegas-datasource', function(Y) {
                 Plugin = Y.Plugin[Plugin];
             }
         }
-        basePlug.call(this, Plugin, config);                                    //reroute
+        IO.prototype.oplug.call(this, Plugin, config);                                    //reroute
     };
 });
