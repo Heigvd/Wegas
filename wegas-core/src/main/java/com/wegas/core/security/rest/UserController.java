@@ -111,8 +111,6 @@ public class UserController {
         for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
             Map account = new HashMap<>();
             returnValue.add(account);
-//            if (a.getFirstname() != null && a.getLastname() != null) {
-//                account.put("label", a.getFirstname() + " " + a.getLastname());
             if (a.getFirstname() != null && a.getLastname() != null) {
                 account.put("label", a.getFirstname() + " " + a.getLastname());
             } else {
@@ -129,7 +127,7 @@ public class UserController {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
-        return accountFacade.findByNameOrEmail(value, true);
+        return accountFacade.findByNameOrEmail("%" + value + "%", true);
     }
 
     @GET
