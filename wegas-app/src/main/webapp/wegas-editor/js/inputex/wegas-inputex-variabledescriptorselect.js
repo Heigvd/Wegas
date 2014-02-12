@@ -168,7 +168,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
             if (items) {
                 for (i = 0; i < items.length; i += 1) {
-                    if (!this.options.classFilter || this.options.classFilter.indexOf(items[i].get("@class")) > -1) {
+                    if (!this.options.classFilter || Y.Array.indexOf(this.options.classFilter, items[i].get("@class")) > -1) {
                         choices.push({
                             value: items[i].get("name"),
                             label: items[i].getEditorLabel()
@@ -342,7 +342,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             var i, methods = entity.getMethodCfgs(), ret = [];
             for (i in methods) {
                 if (!this.options.returnsFilter                                 // Apply filter on the method return type
-                        || this.options.returnsFilter.indexOf(methods[i].returns || "void") >= 0) {
+                        || Y.Array.indexOf(this.options.returnsFilter, methods[i].returns || "void") >= 0) {
 
 
                     methods[i].value = i;

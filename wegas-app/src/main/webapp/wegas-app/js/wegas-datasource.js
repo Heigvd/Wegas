@@ -16,9 +16,9 @@ YUI.add('wegas-datasource', function(Y) {
             Lang = Y.Lang, Wegas = Y.Wegas, IO = Y.DataSource.IO,
             WegasCache, VariableDescriptorCache, GameModelCache, GameCache, PageCache,
             DEFAULTHEADERS = {
-        'Content-Type': 'application/json;charset=ISO-8859-1',
-        'Managed-Mode': 'true'
-    };
+                'Content-Type': 'application/json;charset=ISO-8859-1',
+                'Managed-Mode': 'true'
+            };
 
     /**
      * @name Y.Wegas.DataSource
@@ -137,22 +137,22 @@ YUI.add('wegas-datasource', function(Y) {
             Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
 
-                if (payload.cfg.initialRequest) {
-                    this.clear(false);
-                }
+                        if (payload.cfg.initialRequest) {
+                            this.clear(false);
+                        }
 
-                payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                if (payload.serverResponse.get
-                        && payload.serverResponse.get("entities")
-                        && payload.serverResponse.get("entities").length > 0) {
-                    payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
-                    payload.response.entities = payload.serverResponse.get("entities");
-                }
-                if (payload.cfg.updateCache !== false) {
-                    this.onResponseRevived(payload);
-                }
-                host.fire("response", payload);
-            }, this, payload));
+                        payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
+                        if (payload.serverResponse.get
+                                && payload.serverResponse.get("entities")
+                                && payload.serverResponse.get("entities").length > 0) {
+                            payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
+                            payload.response.entities = payload.serverResponse.get("entities");
+                        }
+                        if (payload.cfg.updateCache !== false) {
+                            this.onResponseRevived(payload);
+                        }
+                        host.fire("response", payload);
+                    }, this, payload));
 
             return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         },
@@ -226,7 +226,7 @@ YUI.add('wegas-datasource', function(Y) {
                         entity.setAttrs(needle.getAttrs());
                         if (this.oldIds) {
                             var newEntity = Y.Array.find(entity.get("items"), function(i) {
-                                return this.oldIds.indexOf(i.get("id")) < 0;
+                                return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
                             }, this);
                             this.get("host").fire("added", {
                                 entity: newEntity
@@ -285,14 +285,14 @@ YUI.add('wegas-datasource', function(Y) {
                 // Y.log("doFind(" + needle + ")", 'log', 'Y.Wegas.WegasCache');
                 var ret = [],
                         doFind = function(stack) {
-                    return Y.Array.find(stack, function(item, index, array) {
-                        if (this.testEntity(item, key, needle)) {                   // We check the current element if it's a match
-                            ret.push(item);
-                        }
-                        this.walkEntity(item, doFind);
-                        return false;
-                    }, this);
-                };
+                            return Y.Array.find(stack, function(item, index, array) {
+                                if (this.testEntity(item, key, needle)) {                   // We check the current element if it's a match
+                                    ret.push(item);
+                                }
+                                this.walkEntity(item, doFind);
+                                return false;
+                            }, this);
+                        };
                 doFind.call(this, this.getCache());
                 return ret;
             }
@@ -1256,13 +1256,13 @@ YUI.add('wegas-datasource', function(Y) {
                 defIOConfig = this.get("ioConfig"),
                 request = e.request,
                 cfg = Y.merge(defIOConfig, e.cfg, {
-            on: Y.merge(defIOConfig, {
-                success: this.successHandler,
-                failure: this.failureHandler
-            }),
-            context: this,
-            "arguments": e
-        });
+                    on: Y.merge(defIOConfig, {
+                        success: this.successHandler,
+                        failure: this.failureHandler
+                    }),
+                    context: this,
+                    "arguments": e
+                });
 
         // Support for POST transactions
         if (Lang.isString(cfg.fullUri)) {

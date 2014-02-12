@@ -90,7 +90,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
 
             Y.Array.each(this.permsField.subFields, function(eachSubfield) {
                 Y.Array.each(eachSubfield.roleSelect.choicesList, function(role) {
-                    if (eachSubfield.roleSelect.getValue().id === role.value || list.indexOf(role.value) === -1) {
+                    if (eachSubfield.roleSelect.getValue().id === role.value || Y.Array.indexOf(list, role.value) === -1) {
                         eachSubfield.roleSelect.showChoice(role);
                     } else {
                         eachSubfield.roleSelect.hideChoice(role);
@@ -161,12 +161,12 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                 var splitedLabel = item.name.split(":"),
                         splitedPermissions = (item.value) ? item.value.split(":") : item.name.split(":"),
                         box = new inputEx.CheckBox({
-                    rightLabel: splitedLabel[1],
-                    name: splitedPermissions[0] + ":" + splitedPermissions[1],
-                    value: false,
-                    parentEl: this.fieldContainer.div,
-                    className: "eachPermissions"
-                });
+                            rightLabel: splitedLabel[1],
+                            name: splitedPermissions[0] + ":" + splitedPermissions[1],
+                            value: false,
+                            parentEl: this.fieldContainer.div,
+                            className: "eachPermissions"
+                        });
 
                 box.on("updated", function(e, field) {
                     if (field.getValue()) {
@@ -255,7 +255,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                     filter = this.getRoleIds(),
                     i = 0;
 
-            while (filter.indexOf(newField.getValue().id) > -1
+            while (Y.Array.indexOf(filter, newField.getValue().id) > -1
                     && i < newField.roleSelect.choicesList.length) {
                 newField.setValue({
                     id: newField.roleSelect.choicesList[i].value

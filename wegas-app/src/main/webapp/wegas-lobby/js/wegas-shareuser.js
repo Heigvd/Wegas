@@ -116,8 +116,8 @@ YUI.add('wegas-shareuser', function(Y) {
                 //    return;
 
                 Y.Array.each(userNames, function(value) {                       // Remove items that have
-                    if ((!this.field.options.value || !this.field.options.value.indexOf[value.trim()])
-                            && value.trim() !== "") {
+                    if ((!this.field.options.value || !this.field.options.value.indexOf[Y.Lang.trim(value)])
+                            && Y.Lang.trim(value) !== "") {
                         values.push(value);
                     }
                 }, this);
