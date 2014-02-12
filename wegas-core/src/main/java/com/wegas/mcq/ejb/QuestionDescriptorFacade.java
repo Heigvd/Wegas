@@ -10,7 +10,7 @@ package com.wegas.mcq.ejb;
 import com.wegas.core.ejb.AbstractFacadeImpl;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.event.DescriptorRevivedEvent;
+import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;

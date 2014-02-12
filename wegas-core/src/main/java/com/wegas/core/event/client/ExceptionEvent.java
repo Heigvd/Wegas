@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.event;
+package com.wegas.core.event.client;
 
 import java.util.List;
 import javax.xml.bind.annotation.XmlType;
@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @XmlType(name = "ExceptionEvent")
-public class ExceptionEvent extends ServerEvent {
+public class ExceptionEvent extends ClientEvent {
 
     private List<Exception> exceptions;
 

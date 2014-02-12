@@ -8,6 +8,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import java.util.Map;
@@ -32,6 +33,11 @@ public class LibraryController {
      */
     @EJB
     private GameModelFacade gameModelFacade;
+    /**
+     *
+     */
+    @EJB
+    private LibraryFacade libraryFacade;
 
     @GET
     @Path("{library:.*}")
@@ -40,7 +46,7 @@ public class LibraryController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
-        return this.findLibrary(gameModelId, library);
+        return libraryFacade.findLibrary(gameModelId, library);
     }
 
     @GET
@@ -51,7 +57,7 @@ public class LibraryController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
-        return this.findLibrary(gameModelId, library).get(key).getContent();
+        return libraryFacade.findLibrary(gameModelId, library).get(key).getContent();
     }
 
     /**
@@ -69,7 +75,7 @@ public class LibraryController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        this.findLibrary(gameModelId, library).put(key, script);
+        libraryFacade.findLibrary(gameModelId, library).put(key, script);
         // return Response.ok().build();
         return gameModelFacade.find(gameModelId);
     }
@@ -88,31 +94,8 @@ public class LibraryController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        this.findLibrary(gameModelId, library).remove(key);
+        libraryFacade.findLibrary(gameModelId, library).remove(key);
         // return Response.ok().build();
         return gameModelFacade.find(gameModelId);
-    }
-
-    /**
-     *
-     * @param gameModelId
-     * @param name
-     * @return
-     */
-    private Map<String, GameModelContent> findLibrary(Long gameModelId, String name) {
-        GameModel gameModel = gameModelFacade.find(gameModelId);
-        switch (name) {
-            case "Script":
-                return gameModel.getScriptLibrary();
-
-            case "ClientScript":
-                return gameModel.getClientScriptLibrary();
-
-            case "CSS":
-                return gameModel.getCssLibrary();
-
-            default:
-                throw new RuntimeException("Unable to find associated library: " + name);
-        }
     }
 }

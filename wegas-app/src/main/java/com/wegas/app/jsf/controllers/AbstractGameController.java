@@ -70,11 +70,11 @@ public class AbstractGameController implements Serializable {
     }
 
     public String getClientScripts() {
-        String ret = "";
+        StringBuilder ret = new StringBuilder();
         for (GameModelContent c : this.getCurrentGameModel().getClientScriptLibrary().values()) {
-            ret += c.getContent();
+            ret.append(c.getContent());
         }
-        return ret;
+        return ret.toString();
     }
 
     public String getStyleSheets() {
