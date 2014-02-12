@@ -26,14 +26,16 @@
                     height: 32px;
                     text-shadow: 1px 0 1px black, 0 1px 1px black;
                 }
-                /* Move Uservoice widget so it does not overlap right tab */
-                #uvTab {
-                    border-bottom: 1px solid #FFF !important;
-                    border-radius: 4px 4px 4px 4px !important;
-                    right: 192px !important;
-                    top: -3px !important;
-                    bottom: auto !important;
-                    left: auto !important;
+                /** Uservoice widget */
+                .yui3-skin-sam .uv-icon {
+                    right: 0;
+                    top: 11px !important;
+                    width: 23px;
+                    opacity: 1;
+                }
+                .yui3-skin-sam .uv-icon svg {
+                    width: 24px;
+                    height: 27px;
                 }
             </style>
 
@@ -49,10 +51,9 @@
             <ui:insert name="editorHeader"></ui:insert>
 
         </ui:define>
+        
         <ui:define name="body">
-
             <script type="text/javascript">
-
                 YUI().use("wegas-app", "wegas-scripteval", function(Y) {
                     var app = new Y.Wegas.App({
                         //layoutSrc: 'rest/GameModel/#{editorGameController.currentGameModel.id}/Page/EditorLayout',
@@ -94,10 +95,10 @@
                                          * </ui:fragment>
                                          */
                                         plugins: [{
-                                                fn: "JSONSchema"
-                                            }, {
-                                                fn: "PageCache"
-                                            }]
+                                        fn: "JSONSchema"
+                                    }, {
+                                        fn: "PageCache"
+                                    }]
                             },
                             User: {
                                 source: "rest/Extended/User",
@@ -204,8 +205,7 @@
                     // Footer script (for host.html)
                     /**
                      * THIS IS NOT A COMMENT !!!
-                     * Writen as a comment to avoid parsing problems.
-                     * Mixing JSF/JavaScript
+                     * Writen as a comment to avoid parsing problems mixing JSF/JavaScript
                      */
                     ////<ui:insert name="editorFooter" />////
                     /**
@@ -213,7 +213,11 @@
                      */
                 });
             </script>
-
         </ui:define>
+
+        <ui:define name="uservoice_trigger_position">top-right</ui:define>
+        <ui:define name="uservoice_trigger_background_color">white</ui:define>
+        <ui:define name="uservoice_trigger_color">#072644</ui:define>
+
     </ui:composition>
 </html>
