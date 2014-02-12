@@ -8,7 +8,7 @@
 package com.wegas.core.security.rest;
 
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.event.WarningEvent;
+import com.wegas.core.event.client.WarningEvent;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;

@@ -8,7 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
-import com.wegas.core.event.PlayerAction;
+import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
