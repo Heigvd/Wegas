@@ -5,34 +5,42 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.event;
+package com.wegas.core.event.internal;
 
 import com.wegas.core.persistence.game.Player;
-import java.io.Serializable;
+import javax.script.ScriptEngine;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class PlayerAction implements Serializable {
+public class EngineInvocationEvent {
 
-    /**
-     *
-     */
     private Player player;
+    private ScriptEngine engine;
 
     /**
      *
+     * @param player
+     * @param engine
      */
-    public PlayerAction() {
+    public EngineInvocationEvent(Player player, ScriptEngine engine) {
+        this.player = player;
+        this.engine = engine;
     }
 
     /**
-     *
-     * @param p
+     * @return the engine
      */
-    public PlayerAction(Player p) {
-        this.player = p;
+    public ScriptEngine getEngine() {
+        return engine;
+    }
+
+    /**
+     * @param engine the engine to set
+     */
+    public void setEngine(ScriptEngine engine) {
+        this.engine = engine;
     }
 
     /**

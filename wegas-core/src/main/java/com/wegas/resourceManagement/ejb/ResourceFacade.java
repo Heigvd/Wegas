@@ -9,7 +9,7 @@ package com.wegas.resourceManagement.ejb;
 
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.event.DescriptorRevivedEvent;
+import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.resourceManagement.persistence.AbstractAssignement;
 import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
