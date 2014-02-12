@@ -510,7 +510,15 @@ YUI.add('wegas-entity', function(Y) {
                             label: "Players",
                             tabSelector: '#rightTabView',
                             wchildren: [{
-                                    type: "TeamTreeView"
+                                    type: "TeamTreeView",
+                                    plugins: [{
+                                            fn: "EditorTVContextMenu"
+                                        }, {
+                                            fn: "EditorTVToolbarMenu",
+                                            cfg: {
+                                                autoClick: false
+                                            }
+                                        }]
                                 }]
                         }
                     }]

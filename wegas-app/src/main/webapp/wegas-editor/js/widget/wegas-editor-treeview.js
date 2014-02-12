@@ -76,14 +76,11 @@ YUI.add('wegas-editor-treeview', function(Y) {
             }
 
             var treeNodes, ds = this.get(DATASOURCE),
-                    cb = this.get(CONTENTBOX),
                     selector = this.get("dataSelector"),
                     entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll(),
                     treeNodes = this.genTreeViewElements(entities);
 
-            this.treeView.destroyAll();                                         // @FIXME is this enough, or should we destroy the nodes
-            cb.all(".wegas-smallmessage").remove();
-
+            this.treeView.destroyAll();
             this.treeView.add(treeNodes);
             this.treeView.syncUI();
 
@@ -185,12 +182,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
             this.treeView.addTarget(this);
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
 
-            this.plug(Plugin.EditorTVToolbarMenu, {
-                autoClick: false
-            });
-            this.plug(Plugin.EditorTVContextMenu);
             this.plug(Plugin.RememberExpandedTreeView);
             this.plug(Plugin.WidgetToolbar);
+
             //this.plug(Plugin.EditorTVToggleClick);
             //if (this.isFreeForAll()) {                                          // @hack Change the display if the gamemodel is freeforall
             //    this.get("parent").set("label", "Players");
@@ -204,8 +198,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 return;
             }
 
-            var cb = this.get(CONTENTBOX),
-                    treeNodes = this.genTreeViewElements(this.get("entity").get("teams"));
+            var treeNodes = this.genTreeViewElements(this.get("entity").get("teams"));
 
             this.treeView.destroyAll();
             this.treeView.add(treeNodes);
@@ -221,47 +214,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
                         return node.children || [];
                     })).slice(1);
                 } else {
-                    return ret.slice(1);
+                    return ret;
                 }
             } else
                 return ret;
-        }
-    }, {
-        ATTRS: {
-            dataSource: {
-                value: "Game"
-            },
-            entity: {
-                getter: function(val) {
-                    if (!val)
-                        return Wegas.Facade.Game.cache.getCurrentGame();
-                    else
-                        return val;
-                }
-            },
-            emptyMessage: {
-                value: "No player has joined yet"
-            }
-        }
-    });
-    Y.namespace('Wegas').TeamTreeView = TeamTreeView;
-    /**
-     *
-     */
-    var TeamTreeViewEditor = Y.Base.create("wegas-editor-treeview", TeamTreeView, [], {
-        CONTENT_TEMPLATE: '<div class="wegas-editor-treeview-team">'
-                + '<div class="treeview"></div>'
-                + "<div class=\"message\"></div>"
-                + '</div>',
-        renderUI: function() {
-            this.treeView = new Y.TreeView({
-                emptyMsg: this.get("emptyMessage")
-            });                                                                 // Render the treeview
-            this.treeView.addTarget(this);
-            this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
-
-            this.plug(Plugin.RememberExpandedTreeView);
-            this.plug(Plugin.WidgetToolbar);
         },
         genTreeViewElement: function(entity) {
             var elClass = entity.get(CLASS),
@@ -300,9 +256,25 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     };
             }
         }
+    }, {
+        ATTRS: {
+            dataSource: {
+                value: "Game"
+            },
+            entity: {
+                getter: function(val) {
+                    if (!val)
+                        return Wegas.Facade.Game.cache.getCurrentGame();
+                    else
+                        return val;
+                }
+            },
+            emptyMessage: {
+                value: "No player has joined yet"
+            }
+        }
     });
-    Y.namespace('Wegas').TeamTreeViewEditor = TeamTreeViewEditor;
-
+    Y.namespace('Wegas').TeamTreeView = TeamTreeView;
     /**
      * @class To be plugged on a an EditorTreeview, keeps track of the
      * collapsed nodes.

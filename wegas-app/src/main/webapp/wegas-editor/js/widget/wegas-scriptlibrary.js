@@ -107,7 +107,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
          * @private
          */
         destructor: function() {
-           // this.responseHandler.detach();
+            // this.responseHandler.detach();
             this.selectField.destroy();
             this.aceField.destroy();
             this.newButton.destroy();
@@ -222,7 +222,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                     label: "<span class=\"wegas-icon wegas-icon-preview\" ></span>Preview",
                     on: {
                         click: Y.bind(function() {
-                            this.updateLoadedSheet(this.currentScriptName, this.aceField.getValue());
+                            this.updateStyleSheet(this.currentScriptName, this.aceField.getValue());
                         }, this)
                     }
                 }).render(toolbarNode);
@@ -250,8 +250,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     this.showMessageBis("success", "Script saved");
 
                                     if (this.get("library") === "CSS") {
-                                        this.updateLoadedSheet(this.currentScriptName, this.aceField.getValue());
-                                    };
+                                        this.updateStyleSheet(this.currentScriptName, this.aceField.getValue());
+                                    }
                                     this.syncUI();
                                 },
                                 failure: function() {
@@ -280,7 +280,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                 success: function() {
                                     this.showMessageBis("success", "Script deleted");
                                     if (this.get("library") === "CSS") {
-                                        this.updateLoadedSheet(this.currentScriptName, "");
+                                        this.updateStyleSheet(this.currentScriptName, "");
                                     }
                                     this.currentScriptName = null;
                                     this.syncUI();
@@ -294,11 +294,8 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 }
             }).render(toolbarNode);
         },
-        updateLoadedSheet: function(id, content) {
-            if (Y.Plugin.CSSLoader.customCSSStyleSheet[id]) {
-                Y.Plugin.CSSLoader.customCSSStyleSheet[id].disable();
-            }
-            Y.Plugin.CSSLoader.customCSSStyleSheet[id] = new Y.StyleSheet(content);
+        updateStyleSheet: function(id, content) {
+            Y.Plugin.CSSLoader.updateStyleSheet(id, content);
         }
     }, {
         ATTRS: {

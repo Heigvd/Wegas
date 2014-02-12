@@ -374,11 +374,11 @@ font{
 
 /* Edit team widget styles */
 .wegas-editteam .yui3-u {
-    width: 112px;
+    width: 116px;
     padding-bottom: 3px;
 }
 .wegas-editteam  .yui3-u:first-child {
-    padding-left: 20px;
+    padding-left: 22px;
 }
 .wegas-editteam .header .yui3-u {
     color: #505050;
