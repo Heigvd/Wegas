@@ -213,8 +213,6 @@
                                     }, {
                                         "fn": "PageEditor"
                                     }, {
-                                        "fn": "CSSLoader"
-                                    }, {
                                         "fn": "Injector"
                                     }, {
                                         "fn": "PopupListener",
@@ -223,7 +221,10 @@
                                         }
                                     }
 
-                                ]
+                                ],
+                                "plugins_old": [{
+                                        "fn": "CSSLoader"
+                                    }]
                             }]
                     }]
             }]
