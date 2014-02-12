@@ -137,7 +137,7 @@ YUI.add("wegas-chess", function(Y) {
 
             for (i = 0; i < allPiecesNodes.size(); i += 1) {                    // Case 3: Piece is not present anymore, we destroy it
                 var item = allPiecesNodes.item(i);
-                if (treated.indexOf(item) === -1) {
+                if (Y.Array.indexOf(treated, item) === -1) {
                     item.remove(true);
                 }
             }
@@ -190,21 +190,21 @@ YUI.add("wegas-chess", function(Y) {
         getAvailableMoves: function(cfg) {
             var i, j, moves = [], finalMoves = [],
                     genLine = function(dirs, length) {
-                for (i = 0; i < dirs.length; i += 1) {
-                    var d = dirs[i], collidee = null;
-                    for (j = 1; j < length && !collidee; j += 1) {
-                        var m = {
-                            x: cfg.x + (j * d.x),
-                            y: cfg.y + (j * d.y)
-                        };
-                        collidee = this.getPieceAt(m);
-                        if (this.isValidMove(m, cfg)) {
-                            moves.push(m);
+                        for (i = 0; i < dirs.length; i += 1) {
+                            var d = dirs[i], collidee = null;
+                            for (j = 1; j < length && !collidee; j += 1) {
+                                var m = {
+                                    x: cfg.x + (j * d.x),
+                                    y: cfg.y + (j * d.y)
+                                };
+                                collidee = this.getPieceAt(m);
+                                if (this.isValidMove(m, cfg)) {
+                                    moves.push(m);
+                                }
+                            }
                         }
-                    }
-                }
-                return moves;
-            };
+                        return moves;
+                    };
 
             switch (cfg.type) {
                 case "horse":
@@ -249,9 +249,9 @@ YUI.add("wegas-chess", function(Y) {
                     for (i = 0; i < 2; i += 1) {                                // Pawn eat on til up, left and right
                         var factor = (i === 0) ? 1 : -1,
                                 m = {
-                            x: cfg.x + factor,
-                            y: cfg.y + this.side
-                        };
+                                    x: cfg.x + factor,
+                                    y: cfg.y + this.side
+                                };
                         if (this.getPieceAt(m)) {
                             moves.push(m);
                         }
@@ -287,10 +287,10 @@ YUI.add("wegas-chess", function(Y) {
             return (pos.x >= 0 && pos.x < 8
                     && pos.y >= 0 && pos.y < 8
                     && (!collidee ||
-                    (collidee.side !== this.side
-                            && collidee.type !== "king"
-                            && (cfg.type !== "pawn" || pos.x !== cfg.x)
-                            )));
+                            (collidee.side !== this.side
+                                    && collidee.type !== "king"
+                                    && (cfg.type !== "pawn" || pos.x !== cfg.x)
+                                    )));
         },
         /**
          *
@@ -331,7 +331,7 @@ YUI.add("wegas-chess", function(Y) {
          */
         string2pos: function(str) {
             var poses = ["a", "b", "c", "d", "e", "f", "g", "h"];
-            return {x: poses.indexOf(str.substr(0, 1).toLowerCase()), y: +str.substr(1) - 1};
+            return {x: Y.Array.indexOf(poses, str.substr(0, 1).toLowerCase()), y: +str.substr(1) - 1};
         },
         pos2string: function(cfg) {
             var poses = ["a", "b", "c", "d", "e", "f", "g", "h"];

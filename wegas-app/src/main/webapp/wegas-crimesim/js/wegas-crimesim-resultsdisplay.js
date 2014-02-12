@@ -253,7 +253,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                 return;
             }
             this.get(CONTENTBOX).all('.yui3-datatable-data .treeble-depth-0 .yui3-datatable-col-id').each(function(cell, i) {
-                if (this.unreadEvidences.indexOf(+cell.getContent()) > -1) {
+                if (Y.Array.indexOf(this.unreadEvidences, +cell.getContent()) > -1) {
                     cell.ancestor("tr").addClass('unread');
                 }
             }, this);
