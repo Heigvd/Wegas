@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.event;
+package com.wegas.core.event.client;
 
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @XmlType(name = "CustomEvent")
-public class CustomEvent extends ServerEvent {
+public class CustomEvent extends ClientEvent {
 
     private String type;
     private Object payload;

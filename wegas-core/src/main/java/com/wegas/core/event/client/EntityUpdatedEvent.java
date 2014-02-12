@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.event;
+package com.wegas.core.event.client;
 
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -20,7 +20,7 @@ import org.codehaus.jackson.map.ObjectMapper;
  * @author Yannick Lagger <lagger.yannick at gmail.com>
  */
 @XmlType(name = "EntityUpdatedEvent")
-public class EntityUpdatedEvent extends ServerEvent {
+public class EntityUpdatedEvent extends ClientEvent {
 
     private List<VariableInstance> updatedEntities = new ArrayList<>();
 

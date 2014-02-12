@@ -10,13 +10,11 @@ package com.wegas.core.rest.util;
 import com.sun.jersey.spi.container.*;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.event.EntityUpdatedEvent;
-import com.wegas.core.event.ServerEvent;
+import com.wegas.core.event.client.EntityUpdatedEvent;
+import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.exception.ExceptionWrapper;
 import com.wegas.core.ejb.WebsocketFacade;
-import com.wegas.core.event.ExceptionEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -75,7 +73,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
                 }
             }
 
-            serverResponse.getEvents().addAll(rmf.getRequestManager().getServerEvents());// Push events stored in RequestManager
+            serverResponse.getEvents().addAll(rmf.getRequestManager().getClientEvents());// Push events stored in RequestManager
         }
 
         return response;
@@ -112,7 +110,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
         /**
          *
          */
-        private List<ServerEvent> events = new ArrayList<>();
+        private List<ClientEvent> events = new ArrayList<>();
 
         public ServerResponse() {
         }
@@ -134,50 +132,15 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
         /**
          * @return the events
          */
-        public List<ServerEvent> getEvents() {
+        public List<ClientEvent> getEvents() {
             return events;
         }
 
         /**
          * @param events the events to set
          */
-        public void setEvents(List<ServerEvent> events) {
+        public void setEvents(List<ClientEvent> events) {
             this.events = events;
         }
     }
-    /*
-     @XmlRootElement
-     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-     abstract private static class ServerEvent {
-
-     public ServerEvent() {
-     }
-     }
-     /*
-     @XmlType(name = "EntityUpdatedEvent")
-     private static class EntityUpdatedEvent extends ServerEvent {
-
-     private List<VariableInstance> updatedEntities;
-
-     public EntityUpdatedEvent() {
-     }
-
-     public EntityUpdatedEvent(List<VariableInstance> updatedEntities) {
-     this.updatedEntities = updatedEntities;
-     }
-
-     /**
-     * @return the updatedEntities
-     */
-    /* public List<VariableInstance> getUpdatedEntities() {
-     return updatedEntities;
-     }
-
-     /**
-     * @param updatedEntities the updatedEntities to set
-     */
-    /*public void setUpdatedEntities(List<VariableInstance> updatedEntities) {
-     this.updatedEntities = updatedEntities;
-     }
-     }*/
 }
