@@ -172,7 +172,7 @@ YUI.add('wegas-editor-form', function(Y) {
                 }
             },
             updateTimeout: {
-                transient: true,
+                "transient": true,
                 value: 1000
             },
             buttons: {
