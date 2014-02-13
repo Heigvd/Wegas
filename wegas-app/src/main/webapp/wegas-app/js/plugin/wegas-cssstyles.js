@@ -12,7 +12,6 @@
 YUI.add('wegas-cssstyles', function(Y) {
     "use strict";
 
-
     var Wegas = Y.Wegas,
             MESURE_STYLE = [
         "fontSize",
