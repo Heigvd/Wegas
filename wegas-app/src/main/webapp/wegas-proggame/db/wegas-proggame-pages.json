@@ -15,6 +15,7 @@
             }],
         "children": [{
                 "type": "Text",
+                "visible": false,
                 "cssClass": "proggame-objectives",
                 "content": "<div class=\"objective\"></div>",
                 "plugins": [{
@@ -37,6 +38,7 @@
                     }]
             }, {
                 "type": "TabView",
+                "visible": false,
                 "cssClass": "apiTab",
                 "children": [{
                         "type": "Tab",
@@ -241,6 +243,107 @@
         "variable": {
             "name": "currentLevel"
         }
+    },
+    "5": {
+        "@name": "Splash screen",
+        "type": "AbsoluteLayout",
+        "plugins": [{
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "width": "940px",
+                        "height": "400px"
+                    }
+                }
+            }],
+        "children": [{
+                "type": "Text",
+                "content": "PROGRAMMING GAME",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "200px",
+                                "left": "0px"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "width": "940px",
+                                "height": "100px"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSText",
+                        "cfg": {
+                            "styles": {
+                                "color": "white",
+                                "fontSize": "9em",
+                                "textAlign": "center"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "fontFamily": "KG Ways to Say Goodbye"
+                            }
+                        }
+                    }]
+            }, {
+                "type": "Button",
+                "label": "START PLAYING",
+                "cssClass": "proggame-button",
+                "plugins": [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 4,
+                            "targetEvent": "click",
+                            "targetPageLoaderId": "maindisplayarea"
+                        }
+                    }, {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "400px",
+                                "left": "350px"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "width": "200px",
+                                "height": "70px"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSText",
+                        "cfg": {
+                            "styles": {
+                                "color": "white",
+                                "fontSize": "2em"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {
+                                "background": "transparent",
+                                "fontFamily": "KG Ways to Say Goodbye",
+                                "lineHeight": "0.8em",
+                                "padding": "5px 0 0"
+                            }
+                        }
+                    }]
+            }]
     },
     "4": {
         "@name": "Map",
@@ -667,7 +770,7 @@
         "maxTurns": 2,
         "winningCondition": "level.objects[0].life===0",
         "onWin": "currentLevel.value=7;money.value+=500;",
-        "api": ["move", "left","right","fire"],
+        "api": ["move", "left", "right", "fire"],
         "objects": [{
                 "id": "Enemy",
                 "components": "NPC",
@@ -986,7 +1089,7 @@
         "onWin": "currentLevel.value=4",
         "onStart": "var names= [\"Romuald\", \"Pete\", \"Roger\", \"Gandalf\", \"Jo\"], name = names[Math.floor((Math.random()*5))];pushArg(\"name\", name);log(\"My name is \" + name);",
         "arguments": ["String name"],
-        "api": [ "move","left","right", "fire","say"],
+        "api": ["move", "left", "right", "fire", "say"],
         "objects": [{
                 "id": "Player",
                 "components": "PC",
