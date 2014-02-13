@@ -28,7 +28,6 @@ YUI.add('wegas-editor-form', function(Y) {
         /**
          * @lends Y.Wegas.Form#
          */
-
         // ** Lifecycle Methods ** //
         /**
          * @function
@@ -41,7 +40,10 @@ YUI.add('wegas-editor-form', function(Y) {
                 emitFacade: true
             });
             this.publish("updated", {
-                emitFacade: false
+                emitFacade: true
+            });
+            this.updateTimer = new Wegas.Timer({
+                duration: this.get("updateTimeout")
             });
         },
         /**
@@ -51,6 +53,16 @@ YUI.add('wegas-editor-form', function(Y) {
          */
         renderUI: function() {
             Y.Array.each(this.get("buttons"), this.addButton, this);
+        },
+        bindUI: function() {
+            this.on("formUpdated", function() {
+                if (!this.form.validate())
+                    return;
+                this.updateTimer.reset();
+            });
+            this.updateTimer.on("timeOut", function() {
+                this.fire("updated", {});
+            }, this);
         },
         /**
          * @function
@@ -69,6 +81,27 @@ YUI.add('wegas-editor-form', function(Y) {
             if (this.form) {
                 this.form.destroy();
             }
+            this.updateTimer.destroy();
+        },
+        setCfg: function(val) {
+            var cfg = Y.clone(val);                                             // Duplicate so val will be untouched while serializing
+            Y.mix(cfg, {
+                parentEl: this.get(CONTENTBOX),
+                className: "wegas-form-ix",
+                type: "group"
+            });
+            inputEx.use(val, Y.bind(function(cfg) {                             // Load form dependencies
+                if (this.form) {
+                    this.form.destroy();
+                }
+                this.form = inputEx(cfg);                                       // Initialize and render form
+                this.form.setValue(this.get("value"), false);                   // Sync form with "value" ATTR
+                this.form.on("updated", function() {
+                    this.fire("formUpdated");
+                }, this);
+
+                this.form.parentWidget = this;                                  // @HACK some widgets need this reference
+            }, this, cfg));
         },
         addButton: function(b) {
             switch (b.action) {
@@ -128,35 +161,19 @@ YUI.add('wegas-editor-form', function(Y) {
              * Configuation of the form
              */
             cfg: {
+                validator: Lang.isObject,
                 setter: function(val) {
-                    if (val) {
-                        var cfg = Y.clone(val);                                 // Duplicate so val will be untouched while serializing
-                        Y.mix(cfg, {
-                            parentEl: this.get(CONTENTBOX),
-                            className: "wegas-form-ix",
-                            type: "group"
-                        });
-                        inputEx.use(val, Y.bind(function(cfg) {                 // Load form dependencies
-                            if (this.form) {
-                                this.form.destroy();
-                            }
-                            this.form = inputEx(cfg);                           // Initialize and render form
-                            this.form.parentWidget = this;
-                            this.form.setValue(this.get("value"), false);       // Sync form with "value" ATTR
-
-                            this.form.on("updated", function(e) {
-                                this.fire("updated", e);
-                            }, this);
-                        }, this, cfg));
-                    }
+                    this.setCfg(val);
                     return val;
                 },
                 _inputex: {
-                    index: 8,
-                    _type: "group",
                     legend: "Fields",
                     fields: inputEx.Group.groupOptions
                 }
+            },
+            updateTimeout: {
+                transient: true,
+                value: 1000
             },
             buttons: {
                 value: [
@@ -173,20 +190,9 @@ YUI.add('wegas-editor-form', function(Y) {
 
     EditEntityForm = Y.Base.create("wegas-form", Form, [], {
         bindUI: function() {
-            //this.timer = new Wegas.Helper.Timer(30);
-
-            this.on("submit", function(e) {
-                this.showOverlay();
-                this.get("dataSource").cache.put(e.value, {
-                    on: {
-                        success: Y.bind(function() {
-                            this.showMessageBis("success", "Item has been updated");
-                            this.hideOverlay();
-                        }, this),
-                        failure: Y.bind(this.defaultFailureHandler, this)
-                    }
-                });
-            });
+            EditEntityForm.superclass.bindUI.call(this);
+            this.on("updated", this.onFormUpdate);
+            this.on("submit", this.onFormUpdate);
         },
         /**
          * @function
@@ -216,14 +222,15 @@ YUI.add('wegas-editor-form', function(Y) {
             }
         },
         showUpdateForm: function(entity) {
-            this.set("value", entity.toObject());
-            this.set("cfg", this.get("cfg") || entity.getFormCfg());
+            this.set("value", entity.toObject());                               // Set the form value of the form,
+            this.set("cfg", this.get("cfg") || entity.getFormCfg());            // and then its fields
 
-            var menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1), function(i) {
-                return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
-            });                                                             // Retrieve menu and remove the first item
+            var menuItems = entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1);
+            //var menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1), function(i) {
+            //    return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+            //});                                                                 // Retrieve menu and remove the first item
 
-            Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+            Y.Array.each(menuItems, function(i) {                               // @hack add icons to some buttons
                 switch (i.label) {
                     case "Delete":
                     case "New":
@@ -236,7 +243,25 @@ YUI.add('wegas-editor-form', function(Y) {
                         i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                 }
             });
-            this.toolbar.add(menuItems).item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
+            this.toolbar.add(menuItems);                                        // Add menu items to the form
+            //this.toolbar.item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
+        },
+        onFormUpdate: function() {
+            if (!this.form.validate())
+                return;
+
+            this.showOverlay();
+            //this.showMessageBis("success", "Saving changes...");
+
+            this.get("dataSource").cache.put(this.form.getValue(), {
+                on: {
+                    success: Y.bind(function() {
+                        this.showMessageBis("success", "Changes saved");
+                        this.hideOverlay();
+                    }, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
+                }
+            });
         }
     }, {
         ATTRS: {
@@ -249,11 +274,11 @@ YUI.add('wegas-editor-form', function(Y) {
                     return val;
                 }
             },
-            //buttons: {
-            //    value: []
-            //}
+            buttons: {
+                value: []
+            }
         }
     });
-
     Y.namespace('Wegas').EditEntityForm = EditEntityForm;
+
 });
