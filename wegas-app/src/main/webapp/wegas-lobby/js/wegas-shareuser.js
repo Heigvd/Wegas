@@ -130,16 +130,16 @@ YUI.add('wegas-shareuser', function(Y) {
                     notAdd = true;
                     for (i in this.field.options.value) {
                         if (this.field.options.value.hasOwnProperty(i)) {
-                            if (this.field.options.value[i].label === value.trim()) {
+                            if (this.field.options.value[i].label === Y.Lang.trim(value)) {
                                 notAdd = false;
                                 break;
                             }
                         }
                     }
                     if (notAdd && value.indexOf("@") !== -1) {
-                        emailList.push(value.trim());
+                        emailList.push(Y.Lang.trim(value));
                     } else if (notAdd) {
-                        otherValueList.push(value.trim());
+                        otherValueList.push(Y.Lang.trim(value));
                     }
                 }, this);
 
