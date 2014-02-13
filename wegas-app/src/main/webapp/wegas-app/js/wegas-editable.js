@@ -66,7 +66,7 @@ YUI.add('wegas-editable', function(Y) {
             var masker;
             mask = Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
             masker = mask.length > 0 ? function(key, value) {
-                if (mask.indexOf(key) !== -1) {
+                if (Y.Array.indexOf(mask, key) !== -1) {
                     return undefined;
                 } else {
                     return value;
@@ -100,7 +100,7 @@ YUI.add('wegas-editable', function(Y) {
                 for (i in attrCfgs) {
                     attrCfgs[i]["default"] = attrCfgs[i].value;// Use the value as default (useful form json object serialization)
 
-                    if (attrCfgs[i]["transient"] || fieldsToIgnore.indexOf(i) > -1) {
+                    if (attrCfgs[i]["transient"] || Y.Array.indexOf(fieldsToIgnore, i) > -1) {
                         delete attrCfgs[i];
                     }
                 }
@@ -288,10 +288,10 @@ YUI.add('wegas-editable', function(Y) {
                     module = YUI_config.groups.wegas.modulesByType[type],
                     modules = [],
                     pushFn = function(field) {
-                if (field) {
-                    modules = modules.concat(Editable.getModulesFromDefinition(field));
-                }
-            };
+                        if (field) {
+                            modules = modules.concat(Editable.getModulesFromDefinition(field));
+                        }
+                    };
             if (Y.Lang.isArray(cfg)) {
                 return Y.Array.flatten(Y.Array.map(cfg, Editable.getModulesFromDefinition));
             }
