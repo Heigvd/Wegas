@@ -44,8 +44,8 @@ YUI.add("wegas-image", function(Y) {
          * @private
          */
         renderUI: function() {
-            this.image = this.get(CONTENTBOX).getDOMNode();
-            this.set("url", this.get("url"));
+            this.image = this.get("boundingBox").one("img"); // !! IE 8 : this.image._node === this.get(CONTENTBOX)._node => false ...
+            this.get("url");
         },
         /**
          * Lifecycle method
@@ -93,7 +93,7 @@ YUI.add("wegas-image", function(Y) {
                     this.getEvent("load").fired = false;
                     this.getEvent("error").fired = false;
                     this.getEvent("render").fired = false;
-                    this.get(CONTENTBOX).setAttribute("src", (val.indexOf("/") === 0) ?
+                    this.image.setAttribute("src", (val.indexOf("/") === 0) ?
                             this.constructor.FILEENTRY + val : //Wegas Filesystem
                             val);
                     return val;
@@ -106,7 +106,7 @@ YUI.add("wegas-image", function(Y) {
                 readOnly: true,
                 "transient": true,
                 getter: function() {
-                    return this.image ? this.image.complete : true;
+                    return this.image && this.image.getDOMNode() ? this.image.getDOMNode().complete : true;
                 }
             }
         }

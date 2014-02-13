@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.event.EntityUpdatedEvent;
+import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
