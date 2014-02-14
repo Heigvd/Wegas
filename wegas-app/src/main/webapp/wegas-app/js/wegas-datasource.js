@@ -1204,7 +1204,7 @@ YUI.add('wegas-datasource', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        delete this.get(HOST).data[e.data.getResponseHeader("Page")];
+                        delete this.get(HOST).data[pageId];
                     }, this)
                 }
             });
