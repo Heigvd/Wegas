@@ -170,6 +170,6 @@ body > .wegas-pageloader, html{
     margin-left:135px;
 }
 /*userVoice*/
-#uvTab{
+.uv-icon {
     display:none;
 }

@@ -177,8 +177,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                 parentEl: cb.one(".signup"),
                 className: "signupgroup"
             });
-            Y.all(".password input").setAttribute("placeholder", "Password");
-            Y.all(".passwordc input").setAttribute("placeholder", "Password confirmation");
+//            Y.all(".password input").setAttribute("placeholder", "Password");
+//            Y.all(".passwordc input").setAttribute("placeholder", "Password confirmation");
             //To work with inputex, for css
             cb.one(".signup .email").ancestor("div").setStyle("width", "330px");
             cb.one(".signup .password").ancestor("div").setStyle("width", "330px");
@@ -423,6 +423,17 @@ YUI.add('wegas-loginwidget', function(Y) {
      */
     Y.inputEx.StringField.prototype.updateTypeInvite = function() {
         var divEl = Y.one(this.divEl);
+        if (!this._fakePass && this.options.typeInvite) {
+            this._fakePass = Y.Node.create("<input type='text'>");
+            this._fakePass.setAttribute("class", this.el.getAttribute("class"));
+            this._fakePass.hide();
+            Y.one(this.el).ancestor().appendChild(this._fakePass);
+            this._fakePass.on("focus", function() {
+                Y.one(this.el).show();
+                this._fakePass.hide();
+                Y.one(this.el).focus();
+            }, this);
+        }
 
         // field not focused
         if (!divEl.hasClass("inputEx-focused")) {
@@ -430,16 +441,21 @@ YUI.add('wegas-loginwidget', function(Y) {
             // show type invite if field is empty
             if (this.isEmpty()) {
                 divEl.addClass("inputEx-typeInvite")
-                        .one("input").setStyle("color", "#888");
+                        .all("input").setStyle("color", "#888");
                 if (this.fieldContainer.className.indexOf("password") > -1) {
-                    Y.one(this.el).setAttribute("type", "");
+//                    Y.one(this.el).setAttribute("type", "");
+                    Y.one(this.el).hide();
+                    this._fakePass.show();
+                    this._fakePass.set("value", this.options.typeInvite);
                 }
                 this.el.value = this.options.typeInvite;
 
                 // important for setValue to work with typeInvite
             } else {
                 if (this.fieldContainer.className.indexOf("password") > -1) {
-                    this.el.setAttribute("type", "password");
+//                    this.el.setAttribute("type", "password");
+                    Y.one(this.el).show();
+                    this._fakePass.hide();
                 }
                 divEl.removeClass("inputEx-typeInvite")
                         .one("input").setStyle("color", "#000");
@@ -453,7 +469,9 @@ YUI.add('wegas-loginwidget', function(Y) {
                 // remove the "empty" state and class
                 this.previousState = null;
                 if (this.fieldContainer.className.indexOf("password") > -1) {
-                    Y.one(this.el).setAttribute("type", "password");
+//                    Y.one(this.el).setAttribute("type", "password");
+                    Y.one(this.el).show();
+                    this._fakePass.hide();
                 }
                 divEl.one("input").setStyle("color", "#000");
                 divEl.removeClass("inputEx-typeInvite");

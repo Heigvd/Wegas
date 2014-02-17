@@ -55,9 +55,8 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
     Y.inputEx.registerType("gamemodelselect", GameModelSelect);                 // Register this class
     Y.namespace("inputEx.Wegas").GameModelSelect = GameModelSelect;
 
-
     /**
-     * @class Y.inputEx.Wegas.EnrolementKeyList
+     * @class Y.inputEx.Wegas.EnrolmentKeyList
      * @extends Y.inputEx.ListField
      * @constructor
      * @param {Object} options  options object
@@ -65,11 +64,10 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
      *   <li></li>
      * </ul>
      */
-    var EnrolementKeyList = function(options) {
-        EnrolementKeyList.superclass.constructor.call(this, options);
+    var EnrolmentKeyList = function(options) {
+        EnrolmentKeyList.superclass.constructor.call(this, options);
     };
-
-    Y.extend(EnrolementKeyList, Y.inputEx.ListField, {
+    Y.extend(EnrolmentKeyList, Y.inputEx.ListField, {
         setOptions: function(options) {
             options.elementType = options.elementType || {
                 type: "group",
@@ -90,10 +88,10 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                     }]
             };
 
-            EnrolementKeyList.superclass.setOptions.call(this, options);
+            EnrolmentKeyList.superclass.setOptions.call(this, options);
         },
         addElement: function(value) {
-            var subfield = EnrolementKeyList.superclass.addElement.call(this, value),
+            var subfield = EnrolmentKeyList.superclass.addElement.call(this, value),
                     node = new Y.Node(subfield.divEl);
 
             node.all(".inputEx-Field").each(function(n) {
@@ -125,12 +123,12 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             for (i = 0; i < total; i += 1) {                                    // Add key fields
                 this.addElement({
                     key: prefix + "-" + teamCount
-                });                                                             
+                });
                 teamCount += 1;
             }
             this.fireUpdatedEvt();                                              // Fire updated !
         }
     });
-    Y.inputEx.registerType("enrolementkeylist", EnrolementKeyList);             // Register this class
-    
+    Y.inputEx.registerType("enrolmentkeylist", EnrolmentKeyList);               // Register this class
+
 });

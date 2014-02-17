@@ -56,7 +56,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
         onKeyUpEvent: function() {
             var dt = this.get("host").datatable;
             this.changeHandle = this.get("host").datatable.delegate("change", function(e) {
-                var record = dt.getRecord(e.target), val = e.target.get("value").trim();
+                var record = dt.getRecord(e.target), val = Y.Lang.trim(e.target.get("value"));
                 val = (val === "") ? "0" : val; //empty is 0
                 e.target.removeClass("invalid");
                 if (this.isValidField(val)) {
