@@ -472,7 +472,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }, this);
 
             this.on("wegas-transition:destroy", function(e) {
-                var index = this.transitionsTarget.indexOf(e.target);
+                var index = Y.Array.indexOf(this.transitionsTarget, e.target);
                 if (index > -1) {
                     this.transitionsTarget.splice(index, 1);
                 }

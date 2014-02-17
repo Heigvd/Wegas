@@ -31,8 +31,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Entity
 @Cacheable(true)
 @NamedQueries({
-    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance"),
-    @NamedQuery(name = "findAccountByValue", query = "SELECT DISTINCT abstractaccount FROM JpaAccount abstractaccount WHERE lower(abstractaccount.email) LIKE :search OR lower(abstractaccount.firstname) LIKE :search OR lower(abstractaccount.lastname) LIKE :search")})
+    @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p WHERE p.value LIKE :instance")})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "FacebookAccount", value = FacebookAccount.class),
     @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),

@@ -163,7 +163,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 
             this.showOverlay();
             this.treeView.destroyAll();
-            
+
             for (i in index) {
                 if (index.hasOwnProperty(i)) {
                     node = new Y.TreeNode({
@@ -278,9 +278,10 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 
         },
         getMenuItems: function(data, node) {
-            var menuItems = PageTreeviewToolbarMenu.superclass.getMenuItems.call(this, data),
-                    host = this.get("host");
-
+            var menuItems = [], host = this.get("host");
+            if (data.widget) {
+                menuItems = PageTreeviewToolbarMenu.superclass.getMenuItems.call(this, data);
+            }
             if (data.page) {                                                    // First level click, need to mix page edition and widget edition
                 menuItems.splice(menuItems.length - 1, 1);                      // Remove widget delete button
                 menuItems.splice(menuItems.length, 0, {//                       // Add page rename, copy and delete buttons
@@ -316,7 +317,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 
             if (page) {
                 //return;
-                this.get(HOST).changePage(page);
+//                this.get(HOST).changePage(page);
                 targetWidget.get("data").widget = targetWidget.item(0) && targetWidget.item(0).get("data.widget");// There may be no child widget when the widget is empty
             }
 

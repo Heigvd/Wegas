@@ -187,9 +187,6 @@ YUI.add('wegas-helper', function(Y) {
     Y.namespace("Wegas").superbind = Y.Wegas.Helper.superbind;
 
     Y.namespace("Wegas").Timer = Y.Base.create("wegas-timer", Y.Base, [], {
-        initializer: function() {
-
-        },
         start: function() {
             if (!this.handler) {
                 this.handler = Y.later(this.get("duration"), this, this.timeOut);
@@ -204,6 +201,13 @@ YUI.add('wegas-helper', function(Y) {
         timeOut: function() {
             this.handler = null;
             this.fire("timeOut");
+        },
+        destructor: function() {
+            if (this.handler) {
+                this.fire("timeOut");
+                this.handler.cancel();
+                this.handler = null;
+            }
         }
     }, {
         ATTRS: {

@@ -203,23 +203,23 @@ h2{
     background-color:#DDDDDD;
 }
 .vertical-menu .actions{
-    background-image: url(wegas-pmg/images/businessmen.png);
+    background-image: url(../../wegas-pmg/images/businessmen.png);
 }
 .vertical-menu .questions {
-    background-image: url(wegas-pmg/images/checklist-icon-2.png);
+    background-image: url(../../wegas-pmg/images/checklist-icon-2.png);
 }
 .vertical-menu .inbox {
-    background-image: url(wegas-pmg/images/messages.png);
+    background-image: url(../../wegas-pmg/images/messages.png);
 }
 .vertical-menu .history {
-    background-image: url(wegas-pmg/images/clock.png);
+    background-image: url(../../wegas-pmg/images/clock.png);
 }
 
 .vertical-menu .help, .vertical-menu .help:hover{
     display:none;
     border-width:0;
     background:none;
-    background-image: url(wegas-pmg/images/help.png);
+    background-image: url(../../wegas-pmg/images/help.png);
     background-position: center;
     background-repeat: no-repeat;
     position:absolute;
@@ -647,12 +647,3 @@ h2{
     font-size: 9pt;
 }
 
-/* User voice popup */
-#uvTab {
-    border-bottom: 1px solid #FFF !important;
-    border-radius: 4px 4px 4px 4px !important;
-    right: 192px !important;
-    top: -3px !important;
-    bottom: auto !important;
-    left: auto !important;
-}
