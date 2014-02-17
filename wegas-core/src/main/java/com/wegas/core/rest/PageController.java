@@ -270,7 +270,7 @@ public class PageController {
 
         Pages pages = new Pages(gameModelId);
         pages.deletePage(pageId);
-        return Response.ok().header("Page", pageId).build();
+        return this.getIndex(gameModelId);
     }
 
     /**

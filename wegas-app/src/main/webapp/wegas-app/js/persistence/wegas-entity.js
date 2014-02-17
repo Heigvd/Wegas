@@ -212,33 +212,43 @@ YUI.add('wegas-entity', function(Y) {
                 type: BUTTON,
                 label: "Edit",
                 plugins: [{
-                        fn: "EditEntityAction"
-                    }, {
-                        fn: "OpenTabActionSec",
+                        fn: "OpenTabAction",
                         cfg: {
-                            label: "Share",
+                            label: "Game model",
+                            emptyTab: true,
                             tabSelector: '#rightTabView',
                             wchildren: [{
-                                    type: "ShareUser",
-                                    plugins: [{
-                                            fn: "WidgetToolbar",
-                                            cfg: {
-                                                children: [{type: "Text"}]
-                                            }
-                                        }],
-                                    permsList: [{
-                                            rightLabel: "Edit",
-                                            value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
-                                        }, {
-                                            rightLabel: "Copy",
-                                            value: "GameModel:Duplicate"
-                                        }, {
-                                            rightLabel: "Host",
-                                            value: "GameModel:Instantiate"
-                                        }]
+                                    type: "EditEntityForm"
                                 }]
                         }
-                    }]
+                    }, 
+//                    {
+//                        fn: "OpenTabActionSec",
+//                        cfg: {
+//                            label: "Share",
+//                            tabSelector: '#rightTabView',
+//                            wchildren: [{
+//                                    type: "ShareUser",
+//                                    plugins: [{
+//                                            fn: "WidgetToolbar",
+//                                            cfg: {
+//                                                children: [{type: "Text"}]
+//                                            }
+//                                        }],
+//                                    permsList: [{
+//                                            rightLabel: "Edit",
+//                                            value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
+//                                        }, {
+//                                            rightLabel: "Copy",
+//                                            value: "GameModel:Duplicate"
+//                                        }, {
+//                                            rightLabel: "Host",
+//                                            value: "GameModel:Instantiate"
+//                                        }]
+//                                }]
+//                        }
+//                    }
+                ]
             }, {
                 type: BUTTON,
                 label: "Open in editor",
@@ -341,91 +351,70 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": true,
                 value: []
             },
-            visibility: {
-                "transient": true,
-                type: STRING,
-                choices: [
-                    //{value: 'Private', label: 'Only people in the list s join'},
-                    {value: 'Public', label: 'Game is visible in the lobby.'},
-                    {value: 'Link', label: 'Player need the link to join. '}],
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
-                }
-            },
             access: {
                 type: STRING,
                 value: "ENROLMENTKEY",
-                choices: [
-                    //{
-                    //    value: "OPEN",
-                    //    label: "Public game"                    
-                    //},{
-                    //    value: "URL",
-                    //    label: "Anyone with the link can join"
-                    //}, 
-                    {
+                choices: [{
                         value: "ENROLMENTKEY",
-                        label: "Anyone with the link or the enrolment key can join"
+                        label: "Open"
                     }, {
                         value: "SINGLEUSAGEENROLMENTKEY",
-                        label: "Each player needs its own enrolment key to join"
+                        label: "Limited seats"
                     }
-                    //, {
-                    //    value: "CLOSE",
-                    //    label: "Game does not accept new players"
-                    //}
                 ],
                 _inputex: {
+                    label: "Access",
                     value: "ENROLMENTKEY",
                     interactions: [{
-                            valueTrigger: "OPEN", // this action will run when this field value is set to OPEN
-                            actions: [{name: 'key', action: 'hide'},
-                                {name: 'keys', action: 'hide'}]
-                        },
-                        //{
-                        //    valueTrigger: "URL", // this action will run when this field value is set to OPEN
-                        //    actions: [{name: 'key', action: 'hide'},
-                        //        {name: 'keys', action: 'hide'}]
-                        //}, 
-                        {
                             valueTrigger: "ENROLMENTKEY",
                             actions: [{name: 'token', action: 'show'},
-                                {name: 'keys', action: 'hide'}]
+                                {name: 'url', action: 'show'},
+                                {name: 'keys', action: 'hide'},
+                                {name: 'users', action: 'hide'}]
                         }, {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
                             actions: [{name: 'token', action: 'hide'},
-                                {name: 'keys', action: 'show'}]
-                        }
-                        //, {
-                        //    valueTrigger: "CLOSE",
-                        //    actions: [{name: 'key', action: 'hide'},
-                        //        {name: 'keys', action: 'hide'}]
-                        //}
-                    ]
+                                {name: 'url', action: 'hide'},
+                                {name: 'keys', action: 'show'},
+                                {name: 'users', action: 'show'}]
+                        }]
                 }
             },
-            key: {
-                type: HIDDEN
+            url: {
+                type: STRING,
+                optional: true,
+                label: "Option 1: Share url",
+                value: "http://wegas.albasim.ch/?token=223pomp"
+            },
+            token: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    label: "Option 2: Share enrolment key"
+                            //description: "Player can join this game by using the enrolment key in the lobby or using the link below.<br />"
+                            //        + "The key can be used to join multiple times."
+                            //description: "Leave blank for automatic generation",
+                            //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
             },
             keys: {
                 type: ARRAY,
                 value: [],
                 _inputex: {
                     label: "Enrolment keys",
-                    _type: "enrolementkeylist",
+                    _type: "enrolmentkeylist",
                     description: "Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
                             + "Each key can be used by only one team/player."
                 }
             },
-            token: {
-                type: STRING,
-                optional: true,
+            users: {
+                type: ARRAY,
+                value: [],
                 _inputex: {
-                    label: "Enrolment key",
-                    description: "Player can join this game by using the enrolment key in the lobby or using the link below.<br />"
-                            + "The key can be used to join multiple times."
-                            //description: "Leave blank for automatic generation",
-                            //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    label: "Option 2: Create user in advance",
+                    _type: "enrolmentkeylist",
+                    description: "Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
+                            + "Each key can be used by only one team/player."
                 }
             },
             playersCount: {

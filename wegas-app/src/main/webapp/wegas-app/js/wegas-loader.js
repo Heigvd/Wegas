@@ -218,7 +218,7 @@ YUI().use(function(Y) {
                 'wegas-form': {
                     path: 'js/widget/wegas-form-min.js',
                     requires: ['wegas-widget', 'wegas-inputex', 'wegas-widgettoolbar', "wegas-button",
-                        'inputex-string', 'inputex-jsonschema', "inputex-group"],
+                        'inputex-string', 'inputex-jsonschema', "inputex-group", "event-valuechange"],
                     ws_provides: "Form"
                 },
                 'wegas-gallerycss': {
@@ -882,7 +882,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-gamemodelselect': {
                     requires: ['inputex-select', 'inputex-list', "inputex-uneditable"],
-                    ix_provides: ['gamemodelselect', "enrolementkeylist"]
+                    ix_provides: ['gamemodelselect', "enrolmentkeylist"]
                 },
                 'wegas-inputex-roleselect': {
                     requires: 'inputex-select',
@@ -1026,10 +1026,10 @@ YUI().use(function(Y) {
                 ace: {
                     async: false,
                     path: "ace/src-min/ace.js"
-                            //fullpath: "http://rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
+                            //fullpath: "//rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
                 },
                 pusher: {
-                    fullpath: "http://js.pusher.com/1.12/pusher.min.js"
+                    fullpath: "//js.pusher.com/1.12/pusher.min.js"
                 },
                 googletranslate: {
                     async: false,

@@ -198,11 +198,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }
 
                 this.each(function() {
-                // try {
+                    // try {
                     this.makeAllOutgoingTransitions();
-                //} catch (e) {
-                //    Y.error("Failed creating transition", e, "Y.Wegas.StateMachineViewer");
-                //}
+                    //} catch (e) {
+                    //    Y.error("Failed creating transition", e, "Y.Wegas.StateMachineViewer");
+                    //}
                 });
             }
             this.highlightUnusedStates();
@@ -247,14 +247,14 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         save: function() {
             var entity = this.get("entity"),
                     DEFAULTCB = {
-                success: Y.bind(function(e) {
-                    this.hideOverlay();
-                }, this),
-                failure: Y.bind(function(e) {
-                    this.showMessage("error", e.response.data.message);
-                    this.hideOverlay();
-                }, this)
-            };
+                        success: Y.bind(function(e) {
+                            this.hideOverlay();
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            this.showMessage("error", e.response.data.message);
+                            this.hideOverlay();
+                        }, this)
+                    };
             if (entity) {
                 this.showOverlay();
                 entity = Y.JSON.parse(Y.JSON.stringify(entity));
@@ -469,7 +469,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }, this);
 
             this.on("wegas-transition:destroy", function(e) {
-                var index = this.transitionsTarget.indexOf(e.target);
+                var index = Y.Array.indexOf(this.transitionsTarget, e.target);
                 if (index > -1) {
                     this.transitionsTarget.splice(index, 1);
                 }
