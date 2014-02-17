@@ -33,6 +33,14 @@
                         }]
                 }, 0).item(0);
                 tab.set("selected", 2);
+                tab.witem(0).treeView.plug(Y.Plugin.TeamSelection);
+                
+                for (i = 0; i &lt; tab.witem(0).treeView.size(); i += 1) {
+                    if (tab.witem(0).treeView.item(i).get("data").entity.get("players") &amp;&amp; !tab.witem(0).treeView.item(i).get("data").entity.get("players").length) {
+                            tab.witem(0).treeView.item(i).get("boundingBox").addClass("noPlayer");
+                    }
+                }
+                
                 tab.witem(0).on(["treeleaf:click", "treenode:click"], function(e) {                        // Listen to click events on the first child (treeview)
                     var entity = e.target.get("data.entity"),
                             player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;

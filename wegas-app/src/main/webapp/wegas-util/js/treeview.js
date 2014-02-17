@@ -18,12 +18,12 @@ YUI.add('treeview', function(Y) {
             CONTENT_BOX = "contentBox",
             BOUNDING_BOX = "boundingBox",
             classNames = {
-                loading: getClassName(TREENODE, "loading"),
-                collapsed: getClassName(TREENODE, "collapsed"),
-                visibleRightWidget: getClassName(TREEVIEW, "visible-right"),
-                multiSelect: getClassName(TREEVIEW, "multiselect"),
-                emptyMSG: getClassName(TREEVIEW, "empty-msg")
-            },
+        loading: getClassName(TREENODE, "loading"),
+        collapsed: getClassName(TREENODE, "collapsed"),
+        visibleRightWidget: getClassName(TREEVIEW, "visible-right"),
+        multiSelect: getClassName(TREEVIEW, "multiselect"),
+        emptyMSG: getClassName(TREEVIEW, "empty-msg")
+    },
     RIGHTWIDGETSETTERFN = function(v) {
         var rightWidget = this.get("rightWidget"),
                 targetNode = this.get(BOUNDING_BOX).one(".yui3-tree-rightwidget");
@@ -807,6 +807,31 @@ YUI.add('treeview', function(Y) {
             data: {}
         }
     });
+
+    /**
+     * TreeView plugin, if a team select all players.
+     * Toggle selection on click
+     */
+    Y.Plugin.TeamSelection = Y.Base.create("TeamSelection", Y.Plugin.Base, [], {
+        initializer: function() {
+            this.get("host").each(function(child) {
+                if (child.get("selected")) {
+                    child.set("selected", 1);
+                }
+            });
+            this.get("host").after('render', function() {
+                this.after("treeleaf:selectedChange", function(e) {
+                    if (e.newVal > 0) {
+                        e.target.get("parent").selectAll();
+                    } else {
+                        e.target.get("parent").deselectAll();
+                    }
+                },this);
+            });
+        }
+    }, {
+        NS: "teamselect"
+    });
     /**
      * TreeView plugin, nodes will react like checkboxes.
      * Toggle selection on click
@@ -815,14 +840,14 @@ YUI.add('treeview', function(Y) {
         initializer: function() {
             this.onHostEvent("nodeClick", function(e) {
                 e.preventDefault();
-                if (e.node && e.node !== this) {
+                if (e.node && e.node !== this.get("host")) {
                     if (e.node.get("selected")) {
                         e.node.set("selected", 0);
                     } else {
                         e.node.set("selected", 1);
                     }
                 }
-            }, this.get("host"));
+            });
             this.get("host").get(BOUNDING_BOX).addClass(classNames.multiSelect);
         },
         destructor: function() {

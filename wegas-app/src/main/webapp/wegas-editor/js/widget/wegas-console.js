@@ -66,10 +66,14 @@ YUI.add('wegas-console', function(Y) {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
                         this.showMessage("success", "The impact has been successfully completed", 4000);
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: '
+                                + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
                         this.showMessage("error", "An error has occurred, please retry again", 4000);
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: '
+                                + e.response.results.message + "</div>");
                     }, this)
                 }
             });
