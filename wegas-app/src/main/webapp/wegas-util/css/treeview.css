@@ -80,16 +80,10 @@
     right:5px;
     top: 2px;
 }
-.yui3-treenode {
-    padding: 2px 0;
-}
-.yui3-treenode .yui3-treenode {
-    padding: 0;
-}
 .yui3-treenode-content-header,
-.yui3-treeleaf-content-header{
+.yui3-treeleaf-content-header {
     position: relative;
-    padding: 3px 27px 3px 2px;
+    padding: 5px 27px 5px 2px;
     white-space: nowrap;
     font-style: normal;
     max-height: 50px;
@@ -99,6 +93,10 @@
     -moz-transition: max-height 0.15s, padding 0.15s;
     -ms-transition: max-height 0.15s, padding 0.15s;
     -webkit-transition: max-height 0.15s, padding 0.15s;
+}
+.yui3-treenode-content-header .yui3-treenode-content-header,
+.yui3-treeleaf-content-header .yui3-treeleaf-content-header {
+    padding: 3px 27px 3px 2px;
 }
 .yui3-treenode-content-header > .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-header > .yui3-treeleaf-content-rightwidget{

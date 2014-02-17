@@ -235,6 +235,26 @@ YUI.add('wegas-form', function(Y) {
                 (options.autocomplete === false || options.autocomplete === "off") ? false : true;
         this.options.trim = (options.trim === true) ? true : false;
     };
+    /** 
+     * Modified to allow changes on the fly
+     */
+    inputEx.StringField.prototype.initEvents = function() {
+        //Y.on("change", this.onChange, this.el, this);
+        Y.on("valueChange", this.onChange, this.el, this);                      // Modified
+        
+        if (Y.UA.ie > 0) { // refer to inputEx-95
+            var field = this.el;
+            Y.on("key", function(e) {
+                field.blur();
+                field.focus();
+            }, this.el, 'down:13', this);
+        }
+
+        Y.on("focus", this.onFocus, this.el, this);
+        Y.on("blur", this.onBlur, this.el, this);
+        Y.on("keypress", this.onKeyPress, this.el, this);
+        Y.on("keyup", this.onKeyUp, this.el, this);
+    };
     /**
      * @hack Let inputex also get requirement from selectfields, lists
      */

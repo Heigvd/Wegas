@@ -19,27 +19,23 @@ YUI.add('wegas-proggame-objective', function(Y) {
      */
     var Objective = Y.Base.create("wegas-proggame-objective", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
-            var fullObjective = this.get("fullObjective"),
-                    globalObjective = this.get("globalObjective");
             this.afterHostEvent("render", function() {
 
-                Y.all(".proggame-objectives").show();
-                Y.all(".apiTab").show();
+                var fullObjective = this.get("fullObjective"),
+                        globalObjective = this.get("globalObjective");
 
-                if (fullObjective && globalObjective) {
-                    this.displayPopup(fullObjective);
-                    this.displayFix(globalObjective);
-                } else if (fullObjective && !globalObjective) {
-                    this.displayPopup(fullObjective);
-                    this.displayFix(fullObjective);
+                if (fullObjective && !globalObjective) {
+                    globalObjective = fullObjective;
                 } else if (!fullObjective && globalObjective) {
-                    this.displayPopup(globalObjective);
-                    this.displayFix(globalObjective);
-                } else {
-                    this.popupContent = "No objective to display";
-                    this.displayFix(this.popupContent);
+                    fullObjective = globalObjective;
                 }
-                this.reDisplayPopup();
+
+                this.displayPopup(fullObjective);
+                this.displayFix(globalObjective);
+
+                this.objectivesHandler = Y.all(".objective").on('click', function(e) { // When summary is clicked,
+                    this.displayPopup(this.popupContent);                       // redisplay the popup
+                }, this);
             });
         },
         displayPopup: function(content) {
@@ -47,17 +43,11 @@ YUI.add('wegas-proggame-objective', function(Y) {
             this.popupContent = content;
         },
         displayFix: function(content) {
-            Y.all(".objective").empty().append("<h1>OBJECTIVES</h1><div class='objValue'>" + content + "</div>");
-        },
-        reDisplayPopup: function() {
-            this.objectivesHandler = Y.all(".objective").on('click', function(e) {
-                this.displayPopup(this.popupContent);
-            }, this);
+            Y.all(".objective").empty().append("<h1>OBJECTIVES</h1><div class='objValue'>" +
+                    (content || "No objectives to display")
+                    + "</div>");
         },
         destructor: function() {
-            Y.all(".proggame-objectives").hide();
-            Y.all(".apiTab").hide();
-
             this.objectivesHandler.detach();
         }
     }, {
@@ -84,17 +74,4 @@ YUI.add('wegas-proggame-objective', function(Y) {
     });
     Y.Plugin.Objective = Objective;
 
-    var TreeViewWidget = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        renderUI: function() {
-            this.treeView = new Y.TreeView({
-                render: this.get("contentBox"),
-                children: []
-            });
-            this.treeView.on("treenode:click", function(e) {
-                //this.collapseAll();
-                e.target.toggleTree();
-            });
-        }
-    });
-    Y.Wegas.TreeViewWidget = TreeViewWidget;
 });

@@ -10,6 +10,7 @@ package com.wegas.core.persistence.game;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -37,6 +38,7 @@ public class GameModelContent implements Serializable {
      *
      */
     @Lob
+    @NotNull
     @Basic(fetch = FetchType.LAZY)
     //@Column(columnDefinition = "text")
     //@JsonView({Views.Export.class})

@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.event.EngineInvocationEvent;
+import com.wegas.core.event.internal.EngineInvocationEvent;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;

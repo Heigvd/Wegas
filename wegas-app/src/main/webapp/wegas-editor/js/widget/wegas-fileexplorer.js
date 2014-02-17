@@ -79,7 +79,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             cfg: {
                                 testFn: function(searchVal) {
                                     var ret;
-                                    searchVal = searchVal.trim();
+                                    searchVal = Y.Lang.trim(searchVal);
                                     ret = (searchVal === "");
                                     if (!ret) {
                                         ret = this.get(LABEL).toLowerCase().indexOf(searchVal.toLowerCase()) > -1;

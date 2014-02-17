@@ -246,6 +246,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 .yui3-skin-sam .wegas-layout-hd .wegas-login {
     float:right  !important;
+    margin-right: 37px;
 }
 .yui3-skin-sam .wegas-layout-hd .wegas-login img {
     margin-top: -5px;
@@ -615,4 +616,15 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-icon-view,.wegas-icon-open {
     /*background-position: 1px -709px;     Goggles */
     background-position: 0 -1432px;
+}
+
+/************************* Impact  ***************************************/
+
+.wegas-console .inputEx-ListField .wegas-addbutton {
+    position: absolute;
+    bottom: -138%;
+}
+
+.wegas-console .inputEx-ListField .wegas-addbutton::after{ 
+    content: "Add"; 
 }
