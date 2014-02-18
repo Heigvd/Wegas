@@ -36,7 +36,6 @@ public class GameController extends AbstractGameController {
      */
     @ManagedProperty("#{param.gameId}")
     private Long gameId;
-
     /**
      *
      */
