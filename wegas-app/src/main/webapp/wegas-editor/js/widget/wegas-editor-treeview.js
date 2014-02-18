@@ -75,16 +75,12 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 return;
             }
 
-            var treeNodes, ds = this.get(DATASOURCE),
-                    selector = this.get("dataSelector"),
-                    entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll(),
-                    treeNodes = this.genTreeViewElements(entities);
-
             this.treeView.destroyAll();
-            this.treeView.add(treeNodes);
+            this.treeView.add(this.getNodes());
             this.treeView.syncUI();
 
             this.hideOverlay();
+
         },
         destructor: function() {
             this.treeView.destroy();
@@ -96,6 +92,13 @@ YUI.add('wegas-editor-treeview', function(Y) {
          * @function
          * @private
          */
+        getNodes: function() {
+            var ds = this.get(DATASOURCE),
+                    selector = this.get("dataSelector"),
+                    entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll();
+
+            return this.genTreeViewElements(entities);
+        },
         genTreeViewElements: function(elements) {
             return Y.Array.filter(Y.Array.map(elements, this.genTreeViewElement, this), Y.Lang.isObject);
         },
@@ -186,43 +189,26 @@ YUI.add('wegas-editor-treeview', function(Y) {
             this.plug(Plugin.WidgetToolbar);
 
             //this.plug(Plugin.EditorTVToggleClick);
-            //if (this.isFreeForAll()) {                                          // @hack Change the display if the gamemodel is freeforall
+            //if (this.isFreeForAll()) {                                        // @hack Change the display if the gamemodel is freeforall
             //    this.get("parent").set("label", "Players");
             //}
         },
-        syncUI: function() {
-            Y.log("sync()", "info", "Wegas.TeamTreeView");
+        getNodes: function() {
+            var entity = this.get("entity"), acc = [],
+                    nodes = this.genTreeViewElements(entity.get("teams"));
 
-            if (!this.get(DATASOURCE)) {
-                this.get(CONTENTBOX).append("Unable to find datasource");
-                return;
-            }
-
-            var treeNodes = this.genTreeViewElements(this.get("entity").get("teams"));
-
-            this.treeView.destroyAll();
-            this.treeView.add(treeNodes);
-            this.treeView.syncUI();
-
-            this.hideOverlay();
-        },
-        genTreeViewElements: function(entities) {
-            var ret = TeamTreeView.superclass.genTreeViewElements.call(this, entities);
-            if (entities[0] && entities[0] instanceof Wegas.persistence.Team) {
-                if (this.get("entity").get("properties.freeForAll")) {// Do not display teams in free for all game
-                    return Y.Array.flatten(Y.Array.map(ret, function(node) {
-                        return node.children || [];
-                    })).slice(1);
-                } else {
-                    return ret;
-                }
+            if (entity.get("properties.freeForAll")) {                          // Do not display teams in free for all game
+                Y.Array.each(nodes, function(i) {
+                    acc = acc.concat(i.children);
+                });
+                return acc;
             } else
-                return ret;
+                return nodes;
         },
         genTreeViewElement: function(entity) {
             var elClass = entity.get(CLASS),
-                    collapsed = !this.isNodeExpanded(entity),
-                    selected = (this.currentSelection === entity.get(ID)) ? 2 : 0;
+                    collapsed = !this.isNodeExpanded(entity);
+            //selected = (this.currentSelection === entity.get(ID)) ? 2 : 0;
 
             switch (elClass) {
                 case 'Team':
