@@ -20,6 +20,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 
 /**
  *
@@ -47,6 +48,11 @@ public class SingleLobbyController implements Serializable {
     /**
      *
      */
+    @Inject
+    ErrorController errorController;
+    /**
+     *
+     */
     private Game currentGame = null;
 
     /**
@@ -61,36 +67,37 @@ public class SingleLobbyController implements Serializable {
 
         if (token != null) {
             currentGame = gameFacade.findByToken(token);
-            //if (currentGame != null) {                                          // 1st case: token is associated with a game
-            try {
-                playerFacade.findCurrentPlayer(currentGame);
-                externalContext.dispatch("play.xhtml?gameId=" + currentGame.getId());// display game page
-            } catch (PersistenceException e) {
-                // Nothing to do. stay on current page so player will choose his team
+            if (currentGame != null) {                                          // 1st case: token is associated with a game
+                try {
+                    playerFacade.findCurrentPlayer(currentGame);
+                    externalContext.dispatch("play.xhtml?gameId=" + currentGame.getId());// display game page
+                } catch (PersistenceException e) {
+                    // Nothing to do. stay on current page so player will choose his team
+                }
+
+                //} else {                                                            // 2nd case: token is associated with a team
+                //    final Team currentTeam = teamFacade.findByToken(token);
+                //    if (currentTeam != null) {
+                //        try {
+                //            playerFacade.findCurrentPlayer(currentTeam.getGame());
+                //        } catch (NoResultException etp) {                           // Player has not joined yet
+                //            if (SecurityHelper.isAnyPermitted(currentTeam.getGame(), Arrays.asList("Token", "TeamToken", "View"))) {
+                //                teamFacade.joinTeam(currentTeam, userFacade.getCurrentUser()); // so we join him
+                //            } else {
+                //                externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // not allowed
+                //            }
+                //        }
+                //        externalContext.dispatch("play.xhtml?gameId=" + currentTeam.getGame().getId());// display game page
+                //    } else {
+                //        externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // no game
+                //    }
+                //}
+            } else {
+                errorController.dispatch("The game you are looking for could not be found.");
             }
-
-            //} else {                                                            // 2nd case: token is associated with a team
-            //    final Team currentTeam = teamFacade.findByToken(token);
-            //    if (currentTeam != null) {
-            //        try {
-            //            playerFacade.findCurrentPlayer(currentTeam.getGame());
-            //        } catch (NoResultException etp) {                           // Player has not joined yet
-            //            if (SecurityHelper.isAnyPermitted(currentTeam.getGame(), Arrays.asList("Token", "TeamToken", "View"))) {
-            //                teamFacade.joinTeam(currentTeam, userFacade.getCurrentUser()); // so we join him
-            //            } else {
-            //                externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // not allowed
-            //            }
-            //        }
-            //        externalContext.dispatch("play.xhtml?gameId=" + currentTeam.getGame().getId());// display game page
-            //    } else {
-            //        externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // no game
-            //    }
-            //}
-
         } else {
-            externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // no game
+            errorController.dispatch("The game you are looking for could not be found.");
         }
-
     }
 
     /**
