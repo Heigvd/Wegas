@@ -52,7 +52,7 @@ div.inputEx-fieldWrapper {
 
 /* Wegas Form Widget Styles */
 .wegas-form-content {
-    padding: 20px 0 20px !important;
+    padding: 20px 10px 20px !important;
 }
 .wegas-form div.inputEx-fieldWrapper,
 .wegas-form div.inputEx-Field {
@@ -65,7 +65,7 @@ div.inputEx-fieldWrapper {
 }
 .wegas-form-content input[type=text],
 .wegas-form-content input[type=password] {
-    width: 98%;
+    width: 99%;
     padding: 2px 0.5%;
 }
 .wegas-form input[type=checkbox] {
@@ -87,7 +87,6 @@ div.inputEx-fieldWrapper {
 /* Set up fluid layout for inputex fields */
 .wegas-form div.wegas-form-ix >fieldset >div {
     padding-left:135px;
-    margin-right: 7px;
     white-space: nowrap;
     position: relative;
 }
