@@ -68,7 +68,7 @@ public class GameModelController {
         SecurityUtils.getSubject().checkPermission("GameModel:Duplicate:gm" + templateGameModelId);
         GameModel duplicate = gameModelFacade.duplicate(templateGameModelId);
         duplicate.setName(gm.getName());
-        gameModelFacade.addGame(gm, new DebugGame());
+        gameModelFacade.addGame(duplicate, new DebugGame());
         //duplicate.merge(gm);
 
         return duplicate;
