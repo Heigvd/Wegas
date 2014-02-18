@@ -15,7 +15,7 @@ YUI.add('wegas-sharerole', function(Y) {
         /**
          *
          */
-        CONTENT_TEMPLATE: "<div><div class=\"title\" >Game link</div></div>",
+        CONTENT_TEMPLATE: "<div><div class=\"title\" >Option 2: Share link</div></div>",
         /**
          *
          */
@@ -42,13 +42,23 @@ YUI.add('wegas-sharerole', function(Y) {
             this.link = new Y.inputEx.StringField({
                 wrapperClassName: "inputEx-fieldWrapper wegas-link",
                 parentEl: cb,
-                description: 'Using this link, player will access game directly',
+                description: 'Using this link, players need to log in or create an account, and will then be redirected to the game.',
                 value: Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token")
             });
-            //this.link.disable();
 
             this.syncLinkVisibility();
             this.requestPermissions();
+
+
+            this.set("visible", false);                                         // @HACK Visibility depends on a node in the parent's tree 
+            Y.on("available", function() {
+                var node = Y.one(".wegas-game-access select"),
+                        updatVisibility = function() {
+                    this.set("visible", node.get("value") === "ENROLMENTKEY");
+                };
+                updatVisibility.call(this);
+                node.on("valuechange", updatVisibility, this);
+            }, ".wegas-game-access select", this);
         },
         bindUI: function() {
             this.visibility.on("updated", function(value) {
@@ -68,9 +78,12 @@ YUI.add('wegas-sharerole', function(Y) {
                 }
             }, this);
 
-            this.get("contentBox").one(".wegas-link input").on("click", function(e) {
-                e.target.select();
-            });                                                                 // Select whole link on click
+            //this.link.disable();
+            var inputNode = this.get("contentBox").one(".wegas-link input");
+            inputNode.on("keypress", function(e) {
+                e.preventDefault();
+            });                                                                 // Edition not allowed on the input node
+            inputNode.on("click", inputNode.select, inputNode);                 // Select whole link on click
         },
         destructor: function() {
             this.link.destroy();
@@ -102,11 +115,11 @@ YUI.add('wegas-sharerole', function(Y) {
             });
         },
         syncLinkVisibility: function(selectValue) {
-            if (this.visibility.getValue() === "Private") {
-                //this.link.hide();
-            } else {
-                //this.link.show();
-            }
+            //if (this.visibility.getValue() === "Private") {
+            //    this.link.hide();
+            //} else {
+            //    this.link.show();
+            //}
         }
     }, {
         ATTRS: {
