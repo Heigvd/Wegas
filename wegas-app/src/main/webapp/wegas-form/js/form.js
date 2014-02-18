@@ -81,22 +81,9 @@ YUI.add('form', function(Y) {
          * 
          */
         bindUI: function() {
-            this.get("inputNode").on("change", function(e) {
+            this.get("inputNode").on("valueChange", function(e) {
                 this.set("value", this.get("value"), {internal: true});
             }, this);
-
-            //if (Y.UA.ie > 0) { // refer to inputEx-95
-            //    var field = this.el;
-            //    Y.on("key", function(e) {
-            //        field.blur();
-            //        field.focus();
-            //    }, this.el, 'down:13', this);
-            //}
-            //
-            //Y.on("focus", this.onFocus, this.el, this);
-            //Y.on("blur", this.onBlur, this.el, this);
-            //Y.on("keypress", this.onKeyPress, this.el, this);
-            //Y.on("keyup", this.onKeyUp, this.el, this);
         },
         /**
          * 
@@ -166,7 +153,7 @@ YUI.add('form', function(Y) {
         }
     });
     Y.String = String;
-    
+
     /**
      * 
      */
