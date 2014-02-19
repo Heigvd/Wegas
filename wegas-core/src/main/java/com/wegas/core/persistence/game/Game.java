@@ -53,6 +53,7 @@ public class Game extends NamedEntity {
      *
      */
     @NotNull
+    @Basic(optional = false)
     // @Pattern(regexp = "^\\w+$")
     private String token;
     /**
@@ -115,17 +116,17 @@ public class Game extends NamedEntity {
     /**
      *
      */
-    @NotNull
-    @Column(name = "wkey")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
-    private String key;
+    private List<GameEnrolmentKey> keys = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
-    private List<GameEnrolmentKey> keys = new ArrayList<>();
+    private List<GameAccountKey> accountkeys = new ArrayList<>();
 
     /**
      *
@@ -165,15 +166,6 @@ public class Game extends NamedEntity {
      */
     @PreUpdate
     public void preUpdate() {
-        if (this.getToken() == null || this.getToken().equals("")) {
-            //this.setToken(Helper.genToken(10));
-            this.setToken(this.getName());
-        }
-        if (this.getKey() == null || this.getKey().equals("")) {
-            this.setKey(this.getName());
-        }
-        this.key = this.key.toLowerCase().replace(" ", "-");
-        this.token = this.token.toLowerCase().replace(" ", "-");
         this.setUpdatedTime(new Date());
     }
 
@@ -379,18 +371,12 @@ public class Game extends NamedEntity {
         }
     }
 
-    /**
-     * @return the enrolmentKey
-     */
-    public String getKey() {
-        return key;
+    public List<GameAccountKey> getAccountkeys() {
+        return accountkeys;
     }
 
-    /**
-     * @param enrolmentKey the enrolmentKey to set
-     */
-    public void setKey(String enrolmentKey) {
-        this.key = enrolmentKey;
+    public void setAccountkeys(List<GameAccountKey> accountkeys) {
+        this.accountkeys = accountkeys;
     }
 
     /**
