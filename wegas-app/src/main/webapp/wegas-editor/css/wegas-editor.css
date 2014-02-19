@@ -417,9 +417,12 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 /* Share role */
-.wegas-link div,
-.wegas-link input {
+.wegas-link div {
     width: 100%;
+}
+.wegas-link input {    
+    width: 99%;
+    padding: 2px 0.5%;
 }
 /* Share user */
 .wegas-shareuser-content {

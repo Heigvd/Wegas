@@ -36,11 +36,16 @@ YUI.add('wegas-widgettoolbar', function(Y) {
         initializer: function() {
             this.children = [];
             this.render();
+            //this.messageTimer = new Y.Wegas.Timer({
+            //    duration: 2000
+            //});
+            //his.messageTimer.on("timeOut", this.setStatusMessage, this, "");
             //this.afterHostEvent("render", this.render, this);
 
             this.onHostEvent("*:message", function(e) {                         // Observe success messages,
                 if (e.level === "success" && !e.timeout) {
                     this.setStatusMessage(e.content);                           // to display in the toolbar
+                    //this.messageTimer.reset();
                     e.halt(true);
                 }
             });
@@ -50,6 +55,7 @@ YUI.add('wegas-widgettoolbar', function(Y) {
          * @private
          */
         destructor: function() {
+            //this.messageTimer.destroy();
             this.menuBar.destroy();
         },
         // *** Private methods *** //

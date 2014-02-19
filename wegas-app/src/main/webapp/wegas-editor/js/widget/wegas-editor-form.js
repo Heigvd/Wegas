@@ -55,13 +55,15 @@ YUI.add('wegas-editor-form', function(Y) {
             Y.Array.each(this.get("buttons"), this.addButton, this);
         },
         bindUI: function() {
-            this.on("formUpdated", function() {
-                if (!this.form.validate())
+            this.on("update", function() {
+                if (!this.form.validate()) {
+                    this.showMessageBis("success", "Could not save changes");
                     return;
+                }
                 this.updateTimer.reset();
             });
             this.updateTimer.on("timeOut", function() {
-                this.fire("updated", {});
+                this.fire("updateTimeOut", {});
             }, this);
         },
         /**
@@ -97,7 +99,7 @@ YUI.add('wegas-editor-form', function(Y) {
                 this.form = inputEx(cfg);                                       // Initialize and render form
                 this.form.setValue(this.get("value"), false);                   // Sync form with "value" ATTR
                 this.form.on("updated", function() {
-                    this.fire("formUpdated");
+                    this.fire("update");
                 }, this);
 
                 this.form.parentWidget = this;                                  // @HACK some widgets need this reference
@@ -191,8 +193,12 @@ YUI.add('wegas-editor-form', function(Y) {
     EditEntityForm = Y.Base.create("wegas-form", Form, [], {
         bindUI: function() {
             EditEntityForm.superclass.bindUI.call(this);
-            this.on("updated", this.onFormUpdate);
-            this.on("submit", this.onFormUpdate);
+
+            this.on("update", function() {
+                this.showMessageBis("success", "Saving...");
+            });
+            this.on("updateTimeOut", this.save);
+            this.on("submit", this.save);
         },
         /**
          * @function
@@ -228,9 +234,9 @@ YUI.add('wegas-editor-form', function(Y) {
             var menuItems = entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1);
             //var menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1), function(i) {
             //    return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
-            //});                                                                 // Retrieve menu and remove the first item
+            //});                                                               // Retrieve menu and remove the first item
 
-            Y.Array.each(menuItems, function(i) {                               // @hack add icons to some buttons
+            Y.Array.each(menuItems, function(i) {                               // @hack Add icons to some buttons
                 switch (i.label) {
                     case "Delete":
                     case "New":
@@ -246,18 +252,19 @@ YUI.add('wegas-editor-form', function(Y) {
             this.toolbar.add(menuItems);                                        // Add menu items to the form
             //this.toolbar.item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
         },
-        onFormUpdate: function() {
-            if (!this.form.validate())
+        save: function() {
+            if (!this.form.validate()) {
                 return;
+            }
 
-            this.showOverlay();
-            //this.showMessageBis("success", "Saving changes...");
+            //this.showOverlay();
+            //this.showMessageBis("success", "Saving...");
 
             this.get("dataSource").cache.put(this.form.getValue(), {
                 on: {
                     success: Y.bind(function() {
-                        this.showMessageBis("success", "Changes saved");
-                        this.hideOverlay();
+                        this.showMessageBis("success", "All changes saved");
+                        //this.hideOverlay();
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }

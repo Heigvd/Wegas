@@ -12,9 +12,8 @@
  */
 YUI.add("wegas-inputex-contextgroup", function(Y) {
     "use strict";
-    var contextGroup;
 
-    contextGroup = function(options) {
+    var contextGroup = function(options) {
         contextGroup.superclass.constructor.call(this, options);
     };
     Y.extend(contextGroup, Y.inputEx.Group, {
