@@ -28,6 +28,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.swing.text.StyledEditorKit;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -96,6 +97,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
         final User currentUser = userFacade.getCurrentUser();
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
+        game.setToken(this.createUniqueEnrolmentkey(game));
         gameModel.addGame(game);
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
@@ -109,6 +111,35 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         } catch (PersistenceException ex) {
             logger.error("Unable to find Role: Public", ex);
         }
+    }
+
+    public String createUniqueEnrolmentkey(Game game) {
+        String prefixKey = game.getName();
+        boolean foundUniqueKey = false;
+        if (prefixKey.length() > 11) {
+            prefixKey = prefixKey.substring(0, 11);
+        }
+        prefixKey = prefixKey.toLowerCase().replace(" ", "-");
+
+        while (!foundUniqueKey) {
+            boolean foundedGameAccountKey = true;
+            boolean foundedGameEnrolentKey = true;
+            try {
+                this.findGameAccountKey(prefixKey);
+            } catch (Exception e) {
+                foundedGameAccountKey = false;
+            }
+            try {
+                this.findGameEnrolmentKey(prefixKey);
+            } catch (Exception e) {
+                foundedGameEnrolentKey = false;
+            }
+            Game foundGameByToken = this.findByToken(prefixKey);
+            if (!foundedGameEnrolentKey && !foundedGameAccountKey && foundGameByToken == null) {
+                return prefixKey;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -146,7 +177,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
                 break;
 
             case ENROLMENTKEY:
-                if (!game.getKey().equals(key)) {
+                if (!game.getToken().equals(key)) {
                     throw new Exception("The provided key does not match");     // There user is already registered to target game
                 }
                 break;
@@ -159,6 +190,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
                 }
                 throw new Exception("The provided key does not match");         // There user is already registered to target game
         }
+    }
+    // @TODO based on gameToken
+    public Game createGameAccount(final Game game, final Long accountNumber) {
+
+        return game;
     }
 
     /**
@@ -187,6 +223,15 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         cq.where(cb.equal(game.get(GameEnrolmentKey_.key), key));
         Query q = em.createQuery(cq);
         return (GameEnrolmentKey) q.getSingleResult();
+    }
+
+    private GameAccountKey findGameAccountKey(String key) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<GameAccountKey> gameAccount = cq.from(GameAccountKey.class);
+        cq.where(cb.equal(gameAccount.get(GameAccountKey_.key), key));
+        Query q = em.createQuery(cq);
+        return (GameAccountKey) q.getSingleResult();
     }
 
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
