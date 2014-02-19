@@ -287,20 +287,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
      */
     Plugin.EditorTVToolbarMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
-            this.afterHostEvent("treeview:selectionChange", function(e) {
-                if (e.prevVal === e.newVal ||
-                        (e.prevVal && e.newVal && e.prevVal._items === e.newVal._items)) {
-                    return;
-                }
-                this.onTreeViewSelection(e);
-            }, this);
+            this.afterHostEvent("*:click",this.onTreeViewSelection);
         },
         onTreeViewSelection: function(e) {
-            if (!e.target.getSelection()) {
-                //deselect
-                return;
-            }
-            var menuItems = this.getMenuItems(e.target.getSelection().item(0).get("data")),
+            var menuItems = this.getMenuItems(e.target.get("data")),
                     host = this.get(HOST);
 
             if (menuItems) {
