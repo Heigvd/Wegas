@@ -176,68 +176,42 @@ public class GameController {
      */
     @GET
     @Path("/JoinGame/{token : .*}/")
-    public Object tokenJoinGame(@PathParam("token") String token) throws Exception {
+    public Object tokenJoinGame(@PathParam("token") String token) throws WegasException {
         Game game = gameFacade.findByToken(token);                              // 1st case: game token
-        if (game != null && game.getAccess() == Game.GameAccess.ENROLMENTKEY) {
-            // Is ok
-        } else if (game == null) {                                              // 2nd case: single usage enrolement key
+        if (game != null) {
+            if (game.getAccess() == Game.GameAccess.ENROLMENTKEY) {
+                return "Team token required";
+                //throw new WegasException("This key has already been used");
+            }
+        } else {                                                                // 2nd case: single usage enrolement key
             GameEnrolmentKey gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);
+            game = gameEnrolmentKey.getGame();
             if (gameEnrolmentKey.getUsed()) {
                 throw new WegasException("This key has already been used");
             }
-            gameEnrolmentKey.setUsed(true);
-            game = gameEnrolmentKey.getGame();
-
             if (game.getAccess() != Game.GameAccess.SINGLEUSAGEENROLMENTKEY) {
-                throw new WegasException("This key has already been used");
+                throw new WegasException("Not allowed to connect using sinle usage enrolment keys");
             }
-        }
-
-        Team team = null;
-
-        if (game.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll)) {   // If game is "freeForAll" (single team)
-            //if (game.getTeams().isEmpty()) {
-            if (game.getTeams().size() <= 1) {                                  // First team is debug team
-                team = new Team("Default");
-                teamFacade.create(game.getId(), team);
-            } else {
-                team = game.getTeams().get(1);                                  // Join the first team available
-            }
+            gameEnrolmentKey.setUsed(true);
         }
 
         try {                                       // We check if logged user is already registered in the target game
             playerFacade.findByGameIdAndUserId(game.getId(), userFacade.getCurrentUser().getId());
-            throw new Exception("You are already registered to this game.");    // There user is already registered to target game
+            throw new WegasException("You are already registered to this game.");// There user is already registered to target game
 
         } catch (NoResultException e) {             // If there is no NoResultException, everything is ok, we can return the game
 
-            if (team != null) {
-                SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token", "TeamToken"));
+            SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token"));
+            if (game.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll)) {// If game is "freeForAll" (single team)
+                //if (game.getTeams().isEmpty()) {
+                if (game.getTeams().size() <= 1) {                              // Create a team if none present (first team is debug team)
+                    teamFacade.create(game.getId(), new Team("Default"));
+                }
+                Team team = game.getTeams().get(1);                              // Join the first team available
                 return Arrays.asList(team, game);
-
-            } else if (SecurityHelper.isAnyPermitted(game, Arrays.asList("View", "Token"))) {
-                return game;
-
-            } else if (SecurityHelper.isPermitted(game, "TeamToken")) {
-                return "Team token required";
             } else {
-                throw new UnauthorizedException();
+                return game;
             }
-        }
-    }
-
-    @GET
-    @Path("{gameId : [1-9][0-9]*}/KeyJoin/{key : .*}/")
-    public Object keyJoinGame(@PathParam("gameId") Long gameId, @PathParam("key") String key) throws Exception {
-        Game game = gameFacade.find(gameId);
-
-        try {                                       // We check if logged user is already registered in the target game
-            playerFacade.findByGameIdAndUserId(game.getId(), userFacade.getCurrentUser().getId());
-            throw new Exception("You are already registered to this game.");    // There user is already registered to target game
-
-        } catch (NoResultException e) {             // If there is no NoResultException, everything is ok, we can return the game
-            gameFacade.checkKey(game, key);
-            return game;
         }
     }
 
@@ -250,7 +224,7 @@ public class GameController {
     @Path("/JoinTeam/{teamId : .*}/")
     public Game joinTeam(@PathParam("teamId") Long teamId) {
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
-                Arrays.asList("View", "Token", "TeamToken"));                   // Make sure the user can join
+                Arrays.asList("View", "Token"));                                // Make sure the user can join
 
         return teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
     }
@@ -259,7 +233,7 @@ public class GameController {
     @Path("/JoinTeam/{teamId : .*}/")
     public Game joinTeamByGroup(@PathParam("teamId") Long teamId, List<AbstractAccount> accounts) {
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
-                Arrays.asList("View", "Token", "TeamToken"));                   // Make sure the user can join
+                Arrays.asList("View", "Token"));                                // Make sure the user can join
 
         List<User> users = userFacade.findOrCreate(accounts);
         Game g = null;

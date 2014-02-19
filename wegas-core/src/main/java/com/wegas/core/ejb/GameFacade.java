@@ -136,31 +136,6 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         userFacade.deleteRolePermissionsByInstance("g" + entity.getId());
     }
 
-    public void checkKey(final Game game, final String key) throws Exception {
-        switch (game.getAccess()) {
-            case CLOSE:
-                throw new Exception("This game does not accept new players");   // There user is already registered to target game
-
-            case OPEN:
-            case URL:
-                break;
-
-            case ENROLMENTKEY:
-                if (!game.getKey().equals(key)) {
-                    throw new Exception("The provided key does not match");     // There user is already registered to target game
-                }
-                break;
-
-            case SINGLEUSAGEENROLMENTKEY:
-                for (GameEnrolmentKey eKey : game.getKeys()) {
-                    if (eKey.getKey().equals(key)) {
-                        break;
-                    }
-                }
-                throw new Exception("The provided key does not match");         // There user is already registered to target game
-        }
-    }
-
     /**
      * Search for a game with token
      *
