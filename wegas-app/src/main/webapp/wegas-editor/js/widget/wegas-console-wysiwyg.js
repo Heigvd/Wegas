@@ -42,7 +42,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * @description create and render the Y.inputEx.WysiwygScript.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX), innerHTML;
 
             this.plug(Plugin.WidgetToolbar);
 
@@ -55,6 +55,10 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             this.srcField.el.cols = 100;
 
             this.runButton();
+            this.srcField.viewSrc.get("contentBox")._node.attributes.style.value = "";
+            innerHTML = this.srcField.viewSrc.get("contentBox").get("innerHTML");
+            this.srcField.viewSrc.get("contentBox").set("innerHTML", innerHTML + "Source");
+            this.toolbar.add(this.srcField.viewSrc);
         },
         /**
          * @function
@@ -66,14 +70,15 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             var treeView, editorTreeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team"),
                     cGameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), i,
                     playerId, selected = 0;
-            
+
             if (!editorTreeView) {
                 return;
             }
-            
+
             treeView = editorTreeView.treeView;
-            
+
             this.handlers.push(this.get("parent").on("selectedChange", function(e) {
+                selected = 0;
                 if (e.newVal !== 1) {
                     treeView.unplug(Plugin.CheckBoxTV);
                     this.removeCheckbox();
@@ -88,14 +93,23 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                     if (!treeView.size()) {
                         return;
                     }
-                    treeView.item(selected).set("selected", 2);
+
                     // Select only first team or player
                     if (cGameModel.get("properties.freeForAll")) {
                         playerId = treeView.item(selected).get("data").entity.get("id");
+                        treeView.item(selected).set("selected", 2);
                     } else {
-                        playerId = treeView.item(selected).get("data").entity.get("players")[0].get("id");
+                        while (!playerId) {
+                            if (treeView.item(selected).get("data").entity.get("players").length !== 0) {
+                                playerId = treeView.item(selected).get("data").entity.get("players")[0].get("id");
+                            } else {
+                            selected += 1;
+                            }
+                        }
+                        treeView.item(selected).selectAll();
                     }
                     Y.Wegas.app.set('currentPlayer', playerId);
+                    playerId = null;
                 } else {
                     treeView.plug(Plugin.CheckBoxTV);
                     this.addCheckbox();
@@ -109,14 +123,18 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * @description Create and render the button for run the script.
          */
         runButton: function() {
-            var el = this.toolbar.get('header'), multiPlayerScript;
+            var el = this.toolbar.get('header'), multiPlayerScript, playerList;
 
             this.runButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-play\"></span>Apply",
                 on: {
                     click: Y.bind(function() {
+                        playerList = this.playerList();
+                        if (playerList.length === 0) {
+                            return;
+                        }
                         multiPlayerScript = {
-                            playerIdList: this.playerList(),
+                            playerIdList: playerList,
                             script: {
                                 "@class": "Script",
                                 language: "JavaScript",
@@ -154,7 +172,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                 });
             } else {
                 if (!selection.size()) {
-                    this.showMessageBis("info", "No team is selected.");
+                    this.showMessageBis("info", "No team is selected! This impact has not been applied");
                 }
                 selection.each(function(item) {
                     var entity = item.get("data.entity");
@@ -173,7 +191,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          */
         addCheckbox: function() {
             var editorTreeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team"), i;
-            this.addClassEmptyTeam();
+            this.emptyTeamList();
             this.selectAll = new Y.Node.create("<span class='emptyCheckbox selectAll'>Select all</span>");
             editorTreeview.toolbar.get("header").append(this.selectAll);
             this.selectAll.on("click", function(e, editorTreeview) {
@@ -214,13 +232,12 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * @private
          * @description checks if all teams has a player otherwise add a "noPlayer" class.
          */
-        addClassEmptyTeam: function() {
+        emptyTeamList: function() {
             var editorTreeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team"),
                     i;
             this.emptyTeam = [];
             for (i = 0; i < editorTreeview.treeView.size(); i += 1) {
                 if (editorTreeview.treeView.item(i).get("data").entity.get("players") && !editorTreeview.treeView.item(i).get("data").entity.get("players").length) {
-                    editorTreeview.treeView.item(i).get("boundingBox").addClass("noPlayer");
                     this.emptyTeam.push(i);
                 }
             }

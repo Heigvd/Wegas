@@ -14,7 +14,8 @@
 .wegas-stdmode .editor-variables,
 .wegas-stdmode .editor-pages,
 .wegas-stdmode .editor-scenarist-button,
-.wegas-stdmode .editor-restart-button {
+.wegas-stdmode .editor-restart-button,
+.wegas-stdmode .results{
     display: none;
 }
 .wegas-editmode .editor-variables,
@@ -43,7 +44,20 @@
     color: #072644;
 }
 
-/************************* leftTabView Checkbox plugin   **********************************/
+/************************* leftTabView  ***************************************/
+
+#leftTabView .yui3-treeview-content>.noPlayer .yui3-treenode-content-header{
+    opacity: 0.5;
+}
+
+#leftTabView .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
+#leftTabView .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
+    box-shadow: 0px 0px 1px #6D6D6D;
+    font-weight: bolder;
+    background-color: #EDEDED;
+}
+
+/************************* leftTabView Checkbox plugin   **********************/
 
 #leftTabView .wegas-toolbar .selectAll{
     position: absolute;
@@ -68,12 +82,6 @@
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
     background: url(../images/checkbox.png) 247px -4px no-repeat;
     background-color: #EDEDED;
-    box-shadow: 0px 0px 1px #6D6D6D;
-    font-weight: bolder;
-}
-
-#leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.noPlayer .yui3-treenode-content-header{
-    background: white;
 }
 
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content-header:hover {

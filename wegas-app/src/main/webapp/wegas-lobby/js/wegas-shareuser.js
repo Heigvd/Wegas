@@ -123,23 +123,25 @@ YUI.add('wegas-shareuser', function(Y) {
 
                 //Add all accounts from "this.field" with an id (means selected with autocompletion)
                 Y.Array.each(this.field.options.value, function(account) {
-                    this.addToUserlist(account.value, account.label);
+                    if (this.checkFieldValue(userNames, account)) {
+                        this.addToUserlist(account.value, account.label);
+                    }
                 }, this);
 
                 Y.Array.each(userNames, function(value) {                       // Create the email list and other value list
                     notAdd = true;
                     for (i in this.field.options.value) {
                         if (this.field.options.value.hasOwnProperty(i)) {
-                            if (this.field.options.value[i].label === value.trim()) {
+                            if (this.field.options.value[i].label === Y.Lang.trim(value)) {
                                 notAdd = false;
                                 break;
                             }
                         }
                     }
                     if (notAdd && value.indexOf("@") !== -1) {
-                        emailList.push(value.trim());
+                        emailList.push(Y.Lang.trim(value));
                     } else if (notAdd) {
-                        otherValueList.push(value.trim());
+                        otherValueList.push(Y.Lang.trim(value));
                     }
                 }, this);
 
@@ -227,6 +229,13 @@ YUI.add('wegas-shareuser', function(Y) {
                     userId: id
                 });
             }
+        },
+        checkFieldValue: function(usernameList, account) {
+            return Y.Array.some(usernameList, function(value) {
+                if (account.label === Y.Lang.trim(value)) {
+                    return true;
+                }
+            });
         },
         destructor: function() {
             this.field.destroy();
