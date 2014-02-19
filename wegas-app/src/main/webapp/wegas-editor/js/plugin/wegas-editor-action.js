@@ -12,8 +12,7 @@
 YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
-    var Linkwidget,
-            Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
+    var Linkwidget, Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
             CONTENTBOX = 'contentBox';
 
     /**
@@ -230,68 +229,6 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     });
     Plugin.OpenGameAction = OpenGameAction;
-
-    /**
-     *  @name Y.Plugin.LoadTreeviewNodeAction
-     *  @extends Y.Plugin.Action
-     *  @class Open a game in the editor
-     *  @constructor
-     */
-    var LoadTreeviewNodeAction = function() {
-        LoadTreeviewNodeAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(LoadTreeviewNodeAction, Action, {
-        /** @lends Y.Plugin.LoadTreeviewNodeAction# */
-
-        /**
-         * @function
-         * @private
-         */
-        execute: function() {
-            var entity = this.get("entity"),
-                    tabId = this.get("tabId") || this.get("host").get("label"),
-                    tabCfg = {
-                label: entity.get("name") || "Unnamed"
-            },
-            tab = Wegas.TabView.createTab(tabId, this.get("tabSelector"), tabCfg);
-            tab.set("visible", true);
-            tab.set("selected", 2);
-            tab.witem(0).set("emptyMessage", "This model has no games.");
-            tab.witem(0).toolbar.item(0).set("disabled", false);  // Allow game creation
-
-            Wegas.Facade.Game.set("source", // Change the source attribute on the datasource
-                    Wegas.app.get("base") + "rest/GameModel/" + entity.get("id") + "/Game");
-
-            Wegas.Facade.Game.sendRequest({
-                request: "/"
-            });
-        }
-    }, {
-        /** @lends Y.Plugin.LoadTreeviewNodeAction */
-
-        NS: "LoadTreeviewNodeAction",
-        NAME: "LoadTreeviewNodeAction",
-        /**
-         * <p><strong>Attributes</strong></p>
-         * <ul>
-         *    <li>tabId: the id of the Y.Wegas.Tab widget that will bo opened.</li>
-         *    <li>tabSelector: the id of a Y.Wegas.TabView where a new tab will be created if none
-         *    was found <i>default: #centerTabView</i></li>
-         *    <li>entity: the entity, which the link will point to.</li>
-         * </ul>
-         *
-         * @field
-         * @static
-         */
-        ATTRS: {
-            tabId: {},
-            tabSelector: {
-                value: '#centerTabView'
-            },
-            entity: {}
-        }
-    });
-    Plugin.LoadTreeviewNodeAction = LoadTreeviewNodeAction;
 
     // *** Buttons *** //
     /**
