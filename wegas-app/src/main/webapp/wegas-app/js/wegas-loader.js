@@ -128,8 +128,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-layout-resizable': {
                     path: 'js/widget/wegas-layout-resizable-min.js',
-                    requires: ['wegas-widget', 'widget-stdmod', 'event-resize',
-                        'anim-easing', 'resize', 'wegas-layout-resizablecss'],
+                    requires: ['wegas-widget', 'widget-stdmod', 'event-resize', 'resize', 'wegas-layout-resizablecss'],
                     ws_provides: 'ResizableLayout'
                 },
                 'wegas-layout-resizablecss': {
@@ -513,7 +512,6 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-form': {
                     path: 'js/widget/wegas-editor-form-min.js',
-                    //requires: 'wegas-form',
                     ws_provides: 'EditEntityForm'
                 },
                 'wegas-editor-widgetaction': {
