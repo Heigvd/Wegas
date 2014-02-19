@@ -34,6 +34,79 @@
                     width: 24px;
                     height: 27px;
                 }
+                /** Edit game form */
+                .wegas-lobby-editgame  .wegas-form-content{
+                    padding-bottom: 0px !important;
+                }
+                .wegas-game-subtitle {
+                    margin: 30px 0 0 !important;
+                    background: #f6f6f6;
+                }
+                .wegas-game-subtitle .inputEx-label {
+                    padding: 10px 0 10px 5px !important;
+                    text-align: left;
+                    width: 300px;
+                }
+                .yui3-skin-sam .wegas-game-subtitle label {
+                    font-weight: bolder !important;
+                }
+                .wegas-game-access, 
+                .wegas-game-token,
+                .wegas-game-keys,
+                .wegas-game-users {
+                    background: #f6f6f6;           
+                    margin: 0 !important;
+                }
+                .wegas-game-name .inputEx-label,
+                .wegas-game-access .inputEx-label {
+                    width: 58px !important;
+                }
+                .wegas-game-name .inputEx-Field,
+                .wegas-game-access .inputEx-Field {
+                    margin-left: -68px;
+                    margin-right: 1px;
+                }
+                .wegas-game-access  {
+                    padding-bottom: 15px;
+                }
+                .wegas-game-access .inputEx-Field {
+                    margin-right: 10px;
+                }
+                .wegas-game-keys,
+                .wegas-game-users {
+                    padding-bottom: 15px;
+                }
+                .wegas-game-token .inputEx-label,
+                .wegas-game-users > .inputEx-label ,
+                .wegas-game-keys > .inputEx-label {
+                    text-align: left;
+                    font-style: italic;
+                    padding: 0 0px 3px 5px;
+                    width: 300px !important;
+                }
+                .wegas-game-token .inputEx-Field,
+                .wegas-game-users > .inputEx-Field,
+                .wegas-game-keys > .inputEx-Field {                
+                    margin-left: -125px;
+                    margin-right: 10px;
+                    display: block;
+                    clear: both;
+                }
+                .wegas-game-keys img.inputEx-ListField-addButton,
+                .wegas-game-users img.inputEx-ListField-addButton {
+                    position: absolute;
+                    top: -19px;
+                    left: 175px;
+                }
+                .wegas-sharerole-content {
+                    margin-top: 0px;
+                }
+                .wegas-sharerole .title {
+                    font-weight: normal;
+                    font-style: italic;
+                    margin-bottom: 3px;
+                    color: #505050;
+                }
             </style>
         </ui:define>
 
@@ -126,32 +199,27 @@
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
                         window.open(app.get("base") + "play.html?gameId=" + e.gameId);// open the game in a new tab
 
-                        Y.Wegas.Facade.GameModel.sendInitialRequest({//         // Refresh game model list
+                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest();// reload datasource
+                        //Y.Wegas.Facade.PublicGames.sendInitialRequest();
+                        Y.Wegas.Facade.Game.sendInitialRequest({
                             on: {
                                 success: function() {
-                                    Y.Wegas.Facade.RegisteredGames.sendInitialRequest();// reload datasource
-                                    Y.Wegas.Facade.PublicGames.sendInitialRequest();
-
-                                    Y.Wegas.Facade.Game.sendInitialRequest({
-                                        on: {
-                                            success: function() {
-                                                Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
-                                            }
-                                        }
-                                    });
+                                    Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
                                 }
                             }
                         });
+                        
+                        //Y.Wegas.Facade.GameModel.sendInitialRequest();          // Refresh game model list
                     });
 
                     app.render();                                               // Launch the editor
                 });
             </script>
         </ui:define>
-        
+
         <ui:define name="uservoice_trigger_position">top-right</ui:define>
         <ui:define name="uservoice_trigger_background_color">white</ui:define>
         <ui:define name="uservoice_trigger_color">#072644</ui:define>
-        
+
     </ui:composition>
 </html>

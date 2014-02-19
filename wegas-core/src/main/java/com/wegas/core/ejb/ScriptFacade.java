@@ -146,7 +146,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException, WegasException {
+    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException {
         evt.getEngine().put("self", evt.getPlayer());                           // Inject current player
         evt.getEngine().put("gameModel", evt.getPlayer().getGameModel());       // Inject current gameModel
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
@@ -262,8 +262,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public Object eval(Long playerId, Script s)
-            throws ScriptException, WegasException {
+    public Object eval(Long playerId, Script s) throws ScriptException, WegasException {
         requestManager.setPlayer(playerEntityFacade.find(playerId));
         return this.eval(s);
     }

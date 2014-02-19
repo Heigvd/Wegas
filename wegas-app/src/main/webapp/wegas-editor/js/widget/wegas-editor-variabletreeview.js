@@ -54,10 +54,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 Wegas.Facade.VariableDescriptor.cache.move(entity, dropEntity, e.index);// call facade method
             });
         },
-        syncUI: function() {
-            VariableTreeView.superclass.syncUI.call(this);
-            this.treeView.syncUI();                                             // Needed by treeview sort plugin
-        },
         //
         // *** Private Methods *** //
         /**

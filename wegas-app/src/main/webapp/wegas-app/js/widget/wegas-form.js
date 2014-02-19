@@ -106,8 +106,24 @@ YUI.add('wegas-form', function(Y) {
         destroyForm: function() {
             this.get("form").destroy();
             this.set("form", null);
-        }
+        },
+        setCfg: function(val) {
+            var cfg = Y.clone(val);                                             // Duplicate so val will be untouched while serializing
+            Y.mix(cfg, {
+                parentEl: this.get("contentBox"),
+                className: "wegas-form-ix",
+                type: "group"
+            })                                                                  // Set up the form parentEl attribute, so it knows where to render
 
+            Y.inputEx.use(val, Y.bind(function(cfg) {                           // Load form dependencies
+                var form = Y.inputEx(cfg);                                      // Initialize and render form
+                form.setValue(this.get("values"), false);                       // Sync form with "values" ATTR
+                this.set("form", form);
+                form.on("updated", function(e) {
+                    this.fire("updated", e);
+                }, this);
+            }, this, cfg));
+        }
     }, {
         /** @lends Y.Wegas.Form */
         EDITORNAME: "Form",
@@ -152,21 +168,9 @@ YUI.add('wegas-form', function(Y) {
              * Configuation of the form
              */
             cfg: {
+                validator: Y.Lang.isObject,
                 setter: function(val) {
-                    if (val) {
-                        var cfg = Y.clone(val);                                 // Duplicate so val will be untouched while serializing
-                        cfg.parentEl = this.get("contentBox");                  // Set up the form parentEl attribute, so it knows where to render
-                        cfg.className = "wegas-form-ix";
-                        cfg.type = cfg.type || "group";
-                        Y.inputEx.use(val, Y.bind(function(cfg) {               // Load form dependencies
-                            var form = Y.inputEx(cfg);                          // Initialize and render form
-                            form.setValue(this.get("values"), false);           // Sync form with "values" ATTR
-                            this.set("form", form);
-                            form.on("updated", function(e) {
-                                this.fire("updated", e);
-                            }, this);
-                        }, this, cfg));
-                    }
+                    this.setCfg(val);
                     return val;
                 },
                 items: {
@@ -226,7 +230,7 @@ YUI.add('wegas-form', function(Y) {
         this.options.maxLength = options.maxLength;
         this.options.minLength = options.minLength;
         this.options.typeInvite = options.typeInvite;
-        if (!this.options.required && this.options.typeInvite === undefined) {  // !!!MODIFIED!!!
+        if (!this.options.required && this.options.typeInvite === undefined) {  // @MODIFIED
             this.options.typeInvite = "optional";
         }
         this.options.readonly = options.readonly;
@@ -240,8 +244,8 @@ YUI.add('wegas-form', function(Y) {
      */
     inputEx.StringField.prototype.initEvents = function() {
         //Y.on("change", this.onChange, this.el, this);
-        Y.on("valueChange", this.onChange, this.el, this);                      // Modified
-        
+        Y.on("valueChange", this.onChange, this.el, this);                      // @Modified
+
         if (Y.UA.ie > 0) { // refer to inputEx-95
             var field = this.el;
             Y.on("key", function(e) {
@@ -259,7 +263,6 @@ YUI.add('wegas-form', function(Y) {
      * @hack Let inputex also get requirement from selectfields, lists
      */
     inputEx.getRawModulesFromDefinition = function(inputexDef) {
-
         var type = inputexDef.type || 'string',
                 module = YUI_config.groups.inputex.modulesByType[type],
                 modules = [module || type],
@@ -278,7 +281,6 @@ YUI.add('wegas-form', function(Y) {
         }, this);
 
         // TODO: inplaceedit  editorField
-
         return modules;
     };
 
