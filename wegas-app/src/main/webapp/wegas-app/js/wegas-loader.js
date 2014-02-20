@@ -866,7 +866,7 @@ YUI().use(function(Y) {
                         "autocomplete", "autocomplete-highlighters", "autocomplete-filters",
                         "dd-plugin", 'dd-drop', 'dd-proxy', 'dd-constrain', "button-group",
                         "wegas-teaching-arrow", "wegas-teaching-rectangle"]
-                },
+                }
             }
         },
         /* Lobby */
