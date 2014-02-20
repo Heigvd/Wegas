@@ -12,8 +12,7 @@ YUI.add('wegas-editor-form', function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", inputEx = Y.inputEx, Lang = Y.Lang,
-            Wegas = Y.Wegas,
-            Form, EditEntityForm;
+            Wegas = Y.Wegas, Form, EditEntityForm;
 
     /**
      * @name Y.Wegas.Form
@@ -55,13 +54,7 @@ YUI.add('wegas-editor-form', function(Y) {
             Y.Array.each(this.get("buttons"), this.addButton, this);
         },
         bindUI: function() {
-            this.on("update", function() {
-                if (!this.form.validate()) {
-                    this.showMessageBis("success", "Could not save changes");
-                    return;
-                }
-                this.updateTimer.reset();
-            });
+            this.on("update", this.updateTimer.reset, this.updateTimer);
             this.updateTimer.on("timeOut", function() {
                 this.fire("updateTimeOut", {});
             }, this);
@@ -90,14 +83,15 @@ YUI.add('wegas-editor-form', function(Y) {
             Y.mix(cfg, {
                 parentEl: this.get(CONTENTBOX),
                 className: "wegas-form-ix",
-                type: "group"
+                type: "group",
+                value: this.get("value")
             });
             inputEx.use(val, Y.bind(function(cfg) {                             // Load form dependencies
                 if (this.form) {
                     this.form.destroy();
                 }
                 this.form = inputEx(cfg);                                       // Initialize and render form
-                this.form.setValue(this.get("value"), false);                   // Sync form with "value" ATTR
+                //this.form.setValue(this.get("value"), false);                 // Sync form with "value" ATTR
                 this.form.on("updated", function() {
                     this.fire("update");
                 }, this);
@@ -195,7 +189,11 @@ YUI.add('wegas-editor-form', function(Y) {
             EditEntityForm.superclass.bindUI.call(this);
 
             this.on("update", function() {
-                this.showMessageBis("success", "Saving...");
+                if (this.form.validate()) {
+                    this.showMessageBis("success", "Saving...");
+                } else {
+                    this.showMessageBis("success", "Unable to save");
+                }
             });
             this.on("updateTimeOut", this.save);
             this.on("submit", this.save);
@@ -250,21 +248,16 @@ YUI.add('wegas-editor-form', function(Y) {
                 }
             });
             this.toolbar.add(menuItems);                                        // Add menu items to the form
-            //this.toolbar.item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
         },
         save: function() {
             if (!this.form.validate()) {
                 return;
             }
 
-            //this.showOverlay();
-            //this.showMessageBis("success", "Saving...");
-
             this.get("dataSource").cache.put(this.form.getValue(), {
                 on: {
                     success: Y.bind(function() {
                         this.showMessageBis("success", "All changes saved");
-                        //this.hideOverlay();
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }
@@ -287,5 +280,4 @@ YUI.add('wegas-editor-form', function(Y) {
         }
     });
     Y.namespace('Wegas').EditEntityForm = EditEntityForm;
-
 });
