@@ -73,7 +73,7 @@ YUI.add("wegas-inputex-hashlist", function (Y) {
          * @function
          * @private
          */
-        setValue: function (v) {
+        setValue: function (v, sendUpdatedEvent) {
             var key, val = [];
 
             if (this.options.elementType.type == "combine") {
@@ -90,7 +90,7 @@ YUI.add("wegas-inputex-hashlist", function (Y) {
                 }
             }
 
-            HashList.superclass.setValue.call(this, val);
+            HashList.superclass.setValue.call(this, val, sendUpdatedEvent);
         }
     });
 

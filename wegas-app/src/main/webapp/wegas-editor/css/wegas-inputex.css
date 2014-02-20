@@ -59,10 +59,11 @@ div.inputEx-fieldWrapper {
     float:none;
 }
 /*.wegas-form-centent .inputEx-Group,*/
-.wegas-form-content select,
-.wegas-form-content textarea {
+.wegas-form-content select {
     width: 100%;
+    padding: 1px 0;
 }
+.wegas-form-content textarea,
 .wegas-form-content input[type=text],
 .wegas-form-content input[type=password] {
     width: 99%;
@@ -70,10 +71,6 @@ div.inputEx-fieldWrapper {
 }
 .wegas-form input[type=checkbox] {
     margin-top: .2em;
-}
-.wegas-form-content select{
-    width: 100%;
-    padding: 2px 0;
 }
 .wegas-form div.inputEx-label {
     padding-top: 0.3em;
@@ -178,7 +175,7 @@ div.inputEx-description {
 
 .yui3-skin-sam .inputEx-WysiwigScript .inputEx-ListField .wegas-addbutton {
     /*left: -50px;*/
-    top: -25px;
+    top: -29px;
 }
 .inputEx-WysiwigScript .inputEx-ListField .wegas-removebutton {
     left: -32px;
