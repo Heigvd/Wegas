@@ -258,11 +258,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 
     var PageTreeviewToolbarMenu = Y.Base.create("wegas-editor-page", Plugin.VariableTVToolbarMenu, [], {
         onTreeViewSelection: function(e) {
-            if (!e.target.getSelection()) {
-                //deselect
-                return;
-            }
-            var selection = e.target.getSelection().item(0), data = selection.get("data"),
+            var selection = e.target, data = selection.get("data"),
                     page = data.page,
                     widget = data.widget;
 

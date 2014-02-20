@@ -12,19 +12,10 @@
 /* Editor treeview styles */
 .wegas-editor-treeview .yui3-treenode-content-header,
 .wegas-editor-treeview .yui3-treeleaf-content-header {
-    cursor:pointer;
-}
-.wegas-editor-treeview .wegas-treeview-editmenubutton,
-.wegas-page-editor .wegas-treeview-editmenubutton{
-    width: 20px;
-    height: 20px;
     cursor: pointer;
-    background: transparent url("../../wegas-app/images/wegas-app-sprite.png") 2px -334px no-repeat;
-    margin: 2px 5px;
-    display: inline-block;
 }
 
-/** Styles for table trees (Games) */
+/** Styles for table treeviews (Games) */
 .wegas-editor-treeview-content .yui3-treeview > ul > li,
 .wegas-page-editor .yui3-treeview > ul > li {
     box-shadow: 0px -1px 0px #f1f1f1;
@@ -48,7 +39,7 @@
 .wegas-editor-treeview-table .yui3-u-col2 > div {
     overflow: hidden;
     text-overflow: ellipsis;
-    /*    text-align: center;*/
+    /*text-align: center;*/
 }
 .wegas-editor-treeview-tablehd {
     font-weight: bold;
@@ -81,4 +72,39 @@
     /*height: 10px;*/
     /*font-style: italic;*/
     /*min-height:5px;*/
+}
+
+.yui3-skin-sam .wegas-icon-variabledescriptor,
+.yui3-skin-sam .wegas-icon-questiondescriptor,
+.yui3-skin-sam .wegas-icon-triggerdescriptor {
+    margin: -6px 0 -8px;
+    height: 24px;
+    background-repeat: no-repeat;
+    background-image: url(../../wegas-app/images/wegas-app-sprite.png);
+}
+.wegas-icon-variabledescriptor {
+    background-position: 0 -976px;
+}
+.yui3-skin-sam .wegas-icon-questiondescriptor {
+    background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -756px no-repeat;
+}
+.yui3-skin-sam .wegas-icon-choicedescriptor {
+    background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -850px no-repeat;
+}
+.yui3-skin-sam .wegas-icon-triggerdescriptor {
+    background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -940px no-repeat;
+}
+.yui3-skin-sam .wegas-icon-inboxdescriptor {
+    background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -426px no-repeat;
+}
+.wegas-icon-resourcedescriptor {
+    background-position: 0 -590px;
+}
+
+/* Team treeview */
+.wegas-editor-treeview-team .description {
+    font-style: italic;
+    margin:20px 10px 10px;
+    padding: 10px;
+    background: #f6f6f6;
 }

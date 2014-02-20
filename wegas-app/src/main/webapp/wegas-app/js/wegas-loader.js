@@ -34,8 +34,8 @@ YUI().use(function(Y) {
                  */
                 'wegas-app': {
                     requires: [
-                        'base', 'plugin', "event-key", "array-extras", 'timers',
-                        'wegas-helper', 'wegas-entity', 'wegas-datasource',
+                        'base', 'plugin', "array-extras", 'timers',
+                        'wegas-helper', 'wegas-entity', 'wegas-datasource'
                                 // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
                 },
@@ -128,8 +128,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-layout-resizable': {
                     path: 'js/widget/wegas-layout-resizable-min.js',
-                    requires: ['wegas-widget', 'widget-stdmod', 'event-resize',
-                        'anim-easing', 'resize', 'wegas-layout-resizablecss'],
+                    requires: ['wegas-widget', 'widget-stdmod', 'event-resize', 'resize', 'wegas-layout-resizablecss'],
                     ws_provides: 'ResizableLayout'
                 },
                 'wegas-layout-resizablecss': {
@@ -503,7 +502,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-action': {
                     path: 'js/plugin/wegas-editor-action-min.js',
-                    requires: ["wegas-button", 'wegas-plugin'],
+                    requires: ["wegas-button", 'wegas-plugin', "event-key"],
                     ws_provides: ["OpenTabAction", "Linkwidget"]
                 },
                 'wegas-editor-entityaction': {
@@ -513,7 +512,6 @@ YUI().use(function(Y) {
                 },
                 'wegas-editor-form': {
                     path: 'js/widget/wegas-editor-form-min.js',
-                    //requires: 'wegas-form',
                     ws_provides: 'EditEntityForm'
                 },
                 'wegas-editor-widgetaction': {
@@ -802,7 +800,7 @@ YUI().use(function(Y) {
                 'wegas-proggame-level': {
                     requires: ['tabview', "treeview",
                         'wegas-tabview', 'wegas-widget', 'wegas-inputex-ace',
-                        'wegas-proggame-display', 'wegas-proggame-jsinstrument'],
+                        'wegas-proggame-display', 'wegas-proggame-jsinstrument', 'event-key'],
                     ws_provides: 'ProgGameLevel'
                 },
                 'wegas-proggame-display': {
@@ -868,7 +866,7 @@ YUI().use(function(Y) {
                         "autocomplete", "autocomplete-highlighters", "autocomplete-filters",
                         "dd-plugin", 'dd-drop', 'dd-proxy', 'dd-constrain', "button-group",
                         "wegas-teaching-arrow", "wegas-teaching-rectangle"]
-                },
+                }
             }
         },
         /* Lobby */
@@ -902,7 +900,7 @@ YUI().use(function(Y) {
                 'wegas-loginwidget': {
                     requires: ['inputex-group', 'inputex-password', 'inputex-string',
                         "inputex-hidden", "inputex-email", "inputex-checkbox", 'button',
-                        'wegas-widget', 'wegas-button', 'wegas-logincss'],
+                        'wegas-widget', 'wegas-button', 'wegas-logincss', "event-key"],
                     ws_provides: "LoginWidget"
                 },
                 'wegas-logincss': {

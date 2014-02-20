@@ -346,7 +346,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         EDITMENU: [{
                 type: "EditEntityButton"
-
             }, {
                 type: BUTTON,
                 label: "Copy",

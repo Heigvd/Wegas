@@ -631,4 +631,54 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     });
     Plugin.EditFSMAction = EditFSMAction;
 
+
+    /**
+     * @name Y.Plugin.EditEntityAction
+     * @extends Y.Plugin.EntityAction
+     * @constructor
+     */
+//    var EditEntityAction = Y.Base.create("wegas-actionplugin", Y.Plugin.Base, [], {
+//        /** @lends Y.Plugin.EditEntityAction */
+//
+//        /**
+//         * @function
+//         * @private
+//         */
+//        initializer: function(cfg) {
+//            this.get("host").plug(Y.Plugin.OpenTabAction, {
+//                label: "Game",
+//                emptyTab: true,
+//                tabSelector: '#rightTabView',
+//                wchildren: [{
+//                        type: "EditEntityForm",
+//                        entity: cfg.entity,
+//                        dataSource: cfg.dataSource
+//                    }]
+//            });
+//        }
+//    }, {
+//        NS: "editentity",
+//        NAME: "EditEntityAction"
+//    });
+//    Y.Plugin.EditEntityAction = EditEntityAction;
+//
+//    /**
+//     * Shortcut to create a Button with an EditEntityAction plugin
+//     */
+//    Wegas.EditEntityButton = Y.Base.create("button", Wegas.Button, [], {
+//        initializer: function(cfg) {
+//            this.plug(EditEntityAction, cfg);
+//        },
+////        bindUI: function() {
+////            if (!this.get(LABEL)) {
+////                this.set(LABEL, "Edit");                                        // @FIXME hack because the ATTR's value is not taken into account
+////            }
+////        }
+//    }, {
+//        ATTRS: {
+//            label: {
+//                value: "Edit"
+//            }
+//        }
+//    });
 });
