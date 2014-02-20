@@ -10,7 +10,6 @@ package com.wegas.core.ejb;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.*;
-import static com.wegas.core.persistence.game.Game.GameAccess.OPEN;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -28,7 +27,6 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.swing.text.StyledEditorKit;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -116,30 +114,57 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     public String createUniqueEnrolmentkey(Game game) {
         String prefixKey = game.getName();
         boolean foundUniqueKey = false;
+        String search = prefixKey;
+        int counter = 0;
+        String key = null;
+
         if (prefixKey.length() > 11) {
             prefixKey = prefixKey.substring(0, 11);
+            search = prefixKey + "%";
         }
         prefixKey = prefixKey.toLowerCase().replace(" ", "-");
 
+        int nbGame = this.findGameByName(search).size();
+
         while (!foundUniqueKey) {
+            if (counter > 0) {
+                nbGame = nbGame + 2000;
+            }
+            String genkey = this.keyGen(nbGame);
+            key = prefixKey + "-" + genkey;
             boolean foundedGameAccountKey = true;
             boolean foundedGameEnrolentKey = true;
             try {
-                this.findGameAccountKey(prefixKey);
+                this.findGameAccountKey(key);
             } catch (Exception e) {
                 foundedGameAccountKey = false;
             }
             try {
-                this.findGameEnrolmentKey(prefixKey);
+                this.findGameEnrolmentKey(key);
             } catch (Exception e) {
                 foundedGameEnrolentKey = false;
             }
-            Game foundGameByToken = this.findByToken(prefixKey);
+            Game foundGameByToken = this.findByToken(key);
             if (!foundedGameEnrolentKey && !foundedGameAccountKey && foundGameByToken == null) {
-                return prefixKey;
+                foundUniqueKey = true;
             }
+            counter += 1;
         }
-        return null;
+        return key;
+    }
+
+    private String keyGen(long gameNumber) {
+        final String digits = "etx8hgkunjf79ca0pm3yzw1sovi5dbr624ql";
+        final int digitSize = digits.length();
+        StringBuilder sb = new StringBuilder();
+        int modulo;
+        gameNumber += 36;
+        while (gameNumber > 0) {
+            modulo = (int) (gameNumber % digitSize);
+            sb.append(digits.substring(modulo, modulo + 1));
+            gameNumber = gameNumber / digitSize;
+        }
+        return sb.toString();
     }
 
     @Override
@@ -195,13 +220,22 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return (GameEnrolmentKey) q.getSingleResult();
     }
 
-    private GameAccountKey findGameAccountKey(String key) {
+    public GameAccountKey findGameAccountKey(String key) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameAccountKey> gameAccount = cq.from(GameAccountKey.class);
         cq.where(cb.equal(gameAccount.get(GameAccountKey_.key), key));
         Query q = em.createQuery(cq);
         return (GameAccountKey) q.getSingleResult();
+    }
+
+    public List<Game> findGameByName(String search) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<Game> game = cq.from(Game.class);
+        cq.where(cb.like(game.get(Game_.name), search));
+        Query q = em.createQuery(cq);
+        return (List<Game>) q.getResultList();
     }
 
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
@@ -260,6 +294,17 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             games.add(game);
         }
         return games;
+    }
+
+    public Game createGameAccount(Game g, Long accountNumber) {
+        for (int i = 0; i < accountNumber; i++) {
+            int newNumber = g.getAccountkeys().size() + 1;
+            GameAccountKey gameAccountKey = new GameAccountKey();
+            gameAccountKey.setKey(g.getToken() + "-" + newNumber);
+            gameAccountKey.setGame(g);
+            g.getAccountkeys().add(gameAccountKey);
+        }
+        return g;
     }
 
     /**
