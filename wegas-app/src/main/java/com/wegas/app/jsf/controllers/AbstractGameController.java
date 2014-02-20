@@ -8,12 +8,15 @@
 package com.wegas.app.jsf.controllers;
 
 import com.sun.faces.util.Util;
+import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import java.io.Serializable;
 import java.util.Locale;
+import javax.ejb.EJB;
+import javax.ejb.EJBs;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 
@@ -28,6 +31,11 @@ public class AbstractGameController implements Serializable {
      */
     @ManagedProperty("#{param.id}")
     protected Long playerId;
+    /**
+     *
+     */
+    @EJB
+    private LibraryFacade libraryFacade;
     /**
      *
      */
@@ -70,20 +78,11 @@ public class AbstractGameController implements Serializable {
     }
 
     public String getClientScripts() {
-        StringBuilder ret = new StringBuilder();
-        for (GameModelContent c : this.getCurrentGameModel().getClientScriptLibrary().values()) {
-            ret.append(c.getContent());
-        }
-        return ret.toString();
+        return libraryFacade.getLibraryContent(this.getCurrentGameModel().getId(), "ClientScript");
     }
 
     public String getStyleSheets() {
-        StringBuilder ret = new StringBuilder();
-        for (GameModelContent c : this.getCurrentGameModel().getCssLibrary().values()) {
-            ret.append(c.getContent().replaceAll("\\.\\./", null));
-            //ret.append(c.getContent());
-        }
-        return ret.toString();
+        return libraryFacade.getLibraryContent(this.getCurrentGameModel().getId(), "CSS");
     }
 
     /**

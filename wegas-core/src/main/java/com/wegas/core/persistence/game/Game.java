@@ -31,7 +31,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @Table(uniqueConstraints = {
-//    @UniqueConstraint(columnNames = {"name"}), //@UniqueConstraint(columnNames = {"token"}),
+    //    @UniqueConstraint(columnNames = {"name"}), //@UniqueConstraint(columnNames = {"token"}),
     @UniqueConstraint(columnNames = {"wkey"})
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -48,7 +48,7 @@ public class Game extends NamedEntity {
     /**
      *
      */
-    @NotNull
+    @Basic(optional = false)
     //@Pattern(regexp = "^\\w+$")
     private String name;
     /**
