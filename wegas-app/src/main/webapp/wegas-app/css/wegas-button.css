@@ -30,7 +30,7 @@
 .yui3-skin-sam .yui3-button-hidden, .yui3-skin-sam .yui3-togglebutton-hidden {
     display:none !important;
 }
-/* Wegas small icons */
+/* Wegas icons */
 .yui3-skin-sam .wegas-icon-reset,
 .yui3-skin-sam .wegas-icon-refresh {
     background-position: 0px -300px;
@@ -112,3 +112,22 @@
 .yui3-skin-sam .wegas-icon-showregions {
     background-position: 0px -1360px;
 }
+.yui3-skin-sam .wegas-icon-duplicate {
+    background: url(../../wegas-app/images/wegas-app-sprite.png) no-repeat 1px -1287px,
+        url(../../wegas-app/images/wegas-app-sprite.png) no-repeat -3px -1289px;
+    height: 19px;
+}
+.wegas-icon-edit {
+    background-position: 1px -1110px;
+}
+.wegas-icon-delete {
+    background-position: 1px -944px;
+}
+.wegas-icon-open-in-editor {
+    background-position: 0 -943px;
+}
+.wegas-icon-view,.wegas-icon-open {
+    /*background-position: 1px -709px;     Goggles */
+    background-position: 0 -1432px;
+}
+
