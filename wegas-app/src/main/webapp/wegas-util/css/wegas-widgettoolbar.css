@@ -92,3 +92,12 @@
 .yui3-skin-sam .wegas-userpreferences .wegas-toolbar{
     background-color:rgba(255, 255, 255, 0.4);
 }
+
+/** Status message */
+.wegas-status-message{
+    color: gray;
+    float: right;
+    margin-top: 6px;
+    text-shadow: 1px 1px 0px #DDD;
+    font-size: 11px;
+}

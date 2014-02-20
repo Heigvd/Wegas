@@ -79,19 +79,18 @@ YUI.add('wegas-app', function(Y) {
 
             this.on("render", function() {                                      // Remove loading overlay on render
                 Y.one("body").removeClass("wegas-loading-overlay");
+                /**
+                 * Shortcut to activate developper mode. Allow access to Y instance. Toggle.
+                 * Event keypress '°'
+                 */
+                Y.one("body").on("key", function() {
+                    Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
+                }, "167");
             });
 
             Y.on("io:failure", this.globalFailureHandler, this);
 
             this.initDataSources();
-
-            /**
-             * Shortcut to activate developper mode. Allow access to Y instance. Toggle.
-             * Event keypress '°'
-             */
-            Y.one("body").on("key", function() {
-                Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
-            }, "167");
         },
         // *** Private methods ** //
         /**

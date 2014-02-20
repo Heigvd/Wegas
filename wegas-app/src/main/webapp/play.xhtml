@@ -18,8 +18,137 @@
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
             </ui:repeat>
 
-            <meta name="google-translate-customization" content="#gameController.currentGameModel.getProperty('googleTranslateId')" />
+            <!--<meta name="google-translate-customization" content="#gameController.currentGameModel.getProperty('googleTranslateId')" />-->
 
+        </ui:define>
+
+        <ui:define name="body">
+            <script type="text/javascript">
+                YUI().use('wegas-app', 'wegas-scripteval', function(Y) {
+                    var app = new Y.Wegas.App({
+                        layoutSrc: 'wegas-app/db/wegas-app-layout.json',
+                        debug: #{requestController.debugMode()},
+                        currentGameModel: #{gameController.currentGameModel.id},
+                        currentGame: #{gameController.currentGame.id},
+                        currentTeam: #{gameController.currentPlayer.team.id},
+                        currentPlayer: #{gameController.currentPlayer.id},
+                        currentUser: #{requestController.currentUser.id},
+                        /**
+                         * This field is used to override Entities edition menus.
+                         * Use the target class name as the key.
+                         */
+                        dataSources: {
+                            GameModel: {
+                                source: "rest/GameModel",
+                                initialRequest: "/#{gameController.currentGameModel.id}",
+                                plugins: [{
+                                        fn: "GameModelCache"
+                                    }]
+                            },
+                            Game: {
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
+                                initialRequest: "/#{gameController.currentGame.id}",
+                                plugins: [{
+                                        fn: "GameCache"
+                                    }
+                                ]
+                            },
+                            Page: {
+                                /*
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!gameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                 */
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Page/",
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                /*
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                 */
+                                source: "#{gameController.currentGameModel.properties.get('pagesUri')}",
+                                        /* THIS IS NOT A COMMENT
+                                         * </ui:fragment>
+                                         */
+                                        plugins: [{
+                                        fn: "JSONSchema"
+                                    }, {
+                                        fn: "PageCache"
+                                    }
+                                ]
+                            },
+                            /* THIS IS NOT A COMMENT
+                             * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
+                             */
+                            Pusher: {
+                                type: "PusherDataSource",
+                                source: "rest/Pusher/",
+                                applicationKey: "#{gameController.currentGameModel.getProperty('websocket')}"
+                            },
+                            /* THIS IS NOT A COMMENT
+                             * </ui:fragment>
+                             */
+                            VariableDescriptor: {
+                                //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                /* THIS IS NOT A COMMENT
+                                 * <ui:fragment rendered="#{!gameController.currentGameModel.getProperty('allGameVariables')}">
+                                 */
+                                source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                /* THIS IS NOT A COMMENT
+                                 * <ui:fragment rendered="#{gameController.currentGameModel.getProperty('allGameVariables')}">
+                                 */
+                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                        /* THIS IS NOT A COMMENT
+                                         * </ui:fragment>
+                                         */
+                                        initialRequest: "",
+                                plugins: [{
+                                        fn: "VariableDescriptorCache"
+                                    }, {
+                                        fn: "ScriptEval"
+                                    }
+                                    /* THIS IS NOT A COMMENT
+                                     * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
+                                     */
+                                    , {
+                                        fn: "WebSocketListener",
+                                        cfg: {
+                                            dataSource: "Pusher"
+                                        }
+                                    }
+                                    /* THIS IS NOT A COMMENT
+                                     * </ui:fragment>
+                                     */
+                                ]
+                            },
+                            User: {
+                                source: "rest/Extended/User",
+                                initialRequest: "/" + #{requestController.currentUser.id},
+                                plugins: [{
+                                        fn: "UserCache"
+                                    }]
+                            },
+                            File: {
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/File/",
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                    }]
+                            }
+                        }
+                    });
+
+                    app.after("render", function() {
+                        try {
+                            #{gameController.clientScripts}                     // Add game model specific js footer
+                        } catch (e) {
+                            Y.log("Error running client scripts.", "error");
+                        }
+                    });
+
+                    app.render();                                               // Render app
+                });
+            </script>
         </ui:define>
 
     </ui:composition>
