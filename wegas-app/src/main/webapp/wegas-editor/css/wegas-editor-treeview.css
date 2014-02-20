@@ -82,3 +82,11 @@
     /*font-style: italic;*/
     /*min-height:5px;*/
 }
+
+/* Team treeview */
+.wegas-editor-treeview-team .description {
+    font-style: italic;
+    margin:20px 10px 10px;
+    padding: 10px;
+    background: #f6f6f6;
+}

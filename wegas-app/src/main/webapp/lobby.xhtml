@@ -6,108 +6,10 @@
     <ui:composition template="/wegas-app/view/template/app-default.xhtml">
 
         <ui:define name="head">
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
-            <style type="text/css">
-                .yui3-skin-sam #centerTabView .yui3-tab-label {
-                    min-width: 90px;
-                }
-                .yui3-skin-sam #gameModelsTab {
-                    padding-left: 15px;
-                }
-                #rightTabView .yui3-tab-remove {
-                    display: none;
-                }
-                #rightTabView .yui3-tabview-removeable .yui3-tab-label,
-                #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label:focus,
-                #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label:hover,
-                #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label {
-                    padding-right: 1.4em;
-                }
-                /** Uservoice widget */
-                .yui3-skin-sam .uv-icon {
-                    right: 0;
-                    top: 11px !important;
-                    width: 23px;
-                    opacity: 1;
-                }
-                .yui3-skin-sam .uv-icon svg {
-                    width: 24px;
-                    height: 27px;
-                }
-                /** Edit game form */
-                .wegas-lobby-editgame  .wegas-form-content{
-                    padding-bottom: 0px !important;
-                }
-                .wegas-game-subtitle {
-                    margin: 30px 0 0 !important;
-                    background: #f6f6f6;
-                }
-                .wegas-game-subtitle .inputEx-label {
-                    padding: 10px 0 10px 5px !important;
-                    text-align: left;
-                    width: 300px;
-                }
-                .yui3-skin-sam .wegas-game-subtitle label {
-                    font-weight: bolder !important;
-                }
-                .wegas-game-access, 
-                .wegas-game-token,
-                .wegas-game-keys,
-                .wegas-game-users {
-                    background: #f6f6f6;           
-                    margin: 0 !important;
-                }
-                .wegas-game-name .inputEx-label,
-                .wegas-game-access .inputEx-label {
-                    width: 58px !important;
-                }
-                .wegas-game-name .inputEx-Field,
-                .wegas-game-access .inputEx-Field {
-                    margin-left: -68px;
-                    margin-right: 1px;
-                }
-                .wegas-game-access  {
-                    padding-bottom: 15px;
-                }
-                .wegas-game-access .inputEx-Field {
-                    margin-right: 10px;
-                }
-                .wegas-game-keys,
-                .wegas-game-users {
-                    padding-bottom: 15px;
-                }
-                .wegas-game-token .inputEx-label,
-                .wegas-game-users > .inputEx-label ,
-                .wegas-game-keys > .inputEx-label {
-                    text-align: left;
-                    font-style: italic;
-                    padding: 0 0px 3px 5px;
-                    width: 300px !important;
-                }
-                .wegas-game-token .inputEx-Field,
-                .wegas-game-users > .inputEx-Field,
-                .wegas-game-keys > .inputEx-Field {                
-                    margin-left: -125px;
-                    margin-right: 10px;
-                    display: block;
-                    clear: both;
-                }
-                .wegas-game-keys img.inputEx-ListField-addButton,
-                .wegas-game-users img.inputEx-ListField-addButton {
-                    position: absolute;
-                    top: -19px;
-                    left: 175px;
-                }
-                .wegas-sharerole-content {
-                    margin-top: 0px;
-                }
-                .wegas-sharerole .title {
-                    font-weight: normal;
-                    font-style: italic;
-                    margin-bottom: 3px;
-                    color: #505050;
-                }
-            </style>
+            <!--<link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-lobby/css/wegas-lobby-min.css" />-->
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/wegas-editor/css/wegas-editor-min.css&amp;/wegas-lobby/css/wegas-lobby-min.css" />
+
         </ui:define>
 
         <ui:define name="body">
@@ -208,7 +110,7 @@
                                 }
                             }
                         });
-                        
+
                         //Y.Wegas.Facade.GameModel.sendInitialRequest();          // Refresh game model list
                     });
 

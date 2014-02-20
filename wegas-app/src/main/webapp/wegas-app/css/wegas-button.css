@@ -31,14 +31,6 @@
     display:none !important;
 }
 /* Wegas small icons */
-.yui3-skin-sam .wegas-icon {
-    display: inline-block;
-    height: 18px;
-    width: 18px;
-    overflow: hidden;
-    background-repeat: no-repeat;
-    background-image: url(../images/wegas-app-sprite.png);
-}
 .yui3-skin-sam .wegas-icon-reset,
 .yui3-skin-sam .wegas-icon-refresh {
     background-position: 0px -300px;
