@@ -343,61 +343,28 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .yui3-skin-sam .wegas-icon-role,
 .yui3-skin-sam .wegas-icon-player,
 .yui3-skin-sam .wegas-icon-user,
-.yui3-skin-sam .wegas-icon-variabledescriptor,
-.yui3-skin-sam .wegas-icon-questiondescriptor,
-.yui3-skin-sam .wegas-icon-triggerdescriptor,
 .yui3-skin-sam .wegas-icon-jpaaccount {
     margin: -6px 0 -8px;
     height: 24px;
+    background-repeat: no-repeat;
+    background-image: url(../../wegas-app/images/wegas-app-sprite.png);
+}
+.yui3-skin-sam .wegas-icon-game,
+.yui3-skin-sam .wegas-icon-gamemodel {
+    margin: -6px -2px -8px;
 }
 .yui3-skin-sam .wegas-icon-gamemodel {
-    background-position: -514px;
+    background-position: 0 -514px;
 }
 .yui3-skin-sam .wegas-icon-game {
-    background-position: -552px;
+    background-position: 0 -552px;
 }
 .yui3-skin-sam .wegas-icon-team,
 .yui3-skin-sam .wegas-icon-role {
-    background-position: -621px;
+    background-position: 0 -621px;
 }
 .yui3-skin-sam .wegas-icon-player,
 .yui3-skin-sam .wegas-icon-user,
 .yui3-skin-sam .wegas-icon-jpaaccount {
-    background-position: -590px;
-}
-.wegas-icon-variabledescriptor {
-    background-position: -976px;
-}
-.wegas-icon-questiondescriptor {
-    background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -756px no-repeat;
-}
-.wegas-icon-choicedescriptor {
-    background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -850px no-repeat;
-}
-.wegas-icon-triggerdescriptor {
-    background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -940px no-repeat;
-}
-.wegas-icon-inboxdescriptor {
-    background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -426px no-repeat;
-}
-.wegas-icon-resourcedescriptor {
-    background-position: -590px;
-}
-.yui3-skin-sam .wegas-icon-duplicate {
-    background: url(../../wegas-app/images/wegas-app-sprite.png) no-repeat 1px -1287px,
-        url(../../wegas-app/images/wegas-app-sprite.png) no-repeat -3px -1289px;
-    height: 19px;
-}
-.wegas-icon-edit {
-    background-position: 1px -1110px;
-}
-.wegas-icon-delete {
-    background-position: 1px -944px;
-}
-.wegas-icon-open-in-editor {
-    background-position: 0 -943px;
-}
-.wegas-icon-view,.wegas-icon-open {
-    /*background-position: 1px -709px;     Goggles */
-    background-position: 0 -1432px;
+    background-position: 0 -590px;
 }
