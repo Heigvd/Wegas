@@ -16,7 +16,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
             ITEMS = "items", BUTTON = "Button", VALUE = "value", TEXT = "text",
             HTML = "html",
-            Wegas = Y.namespace("Wegas"), Base = Y.Base,
+            Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
             IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
@@ -28,9 +28,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * VariableDescriptor mapper
      */
-    Wegas.persistence.VariableDescriptor = Base.create("VariableDescriptor", Wegas.persistence.Entity, [], {
+    persistence.VariableDescriptor = Base.create("VariableDescriptor", persistence.Entity, [], {
         getInstance: function(player) {
-            var playerId = player instanceof Wegas.persistence.Player ? player.get("id") : player || Wegas.app.get('currentPlayer');
+            var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.app.get('currentPlayer');
             return this.get("scope").getInstance(playerId);
         },
         getLabel: function() {
@@ -66,10 +66,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             },
             scope: {
                 valueFn: function() {
-                    return new Wegas.persistence.TeamScope();                 // Should the default scope be set server or client side?
+                    return new persistence.TeamScope();                 // Should the default scope be set server or client side?
                 },
                 validator: function(o) {
-                    return o instanceof Wegas.persistence.Scope;
+                    return o instanceof persistence.Scope;
                 },
                 properties: {
                     "@class": {
@@ -114,7 +114,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             defaultInstance: {
                 value: null,
                 validator: function(o) {
-                    return o instanceof Wegas.persistence.VariableInstance;
+                    return o instanceof persistence.VariableInstance;
                 }
             }
         },
@@ -135,7 +135,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * Scope mapper
      */
-    Wegas.persistence.Scope = Base.create("Scope", Wegas.persistence.Entity, [], {
+    persistence.Scope = Base.create("Scope", persistence.Entity, [], {
         getInstance: function() {
             Y.error("SHOULD BE OVERRIDDEN, abstract!", new Error("getInstance, abstract"), "Wegas.persistance.Scope");
         }
@@ -160,7 +160,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * GameModelScope mapper
      */
-    Wegas.persistence.GameModelScope = Base.create("GameModelScope", Wegas.persistence.Scope, [], {
+    persistence.GameModelScope = Base.create("GameModelScope", persistence.Scope, [], {
         getInstance: function() {
             return this.get("variableInstances")[0];
         }
@@ -174,7 +174,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * GameScope mapper
      */
-    Wegas.persistence.GameScope = Base.create("GameScope", Wegas.persistence.Scope, [], {
+    persistence.GameScope = Base.create("GameScope", persistence.Scope, [], {
         getInstance: function() {
             return this.get("variableInstances")["" + Wegas.app.get('currentGame')];
         }
@@ -189,7 +189,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * TeamScope mapper
      */
-    Wegas.persistence.TeamScope = Base.create("TeamScope", Wegas.persistence.Scope, [], {
+    persistence.TeamScope = Base.create("TeamScope", persistence.Scope, [], {
         getInstance: function(playerId) {
             return this.get("variableInstances")[Wegas.app.get('currentTeam')];
         }
@@ -204,7 +204,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * PlayerScope mapper
      */
-    Wegas.persistence.PlayerScope = Base.create("PlayerScope", Wegas.persistence.Scope, [], {
+    persistence.PlayerScope = Base.create("PlayerScope", persistence.Scope, [], {
         getInstance: function(playerId) {
             return this.get("variableInstances")[playerId];
         }
@@ -219,7 +219,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * VariableInstance mapper
      */
-    Wegas.persistence.VariableInstance = Base.create("VariableInstance", Wegas.persistence.Entity, [], {}, {
+    persistence.VariableInstance = Base.create("VariableInstance", persistence.Entity, [], {}, {
         ATTRS: {
             descriptorId: {
                 type: STRING,
@@ -235,7 +235,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * Meant to augment primitive Descriptors (Number, Text, String) with some functions
      */
-    Wegas.persistence.PrimitiveDescriptor = Base.create("Primitive", Wegas.persistence.Entity, [], {
+    persistence.PrimitiveDescriptor = Base.create("Primitive", persistence.Entity, [], {
         getValue: function(player) {
             return this.getInstance(player).get(VALUE);
         }
@@ -243,7 +243,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * StringDescriptor mapper
      */
-    Wegas.persistence.StringDescriptor = Base.create("StringDescriptor", Wegas.persistence.VariableDescriptor, [Wegas.persistence.PrimitiveDescriptor], {}, {
+    persistence.StringDescriptor = Base.create("StringDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
         ATTRS: {
             "@class": {
                 value: "StringDescriptor"
@@ -272,7 +272,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * StringInstance mapper
      */
-    Wegas.persistence.StringInstance = Base.create("StringInstance", Wegas.persistence.VariableInstance, [Wegas.persistence.PrimitiveDescriptor], {}, {
+    persistence.StringInstance = Base.create("StringInstance", persistence.VariableInstance, [persistence.PrimitiveDescriptor], {}, {
         ATTRS: {
             "@class": {
                 value: "StringInstance"
@@ -285,7 +285,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * StringDescriptor mapper
      */
-    Wegas.persistence.TextDescriptor = Base.create("TextDescriptor", Wegas.persistence.VariableDescriptor, [Wegas.persistence.PrimitiveDescriptor], {}, {
+    persistence.TextDescriptor = Base.create("TextDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
         ATTRS: {
             "@class": {
                 value: "TextDescriptor"
@@ -336,7 +336,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * TextInstance mapper
      */
-    Wegas.persistence.TextInstance = Base.create("TextInstance", Wegas.persistence.VariableInstance, [], {}, {
+    persistence.TextInstance = Base.create("TextInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "TextInstance"
@@ -351,7 +351,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * NumberDescriptor mapper
      */
-    Wegas.persistence.NumberDescriptor = Base.create("NumberDescriptor", Wegas.persistence.VariableDescriptor, [Wegas.persistence.PrimitiveDescriptor], {}, {
+    persistence.NumberDescriptor = Base.create("NumberDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
         ATTRS: {
             "@class": {
                 value: "NumberDescriptor"
@@ -441,7 +441,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * NumberInstance mapper
      */
-    Wegas.persistence.NumberInstance = Base.create("NumberInstance", Wegas.persistence.VariableInstance, [], {}, {
+    persistence.NumberInstance = Base.create("NumberInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "NumberInstance"
@@ -465,7 +465,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * ListDescriptor mapper
      */
-    Wegas.persistence.ListDescriptor = Base.create("ListDescriptor", Wegas.persistence.VariableDescriptor, [], {
+    persistence.ListDescriptor = Base.create("ListDescriptor", persistence.VariableDescriptor, [], {
         /**
          * Extend clone to add transient childs
          */
@@ -483,9 +483,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 var i, it;
                 for (i = 0; i < items.length; i += 1) {
                     it = items[i];
-                    if (it instanceof Wegas.persistence.QuestionDescriptor) {
+                    if (it instanceof persistence.QuestionDescriptor) {
                         acc.push(it);
-                    } else if (it instanceof Wegas.persistence.ListDescriptor) {
+                    } else if (it instanceof persistence.ListDescriptor) {
                         doFlatten(it.get(ITEMS));
                     } else {
                         acc.push(it);
@@ -505,7 +505,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 if (it.get("id") === +id) {
                     needle = it;
                     return false;
-                } else if (it instanceof Wegas.persistence.ListDescriptor) {
+                } else if (it instanceof persistence.ListDescriptor) {
                     return Y.Array.every(it.get(ITEMS), filterFn);
                 } else {
                     return true;
@@ -637,7 +637,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /*
      * ListInstance mapper
      */
-    Wegas.persistence.ListInstance = Base.create("ListInstance", Wegas.persistence.VariableInstance, [], {}, {
+    persistence.ListInstance = Base.create("ListInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "ListInstance"
@@ -646,7 +646,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     });
 
 
-    Wegas.persistence.InboxDescriptor = Base.create("InboxDescriptor", Wegas.persistence.VariableDescriptor, [], {
+    persistence.InboxDescriptor = Base.create("InboxDescriptor", persistence.VariableDescriptor, [], {
         isEmpty: function(player) {
             return this.getInstance(player).get("messages").length < 1;
         }
@@ -715,7 +715,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * InboxInstance mapper
      */
-    Wegas.persistence.InboxInstance = Base.create("InboxInstance", Wegas.persistence.VariableInstance, [], {}, {
+    persistence.InboxInstance = Base.create("InboxInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "InboxInstance",
@@ -735,7 +735,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * Message mapper
      */
-    Wegas.persistence.Message = Base.create("Message", Wegas.persistence.Entity, [], {}, {
+    persistence.Message = Base.create("Message", persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 value: "Message"
@@ -754,7 +754,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * Script mapper
      */
-    Wegas.persistence.Script = Base.create("Script", Wegas.persistence.Entity, [], {
+    persistence.Script = Base.create("Script", persistence.Entity, [], {
         initializer: function() {
             this.publish("evaluated");
             this._inProgress = false;
@@ -836,7 +836,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      *
      */
-    Wegas.persistence.PageMeta = Base.create("wegas-pagemeta", Wegas.persistence.Entity, [], {}, {
+    persistence.PageMeta = Base.create("wegas-pagemeta", persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: STRING,

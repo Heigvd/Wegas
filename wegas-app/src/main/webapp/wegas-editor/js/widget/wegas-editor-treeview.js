@@ -176,7 +176,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 //+ '<div class="yui3-u">Players</div></div>'
                 + '</div>'
                 + '<div class="treeview"></div>'
-                //+ "<div class=\"description\">To share this game with your student, you must first create the teams and then give the students their team enrolment key, which they can use on <a href=\"http://wegas.albasim.ch\">wegas.albasim.ch</a>.</div>"
                 + '</div>',
         renderUI: function() {
             this.treeView = new Y.TreeView({
@@ -287,20 +286,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
      */
     Plugin.EditorTVToolbarMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
-            this.afterHostEvent("treeview:selectionChange", function(e) {
-                if (e.prevVal === e.newVal ||
-                        (e.prevVal && e.newVal && e.prevVal._items === e.newVal._items)) {
-                    return;
-                }
-                this.onTreeViewSelection(e);
-            }, this);
+            this.afterHostEvent("*:click", this.onTreeViewSelection);
         },
         onTreeViewSelection: function(e) {
-            if (!e.target.getSelection()) {
-                //deselect
-                return;
-            }
-            var menuItems = this.getMenuItems(e.target.getSelection().item(0).get("data")),
+            var menuItems = this.getMenuItems(e.target.get("data")),
                     host = this.get(HOST);
 
             if (menuItems) {

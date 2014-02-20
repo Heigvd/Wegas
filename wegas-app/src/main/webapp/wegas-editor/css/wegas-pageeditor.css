@@ -1,3 +1,10 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+*/
 /* Pageeditor Plugin styles */
 .wegas-pageeditor-designmode{
     position:relative;
@@ -233,4 +240,23 @@ body > .wegas-pageloader > .wegas-pageloader-content{
 .wegas-page-editor .page-node> ul.yui3-treenode-content>li>div.content-header,
 .wegas-page-editor .page-node> ul.yui3-treeleaf-content>div.content-header{
     display:none;
+}
+
+/* Pageloader view src plugin styles */
+.wegas-pageloader > .inputEx-fieldWrapper  {
+    position: absolute;
+    top: 31px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    overflow: auto;
+    margin: 0px;
+}
+.wegas-pageloader > .inputEx-fieldWrapper  .inputEx-Field {
+    float:none;
+    height:100%;
+}
+.wegas-pageloader > .inputEx-fieldWrapper .ace_editor {
+    height: 100%;
+    width: 100%;
 }

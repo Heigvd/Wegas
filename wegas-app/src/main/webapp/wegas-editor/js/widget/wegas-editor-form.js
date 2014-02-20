@@ -12,8 +12,7 @@ YUI.add('wegas-editor-form', function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", inputEx = Y.inputEx, Lang = Y.Lang,
-            Wegas = Y.Wegas,
-            Form, EditEntityForm;
+            Wegas = Y.Wegas, Form, EditEntityForm;
 
     /**
      * @name Y.Wegas.Form
@@ -35,7 +34,7 @@ YUI.add('wegas-editor-form', function(Y) {
          * @description plug a toolbar and publich "submit" event.
          */
         initializer: function() {
-            this.plug(Y.Plugin.WidgetToolbar);
+            this.plug(Y.Plugin.WidgetToolbar);                                  // A toolbar where to place the buttons
             this.publish("submit", {
                 emitFacade: true
             });
@@ -51,19 +50,10 @@ YUI.add('wegas-editor-form', function(Y) {
          * @private
          * @description
          */
-        renderUI: function() {
-            Y.Array.each(this.get("buttons"), this.addButton, this);
-        },
         bindUI: function() {
-            this.on("update", function() {
-                if (!this.form.validate()) {
-                    this.showMessageBis("success", "Could not save changes");
-                    return;
-                }
-                this.updateTimer.reset();
-            });
+            this.on("update", this.updateTimer.reset, this.updateTimer);        // Whenever the form is updated, reset the update time
             this.updateTimer.on("timeOut", function() {
-                this.fire("updateTimeOut", {});
+                this.fire("updateTimeOut");
             }, this);
         },
         /**
@@ -72,7 +62,8 @@ YUI.add('wegas-editor-form', function(Y) {
          * @description call function "renderToolbar".
          */
         syncUI: function() {
-            this.set("cfg", this.get("cfg"));
+            Y.Array.each(this.get("buttons"), this.addButton, this);            // Render the buttons
+            this.renderForm(this.get("cfg"));                                   // Render the form
         },
         /**
          * @function
@@ -85,49 +76,40 @@ YUI.add('wegas-editor-form', function(Y) {
             }
             this.updateTimer.destroy();
         },
-        setCfg: function(val) {
-            var cfg = Y.clone(val);                                             // Duplicate so val will be untouched while serializing
-            Y.mix(cfg, {
-                parentEl: this.get(CONTENTBOX),
-                className: "wegas-form-ix",
-                type: "group"
-            });
-            inputEx.use(val, Y.bind(function(cfg) {                             // Load form dependencies
-                if (this.form) {
-                    this.form.destroy();
+        renderForm: function(val) {
+            inputEx.use(val, Y.bind(function(val) {                             // Load form dependencies
+                var cfg = Y.clone(val);                                         // Duplicate so val will be untouched upon serialization
+                Y.mix(cfg, {//                                                  // Add some default properties
+                    parentEl: this.get(CONTENTBOX),
+                    className: "wegas-form-ix",
+                    type: "group",
+                    value: this.get("value", {internal: true})
+                });
+                if (this.form) {                                                // If there's already a form,
+                    this.form.destroy();                                        // destroy it
                 }
-                this.form = inputEx(cfg);                                       // Initialize and render form
-                this.form.setValue(this.get("value"), false);                   // Sync form with "value" ATTR
-                this.form.on("updated", function() {
-                    this.fire("update");
+                this.form = inputEx(cfg);                                       // Initialize and render the new form
+                //this.form.setValue(this.get("value"), false);                 // Set the form value
+                this.form.on("updated", function() {//                          // Whenever a form is updated,
+                    this.fire("update");                                        // throw an event
                 }, this);
 
                 this.form.parentWidget = this;                                  // @HACK some widgets need this reference
-            }, this, cfg));
+            }, this, val));
         },
         addButton: function(b) {
-            switch (b.action) {
-                case "submit":
-                    b.on = {
-                        click: Y.bind(function() {
-                            if (!this.form.validate()) {
-                                this.showMessageBis("error", "Some fields are not valid.");
-                                return;
-                            }
-                            this.fire("submit", {
-                                value: this.form.getValue()
-                            });
-                        }, this)
-                    };
-                    break;
-                default:
-                    b.on = {
-                        click: Y.bind(function(action) {
-                            this.fire(action);
-                        }, this, b.action)
-                    };
-                    break;
-            }
+            b.on = {
+                click: Y.bind(function(action) {                                // Push click event to the button, depending on their action field
+                    if (!this.form.validate()) {
+                        this.showMessageBis("error", "Some fields are not valid");
+                        return;
+                    }
+                    this.fire(action, {
+                        value: this.get("value")
+                    });
+                }
+                , this, b.action)
+            };
             this.toolbar.add(b);
         }
     }, {
@@ -156,6 +138,13 @@ YUI.add('wegas-editor-form', function(Y) {
                             this.form.setValue(val, false);
                         }
                         return val;
+                    },
+                    getter: function(val, name, cfg) {
+                        if (this.form && !cfg.internal) {
+                            return this.form.getValue();
+                        } else {
+                            return val;
+                        }
                     }
                 }
             },
@@ -165,7 +154,7 @@ YUI.add('wegas-editor-form', function(Y) {
             cfg: {
                 validator: Lang.isObject,
                 setter: function(val) {
-                    this.setCfg(val);
+                    this.renderForm(val);
                     return val;
                 },
                 _inputex: {
@@ -194,11 +183,15 @@ YUI.add('wegas-editor-form', function(Y) {
         bindUI: function() {
             EditEntityForm.superclass.bindUI.call(this);
 
-            this.on("update", function() {
-                this.showMessageBis("success", "Saving...");
+            this.on("update", function() {                                      // When the form is updated,
+                if (this.form.validate()) {                                     // display appropriate message in the toolbar
+                    this.showMessageBis("success", "Saving...");
+                } else {
+                    this.showMessageBis("success", "Unable to save");
+                }
             });
-            this.on("updateTimeOut", this.save);
-            this.on("submit", this.save);
+            this.on("updateTimeOut", this.save);                                // 2 seconds after user has stopped updating, save changes
+            this.on("submit", this.save);                                       // Upon submit button click, save changes
         },
         /**
          * @function
@@ -213,18 +206,18 @@ YUI.add('wegas-editor-form', function(Y) {
                             || entity instanceof Wegas.persistence.VariableInstance))// Those classes may not be loaded
                     || entity instanceof Wegas.persistence.JpaAccount
                     || entity instanceof Wegas.persistence.GameModel
-                    || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for every entities
+                    || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for any entities, just need to check if it causes bugs
                 this.showOverlay();
-                this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
+                this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// Retrieve the entity from the source
                     on: {
                         success: Y.bind(function(e) {
-                            this.showUpdateForm(e.response.entity);
+                            this.showUpdateForm(e.response.entity);             // and show the form
                             this.hideOverlay();
                         }, this)
                     }
                 });
-            } else {
-                this.showUpdateForm(entity);
+            } else {                                                            // Otherwise,
+                this.showUpdateForm(entity);                                    // render the form directy
             }
         },
         showUpdateForm: function(entity) {
@@ -250,21 +243,16 @@ YUI.add('wegas-editor-form', function(Y) {
                 }
             });
             this.toolbar.add(menuItems);                                        // Add menu items to the form
-            //this.toolbar.item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
         },
         save: function() {
             if (!this.form.validate()) {
                 return;
             }
 
-            //this.showOverlay();
-            //this.showMessageBis("success", "Saving...");
-
-            this.get("dataSource").cache.put(this.form.getValue(), {
+            this.get("dataSource").cache.put(this.get("value"), {
                 on: {
                     success: Y.bind(function() {
                         this.showMessageBis("success", "All changes saved");
-                        //this.hideOverlay();
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }
@@ -287,5 +275,4 @@ YUI.add('wegas-editor-form', function(Y) {
         }
     });
     Y.namespace('Wegas').EditEntityForm = EditEntityForm;
-
 });
