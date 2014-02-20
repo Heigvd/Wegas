@@ -114,24 +114,23 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     public String createUniqueEnrolmentkey(Game game) {
         String prefixKey = game.getName();
         boolean foundUniqueKey = false;
-        String search = prefixKey;
         int counter = 0;
         String key = null;
 
         if (prefixKey.length() > 11) {
             prefixKey = prefixKey.substring(0, 11);
-            search = prefixKey + "%";
         }
         prefixKey = prefixKey.toLowerCase().replace(" ", "-");
 
-        int nbGame = this.findGameByName(search).size();
-
+        int length = 2;
+        int maxRequest = 400;
         while (!foundUniqueKey) {
-            if (counter > 0) {
-                nbGame = nbGame + 2000;
+            if (counter > maxRequest) {
+                length += 1;
+                maxRequest += 400;
             }
-            String genkey = this.keyGen(nbGame);
-            key = prefixKey + "-" + genkey;
+            String genLetter = this.genRandomLetter(length);
+            key = prefixKey + "-" + genLetter;
             boolean foundedGameAccountKey = true;
             boolean foundedGameEnrolentKey = true;
             try {
@@ -153,16 +152,15 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return key;
     }
 
-    private String keyGen(long gameNumber) {
-        final String digits = "etx8hgkunjf79ca0pm3yzw1sovi5dbr624ql";
-        final int digitSize = digits.length();
+    private String genRandomLetter(long length) {
+        final String tokenElements = "abcdefghijklmnopqrstuvwxyz";
+        final Integer digits = tokenElements.length();
+        length = Math.min(50, length); // max 50 length;
         StringBuilder sb = new StringBuilder();
-        int modulo;
-        gameNumber += 36;
-        while (gameNumber > 0) {
-            modulo = (int) (gameNumber % digitSize);
-            sb.append(digits.substring(modulo, modulo + 1));
-            gameNumber = gameNumber / digitSize;
+        Integer random = (int) (Math.random() * digits);
+        sb.append(tokenElements.charAt(random));
+        if (length > 1) {
+            sb.append(genRandomLetter(length - 1));
         }
         return sb.toString();
     }
