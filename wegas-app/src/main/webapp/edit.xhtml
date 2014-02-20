@@ -9,8 +9,6 @@
 
         <ui:define name="head">
 
-            <!--<meta name="google-translate-customization" content="#editorGameController.currentGameModel.getProperty('googleTranslateId')" />-->
-
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
 
             <style type="text/css">
@@ -49,9 +47,11 @@
             </ui:repeat>
 
             <ui:insert name="editorHeader"></ui:insert>
+            
+            <!--<meta name="google-translate-customization" content="#editorGameController.currentGameModel.getProperty('googleTranslateId')" />-->
 
         </ui:define>
-        
+
         <ui:define name="body">
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", function(Y) {
@@ -140,11 +140,11 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
                                  */
                                 source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                        /* THIS IS NOT A COMMENT
-                                         * </ui:fragment>
-                                         */
-                                        //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                        initialRequest: "",
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache"
                                     }, {
@@ -162,7 +162,7 @@
                                     /* THIS IS NOT A COMMENT
                                      * </ui:fragment>
                                      */
-                                ]
+                                ]   
                             },
                             File: {
                                 source: "rest/GameModel/#{editorGameController.currentGameModel.id}/File/",
