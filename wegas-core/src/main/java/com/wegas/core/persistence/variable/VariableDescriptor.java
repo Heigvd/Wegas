@@ -75,6 +75,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      */
     @NotNull
+    @Basic(optional = false)
     //@JsonView(Views.EditorExtendedI.class)
     protected String name;
     /**
@@ -100,8 +101,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * Here we cannot use type T, otherwise jpa won't handle the db ref
      * correctly
      */
-    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @NotNull
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     @JsonView(Views.EditorExtendedI.class)
     private VariableInstance defaultInstance;
     /*
@@ -109,8 +109,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
      * updatable = true)
      */
-    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
-    @NotNull
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY, optional = false)
     //@JsonManagedReference
     @JsonView(Views.WithScopeI.class)
     private AbstractScope scope;

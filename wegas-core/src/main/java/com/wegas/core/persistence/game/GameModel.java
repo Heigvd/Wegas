@@ -19,7 +19,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.shiro.SecurityUtils;
 import org.codehaus.jackson.JsonNode;
@@ -56,9 +55,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      *
      */
-    @NotNull
-    //@XmlID
+    @Basic(optional = false)
     //@Pattern(regexp = "^\\w+$")
+    //@XmlID
     private String name;
     /**
      *

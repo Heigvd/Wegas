@@ -42,17 +42,13 @@ public class Team extends AbstractEntity {
      *
      */
     @NotNull
+    @Basic(optional = false)
     private String name;
     /**
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
-    /**
-     *
-     */
-    //@NotNull
-    //private String token;
     /**
      *
      */
@@ -63,7 +59,6 @@ public class Team extends AbstractEntity {
      * The game model this belongs to
      */
     @ManyToOne(optional = false)
-    @NotNull
     @JoinColumn(name = "parentgame_id")
     @XmlTransient
     //@XmlInverseReference(mappedBy = "teams")
@@ -97,7 +92,6 @@ public class Team extends AbstractEntity {
     public void merge(AbstractEntity a) {
         Team t = (Team) a;
         this.setName(t.getName());
-        //this.setToken(t.getToken());
     }
 
     /**

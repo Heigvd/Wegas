@@ -22,8 +22,6 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 /**
@@ -71,7 +69,6 @@ public class EditorGameController extends AbstractGameController {
      */
     @PostConstruct
     public void init() throws IOException {
-        final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
             currentPlayer = playerFacade.find(this.getPlayerId());
@@ -100,7 +97,7 @@ public class EditorGameController extends AbstractGameController {
         } else if (this.gameId != null) {                                       // If a game id is provided
             try {
                 currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,
-                        userFacade.getCurrentUser().getId());           // Try to check if current shiro user is registered to the target game
+                        userFacade.getCurrentUser().getId());                   // Try to check if current shiro user is registered to the target game
 
             } catch (NoResultException e) {                                     // If we still have nothing
                 try {
@@ -118,10 +115,10 @@ public class EditorGameController extends AbstractGameController {
             }
         }
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
-            externalContext.dispatch("/wegas-app/view/error/error.xhtml");
+            errorController.dispatch("Team " + teamFacade.find(this.teamId).getName() + " has no player.");
         } else {
             if (!SecurityHelper.isPermitted(currentPlayer.getGame(), "Edit")) {
-                externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml");
+                errorController.accessDenied();
             }
         }
 
