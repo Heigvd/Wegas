@@ -146,14 +146,14 @@ abstract public class VariableInstance extends AbstractEntity {
     @XmlTransient
     @JsonIgnore
     public AbstractScope getScope() {
-        if (this.gameModelScope != null) {
-            return this.gameModelScope;
-        } else if (this.gameScope != null) {
-            return this.gameScope;
-        } else if (this.teamScope != null) {
+        if (this.teamScopeKey != null) {
             return this.teamScope;
-        } else if (this.playerScope != null) {
+        } else if (this.playerScopeKey != null) {
             return this.playerScope;
+        } else if (this.gameScopeKey != null) {
+            return this.gameScope;
+        } else if (this.gameModelScope != null) {
+            return this.gameModelScope;
         } else {
             return null;
         }
@@ -276,10 +276,10 @@ abstract public class VariableInstance extends AbstractEntity {
     }
 
     public VariableDescriptor findDescriptor() {
-        if (this.getDefaultDescriptor() != null) {
-            return this.getDefaultDescriptor();
-        } else {
+        if (this.getScope() != null) {
             return this.getDescriptor();
+        } else {
+            return this.getDefaultDescriptor();
         }
     }
 

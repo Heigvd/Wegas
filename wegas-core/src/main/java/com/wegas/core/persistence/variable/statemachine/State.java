@@ -48,10 +48,11 @@ public class State extends AbstractEntity {
      *
      */
     private String label;
-    @Embedded
     /**
      *
      */
+    @Embedded
+    @JsonView(Views.EditorExtendedI.class)
     private Script onEnterEvent;
     /**
      *
@@ -59,6 +60,10 @@ public class State extends AbstractEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "transition_id", referencedColumnName = "state_id")
     private List<Transition> transitions = new ArrayList<>();
+    /**
+     *
+     */
+    @JsonView(Views.EditorExtendedI.class)
     private Coordinate editorPosition;
 
     /**

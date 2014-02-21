@@ -91,7 +91,7 @@ public class Game extends NamedEntity {
     /**
      *
      */
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "gamemodelid", nullable = false)
     // @JsonBackReference
     private GameModel gameModel;

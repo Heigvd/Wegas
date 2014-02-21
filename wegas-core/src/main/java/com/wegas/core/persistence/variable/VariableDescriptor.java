@@ -31,6 +31,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.annotate.JsonView;
+import org.eclipse.persistence.annotations.JoinFetch;
 
 /**
  *
@@ -109,7 +110,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
      * updatable = true)
      */
-    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY, optional = false)
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
+    //@BatchFetch(BatchFetchType.JOIN)
+    @JoinFetch
     //@JsonManagedReference
     @JsonView(Views.WithScopeI.class)
     private AbstractScope scope;

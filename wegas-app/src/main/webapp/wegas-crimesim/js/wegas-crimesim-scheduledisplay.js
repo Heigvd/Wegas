@@ -377,7 +377,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             }, this);
 
             /* gallery : [{srcUrl:'url', description:'text'},{}, ...]*/
-            this.gallery.set("gallery", Y.clone(question.get("pictures")));     // @hack clone since Gallery will replace the string by an object
+            this.gallery.set("gallery", Y.clone(extendedQuestion.get("pictures")));     // @hack clone since Gallery will replace the string by an object
         },
         renderDetails: function(reply) {
             var choiceDescriptor = reply.getChoiceDescriptor(),
