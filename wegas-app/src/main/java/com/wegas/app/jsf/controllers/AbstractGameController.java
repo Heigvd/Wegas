@@ -11,12 +11,10 @@ import com.sun.faces.util.Util;
 import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import java.io.Serializable;
 import java.util.Locale;
 import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 

@@ -38,10 +38,10 @@ public class ChoiceInstance extends VariableInstance {
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id", insertable = false, updatable = false)
-    //@JsonBackReference
     @XmlTransient
+    //@JsonBackReference
     //@JsonDeserialize(using = JsonDeserializer.None.class)
     private Result currentResult;
     /**
@@ -56,9 +56,13 @@ public class ChoiceInstance extends VariableInstance {
     @Transient
     private int currentResultIndex;
 
+    /**
+     *
+     * @return
+     */
     @JsonIgnore
     public Result getResult() {
-        if (this.currentResult != null) {
+        if (this.currentResultId != null) {
             return this.currentResult;
         } else {
             try {

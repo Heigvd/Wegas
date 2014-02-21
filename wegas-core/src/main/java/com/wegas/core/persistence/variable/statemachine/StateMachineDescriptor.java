@@ -32,6 +32,9 @@ import org.codehaus.jackson.map.annotate.JsonView;
 })
 public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> {
 
+    /**
+     *
+     */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
     @MapKeyColumn(name = "fsm_statekey")
