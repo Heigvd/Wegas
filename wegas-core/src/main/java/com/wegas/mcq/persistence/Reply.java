@@ -65,7 +65,7 @@ public class Reply extends AbstractEntity {
     @PostPersist
     @PostUpdate
     @PostRemove
-    private void onUpdate() {
+    public void onUpdate() {
         this.getQuestionInstance().onInstanceUpdate();
     }
 

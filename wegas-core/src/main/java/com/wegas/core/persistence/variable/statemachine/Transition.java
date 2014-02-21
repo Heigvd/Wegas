@@ -54,6 +54,7 @@ public class Transition extends AbstractEntity {
         @AttributeOverride(name = "lang", column =
                 @Column(name = "onTransition_language"))
     })
+    @JsonView(Views.EditorExtendedI.class)
     private Script preStateImpact;
     private Long nextStateId;
 

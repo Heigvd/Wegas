@@ -63,6 +63,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      *
      */
     @ElementCollection
+    @JsonView(Views.ExtendedI.class)
     //@JsonView(Views.EditorI.class)
     private List<String> pictures = new ArrayList<>();
 

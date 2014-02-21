@@ -30,7 +30,6 @@ import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  *
@@ -179,27 +178,26 @@ public class GameController {
     public Object tokenJoinGame(@PathParam("token") String token) throws WegasException {
         Game game = gameFacade.findByToken(token);                              // 1st case: game token
         if (game != null) {
-            if (game.getAccess() == Game.GameAccess.ENROLMENTKEY) {
-                return "Team token required";
-                //throw new WegasException("This key has already been used");
+            if (game.getAccess() != Game.GameAccess.ENROLMENTKEY) {             // Check game token are authorized on this game
+                return "Team token required";                                   // Return a string indicating the client it should provide an enrolment key (not an error)
             }
         } else {                                                                // 2nd case: single usage enrolement key
-            GameEnrolmentKey gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);
+            GameEnrolmentKey gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);// Look the key up
             game = gameEnrolmentKey.getGame();
-            if (gameEnrolmentKey.getUsed()) {
+            if (gameEnrolmentKey.getUsed()) {                                   // Check the token has not already been used
                 throw new WegasException("This key has already been used");
             }
-            if (game.getAccess() != Game.GameAccess.SINGLEUSAGEENROLMENTKEY) {
+            if (game.getAccess() != Game.GameAccess.SINGLEUSAGEENROLMENTKEY) {  // Check single usage enrolement key are authorized on this game
                 throw new WegasException("Not allowed to connect using sinle usage enrolment keys");
             }
-            gameEnrolmentKey.setUsed(true);
+            gameEnrolmentKey.setUsed(true);                                     // Mark the current key as used
         }
 
-        try {                                       // We check if logged user is already registered in the target game
+        try {                                                                   // Check if logged user is already registered in the target game
             playerFacade.findByGameIdAndUserId(game.getId(), userFacade.getCurrentUser().getId());
-            throw new WegasException("You are already registered to this game.");// There user is already registered to target game
+            throw new WegasException("You are already registered to this game.");// Current user is already registered to target game
 
-        } catch (NoResultException e) {             // If there is no NoResultException, everything is ok, we can return the game
+        } catch (NoResultException e) {                                         // If there is no NoResultException, everything is ok, we can pursue
 
             SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token"));
             if (game.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll)) {// If game is "freeForAll" (single team)
@@ -207,7 +205,7 @@ public class GameController {
                 if (game.getTeams().size() <= 1) {                              // Create a team if none present (first team is debug team)
                     teamFacade.create(game.getId(), new Team("Default"));
                 }
-                Team team = game.getTeams().get(1);                              // Join the first team available
+                Team team = game.getTeams().get(1);                             // Join the first team available
                 return Arrays.asList(team, game);
             } else {
                 return game;

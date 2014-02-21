@@ -10,6 +10,8 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.ejb.RequestFacade;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,14 @@ public class ErrorController implements Serializable {
         this.setErrorMessage(errorMsg);
         try {
             FacesContext.getCurrentInstance().getExternalContext().dispatch("/wegas-app/view/error/error.xhtml");
+        } catch (IOException ex) {
+            logger.error("Unable to find error page", ex);
+        }
+    }
+
+    public void accessDenied() {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().dispatch("/wegas-app/view/error/accessdenied.xhtml");
         } catch (IOException ex) {
             logger.error("Unable to find error page", ex);
         }

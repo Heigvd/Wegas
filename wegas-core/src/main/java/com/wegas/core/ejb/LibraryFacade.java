@@ -51,4 +51,13 @@ public class LibraryFacade implements Serializable {
                 throw new RuntimeException("Unable to find associated library: " + name);
         }
     }
+
+    public String getLibraryContent(Long gameModelId, String name) {
+        StringBuilder ret = new StringBuilder();
+        for (GameModelContent c : this.findLibrary(gameModelId, name).values()) {
+            ret.append(c.getContent().replaceAll("\\.\\./", null));
+            //ret.append(c.getContent());
+        }
+        return ret.toString();
+    }
 }
