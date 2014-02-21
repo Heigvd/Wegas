@@ -11,7 +11,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.persistence.User;
 import java.util.Date;
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -35,7 +34,7 @@ public class Player extends AbstractEntity {
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
     /**
      *
@@ -54,8 +53,7 @@ public class Player extends AbstractEntity {
     /**
      * The game model this belongs to
      */
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JsonBackReference(value = "player-team")
     @JoinColumn(name = "parentteam_id")
     //@XmlInverseReference(mappedBy = "players")

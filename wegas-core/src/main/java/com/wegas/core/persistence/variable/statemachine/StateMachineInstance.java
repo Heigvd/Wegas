@@ -10,14 +10,12 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.dialogue.DialogueInstance;
-import com.wegas.mcq.persistence.ChoiceDescriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -29,18 +27,28 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  */
 @Entity
 @Table(name = "FSMinstance")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Access(AccessType.FIELD)
 @XmlRootElement
 @XmlType(name = "FSMInstance")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class),
     @JsonSubTypes.Type(name = "DialogueInstance", value = DialogueInstance.class)
 })
-@Access(AccessType.FIELD)
 public class StateMachineInstance extends VariableInstance implements Serializable {
 
+    /**
+     *
+     */
     @Column(name = "currentstate_id")
     private Long currentStateId;
+    /**
+     *
+     */
     private Boolean enabled = true;
+    /**
+     *
+     */
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "transitionHistory")
     @Column(name = "transitionId")
@@ -59,11 +67,7 @@ public class StateMachineInstance extends VariableInstance implements Serializab
     @JsonProperty("currentState")
     public State getCurrentState() {
         final Map<Long, State> states = ((StateMachineDescriptor) this.findDescriptor()).getStates();
-        if (states.containsKey(this.currentStateId)) {
-            return states.get(this.currentStateId);
-        } else {
-            return null;
-        }
+        return states.get(this.currentStateId);
     }
 
     @JsonIgnore
@@ -105,6 +109,7 @@ public class StateMachineInstance extends VariableInstance implements Serializab
      *
      * @return
      */
+    @JsonIgnore
     public List<Long> getTransitionHistory() {
         return transitionHistory;
     }

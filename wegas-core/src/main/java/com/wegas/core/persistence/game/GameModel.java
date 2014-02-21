@@ -19,7 +19,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.shiro.SecurityUtils;
 import org.codehaus.jackson.JsonNode;
@@ -56,9 +55,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      *
      */
-    @NotNull
-    //@XmlID
+    @Basic(optional = false)
     //@Pattern(regexp = "^\\w+$")
+    //@XmlID
     private String name;
     /**
      *
@@ -98,9 +97,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinColumn(name = "rootgamemodel_id")
+    @OrderColumn
     @JsonView(Views.Export.class)
     //@JsonManagedReference
-    @OrderColumn
     private List<VariableDescriptor> childVariableDescriptors;
     /**
      *
@@ -130,13 +129,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "clientscriptlibrary_gamemodelid")
-    //@ElementCollection(fetch = FetchType.LAZY)
     @JsonView({Views.Export.class})
     private Map<String, GameModelContent> clientScriptLibrary = new HashMap<>();
     /**
      *
      */
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection
     private Map<String, String> properties = new HashMap<>();
     /**
      * Holds a reference to the pages, used to serialize page and game model at
@@ -146,11 +144,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonView({Views.Export.class})
     private Map<String, JsonNode> pages;
 
-    /**
-     *
-     */
-//    @ManyToOne(optional = true)
-//    private GameModel parentGameModel;
     /**
      *
      */
@@ -180,13 +173,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.setPages(map);
     }
 
-//    public GameModel getParentGameModel() {
-//        return parentGameModel;
-//    }
-//
-//    public void setParentGameModel(GameModel parentGameModel) {
-//        this.parentGameModel = parentGameModel;
-//    }
     /**
      *
      * @param force
@@ -255,7 +241,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      * @param id
      */
-//    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -524,8 +509,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         if (this.pages != null) {
             try {
                 Pages pagesDAO = new Pages(this.id.toString());
-                pagesDAO.delete();                                                  // Remove existing pages
-                for (Entry<String, JsonNode> p : this.pages.entrySet()) {             // Add all pages
+                pagesDAO.delete();                                              // Remove existing pages
+                for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
                 }
 

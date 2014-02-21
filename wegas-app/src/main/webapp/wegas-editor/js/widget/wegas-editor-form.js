@@ -132,19 +132,17 @@ YUI.add('wegas-editor-form', function(Y) {
              */
             value: {
                 "transient": true,
-                value: {
-                    setter: function(val) {
-                        if (this.form) {
-                            this.form.setValue(val, false);
-                        }
+                setter: function(val) {
+                    if (this.form) {
+                        this.form.setValue(val, false);
+                    }
+                    return val;
+                },
+                getter: function(val, name, cfg) {
+                    if (this.form && (!cfg || !cfg.internal)) {
+                        return this.form.getValue();
+                    } else {
                         return val;
-                    },
-                    getter: function(val, name, cfg) {
-                        if (this.form && !cfg.internal) {
-                            return this.form.getValue();
-                        } else {
-                            return val;
-                        }
                     }
                 }
             },

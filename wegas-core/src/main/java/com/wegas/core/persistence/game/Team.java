@@ -42,6 +42,7 @@ public class Team extends AbstractEntity {
      *
      */
     @NotNull
+    @Basic(optional = false)
     private String name;
     /**
      *
@@ -51,19 +52,13 @@ public class Team extends AbstractEntity {
     /**
      *
      */
-    //@NotNull
-    //private String token;
-    /**
-     *
-     */
     @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference(value = "player-team")
     private List<Player> players = new ArrayList<>();
     /**
      * The game model this belongs to
      */
-    @ManyToOne(optional = false)
-    @NotNull
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "parentgame_id")
     @XmlTransient
     //@XmlInverseReference(mappedBy = "teams")
@@ -97,7 +92,6 @@ public class Team extends AbstractEntity {
     public void merge(AbstractEntity a) {
         Team t = (Team) a;
         this.setName(t.getName());
-        //this.setToken(t.getToken());
     }
 
     /**
