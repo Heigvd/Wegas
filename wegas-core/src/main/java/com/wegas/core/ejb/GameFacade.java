@@ -167,6 +167,18 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     @Override
     public Game update(final Long entityId, final Game entity) {
+        String token = entity.getToken().toLowerCase().replace(" ", "-");
+        String s = token.substring(token.length() - 1);
+        String [] splitedToken = entity.getToken().split("-");
+        if (!s.equals("-")){
+            try {
+                Long.parseLong(splitedToken[splitedToken.length -1]);
+                throw new WegasException("You can't have a trait followed by a number (example: xx-12)");
+            }catch (NumberFormatException e){
+                //Gotcha
+            }
+        }
+               
         if ((this.findByToken(entity.getToken()) != null
                 && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)) {
             //|| teamFacade.findByToken(entity.getToken()) != null) {
