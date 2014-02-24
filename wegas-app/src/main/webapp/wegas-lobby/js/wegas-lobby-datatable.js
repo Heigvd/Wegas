@@ -195,6 +195,10 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             key: "name",
                             label: "Name"
                         }, {
+                            key: "gameModelName",
+                            label: "Scenario",
+                            width: "150px"
+                        }, {
                             key: "createdBy",
                             label: "Created by",
                             width: "150px"
@@ -208,10 +212,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             label: "Players",
                             width: "70px",
                             formatter: "count"
-                        }, {
-                            key: "gameModelName",
-                            label: "Game model",
-                            width: "150px"
                         }
 //                        {
 //                            key: "teamsCount",
@@ -305,7 +305,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             });
         },
         onClick: function(e) {
-            var host = this.get(HOST),
+            var host = this.get(HOST), button,
                     tr = e.newVal, // the Node for the TR clicked ...
                     last_tr = e.prevVal, //  "   "   "   the last TR clicked ...
                     rec = host.dataTable.getRecord(tr), // the current Record for the clicked TR
@@ -329,47 +329,51 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     menuItems = entity.getMenuCfg(data);                        // use entity default menu
                 }
 
-                Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
-                    switch (i.label) {
-                        case "Delete":
-                        case "Open in editor":
-                        case "Open":
-                        case "View":
-                            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
-                    }
-                });
-                if (menuItems.length === 0) {
-                    return;
-                }
-                if (this.buttons) {
-                    this.buttons.each(function(b) {                             // Remove existing buttons,
-                        b.destroy();
-                    });
-                }
+                button = Wegas.Widget.create(menuItems[0]);
+                button.render().fire("click");                                  // launch first button action
+                button.destroy();
+
+                //Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+                //    switch (i.label) {
+                //        case "Delete":
+                //        case "Open in editor":
+                //        case "Open":
+                //        case "View":
+                //            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                //    }
+                //});
+                //if (menuItems.length === 0) {
+                //    return;
+                //}
+                //if (this.buttons) {
+                //    this.buttons.each(function(b) {                             // Remove existing buttons,
+                //        b.destroy();
+                //    });
+                //}
                 //this.buttons = Y.Array.map(menuItems, function(i) {           // Add new buttons to the toolbar
                 //    return host.toolbar.add(i);
                 //});
-                if (this.get("autoClick")) {                                    // If we are in autoclick,
+                //if (this.get("autoClick")) {                                    // If we are in autoclick,
 
-                    //Y.once("rightTabShown", function() {
-                    //    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
-                    //    if (target && !target.toolbar) {
-                    //        target = target.item(0);
-                    //    }
-                    //
-                    //    if (target && target.toolbar) {
-                    //        this.buttons = target.toolbar.add(menuItems);       // Add new buttons to the right tab's toolbar
-                    //
-                    //        this.buttons.item(0).set("visible", false);
-                    //        if (this.buttons.item(1))
-                    //            this.buttons.item(1).get(CONTENTBOX).setStyle("marginLeft", "15px");
-                    //    }
-                    //}, this);
+                //Y.once("rightTabShown", function() {
+                //    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
+                //    if (target && !target.toolbar) {
+                //        target = target.item(0);
+                //    }
+                //
+                //    if (target && target.toolbar) {
+                //        this.buttons = target.toolbar.add(menuItems);       // Add new buttons to the right tab's toolbar
+                //
+                //        this.buttons.item(0).set("visible", false);
+                //        if (this.buttons.item(1))
+                //            this.buttons.item(1).get(CONTENTBOX).setStyle("marginLeft", "15px");
+                //    }
+                //}, this);
 
-                    var button = Wegas.Widget.create(menuItems[0]);
-                    button.render().fire("click");                              // launch first button action
-                    button.destroy();
-                }
+                //var button = Wegas.Widget.create(menuItems[0]);
+                //button.render().fire("click");                              // launch first button action
+                //button.destroy();
+                //}
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");
                 host.currentSelection = null;
@@ -379,10 +383,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         NS: "EditorDTMenu",
         NAME: "EditorDTMenu",
         ATTRS: {
-            children: {},
-            autoClick: {
-                value: true
-            }
+            children: {}
         }
     });
 
