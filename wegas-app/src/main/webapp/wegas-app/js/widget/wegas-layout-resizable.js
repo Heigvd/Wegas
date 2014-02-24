@@ -160,7 +160,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 //if (parseInt(target.getStyle("width"), 10) < cfg.width) {     // Only display if hidde
                 if (parseInt(target.getStyle("width"), 10) < 70) {              // Only display if hidde
                     target.setStyle("left", "initial");                         // Reset left value since it may have been changed during resize
-                    target.setStyle("width", this.oldWidth || ((this.get(position + ".width") || 400) + "px"));
+                    target.setStyle("width", this.oldWidth || ((this.get(position + ".width") || 430) + "px"));
                     this.syncCenterNode();
                     //this.getAnim(position).set("reverse", false).run();
                 }

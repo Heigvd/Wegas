@@ -48,12 +48,13 @@ YUI.add('wegas-pageeditor', function(Y) {
             if (host.toolbar) {
                 el = host.toolbar.get('header');
 
-                el.append('<div style="width:15px;display:inline-block;"></div>');// Add a separator
+                el.append('<div style="width:10px;display:inline-block;"></div>');// Add a separator
 
                 /* Edit page  */
                 this.designButton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Edit page"
                 }).render(el);
+                this.designButton.get("contentBox").addClass("wegas-pageeditor-editbutton")
                 this.designButton.after("pressedChange", function(e) {
                     host.get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
                             e.newVal);
