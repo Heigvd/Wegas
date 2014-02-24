@@ -139,7 +139,7 @@ YUI.add('wegas-entity', function(Y) {
      * GameModel mapper
      */
     persistence.GameModel = Base.create("GameModel", persistence.Entity, [], {}, {
-        EDITORNAME: "Game model",
+        EDITORNAME: "Scenario",
         ATTRS: {
             name: {
                 type: STRING
@@ -215,7 +215,7 @@ YUI.add('wegas-entity', function(Y) {
                 plugins: [{
                         fn: "OpenTabAction",
                         cfg: {
-                            label: "Game model",
+                            label: "Scenario",
                             emptyTab: true,
                             tabSelector: '#rightTabView',
                             wchildren: [{
@@ -242,7 +242,7 @@ YUI.add('wegas-entity', function(Y) {
                                             rightLabel: "Copy",
                                             value: "GameModel:Duplicate"
                                         }, {
-                                            rightLabel: "Host",
+                                            rightLabel: "Start game",
                                             value: "GameModel:Instantiate"
                                         }]
                                 }]
@@ -504,10 +504,7 @@ YUI.add('wegas-entity', function(Y) {
                                     plugins: [{
                                             fn: "EditorTVContextMenu"
                                         }, {
-                                            fn: "EditorTVToolbarMenu",
-                                            cfg: {
-                                                autoClick: false
-                                            }
+                                            fn: "EditorTVToolbarMenu"
                                         }]
                                 }]
                         }

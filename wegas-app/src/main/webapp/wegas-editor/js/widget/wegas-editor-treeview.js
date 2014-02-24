@@ -35,13 +35,12 @@ YUI.add('wegas-editor-treeview', function(Y) {
         renderUI: function() {
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            });
-            this.treeView.addTarget(this);
-            this.treeView.render(this.get(CONTENTBOX));
+            });                                                                 // Instantiate treeview
+            this.treeView.addTarget(this);                                      // Listen to treeview's events
+            this.treeView.render(this.get(CONTENTBOX));                         // Render treeview                   
 
-            this.plug(Plugin.EditorTVToolbarMenu);
-            this.plug(Plugin.EditorTVContextMenu);
-            this.plug(Plugin.RememberExpandedTreeView);
+            this.plug(Plugin.EditorTVContextMenu);                              // Open context menu on right click
+            this.plug(Plugin.RememberExpandedTreeView);                         // Selected node is preserved across requests
         },
         /**
          * @function
@@ -296,9 +295,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 host.toolbar.destroyAll();
                 host.toolbar.add(menuItems);                                    // Populate the menu with the elements associated to the
 
-                if (this.get("autoClick")) {
-                    host.toolbar.item(0).set("visible", false).fire("click");   // Excute the actions associated to the first item of the menu
-                }
+                //host.toolbar.item(0).set("visible", false).fire("click");       // Excute the actions associated to the first item of the menu
+
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
                 host.currentSelection = null;
@@ -340,11 +338,26 @@ YUI.add('wegas-editor-treeview', function(Y) {
     }, {
         NS: "menu",
         ATTRS: {
-            children: {},
-            autoClick: {
-                value: true
+            children: {}
+        }
+    });
+    /**
+     * 
+     */
+    Plugin.EditorTVDefaultMenuClick = Y.Base.create("admin-menu", Plugin.EditorTVToolbarMenu, [], {
+        onTreeViewSelection: function(e) {
+            var menuItems = this.getMenuItems(e.target.get("data"));
+
+            if (menuItems) {
+                var button = Wegas.Widget.create(menuItems[0]);
+                button.fire("click");
+                button.destroy();
+            } else {
+                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
             }
         }
+    }, {
+        NS: "defaultmenuclick"
     });
     /**
      * @class Open a menu on right click, containing the admin edition field

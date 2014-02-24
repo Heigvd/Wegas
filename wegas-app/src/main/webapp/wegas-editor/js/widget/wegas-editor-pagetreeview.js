@@ -256,7 +256,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
     });
     Y.namespace("Wegas").PageTreeview = PageTreeview;
 
-    var PageTreeviewToolbarMenu = Y.Base.create("wegas-editor-page", Plugin.VariableTVToolbarMenu, [], {
+    var PageTreeviewToolbarMenu = Y.Base.create("wegas-editor-page", Plugin.EditorTVDefaultMenuClick, [], {
         onTreeViewSelection: function(e) {
             var selection = e.target, data = selection.get("data"),
                     page = data.page,

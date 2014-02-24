@@ -28,15 +28,9 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         CONTENT_TEMPLATE: "<div class=\"wegas-editor-variabletreeview\"></div>",
         // ** Lifecycle methods ** //
         renderUI: function() {
-            //VariableTreeView.superclass.renderUI.apply(this);
+            VariableTreeView.superclass.renderUI.apply(this);                   // Render treeview
 
-            this.treeView = new Y.TreeView();
-            this.treeView.addTarget(this);
-            this.treeView.render(this.get(CONTENTBOX));
-
-            this.plug(Plugin.VariableTVToolbarMenu);
-            this.plug(Plugin.EditorTVContextMenu);
-            this.plug(Plugin.RememberExpandedTreeView);
+            this.plug(Plugin.EditorTVDefaultMenuClick);                         // Open edit tab on left click
 
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
@@ -334,56 +328,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
     }, {
         NS: "EditorTVNodeLoader",
         NAME: "EditorTVNodeLoader"
-    });
-
-    /**
-     *
-     */
-    Plugin.VariableTVToolbarMenu = Y.Base.create("admin-menu", Plugin.EditorTVToolbarMenu, [], {
-        onTreeViewSelection: function(e) {
-            var menuItems = this.getMenuItems(e.target.get("data"), e.node),
-                    host = this.get("host"), firstButton;
-
-            if (menuItems) {
-                if (this.get("autoClick")) {
-                    firstButton = menuItems[0];
-                    menuItems.splice(0, 1);
-                    //host.toolbar.item(0).set("visible", false).fire("click"); // Excute the actions associated to the first item of the menu
-                }
-
-                if (menuItems[0] && menuItems[0].label.indexOf("New") > -1) {
-                    //host.toolbar.destroyAll();
-                    host.toolbar.item(host.toolbar.size() - 1).destroy();
-                    host.toolbar.add(menuItems[0]);                             // Populate the menu with the elements associated to the
-                    menuItems.splice(0, 1);
-                } else {
-                    //host.toolbar.item(host.toolbar.size() - 1).disable();
-                }
-
-                //Y.once("rightTabShown", function() {
-                //    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
-                //    if (target && !target.toolbar) {
-                //        target = target.item(0);
-                //    }
-                //
-                //    if (target && target.toolbar && menuItems.length > 0) {
-                //        var buttons = target.toolbar.add(menuItems);            // Add new buttons to the right tab's toolbar
-                //        buttons.item(0).get(CONTENTBOX).setStyle("marginLeft", "15px");
-                //    }
-                //}, this);
-
-                if (this.get("autoClick")) {
-                    var button = Wegas.Widget.create(firstButton);
-                    button.fire("click");
-                    button.destroy();
-                }
-            } else {
-                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
-                host.currentSelection = null;
-            }
-        }
-    }, {
-        NS: "menu"
     });
 
 });

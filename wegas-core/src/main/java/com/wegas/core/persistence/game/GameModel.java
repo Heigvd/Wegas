@@ -183,6 +183,19 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         }
     }
 
+    public void propagateGameModel() {
+        this.propagateGameModel(this);
+    }
+
+    public void propagateGameModel(final DescriptorListI list) {
+        for (VariableDescriptor vd : (List<VariableDescriptor>) list.getItems()) {
+            this.variableDescriptors.add(vd);
+            if (vd instanceof DescriptorListI) {
+                this.propagateGameModel((DescriptorListI) vd);
+            }
+        }
+    }
+
     @Override
     public void merge(AbstractEntity n) {
         GameModel other = (GameModel) n;
@@ -296,7 +309,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setChildVariableDescriptors(List<VariableDescriptor> variableDescriptors) {
         this.childVariableDescriptors = variableDescriptors;
-        this.variableDescriptors = variableDescriptors;
+        //this.variableDescriptors.addAll(variableDescriptors);
         for (VariableDescriptor vd : variableDescriptors) {
             vd.setGameModel(this);
         }
