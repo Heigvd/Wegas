@@ -8,33 +8,35 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.ScriptEvent;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.internal.ResetEvent;
-import com.wegas.core.exception.NoPlayerException;
 import com.wegas.core.exception.WegasException;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.resourceManagement.persistence.DialogueTransition;
 import java.io.Serializable;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.script.Invocable;
 import javax.script.ScriptException;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Run state machines.
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
@@ -43,25 +45,26 @@ import org.slf4j.LoggerFactory;
 public class StateMachineFacade implements Serializable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
+    /**
+     * Event parameter will be passed in a function with named parameter
+     * {@value #EVENT_PARAMETER_NAME}
+     */
+    static final private String EVENT_PARAMETER_NAME = "param";
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
     @EJB
     private ScriptFacade scriptManager;
-    /**
-     * StateMachineFacade is running
-     */
-    private Boolean run = false;
-    /**
-     * Used to store each transition triggered by a specific player
-     */
+
     @Inject
     private RequestManager requestManager;
+    @Inject
+    private ScriptEvent scriptEvent;
     /**
-     * Stores passed transitions
+     * Manage internal event transition.
      */
-    private Map<Player, HashSet<Transition>> playerTransitions = new HashMap<>();
+    private InternalStateMachineEventCounter stateMachineEventsCounter;
 
     /**
      *
@@ -80,87 +83,22 @@ public class StateMachineFacade implements Serializable {
             player = variableInstanceFacade.findAPlayer(requestManager.getUpdatedInstances().get(0));
         }
         this.runForPlayer(player);
-//         this.playerUpdated(playerAction.getPlayer());
-//        this.playerTransitions.clear();
     }
 
     public void resetEventListener(@Observes ResetEvent resetEvent) {
         logger.debug("Received Reset event");
         System.out.println("ResetEvent");
         for (Player player : resetEvent.getConcernedPlayers()) {
-//            this.playerUpdated(player);
             this.runForPlayer(player);
         }
-//        this.playerTransitions.clear();
     }
 
     private void runForPlayer(Player player) {
         List<StateMachineDescriptor> statemachines = variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
         List<Transition> passed = new ArrayList<>();
+        stateMachineEventsCounter = new InternalStateMachineEventCounter();
         Integer steps = this.doSteps(player, passed, statemachines, 0);
         logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", player.getName(), passed);
-    }
-
-    /**
-     *
-     * @param player
-     */
-    private void playerUpdated(Player player) {
-        Integer steps = 0;
-        logger.debug("Updated instances {}, transition done : {}", requestManager.getUpdatedInstances());
-        if (run) {
-            logger.debug("Running, received changed {}", requestManager.getUpdatedInstances());
-            return;
-        }
-
-        run = true;
-        //gameManager.clearUpdatedInstances();
-        //TODO: lock SMInstance (concurrency)
-
-        /*
-         * Find players for each instance
-         */
-        if (player != null) {
-            playerTransitions.put(player, new HashSet<Transition>());
-        } else {
-            for (VariableInstance instance : requestManager.getUpdatedInstances()) {
-                try {
-                    /*
-                     * Setup player's passed transitions
-                     */
-                    playerTransitions.put(variableInstanceFacade.findAPlayer(instance), new HashSet<Transition>());
-                } catch (NoPlayerException e) {
-                    logger.warn("{} : {}", e.getClass().getSimpleName(), e.getMessage());
-                }
-            }
-        }
-        if (playerTransitions.size() < 1) {
-            logger.warn("No players found");
-            return;
-        }
-        /*
-         * build a list with each statemachine instance relevant to players
-         * (MAP)
-         */
-        Map<StateMachineInstance, Player> statemachinesPlayerMap = new HashMap<>();
-        GameModel gamemodel = ((Player) playerTransitions.keySet().toArray()[0]).getGameModel();
-        List<StateMachineDescriptor> stateMachineDescriptors = variableDescriptorFacade.findByClass(gamemodel, StateMachineDescriptor.class);
-        for (StateMachineDescriptor stateMachineDescriptor : stateMachineDescriptors) {
-            for (Player p : playerTransitions.keySet()) {
-                statemachinesPlayerMap.put((StateMachineInstance) stateMachineDescriptor.getInstance(p), p); //won't duplicate (HashMap) if players share same instance
-            }
-        }
-
-        logger.debug("StateMachineInstance(s) found: {}", statemachinesPlayerMap);
-        while (this.run(statemachinesPlayerMap, playerTransitions)) {
-            steps += 1;
-        }
-        run = false;
-        if (steps > 0) {
-            for (Player p : playerTransitions.keySet()) {
-                logger.info("#steps[" + steps + "] - Player {} triggered transition(s):{}", p.getName(), playerTransitions.get(p));
-            }
-        }
     }
 
     private Integer doSteps(Player player, List<Transition> passedTransitions, List<StateMachineDescriptor> stateMachineDescriptors, Integer steps) {
@@ -175,22 +113,40 @@ public class StateMachineFacade implements Serializable {
         for (VariableDescriptor sm : stateMachineDescriptors) {
             validTransition = false;
             smi = (StateMachineInstance) sm.getInstance(player);
-            if (!smi.getEnabled()) {
+            if (!smi.getEnabled() || smi.getCurrentState() == null) { // a state may not be defined : remove statemachine's state when a player is inside that state
                 continue;
             }
             transitions = smi.getCurrentState().getTransitions();
             for (Transition transition : transitions) {
                 if (transition instanceof DialogueTransition) {                 // Dialogue, don't eval
                     continue;
-                } else if (transition.getTriggerCondition() == null
-                        || transition.getTriggerCondition().getContent() == null
-                        || transition.getTriggerCondition().getContent().equals("")) {
+                } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;
+                } else if (transition.getTriggerCondition().getContent().contains("Event.fired")) { //TODO: better way to find out which are event transition.
+                    if (passedTransitions.contains(transition)) {
+                        /*
+                         * Loop prevention : that player already passed through
+                         * this transiton
+                         */
+                        logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
+                    } else {
+                        try {
+                            if (this.eventTransition(player, transition, smi)) {
+                                passedTransitions.add(transition);
+                                transitionPassed = true;
+                            }
+                        } catch (ScriptException ex) {
+                            //maybe throw a WegasException
+                            //validTransition still false
+                        }
+
+                    }
+
                 } else {
-                    requestManager.setPlayer(player);
                     try {
-                        validTransition = (Boolean) scriptManager.eval(transition.getTriggerCondition());
+                        validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition());
                     } catch (ScriptException ex) {
+                        //validTransition still false
                     }
                 }
                 if (validTransition == null) {
@@ -219,8 +175,7 @@ public class StateMachineFacade implements Serializable {
             variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
             preImpacts.addAll(impacts);
             try {
-                requestManager.setPlayer(player);
-                scriptManager.eval(preImpacts);
+                scriptManager.eval(player, preImpacts);
             } catch (ScriptException | WegasException ex) {
                 logger.warn("Script failed ", ex);
             }
@@ -231,119 +186,116 @@ public class StateMachineFacade implements Serializable {
 
     }
 
-    private Boolean run(Map<StateMachineInstance, Player> statemachinesPlayerMap,
-            Map<Player, HashSet<Transition>> playerTransitions) {
-
-        Boolean transitionTriggered = false;
-        Map<Player, List<Script>> playerImpacts = new HashMap<>();
-        Player currentPlayer;
-        List<Script> impacts;
-        HashSet<Transition> passedTransitions;
-
-        for (StateMachineInstance stateMachine : statemachinesPlayerMap.keySet()) {
-            /*
-             * Skip disabled Statemachines
-             */
-            if (!stateMachine.getEnabled()) {
-                continue;
-            }
-            currentPlayer = statemachinesPlayerMap.get(stateMachine);
-            passedTransitions = playerTransitions.get(currentPlayer);
-
-
-            /*
-             * Setup player's impact list
-             */
-            if (playerImpacts.get(currentPlayer) == null) {
-                impacts = new ArrayList<>();
-                playerImpacts.put(currentPlayer, impacts);
-            } else {
-                impacts = playerImpacts.get(currentPlayer);
-            }
-            List<Transition> transitions = stateMachine.getCurrentState().getTransitions();
-            /*
-             * Loop on each state's transtions until a valid transition is found
-             */
-            for (Transition transition : transitions) {
-                Boolean validTransition = false;
-
-                if (!(transition instanceof DialogueTransition)
-                        && transition.getTriggerCondition() != null) {      //Do not eval Dialogue transition, no condition means invalid transition
-                    requestManager.setPlayer(currentPlayer);
-                    try {
-
-                        if (transition.getTriggerCondition().getContent().equals("")) { // if the condition is empty
-                            validTransition = true;                             // return true
-                        } else {                                                // Otherwise evaluate the condition
-                            validTransition = (Boolean) scriptManager.eval(transition.getTriggerCondition());
-                        }
-                    } catch (ScriptException ex) {
-                        validTransition = false;
-                    }
-                }
-
-                if (validTransition == null) {
-                    throw new WegasException("Please review condition [" + stateMachine.getDescriptor().getName() + "]:\n"
-                            + transition.getTriggerCondition().getContent());
-                } else if (validTransition) {
-                    /*
-                     * A valid transition has been found
-                     */
-                    if (passedTransitions.contains(transition)) {
-                        /*
-                         * Loop prevention : that player already passed through
-                         * this transiton
-                         */
-                        logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
-                    } else {
-                        passedTransitions.add(transition);                      //Store transition to avoid doing it again
-                        stateMachine.setCurrentStateId(transition.getNextStateId());//Change statemachine's state
-                        impacts.add(transition.getPreStateImpact());            //Prepare for eval
-                        impacts.add(stateMachine.getCurrentState().getOnEnterEvent()); //Prepare for eval
-                        stateMachine.transitionHistoryAdd(transition.getId());  // Adding transition.id to history
-                        transitionTriggered = true;
-                        break;                                                  // A transition has bean found stop searching
-                    }
-                }
-            }
-        }
-        this.compute(playerImpacts);
-        return transitionTriggered;
-    }
-
     /**
-     * Compute for a list of players their impact list
+     * Manage event transition
      *
-     * @param playerImpacts Map a player with a list of corresponding Script
-     * impacts
-     */
-    private void compute(Map<Player, List<Script>> playerImpacts) {
-        for (Iterator<Player> it = playerImpacts.keySet().iterator(); it.hasNext();) {
-            Player p = it.next();
-            requestManager.setPlayer(p);
-            if (playerImpacts.get(p).size() > 0) {
-                logger.debug("Compute for {}\n{}", p.getName(), playerImpacts.get(p));
-                try {
-                    scriptManager.eval(playerImpacts.get(p));
-                } catch (ScriptException | WegasException ex) {
-                    logger.warn("Script failed ", ex);
-                }
-            }
-        }
-    }
-    /**
-     *
-     * @param entity
+     * @param player current {@link Player}
+     * @param transition the event transition
+     * @param smi current {@link StateMachineInstance} passing transition
+     * @return
      * @throws ScriptException
-     * @throws WegasException
      */
-//    public void step(StateMachineInstance entity) throws ScriptException, WegasException{
-//        List<Transition> transitions = entity.getCurrentState().getTransitions();
-//        for(Transition transition: transitions){
-//            Script script = transition.getTriggerCondition();
-//            //Get playerId, gameModelId and need an additional evalScript (true|false)
-//            scriptManager.eval(Long.MIN_VALUE, script);
-//
-//        }
-//    }
+    private Boolean eventTransition(Player player, Transition transition, StateMachineInstance smi) throws ScriptException {
+        String script = transition.getTriggerCondition().getContent();
+        Pattern pattern = Pattern.compile("Event\\.fired\\((['\"])(\\w+)\\1\\)");
+        Matcher matcher = pattern.matcher(script);
+        String event;
+        if (matcher.matches()) {
+            event = matcher.group(2);
+        } else {
+            return false;
+        }
+        Object[] firedParams = scriptEvent.getFiredParameters(event);
+        /* events and more ? */
+        if (!(Boolean) scriptManager.eval(player, transition.getTriggerCondition())) {
+            return false;
+        }
+        final Integer instanceEventCount = stateMachineEventsCounter.count(smi, event);
+        if (firedParams.length > instanceEventCount) {
+            smi.setCurrentStateId(transition.getNextStateId());
+            stateMachineEventsCounter.increase(smi, event);
+            if (!this.isNotDefined(transition.getPreStateImpact())) {
+                this.evalEventImpact(player, transition.getPreStateImpact(), firedParams[instanceEventCount]);
+            }
+            if (!this.isNotDefined(smi.getCurrentState().getOnEnterEvent())) {
+                this.evalEventImpact(player, smi.getCurrentState().getOnEnterEvent(), firedParams[instanceEventCount]);
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Run given script with given parameter. Script may use named parameter
+     * {@value #EVENT_PARAMETER_NAME} to access passed parameter.
+     *
+     * @param script the script to run
+     * @param param the parameter to pass to the script
+     * @see #EVENT_PARAMETER_NAME
+     */
+    private void evalEventImpact(Player player, final Script script, final Object param) throws ScriptException {
+        try {
+            final Object impactFunc;
+            if (script.getLanguage().toLowerCase().equals("javascript")) {
+                impactFunc = scriptManager.eval(new Script(script.getLanguage(),
+                        String.format("function(%s){%s}", EVENT_PARAMETER_NAME, script.getContent()) // A JavaScript Function. should check for engine type
+                ));
+            } else {
+                return; // define other language here
+            }
+            if (param instanceof ScriptEvent.EmptyObject) {
+                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc);
+            } else {
+                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc, param);
+            }
+        } catch (NoSuchMethodException ex) {
+            logger.debug("Event transition script failed", ex);
+        }
+    }
+
+    /**
+     * Test if a script is not defined, ie empty or null
+     *
+     * @param script to test
+     * @return
+     */
+    private Boolean isNotDefined(Script script) {
+        return script == null || script.getContent() == null
+                || script.getContent().equals("");
+    }
+
+    /**
+     * Used to store Events during run. Prevent passing multiple event
+     * transitions with same event if less events where thrown.
+     * StateMachineInstance dependant.
+     */
+    private class InternalStateMachineEventCounter {
+
+        private final Map<StateMachineInstance, Map<String, Integer>> smEvents;
+
+        private InternalStateMachineEventCounter() {
+            this.smEvents = new HashMap<>();
+        }
+
+        private Integer count(StateMachineInstance instance, String event) {
+            if (!smEvents.containsKey(instance)) {
+                smEvents.put(instance, new HashMap<String, Integer>());
+            }
+            if (smEvents.get(instance).containsKey(event)) {
+                return smEvents.get(instance).get(event);
+            } else {
+                return 0;
+            }
+        }
+
+        private void increase(StateMachineInstance instance, String event) {
+            if (!smEvents.containsKey(instance)) {
+                smEvents.put(instance, new HashMap<String, Integer>());
+            }
+            smEvents.get(instance).put(event, this.count(instance, event) + 1);
+        }
+
+    }
 }

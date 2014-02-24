@@ -105,7 +105,7 @@ function changePicture() {
                 for (j = 0; j < imgSuffixe.length; j++) {
                     if (oldImg.indexOf(imgSuffixe[j]) > -1) {
                         newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[0]);
-                        break
+                        break;
                     }
                 }
                 break;
@@ -113,7 +113,7 @@ function changePicture() {
                 for (j = 0; j < imgSuffixe.length; j++) {
                     if (oldImg.indexOf(imgSuffixe[j]) > -1) {
                         newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[1]);
-                        break
+                        break;
                     }
                 }
                 break;
@@ -121,7 +121,7 @@ function changePicture() {
                 for (j = 0; j < imgSuffixe.length; j++) {
                     if (oldImg.indexOf(imgSuffixe[j]) > -1) {
                         newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[2]);
-                        break
+                        break;
                     }
                 }
                 break;
@@ -131,3 +131,24 @@ function changePicture() {
         }
     }
 }
+/**
+ * History
+ **/
+function sendHistory(type, title, msg) {
+    var phase = phases.getDescriptor().item(currentPhase.value - 1),
+            phaseText = type + " - " + phase.label + " (" + phase.getInstance().value + ")";
+    VariableDescriptorFacade.find(gameModel, "history").sendMessage(self, phaseText, title, msg, []);
+}
+
+Event.on("replyValidate", function(e) {
+    var msg = "", root;
+    /* Assume third level*/
+    root = VariableDescriptorFacade.findParentList(e.question.getDescriptor());
+    root = VariableDescriptorFacade.findParentList(root);
+    root = VariableDescriptorFacade.findParentList(root);
+    msg += "<b>" + e.choice.getDescriptor().getTitle() + "</b><br>"; // Choice selected
+    msg += e.choice.getDescriptor().getDescription() + "<br><hr><br>"; // choice description
+    msg += e.reply.getResult().getAnswer(); //Reply
+
+    sendHistory(root.label, e.question.getDescriptor().getTitle(), msg, []);
+});

@@ -168,7 +168,7 @@
                         Y.one(".wegas-title").setContent(gm.get("name"));
 
                         try {
-                            #{editorGameController.getClientScripts()}          // Display game model specific js footer
+                #{editorGameController.getClientScripts()}          // Display game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }

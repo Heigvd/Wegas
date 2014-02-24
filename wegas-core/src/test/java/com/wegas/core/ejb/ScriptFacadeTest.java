@@ -38,7 +38,6 @@ public class ScriptFacadeTest extends AbstractEJBTest {
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
         final ScriptFacade sm = lookupBy(ScriptFacade.class);
 
-
         final NumberDescriptor numberDescriptor = new NumberDescriptor("inttest");
         numberDescriptor.setDefaultInstance(new NumberInstance(1));
         numberDescriptor.setScope(new TeamScope());
@@ -60,5 +59,11 @@ public class ScriptFacadeTest extends AbstractEJBTest {
         // Verify the new value
         final StringInstance instance = (StringInstance) vif.find(stringDescriptor.getId(), player.getId());
         Assert.assertEquals(VALUE2, instance.getValue());
+
+        //Test with events
+        final Script testEvent = new Script("Event.on('testEvent', function(o){VariableDescriptorFacade.findByName(gameModel,'" + VARIABLENAME + "').getInstance(self).setValue(o.value);});\nEvent.fire('testEvent', {'value':'" + VALUE + "'});");
+        testEvent.setLanguage("JavaScript");
+        sm.eval(player.getId(), testEvent);
+        Assert.assertEquals(VALUE, ((StringInstance) vif.find(stringDescriptor.getId(), player.getId())).getValue());
     }
 }

@@ -61,6 +61,11 @@ public class ScriptFacade implements Serializable {
      *
      */
     @Inject
+    private ScriptEvent event;
+    /**
+     *
+     */
+    @Inject
     private RequestManager requestManager;
     /**
      *
@@ -87,34 +92,43 @@ public class ScriptFacade implements Serializable {
      * @throws WegasException
      */
     public Object eval(Script script, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
-        ScriptEngineManager mgr = new ScriptEngineManager();                    // Instantiate the corresponding script engine
-        ScriptEngine engine;
-        try {
-            engine = mgr.getEngineByName(script.getLanguage());
-        } catch (NullPointerException ex) {
-            logger.error("Could not find language", ex.getMessage(), ex.getStackTrace());
-            throw new WegasException("Could not instantiate script engine for script" + script);
+
+        ScriptEngine engine = requestManager.getCurrentEngine();
+        if (engine == null) {
+            ScriptEngineManager mgr = new ScriptEngineManager();                    // Instantiate the corresponding script engine
+
+            try {
+                engine = mgr.getEngineByName(script.getLanguage());
+            } catch (NullPointerException ex) {
+                logger.error("Could not find language", ex.getMessage(), ex.getStackTrace());
+                throw new WegasException("Could not instantiate script engine for script" + script);
+            }
+
+            // Invocable invocableEngine = (Invocable) engine;
+            engine.put("self", requestManager.getPlayer());                         // Inject current player
+            engine.put("gameModel", requestManager.getPlayer().getGameModel());     // Inject current gameModel
+            try {
+                engineInvocationEvent.fire(
+                        new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
+
+            } catch (ObserverException ex) {
+                throw (WegasException) ex.getCause();
+            }
+            requestManager.setCurrentEngine(engine);
         }
         // Invocable invocableEngine = (Invocable) engine;
 
+        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
+            engine.put(arg.getKey(), arg.getValue());
+        }
+
         try {
-            engineInvocationEvent.fire(new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
-
-        } catch (ObserverException ex) {
-            throw (WegasException) ex.getCause();
-        } finally {                                                             //Try finishing evaluation
-            for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
-                engine.put(arg.getKey(), arg.getValue());
-            }
-
-            try {
-                return engine.eval(script.getContent());
-            } catch (ScriptException ex) {
-                logger.warn("{} in\n{}", ex.getMessage(), script.getContent());
-                requestManager.addException(
-                        new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
-                throw new ScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
-            }
+            return engine.eval(script.getContent());
+        } catch (ScriptException ex) {
+            logger.warn("{} in\n{}", ex.getMessage(), script.getContent());
+            requestManager.addException(
+                    new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
+            throw new ScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
         }
     }
 
@@ -151,6 +165,8 @@ public class ScriptFacade implements Serializable {
         evt.getEngine().put("gameModel", evt.getPlayer().getGameModel());       // Inject current gameModel
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
         evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
+        evt.getEngine().put("Event", event);                                    // Inject the Event manager
+        event.detachAll();
 
         List<String> errorVariable = new ArrayList<>();
 

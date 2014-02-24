@@ -197,7 +197,16 @@
                                 "disabled": false,
                                 "label": "<span class=\"wegas-icon cep-icon-history\"></span>Historique",
                                 "cssClass": "menu-button",
-                                "disabled": true
+                                "plugins": [
+                                    {
+                                        "fn": "OpenPageAction",
+                                        "cfg": {
+                                            "subpageId": 7,
+                                            "targetEvent": "click",
+                                            "targetPageLoaderId": "maindisplayarea"
+                                        }
+                                    }
+                                ]
                             }, {
                                 "cssClass": "menu-loginbutton",
                                 "disabled": false,
@@ -311,6 +320,9 @@
     },
     "7": {
         "id": 7,
-        "type": "ResultsDisplay"
+        "type": "InboxDisplay",
+        "variable": {
+            "name": "history"
+        }
     }
 }

@@ -240,6 +240,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                         value: expression.arguments[1].value
                                     };
                                 case "RequestManager":
+                                case "Event":
                                     var args = [];
 
                                     Y.Array.each(expression.arguments, function(i) {

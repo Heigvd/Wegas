@@ -7,9 +7,9 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
-import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
+import javax.script.ScriptEngine;
 
 /**
  *
@@ -50,6 +51,10 @@ public class RequestManager implements Serializable {
      *
      */
     private Locale locale;
+    /**
+     *
+     */
+    private ScriptEngine currentEngine = null;
 
     /**
      *
@@ -72,7 +77,10 @@ public class RequestManager implements Serializable {
      * @param currentPlayer the currentPlayer to set
      */
     public void setPlayer(Player currentPlayer) {
-        this.currentPlayer = currentPlayer;
+       if ((this.currentPlayer == null) || (currentPlayer == null) || (currentPlayer.getId() != this.currentPlayer.getId())) {
+            this.currentPlayer = currentPlayer;
+            this.setCurrentEngine(null);
+        }
     }
 
     /**
@@ -81,6 +89,22 @@ public class RequestManager implements Serializable {
      */
     public GameModel getCurrentGameModel() {
         return this.getPlayer().getGameModel();
+    }
+
+    /**
+     *
+     * @return the currentEngine
+     */
+    public ScriptEngine getCurrentEngine() {
+        return currentEngine;
+    }
+
+    /**
+     *
+     * @param currentEngine the currentEngine to set
+     */
+    public void setCurrentEngine(ScriptEngine currentEngine) {
+        this.currentEngine = currentEngine;
     }
 
     /**

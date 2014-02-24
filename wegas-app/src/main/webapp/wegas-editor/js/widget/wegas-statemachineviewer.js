@@ -43,21 +43,24 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this._childrenContainer = childrenContainer;
             childrenContainer.setStyle("transform", "scale(1)");
 
-            this.btnNew = this.toolbar.add(new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>New"
-            })).item(0);
+            this.btnNew = new Y.Button({
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
+                render: this.toolbar.get("header")
+            });
 
             this.toolbar.get('header').append('<div style="width:10px;display:inline-block;"></div>');// Add a separator
 
-            this.sliderZoom = this.toolbar.add(new Y.Slider({
+            this.sliderZoom = new Y.Slider({
                 min: StateMachineViewer.MIN_ZOOM * StateMachineViewer.FACTOR_ZOOM,
                 max: StateMachineViewer.MAX_ZOOM * StateMachineViewer.FACTOR_ZOOM,
-                value: StateMachineViewer.FACTOR_ZOOM // default zoom
-            })).item(0);
+                value: StateMachineViewer.FACTOR_ZOOM, // default zoom
+                render: this.toolbar.get("header")
+            });
 
-            this.btnZoomValue = this.toolbar.add(new Y.Button({
-                label: "100%"
-            })).item(0);
+            this.btnZoomValue = new Y.Button({
+                label: "100%",
+                render: this.toolbar.get("header")
+            });
 
             this.scrollView = new Y.ScrollView({
                 srcNode: '.scrollable',
