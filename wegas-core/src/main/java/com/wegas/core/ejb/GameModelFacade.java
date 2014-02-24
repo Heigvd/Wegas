@@ -87,7 +87,6 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
         this.em.flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
-        //this.reset(entity);                                                   // Reset the game model
 
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Duplicate:gm" + entity.getId());
@@ -119,26 +118,25 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
-        final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
+        final GameModel newGameModel = (GameModel) srcGameModel.duplicate();    // Duplicate it
 
-        boolean added = false;
+        boolean added = false;                                                  // Find a unique name for this new game (e.g. Oldname(1))
         int suffix = 1;
-        String newName = null;
+        String newName;
         while (!added) {
             newName = srcGameModel.getName() + "(" + suffix + ")";
             try {
                 this.findByName(newName);
                 suffix++;
             } catch (NoResultException ex) {
+                newGameModel.setName(newName);
                 added = true;
             }
         }
 
-        newGameModel.setName(newName);
-        this.create(newGameModel);                                              // store it db
-        //em.flush();
+        this.create(newGameModel);                                              // Create the new game model
 
-        try {                                                                   //Clone jcr FILES
+        try {                                                                   // Clone files and pages
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
             connector.cloneWorkspace(srcGameModel.getId());
             newGameModel.setPages(srcGameModel.getPages());
@@ -211,11 +209,15 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         this.reset(this.find(gameModelId));
     }
 
+    /**
+     *
+     * @param gameModel
+     */
     public void reset(final GameModel gameModel) {
-        em.flush();
-        em.refresh(gameModel);
+        //em.flush();
+        gameModel.propagateGameModel();
         gameModel.propagateDefaultInstance(true);                               // Propagate default instances
-        em.flush();  
+        em.flush();
         resetEvent.fire(new ResetEvent(gameModel));                             // Send an reset event (for the state machine and other)
     }
 }
