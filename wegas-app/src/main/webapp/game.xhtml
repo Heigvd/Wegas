@@ -58,7 +58,8 @@
                     app.render();                                               // Launch app
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
-                        window.location = app.get("base") + "play.html?gameId=" + e.gameId;// open the game in a new tab
+                        Y.config.win.location.reload();
+                        //window.location = app.get("base") + "play.html?gameId=" + e.gameId;// open the game in a new tab
                     });
                 });
             </script>

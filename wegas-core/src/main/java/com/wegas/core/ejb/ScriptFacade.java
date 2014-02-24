@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.EngineInvocationEvent;
 import com.wegas.core.exception.WegasException;
+import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -17,7 +18,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -66,20 +66,14 @@ public class ScriptFacade implements Serializable {
      *
      */
     @Inject
-    private ScriptEvent event;
-    /**
-     *
-     */
-    @Inject
     Event<EngineInvocationEvent> engineInvocationEvent;
 
     /**
      *
      */
-    @PostConstruct
-    public void onConstruct() {
-    }
-
+    //@PostConstruct
+    //public void onConstruct() {
+    //}
     /**
      *
      * Fires an engineInvocationEvent, which should be intercepted to customize
@@ -92,42 +86,47 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public Object eval(List<Script> scripts, Map<String, Object> arguments) throws ScriptException, WegasException {
-        while (scripts.remove(null)) {
-        }                                           //remove null scripts
+    public Object eval(Script script, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
+        ScriptEngineManager mgr = new ScriptEngineManager();                    // Instantiate the corresponding script engine
+        ScriptEngine engine;
+        try {
+            engine = mgr.getEngineByName(script.getLanguage());
+        } catch (NullPointerException ex) {
+            logger.error("Could not find language", ex.getMessage(), ex.getStackTrace());
+            throw new WegasException("Could not instantiate script engine for script" + script);
+        }
+        // Invocable invocableEngine = (Invocable) engine;
+
+        try {
+            engineInvocationEvent.fire(new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
+
+        } catch (ObserverException ex) {
+            throw (WegasException) ex.getCause();
+        } finally {                                                             //Try finishing evaluation
+            for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
+                engine.put(arg.getKey(), arg.getValue());
+            }
+
+            try {
+                return engine.eval(script.getContent());
+            } catch (ScriptException ex) {
+                logger.warn("{} in\n{}", ex.getMessage(), script.getContent());
+                requestManager.addException(
+                        new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
+                throw new ScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
+            }
+        }
+    }
+
+    public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         if (scripts.isEmpty()) {
             return null;
         }
-        ScriptEngine engine = requestManager.getCurrentEngine();
-        if (engine == null) {
-            ScriptEngineManager mgr = new ScriptEngineManager();                    // Instantiate the corresponding script engine
-
-            try {
-                engine = mgr.getEngineByName(scripts.get(0).getLanguage());
-            } catch (NullPointerException ex) {
-                logger.error("Wrong language ?", ex.getMessage(), ex.getStackTrace());
-                return null;
-            }
-
-            // Invocable invocableEngine = (Invocable) engine;
-            engine.put("self", requestManager.getPlayer());                         // Inject current player
-            engine.put("gameModel", requestManager.getPlayer().getGameModel());     // Inject current gameModel
-            try {
-                engineInvocationEvent.fire(
-                        new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
-
-            } catch (ObserverException ex) {
-                throw (WegasException) ex.getCause();
-            }
-            requestManager.setCurrentEngine(engine);
-        }
-        Object result = null;
-        for (Entry<String, Object> arg : arguments.entrySet()) {    // Inject the arguments
-            engine.put(arg.getKey(), arg.getValue());
-        }
+        while (scripts.remove(null)) {
+        }                                                                        //remove null scripts
         // @fixme test the most performant version
         StringBuilder buf = new StringBuilder();
-        for (Script s : scripts) {                                          // Evaluate each script
+        for (Script s : scripts) {                                              // Evaluate each script
             try {
                 buf.append(s.getContent());
                 buf.append(";");
@@ -136,16 +135,7 @@ public class ScriptFacade implements Serializable {
             }
             //result = engine.eval(s.getContent());
         }
-        try {
-            result = engine.eval(buf.toString());
-        } catch (ScriptException ex) {
-            logger.warn("{} in\n{}", ex.getMessage(), buf.toString());
-            requestManager.addException(
-                    new com.wegas.core.exception.ScriptException(buf.toString(), ex.getLineNumber(), ex.getMessage()));
-            throw new ScriptException(ex.getMessage(), buf.toString(), ex.getLineNumber());
-        }
-
-        return result;
+        return this.eval(new Script(buf.toString()));
     }
 
     /**
@@ -156,11 +146,11 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException, WegasException {
+    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException {
+        evt.getEngine().put("self", evt.getPlayer());                           // Inject current player
+        evt.getEngine().put("gameModel", evt.getPlayer().getGameModel());       // Inject current gameModel
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
         evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
-        evt.getEngine().put("Event", event);                  // Inject the Event manager
-        event.detachAll();
 
         List<String> errorVariable = new ArrayList<>();
 
@@ -207,21 +197,7 @@ public class ScriptFacade implements Serializable {
      * @throws WegasException
      */
     public Object eval(List<Script> scripts) throws ScriptException, WegasException {
-        return this.eval(scripts, new HashMap<String, Object>());
-    }
-
-    /**
-     *
-     * @param s
-     * @param arguments
-     * @return
-     * @throws ScriptException
-     * @throws WegasException
-     */
-    public Object eval(Script s, Map<String, Object> arguments) throws ScriptException, WegasException {
-        List<Script> scripts = new ArrayList<>();
-        scripts.add(s);
-        return this.eval(scripts, arguments);
+        return this.eval(scripts, new HashMap<String, AbstractEntity>());
     }
 
     /**
@@ -259,7 +235,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public Object eval(Player player, Script s, Map<String, Object> arguments) throws ScriptException, WegasException {
+    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         requestManager.setPlayer(player);
         return this.eval(s, arguments);
     }
@@ -273,7 +249,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public Object eval(Player player, List<Script> scripts, Map<String, Object> arguments) throws ScriptException, WegasException {
+    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         requestManager.setPlayer(player);                                       // Set up request's execution context
         return this.eval(scripts, arguments);
     }
@@ -286,8 +262,7 @@ public class ScriptFacade implements Serializable {
      * @throws ScriptException
      * @throws WegasException
      */
-    public Object eval(Long playerId, Script s)
-            throws ScriptException, WegasException {
+    public Object eval(Long playerId, Script s) throws ScriptException, WegasException {
         requestManager.setPlayer(playerEntityFacade.find(playerId));
         return this.eval(s);
     }
@@ -300,6 +275,6 @@ public class ScriptFacade implements Serializable {
      * @throws WegasException
      */
     public Object eval(Script s) throws ScriptException, WegasException {
-        return this.eval(s, new HashMap<String, Object>());
+        return this.eval(s, new HashMap<String, AbstractEntity>());
     }
 }

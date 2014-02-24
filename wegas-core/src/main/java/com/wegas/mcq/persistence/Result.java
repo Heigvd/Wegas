@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.map.annotate.JsonView;
+import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.BatchFetchType;
 
 /**
  *
@@ -28,7 +30,6 @@ import org.codehaus.jackson.map.annotate.JsonView;
 public class Result extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
-//    private static final Logger logger = LoggerFactory.getLogger(MCQReplyInstanceEntity.class);
     /**
      *
      */
@@ -51,7 +52,7 @@ public class Result extends AbstractEntity {
     /*
      *
      */
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection
     private List<String> files = new ArrayList<>();
     /**
      *

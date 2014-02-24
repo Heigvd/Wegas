@@ -59,6 +59,13 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 return inputEx.WysiwygScript.superclass.getValue.apply(this, arguments);
             }
         },
+        /**
+         * 
+         */
+        setValue: function() {
+            inputEx.WysiwygScript.superclass.setValue.apply(this, arguments);
+            this.updateExpressionList();
+        },
         // *** Private Methods *** //
         /**
          *
@@ -93,10 +100,14 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             container.prepend(this.viewSrc.get("boundingBox"));
             container.append("<em class=\"msg\"></em>");
 
-            this.on("updated", this.updateExpressionList, this);                // Whenever the value is updated, we synchronize the UI
+            this.on("updated", function() {
+                if (this.options.mode === "text") {
+                    this.updateExpressionList();
+                }
+            }, this);                // Whenever the value is updated, we synchronize the UI
 
-            this.updateExpressionList();
-            this.setMode(this.options.mode);
+            this.updateExpressionList();                                        // Synchronize the wysiwig list
+            this.setMode(this.options.mode);                                    // Set the default mode (wysiwyg or source)
         },
         /**
          *
@@ -147,22 +158,22 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             }
 
             this.viewSrc.set("disabled", false);
+
             if (this.exprList) {
                 this.exprList.destroy();
             }
-            if (this.options.expects === "condition") {
-                for (i = 0; i < fields.length; i += 1) {
-                    fields[i].type = "variabledescriptorcondition";
-                }
-            }
-            this.exprList = Y.inputEx({// Render the expression as a Y.inputEx.Wegas.ListField
+            this.exprList = Y.inputEx({//                                       // Render the expression as a Y.inputEx.Wegas.ListField
                 type: "listfield",
                 fields: fields,
                 useButtons: true,
                 parentEl: this.fieldContainer,
                 addType: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline" //variabledescriptorsetter"
             });
-
+            this.exprList.on("updated", function() {
+                if (this.options.mode === "wysiwyg") {
+                    this.fireUpdatedEvt();
+                }
+            }, this);                                                           // Whenever the list is update, fire updated event
 
             if (this.options.mode !== "wysiwyg") {
                 this.exprList.hide();
@@ -225,7 +236,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             switch (expression.callee.object.name) {
                                 case "VariableDescriptorFacade":
                                     return {
-                                        type: "wysiwygline", // wysiwygline/variabledescriptorsetter
+                                        type: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline",
                                         value: expression.arguments[1].value
                                     };
                                 case "RequestManager":

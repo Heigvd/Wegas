@@ -178,14 +178,14 @@ YUI.add('wegas-datasource', function(Y) {
             }
             if (Lang.isArray(response)) {              // Non-managed response: we apply the operation for each object in the returned array
                 for (i = 0; i < response.length; i += 1) {
-                    this.updated = this.updateCache(e.cfg.method, response[i]) || this.updated;
+                    this.updated = this.updateCache(e.cfg.method, response[i], !e.cfg.initialRequest) || this.updated;
                 }
             } else {
                 if (response.get("entities")) {
                     for (i = 0; i < response.get("entities").length; i += 1) {   // Update the cache with the Entites in the reply body
                         entity = response.get("entities")[i];
                         if (Lang.isObject(entity)) {
-                            this.updated = this.updateCache(e.cfg.method, entity) || this.updated;
+                            this.updated = this.updateCache(e.cfg.method, entity, !e.cfg.initialRequest) || this.updated;
                         }
                     }
                 }
@@ -210,7 +210,7 @@ YUI.add('wegas-datasource', function(Y) {
          *  @param {page} entity The entity to update in the cache
          *  @return {Boolean} `true` if object could be located and method applied
          */
-        updateCache: function(method, entity) {
+        updateCache: function(method, entity, updateEvent) {
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.WegasCache");
             switch (method) {
                 case "DELETE":
@@ -239,18 +239,20 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                     break;
             }
-            this.addToCache(entity);                                            // In case we still have not found anything
+            this.addToCache(entity, updateEvent);                                            // In case we still have not found anything
             return true;
         },
         /**
          * @function
          * @private
          */
-        addToCache: function(entity) {
+        addToCache: function(entity, updateEvent) {
             this.getCache().push(entity);
-            this.get("host").fire("added", {
-                entity: entity
-            });
+            if (updateEvent) {
+                this.get("host").fire("added", {
+                    entity: entity
+                });
+            }
         },
         /// *** Cache methods *** //
         /**
@@ -325,8 +327,8 @@ YUI.add('wegas-datasource', function(Y) {
             if (val.response.results) {
                 val = val.response.results.events;
             }
-            
-            for(i=0; i<val.length; i++) {
+
+            for (i = 0; i < val.length; i++) {
                 if (val[i].get("val").type === key) {
                     eventsFound.push(val[i].get("val.payload"));
                 }

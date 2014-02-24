@@ -42,7 +42,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * @description create and render the Y.inputEx.WysiwygScript.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX), innerHTML;
 
             this.plug(Plugin.WidgetToolbar);
 
@@ -55,6 +55,9 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             this.srcField.el.cols = 100;
 
             this.runButton();
+            this.srcField.viewSrc.get("contentBox")._node.attributes.style.value = "";
+            innerHTML = this.srcField.viewSrc.get("contentBox").get("innerHTML");
+            this.srcField.viewSrc.get("contentBox").set("innerHTML", innerHTML + "Source");
             this.toolbar.add(this.srcField.viewSrc);
         },
         /**

@@ -123,7 +123,9 @@ YUI.add('wegas-shareuser', function(Y) {
 
                 //Add all accounts from "this.field" with an id (means selected with autocompletion)
                 Y.Array.each(this.field.options.value, function(account) {
-                    this.addToUserlist(account.value, account.label);
+                    if (this.checkFieldValue(userNames, account)) {
+                        this.addToUserlist(account.value, account.label);
+                    }
                 }, this);
 
                 Y.Array.each(userNames, function(value) {                       // Create the email list and other value list
@@ -227,6 +229,13 @@ YUI.add('wegas-shareuser', function(Y) {
                     userId: id
                 });
             }
+        },
+        checkFieldValue: function(usernameList, account) {
+            return Y.Array.some(usernameList, function(value) {
+                if (account.label === Y.Lang.trim(value)) {
+                    return true;
+                }
+            });
         },
         destructor: function() {
             this.field.destroy();

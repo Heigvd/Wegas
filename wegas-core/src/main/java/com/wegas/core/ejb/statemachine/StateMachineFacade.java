@@ -118,7 +118,7 @@ public class StateMachineFacade implements Serializable {
             }
             transitions = smi.getCurrentState().getTransitions();
             for (Transition transition : transitions) {
-                if (transition instanceof DialogueTransition) {                   //Dialogue, don't eval
+                if (transition instanceof DialogueTransition) {                 // Dialogue, don't eval
                     continue;
                 } else if (this.isNotDefined(transition.getTriggerCondition())) {
                     validTransition = true;

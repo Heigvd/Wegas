@@ -161,19 +161,17 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          * @function
          */
         genChoices: function(entity, items) {
-            var choices = [];
-
             if (items) {
-                choices = Y.Array.each(items, function(i) {
-                    if (!this.options.classFilter || Y.Lang.indexOf(this.options.classFilter, i.get("@class")) > -1) {
-                        choices.push({
-                            value: i.get("name"),
-                            label: i.getEditorLabel()
-                        });
-                    }
+                return Y.Array.map(Y.Array.filter(items, function(i) {        // Apply class filter
+                    return !this.options.classFilter || Y.Lang.indexOf(this.options.classFilter, i.get("@class")) > -1;
+                }, this), function(i) {
+                    return{
+                        value: i.get("name"),
+                        label: i.getEditorLabel()
+                    };
                 }, this);
             }
-            return choices;
+            return [];
         }
     });
     inputEx.registerType("variabledescriptorselect", VariableDescriptorSelect, {});
@@ -186,7 +184,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
      * @param {Object} options InputEx definition object
      */
     VariableDescriptorGetter = function(options) {
-        VariableDescriptorGetter.superclass.constructor.call(this, options);
+        VariableDescriptorMethod.superclass.constructor.call(this, options);
     };
 
     Y.extend(VariableDescriptorGetter, VariableDescriptorSelect, {
@@ -499,21 +497,6 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                 type: "html",
                                 scriptType: "string"
                             }],
-                        scriptType: "string"
-                    }]
-            },
-            "Event.fire": {
-                label: "Fire event",
-                arguments: [{
-                        type: "string",
-                        scriptType: "string"
-                    }]
-            },
-            "Event.fired": {
-                label: "On event",
-                returns: "boolean",
-                arguments: [{
-                        type: "string",
                         scriptType: "string"
                     }]
             }

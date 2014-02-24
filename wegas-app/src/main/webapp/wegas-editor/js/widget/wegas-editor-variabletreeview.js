@@ -54,10 +54,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 Wegas.Facade.VariableDescriptor.cache.move(entity, dropEntity, e.index);// call facade method
             });
         },
-        syncUI: function() {
-            VariableTreeView.superclass.syncUI.call(this);
-            this.treeView.syncUI();                                             // Needed by treeview sort plugin
-        },
         //
         // *** Private Methods *** //
         /**
@@ -298,7 +294,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         initializer: function() {
             this.onHostEvent("*:nodeExpanded", this.fillsLeaf);             //if treeleaf is empty, load elements from sever
 
-
             //this.afterHostMethod("syncUI", function () {
             //    var i, doExpand = function (e) {
             //        for (i = 0; i < e.size(); i += 1) {
@@ -346,11 +341,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
      */
     Plugin.VariableTVToolbarMenu = Y.Base.create("admin-menu", Plugin.EditorTVToolbarMenu, [], {
         onTreeViewSelection: function(e) {
-         if (!e.target.getSelection()) {
-                //deselect
-                return;
-            }
-            var menuItems = this.getMenuItems(e.target.getSelection().item(0).get("data"), e.node),
+            var menuItems = this.getMenuItems(e.target.get("data"), e.node),
                     host = this.get("host"), firstButton;
 
             if (menuItems) {

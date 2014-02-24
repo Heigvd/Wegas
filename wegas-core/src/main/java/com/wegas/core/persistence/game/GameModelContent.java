@@ -38,8 +38,7 @@ public class GameModelContent implements Serializable {
      *
      */
     @Lob
-    @NotNull
-    @Basic(fetch = FetchType.LAZY)
+    @Basic(optional = false, fetch = FetchType.LAZY)
     //@Column(columnDefinition = "text")
     //@JsonView({Views.Export.class})
     private String content = "";

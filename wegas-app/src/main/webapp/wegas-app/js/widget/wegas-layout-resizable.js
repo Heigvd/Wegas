@@ -134,12 +134,15 @@ YUI.add('wegas-layout-resizable', function(Y) {
             var node = this.getPositionNode(position);
             if (!!this.get(position + ".animate")) {                            // False by default
                 node.setStyle("left", "initial");                               // Reset left value
-                this.getAnim(position).setAttrs({// and change anim width because the element may have been resized
-                    reverse: true,
-                    to: {
-                        width: node.getStyle("width")
-                    }
-                }).run();
+                this.oldWidth = node.getStyle("width");
+                node.setStyle("width", "0");
+                this.syncCenterNode();
+                //this.getAnim(position).setAttrs({// and change anim width because the element may have been resized
+                //    reverse: true,
+                //    to: {
+                //        width: node.getStyle("width")
+                //    }
+                //}).run();
             } else {
                 node.all(".yui3-tabview-panel > div").hide();// @hack
             }
@@ -151,14 +154,15 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description do a slide (tween) animation to show the panel
          */
         showPosition: function(position) {
-            var target = this.getPositionNode(position),
-                    cfg = this.get(position);
+            var target = this.getPositionNode(position);
 
             if (!!this.get(position + ".animate")) {                            // False by default
-                //if (parseInt(target.getStyle("width"), 10) < cfg.width) {       // Only display if hidde
+                //if (parseInt(target.getStyle("width"), 10) < cfg.width) {     // Only display if hidde
                 if (parseInt(target.getStyle("width"), 10) < 70) {              // Only display if hidde
                     target.setStyle("left", "initial");                         // Reset left value since it may have been changed during resize
-                    this.getAnim(position).set("reverse", false).run();
+                    target.setStyle("width", this.oldWidth || ((this.get(position + ".width") || 400) + "px"));
+                    this.syncCenterNode();
+                    //this.getAnim(position).set("reverse", false).run();
                 }
             } else {
                 target.all(".yui3-tabview-panel > div").show();

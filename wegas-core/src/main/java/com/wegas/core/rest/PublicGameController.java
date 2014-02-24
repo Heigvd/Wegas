@@ -74,7 +74,7 @@ public class PublicGameController {
 
         for (Iterator<Game> it = games.iterator(); it.hasNext();) {
             Game g = it.next();
-            if (SecurityHelper.isAnyPermitted(g, Arrays.asList("View", "Token", "TeamToken"))
+            if (SecurityHelper.isAnyPermitted(g, Arrays.asList("View", "Token"))
                     && !registeredGames.contains(g)) {
                 retGames.add(g);
             }

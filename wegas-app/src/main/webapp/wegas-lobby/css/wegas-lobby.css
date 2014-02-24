@@ -1,0 +1,287 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+*/
+.yui3-skin-sam #centerTabView .yui3-tab-label {
+    min-width: 90px;
+}
+.yui3-skin-sam #gameModelsTab {
+    padding-left: 15px;
+}
+#rightTabView .yui3-tab-remove {
+    display: none;
+}
+#rightTabView .yui3-tabview-removeable .yui3-tab-label,
+#rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label:focus,
+#rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label:hover,
+#rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label {
+    padding-right: 1.4em;
+}
+/** Uservoice widget */
+.yui3-skin-sam .uv-icon {
+    right: 0;
+    top: 11px !important;
+    width: 23px;
+    opacity: 1;
+}
+.yui3-skin-sam .uv-icon svg {
+    width: 24px;
+    height: 27px;
+}
+/** Edit game form */
+.wegas-lobby-editgame  .wegas-form-content{
+    padding-bottom: 0px !important;
+}
+.wegas-game-subtitle {
+    margin: 30px 0 0 !important;
+    background: #f6f6f6;
+}
+.wegas-game-subtitle .inputEx-label {
+    padding: 10px 0 10px 5px !important;
+    text-align: left;
+    width: 300px;
+}
+.yui3-skin-sam .wegas-game-subtitle label {
+    font-weight: bolder !important;
+}
+.wegas-game-access, 
+.wegas-game-token,
+.wegas-game-keys,
+.wegas-game-users {
+    background: #f6f6f6;           
+    margin: 0 !important;
+}
+.wegas-game-name .inputEx-label,
+.wegas-game-access .inputEx-label {
+    width: 58px !important;
+}
+.wegas-game-name .inputEx-Field,
+.wegas-game-access .inputEx-Field {
+    margin-left: -68px;
+    margin-right: 1px;
+}
+.wegas-game-access  {
+    padding-bottom: 15px;
+}
+.wegas-game-access .inputEx-Field {
+    margin-right: 10px;
+}
+.wegas-game-keys,
+.wegas-game-users {
+    padding-bottom: 15px;
+}
+.wegas-game-token .inputEx-label,
+.wegas-game-users > .inputEx-label ,
+.wegas-game-keys > .inputEx-label {
+    text-align: left;
+    font-style: italic;
+    padding: 0 0px 3px 5px;
+    width: 300px !important;
+}
+.wegas-game-token .inputEx-Field,
+.wegas-game-users > .inputEx-Field,
+.wegas-game-keys > .inputEx-Field {                
+    margin-left: -125px;
+    margin-right: 10px;
+    display: block;
+    clear: both;
+}
+.wegas-game-keys img.inputEx-ListField-addButton,
+.wegas-game-users img.inputEx-ListField-addButton {
+    position: absolute;
+    top: -19px;
+    left: 175px;
+}
+.wegas-sharerole-content {
+    margin-top: 0px;
+}
+.wegas-sharerole .title {
+    font-weight: normal;
+    font-style: italic;
+    margin-bottom: 3px;
+    color: #505050;
+}
+
+
+/* Lobby datatables */
+.wegas-lobby-datatable .wegas-lobby-datatable-icon {
+    padding: 0 0 0 6px;
+    width: 18px;
+}
+.wegas-lobby-datatable tr td.yui3-datatable-cell {
+    cursor: pointer;
+}
+
+/*.wegas-lobby-datatable .wegas-lobby-datatable-icon .wegas-icon {*/
+/*width: 10px;*/
+/*}*/
+/*.wegas-lobby-datatable .wegas-datatable-menu {
+    width:20px;
+    padding: 1px 5px;
+}*/
+.wegas-datatable-center { 
+    text-align: center;
+}
+
+.yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-table {
+    table-layout: fixed;
+}
+.yui3-skin-sam .wegas-lobby-datatable  .yui3-datatable-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr[data-yui3-record]:hover {
+    box-shadow: 0 0 1px #6d6d6d;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr:hover td.yui3-datatable-cell{
+    background-color: #f9f9f9;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr.wegas-datatable-selected {
+    box-shadow: 0 0 1px #6d6d6d !important;
+    font-weight: bolder;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr.wegas-datatable-selected td.yui3-datatable-cell {
+    background-color: #ededed !important;
+}
+.wegas-lobby-datatable .wegas-icon-menu {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    background: transparent url("../../wegas-app/images/wegas-app-sprite.png") 2px -334px no-repeat;
+    /*margin: 2px 5px;*/
+    display: inline-block;
+}
+.wegas-joinedgamesdatatable tr:hover td.yui3-datatable-col-name { 
+    text-decoration: underline;
+}
+
+/* Permissions */
+.role-permissions .inputEx-fieldWrapper{
+    float: left;
+    width: 91px;
+    /*margin-left: 25px;*/
+}
+.role-permissions .inputEx-fieldWrapper:first-child{
+    margin-left: 0px
+}
+.inputEx-fieldWrapper .roleBox {
+    margin-left: 25px;
+    margin-top: 5px;
+}
+.eachPermissions{
+    margin-left: 5px;
+}
+.eachPermissions:first-child{
+    margin-left: 20px;
+}
+.eachPermissions label{
+    margin-left: 4px;
+}
+.role-permissions .permissionList {
+    width: 80%;
+    margin-left: 115px;
+}
+
+/* Share role */
+.wegas-sharerole-hidden {
+    display: none;
+}
+.wegas-sharerole-content {
+    padding: 10px;
+    background: #f6f6f6;
+    margin: 0px 10px 10px;
+}
+.wegas-sharerole .title {
+    font-weight: bolder;
+    margin-bottom: 5px;
+}
+.wegas-link div {
+    width: 100%;
+}
+.wegas-link input {    
+    width: 99%;
+    padding: 2px 0.5%;
+}
+/* Share user */
+.wegas-shareuser-content {
+    padding: 6px 10px 20px;
+}
+.wegas-shareuser .wegas-shareuser-content > .title {
+    font-weight: bold;
+    font-size: 90%;
+    padding: 0px 8px 5px;
+}
+
+.wegas-shareuser .username-field .MarkupField-wrapper {
+    width: 175px;
+    margin-bottom: 5px;
+}
+.wegas-shareuser .inputEx-CheckBox {
+    padding:0;
+}
+.wegas-shareuser .wegas-shareuser-content .inputEx-ListField {
+    margin:0;
+}
+.wegas-shareuser .inputEx-ListField-addButton ,
+.wegas-shareuser .wegas-shareuser-content .inputEx-ListField > span {
+    display: none;
+}
+.wegas-shareuser img.inputEx-ListField-delButton {
+    margin: 0;
+}
+.wegas-shareuser .inputEx-ListField-subFieldEl {
+    margin-left: 11px;
+}
+.wegas-shareuser .inputEx-ListField,
+.wegas-shareuser .inputEx-ListField-childContainer {
+    width: 100%;
+}
+.wegas-shareuser .inputEx-ListField-childContainer:empty:after {
+    content: "No permissions added yet";
+    text-align: center;
+    font-style: italic;
+    display: block;
+    margin: 10px;
+}
+.wegas-shareuser .inputEx-ListField-childContainer > div {
+    border-top: 1px solid #f1f1f1;
+    padding-top: 5px;
+}
+.wegas-shareuser .inputEx-ListField-childContainer .inputEx-fieldWrapper {
+    margin-bottom: 0px;
+}
+.wegas-shareuser .permission-group fieldset div {
+    float: left;
+    margin-left: 5px;
+}
+/*.wegas-shareuser .permission-group fieldset div:first-child {
+    margin-left: 3px;
+}*/
+.wegas-shareuser .wegas-userlist > div {
+    margin: 0;
+}
+.wegas-shareuser .wegas-adduser {
+    padding: 10px;
+    background: #f6f6f6;
+}
+.wegas-shareuser .wegas-adduser .title {
+    padding-bottom: 5px;
+}
+.wegas-shareuser .wegas-adduser .inputEx-AutoComplete {
+    width: 100%;
+}
+.wegas-shareuser .wegas-adduser input {
+    width: 98%;
+    padding: 2px;
+}
+.wegas-shareuser .wegas-button {
+    margin: 0;
+    background-color: white;
+}
