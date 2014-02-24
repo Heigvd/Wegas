@@ -146,11 +146,11 @@ abstract public class VariableInstance extends AbstractEntity {
     @XmlTransient
     @JsonIgnore
     public AbstractScope getScope() {
-        if (this.teamScopeKey != null) {
+        if (this.teamScope != null) {
             return this.teamScope;
-        } else if (this.playerScopeKey != null) {
+        } else if (this.playerScope != null) {
             return this.playerScope;
-        } else if (this.gameScopeKey != null) {
+        } else if (this.gameScope != null) {
             return this.gameScope;
         } else if (this.gameModelScope != null) {
             return this.gameModelScope;
