@@ -137,6 +137,11 @@ public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance>
         }
     }
 
+    /**
+     *
+     * @param instance
+     * @return
+     */
     public Team findTeam(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
             return playerFacade.find(instance.getPlayerScopeKey()).getTeam();

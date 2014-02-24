@@ -93,11 +93,20 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Instantiate:gm" + entity.getId());
     }
 
+    /**
+     *
+     * @param gm
+     */
     public void createWithDebugGame(final GameModel gm) {
         this.create(gm);
         this.addGame(gm, new DebugGame());
     }
 
+    /**
+     *
+     * @param gameModel
+     * @param game
+     */
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
         this.reset(gameModel);                                                  // Reset the game model
@@ -147,6 +156,12 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         return newGameModel;
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @return
+     * @throws IOException
+     */
     public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
         GameModel gm = this.duplicate(gameModelId);
         this.addGame(gm, new DebugGame());
@@ -176,6 +191,10 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         return getEntityManager().createQuery(query).getResultList();
     }
 
+    /**
+     *
+     * @return
+     */
     public List<GameModel> findTemplates() {
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery query = criteriaBuilder.createQuery();
@@ -214,7 +233,6 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
      * @param gameModel
      */
     public void reset(final GameModel gameModel) {
-        //em.flush();
         gameModel.propagateGameModel();
         gameModel.propagateDefaultInstance(true);                               // Propagate default instances
         em.flush();
