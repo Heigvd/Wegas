@@ -44,17 +44,18 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX), innerHTML;
 
+            this.get("boundingBox").addClass("wegas-form");
+            
             this.plug(Plugin.WidgetToolbar);
 
             this.srcField = new Y.inputEx.WysiwygScript({
-                parentEl: cb,
-                className: "editor-animator-impactlist"
+                parentEl: cb
             });
             cb.append('<div class="results"></div>');
             this.srcField.el.rows = 8;
             this.srcField.el.cols = 100;
 
-            this.runButton();
+            this.renderRunButton();
             this.srcField.viewSrc.get("contentBox")._node.attributes.style.value = "";
             innerHTML = this.srcField.viewSrc.get("contentBox").get("innerHTML");
             this.srcField.viewSrc.get("contentBox").set("innerHTML", innerHTML + "Source");
@@ -103,7 +104,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                             if (treeView.item(selected).get("data").entity.get("players").length !== 0) {
                                 playerId = treeView.item(selected).get("data").entity.get("players")[0].get("id");
                             } else {
-                            selected += 1;
+                                selected += 1;
                             }
                         }
                         treeView.item(selected).selectAll();
@@ -122,11 +123,11 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * @private
          * @description Create and render the button for run the script.
          */
-        runButton: function() {
+        renderRunButton: function() {
             var el = this.toolbar.get('header'), multiPlayerScript, playerList;
 
             this.runButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-play\"></span>Apply",
+                label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run",
                 on: {
                     click: Y.bind(function() {
                         playerList = this.playerList();

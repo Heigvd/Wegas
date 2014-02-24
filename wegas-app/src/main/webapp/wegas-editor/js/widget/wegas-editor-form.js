@@ -81,7 +81,6 @@ YUI.add('wegas-editor-form', function(Y) {
                 var cfg = Y.clone(val);                                         // Duplicate so val will be untouched upon serialization
                 Y.mix(cfg, {//                                                  // Add some default properties
                     parentEl: this.get(CONTENTBOX),
-                    className: "wegas-form-ix",
                     type: "group",
                     value: this.get("value", {internal: true})
                 });

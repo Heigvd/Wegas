@@ -105,7 +105,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             });                                                                 // Retrieve menu and remove the first item
 
             widget.highlight(true);
-            form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "15px");
+            form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "10px");
         }
     }, {
         NS: "EditWidgetAction",
