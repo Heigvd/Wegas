@@ -58,17 +58,17 @@ YUI.add('wegas-pageeditor', function(Y) {
                     host.get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
                             e.newVal);
                     if (e.newVal) {
-                        Y.Wegas.Facade.Page.cache.getIndex(function(index) {
-                            var pageName = index[host.get("pageId")] !== ""
-                                    ? index[host.get("pageId")]
-                                    : "<i>unamed(" + host.get("pageId") + ")</i>";
-                            host.toolbar.setStatusMessage("Editing page: " + pageName);
-                        });
+//                        Y.Wegas.Facade.Page.cache.getIndex(function(index) {
+//                            var pageName = index[host.get("pageId")] !== ""
+//                                    ? index[host.get("pageId")]
+//                                    : "<i>unamed(" + host.get("pageId") + ")</i>";
+//                            host.toolbar.setStatusMessage("Editing page: " + pageName);
+//                        });
                         this.bind();
                         this.layoutButton.show();
                         this.sourceButton.show();
                         this.addButton.show();
-                        this.refreshButton.show();
+                        //this.refreshButton.show();
                         host.get(CONTENTBOX).prepend(this.overlayMask);
                     } else {
                         this.detach();
@@ -94,8 +94,11 @@ YUI.add('wegas-pageeditor', function(Y) {
                             }), addElement = Y.Array.find(menu, function(o) {   /* search "Add" menu */
                                 return o.label.indexOf("Add") > -1;
                             });
-                
-                            this.menu.set("children", addElement.plugins[0].cfg.children);// And place it'
+                            if (addElement) {
+                                this.menu.set("children", addElement.plugins[0].cfg.children);// And place it'
+                            } else {
+                                this.menu.set("children", []);
+                            }
                         }
                     }
                 });
