@@ -15,7 +15,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
     "use strict";
     Y.Wegas.FlexitestsController.EDITMENU = [{
             type: "Button",
-            label: "Properties",
+            label: "Edit",
             plugins: [{
                     fn: "EditWidgetAction"
                 }
@@ -73,7 +73,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
     ];
     Y.Wegas.ChoiceList.EDITMENU = [{
             type: "Button",
-            label: "Properties",
+            label: "Edit",
             plugins: [{
                     fn: "EditWidgetAction"
                 }
@@ -127,7 +127,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
     ];
     Y.Wegas.List.EDITMENU = [{
             type: "Button",
-            label: "Properties",
+            label: "Edit",
             plugins: [{
                     fn: "EditWidgetAction"
                 }
