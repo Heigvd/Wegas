@@ -262,7 +262,7 @@ YUI.add('wegas-join', function(Y) {
                         this.hideOverlay();
 
                         this.get("contentBox").empty();
-                        
+
                         var rightTab = Y.Widget.getByNode("#rightTabView");     // Empty right tab on join
                         rightTab && rightTab.destroyAll();
                     }, this),
@@ -421,7 +421,6 @@ YUI.add('wegas-join', function(Y) {
                 useButtons: true,
                 elementType: {
                     type: "group",
-                    required: true,
                     fields: [{
                             name: "@class",
                             type: "hidden",
@@ -501,4 +500,25 @@ YUI.add('wegas-join', function(Y) {
         }
     });
     Y.namespace('Wegas').TeamEdition = TeamEdition;
+    Y.inputEx.AutoComplete.prototype.buildAutocomplete = function() {
+        // Call this function only when this.el AND this.listEl are available
+        if (!this._nElementsReady) {
+            this._nElementsReady = 0;
+        }
+        this._nElementsReady++;
+        if (this._nElementsReady != 2)
+            return;
+
+        this.yEl = Y.one(this.el)
+        this.yEl.plug(Y.Plugin.AutoComplete, this.options.autoComp);
+
+        // Instantiate AutoComplete
+        this.yEl.ac.on("select", this.itemSelectHandler, this);
+        this.yEl.on("blur", this.onBlur, this);
+
+        this.yEl.on("valueChange", function() {                                 // @MODIFIED
+            this.hiddenEl.value = this.el.value;
+            this.validate();
+        }, this);
+    };
 });
