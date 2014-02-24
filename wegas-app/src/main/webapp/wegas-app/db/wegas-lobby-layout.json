@@ -364,7 +364,7 @@
                                                                 "type": "hidden",
                                                                 "value": "null"
                                                             }, {
-                                                                "label": "Based on",
+                                                                "label": "Scenario",
                                                                 "name": "gameModelId",
                                                                 "required": true,
                                                                 "filters": {"canInstantiate": true},
