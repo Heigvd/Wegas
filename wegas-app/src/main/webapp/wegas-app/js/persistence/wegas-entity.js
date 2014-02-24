@@ -14,7 +14,8 @@ YUI.add('wegas-entity', function(Y) {
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
             BUTTON = "Button", TEXT = "text", HTML = "html", GROUP = "group",
-            Wegas = Y.namespace("Wegas"), Base = Y.Base, Entity,
+            Wegas = Y.namespace("Wegas"), persistence = Y.namespace('Wegas.persistence'),
+            Base = Y.Base, Entity,
             IDATTRDEF = {
         type: STRING,
         optional: true, // The id is optional for entites that have not been persisted
@@ -90,12 +91,12 @@ YUI.add('wegas-entity', function(Y) {
          */
         METHODS: {}
     });
-    Y.namespace('Wegas.persistence').Entity = Entity;
+    persistence.Entity = Entity;
 
     /**
      *
      */
-    Wegas.persistence.DefaultEntity = Base.create("DefaultEntity", Entity, [], {
+    persistence.DefaultEntity = Base.create("DefaultEntity", Entity, [], {
         initializer: function(cfg) {
             this.set("val", cfg);
         },
@@ -107,12 +108,12 @@ YUI.add('wegas-entity', function(Y) {
             val: {}
         }
     });
-    Wegas.persistence.RestException = Wegas.persistence.DefaultEntity;
+    persistence.RestException = persistence.DefaultEntity;
 
     /**
      * ServerResponse mapper
      */
-    Wegas.persistence["ManagedModeResponseFilter$ServerResponse"] = Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
+    persistence["ManagedModeResponseFilter$ServerResponse"] = Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
         ATTRS: {
             entities: {
                 value: []
@@ -126,7 +127,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * 
      */
-    Wegas.persistence.EntityUpdatedEvent = Base.create("EntityUpdatedEvent", Wegas.persistence.Entity, [], {}, {
+    persistence.EntityUpdatedEvent = Base.create("EntityUpdatedEvent", persistence.Entity, [], {}, {
         ATTRS: {
             updatedEntities: {
                 value: []
@@ -137,7 +138,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * GameModel mapper
      */
-    Wegas.persistence.GameModel = Base.create("GameModel", Wegas.persistence.Entity, [], {}, {
+    persistence.GameModel = Base.create("GameModel", persistence.Entity, [], {}, {
         EDITORNAME: "Game model",
         ATTRS: {
             name: {
@@ -221,34 +222,32 @@ YUI.add('wegas-entity', function(Y) {
                                     type: "EditEntityForm"
                                 }]
                         }
-                    }, 
-//                    {
-//                        fn: "OpenTabActionSec",
-//                        cfg: {
-//                            label: "Share",
-//                            tabSelector: '#rightTabView',
-//                            wchildren: [{
-//                                    type: "ShareUser",
-//                                    plugins: [{
-//                                            fn: "WidgetToolbar",
-//                                            cfg: {
-//                                                children: [{type: "Text"}]
-//                                            }
-//                                        }],
-//                                    permsList: [{
-//                                            rightLabel: "Edit",
-//                                            value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
-//                                        }, {
-//                                            rightLabel: "Copy",
-//                                            value: "GameModel:Duplicate"
-//                                        }, {
-//                                            rightLabel: "Host",
-//                                            value: "GameModel:Instantiate"
-//                                        }]
-//                                }]
-//                        }
-//                    }
-                ]
+                    }, {
+                        fn: "OpenTabActionSec",
+                        cfg: {
+                            label: "Share",
+                            tabSelector: '#rightTabView',
+                            wchildren: [{
+                                    type: "ShareUser",
+                                    plugins: [{
+                                            fn: "WidgetToolbar",
+                                            cfg: {
+                                                children: [{type: "Text"}]
+                                            }
+                                        }],
+                                    permsList: [{
+                                            rightLabel: "Edit",
+                                            value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
+                                        }, {
+                                            rightLabel: "Copy",
+                                            value: "GameModel:Duplicate"
+                                        }, {
+                                            rightLabel: "Host",
+                                            value: "GameModel:Instantiate"
+                                        }]
+                                }]
+                        }
+                    }]
             }, {
                 type: BUTTON,
                 label: "Open in editor",
@@ -308,7 +307,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * Game mapper
      */
-    Wegas.persistence.Game = Base.create("Game", Wegas.persistence.Entity, [], {}, {
+    persistence.Game = Base.create("Game", persistence.Entity, [], {}, {
         ATTRS: {
             gameModelId: {
                 type: STRING,
@@ -317,7 +316,10 @@ YUI.add('wegas-entity', function(Y) {
                 }
             },
             name: {
-                type: STRING
+                type: STRING,
+                _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-game-name'
+                }
             },
             description: {
                 type: STRING,
@@ -345,11 +347,20 @@ YUI.add('wegas-entity', function(Y) {
             properties: {
                 "transient": true,
                 value: {},
-                getter: Wegas.persistence.GameModel.ATTRS.properties.getter
+                getter: persistence.GameModel.ATTRS.properties.getter
             },
             teams: {
                 "transient": true,
                 value: []
+            },
+            shareLabel: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    _type: "uneditable",
+                    label: "Invite players",
+                    wrapperClassName: "inputEx-fieldWrapper wegas-game-subtitle"
+                }
             },
             access: {
                 type: STRING,
@@ -359,39 +370,35 @@ YUI.add('wegas-entity', function(Y) {
                         label: "Open"
                     }, {
                         value: "SINGLEUSAGEENROLMENTKEY",
-                        label: "Limited seats"
+                        label: "Restricted"
                     }
                 ],
                 _inputex: {
                     label: "Access",
                     value: "ENROLMENTKEY",
+                    wrapperClassName: "inputEx-fieldWrapper wegas-game-access",
                     interactions: [{
                             valueTrigger: "ENROLMENTKEY",
                             actions: [{name: 'token', action: 'show'},
-                                {name: 'url', action: 'show'},
+                                //{name: 'url', action: 'show'},
                                 {name: 'keys', action: 'hide'},
                                 {name: 'users', action: 'hide'}]
                         }, {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
                             actions: [{name: 'token', action: 'hide'},
-                                {name: 'url', action: 'hide'},
+                                //{name: 'url', action: 'hide'},
                                 {name: 'keys', action: 'show'},
                                 {name: 'users', action: 'show'}]
                         }]
                 }
             },
-            url: {
-                type: STRING,
-                optional: true,
-                label: "Option 1: Share url",
-                value: "http://wegas.albasim.ch/?token=223pomp"
-            },
             token: {
                 type: STRING,
                 optional: true,
                 _inputex: {
-                    label: "Option 2: Share enrolment key"
-                            //description: "Player can join this game by using the enrolment key in the lobby or using the link below.<br />"
+                    label: "Option 1: Share enrolment key",
+                    wrapperClassName: "inputEx-fieldWrapper wegas-game-token",
+                    description: "Players need to log in or create an account and then use the enrolment key to join the game."
                             //        + "The key can be used to join multiple times."
                             //description: "Leave blank for automatic generation",
                             //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
@@ -401,10 +408,12 @@ YUI.add('wegas-entity', function(Y) {
                 type: ARRAY,
                 value: [],
                 _inputex: {
-                    label: "Enrolment keys",
+                    label: "Option 1: Enrolment keys",
+                    wrapperClassName: "inputEx-fieldWrapper wegas-game-keys",
                     _type: "enrolmentkeylist",
-                    description: "Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
-                            + "Each key can be used by only one team/player."
+                    description: "Players need to log in or create an account and then use the enrolment key to join the game.<br />"
+                            + "Each key can be used by only once."
+                            //"Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
                 }
             },
             users: {
@@ -412,9 +421,9 @@ YUI.add('wegas-entity', function(Y) {
                 value: [],
                 _inputex: {
                     label: "Option 2: Create user in advance",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature wegas-game-users',
                     _type: "enrolmentkeylist",
-                    description: "Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
-                            + "Each key can be used by only one team/player."
+                    description: "Players can join this game the user name and password on the login page."
                 }
             },
             playersCount: {
@@ -422,7 +431,7 @@ YUI.add('wegas-entity', function(Y) {
                 getter: function() {
                     var count = 0;
                     Y.Array.each(this.get("teams"), function(t) {
-                        if (!(t instanceof Wegas.persistence.DebugTeam)) {
+                        if (!(t instanceof persistence.DebugTeam)) {
                             count += t.get("players").length;
                         }
                     });
@@ -433,11 +442,7 @@ YUI.add('wegas-entity', function(Y) {
         EDITMENU: [{
                 type: BUTTON,
                 label: "Edit",
-                plugins: [
-                    //{
-                    //    fn: "EditEntityAction"
-                    //},
-                    {
+                plugins: [{
                         fn: "OpenTabAction",
                         cfg: {
                             label: "Game",
@@ -445,6 +450,7 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "List",
+                                    cssClass: "wegas-lobby-editgame",
                                     children: [{
                                             type: "EditEntityForm"
                                         }, {
@@ -455,12 +461,7 @@ YUI.add('wegas-entity', function(Y) {
                                                 }, {
                                                     name: "Link",
                                                     value: "Game:Token"
-                                                }
-                                                //, {
-                                                //    name: "TeamToken",
-                                                //    value: "Game:TeamToken"
-                                                //}
-                                            ]
+                                                }]
                                         }]
                                 }]
                         }
@@ -571,12 +572,12 @@ YUI.add('wegas-entity', function(Y) {
             }
         ]
     });
-    Wegas.persistence.DebugGame = Wegas.persistence.Game;
+    persistence.DebugGame = persistence.Game;
 
     /**
      * Team mapper
      */
-    Wegas.persistence.Team = Base.create("Team", Wegas.persistence.Entity, [], {}, {
+    persistence.Team = Base.create("Team", persistence.Entity, [], {}, {
         ATTRS: {
             '@class': {
                 value: "Team"
@@ -637,12 +638,12 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * 
      */
-    Wegas.persistence.DebugTeam = Base.create("DebugTeam", Wegas.persistence.Team, [], {}, {});
+    persistence.DebugTeam = Base.create("DebugTeam", persistence.Team, [], {}, {});
 
     /**
      * Player mapper
      */
-    Wegas.persistence.Player = Base.create("Player", Wegas.persistence.Entity, [], {}, {
+    persistence.Player = Base.create("Player", persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: STRING
@@ -674,7 +675,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * User mapper
      */
-    Wegas.persistence.User = Base.create("User", Wegas.persistence.Entity, [], {
+    persistence.User = Base.create("User", persistence.Entity, [], {
         getMainAccount: function() {
             return this.get("accounts")[0];
         }
@@ -702,7 +703,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * Role mapper
      */
-    Wegas.persistence.Role = Base.create("Role", Wegas.persistence.Entity, [], {}, {
+    persistence.Role = Base.create("Role", persistence.Entity, [], {}, {
         ATTRS: {
             name: {
                 type: STRING
@@ -752,7 +753,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * JpaAccount mapper
      */
-    Wegas.persistence.JpaAccount = Base.create("JpaAccount", Wegas.persistence.Entity, [], {
+    persistence.JpaAccount = Base.create("JpaAccount", persistence.Entity, [], {
         getPublicName: function() {
             return this.get("name");
         }
@@ -882,7 +883,7 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * JpaAccount mapper
      */
-    Wegas.persistence.GuestJpaAccount = Base.create("JpaAccount", Wegas.persistence.Entity, [], {
+    persistence.GuestJpaAccount = Base.create("JpaAccount", persistence.Entity, [], {
         getPublicName: function() {
             return "Guest";
         }

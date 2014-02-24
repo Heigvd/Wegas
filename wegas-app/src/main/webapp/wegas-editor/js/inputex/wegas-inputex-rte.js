@@ -27,9 +27,17 @@ YUI.add("wegas-inputex-rte", function(Y) {
 
     Y.extend(RTEField, inputEx.Textarea, {
         destroy: function() {
-            tinymce.remove("#" + this.el.id);
-            //tinymce.execCommand('mceRemoveEditor', false, this.el.id);
+            if (this.editor) {
+                this.editor.destroy();
+            } else {
+                Y.once("domready", function() {
+                    this.editor.destroy();
+                }, this);
+            }
+
             RTEField.superclass.destroy.call(this);
+            //tinymce.execCommand('mceRemoveEditor', false, this.el.id);
+            //tinymce.remove("#" + this.el.id);
         },
         /**
          * Set the default values of the options
@@ -46,9 +54,8 @@ YUI.add("wegas-inputex-rte", function(Y) {
          */
         renderComponent: function() {
             RTEField.superclass.renderComponent.call(this);
-            if (!RTEField.init) {
-                RTEField.init = true;
-                tinymce.init({
+            Y.once("domready", function() {
+                this.editor = new tinymce.Editor(this.el.id, {
                     plugins: [
                         "autolink autoresize link image lists code media table contextmenu paste"
                                 //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
@@ -61,6 +68,10 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     relative_urls: false,
                     toolbar_items_size: 'small',
                     file_browser_callback: this.onFileBrowserClick,
+                    setup: Y.bind(function(editor) {
+                        editor.on('change', Y.bind(this.fireUpdatedEvt, this));
+                        this.editor = editor;
+                    }, this),
                     image_advtab: true,
                     autoresize_min_height: 35,
                     autoresize_max_height: 500,
@@ -84,11 +95,13 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         }, {
                             title: 'Normal',
                             inline: 'span'
-                        }]});
-            }
-            Y.once("domready", function() {
+                        }]}, tinymce.EditorManager);
+
+                this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
+                this.editor.render();
+
                 //tinymce.createEditor(this.el.id, {});
-                tinymce.execCommand('mceAddEditor', false, this.el.id);
+                //tinymce.execCommand('mceAddEditor', false, this.el.id);
             }, this);
         },
         onFileBrowserClick: function(field_name, url, type, win) {

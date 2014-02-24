@@ -6,35 +6,10 @@
     <ui:composition template="/wegas-app/view/template/app-default.xhtml">
 
         <ui:define name="head">
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
-            <style type="text/css">
-                .yui3-skin-sam #centerTabView .yui3-tab-label {
-                    min-width: 90px;
-                }
-                .yui3-skin-sam #gameModelsTab {
-                    padding-left: 15px;
-                }
-                #rightTabView .yui3-tab-remove {
-                    display: none;
-                }
-                #rightTabView .yui3-tabview-removeable .yui3-tab-label,
-                #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label:focus,
-                #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label:hover,
-                #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label {
-                    padding-right: 1.4em;
-                }
-                /** Uservoice widget */
-                .yui3-skin-sam .uv-icon {
-                    right: 0;
-                    top: 11px !important;
-                    width: 23px;
-                    opacity: 1;
-                }
-                .yui3-skin-sam .uv-icon svg {
-                    width: 24px;
-                    height: 27px;
-                }
-            </style>
+            <!--<link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-lobby/css/wegas-lobby-min.css" />-->
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/wegas-editor/css/wegas-editor-min.css&amp;/wegas-lobby/css/wegas-lobby-min.css" />
+
         </ui:define>
 
         <ui:define name="body">
@@ -126,32 +101,27 @@
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined
                         window.open(app.get("base") + "play.html?gameId=" + e.gameId);// open the game in a new tab
 
-                        Y.Wegas.Facade.GameModel.sendInitialRequest({//         // Refresh game model list
+                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest();// reload datasource
+                        //Y.Wegas.Facade.PublicGames.sendInitialRequest();
+                        Y.Wegas.Facade.Game.sendInitialRequest({
                             on: {
                                 success: function() {
-                                    Y.Wegas.Facade.RegisteredGames.sendInitialRequest();// reload datasource
-                                    Y.Wegas.Facade.PublicGames.sendInitialRequest();
-
-                                    Y.Wegas.Facade.Game.sendInitialRequest({
-                                        on: {
-                                            success: function() {
-                                                Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
-                                            }
-                                        }
-                                    });
+                                    Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
                                 }
                             }
                         });
+
+                        //Y.Wegas.Facade.GameModel.sendInitialRequest();          // Refresh game model list
                     });
 
                     app.render();                                               // Launch the editor
                 });
             </script>
         </ui:define>
-        
+
         <ui:define name="uservoice_trigger_position">top-right</ui:define>
         <ui:define name="uservoice_trigger_background_color">white</ui:define>
         <ui:define name="uservoice_trigger_color">#072644</ui:define>
-        
+
     </ui:composition>
 </html>

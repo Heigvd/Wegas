@@ -64,10 +64,9 @@ YUI.add('wegas-app', function(Y) {
          * @private
          */
         destructor: function() {
-            var i;
-            for (i in Y.Wegas.Facade) {
-                Y.Wegas.Facade[i].destroy();
-            }
+            Y.Object.each(Y.Wegas.Facade, function(i) {
+                i.destroy();
+            });
         },
         /**
          * Render function
@@ -80,60 +79,18 @@ YUI.add('wegas-app', function(Y) {
 
             this.on("render", function() {                                      // Remove loading overlay on render
                 Y.one("body").removeClass("wegas-loading-overlay");
+                /**
+                 * Shortcut to activate developper mode. Allow access to Y instance. Toggle.
+                 * Event keypress '°'
+                 */
+                Y.one("body").on("key", function() {
+                    Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
+                }, "167");
             });
 
-            Y.on("io:failure", function(tId, req, e) {                          // Add a global io failure listener
-                var msg;
-                try {
-                    msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source") + e.request
-                            + ", " + e.cfg.data + ": ";
-                } catch (e) {
-                    msg = "Error sending request: ";
-                }
-                try {
-                    var r = Y.JSON.parse(req.responseText);
-                    msg += "\n Server reply " + Y.JSON.stringify(r, null, "\t");
-
-                    if (r.exception === "org.apache.shiro.authz.UnauthenticatedException") {
-                        //Y.io(this.get("base") + "/User/LoggedIn");
-                        var panel = new Y.Wegas.Panel({
-                            content: "<div class='icon icon-info'>You have been logged out.</div>",
-                            modal: true,
-                            centered: true,
-                            buttons: {
-                                footer: [{
-                                        label: 'Click here to reconnect',
-                                        action: function() {
-                                            Y.config.win.location.reload();
-                                            //Y.config.win.location.href = Y.config.win.location.href + "#";
-                                        }
-                                    }]
-                            }
-                        });
-                        panel.render();
-                        e.preventDefault();
-                        return;
-                    } else if (r.exception === "org.apache.shiro.authz.UnauthorizedException") {
-                        // @todo Do something?
-                    }
-                } catch (e) {                                                   // JSON PARSE ERROR
-                    msg += "\n Server reply " + (req && req.responseText);
-                }
-                Y.log(msg, "error");
-                if (window.Muscula) {                                           // Send an event to muscula
-                    window.Muscula.errors.push(new Error(msg));
-                }
-            }, this);
+            Y.on("io:failure", this.globalFailureHandler, this);
 
             this.initDataSources();
-
-            /**
-             * Shortcut to activate developper mode. Allow access to Y instance. Toggle.
-             * Event keypress '°'
-             */
-            Y.one("body").on("key", function() {
-                Y.Wegas.app.set("devMode", !Y.Wegas.app.get("devMode"));
-            }, "167");
         },
         // *** Private methods ** //
         /**
@@ -193,11 +150,9 @@ YUI.add('wegas-app', function(Y) {
          * @description initPage methods
          */
         initPage: function() {
-            //Y.Wegas.Widget.use(this.widgetCfg, Y.bind(function(cfg) {         // Load the subwidget dependencies
             this.widget = Y.Wegas.Widget.create(this.widgetCfg);                // Render the subwidget
             this.widget.render();
             this.fire("render");                                                // Fire a render event for some eventual post processing
-            //}, this, this.widgetCfg));
 
             //this.pageLoader = new Y.Wegas.PageLoader();                       // Load the subwidget using pageloader
             //this.pageLoader.render();
@@ -209,6 +164,48 @@ YUI.add('wegas-app', function(Y) {
             //    Y.log('initUI(): Error rendering UI: ' + ((renderException.stack)
             //     ? renderException.stack : renderException), 'error', 'Wegas.App');
             //}
+        },
+        globalFailureHandler: function(tId, req, e) {                          // Add a global io failure listener
+            var msg;
+            try {
+                msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source") + e.request
+                        + ", " + e.cfg.data + ": ";
+            } catch (e) {
+                msg = "Error sending request: ";
+            }
+            try {
+                var r = Y.JSON.parse(req.responseText);
+                msg += "\n Server reply " + Y.JSON.stringify(r, null, "\t");
+
+                if (r.exception === "org.apache.shiro.authz.UnauthenticatedException") {
+                    //Y.io(this.get("base") + "/User/LoggedIn");
+                    var panel = new Y.Wegas.Panel({
+                        content: "<div class='icon icon-info'>You have been logged out.</div>",
+                        modal: true,
+                        centered: true,
+                        buttons: {
+                            footer: [{
+                                    label: 'Click here to reconnect',
+                                    action: function() {
+                                        Y.config.win.location.reload();
+                                        //Y.config.win.location.href = Y.config.win.location.href + "#";
+                                    }
+                                }]
+                        }
+                    });
+                    panel.render();
+                    e.preventDefault();
+                    return;
+                } else if (r.exception === "org.apache.shiro.authz.UnauthorizedException") {
+                    // @todo Do something?
+                }
+            } catch (e) {                                                   // JSON PARSE ERROR
+                msg += "\n Server reply " + (req && req.responseText);
+            }
+            Y.log(msg, "error");
+            if (window.Muscula) {                                           // Send an event to muscula
+                window.Muscula.errors.push(new Error(msg));
+            }
         }
     }, {
         /** @lends Y.Wegas.App */

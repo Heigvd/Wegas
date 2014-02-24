@@ -8,7 +8,7 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.ListInstance;
+import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -17,15 +17,17 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.BatchFetchType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "QuestionInstance")
 @Table(name = "MCQQuestionInstance")
-public class QuestionInstance extends ListInstance {
+@XmlType(name = "QuestionInstance")
+public class QuestionInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     //private static final Logger logger = LoggerFactory.getLogger(QuestionInstance.class);
@@ -33,7 +35,9 @@ public class QuestionInstance extends ListInstance {
      *
      */
     @OneToMany(mappedBy = "questionInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @BatchFetch(BatchFetchType.JOIN)
     @JsonManagedReference
+    //@JoinFetch
     private List<Reply> replies = new ArrayList<>();
     /**
      *
@@ -133,5 +137,14 @@ public class QuestionInstance extends ListInstance {
      */
     public void desactivate() {
         this.setActive(false);
+    }
+
+    /**
+     *
+     * @param index
+     * @return
+     */
+    public ChoiceDescriptor item(int index) {
+        return ((QuestionDescriptor) this.getDescriptor()).item(index);
     }
 }
