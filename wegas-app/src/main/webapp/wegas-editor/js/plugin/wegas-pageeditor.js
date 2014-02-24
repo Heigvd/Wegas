@@ -92,7 +92,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                             var menu = host.get("widget").getMenuCfg({
                                 targetwidget: host.get("widget")
                             }), addElement = Y.Array.find(menu, function(o) {   /* search "Add" menu */
-                                return o.label === "Add";
+                                return o.label.indexOf("Add") > -1;
                             });
                 
                             this.menu.set("children", addElement.plugins[0].cfg.children);// And place it'
