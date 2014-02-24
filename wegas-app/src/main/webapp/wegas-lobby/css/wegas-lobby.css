@@ -88,15 +88,6 @@
     top: -19px;
     left: 175px;
 }
-.wegas-sharerole-content {
-    margin-top: 0px;
-}
-.wegas-sharerole .title {
-    font-weight: normal;
-    font-style: italic;
-    margin-bottom: 3px;
-    color: #505050;
-}
 
 
 /* Lobby datatables */
@@ -189,8 +180,10 @@
     margin: 0px 10px 10px;
 }
 .wegas-sharerole .title {
-    font-weight: bolder;
-    margin-bottom: 5px;
+    font-weight: normal;
+    font-style: italic;
+    margin-bottom: 3px;
+    color: #505050;
 }
 .wegas-link div {
     width: 100%;
