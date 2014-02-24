@@ -137,6 +137,7 @@
     position:absolute;
     top:0;
     right:0;
+    display: none;
 }
 .wegas-pageeditor-overlay-content > .wegas-editmenubutton-icon{
     background: transparent url("../../wegas-app/images/wegas-app-sprite.png") 2px -334px no-repeat;
