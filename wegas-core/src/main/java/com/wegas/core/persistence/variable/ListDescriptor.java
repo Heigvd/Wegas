@@ -38,7 +38,7 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @JoinColumn(referencedColumnName = "variabledescriptor_id")
     //@OrderBy("id")
     @OrderColumn
-    private List<VariableDescriptor> items = new ArrayList<VariableDescriptor>();
+    private List<VariableDescriptor> items = new ArrayList<>();
 
     public ListDescriptor() {
         super();
@@ -56,15 +56,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         super(name, defaultInstance);
     }
 
-    /**
-     *
-     * @param force
-     */
-    /*
-     * @Override public void propagateDefaultInstance(boolean force) {
-     * super.propagateDefaultInstance(force); for (VariableDescriptor vd:
-     * this.getItems()) { vd.propagateDefaultInstance(force); } }
-     */
     /**
      *
      * @param gameModel
@@ -88,10 +79,6 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     /**
      * @param items
      */
-//    @Override
-//    public void setItems(List<VariableDescriptor> items) {
-//        this.items = items;
-//    }
     @Override
     public void setItems(List<VariableDescriptor> items) {
         this.items = items;
@@ -123,11 +110,20 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         return this.items.get(index);
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int size() {
         return this.items.size();
     }
 
+    /**
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean remove(VariableDescriptor item) {
         return this.items.remove(item);

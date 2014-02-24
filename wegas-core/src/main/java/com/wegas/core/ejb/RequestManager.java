@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
-import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -21,10 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import javax.inject.Named;
-import javax.script.ScriptEngine;
 
 /**
  *
@@ -34,11 +30,6 @@ import javax.script.ScriptEngine;
 @RequestScoped
 public class RequestManager implements Serializable {
 
-    /**
-     *
-     */
-    @Inject
-    Event<PlayerAction> playerActionEvent;
     /**
      *
      */
@@ -59,10 +50,6 @@ public class RequestManager implements Serializable {
      *
      */
     private Locale locale;
-    /**
-     *
-     */
-    private ScriptEngine currentEngine = null;
 
     /**
      *
@@ -85,10 +72,7 @@ public class RequestManager implements Serializable {
      * @param currentPlayer the currentPlayer to set
      */
     public void setPlayer(Player currentPlayer) {
-       if ((this.currentPlayer == null) || (currentPlayer == null) || (currentPlayer.getId() != this.currentPlayer.getId())) {
-            this.currentPlayer = currentPlayer;
-            this.setCurrentEngine(null);
-        }
+        this.currentPlayer = currentPlayer;
     }
 
     /**
@@ -97,14 +81,6 @@ public class RequestManager implements Serializable {
      */
     public GameModel getCurrentGameModel() {
         return this.getPlayer().getGameModel();
-    }
-
-    public ScriptEngine getCurrentEngine() {
-        return currentEngine;
-    }
-
-    public void setCurrentEngine(ScriptEngine currentEngine) {
-        this.currentEngine = currentEngine;
     }
 
     /**
@@ -138,18 +114,27 @@ public class RequestManager implements Serializable {
 
     /**
      *
-     * @param exception
+     * @param event
      */
     public void addEvent(ClientEvent event) {
         this.events.add(event);
     }
 
+    /**
+     *
+     * @param e
+     */
     public void addException(Exception e) {
         ArrayList exceptions = new ArrayList();
         exceptions.add(e);
         this.addEvent(new ExceptionEvent(exceptions));
     }
 
+    /**
+     *
+     * @param type
+     * @param payload
+     */
     public void sendCustomEvent(String type, Object payload) {
         this.addEvent(new CustomEvent(type, payload));
     }
