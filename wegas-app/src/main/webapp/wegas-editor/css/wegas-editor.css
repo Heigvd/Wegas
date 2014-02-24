@@ -368,3 +368,16 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .yui3-skin-sam .wegas-icon-jpaaccount {
     background-position: 0 -590px;
 }
+
+/** Uservoice widget */
+.yui3-skin-sam .uv-icon {
+    right: 0;
+    top: 11px !important;
+    width: 23px;
+    opacity: 1;                   
+    z-index: 0;
+}
+.yui3-skin-sam .uv-icon svg {
+    width: 24px;
+    height: 27px;
+}
