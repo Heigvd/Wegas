@@ -259,6 +259,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
         }
     });
     Y.namespace('Wegas').TeamTreeView = TeamTreeView;
+
     /**
      * @class To be plugged on a an EditorTreeview, keeps track of the
      * collapsed nodes.
@@ -294,9 +295,6 @@ YUI.add('wegas-editor-treeview', function(Y) {
             if (menuItems) {
                 host.toolbar.destroyAll();
                 host.toolbar.add(menuItems);                                    // Populate the menu with the elements associated to the
-
-                //host.toolbar.item(0).set("visible", false).fire("click");       // Excute the actions associated to the first item of the menu
-
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
                 host.currentSelection = null;
@@ -341,6 +339,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             children: {}
         }
     });
+
     /**
      * 
      */
@@ -359,6 +358,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
     }, {
         NS: "defaultmenuclick"
     });
+
     /**
      * @class Open a menu on right click, containing the admin edition field
      * @constructor
@@ -375,7 +375,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             var targetWidget = Y.Widget.getByNode(e.domEvent.target),
                     menuItems = this.getMenuItems(targetWidget.get("data"), targetWidget);    // Fetch menu items
 
-            //menuItems.splice(0, 1);                                             // Remove "Edit" button
+            //menuItems.splice(0, 1);                                           // Remove "Edit" button
 
             Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning
                 Y.Array.each(i.plugins, function(p, index) {
@@ -415,6 +415,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
         }
     });
 
+    /**
+     * 
+     */
     Plugin.EditorTVToggleClick = Y.Base.create("EditorTVToggleClick", Plugin.Base, [], {
         initializer: function() {
             this.onHostEvent("treenode:click", function(e) {
