@@ -23,17 +23,7 @@
 #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label {
     padding-right: 1.4em;
 }
-/** Uservoice widget */
-.yui3-skin-sam .uv-icon {
-    right: 0;
-    top: 11px !important;
-    width: 23px;
-    opacity: 1;
-}
-.yui3-skin-sam .uv-icon svg {
-    width: 24px;
-    height: 27px;
-}
+
 /** Edit game form */
 .wegas-lobby-editgame  .wegas-form-content{
     padding-bottom: 0px !important;
