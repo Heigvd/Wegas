@@ -233,6 +233,7 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
      * @param gameModel
      */
     public void reset(final GameModel gameModel) {
+        em.flush();                                                             // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         gameModel.propagateGameModel();
         gameModel.propagateDefaultInstance(true);                               // Propagate default instances
         em.flush();
