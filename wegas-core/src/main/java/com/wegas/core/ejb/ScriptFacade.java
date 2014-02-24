@@ -120,8 +120,6 @@ public class ScriptFacade implements Serializable {
 
         for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
             engine.put(arg.getKey(), arg.getValue());
-        }
-
         try {
             return engine.eval(script.getContent());
         } catch (ScriptException ex) {
@@ -131,6 +129,18 @@ public class ScriptFacade implements Serializable {
             throw new ScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
         }
 
+            engineInvocationEvent.fire(new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
+
+
+            try {
+                return engine.eval(script.getContent());
+            } catch (ScriptException ex) {
+                logger.warn("{} in\n{}", ex.getMessage(), script.getContent());
+                requestManager.addException(
+                        new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
+                throw new ScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
+            }
+        }
     }
 
     public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
