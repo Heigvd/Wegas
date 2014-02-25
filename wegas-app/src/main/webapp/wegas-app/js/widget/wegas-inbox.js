@@ -115,7 +115,7 @@ YUI.add('wegas-inbox', function(Y) {
             this.isSyncing = true;
 
             this.tabView.destroyAll();
-            
+
             for (i = messages.length - 1; i >= 0; i -= 1) {
                 msg = messages[i];
                 from = msg.get("from") || "<i>No sender</i>";
@@ -137,10 +137,10 @@ YUI.add('wegas-inbox', function(Y) {
             }
 
             if (messages.length === 0) {
-                this.tabView.add({
+                this.tabView.add(new Y.Tab({
                     label: '',
                     content: '<center><i>You have no messages</i></center>'
-                });
+                }));
             }
 
             this.isSyncing = false;
