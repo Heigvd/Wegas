@@ -59,7 +59,8 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         bindUI: function() {
             var onUpdate = function(e) {
-                if ("" + this.get("variable.evaluated") !== "" + this.get('pageId')) {
+                var variable = this.get("variable.evaluated");
+                if (variable && "" + this.get("variable.evaluated") !== "" + this.get('pageId')) {
                     this.syncUI();
                 }
             };

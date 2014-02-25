@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.*;
@@ -20,6 +21,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -63,6 +66,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+    /**
+     *
+     */
+    @Inject
+    private Event<PlayerAction> playerActionEvent;
 
     /**
      *
@@ -75,6 +83,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      *
      * @param gameModelId
      * @param game
+     * @throws IOException
      */
     public void publishAndCcreate(final Long gameModelId, final Game game) throws IOException {
         GameModel gm = gameModelFacade.duplicate(gameModelId);
@@ -83,10 +92,20 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         this.create(gm, game);
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param game
+     */
     public void create(final Long gameModelId, final Game game) {
         this.create(gameModelFacade.find(gameModelId), game);
     }
 
+    /**
+     *
+     * @param gameModel
+     * @param game
+     */
     public void create(final GameModel gameModel, final Game game) {
         if (this.findByToken(game.getToken()) != null) {
             //  || teamFacade.findByToken(game.getToken()) != null) {
@@ -221,6 +240,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     public GameEnrolmentKey findGameEnrolmentKey(final String key) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
@@ -230,6 +254,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return (GameEnrolmentKey) q.getSingleResult();
     }
 
+    /**
+     * 
+     * @param key
+     * @return 
+     */
     public GameAccountKey findGameAccountKey(String key) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
@@ -239,6 +268,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return (GameAccountKey) q.getSingleResult();
     }
 
+    /**
+     * 
+     * @param search
+     * @return 
+     */
     public List<Game> findGameByName(String search) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
@@ -262,6 +296,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     /**
      *
+     * @param orderBy
      * @return
      */
     public List<Game> findAll(final String orderBy) {
@@ -270,6 +305,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return getByGameId.getResultList();
     }
 
+    /**
+     *
+     * @param userId
+     * @return
+     */
     public List<Game> findRegisteredGames(final Long userId) {
         final Query getByGameId =
                 em.createQuery("SELECT game, p FROM Game game "
@@ -282,6 +322,12 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return this.findRegisterdGames(getByGameId);
     }
 
+    /**
+     *
+     * @param userId
+     * @param gameModelId
+     * @return
+     */
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
         final Query getByGameId =
                 em.createQuery("SELECT game, p FROM Game game "
@@ -294,6 +340,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return this.findRegisterdGames(getByGameId);
     }
 
+    /**
+     * 
+     * @param q
+     * @return 
+     */
     private List<Game> findRegisterdGames(final Query q) {
         final List<Game> games = new ArrayList<>();
         for (Object ret : q.getResultList()) {                                // @hack Replace created time by player joined time
@@ -306,6 +357,12 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return games;
     }
 
+    /**
+     * 
+     * @param g
+     * @param accountNumber
+     * @return 
+     */
     public Game createGameAccount(Game g, Long accountNumber) {
         for (int i = 0; i < accountNumber; i++) {
             int newNumber = g.getAccountkeys().size() + 1;
@@ -315,6 +372,67 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             g.getAccountkeys().add(gameAccountKey);
         }
         return g;
+    }
+
+    /**
+     *
+     * @param team
+     * @param player
+     */
+    private void joinTeam(Team team, Player player) {
+        team.addPlayer(player);
+        em.persist(player);
+
+        team.getGame().getGameModel().propagateDefaultInstance(false);
+        playerActionEvent.fire(new PlayerAction(player));
+    }
+
+    /**
+     *
+     * @param teamId
+     * @param p
+     * @return
+     */
+    public Player joinTeam(Long teamId, Player p) {
+        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
+        this.joinTeam(teamFacade.find(teamId), p);
+        return p;
+    }
+
+    /**
+     *
+     * @param team
+     * @param user
+     * @return
+     */
+    public Player joinTeam(Team team, User user) {
+        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
+        Player p = new Player();
+        p.setUser(user);
+        this.joinTeam(team, p);
+        this.addRights(p.getGame());
+        return p;
+    }
+
+    /**
+     *
+     * @param teamId
+     * @param userId
+     * @return
+     */
+    public Player joinTeam(Long teamId, Long userId) {
+        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
+        return this.joinTeam(teamFacade.find(teamId), userFacade.find(userId));
+    }
+
+    /**
+     *
+     * @param game
+     */
+    public void addRights(Game game) {
+        userFacade.getCurrentUser().getMainAccount().addPermission(
+                "Game:View:g" + game.getId(), // Add "View" right on game,
+                "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
     }
 
     /**

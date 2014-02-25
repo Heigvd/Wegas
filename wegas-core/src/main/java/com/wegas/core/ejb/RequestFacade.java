@@ -120,6 +120,7 @@ public class RequestFacade {
 //    }
     /**
      *
+     * @param player
      */
     public void commit(Player player) {
         em.flush();
@@ -156,7 +157,7 @@ public class RequestFacade {
             em.flush();
         }
     }
-    
+
     /**
      *
      */

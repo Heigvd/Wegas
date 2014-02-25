@@ -32,7 +32,7 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            if (confirm("This will restart every game depending on this model. Are you sure?")) {
+            if (confirm("This will restart for every player. Are you sure?")) {
                 var host = this.get("host");
                 host.showOverlay();
                 Wegas.Facade.VariableDescriptor.sendRequest({

@@ -224,7 +224,7 @@ public class GameController {
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
                 Arrays.asList("View", "Token"));                                // Make sure the user can join
 
-        return teamFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
+        return gameFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
     }
 
     @POST
@@ -237,7 +237,7 @@ public class GameController {
         Game g = null;
 
         for (User user : users) {
-            g = teamFacade.joinTeam(teamId, user.getId()).getGame();
+            g = gameFacade.joinTeam(teamId, user.getId()).getGame();
         }
         return g;
     }

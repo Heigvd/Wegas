@@ -31,6 +31,8 @@
                                                                 "dataSource": "User"
                                                             }]
                                                     }
+                                                }, {
+                                                    "fn": "EditorTVDefaultMenuClick"
                                                 }]
                                         }]
                                 }, {
@@ -52,6 +54,8 @@
                                                                 "dataSource": "Role"
                                                             }]
                                                     }
+                                                }, {
+                                                    "fn": "EditorTVDefaultMenuClick"
                                                 }]
                                         }]
                                 }]
@@ -117,6 +121,10 @@
                                             "key": "name",
                                             "label": "Name"
                                         }, {
+                                            "key": "gameModelName",
+                                            "label": "Scenario",
+                                            "width": "150px"
+                                        }, {
                                             "key": "createdBy",
                                             "label": "Created by",
                                             "width": "150px"
@@ -125,10 +133,6 @@
                                             "label": "Joined",
                                             "width": "140px",
                                             "formatter": "date"
-                                        }, {
-                                            "key": "gameModelName",
-                                            "label": "Game model",
-                                            "width": "150px"
                                         }]
                                 },
                                 "plugins": [{
@@ -213,16 +217,14 @@
                                                                                                         "key": "name",
                                                                                                         "label": "Name"
                                                                                                     }, {
+                                                                                                        "key": "gameModelName",
+                                                                                                        "label": "Scenario",
+                                                                                                        "width": "150px"
+                                                                                                    }, {
                                                                                                         "key": "createdBy",
                                                                                                         "label": "Created by",
                                                                                                         "width": "150px"
-                                                                                                    }, {
-                                                                                                        "key": "createdTime",
-                                                                                                        "label": "Created",
-                                                                                                        "width": "140px",
-                                                                                                        "formatter": "date"
-                                                                                                    }
-                                                                                                ]
+                                                                                                    }]
                                                                                             },
                                                                                             "emptyMessage": "No game is available to play.",
                                                                                             "plugins": [{
@@ -362,7 +364,7 @@
                                                                 "type": "hidden",
                                                                 "value": "null"
                                                             }, {
-                                                                "label": "Based on",
+                                                                "label": "Scenario",
                                                                 "name": "gameModelId",
                                                                 "required": true,
                                                                 "filters": {"canInstantiate": true},
@@ -387,6 +389,7 @@
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "GameModel",
+                                "emptyMessage": "You have not created any scenario yet",
                                 "dataTableCfg": {
                                     "columns": [{
                                             "key": "iconCSS",
@@ -414,7 +417,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
-                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New model",
+                                                    "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New scenario",
                                                     "targetClass": "GameModel",
                                                     "dataSource": "GameModel",
                                                     "formCfg": {

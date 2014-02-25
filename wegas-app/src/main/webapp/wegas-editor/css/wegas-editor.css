@@ -82,18 +82,11 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 /* Console widget styles */
-.wegas-console div.inputEx-Field {
-    float:none;
-}
-.wegas-console > div > .inputEx-fieldWrapper {
-    overflow: auto;
-    height: 50%;
-}
 .wegas-console .results {
     padding: 10px;
     overflow: auto;
     position: absolute;
-    top: 50%;
+    max-height: 200px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -108,28 +101,19 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     border: 1px solid red;
     background: rgb(248, 220, 220);
 }
-.wegas-console .inputEx-ListField .wegas-addbutton {
+.yui3-skin-sam .wegas-console .inputEx-ListField .wegas-addbutton {
     position: absolute;
-    bottom: -138%;
+    bottom: -28px;
+    top: initial;
+    left: initial;
 }
 .wegas-console .inputEx-ListField .wegas-addbutton::after{ 
     content: "Add"; 
 }
 
 /* Styles for Animator -> impact game */
-.editor-animator-impactlist {
-    margin-top: 10px;
-    margin-left: 65px;
-}
-.editor-animator-impactlist .inputEx-ListField{
-    float: none;
-    margin-top: 10px;
-}
-.editor-animator-impactlist textarea{
-    margin-top: 10px;
-}
-.editor-animator-impactlist .inputEx-ListField .wegas-removebutton{
-    margin-left: 90px;
+.wegas-console-wysiwyg-content {
+    padding: 10px 10px 20px 140px;
 }
 
 /* YUI3 Console style override */
@@ -367,4 +351,17 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .yui3-skin-sam .wegas-icon-user,
 .yui3-skin-sam .wegas-icon-jpaaccount {
     background-position: 0 -590px;
+}
+
+/** Uservoice widget */
+.yui3-skin-sam .uv-icon {
+    right: 0;
+    top: 11px !important;
+    width: 23px;
+    opacity: 1;                   
+    z-index: 0;
+}
+.yui3-skin-sam .uv-icon svg {
+    width: 24px;
+    height: 27px;
 }

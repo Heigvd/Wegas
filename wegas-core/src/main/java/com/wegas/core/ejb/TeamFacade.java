@@ -7,19 +7,14 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.User;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -36,11 +31,6 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      *
      */
     @EJB
-    private UserFacade userFacade;
-    /**
-     *
-     */
-    @EJB
     private GameFacade gameFacade;
     /**
      *
@@ -52,11 +42,6 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
-    /**
-     *
-     */
-    @Inject
-    private Event<PlayerAction> playerActionEvent;
 
     /**
      *
@@ -66,30 +51,25 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
     public void create(Long gameId, Team t) {
         Game g = gameFacade.find(gameId);
         g.addTeam(t);
+        gameFacade.addRights(g);                                                // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
 
-        this.addRights(g);              // @fixme Should only be done for a player
         em.flush();
-        em.refresh(t);
         g.getGameModel().propagateDefaultInstance(false);
     }
 
-    private void addRights(Game game) {
-        userFacade.getCurrentUser().getMainAccount().addPermission(
-                "Game:View:g" + game.getId(), // Add "View" right on game,
-                "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
-    }
-
+    /**
+     *
+     * @param entity
+     */
     @Override
     public void remove(Team entity) {
-        List<VariableInstance> instancesToRemove = this.getAssociatedInstances(entity);
-        List<Player> players = entity.getPlayers();
-        for (Player p : players) {
-            instancesToRemove.addAll(playerFacade.getAssociatedInstances(p));
+        for (Player p : entity.getPlayers()) {
+            playerFacade.remove(p);
         }
-        this.em.remove(entity);
-        for (VariableInstance i : instancesToRemove) {
+        for (VariableInstance i : this.getAssociatedInstances(entity)) {
             this.em.remove(i);
         }
+        this.em.remove(entity);
     }
 
     /**
@@ -101,53 +81,6 @@ public class TeamFacade extends AbstractFacadeImpl<Team> {
         Query findInstances = em.createNamedQuery("findTeamInstances");
         findInstances.setParameter("teamid", team.getId());
         return findInstances.getResultList();
-    }
-
-    /**
-     *
-     * @param team
-     * @param user
-     * @return
-     */
-    public Player joinTeam(Team team, User user) {
-        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        Player p = new Player();
-        p.setUser(user);
-        this.joinTeam(team, p);
-        this.addRights(p.getGame());
-        return p;
-    }
-
-    /**
-     *
-     * @param team
-     * @param player
-     */
-    private void joinTeam(Team team, Player player) {
-        team.addPlayer(player);
-        em.persist(player);
-        //em.flush();
-        //em.refresh(player);
-
-        team.getGame().getGameModel().propagateDefaultInstance(false);
-        playerActionEvent.fire(new PlayerAction(player));
-    }
-
-    public Player joinTeam(Long teamId, Player p) {
-        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        this.joinTeam(this.find(teamId), p);
-        return p;
-    }
-
-    /**
-     *
-     * @param teamId
-     * @param userId
-     * @return
-     */
-    public Player joinTeam(Long teamId, Long userId) {
-        // logger.log(Level.INFO, "Adding user " + userId + " to team: " + teamId + ".");
-        return this.joinTeam(this.find(teamId), userFacade.find(userId));
     }
 
     /**

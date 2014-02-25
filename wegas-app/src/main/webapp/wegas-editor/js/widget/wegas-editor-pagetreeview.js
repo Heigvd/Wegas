@@ -179,6 +179,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     if (+i === +page) {                                         //current page
                         pageFound = true;
                         node.set("collapsed", false);
+                        node.get(BOUNDING_BOX).addClass("current-page");
                         Y.soon(Y.bind(buildSub, this, node, this.get("pageLoader").get("widget")));
                     }
                 }
@@ -256,7 +257,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
     });
     Y.namespace("Wegas").PageTreeview = PageTreeview;
 
-    var PageTreeviewToolbarMenu = Y.Base.create("wegas-editor-page", Plugin.VariableTVToolbarMenu, [], {
+    var PageTreeviewToolbarMenu = Y.Base.create("wegas-editor-page", Plugin.EditorTVDefaultMenuClick, [], {
         onTreeViewSelection: function(e) {
             var selection = e.target, data = selection.get("data"),
                     page = data.page,

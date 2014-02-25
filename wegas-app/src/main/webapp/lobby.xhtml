@@ -63,58 +63,38 @@
                             }
                         }
                     });
-                    var refreshTabs = function() {
-                        var tab = Y.Widget.getByNode("#gameModelsTab");
-                        tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
-                        //tab = Y.Widget.getByNode("#gamesTreeViewTab");
-                        //tab.set("visible", !tab.witem(0).dataTable.get("data").isEmpty());
-                    };
 
                     /* <![CDATA[ */
                     app.after("render", function() {
-                        if (Y.Wegas.Facade.Game.data.length > 0) {              // If the user has already created a game
-                            Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2);// select created games tab
-                        }
-                        Y.Widget.getByNode("#centerTabView").on("selectionChange", function(e) {
-                            Y.Widget.getByNode("#rightTabView").destroyAll();   // Empty right widget
-                            var toolbar = e.newVal.witem(0) && e.newVal.witem(0).toolbar;// and remove all buttons
-                            while (toolbar && toolbar.size() > 1) {
-                                toolbar.remove(toolbar.size() - 1);
-                            }
+                        Y.Widget.getByNode("#centerTabView").on("selectionChange", function(e) {// On center tab change,
+                            Y.Widget.getByNode("#rightTabView").destroyAll();   // empty right panel
                         });
-                        refreshTabs();
 
-                        //Y.Wegas.Facade.Game.cache.on("added", function(e) {     // After a game is created
-                        //    if (e.entity instanceof Y.Wegas.persistence.Game) {
-                        //        var gm = Y.Wegas.Facade.GameModel.cache.findById(e.entity.get("gameModelId"));
-                        //        if (!gm || !gm.get("canView")) {
-                        //            Y.Wegas.Facade.GameModel.sendInitialRequest();// To refresh game model list
-                        //        }
-                        //
-                        //        //Y.Widget.getByNode("#gamesTreeViewTab").set("selected", 2).set("visible", true);// select the hosted games tab
-                        //        //Y.Wegas.Facade.PublicGames.sendInitialRequest();  // Refresh available game list
-                        //    }
-                        //});
+                        Y.Widget.getByNode("#gameModelsTab").set("visible", Y.Wegas.Facade.GameModel.cache.find("canDuplicate", true)
+                                || Y.Wegas.Facade.GameModel.cache.find("canEdit", true)); // Hide scenarist tab if no model is available for edition
+
+                        var gamesTab = Y.Widget.getByNode("#gamesTreeViewTab");
+                        gamesTab.set("visible", Y.Wegas.Facade.GameModel.cache.find("canInstantiate", true)
+                                || !gamesTab.witem(0).dataTable.get("data").isEmpty());// Hide teacher tab if no game is available
+                        if (Y.Wegas.Facade.Game.data.length > 0) {              // If the user has already created a game
+                            gamesTab.set("selected", 2);                        // select created games tab
+                        }
                     });
                     /* ]]> */
 
-                    Y.on("gameJoined", function(e) {                            // As soon as a game is joined
+                    Y.on("gameJoined", function(e) {                            // As soon as a game is joined,
                         window.open(app.get("base") + "play.html?gameId=" + e.gameId);// open the game in a new tab
 
-                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest();// reload datasource
-                        //Y.Wegas.Facade.PublicGames.sendInitialRequest();
-                        Y.Wegas.Facade.Game.sendInitialRequest({
+                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest({//   // and refresh the list of games
                             on: {
                                 success: function() {
                                     Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
                                 }
                             }
                         });
-
-                        //Y.Wegas.Facade.GameModel.sendInitialRequest();          // Refresh game model list
                     });
 
-                    app.render();                                               // Launch the editor
+                    app.render();                                               // Render lobby
                 });
             </script>
         </ui:define>
