@@ -87,18 +87,26 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
 
         this.em.flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
-        //this.reset(entity);                                                   // Reset the game model
 
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Duplicate:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Instantiate:gm" + entity.getId());
     }
 
+    /**
+     *
+     * @param gm
+     */
     public void createWithDebugGame(final GameModel gm) {
         this.create(gm);
         this.addGame(gm, new DebugGame());
     }
 
+    /**
+     *
+     * @param gameModel
+     * @param game
+     */
     public void addGame(final GameModel gameModel, final Game game) {
         gameModel.addGame(game);
         this.reset(gameModel);                                                  // Reset the game model
@@ -119,26 +127,25 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
-        final GameModel newGameModel = (GameModel) srcGameModel.duplicate();
+        final GameModel newGameModel = (GameModel) srcGameModel.duplicate();    // Duplicate it
 
-        boolean added = false;
+        boolean added = false;                                                  // Find a unique name for this new game (e.g. Oldname(1))
         int suffix = 1;
-        String newName = null;
+        String newName;
         while (!added) {
             newName = srcGameModel.getName() + "(" + suffix + ")";
             try {
                 this.findByName(newName);
                 suffix++;
             } catch (NoResultException ex) {
+                newGameModel.setName(newName);
                 added = true;
             }
         }
 
-        newGameModel.setName(newName);
-        this.create(newGameModel);                                              // store it db
-        //em.flush();
+        this.create(newGameModel);                                              // Create the new game model
 
-        try {                                                                   //Clone jcr FILES
+        try {                                                                   // Clone files and pages
             ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
             connector.cloneWorkspace(srcGameModel.getId());
             newGameModel.setPages(srcGameModel.getPages());
@@ -149,6 +156,12 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         return newGameModel;
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @return
+     * @throws IOException
+     */
     public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
         GameModel gm = this.duplicate(gameModelId);
         this.addGame(gm, new DebugGame());
@@ -178,6 +191,10 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         return getEntityManager().createQuery(query).getResultList();
     }
 
+    /**
+     *
+     * @return
+     */
     public List<GameModel> findTemplates() {
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery query = criteriaBuilder.createQuery();
@@ -211,11 +228,15 @@ public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
         this.reset(this.find(gameModelId));
     }
 
+    /**
+     *
+     * @param gameModel
+     */
     public void reset(final GameModel gameModel) {
-        em.flush();
-        em.refresh(gameModel);
+        em.flush();                                                             // Need to flush so prepersit events will be thrown (for example Game will add default teams)
+        gameModel.propagateGameModel();
         gameModel.propagateDefaultInstance(true);                               // Propagate default instances
-        em.flush();  
+        em.flush();
         resetEvent.fire(new ResetEvent(gameModel));                             // Send an reset event (for the state machine and other)
     }
 }

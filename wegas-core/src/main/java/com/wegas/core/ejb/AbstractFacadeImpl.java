@@ -83,6 +83,11 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
         return oldEntity;
     }
 
+    /**
+     *
+     * @param entity
+     * @return
+     */
     public T merge(final T entity) {
         this.getEntityManager().merge(entity);
         return entity;
@@ -116,7 +121,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
 
     /**
      *
-     * @param id
+     * @param entityId
      */
     @Override
     public void remove(final Long entityId) {
@@ -125,7 +130,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
 
     /**
      *
-     * @param id
+     * @param entityId
      * @return
      */
     @Override

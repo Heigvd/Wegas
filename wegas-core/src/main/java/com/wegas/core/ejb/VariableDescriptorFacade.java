@@ -77,7 +77,8 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
     /**
      *
      *
-     * @param listDescriptor
+     * @param gameModel
+     * @param list
      * @param entity
      * @return
      */
@@ -119,6 +120,10 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         }
     }
 
+    /**
+     *
+     * @param entity
+     */
     public void reviveItems(DescriptorListI entity) {
         for (Object vd : ((DescriptorListI) entity).getItems()) {
             this.revive((VariableDescriptor) vd);
@@ -168,6 +173,12 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         return newEntity;
     }
 
+    /**
+     *
+     * @param vd
+     * @return
+     * @throws NoResultException
+     */
     public DescriptorListI findParentList(VariableDescriptor vd) throws NoResultException {
         if (vd instanceof ChoiceDescriptor) {                                   // QuestionDescriptor descriptor case
             return ((ChoiceDescriptor) vd).getQuestion();
@@ -180,6 +191,11 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         }
     }
 
+    /**
+     *
+     * @param vd
+     * @param usedNames
+     */
     public void findUniqueName(final VariableDescriptor vd, List<String> usedNames) {
         if (isNullOrEmpty(vd.getName())) {
             vd.setName(DEFAULTVARIABLENAME);
@@ -204,6 +220,10 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         }
     }
 
+    /**
+     *
+     * @param vd
+     */
     public void findUniqueLabel(final VariableDescriptor vd) {
         if (isNullOrEmpty(vd.getLabel())) {
             vd.setLabel(DEFAULTVARIABLELABEL);
@@ -264,12 +284,22 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         return (VariableDescriptor) q.getSingleResult();
     }
 
+    /**
+     *
+     * @param gameModel
+     * @return
+     */
     public List<String> findDistinctNames(final GameModel gameModel) {
         Query distinctNames = em.createQuery("SELECT DISTINCT(var.name) FROM VariableDescriptor var WHERE var.gameModel = :gameModel");
         distinctNames.setParameter("gameModel", gameModel);
         return distinctNames.getResultList();
     }
 
+    /**
+     *
+     * @param gameModel
+     * @return
+     */
     public List<String> findDistinctLabels(final GameModel gameModel) {
         Query distinctNames = em.createQuery("SELECT DISTINCT(var.label) FROM VariableDescriptor var WHERE var.gameModel = :gameModel");
         distinctNames.setParameter("gameModel", gameModel);
@@ -317,12 +347,18 @@ public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescrip
         return findByRootGameModelId.getResultList();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @return
+     */
     public List<VariableDescriptor> findByGameModelId(final Long gameModelId) {
         return gameModelFacade.find(gameModelId).getChildVariableDescriptors();
     }
 
     /**
      *
+     * @param <T>
      * @param gamemodel
      * @param variableDescriptorClass the filtering class
      * @return All specified classes and subclasses belonging to the game model.

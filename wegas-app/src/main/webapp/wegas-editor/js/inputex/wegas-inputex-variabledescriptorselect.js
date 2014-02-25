@@ -163,7 +163,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         genChoices: function(entity, items) {
             if (items) {
                 return Y.Array.map(Y.Array.filter(items, function(i) {        // Apply class filter
-                    return !this.options.classFilter || Y.Lang.indexOf(this.options.classFilter, i.get("@class")) > -1;
+                    return !this.options.classFilter || Y.Array.indexOf(this.options.classFilter, i.get("@class")) > -1;
                 }, this), function(i) {
                     return{
                         value: i.get("name"),

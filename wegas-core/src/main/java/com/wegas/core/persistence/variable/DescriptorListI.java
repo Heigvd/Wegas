@@ -50,5 +50,10 @@ public interface DescriptorListI<T extends VariableDescriptor> {
      */
     public T item(int index);
 
+    /**
+     *
+     * @param item
+     * @return
+     */
     public boolean remove(T item);
 }

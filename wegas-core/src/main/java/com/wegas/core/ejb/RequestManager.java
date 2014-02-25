@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
-import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -21,8 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -33,11 +30,6 @@ import javax.inject.Named;
 @RequestScoped
 public class RequestManager implements Serializable {
 
-    /**
-     *
-     */
-    @Inject
-    Event<PlayerAction> playerActionEvent;
     /**
      *
      */
@@ -122,18 +114,27 @@ public class RequestManager implements Serializable {
 
     /**
      *
-     * @param exception
+     * @param event
      */
     public void addEvent(ClientEvent event) {
         this.events.add(event);
     }
 
+    /**
+     *
+     * @param e
+     */
     public void addException(Exception e) {
         ArrayList exceptions = new ArrayList();
         exceptions.add(e);
         this.addEvent(new ExceptionEvent(exceptions));
     }
 
+    /**
+     *
+     * @param type
+     * @param payload
+     */
     public void sendCustomEvent(String type, Object payload) {
         this.addEvent(new CustomEvent(type, payload));
     }

@@ -75,10 +75,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          */
         syncUI: function() {
             this.mcq = this.getChildById("flexi-mcq");
-
             var targetDescriptor = this.mcq.get("variable.evaluated"),
                     props, exist = false, i, j, done = 0;
-
             if (!targetDescriptor) {
                 this.showMessage("Unable to find target variable");
                 return;
@@ -120,7 +118,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             elements.response = response;
             elements.delay = responseTime;
             reponseElement = this.centerElement.getActiveElement().flexiresponse;
-
             if (reponseElement instanceof Y.Plugin.FlexiResponse &&
                     reponseElement.get("value") === response) {
                 elements.valid = true;
@@ -130,7 +127,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 this.mcq.error(responseTime);
             }
             this.mcq.save(elements);
-
             Y.later(+this.mcq.get("feedback"), this, this.next);
         },
         next: function() {
@@ -197,22 +193,22 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          * @returns {undefined}
          */
         createLoadingEvent: function() {
-            if (this.centerElement.getActiveElement()) {
-                this.centerElement.getActiveElement().onceAfter("render", function(e) {
+            if (this.centerElement.getActiveElement() && this.centerElement.getActiveElement() instanceof Y.Wegas.Image) {
+                this.centerElement.getActiveElement().onceAfter(["load", "error"], function(e) {
                     this.set("currentLoading.center", false);
                 }, this);
             } else {
                 this.set("currentLoading.center", false);
             }
-            if (this.leftElement.getActiveElement()) {
-                this.leftElement.getActiveElement().onceAfter("render", function(e) {
+            if (this.leftElement.getActiveElement() && this.leftElement.getActiveElement() instanceof Y.Wegas.Image) {
+                this.leftElement.getActiveElement().onceAfter(["load", "error"], function(e) {
                     this.set("currentLoading.left", false);
                 }, this);
             } else {
                 this.set("currentLoading.left", false);
             }
-            if (this.rightElement.getActiveElement()) {
-                this.rightElement.getActiveElement().onceAfter("render", function(e) {
+            if (this.rightElement.getActiveElement() && this.rightElement.getActiveElement() instanceof Y.Wegas.Image) {
+                this.rightElement.getActiveElement().onceAfter(["load", "error"], function(e) {
                     this.set("currentLoading.right", false);
                 }, this);
             } else {

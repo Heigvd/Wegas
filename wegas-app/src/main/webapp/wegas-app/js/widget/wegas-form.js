@@ -111,7 +111,6 @@ YUI.add('wegas-form', function(Y) {
             var cfg = Y.clone(val);                                             // Duplicate so val will be untouched while serializing
             Y.mix(cfg, {
                 parentEl: this.get("contentBox"),
-                className: "wegas-form-ix",
                 type: "group"
             })                                                                  // Set up the form parentEl attribute, so it knows where to render
 

@@ -149,14 +149,14 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 cQuestionInstance = cQuestion.getInstance();
                 cReplyLabel = null;
                 if (cQuestion instanceof Y.Wegas.persistence.QuestionDescriptor
-                        && cQuestionInstance.get("active")) {                    // If current question is active
+                        && cQuestionInstance.get("active")) {                   // If current question is active
 
                     if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
                         if (cQuestion.get("allowMultipleReplies")) {
                             cReplyLabel = cQuestionInstance.get("replies").length + "x";
                         } else {
                             choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                            cReplyLabel = choiceDescriptor.get("title") || choiceDescriptor.get("label") || "undefined";
+                            cReplyLabel = choiceDescriptor.get("title") || "undefined";
                             cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel.substr(0, 15) + "..." : cReplyLabel;
                         }
                     }
@@ -181,11 +181,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         },
         /**
          * @function
+         * @param e description
          * @private
          * @description Display selected question's description on current tab.
          */
         onTabSelected: function(e) {
-
             if (e.newVal && e.newVal.cQuestion
                     && !this.isRemovingTabs && !e.newVal.loaded) {
                 e.newVal.loaded = true;
@@ -211,7 +211,8 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         },
         /**
          *
-         * @param {type} tab
+         * @param tab
+         * @param extendedQuestion
          */
         renderTab: function(tab, extendedQuestion) {
             var j, ret, firstChild, cChoices, choiceDescriptor, reply, title,
@@ -225,7 +226,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             ret = ['<div class="content">',
                 '<div class="title">', cQuestion.get("title") || cQuestion.get("label") || "undefined", '</div>',
                 '<div class="description">', extendedQuestion.get("description"), '</div>'];
-
 
             if (cQuestionInstance.get("replies").length === 0                   // If the question is not replied,
                     || cQuestion.get("allowMultipleReplies")) {                 // or it allows to reply multiple times
@@ -246,7 +246,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                             }
                         }
                         ret.push('<div class="reply ', firstChild, ' ', isReplied, '">',
-                                '<div class="name">', cChoices[j].get("title") || cChoices[j].get("label"), '</div>',
+                                '<div class="name">', cChoices[j].get("title"), '</div>',
                                 //'<div class="content">', cChoices[j].get("description"), '</div>',
                                 '<div class="content">',
                                 extendedQuestion.get("items")[j].get("description"),
@@ -266,7 +266,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 for (j = cQuestionInstance.get("replies").length - 1; j >= 0; j -= 1) {
                     reply = cQuestionInstance.get("replies")[j];
                     choiceDescriptor = reply.getChoiceDescriptor();
-                    title = choiceDescriptor.get("title") || choiceDescriptor.get("label");
+                    title = choiceDescriptor.get("title");
                     ret.push('<div class="replyDiv"><div class="reply"><div class="name">', title, '</div>',
                             '<div>',
                             (!cQuestion.get("allowMultipleReplies") || !title) ? extendedQuestion.find(choiceDescriptor.get("id")).get("description") : "",
@@ -292,10 +292,10 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          * @returns {integer} a number
          * @description Return the number of replies corresponding to the given choice.
          */
-        getNumberOfReplies: function(cQuestionInstance, choice) {
+        getNumberOfReplies: function(questionInstance, choice) {
             var i, occurrence = 0;
-            for (i = 0; i < cQuestionInstance.get("replies").length; i++) {
-                if (cQuestionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
+            for (i = 0; i < questionInstance.get("replies").length; i++) {
+                if (questionInstance.get("replies")[i].getChoiceDescriptor().get("id") === choice.get("id")) { //can be buggy
                     occurrence++;
                 }
             }
