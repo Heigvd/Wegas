@@ -40,6 +40,7 @@ YUI.add("wegas-widget", function(Y) {
             emitFacade: true
         });
         this.publish("AttributesChange", {
+            bubbles: false,
             defaultFn: function() {
                 var widget = this.rebuild();
                 if (Y.Plugin.EditEntityAction.currentEntity === this) {         // @FIXME @fx wtf?
