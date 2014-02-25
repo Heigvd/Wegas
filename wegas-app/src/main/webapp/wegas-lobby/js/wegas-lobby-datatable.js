@@ -199,6 +199,11 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             label: "Scenario",
                             width: "150px"
                         }, {
+                            key: "playersCount",
+                            label: "Players",
+                            width: "70px",
+                            formatter: "count"
+                        }, {
                             key: "createdBy",
                             label: "Created by",
                             width: "150px"
@@ -207,11 +212,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             label: "Created",
                             width: "140px",
                             formatter: "date"
-                        }, {
-                            key: "playersCount",
-                            label: "Players",
-                            width: "70px",
-                            formatter: "count"
                         }
 //                        {
 //                            key: "teamsCount",

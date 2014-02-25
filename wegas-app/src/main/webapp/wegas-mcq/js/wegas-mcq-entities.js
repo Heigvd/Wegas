@@ -99,7 +99,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add a choice",
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {

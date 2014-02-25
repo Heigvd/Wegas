@@ -41,14 +41,14 @@
 .yui3-skin-sam .wegas-icon-new {
     background-position: 0px 0px;
 }
-.yui3-skin-sam .wegas-icon-newfile {
+.yui3-skin-sam .wegas-icon.wegas-icon-newfile {
     background: url(../images/wegas-app-sprite.png) no-repeat 1px -1210px,
         url(../../wegas-editor/images/wegas-icon-files.png) no-repeat 1px -228px;
 }
-.yui3-skin-sam .wegas-icon-joingame {
+.yui3-skin-sam .wegas-icon.wegas-icon-joingame {
     background: url(../images/wegas-app-sprite.png) no-repeat 1px -482px;
 }
-.yui3-skin-sam .wegas-icon-newdir {
+.yui3-skin-sam .wegas-icon.wegas-icon-newdir {
     background: url(../images/wegas-app-sprite.png) no-repeat 1px -1167px,
         url(../images/wegas-app-sprite.png) no-repeat 1px -272px;
 }
@@ -111,11 +111,6 @@
 }
 .yui3-skin-sam .wegas-icon-showregions {
     background-position: 0px -1360px;
-}
-.yui3-skin-sam .wegas-icon-duplicate {
-    background: url(../../wegas-app/images/wegas-app-sprite.png) no-repeat 1px -1287px,
-        url(../../wegas-app/images/wegas-app-sprite.png) no-repeat -3px -1289px;
-    height: 19px;
 }
 .wegas-icon-edit {
     background-position: 1px -1110px;

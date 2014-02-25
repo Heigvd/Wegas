@@ -389,6 +389,7 @@
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "GameModel",
+                                "emptyMessage": "You have not created any scenario yet",
                                 "dataTableCfg": {
                                     "columns": [{
                                             "key": "iconCSS",
