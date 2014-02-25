@@ -34,7 +34,6 @@ YUI.add("wegas-image", function(Y) {
             this.publish("error", {fireOnce: true, async: true});
             this.publish("load", {fireOnce: true, async: true});
             this.image = this.get("contentBox");
-            this.handlers = [];
         },
         getEditorLabel: function() {
             return this.get("url");
@@ -54,35 +53,20 @@ YUI.add("wegas-image", function(Y) {
          * @private
          */
         bindUI: function() {
-            this.get(CONTENTBOX).on("load", function(e) {
+            this.image.on("load", function(e) {
                 if (!this.CSSSize) { // adapt only without plugin
                     this.get("boundingBox").setStyles({width: this.image.width, height: this.image.height});
                 }
                 this.fire("load");
                 this.getEvent("load").fired = true;
-                //this.fire("render");
-                //this.getEvent("rendered").fired = true;
             }, this);
-            this.get(CONTENTBOX).on("error", function(e) {
+            this.image.on("error", function(e) {
+                this.image.setAttribute("alt", "Image error");
+                this.image.setAttribute("src", "");
                 this.fire("error");
                 this.getEvent("error").fired = true;
-                this.fire("load");
-                this.getEvent("load").fired = true;
-                //this.fire("render");
-                //this.getEvent("render").fired = true;
             }, this);
-        },
-        /**
-         * Lifecycle method
-         * @function
-         * @private
-         */
-        //destructor: function() {
-        //    var i;
-        //    for (i in this.handlers) {
-        //        this.handlers[i].detach();
-        //    }
-        //}
+        }
 
     }, {
         /** @lends Y.Wegas.WImage */
@@ -95,7 +79,6 @@ YUI.add("wegas-image", function(Y) {
                 setter: function(val) {
                     this.getEvent("load").fired = false;
                     this.getEvent("error").fired = false;
-                    this.getEvent("render").fired = false;
                     this.image.setAttribute("src", (val.indexOf("/") === 0) ?
                             this.constructor.FILEENTRY + val : //Wegas Filesystem
                             val);
