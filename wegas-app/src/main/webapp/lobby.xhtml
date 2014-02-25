@@ -71,7 +71,7 @@
                         });
 
                         Y.Widget.getByNode("#gameModelsTab").set("visible", Y.Wegas.Facade.GameModel.cache.find("canDuplicate", true)
-                                || Y.Wegas.Facade.GameModel.cache.find("canInstantiate", true)); // Hide scenarist tab if no model is available for edition
+                                || Y.Wegas.Facade.GameModel.cache.find("canEdit", true)); // Hide scenarist tab if no model is available for edition
 
                         var gamesTab = Y.Widget.getByNode("#gamesTreeViewTab");
                         gamesTab.set("visible", Y.Wegas.Facade.GameModel.cache.find("canInstantiate", true)
