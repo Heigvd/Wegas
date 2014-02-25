@@ -13,8 +13,6 @@ import com.wegas.core.security.jparealm.JpaAccount_;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.AbstractAccount_;
 import com.wegas.core.security.persistence.Role;
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

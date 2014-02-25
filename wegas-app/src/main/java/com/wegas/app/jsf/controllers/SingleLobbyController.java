@@ -11,6 +11,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
@@ -126,5 +127,12 @@ public class SingleLobbyController implements Serializable {
      */
     public void setCurrentGame(Game currentGame) {
         this.currentGame = currentGame;
+    }
+
+    /**
+     * @return the current game model
+     */
+    public GameModel getCurrentGameModel() {
+        return currentGame.getGameModel();
     }
 }
