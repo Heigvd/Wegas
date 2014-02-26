@@ -346,12 +346,16 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                  */
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
-                    _type: "variableselect"
+                    _type: "variableselect",
+                    classFilter: ["NumberDescriptor"]
                 }
             },
             showUnanswered: {
                 type: "boolean",
-                value: true
+                value: true,
+                _inputex: {
+                    className: "inputEx-fieldWrapper wegas-advanced-feature"
+                }
             }
         }
     });
