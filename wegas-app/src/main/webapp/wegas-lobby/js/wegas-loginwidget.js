@@ -427,7 +427,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             this._fakePass = Y.Node.create("<input type='text'>");
             this._fakePass.setAttribute("class", this.el.getAttribute("class"));
             this._fakePass.hide();
-            Y.one(this.el).ancestor().appendChild(this._fakePass);
+            Y.one(this.el).ancestor().prepend(this._fakePass);
             this._fakePass.on("focus", function() {
                 Y.one(this.el).show();
                 this._fakePass.hide();
@@ -453,7 +453,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 // important for setValue to work with typeInvite
             } else {
                 if (this.fieldContainer.className.indexOf("password") > -1) {
-//                    this.el.setAttribute("type", "password");
+                    //this.el.setAttribute("type", "password");
                     Y.one(this.el).show();
                     this._fakePass.hide();
                 }
@@ -469,7 +469,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 // remove the "empty" state and class
                 this.previousState = null;
                 if (this.fieldContainer.className.indexOf("password") > -1) {
-//                    Y.one(this.el).setAttribute("type", "password");
+                    //Y.one(this.el).setAttribute("type", "password");
                     Y.one(this.el).show();
                     this._fakePass.hide();
                 }
