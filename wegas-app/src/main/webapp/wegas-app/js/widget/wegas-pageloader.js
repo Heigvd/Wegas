@@ -13,6 +13,7 @@
 
 YUI.add('wegas-pageloader', function(Y) {
     "use strict";
+
     var CONTENTBOX = 'contentBox', PageLoader;
     /**
      * @name Y.Wegas.PageLoader
@@ -22,19 +23,14 @@ YUI.add('wegas-pageloader', function(Y) {
      * @constructor
      * @description Load pages and request widget to render.
      */
-    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget,
-            [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.PageLoader# */
 
-// *** Private fields *** //
+        // *** Private fields *** //
         /**
          * Current page id
          */
         currentPageId: null,
-        /**
-         * Reference to each used functions
-         */
-        handlers: null,
         // *** Lifecycle Methods ***/
         /**
          * @function
@@ -58,12 +54,13 @@ YUI.add('wegas-pageloader', function(Y) {
          * When an exception in fire, stop loading page, show error message.
          */
         bindUI: function() {
-            var onUpdate = function(e) {
-                var variable = this.get("variable.evaluated");
-                if (variable && "" + this.get("variable.evaluated") !== "" + this.get('pageId')) {
-                    this.syncUI();
+            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", function() {// When the variable cache is update,
+                if (this.get("variable")
+                        && "" + this.get("variable.evaluated") !== "" + this.get('pageId')) {// and if the current page has change,
+                    this.syncUI();                                              // sync the view
                 }
-            };
+            }, this));
+
             //Y.Wegas.Facade.Page.after("response", this.syncUI, this);
             //this.handlers.push(Y.Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
             //    if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
@@ -71,8 +68,6 @@ YUI.add('wegas-pageloader', function(Y) {
             //        this.syncUI();
             //    }
             //}, this));
-
-            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", onUpdate, this));
         },
         /**
          * @function
@@ -98,13 +93,12 @@ YUI.add('wegas-pageloader', function(Y) {
          * remove instance kept in PageLoader.pageLoaderInstances.
          */
         destructor: function() {
-            var i;
             if (this.get("widget")) {
                 this.get("widget").destroy();
             }
-            for (i = 0; i < this.handlers.length; i += 1) {
-                this.handlers[i].detach();
-            }
+            Y.Array.each(this.handlers, function(h) {
+                h.detach();
+            });
             delete PageLoader.pageLoaderInstances[this.get("pageLoaderId")];
         },
         /**
@@ -166,7 +160,8 @@ YUI.add('wegas-pageloader', function(Y) {
              */
             pageLoaderId: {
                 type: "string",
-                value: "PageLoader" + Y.Lang.now(), //generate a default pageLoaderId
+                value: "maindisplayarea",
+                //value: "PageLoader" + Y.Lang.now(), //generate a default pageLoaderId
                 _inputex: {
                     label: "Zone id"
                 }
@@ -189,33 +184,33 @@ YUI.add('wegas-pageloader', function(Y) {
                 type: "string",
                 "transient": true,
                 setter: function(val) {
-                    if (!val || val === this.currentPageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded, escape
-                        return val;
+                    if (!val || val === this.currentPageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded,
+                        return val;                                             // do not continue
                     }
                     this.currentPageId = val;
                     Y.log("Getting page", "log", "Wegas.PageLoader");
-                    Y.Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {
+                    Y.Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {// Retrieve page
                         if (!widgetCfg) {
-                            return val;
+                            return;
                         }
                         this.showOverlay();
 
-                        //Y.soon(Y.bind(function(widgetCfg) {
                         if (this.get("widget")) {
                             Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
-                            this.get("widget").destroy();                       // @fixme we should remove the widget instead of destroying it
+                            this.get("widget").destroy();
                             this.set("widget", null);
                         }
-                        this.get(CONTENTBOX).empty();                           //let the overlay appear during rendering
+                        this.get(CONTENTBOX).empty();                           // Let the overlay appear during rendering
+
                         Y.Wegas.Widget.use(widgetCfg, Y.bind(function() {       // Load the subwidget dependencies
                             try {
                                 Y.log("Rendering new widget", "log", "Wegas.PageLoader");
                                 var widget = Y.Wegas.Widget.create(widgetCfg);  // Render the subwidget
                                 widget.render(this.get(CONTENTBOX));
-                                widget['@pageId'] = widgetCfg['@pageId'];
+                                widget['@pageId'] = widgetCfg['@pageId'];       // @HACK set up a reference to the page
                                 this.set("widget", widget);
                             } catch (e) {
-                                this._state.add("widgetCfg", "value", widgetCfg); //@HACK : avoid some heavy computing, bypass setter!!! Warn, no events
+                                this._state.add("widgetCfg", "value", widgetCfg);//@HACK : avoid some heavy computing, bypass setter!!! Warn, no events
                                 this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
                                 Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
                             } finally {
@@ -223,8 +218,6 @@ YUI.add('wegas-pageloader', function(Y) {
                                 this.fire("contentUpdated");
                             }
                         }, this));
-                        //}, this, widgetCfg));
-
                     }, this));
                     return val;
                 }
