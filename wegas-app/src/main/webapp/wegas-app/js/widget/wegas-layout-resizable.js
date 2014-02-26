@@ -247,6 +247,9 @@ YUI.add('wegas-layout-resizable', function(Y) {
                 left: leftNode.getStyle("width"),
                 right: rightNode.getStyle("width")
             });
+            rightNode.setStyles({//                                             // Reset left position that may have been set by resize plugin
+                left: "auto"
+            });
             Y.Wegas.app.fire("layout:resize");
         }
     }, {

@@ -147,12 +147,14 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         try {
             account.addRole(roleFacade.findByName("Public"));
         } catch (PersistenceException ex) {
-            logger.error("Unable to find Role: Public", ex);
+            //logger.error("Unable to find Role: Public", ex);
+            logger.error("Unable to find Role: Public");
         }
         try {
             account.addRole(roleFacade.findByName("Registered"));
         } catch (PersistenceException ex) {
-            logger.error("Unable to find Role: Registered", ex);
+            //logger.error("Unable to find Role: Registered", ex);
+            logger.error("Unable to find Role: Registered");
         }
         this.em.flush();
     }

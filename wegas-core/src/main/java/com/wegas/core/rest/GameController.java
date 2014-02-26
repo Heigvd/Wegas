@@ -260,4 +260,17 @@ public class GameController {
 
         return t;
     }
+    
+    /**
+     *
+     * @param entityId
+     * @return
+     */
+    @POST
+    @Path("{gameId : [1-9][0-9]*}/CreateGameAccount/{accountNumber : [1-9][0-9]*}")
+    public Game createGameAccount(@PathParam("gameId") Long gameId, @PathParam("accountNumber") Long accountNumber) {
+        Game g = gameFacade.find(gameId);
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:g" + gameId);
+        return gameFacade.createGameAccount(g, accountNumber);
+    }
 }
