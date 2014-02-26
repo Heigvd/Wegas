@@ -114,6 +114,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
         final User currentUser = userFacade.getCurrentUser();
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
+        game.setToken(this.createUniqueEnrolmentkey(game));
         gameModel.addGame(game);
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
@@ -127,6 +128,60 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         } catch (PersistenceException ex) {
             logger.error("Unable to find Role: Public", ex);
         }
+    }
+
+    public String createUniqueEnrolmentkey(Game game) {
+        String prefixKey = game.getName();
+        boolean foundUniqueKey = false;
+        int counter = 0;
+        String key = null;
+
+        if (prefixKey.length() > 11) {
+            prefixKey = prefixKey.substring(0, 11);
+        }
+        prefixKey = prefixKey.toLowerCase().replace(" ", "-");
+
+        int length = 2;
+        int maxRequest = 400;
+        while (!foundUniqueKey) {
+            if (counter > maxRequest) {
+                length += 1;
+                maxRequest += 400;
+            }
+            String genLetter = this.genRandomLetter(length);
+            key = prefixKey + "-" + genLetter;
+            boolean foundedGameAccountKey = true;
+            boolean foundedGameEnrolentKey = true;
+            try {
+                this.findGameAccountKey(key);
+            } catch (Exception e) {
+                foundedGameAccountKey = false;
+            }
+            try {
+                this.findGameEnrolmentKey(key);
+            } catch (Exception e) {
+                foundedGameEnrolentKey = false;
+            }
+            Game foundGameByToken = this.findByToken(key);
+            if (!foundedGameEnrolentKey && !foundedGameAccountKey && foundGameByToken == null) {
+                foundUniqueKey = true;
+            }
+            counter += 1;
+        }
+        return key;
+    }
+
+    private String genRandomLetter(long length) {
+        final String tokenElements = "abcdefghijklmnopqrstuvwxyz";
+        final Integer digits = tokenElements.length();
+        length = Math.min(50, length); // max 50 length;
+        StringBuilder sb = new StringBuilder();
+        Integer random = (int) (Math.random() * digits);
+        sb.append(tokenElements.charAt(random));
+        if (length > 1) {
+            sb.append(genRandomLetter(length - 1));
+        }
+        return sb.toString();
     }
 
     @Override
@@ -187,12 +242,24 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return (GameEnrolmentKey) q.getSingleResult();
     }
 
-    /**
-     *
-     * @param gameModelId
-     * @param orderBy
-     * @return
-     */
+    public GameAccountKey findGameAccountKey(String key) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<GameAccountKey> gameAccount = cq.from(GameAccountKey.class);
+        cq.where(cb.equal(gameAccount.get(GameAccountKey_.key), key));
+        Query q = em.createQuery(cq);
+        return (GameAccountKey) q.getSingleResult();
+    }
+
+    public List<Game> findGameByName(String search) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<Game> game = cq.from(Game.class);
+        cq.where(cb.like(game.get(Game_.name), search));
+        Query q = em.createQuery(cq);
+        return (List<Game>) q.getResultList();
+    }
+
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         final Query getByGameId =
                 em.createQuery("SELECT game FROM Game game "
@@ -261,6 +328,17 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             games.add(game);
         }
         return games;
+    }
+
+    public Game createGameAccount(Game g, Long accountNumber) {
+        for (int i = 0; i < accountNumber; i++) {
+            int newNumber = g.getAccountkeys().size() + 1;
+            GameAccountKey gameAccountKey = new GameAccountKey();
+            gameAccountKey.setKey(g.getToken() + "-" + newNumber);
+            gameAccountKey.setGame(g);
+            g.getAccountkeys().add(gameAccountKey);
+        }
+        return g;
     }
 
     /**
