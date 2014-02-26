@@ -1,9 +1,17 @@
 /*
-*/
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
 .wegas-mcqtabview {
     line-height: normal;
+    width: 100%;
 }
-
 .wegas-mcqtabview .pmg-subtitle {
     padding:6px 0;
     font-size: 1.2em;

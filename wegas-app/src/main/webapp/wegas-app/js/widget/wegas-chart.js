@@ -183,7 +183,8 @@ YUI.add('wegas-chart', function(Y) {
                     useButtons: true,
                     elementType: {
                         type: "variableselect",
-                        label: "variable"
+                        label: "variable",
+                        classFilter: ["NumberDescriptor"]
                     }
                 }
             },
