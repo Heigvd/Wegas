@@ -45,7 +45,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editable': {},
                 'wegas-datasource': {
-                    requires: ["datasource-io", "json"]
+                    requires: ["datasource-io", "json", "wegas-websocketlistener"]
                 },
                 'wegas-scripteval': {
                     path: 'js/plugin/wegas-scripteval-min.js',
@@ -54,7 +54,6 @@ YUI().use(function(Y) {
                 },
                 'wegas-websocketlistener': {
                     path: 'js/persistence/wegas-websocketlistener-min.js',
-                    requires: 'wegas-pusher-connector',
                     ws_provides: "WebSocketListener"
                 },
                 "wegas-pusher-connector": {
