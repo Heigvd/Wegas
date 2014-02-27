@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class VariableInstanceFacade extends AbstractFacadeImpl<VariableInstance> {
+public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
 
     static final private Logger logger = LoggerFactory.getLogger(VariableInstanceFacade.class);
     /**
