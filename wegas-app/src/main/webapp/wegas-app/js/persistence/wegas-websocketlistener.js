@@ -13,7 +13,10 @@ YUI.add('wegas-websocketlistener', function(Y) {
 
     var WebSocketListener = Y.Base.create("WebSocketListener", Y.Plugin.Base, [], {
         initializer: function() {
-            Y.Wegas.Facade[this.get("dataSource")].on("EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
+            var dataSource = Y.Wegas.Facade[this.get("dataSource")];
+            if (dataSource) {
+                dataSource.on("EntityUpdatedEvent", this.onVariableInstanceUpdate, this);
+            }
         },
         onVariableInstanceUpdate: function(data) {
             Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");

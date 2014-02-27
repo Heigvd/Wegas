@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 public class UserFacade extends AbstractFacadeImpl<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
-    private static final int MAXRESULT = 30;
     /**
      *
      */
@@ -95,14 +94,17 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return em;
     }
 
-    public void guestLogin() {
+    public User guestLogin() {
         if (Helper.getWegasProperty("guestallowed").equals("true")) {
             User newUser = new User(new GuestJpaAccount());                     // return a Guest user
-            this.create(newUser);                                         // Persist it
+            this.create(newUser);                                               // Persist it
 
             Subject subject = SecurityUtils.getSubject();
             subject.login(new GuestToken(newUser.getMainAccount().getId()));
+
+            return newUser;
         }
+        throw new WegasException("Guset log in not allowed on this server");
     }
 
     /**
@@ -117,13 +119,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             return accountFacade.find((Long) subject.getPrincipal()).getUser();
 
         } else {
-//            if (Helper.getWegasProperty("guestallowed").equals("true")) {
-//                userController.guestLogin();
-//                return accountFacade.find((Long) subject.getPrincipal()).getUser();
-//            } else {
-            //  @todo Throw an error, should redirect to home page
             throw new NoResultException("Unable to find user");
-            //}
 
         }
     }
@@ -230,7 +226,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      */
     public boolean addRolePermission(final Long roleId, final String permission) {
         final Role r = roleFacade.find(roleId);
-
         return r.addPermission(this.generatePermisssion(permission));
     }
 
@@ -338,7 +333,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         findByToken.setParameter("instance", "%:" + instance);
         List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
         for (AbstractAccount a : accounts) {
-            // em.detach(a);// TODO??
             for (Iterator<Permission> sit = a.getPermissions().iterator(); sit.hasNext();) {
                 Permission p = sit.next();
                 String splitedPermission[] = p.getValue().split(":");
@@ -348,7 +342,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                     }
                 }
             }
-            //em.merge(a);// TODO??
         }
     }
 
@@ -356,7 +349,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
         AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
-        //em.detach(account);
         for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
             String p = sit.next().getValue();
             String splitedPermission[] = p.split(":");
@@ -366,7 +358,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                 }
             }
         }
-        //em.merge(account);
     }
 
     public void DeleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) throws NoResultException {
@@ -417,14 +408,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
 
         logger.info("removeIdleGuests(): " + resultList.size() + " unused guest accounts removed");
-    }
-
-    /**
-     *
-     * @param account
-     */
-    public void update(JpaAccount account) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
