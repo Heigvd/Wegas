@@ -8,7 +8,7 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.NoResultException;
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class UserFacade extends AbstractFacadeImpl<User> {
+public class UserFacade extends BaseFacade<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
     /**
@@ -94,6 +94,10 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return em;
     }
 
+    /**
+     *
+     * @return
+     */
     public User guestLogin() {
         if (Helper.getWegasProperty("guestallowed").equals("true")) {
             User newUser = new User(new GuestJpaAccount());                     // return a Guest user
@@ -155,6 +159,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         this.em.flush();
     }
 
+    /**
+     *
+     * @param user
+     * @return
+     */
     public User findOrCreate(User user) {
         try {
             AbstractAccount account = user.getMainAccount();
@@ -174,6 +183,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return user;
     }
 
+    /**
+     *
+     * @param accounts
+     * @return
+     */
     public List<User> findOrCreate(List<AbstractAccount> accounts) {
         List<User> ret = new ArrayList<>();
         for (AbstractAccount account : accounts) {
@@ -185,7 +199,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     /**
      * Get all GameModel permissions by GameModel id
      *
-     * @param id
+     * @param instance
      * @return
      */
     public List<Map> findRolePermissionByInstance(String instance) {
@@ -229,19 +243,42 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return r.addPermission(this.generatePermisssion(permission));
     }
 
+    /**
+     *
+     * @param abstractAccountId
+     * @param permission
+     * @return
+     */
     public boolean addAccountPermission(final Long abstractAccountId, final String permission) {
         return this.addAccountPermission(abstractAccountId, this.generatePermisssion(permission));
     }
 
+    /**
+     *
+     * @param abstractAccountId
+     * @param p
+     * @return
+     */
     public boolean addAccountPermission(final Long abstractAccountId, final Permission p) {
         final AbstractAccount a = accountFacade.find(abstractAccountId);
         return a.addPermission(p);
     }
 
+    /**
+     *
+     * @param a
+     * @param permission
+     * @return
+     */
     public boolean addAccountPermission(final AbstractAccount a, final String permission) {
         return a.addPermission(this.generatePermisssion(permission));
     }
 
+    /**
+     *
+     * @param permissionStr
+     * @return
+     */
     public Permission generatePermisssion(final String permissionStr) {
         final Permission p = new Permission(permissionStr);
         final String splitedPermission[] = permissionStr.split(":");
@@ -271,7 +308,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * Delete all permission from a role in a Game or GameModel
      *
      * @param roleId
-     * @param gameModelId
+     * @param instance
      * @return
      */
     public boolean deleteRolePermissionsByIdAndInstance(Long roleId, String instance) {
@@ -289,7 +326,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     /**
      * Delete all role permissions by a game or gameModel id
      *
-     * @param gOrGmId
+     * @param instance
      */
     public void deleteRolePermissionsByInstance(String instance) {
         List<Role> roles = roleFacade.findAll();
@@ -311,6 +348,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
+    /**
+     *
+     * @param instance
+     * @return
+     */
     public List<AbstractAccount> findAccountPermissionByInstance(String instance) {
         Query findByToken = em.createNamedQuery("findUserPermissions");
         findByToken.setParameter("instance", "%:" + instance);
@@ -320,7 +362,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
 
     /**
      *
-     * @param gameOrGameModelId
+     * @param instance
      */
     public void deleteAccountPermissionByInstance(String instance) {
         Query findByToken = em.createNamedQuery("findUserPermissions");//@fixme Unable to select role with a like w/ embeddebale
@@ -345,6 +387,12 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
+    /**
+     *
+     * @param instance
+     * @param accountId
+     * @throws NoResultException
+     */
     public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) throws NoResultException {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
@@ -360,6 +408,12 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
+    /**
+     *
+     * @param permission
+     * @param accountId
+     * @throws NoResultException
+     */
     public void DeleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) throws NoResultException {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '" + permission + "' AND p.account.id =" + accountId);
@@ -393,6 +447,10 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
+    /**
+     *
+     * @FIXME Should also remove players, created games and game models
+     */
     @Schedule(hour = "9", minute = "14")
     public void removeIdleGuests() {
         Query findIdleGuests = em.createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "

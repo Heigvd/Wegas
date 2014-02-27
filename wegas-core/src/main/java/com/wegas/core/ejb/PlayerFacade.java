@@ -26,7 +26,7 @@ import javax.persistence.Query;
  */
 @Stateless
 @LocalBean
-public class PlayerFacade extends AbstractFacadeImpl<Player> {
+public class PlayerFacade extends BaseFacade<Player> {
 
     /**
      *

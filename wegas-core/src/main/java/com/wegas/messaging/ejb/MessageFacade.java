@@ -7,8 +7,7 @@
  */
 package com.wegas.messaging.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeImpl;
-import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class MessageFacade extends AbstractFacadeImpl<Message> {
+public class MessageFacade extends BaseFacade<Message> {
 
     final static private Logger logger = LoggerFactory.getLogger(MessageFacade.class);
     /**
@@ -77,6 +76,7 @@ public class MessageFacade extends AbstractFacadeImpl<Message> {
      * @param subject
      * @param body
      * @param from
+     * @return
      */
     public Message send(Player p, String subject, String body, String from) {
         Message msg = new Message();
@@ -94,6 +94,7 @@ public class MessageFacade extends AbstractFacadeImpl<Message> {
      * @param body
      * @param from
      * @param attachements
+     * @return
      */
     public Message send(Player p, String subject, String body, String from, List<String> attachements) {
         Message msg = new Message();
