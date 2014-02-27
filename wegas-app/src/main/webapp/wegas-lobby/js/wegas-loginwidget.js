@@ -79,7 +79,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             var cb = this.get(CONTENTBOX);
 
             if (Wegas.Helper.getURLParameter("redirect").indexOf("token") > -1) {// If the user is trying to acces
-                cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>You need to log in, create an account or log in as guest to play this game.");
+                cb.one(".main.left").setContent("<h1>&nbsp;</h1>You need to log in, create an account or log in as guest to play this game.");
             } else {                                                            // Otherwise display home page
                 //cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>\n\
                 //        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games.\n\
@@ -104,7 +104,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         + '<li><div class="article-link"><span class="text">'
                         + '<span class="article-title">Leaderway</span>'
                         + '<span class="description">A web-based simulation game for project management education.</span>'
-                        + '<span class="links"><a href="game.html?token=proggame">Start playing</a> | <a href="#" rel="shadowbox[projectgame]">Screenshots</a></span></span>'
+                        + '<span class="links"><a href="game.html?token=leaderway">Start playing</a> | <a href="#" rel="shadowbox[projectgame]">Screenshots</a></span></span>'
                         + '<span class="image"> <span class="image-offset"><img src="wegas-lobby/images/wegas-preview-leaderway-1.png" /></span></span></div></li>'
 
                         + '</ul></div>');
@@ -116,7 +116,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         required: true,
                         type: "email",
                         typeInvite: "Email",
-                        className: "email"
+                        className: "inputEx-Field email"
                     }, {
                         name: "password",
                         required: true,
@@ -128,7 +128,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         type: "boolean",
                         name: "remember",
                         rightLabel: "&nbsp;Remember me",
-                        className: "remember"
+                        className: "inputEx-Field remember"
                     }],
                 parentEl: cb.one(".login"),
                 className: "logingroup"
@@ -154,13 +154,13 @@ YUI.add('wegas-loginwidget', function(Y) {
                         required: true,
                         showMsg: true,
                         typeInvite: "First name",
-                        className: "firstname"
+                        className: "inputEx-Field firstname"
                     }, {
                         name: "lastname",
                         required: true,
                         showMsg: true,
                         typeInvite: "Last name",
-                        className: "lastname"
+                        className: "inputEx-Field lastname"
                     }, {
                         name: "email",
                         required: true,
@@ -420,7 +420,7 @@ YUI.add('wegas-loginwidget', function(Y) {
      * @Hack because "typeInvite" and password don't work (typeInvite is hidden)
      * Change color property (in grey) when input is not focused (black else)
      */
-    Y.inputEx.StringField.prototype.updateTypeInvite = function() {
+    Y.inputEx.PasswordField.prototype.updateTypeInvite = function() {
         var divEl = Y.one(this.divEl);
         if (!this._fakePass && this.options.typeInvite) {
             this._fakePass = Y.Node.create("<input type='text'>");
