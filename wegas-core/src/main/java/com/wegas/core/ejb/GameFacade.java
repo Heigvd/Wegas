@@ -92,6 +92,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         this.create(gm, game);
     }
 
+    @Override
+    public void create(final Game game) {
+        this.create(game.getGameModel().getId(), game);
+    }
+
     /**
      *
      * @param gameModelId
@@ -107,14 +112,14 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param game
      */
     public void create(final GameModel gameModel, final Game game) {
-        if (this.findByToken(game.getToken()) != null) {
-            //  || teamFacade.findByToken(game.getToken()) != null) {
+        if (game.getToken() == null) {
+            game.setToken(this.createUniqueEnrolmentkey(game));
+        } else if (this.findByToken(game.getToken()) != null) {
             throw new WegasException("This token is already in use.");
         }
 
         final User currentUser = userFacade.getCurrentUser();
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
-        game.setToken(this.createUniqueEnrolmentkey(game));
         gameModel.addGame(game);
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
@@ -261,8 +266,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
-        final Query getByGameId =
-                em.createQuery("SELECT game FROM Game game "
+        final Query getByGameId = em.createQuery("SELECT game FROM Game game "
                 + "WHERE game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC");
 
         GameModel gm = new GameModel();
@@ -289,8 +293,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @return
      */
     public List<Game> findRegisteredGames(final Long userId) {
-        final Query getByGameId =
-                em.createQuery("SELECT game, p FROM Game game "
+        final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id "
                 + "AND p.user.id = :userId "
@@ -307,8 +310,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @return
      */
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
-        final Query getByGameId =
-                em.createQuery("SELECT game, p FROM Game game "
+        final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
                 + "ORDER BY p.joinTime ASC");
