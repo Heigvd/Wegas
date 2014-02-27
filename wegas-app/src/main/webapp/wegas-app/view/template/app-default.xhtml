@@ -9,15 +9,15 @@
         <ui:define name="title">#{wegasAppBundle["LobbyPage.Title"]}</ui:define>
 
         <ui:define name="page">
-            <h:body class="yui3-skin-sam wegas-stdmode wegas-loading-overlay #{requestController.currentRoles}"> <!-- @fixme currentRoles should not be display on all pages, since login page does not provide for an account nor any role -->
+            <h:body class="yui3-skin-sam wegas-stdmode wegas-loading-overlay #{requestController.currentRoles}">
 
-                <!-- YUI Base -->
+                <!-- YUI3 Base -->
+                <!-- CDN -->
                 <ui:fragment rendered="#{wegasConfig.useYUICDN}">
-                    <!-- CDN -->
                     <script type="text/javascript" src="http://yui.yahooapis.com/3.14.1/build/yui/yui-min.js"></script>
                 </ui:fragment>
+                <!-- Self hosted -->
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
-                    <!-- Self hosted -->
                     <script type="text/javascript" src="#{request.contextPath}/lib/yui3/build/yui/yui-min.js"></script>
                 </ui:fragment>
 
@@ -30,49 +30,48 @@
                 </ui:fragment>
 
                 <script type="text/javascript">
-                    // Set up some YUI3 default parameters. Will be use for every call to
-                    // the YUI(cfg) function. Can be overridden by the cfg parameter.
+                    // Set up some YUI3 default parameters (Will be use for every call to the YUI(cfg) function. Can be overridden by the cfg parameter)
                     YUI_config.useBrowserConsole = true;
                     YUI_config.insertBefore = 'customstyles';
                     YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
                     YUI_config.charset = "#{wegasConfig.encoding}";
                     YUI_config.debug = #{requestController.debugMode()};
-                    YUI_config.throwFail = false;                               // If throwFail is set, Y.error will generate or re-throw
-                    // a JS Error. Otherwise the failure is logged.
+                    YUI_config.throwFail = false;                               // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
                     YUI_config.errorFn = function(msg, e, src) {
                         // console.log("ERRORFN", msg, e, src);
                         // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", 'Wegas.App');
                         // _gaq.push(['_trackEvent', 'category', 'action', 'opt_label', opt_value]); // Google analytics event
                         // throw msg;
-                        return true;                      // Returning true from this function will stop the Error from being thrown.
+                        return true;                                            // Returning true from this function will stop the Error from being thrown.
                     };
-                    //YUI_config.gallery = 'gallery-2011.02.18-23-10';
                     //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
                     //YUI_config.loadOptional = true;
 
-                    var base = "#{request.requestURL
-                                  .substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
-                            comboBase = base + '/rest/combo/?v=#{wegasConfig.timestamp}&amp;';
-                    function setupLocalPath(groupName) {
-                        YUI_config.groups[groupName].base = base + YUI_config.groups[groupName].root;// Set up wegas path
-                        YUI_config.groups[groupName].comboBase = comboBase;
-                    }
+                    // Set up paths
+                    var base = "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
+                            comboBase = base + '/rest/combo/?v=#{wegasConfig.timestamp}&amp;',
+                            setupPath = function(group) {
+                        group.base = base + group.root;                 // Set up path
+                        group.comboBase = comboBase;                    // Set up combo path
+                    };
 
-                    for (var i in YUI_config.groups) {
-                        if (i.indexOf("wegas") > -1) {
-                            setupLocalPath(i);
-                            YUI_config.groups[i].combine = #{!requestController.debugMode()};
-                            YUI_config.groups[i].filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
+                    for (var i in YUI_config.groups) {                          // Set up path for any group prefixed with wegas
+                        if (i.indexOf("wegas") === 0) {
+                            var group = YUI_config.groups[i];
+                            setupPath(group);
+                            group.combine = #{!requestController.debugMode()};
+                            group.filter = (#{requestController.debugMode()}) ? "raw" : "min";// Select raw files
                         }
                     }
-                    setupLocalPath("libraries");
+                    setupPath(YUI_config.groups.libraries);                     // Set up libraries path
+
                     YUI_config.groups.inputex.root = "/lib/inputex/src/";       // Set up inputex path
                     YUI_config.groups.inputex.combine = #{!requestController.debugMode()};
-                    setupLocalPath("inputex");                            // Set up libraries path
+                    setupPath(YUI_config.groups.inputex);
                 </script>
 
+                <!-- Force use of combo if using self hosted yui -->
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
-                    <!-- local assets -->
                     <script type="text/javascript">
                         YUI_config.comboBase = comboBase;                       // Force use of self hosted yui3
                         YUI_config.filter = "min";
@@ -84,11 +83,12 @@
                 <!-- Page body, overridden in sub templates -->
                 <ui:insert name="body" />
 
+                <!-- Google Analytics -->
                 <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
-                    <!-- Google Analytics -->
                     <ui:include src="ga-tracker.xhtml" />
                 </ui:fragment>
 
+                <!-- Uservoice -->
                 <ui:include src="uservoice-tracker.xhtml" />
 
             </h:body>

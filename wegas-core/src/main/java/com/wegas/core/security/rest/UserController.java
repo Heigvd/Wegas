@@ -264,6 +264,13 @@ public class UserController {
         userFacade.guestLogin();
     }
 
+    @POST
+    @Path("TeacherGuestLogin")
+    public void teacherGuestLogin() {
+        User user = userFacade.guestLogin();
+        user.getMainAccount().addRole(roleFacade.findByName("Scenarist"));
+    }
+
     @GET
     @Path("LoggedIn")
     public boolean isLoggedIn() {
