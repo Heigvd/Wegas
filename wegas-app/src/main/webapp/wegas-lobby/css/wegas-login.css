@@ -50,7 +50,7 @@ div.inputEx-label{
     padding-top:0;
 }
 .logingroup .password,
-.logingroup .password .div,
+.logingroup .password div,
 .logingroup .password input{
     width:90px;
 }

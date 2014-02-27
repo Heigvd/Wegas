@@ -457,18 +457,10 @@
     },
     "right": {
         "width": 530,
-        "resize": true,
-        "collapse": false,
-        "scroll": true,
-        "animate": false,
         "children": [{
                 "type": "TabView",
                 "id": "rightTabView",
-                "cssClass": "editor-tab",
-                "children": [],
-                "plugins": [{
-                        "fn": "LayoutToggleTab"
-                    }]
+                "cssClass": "editor-tab"
             }]
     }
 }
