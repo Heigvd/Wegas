@@ -20,6 +20,6 @@ public class DebugGame extends Game {
     public final static String DEBUGGAMENAME = "Test game";
 
     public DebugGame() {
-        super(DEBUGGAMENAME + "-" + Helper.genToken(10));                       // Name is fixed (with a suffix so it wont break unique name constraint)
+        super(DEBUGGAMENAME + "-" + Helper.genToken(10), Helper.genToken(10));  // Name is fixed (with a suffix so it wont break unique name constraint)
     }
 }

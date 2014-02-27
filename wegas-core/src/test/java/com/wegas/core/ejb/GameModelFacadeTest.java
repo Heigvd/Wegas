@@ -65,7 +65,7 @@ public class GameModelFacadeTest {
         Assert.assertEquals(1, gameModelFacade.findAll().size());
 
         gameModel = gameModelFacade.find(gameModel.getId());
-        Assert.assertEquals(gameModel.getName(), name);
+        Assert.assertEquals(name, gameModel.getName());
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScriptLibrary().get(SCRIPTNAME).getContent());
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getProperty(SCRIPTNAME));
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getCssLibrary().get(SCRIPTNAME).getContent());
