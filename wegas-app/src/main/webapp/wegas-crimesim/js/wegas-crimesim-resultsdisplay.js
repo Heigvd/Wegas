@@ -25,7 +25,6 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         menu: null,
         handlers: null,
         timer: null,
-        gallery: null,
         datatable: null,
         consideredAsRead: null,
         unreadEvidences: null,

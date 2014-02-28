@@ -12,7 +12,7 @@
 YUI.add('wegas-app', function(Y) {
     "use strict";
 
-    var Wegas = Y.namespace('Wegas'), App;
+    var Wegas = Y.namespace('Wegas');
     /**
      * Create a new wegas-app
      *
@@ -33,10 +33,9 @@ YUI.add('wegas-app', function(Y) {
      * @constructor
      * @param Object Will be used to fill attributes field
      */
-    App = Y.Base.create("wegas-app", Y.Base, [], {
+    Wegas.App = Y.Base.create("wegas-app", Y.Base, [], {
         /** @lends Y.Wegas.App# */
-
-        // ** Private methods ** //
+        // ** Public methods ** //
         /**
          * Lifecycle methods
          * @function
@@ -60,12 +59,12 @@ YUI.add('wegas-app', function(Y) {
         /**
          * Render function
          * @function
-         * public
+         * @public
          */
         render: function() {
-            var dataSource, dataSourceClass, widgetCfg,
-                    dataSources = this.get('dataSources'),
-                    requestCounter = 0,
+            var ds, dsClass, widgetCfg,
+                    dataSources = this.get('dataSources'),                      // Data sources cfg objects
+                    requestCounter = 0,                                         // Request counter 
                     onRequest = function() {                                    // When a response to initial requests is received
                         requestCounter -= 1;
                         if (requestCounter === 0) {                             // If all initial request arrived,
@@ -74,7 +73,7 @@ YUI.add('wegas-app', function(Y) {
                             this.widget = widget;                               // push a reference
                             this.fire("render");                                // fire a render event for some eventual post processing
                         }
-                    };                                                          // Request counter 
+                    };
 
             Y.io.header("Accept-Language", Y.config.lang);                      // Set up the language for all requests
             Y.on("io:failure", this.globalFailureHandler, this);                // Set up a default failure handler
@@ -83,40 +82,44 @@ YUI.add('wegas-app', function(Y) {
             Wegas.use(Y.Object.values(dataSources), Y.bind(function(Y) {        // Retrieve data sources dependencies (e.g. Pusher)
                 Y.Object.each(dataSources, function(cfg, name) {                // For each data source,       
                     cfg.source = this.get("base") + (cfg.source || "");         // Set up datasource path
-                    dataSourceClass = Wegas[cfg.type] || Wegas.DataSource;      // Determine which class to use (default is Y.Wegas.DataSource)
-                    dataSource = new dataSourceClass(cfg);                      // Instantiate the datasource
-                    this.dataSources[name] = dataSource;                        // Push to dataSources list
-                    if (dataSource.hasInitialRequest()) {                       // If the data source has an initial request,
-                        dataSource.sendInitialRequest();                        // send it
+                    dsClass = Wegas[cfg.type] || Wegas.DataSource;              // Determine which class to use (default is Y.Wegas.DataSource)
+                    ds = new dsClass(cfg);                                      // Instantiate the datasource
+                    if (ds.hasInitialRequest()) {                               // If the data source has an initial request,
                         requestCounter += 1;                                    // increment request counter
-                        dataSource.onceAfter("response", onRequest, this);      // and increment the request counter
+                        ds.sendInitialRequest();                                // send it
+                        ds.onceAfter("response", onRequest, this);              // and increment the request counter
                     }
+                    this.dataSources[name] = ds;                                // Push to data source list
                 }, this);
 
                 requestCounter += 1;
                 this.dataSources.Page.once("response", function(e) {            // When page data source response arrives,
                     widgetCfg = e.response.results;                             // store the result for later use
-                    Wegas.use(widgetCfg, Y.bind(onRequest, this));              // Optim: Load pages dependencies as soon as they data is received
+                    Wegas.use(widgetCfg, Y.bind(onRequest, this));              // Optim: Load pages dependencies as soon as the data is received
                 }, this);
             }, this));
-
+            
+            // Post render events
             this.on("render", function() {                                      // When the first page is rendered,
-                Y.one("body").removeClass("wegas-loading-overlay");             // remove loading overlay on render
-                Y.one("body").on("key", function() {                            // add Shortcut to activate developper mode. Allow access to Y instance. Toggle.
-                    Wegas.app.set("devMode", !Wegas.app.get("devMode"));
-                }, "167");                                                      // on key '°' pressed
-            });
+                var body = Y.one("body");
+                body.removeClass("wegas-loading-overlay");                      // Remove loading overlay on render
+                body.on("key", function() {                                     // Add shortcut to activate developper mode
+                    body.toggleClass("wegas-stdmode");                          // Toggle stdmode class on body (hides any wegas-advancedfeature)
+                    Y.config.win.Y = Y;                                         // Allow access to Y instance
+                }, "167", this);                                                // on key '°' pressed
+            }, this);
         },
         /**
          * Destructor methods.
          * @function
-         * @private
+         * @public
          */
         destructor: function() {
             Y.Object.each(this.dataSources, function(i) {
                 i.destroy();
             });
         },
+        // ** Private methods ** //
         /**
          * 
          * @param {type} tId
@@ -137,17 +140,14 @@ YUI.add('wegas-app', function(Y) {
                 msg += "\n Server reply " + Y.JSON.stringify(r, null, "\t");
 
                 if (response.exception === "org.apache.shiro.authz.UnauthenticatedException") {// If the user session has timed out,
-                    new Wegas.Panel({//                                       // show a message that invites to reconnect
+                    new Wegas.Panel({                                           // show a message that invites to reconnect
                         content: "<div class='icon icon-info'>You have been logged out.</div>",
                         modal: true,
                         centered: true,
                         buttons: {
                             footer: [{
                                     label: 'Click here to reconnect',
-                                    action: function() {
-                                        Y.config.win.location.reload();
-                                        //Y.config.win.location.href = Y.config.win.location.href + "#";
-                                    }
+                                    action: Y.config.win.location.reload
                                 }]
                         }
                     }).render();
@@ -162,12 +162,19 @@ YUI.add('wegas-app', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.App */
-
         /**
          * @field
          * @static
          */
         ATTRS: {
+            currentGameModel: {},
+            currentGame: {},
+            currentTeam: {},
+            currentPlayer: {},
+            currentUser: {},    
+            dataSources: {
+                value: {}
+            },
             /**
              * Base url for app
              */
@@ -175,26 +182,7 @@ YUI.add('wegas-app', function(Y) {
                 getter: function() {
                     return Y.config.groups.wegas.base.replace("wegas-app/", "");
                 }
-            },
-            dataSources: {
-                value: {}
-            },
-            currentGameModel: {},
-            currentGame: {},
-            currentTeam: {},
-            currentPlayer: {},
-            currentUser: {},
-            /**
-             *
-             */
-            devMode: {
-                value: false,
-                setter: function(val) {
-                    Y.one("body").addClass("wegas-devmode").toggleClass("wegas-stdmode", val);
-                    Y.config.win.Y = Y;                                         // Set up a reference to Y for use in the console
-                }
             }
         }
     });
-    Y.namespace('Wegas').App = App;
 });

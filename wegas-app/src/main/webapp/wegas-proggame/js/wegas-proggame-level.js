@@ -91,7 +91,7 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             this.on("stateChange", function(e) {                                // State machine transitions implementation
                 Y.log("stateChange(" + e.newVal + ")", "info", "Wegas.ProgGameLevel");
-                if (e.newVal === e.prevVal) {
+                if (e.prevVal && e.newVal === e.prevVal) {
                     return;
                 }
                 switch (e.newVal) {
