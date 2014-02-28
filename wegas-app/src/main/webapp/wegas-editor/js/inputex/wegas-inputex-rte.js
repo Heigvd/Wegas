@@ -30,14 +30,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
             if (this.editor) {
                 this.editor.destroy();
             } else {
-                Y.once("domready", function() {
-                    this.editor.destroy();
-                }, this);
+                Y.once("domready", this.editor.destroy, this.editor);
             }
-
             RTEField.superclass.destroy.call(this);
-            //tinymce.execCommand('mceRemoveEditor', false, this.el.id);
-            //tinymce.remove("#" + this.el.id);
         },
         /**
          * Set the default values of the options
@@ -76,8 +71,6 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     autoresize_min_height: 35,
                     autoresize_max_height: 500,
                     content_css: [
-                        // "http://yui.yahooapis.com/combo?3.14.1/build/cssreset/cssreset-min.css&amp;3.14.1/build/cssfonts/cssfonts-min.css&amp;3.14.1/build/cssgrids/cssgrids-min.css",
-                        // Y.Wegas.app.get("base") + "wegas-app/css/wegas-app-min.css"
                         Y.Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
                     ],
                     style_formats: [{// Style formats
@@ -97,7 +90,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                             inline: 'span'
                         }]}, tinymce.EditorManager);
 
-                this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
+                //this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
                 this.editor.render();
 
                 //tinymce.createEditor(this.el.id, {});
@@ -107,10 +100,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
         onFileBrowserClick: function(field_name, url, type, win) {
             RTEField.filePanel = new Y.Wegas.FileSelect();
 
-            RTEField.filePanel.on("*:fileSelected", function(e, path) {
+            RTEField.filePanel.after("*:fileSelected", function(e, path) {
                 e.stopImmediatePropagation();
                 e.preventDefault();
-                RTEField.filePanel.hide();
 
                 var win = RTEField.filePanel.win,
                         field_name = RTEField.filePanel.field_name,
@@ -129,6 +121,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                 if (win.Media) {                                                // If in an editor window
                     win.Media.formToData("src");                                // update the data
                 }
+                RTEField.filePanel.destroy();
             });
             RTEField.filePanel.win = win;
             RTEField.filePanel.field_name = field_name;
@@ -137,7 +130,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
         /**
          * Set the html content
          * @param {String} value The html string
-         * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
+         * @param {boolean} sendUpdatedEvt (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
          */
         setValue: function(value, sendUpdatedEvent) {
             var tmceI = tinyMCE.get(this.el.id);
@@ -165,12 +158,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
             return RTEField.superclass.getValue.call(this)
                     .replace(new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"), "data-file=\"$3\"")// Replace absolute path with injector style path
                     .replace(new RegExp("((src|href)=\".*/rest/GameModel/.*/File/read([^\"]*)\")", "gi"), "data-file=\"$3\"");// Replace absolute path with injector style path
-        },
-        /**
-         * @static
-         */
-        filePanel: null
+        }
     });
-
     inputEx.registerType("html", RTEField, []);                                 // Register this class as "html" type
 });
