@@ -26,61 +26,12 @@
             <script type="text/javascript">
                 YUI().use('wegas-app', 'wegas-scripteval', function(Y) {
                     var app = new Y.Wegas.App({
-                        layoutSrc: 'wegas-app/db/wegas-app-layout.json',
                         currentGameModel: #{gameController.currentGameModel.id},
                         currentGame: #{gameController.currentGame.id},
                         currentTeam: #{gameController.currentPlayer.team.id},
                         currentPlayer: #{gameController.currentPlayer.id},
                         currentUser: #{requestController.currentUser.id},
                         dataSources: {
-                            GameModel: {
-                                source: "rest/GameModel",
-                                initialRequest: "/#{gameController.currentGameModel.id}",
-                                plugins: [{
-                                        fn: "GameModelCache"
-                                    }]
-                            },
-                            Game: {
-                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
-                                initialRequest: "/#{gameController.currentGame.id}",
-                                plugins: [{
-                                        fn: "GameCache"
-                                    }
-                                ]
-                            },
-                            Page: {
-                                /*
-                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!gameController.currentGameModel.properties.containsKey('pagesUri')}">
-                                 */
-                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Page/",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                /*
-                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.properties.containsKey('pagesUri')}">
-                                 */
-                                source: "#{gameController.currentGameModel.properties.get('pagesUri')}",
-                                        /* THIS IS NOT A COMMENT
-                                         * </ui:fragment>
-                                         */
-                                        plugins: [{
-                                        fn: "JSONSchema"
-                                    }, {
-                                        fn: "PageCache"
-                                    }
-                                ]
-                            },
-                            /* THIS IS NOT A COMMENT
-                             * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
-                             */
-                            Pusher: {
-                                type: "PusherDataSource",
-                                source: "rest/Pusher/",
-                                applicationKey: "#{gameController.currentGameModel.getProperty('websocket')}"
-                            },
-                            /* THIS IS NOT A COMMENT
-                             * </ui:fragment>
-                             */
                             VariableDescriptor: {
                                 source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
                                 //source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
@@ -96,6 +47,55 @@
                                         }
                                     }]
                             },
+                            Page: {
+                                /*
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!gameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                 */
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Page/",
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                /*
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                 */
+                                source: "#{gameController.currentGameModel.properties.get('pagesUri')}",
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                initialFullRequest: 'wegas-app/db/wegas-app-layout.json',
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                    }, {
+                                        fn: "PageCache"
+                                    }
+                                ]
+                            },
+                            GameModel: {
+                                source: "rest/GameModel",
+                                initialRequest: "/#{gameController.currentGameModel.id}",
+                                plugins: [{
+                                        fn: "GameModelCache"
+                                    }]
+                            },
+                            Game: {
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
+                                initialRequest: "/#{gameController.currentGame.id}",
+                                plugins: [{
+                                        fn: "GameCache"
+                                    }
+                                ]
+                            },
+                            /* THIS IS NOT A COMMENT
+                             * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
+                             */
+                            Pusher: {
+                                type: "PusherDataSource",
+                                source: "rest/Pusher/",
+                                applicationKey: "#{gameController.currentGameModel.getProperty('websocket')}"
+                            },
+                            /* THIS IS NOT A COMMENT
+                             * </ui:fragment>
+                             */
                             User: {
                                 source: "rest/Extended/User",
                                 initialRequest: "/" + #{requestController.currentUser.id},
