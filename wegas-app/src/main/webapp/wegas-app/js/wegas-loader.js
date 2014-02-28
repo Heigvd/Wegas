@@ -45,7 +45,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-editable': {},
                 'wegas-datasource': {
-                    requires: ["datasource-io", "json", "wegas-websocketlistener"]
+                    requires: ["datasource-io", "json"]
                 },
                 'wegas-scripteval': {
                     path: 'js/plugin/wegas-scripteval-min.js',
@@ -228,7 +228,7 @@ YUI().use(function(Y) {
                     requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
                         'scrollview-paginator', 'scrollview-scrollbars', 'wegas-gallerycss',
                         'stylesheet', 'event-resize'],
-                    ws_provides: "WegasGallery"
+                    ws_provides: "Gallery"
                 },
                 'wegas-googletranslate': {
                     path: 'js/widget/wegas-googletranslate-min.js',
