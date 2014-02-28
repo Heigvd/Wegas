@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets" >
 
-    <ui:composition template="/wegas-app/view/template/app-default.xhtml">
+    <ui:composition template="/wegas-app/jsf/app-default.xhtml">
 
         <ui:define name="title">#{editorGameController.currentGameModel.name}</ui:define>
 
@@ -43,7 +43,7 @@
 
         <ui:define name="body">
             <script type="text/javascript">
-                YUI().use("wegas-app", "wegas-scripteval", function(Y) {
+                YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
                         currentGameModel: #{editorGameController.currentGameModel.id},
                         currentGame: #{editorGameController.currentGame.id},
@@ -134,7 +134,6 @@
                                         fn: "JSONSchema"
                                     }]
                             }
-
                         }
                     });
 

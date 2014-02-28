@@ -85,11 +85,11 @@
 
                 <!-- Google Analytics -->
                 <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
-                    <ui:include src="ga-tracker.xhtml" />
+                    <ui:include src="template/googleanalytics.xhtml" />
                 </ui:fragment>
 
                 <!-- Uservoice -->
-                <ui:include src="uservoice-tracker.xhtml" />
+                <ui:include src="template/uservoice.xhtml" />
 
             </h:body>
         </ui:define>
