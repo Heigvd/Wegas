@@ -197,7 +197,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                             this.renderTab(tab, question);
 
                             if (question.get("pictures").length > 0) {
-                                this.gallery = new Y.Wegas.util.FileExplorerGallery({
+                                this.gallery = new Y.Wegas.util.FileLibraryGallery({
                                     render: tab.get("panelNode").one(".description"),
                                     selectedHeight: 150,
                                     selectedWidth: 235,
