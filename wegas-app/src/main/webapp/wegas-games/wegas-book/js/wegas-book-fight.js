@@ -78,11 +78,7 @@ YUI.add("wegas-book-fight", function(Y) {
             if (typeof stamina !== "number")
                 return;
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                headers: {
-                    'Content-Type': 'application/json; charset=ISO-8859-1',
-                    'Managed-Mode': 'true'
-                },
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({

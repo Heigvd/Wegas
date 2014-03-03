@@ -249,33 +249,14 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
         assignTask: function(resourceDescriptor, taskDescriptor) {
             if (taskDescriptor && resourceDescriptor) {
                 Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                    headers: {
-                        'Content-Type': 'application/json; charset=ISO-8859-1',
-                        'Managed-Mode': 'false'
-                    },
+                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: "POST",
-                        data: Y.JSON.stringify({
+                        data: {
                             "@class": "Script",
                             language: "JavaScript",
-                            content: "importPackage(com.wegas.core.script);\nactions.value -= 1"
-                        })
-                    }
-                });
-                Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                    headers: {
-                        'Content-Type': 'application/json; charset=ISO-8859-1',
-                        'Managed-Mode': 'true'
-                    },
-                    cfg: {
-                        method: "POST",
-                        data: Y.JSON.stringify({
-                            "@class": "Script",
-                            language: "JavaScript",
-                            content: "importPackage(com.wegas.core.script);\nassignTask(" + resourceDescriptor.get('id') + "," + taskDescriptor.get('id') + ");"
-                        })
+                            content: "importPackage(com.wegas.core.script);\nactions.value -= 1\nassignTask(" + resourceDescriptor.get('id') + "," + taskDescriptor.get('id') + ");"
+                        }
                     },
                     on: {
                         success: Y.bind(this.assignTaskResult, this, true),

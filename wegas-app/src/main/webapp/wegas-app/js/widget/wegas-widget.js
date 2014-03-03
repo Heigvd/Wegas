@@ -12,7 +12,7 @@
 YUI.add("wegas-widget", function(Y) {
     "use strict";
     var Lang = Y.Lang, Wegas = Y.Wegas,
-            BOUNDING_BOX = "boundingBox";
+            BOUNDING_BOX = "boundingBox", BUTTON = "Button";
 
     /**
      * @name Y.Wegas.Widget
@@ -80,7 +80,6 @@ YUI.add("wegas-widget", function(Y) {
          */
         showOverlay: function() {
             this.fire("wegas:showOverlay")
-            // this.emitDOMMessage("showOverlay");
         },
         /**
          * @function
@@ -121,11 +120,6 @@ YUI.add("wegas-widget", function(Y) {
                 timeout: timeout
             });
         },
-        highlight: function(bool) {
-            if (!this.get("destroyed")) {
-                bool ? this.get(BOUNDING_BOX).addClass("highlighted") : this.get(BOUNDING_BOX).removeClass("highlighted");
-            }
-        },
         rebuild: function() {
             var parent, index, cfg;
             if (this.isRoot()) {
@@ -145,13 +139,13 @@ YUI.add("wegas-widget", function(Y) {
          *  Defines edition menu to be used in editor
          */
         EDITMENU: [{
-                type: "Button",
+                type: BUTTON,
                 label: "Edit",
                 plugins: [{
                         fn: "EditWidgetAction"
                     }]
             }, {
-                type: "Button",
+                type: BUTTON,
                 label: "Delete",
                 plugins: [{
                         fn: "DeleteWidgetAction"
@@ -414,7 +408,7 @@ YUI.add("wegas-widget", function(Y) {
                     _type: "pluginlist",
                     legend: "Plugins",
                     items: [{
-                            type: "Button",
+                            type: BUTTON,
                             label: "On click",
                             plugins: [{
                                     fn: "WidgetMenu",
@@ -424,18 +418,18 @@ YUI.add("wegas-widget", function(Y) {
                                         },
                                         event: "mouseenter",
                                         children: [{
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Open page",
                                                 data: "OpenPageAction"
                                             }, {
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Impact variables",
                                                 data: "ExecuteScriptAction"
                                             }]
                                     }
                                 }]
                         }, {
-                            type: "Button",
+                            type: BUTTON,
                             label: "Styles",
                             plugins: [{
                                     fn: "WidgetMenu",
@@ -445,34 +439,34 @@ YUI.add("wegas-widget", function(Y) {
                                         },
                                         event: "mouseenter",
                                         children: [{
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Tooltip",
                                                 data: "Tooltip"
                                             }, {
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Background",
                                                 data: "CSSBackground"
                                             }, {
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Position",
                                                 data: "CSSPosition"
                                             }, {
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Size",
                                                 data: "CSSSize"
                                             }, {
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Text",
                                                 data: "CSSText"
                                             }, {
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Other styles",
                                                 data: "CSSStyles"
                                             }]
                                     }
                                 }]
                         }, {
-                            type: "Button",
+                            type: BUTTON,
                             label: "Animations",
                             plugins: [{
                                     fn: "WidgetMenu",
@@ -482,11 +476,11 @@ YUI.add("wegas-widget", function(Y) {
                                         },
                                         event: "mouseenter",
                                         children: [{
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Show after",
                                                 data: "ShowAfter"
                                             }, {
-                                                type: "Button",
+                                                type: BUTTON,
                                                 label: "Hide after",
                                                 data: "HideAfter"
                                             }]
@@ -574,6 +568,7 @@ YUI.add("wegas-widget", function(Y) {
         }
     });
     Y.namespace("Wegas").Widget = Widget;
+
     /**
      * @hack We override this function so widget are looked for in Wegas ns.
      */
@@ -583,8 +578,12 @@ YUI.add("wegas-widget", function(Y) {
         if (altType) {
             config.childType = Y.Lang.isString(altType) ? Wegas[altType] || Y[altType] : altType;
         }
-        return Y.WidgetParent.prototype.o_createChild.call(this, config);                              //reroute
+        return Y.WidgetParent.prototype.o_createChild.call(this, config);       //reroute
     };
+
+    /**
+     * 
+     */
     Y.WidgetParent.ATTRS.defaultChildType = {
         setter: function(val) {
             var returnVal = Y.Attribute.INVALID_VALUE,
@@ -610,8 +609,9 @@ YUI.add("wegas-widget", function(Y) {
         //}, this, this.removeAll()));
     };
 
-
-    /** @Hack, use method defined in wegas-datasource.js */
+    /** 
+     * @hack
+     */
     Y.Widget.prototype.oPlug = Y.Widget.prototype.plug;
     Y.Widget.prototype.plug = function(Plugin, config) {
         if (!Lang.isArray(Plugin)) {

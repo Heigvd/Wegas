@@ -203,8 +203,8 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
                         replyData.fileLinks = "";
                         for (k = 0; k < replyData.files.length; k = k + 1) {
                             replyData.fileLinks += '<a target="_blank" href="' +
-                                    Y.Plugin.CRDataSource.getFullpath(replyData.files[k]) + '">' +
-                                    Y.Plugin.CRDataSource.getFilename(replyData.files[k]) + '</a><br />';
+                                    Y.Wegas.Facade.File.getPath() + replyData.files[k] + '">' +
+                                    Y.Wegas.Helper.getFilename(replyData.files[k]) + '</a><br />';
                         }
                         if (!replyData.fileLinks) {
                             delete replyData.fileLinks;

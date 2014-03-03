@@ -251,7 +251,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 var host = this.get("host");
                 host.showOverlay();
                 host.get(DATASOURCE).sendRequest({
-                    request: "/" + Y.Wegas.app.get("currentUser")
+                    request: "/" + Y.Wegas.Facade.User.get("currentUserId")
                 });
             });
         }

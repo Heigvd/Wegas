@@ -20,11 +20,6 @@ YUI.add('wegas-app', function(Y) {
      * <ul>
      *    <li>base {String} base url for app</li>
      *    <li>dataSources {Object[]} the list of datasource to be loaded on startup</li>
-     *    <li>currentGameModel {Number} current game model id</li>
-     *    <li>currentGame {Number} current game  id</li>
-     *    <li>currentTeam {Number} current team id</li>
-     *    <li>currentPlayer {Number} current player id</li>
-     *    <li>currentUser {Number} current game model idObject litteral representing current user</li>
      * </ul>
      *
      * @name Y.Wegas.App
@@ -87,7 +82,7 @@ YUI.add('wegas-app', function(Y) {
                     if (ds.hasInitialRequest()) {                               // If the data source has an initial request,
                         requestCounter += 1;                                    // increment request counter
                         ds.sendInitialRequest();                                // send it
-                        ds.onceAfter("response", onRequest, this);              // and increment the request counter
+                        ds.once("response", onRequest, this);                   // and increment the request counter
                     }
                     this.dataSources[name] = ds;                                // Push to data source list
                 }, this);
@@ -167,11 +162,6 @@ YUI.add('wegas-app', function(Y) {
          * @static
          */
         ATTRS: {
-            currentGameModel: {},
-            currentGame: {},
-            currentTeam: {},
-            currentPlayer: {},
-            currentUser: {},    
             dataSources: {
                 value: {}
             },

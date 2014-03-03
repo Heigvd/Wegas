@@ -108,11 +108,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                     this.restartValue = "true";
                 }
                 Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                    headers:{
-                        'Content-Type': 'application/json; charset=ISO-8859-1',
-                        'Managed-Mode':'true'
-                    },
+                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: "POST",
                         data: Y.JSON.stringify({
@@ -141,13 +137,9 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                 if (this.boxValue[position].getInstance().get("properties").value <= money){
                     this.setMoney(money - this.boxValue[position].getInstance().get("properties").value);
                 // add property
-                    this.boxValue[position].getInstance().get("properties").playerId = Y.Wegas.app.get('currentPlayer');
+                    this.boxValue[position].getInstance().get("properties").playerId = Y.Wegas.Facade.Game.get('currentPlayerId');
                     Y.Wegas.Facade.VariableDescriptor.sendRequest({
                         request: "/" + this.boxValue[position].getInstance().get("descriptorId") +"/VariableInstance/" + this.boxValue[position].getInstance().get("id"),
-                        headers:{
-                            'Content-Type': 'application/json; charset=ISO-8859-1',
-                            'Managed-Mode':'true'
-                        },
                         cfg: {
                             method: "PUT",
                             data: this.boxValue[position].getInstance().toJSON()
@@ -167,18 +159,14 @@ YUI.add('wegas-monopoly-controller', function(Y) {
 
         setMoney: function(value){
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                headers:{
-                    'Content-Type': 'application/json; charset=ISO-8859-1',
-                    'Managed-Mode':'true'
-                },
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\nmoney.value ="+ value +";"
-                    })
+                        content: "money.value ="+ value +";"
+                    }
                 }
             });
         }

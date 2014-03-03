@@ -107,7 +107,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                 var win = RTEField.filePanel.win,
                         field_name = RTEField.filePanel.field_name,
                         targetInput = win.document.getElementById(field_name);
-                targetInput.value = Y.Plugin.CRDataSource.getFullpath(path);    // update the input field
+                targetInput.value = Y.Wegas.Facade.File.getPath() + path;        // update the input field
 
                 if (typeof (win.ImageDialog) !== "undefined") {                 // are we an image browser
                     if (win.ImageDialog.getImageData) {                         // we are, so update image dimensions...
@@ -115,7 +115,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     }
 
                     if (win.ImageDialog.showPreviewImage) {                     // ... and preview if necessary
-                        win.ImageDialog.showPreviewImage(Y.Plugin.CRDataSource.getFullpath(path));
+                        win.ImageDialog.showPreviewImage(Y.Wegas.Facade.File.getPath() + path);
                     }
                 }
                 if (win.Media) {                                                // If in an editor window
@@ -138,8 +138,8 @@ YUI.add("wegas-inputex-rte", function(Y) {
             if (value) {
                 value = value.replace(
                         new RegExp("data-file=\"([^\"]*)\"", "gi"),
-                        "src=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\""
-                        + " href=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\"");// @hack Place both href and src so it will work for both <a> and <img> elements
+                        "src=\"" + Y.Wegas.Facade.File.getPath() + "$1\""
+                        + " href=\"" + Y.Wegas.Facade.File.getPath() + "$1\"");  // @hack Place both href and src so it will work for both <a> and <img> elements
             }
             RTEField.superclass.setValue.call(this, value, sendUpdatedEvent);
 
@@ -152,7 +152,6 @@ YUI.add("wegas-inputex-rte", function(Y) {
          * @return {String} the html string
          */
         getValue: function() {
-            //var path = Y.Plugin.CRDataSource.getFullpath("")
             tinyMCE.triggerSave();
             //return RTEField.superclass.getValue.call(this).replace(reg, "data-file=\"$3\" $1");
             return RTEField.superclass.getValue.call(this)

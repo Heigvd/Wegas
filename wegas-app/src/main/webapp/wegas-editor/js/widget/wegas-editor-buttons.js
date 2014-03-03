@@ -7,6 +7,8 @@
  */
 
 /**
+ * @deprecated Not used any more
+ * 
  * @module editbutton
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -18,7 +20,7 @@ YUI.add('wegas-editor-buttons', function(Y) {
     var SelectGameButton, SelectPlayerButton;
     /**
      * A button that display all current game's player and that sets the
-     * Y.Wegas.app.set("currentPlayer") on click.
+     * Wegas.Facade.Game.get('currentPlayerId') on click.
      *
      * @class Y.Wegas.SelectPlayerButton
      * @constructor
@@ -37,11 +39,11 @@ YUI.add('wegas-editor-buttons', function(Y) {
             this.plug(Y.Plugin.WidgetMenu);
 
             this.menu.on("button:click", function(e) {
-                Y.Wegas.app.set('currentPlayer', e.target.get("data").get("id"));
+                Y.Wegas.Facade.Game.cache.set('currentPlayerId', e.target.get("data").get("id"));
             });
 
             Y.Wegas.Facade.Game.after("response", this.syncUI, this);
-            Y.Wegas.app.after("currentPlayerChange", this.syncUI, this);
+            Y.Wegas.Facade.Game.cache.after("currentPlayerIdChange", this.syncUI, this);
         },
         /**
          *  @function
@@ -88,10 +90,8 @@ YUI.add('wegas-editor-buttons', function(Y) {
     Y.namespace("Wegas").SelectPlayerButton = SelectPlayerButton;
 
     /**
-     * A button that display all current game's player and that sets the
-     * Y.Wegas.app.set("currentPlayer") on click.
-     *
-     *  @deprecated It should load game list on demand.
+     * @deprecated It should load game list on demand.
+     *  
      * @class Y.Wegas.SelectGameButton
      * @constructor
      * @extends Y.Wegas.Button

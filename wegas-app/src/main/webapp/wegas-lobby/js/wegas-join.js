@@ -151,7 +151,7 @@ YUI.add('wegas-join', function(Y) {
                     entity: entity
                 });
                 this.teamEdition.addExistingAccount(
-                        Y.Wegas.Facade.User.cache.get("currentUser").getMainAccount());// Push  current user to the team's player list
+                        Y.Wegas.Facade.User.get("currentUser").getMainAccount());// Push  current user to the team's player list
             }
 
             this.joinButton.set("visible", true);

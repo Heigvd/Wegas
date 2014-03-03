@@ -45,7 +45,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             var cb = this.get(CONTENTBOX), innerHTML;
 
             this.get("boundingBox").addClass("wegas-form");
-            
+
             this.plug(Plugin.WidgetToolbar);
 
             this.srcField = new Y.inputEx.WysiwygScript({
@@ -109,7 +109,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                         }
                         treeView.item(selected).selectAll();
                     }
-                    Y.Wegas.app.set('currentPlayer', playerId);
+                    Y.Wegas.Facade.Game.cache.set('currentPlayerId', playerId);
                     playerId = null;
                 } else {
                     treeView.plug(Plugin.CheckBoxTV);
@@ -158,7 +158,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                     playerList = [], selection;
 
             if (!treeview) {
-                playerList.push(Y.Wegas.app.get('currentPlayer'));
+                playerList.push(Y.Wegas.Facade.Game.get('currentPlayerId'));
                 return playerList;
             }
 

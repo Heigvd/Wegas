@@ -348,8 +348,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     replyData.fileLinks = "";
                     for (k = 0; k < replyData.files.length; k = k + 1) {
                         replyData.fileLinks += '<a target="_blank" href="' +
-                                Y.Plugin.CRDataSource.getFullpath(replyData.files[k]) + '">' +
-                                Y.Plugin.CRDataSource.getFilename(replyData.files[k]) + '</a><br />';
+                                Y.Wegas.Facade.File.getPath() + replyData.files[k] + '">' +
+                                Y.Wegas.Helper.getFilename(replyData.files[k]) + '</a><br />';
                     }
                     if (!replyData.fileLinks) {
                         delete replyData.fileLinks;
@@ -412,7 +412,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             this.showOverlay();
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 on: {failure: Y.bind(function(e) {
                         this.hideOverlay();
                     }, this)
@@ -424,7 +424,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             this.showOverlay();
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/QuestionDescriptor/SelectChoice/" + data.choice.get("id")
-                        + "/Player/" + Y.Wegas.app.get('currentPlayer') + "/StartTime/" + data.startTime + "/",
+                        + "/Player/" + Y.Wegas.Facade.Game.get('currentPlayerId') + "/StartTime/" + data.startTime + "/",
                 on: {failure: Y.bind(function(e) {
                         this.hideOverlay();
                     }, this)

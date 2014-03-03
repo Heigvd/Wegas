@@ -95,7 +95,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                 this.position -=40;
             }
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({
@@ -128,7 +128,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
 
         setCurrentPlayer: function(id){
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({
@@ -179,7 +179,7 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
         setState: function (newState){
             this.state = newState;
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({

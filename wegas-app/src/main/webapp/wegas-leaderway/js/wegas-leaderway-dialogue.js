@@ -428,15 +428,14 @@ YUI.add('wegas-leaderway-dialogue', function(Y) {
             var currentPage = this.get("root").get("@pageId");
             if (currentPage || currentPage === 0) {
                 Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                    'Managed-Mode': 'false',
+                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: "POST",
-                        data: Y.JSON.stringify({
+                        data: {
                             "@class": "Script",
                             language: "JavaScript",
                             content: "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
-                        })
+                        }
                     }
                 });
             }

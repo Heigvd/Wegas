@@ -21,7 +21,6 @@
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-logincss", function(Y) {
                     var app = new Y.Wegas.App({
-                        currentUser: #{requestController.currentUser.id},
                         dataSources: {
                             Page: {
                                 initialRequest: "wegas-app/db/wegas-lobby-singlegame-layout.json",
@@ -42,7 +41,10 @@
                                 source: "rest/Extended/User",
                                 initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
-                                        fn: "UserCache"
+                                        fn: "UserCache",
+                                        cfg: {
+                                            currentUserId: #{requestController.currentUser.id}
+                                        }
                                     }]
                             },
                             PublicGames: {
