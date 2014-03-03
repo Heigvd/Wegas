@@ -157,6 +157,6 @@ img:hover + .gallery-text{
 body > .wegas-lightGallery .gallery-toggle{
     background: url(../images/sprite_icons.png) no-repeat 2px 2px;
 }
-.light-gallery [href]{
+.wegas-light-gallery [href]{
     display:none;
 }

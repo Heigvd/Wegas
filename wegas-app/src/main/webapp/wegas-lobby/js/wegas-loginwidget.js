@@ -48,9 +48,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                         <h1 class='title'>Try Wegas</h1>\n\
                         <div class='guestlogin'></div>\n\
                     </div>\n\
-                    <div class='main right ask-pass-zone'>\n\
+                    <div class='main right ask-pass'>\n\
                         <h1 class='title'>Get a new password</h1>\n\
-                        <div class='ask-pass'></div>\n\
                     </div>\n\
                     <div class='footer'>\n\
                         <div class='partner'>\n\
@@ -62,11 +61,6 @@ YUI.add('wegas-loginwidget', function(Y) {
                             </div>\n\
                     </div>\n\
                 </div></div>",
-        // *** Private fields *** //
-        /**
-         * Default link to redirect user
-         */
-        defaultRedirect: "index.html",
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -76,41 +70,53 @@ YUI.add('wegas-loginwidget', function(Y) {
          * Call 'redirect' function if user is alread logged.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
+            var cb = this.get(CONTENTBOX),
+                    askPassNode = cb.one(".ask-pass");
 
             if (Wegas.Helper.getURLParameter("redirect").indexOf("token") > -1) {// If the user is trying to acces
                 cb.one(".main.left").setContent("<h1>&nbsp;</h1>You need to log in, create an account or log in as guest to play this game.");
-            } else {                                                            // Otherwise display home page
-                //cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>\n\
-                //        <p>WEGAS (Web Game Authoring System) is a web engine for quick development of simulation games.\n\
-                //         No programming skills is required, you can create your own scenario or adapt an existing one by \n\
-                //        adding elements from other simulations. Advanced users can even create their own serious game from A\n\
-                //         to Z!</p>\n\
-                //        <div class='preview'><img src='wegas-app/images/wegas-preview.jpg' alt='preview' height='254px' width='633px'/></div>\n");
-
+            } else {
                 cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>\n\
                         <p>Wegas (Web Game Authoring System) is a web engine for rapid development of simulation games.\n\
                          No programming skills are required, you can create your own scenario or adapt an existing one by \n\
-                        adding elements from other simulations. Advanced users can even create their own serious game from scratch!</p><br />\n\
-                        <h2>Games created with Wegas</h1>"
+                        adding elements from other simulations. Advanced users can even create their own serious game from scratch!</p><br />"
+
+                        //+ "<div class='preview'><img src='wegas-app/images/wegas-preview.jpg' alt='preview' height='254px' width='633px'/></div>"
+
+                        + "<h2>Games created with Wegas</h1>"
                         + '<div class="wegas-login-thumb"><ul>'
 
                         + '<li><div class="article-link"><span class="text">'
                         + '<span class="article-title">Programming game</span>'
-                        + '<span class="description">A web-based simulation game for project management education.</span>'
-                        + '<span class="links"><a href="game.html?token=proggame">Start playing</a> | <a href="#" rel="shadowbox[projectgame]">Screenshots</a></span></span>'
+                        + '<span class="description">Learn Javascript by coding your way through the game.</span>'
+                        + '<span class="links"><a href="game.html?token=proggame">Start playing</a> '
+                        + '| <a href="#" class="wegas-light-gallery" >Screenshots'
+                        + '<img src="wegas-lobby/images/wegas-proggame-1.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-proggame-2.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-proggame-3.png" style="display:none">'
+                        + '</a></span></span></span>'
                         + '<span class="image"><span class="image-offset"><img src="wegas-lobby/images/wegas-preview-proggame-1.png" /></span></span></div></li>'
 
                         + '<li><div class="article-link"><span class="text">'
                         + '<span class="article-title">Leaderway</span>'
-                        + '<span class="description">A web-based simulation game for project management education.</span>'
-                        + '<span class="links"><a href="game.html?token=leaderway">Start playing</a> | <a href="#" rel="shadowbox[projectgame]">Screenshots</a></span></span>'
+                        + '<span class="description">Lead a team and manage their expectations.</span>'
+                        + '<span class="links"><a href="game.html?token=leaderway">Start playing</a> '
+                        + '| <a href="#" class="wegas-light-gallery" >Screenshots'
+                        + '<img src="wegas-lobby/images/wegas-leaderway-1.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-leaderway-2.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-leaderway-3.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-leaderway-4.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-leaderway-6.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-leaderway-7.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-leaderway-8.png" style="display:none">'
+                        + '</a></span></span></span>'
                         + '<span class="image"> <span class="image-offset"><img src="wegas-lobby/images/wegas-preview-leaderway-1.png" /></span></span></div></li>'
 
                         + '</ul></div>');
             }
 
-            this.loginForm = new Y.inputEx.Group({//                            // Create and append login form
+            // Create and append login form
+            this.loginForm = new Y.inputEx.Group({
                 fields: [{
                         name: "email",
                         required: true,
@@ -130,17 +136,16 @@ YUI.add('wegas-loginwidget', function(Y) {
                         rightLabel: "&nbsp;Remember me",
                         className: "inputEx-Field remember"
                     }],
-                parentEl: cb.one(".login"),
-                className: "logingroup"
+                parentEl: cb.one(".login")
             });
             this.loginButton = new Y.Button({
                 label: "Log in",
                 render: cb.one(".login")
             });
+            cb.one(".login").append('<a class="forgot">Forgot password?</a>');
 
-            cb.one(".login").append('<p class="forgot">Forgot password?</p>');
-
-            this.createAccountForm = new Y.inputEx.Group({//                    // Create and append "sign in" from
+            // Create and append "sign in" from
+            this.createAccountForm = new Y.inputEx.Group({
                 fields: [{
                         name: "id",
                         type: "hidden"
@@ -184,12 +189,10 @@ YUI.add('wegas-loginwidget', function(Y) {
                         required: true,
                         confirm: "password",
                         type: "password",
-                        typeInvite: "Password confirmation", //                 // Does not work in inputex, c.f. hack below
+                        typeInvite: "Password confirmation" //                  // Does not work in inputex, c.f. hack below
                     }],
-                parentEl: cb.one(".signup"),
-                className: "signupgroup"
+                parentEl: cb.one(".signup")
             });
-
             this.signUpButton = new Y.Button({
                 label: "Sign in",
                 render: cb.one(".signup")
@@ -203,22 +206,23 @@ YUI.add('wegas-loginwidget', function(Y) {
                 render: cb.one(".signup-zone .guestlogin")
             });
 
-            this.sendNewPasswordForm = new Y.inputEx.Group({//                  // Create, append and hide from to ask a new password.
+            // Create, append and hide from to ask a new password.
+            this.sendNewPasswordForm = new Y.inputEx.Group({
                 fields: [{
                         name: "email",
                         required: true,
                         type: "email",
                         typeInvite: "Email",
-                        className: "email"
+                        className: "inputEx-Field email"
                     }],
-                parentEl: cb.one(".ask-pass")
+                parentEl: askPassNode
             });
             this.askPassButton = new Y.Button({
                 label: "Submit",
-                render: cb.one(".ask-pass")
+                render: askPassNode
             });
-            cb.one(".ask-pass").append('<p class="return">Create an account</p>');
-            cb.one(".ask-pass-zone").hide();
+            askPassNode.append('<a class="return">Create an account</a>');
+            askPassNode.hide();
         },
         /**
          * @function
@@ -254,9 +258,10 @@ YUI.add('wegas-loginwidget', function(Y) {
                 }
             }, this);
 
-            this.guestLoginButton.on("click", this.guestLogin, this);           // Guest login click event
-            this.guestTeacherLoginButton.on("click", this.guestLogin, this,
-                    "/TeacherGuestLogin/");                                     // Teacher guest login click event
+            this.guestLoginButton.on("click", Y.bind(this.loginRequest, this,
+                    "/GuestLogin/"));                                           // Guest login click even
+            this.guestLoginButton.on("click", Y.bind(this.loginRequest, this,
+                    "/TeacherGuestLogin/"));                                    // Teacher guest login click event
 
             this.askPassButton.on("click", function() {                         // Password recovery click event
                 if (this.sendNewPasswordForm.validate()) {
@@ -294,7 +299,7 @@ YUI.add('wegas-loginwidget', function(Y) {
          */
         changeRightForms: function(showAskForm) {
             var cb = this.get(CONTENTBOX);
-            cb.one(".ask-pass-zone").toggleView(showAskForm);
+            cb.one(".ask-pass").toggleView(showAskForm);
             cb.one(".signup-zone").toggleView(!showAskForm);
             cb.one(".forgot").toggleView(!showAskForm);
         },
@@ -308,37 +313,22 @@ YUI.add('wegas-loginwidget', function(Y) {
          *  informations.
          */
         login: function(email, password, remember) {
+            this.loginRequest("/Authenticate/?email=" + email + "&password=" + password + "&remember=" + remember);
+        },
+        loginRequest: function(url) {
             Wegas.Facade.User.sendRequest({
-                request: "/Authenticate/?email=" + email
-                        + "&password=" + password
-                        + "&remember=" + remember,
+                request: url,
                 cfg: {
                     method: "POST"
                 },
                 on: {
                     success: Y.bind(function(e) {
                         this.showMessage("success", "Login successful");
-                        this.redirect();
+                        window.location = Wegas.Helper.getURLParameter("redirect") || Wegas.app.get("base");
                     }, this),
                     failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Email/password combination not found", 6000);
-                    }, this)
-                }
-            });
-        },
-        guestLogin: function(e, url) {
-            Wegas.Facade.User.sendRequest({
-                request: url || "/GuestLogin/",
-                cfg: {
-                    method: "POST"
-                },
-                on: {
-                    success: Y.bind(function(e) {
-                        this.showMessage("success", "Login successful");
-                        this.redirect();
-                    }, this),
-                    failure: Y.bind(function(e) {
-                        this.showMessage("error", e.response.results.message || "Guest login failed", 6000);
+                        //this.showMessage("error", e.response.results.message || "Guest login failed", 6000);
                     }, this)
                 }
             });
@@ -394,24 +384,6 @@ YUI.add('wegas-loginwidget', function(Y) {
                     }, this)
                 }
             });
-        },
-        /**
-         * @function
-         * @private
-         * @description redirect the user to a page given by the function 'getRedirect'
-         */
-        redirect: function() {
-            window.location = this.getRedirect();
-        },
-        /**
-         * @function
-         * @private
-         * @return url to redirect
-         * @description return redirection given by the function
-         *  'getQueryParameter' or by the default redirection.
-         */
-        getRedirect: function() {
-            return Wegas.Helper.getURLParameter("redirect") || (Wegas.app.get("base") + this.defaultRedirect);
         }
     });
     Y.namespace('Wegas').LoginWidget = LoginWidget;
@@ -424,6 +396,7 @@ YUI.add('wegas-loginwidget', function(Y) {
         var divEl = Y.one(this.divEl);
         if (!this._fakePass && this.options.typeInvite) {
             this._fakePass = Y.Node.create("<input type='text'>");
+            this._fakePass.set("value", this.options.typeInvite);
             this._fakePass.setAttribute("class", this.el.getAttribute("class"));
             this._fakePass.hide();
             Y.one(this.el).ancestor().prepend(this._fakePass);
@@ -442,7 +415,6 @@ YUI.add('wegas-loginwidget', function(Y) {
                 divEl.addClass("inputEx-typeInvite");
                 Y.one(this.el).hide();
                 this._fakePass.show();
-                this._fakePass.set("value", this.options.typeInvite);
                 this.el.value = this.options.typeInvite;
 
                 // important for setValue to work with typeInvite

@@ -5,5 +5,7 @@
         }],
     "plugins": [{
             "fn": "PopupListener"
+        }, {
+            "fn": "Injector"
         }]
 }
