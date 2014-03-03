@@ -64,7 +64,7 @@ YUI.add("wegas-chess", function(Y) {
                 }
 
                 Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: "POST",
                         data: {
@@ -93,7 +93,7 @@ YUI.add("wegas-chess", function(Y) {
                     statusNode = bb.one(".chess-status"),
                     currentGame = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                     players = currentGame.get("teams")[0].get("players"),
-                    cPlayerId = Y.Wegas.app.get("currentPlayer");
+                    cPlayerId = Y.Wegas.Facade.Game.get('currentPlayerId');
 
             this.side = 0;                                                      // Determine which side
             if (players[0].get("id") === cPlayerId) {

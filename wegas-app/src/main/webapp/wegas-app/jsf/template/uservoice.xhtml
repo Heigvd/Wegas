@@ -1,0 +1,22 @@
+<script type='text/javascript' xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    UserVoice = window.UserVoice || [];                                         // Include the UserVoice JavaScript SDK
+    (function() {
+        var uv = document.createElement('script');
+        uv.type = 'text/javascript';
+        uv.async = true;
+        uv.src = '//widget.uservoice.com/3sN3R6bpdxVxNcGgsuAhQ.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(uv, s);
+    })();   
+    UserVoice.push(['set', {//                                                  // Set colors
+            accent_color: '#072644',
+            trigger_color: '<ui:insert name="uservoice_trigger_color">white</ui:insert>',
+            trigger_background_color: '<ui:insert name="uservoice_trigger_background_color">rgba(46, 49, 51, 0.6)</ui:insert>'
+        }]);
+    UserVoice.push(['identify', {        }]);                                   // Identify the user and pass traits (To enable, replace sample data with actual user traits and uncomment the line)
+    // Add default trigger to the bottom-right corner of the window:
+    UserVoice.push(['addTrigger', {mode: 'contact', trigger_position: '<ui:insert name="uservoice_trigger_position">bottom-right</ui:insert>'}]);
+    //UserVoice.push(['addTrigger', '#id', { mode: 'contact' }]);               // Or, use your own custom trigger:
+    UserVoice.push(['autoprompt', {}]);                                         // Autoprompt for Satisfaction and SmartVote (only displayed under certain conditions)
+</script>

@@ -86,7 +86,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
             this.showOverlay();
             //get library  in current game Model (export view);
             Y.Wegas.Facade.GameModel.sendRequest({
-                request: "/" + Y.Wegas.app.get("currentGameModel")
+                request: "/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
                         + "/Library/" + this.get("library") + "?view=Export",
                 cfg: {
                     updateCache: false
@@ -186,7 +186,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                         this.showOverlay();
 
                         Y.Wegas.Facade.GameModel.sendRequest({
-                            request: "/" + Y.Wegas.app.get("currentGameModel")
+                            request: "/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
                                     + "/Library/" + this.get("library") + "/" + this.currentScriptName,
                             cfg: {
                                 method: "POST",
@@ -235,7 +235,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                         this.showOverlay();
 
                         Y.Wegas.Facade.GameModel.sendRequest({
-                            request: "/" + Y.Wegas.app.get("currentGameModel")
+                            request: "/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
                                     + "/Library/" + this.get("library") + "/" + this.selectField.getValue(),
                             cfg: {
                                 method: "POST",
@@ -270,7 +270,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                         this.showOverlay();
 
                         Y.Wegas.Facade.GameModel.sendRequest({
-                            request: "/" + Y.Wegas.app.get("currentGameModel")
+                            request: "/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
                                     + "/Library/" + this.get("library") + "/" + this.currentScriptName,
                             cfg: {
                                 method: "DELETE",

@@ -135,14 +135,19 @@ body h6{
 }
 
 /** Page loader styles */
-body, html, body > .wegas-pageloader, body > .wegas-pageloader > .wegas-pageloader-content{
+.wegas-playerview > .wegas-pageloader-content >.wegas-pageloader-content {
     width:100%;
-    height:100%;
+    height: 100%;
+    overflow: auto;
 }
-body > .wegas-pageloader > .wegas-pageloader-content > div{
+.wegas-playerview > .wegas-pageloader-content > div {
     margin-left: auto;
     margin-right: auto;
 }
+/*body, html, body > .wegas-pageloader, body > .wegas-pageloader > .wegas-pageloader-content{
+    width:100%;
+    height:100%;
+}*/
 
 /* Google translate */
 .wegas-translate {
@@ -190,8 +195,8 @@ font {
  * Box widget
  */
 .wegas-box{
-    width:100%;
-    height:50px;
+    width: 300px;
+    height: 100px;
 }
 
 /* Chat widget */

@@ -14,9 +14,12 @@ import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -38,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class GameFacade extends AbstractFacadeImpl<Game> {
+public class GameFacade extends BaseFacade<Game> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GameFacade.class);
     /**
@@ -92,6 +95,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         this.create(gm, game);
     }
 
+    @Override
+    public void create(final Game game) {
+        this.create(game.getGameModel().getId(), game);
+    }
+
     /**
      *
      * @param gameModelId
@@ -107,8 +115,9 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param game
      */
     public void create(final GameModel gameModel, final Game game) {
-        if (this.findByToken(game.getToken()) != null) {
-            //  || teamFacade.findByToken(game.getToken()) != null) {
+        if (game.getToken() == null) {
+            game.setToken(this.createUniqueEnrolmentkey(game));
+        } else if (this.findByToken(game.getToken()) != null) {
             throw new WegasException("This token is already in use.");
         }
 
@@ -129,10 +138,81 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
     }
 
+    /**
+     *
+     * @param game
+     * @return
+     */
+    public String createUniqueEnrolmentkey(Game game) {
+        String prefixKey = game.getName();
+        boolean foundUniqueKey = false;
+        int counter = 0;
+        String key = null;
+
+        if (prefixKey.length() > 11) {
+            prefixKey = prefixKey.substring(0, 11);
+        }
+        prefixKey = prefixKey.toLowerCase().replace(" ", "-");
+
+        int length = 2;
+        int maxRequest = 400;
+        while (!foundUniqueKey) {
+            if (counter > maxRequest) {
+                length += 1;
+                maxRequest += 400;
+            }
+            String genLetter = this.genRandomLetter(length);
+            key = prefixKey + "-" + genLetter;
+            boolean foundedGameAccountKey = true;
+            boolean foundedGameEnrolentKey = true;
+            try {
+                this.findGameAccountKey(key);
+            } catch (Exception e) {
+                foundedGameAccountKey = false;
+            }
+            try {
+                this.findGameEnrolmentKey(key);
+            } catch (Exception e) {
+                foundedGameEnrolentKey = false;
+            }
+            Game foundGameByToken = this.findByToken(key);
+            if (!foundedGameEnrolentKey && !foundedGameAccountKey && foundGameByToken == null) {
+                foundUniqueKey = true;
+            }
+            counter += 1;
+        }
+        return key;
+    }
+
+    private String genRandomLetter(long length) {
+        final String tokenElements = "abcdefghijklmnopqrstuvwxyz";
+        final Integer digits = tokenElements.length();
+        length = Math.min(50, length); // max 50 length;
+        StringBuilder sb = new StringBuilder();
+        Integer random = (int) (Math.random() * digits);
+        sb.append(tokenElements.charAt(random));
+        if (length > 1) {
+            sb.append(genRandomLetter(length - 1));
+        }
+        return sb.toString();
+    }
+
     @Override
     public Game update(final Long entityId, final Game entity) {
+        String token = entity.getToken().toLowerCase().replace(" ", "-");
+        String s = token.substring(token.length() - 1);
+        String [] splitedToken = entity.getToken().split("-");
+        if (!s.equals("-")){
+            try {
+                Long.parseLong(splitedToken[splitedToken.length -1]);
+                throw new WegasException("You can't have a trait followed by a number (example: xx-12)");
+            }catch (NumberFormatException e){
+                //Gotcha
+            }
+        }
+               
         if ((this.findByToken(entity.getToken()) != null
-                && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)) {
+                && !this.findByToken(entity.getToken()).getId().equals(entity.getId()))) {
             //|| teamFacade.findByToken(entity.getToken()) != null) {
             throw new WegasException("This token is already in use.");
         }
@@ -189,13 +269,40 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
 
     /**
      *
+     * @param key
+     * @return
+     */
+    public GameAccountKey findGameAccountKey(String key) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<GameAccountKey> gameAccount = cq.from(GameAccountKey.class);
+        cq.where(cb.equal(gameAccount.get(GameAccountKey_.key), key));
+        Query q = em.createQuery(cq);
+        return (GameAccountKey) q.getSingleResult();
+    }
+
+    /**
+     *
+     * @param search
+     * @return
+     */
+    public List<Game> findByName(String search) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<Game> game = cq.from(Game.class);
+        cq.where(cb.like(game.get(Game_.name), search));
+        Query q = em.createQuery(cq);
+        return (List<Game>) q.getResultList();
+    }
+
+    /**
+     *
      * @param gameModelId
      * @param orderBy
      * @return
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
-        final Query getByGameId =
-                em.createQuery("SELECT game FROM Game game "
+        final Query getByGameId = em.createQuery("SELECT game FROM Game game "
                 + "WHERE game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC");
 
         GameModel gm = new GameModel();
@@ -222,8 +329,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @return
      */
     public List<Game> findRegisteredGames(final Long userId) {
-        final Query getByGameId =
-                em.createQuery("SELECT game, p FROM Game game "
+        final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id "
                 + "AND p.user.id = :userId "
@@ -240,8 +346,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @return
      */
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
-        final Query getByGameId =
-                em.createQuery("SELECT game, p FROM Game game "
+        final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
                 + "ORDER BY p.joinTime ASC");
@@ -251,6 +356,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return this.findRegisterdGames(getByGameId);
     }
 
+    /**
+     * 
+     * @param q
+     * @return 
+     */
     private List<Game> findRegisterdGames(final Query q) {
         final List<Game> games = new ArrayList<>();
         for (Object ret : q.getResultList()) {                                // @hack Replace created time by player joined time
@@ -261,6 +371,40 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
             games.add(game);
         }
         return games;
+    }
+
+    /**
+     *
+     * @param roleName
+     * @return
+     */
+    public Collection<Game> findPublicGamesByRole(String roleName) {
+        Role role = roleFacade.findByName(roleName);
+        Collection<Game> games = new ArrayList<>();
+        for (Permission permission : role.getPermissions()) {
+            if (permission.getValue().startsWith("Game:View")) {
+                Long gameId = Long.parseLong(permission.getValue().split(":g")[1]);
+                games.add(this.find(gameId));
+            }
+        }
+        return games;
+    }
+
+    /**
+     *
+     * @param g
+     * @param accountNumber
+     * @return
+     */
+    public Game createGameAccount(Game g, Long accountNumber) {
+        for (int i = 0; i < accountNumber; i++) {
+            int newNumber = g.getAccountkeys().size() + 1;
+            GameAccountKey gameAccountKey = new GameAccountKey();
+            gameAccountKey.setKey(g.getToken() + "-" + newNumber);
+            gameAccountKey.setGame(g);
+            g.getAccountkeys().add(gameAccountKey);
+        }
+        return g;
     }
 
     /**

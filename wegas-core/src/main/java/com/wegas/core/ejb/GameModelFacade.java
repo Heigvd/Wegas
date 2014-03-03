@@ -39,7 +39,7 @@ import javax.persistence.criteria.Root;
  */
 @Stateless
 @LocalBean
-public class GameModelFacade extends AbstractFacadeImpl<GameModel> {
+public class GameModelFacade extends BaseFacade<GameModel> {
 
     /**
      *

@@ -32,7 +32,7 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            if (confirm("This will restart every game depending on this model. Are you sure?")) {
+            if (confirm("This will restart for every player. Are you sure?")) {
                 var host = this.get("host");
                 host.showOverlay();
                 Wegas.Facade.VariableDescriptor.sendRequest({
@@ -331,7 +331,7 @@ YUI.add('wegas-editor-action', function(Y) {
             var entity = this.get("entity"),
                     findInTeam = function(team) {
                 return Y.Array.find(team.get("players"), function(p) {
-                    return p.get("userId") === Y.Wegas.app.get("currentUser");
+                    return p.get("userId") === Y.Wegas.Facade.User.get("currentUserId");
                 });
             }, findInGame = function(game) {
                 return Y.Array.find(game.get("teams"), findInTeam);

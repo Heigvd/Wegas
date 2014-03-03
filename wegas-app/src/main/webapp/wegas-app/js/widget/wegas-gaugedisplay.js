@@ -37,17 +37,9 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         MAXVAL: 200,
         /**
-         * Reference to each used functions
-         */
-        handlers: null,
-        /**
          * reference to the gauge object
          */
         gauge: null,
-        /**
-         * reference to the gauge status
-         */
-        disable: null,
         // ** Lifecycle Methods ** //
         /**
          * @function
@@ -56,7 +48,6 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
-            this.disable = false;
         },
         /**
          * @function
@@ -74,25 +65,22 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         setValue: function(cfg) {
             var opts = {
-//                lines: cfg.lines || 1, //don't work with this new version of gauge library
-                // The number of lines to draw
-                angle: cfg.angle || 0.15,
-                // The length of each line
-                lineWidth: cfg.lineWidth || 0.44,
-                // The line thickness
+                angle: cfg.angle || 0.15, // The length of each line
+                lineWidth: cfg.lineWidth || 0.44, // The line thickness
                 pointer: cfg.pointer || {
                     length: 0.5, // The radius of the inner circle
                     strokeWidth: 0.035, // The rotation offset
                     color: '#000000'                                            // Fill color
                 },
-//                colorStart: cfg.colorStart || '#0981A9', // Colors, don't work with this new version of gauge library
-//                colorStop: cfg.colorStop || '#000000',
                 strokeColor: cfg.strokeColor || '#FFFFFF',
-                percentColors: cfg.percentColors || [[0.0, "#0981A9"]],
-//              generateGradient: cfg.generateGradient || false //don't work with this new version of gauge library
+                percentColors: cfg.percentColors || [[0.0, "#0981A9"]]
+                        //colorStart: cfg.colorStart || '#0981A9',              // Colors, don't work with this new version of gauge library
+                        //colorStop: cfg.colorStop || '#000000',
+                        // lines: cfg.lines || 1,                               // The number of lines to draw //don't work with this new version of gauge library
+                        //generateGradient: cfg.generateGradient || false       // don't work with this new version of gauge library
             };
             this.gauge = new Gauge(this.get("contentBox").one("canvas").
-                    getDOMNode());// create the  gauge!conso
+                    getDOMNode());                                              // create the  gauge!conso
             this.gauge.setOptions(opts);
             this.gauge.maxValue = this.MAXVAL;                                  // set max gauge value
             this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)
@@ -105,10 +93,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
-            this.after('disabledChange', function(e) {
-                this.disable = e.newVal;
-                this.syncUI();
-            }, this);
+            this.after('disabledChange', this.syncUI, this);
 
             this.after("cfgChange", function(e) {
                 this.setValue(e.newVal);
@@ -125,6 +110,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             var maxVal, minVal, value, label,
                     variableDescriptor = this.get("variable.evaluated");
             if (!variableDescriptor) {
+                Y.log("error", "Unable to find variable descriptot", "Y.Wegas.GaugeDisplay");
                 return;
             }
 
@@ -133,7 +119,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             maxVal = variableDescriptor.get("maxValue") - minVal;
             value = (variableDescriptor.getInstance().
                     get("value") - minVal) / maxVal * this.MAXVAL;
-            if (!value || this.disable) {
+            if (!value || this.get("disabled")) {
                 value = 0.1;                                                    // @hack @fixme unkown bug, value seams to be treated by gauge as false...
             }
 
@@ -186,7 +172,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "variable"
+                    label: "variable",
+                    classFilter: ["NumberDescriptor"]
                 }
             },
             /**

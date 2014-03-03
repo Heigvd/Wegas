@@ -35,8 +35,18 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
-                    <warName>Wegas-resources</warName>
+                    <warName>${project.build.finalName}</warName>
+                    <useCache>true</useCache>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-webapp</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- YUI JS Compression Plugin -->
@@ -44,7 +54,7 @@
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
                 <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <encoding>UTF-8</encoding>
                     <excludes>
                         <exclude>lib/ace/**</exclude>
                         <exclude>lib/crafty/**</exclude>
@@ -56,9 +66,41 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <!-- Convert files to ISO-8859-1 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Convert files to ${project.build.sourceEncoding}"/>
+                                <!--Has to copy twice, in place doesn't work...-->
+                                <copy todir="${project.build.directory}/${project.build.finalName}/tmp" encoding="UTF-8" outputencoding="${project.build.sourceEncoding}">
+                                    <fileset dir="${project.build.directory}/${project.build.finalName}/lib">
+                                        <include name="**/*.js"/>
+                                        <include name="/*.*"/>
+                                    </fileset>
+                                </copy>
+                                <move todir="${project.build.directory}/${project.build.finalName}/lib" overwrite="true">
+                                    <fileset dir="${project.build.directory}/${project.build.finalName}/tmp">
+                                        <include name="**/*.*"/>
+                                        <include name="/*.*"/>
+                                    </fileset>
+                                </move>
+                                <delete dir="target/Wegas-resources/tmp"/>
+                                <!--should we encode everything? this last is faster-->
+                                <!--<move file="target/Wegas-resources/tmp" tofile="target/Wegas-resources/lib"/>-->
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 </project>

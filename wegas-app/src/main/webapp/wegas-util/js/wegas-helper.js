@@ -181,6 +181,9 @@ YUI.add('wegas-helper', function(Y) {
         getURLParameter: function(name) {
             var param = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
             return param ? decodeURIComponent(param) : param;
+        },
+        getFilename: function(path) {
+            return path.replace(/^.*[\\\/]/, '');
         }
     };
     Y.namespace("Wegas").Helper = Helper;

@@ -2,8 +2,6 @@
     "type": "ResizableLayout",
     "top": {
         "height": 25,
-        "scroll": null,
-        "zIndex": 2,
         "children": [{
                 "type": "Button",
                 "content": "",
@@ -80,12 +78,7 @@
                                             "type": "Console",
                                             "cssClass": "wegas-console",
                                             "plugins": [{
-                                                    "fn": "WidgetToolbar",
-                                                    "cfg": {
-                                                        "children": [{
-                                                                "type": "SelectPlayerButton"
-                                                            }]
-                                                    }
+                                                    "fn": "WidgetToolbar"
                                                 }]
                                         }]
                                 }, {
@@ -145,9 +138,6 @@
     },
     "left": {
         "width": 300,
-        "resize": true,
-        "scroll": true,
-        "animate": true,
         "children": [{
                 "type": "TabView",
                 "id": "leftTabView",
@@ -230,15 +220,10 @@
             }]
     },
     "right": {
-        "resize": true,
-        "collapse": false,
-        "scroll": true,
-        "animate": true,
         "children": [{
                 "type": "TabView",
                 "id": "rightTabView",
                 "cssClass": "editor-tab",
-                "children": [],
                 "plugins": [{
                         "fn": "LayoutToggleTab"
                     }]

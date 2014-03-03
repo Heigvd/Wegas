@@ -7,14 +7,12 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount_;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.AbstractAccount_;
 import com.wegas.core.security.persistence.Role;
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +35,7 @@ import javax.persistence.criteria.Root;
  */
 @Stateless
 @LocalBean
-public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
+public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     private static final int MAXRESULT = 30;
     /**
@@ -98,6 +96,10 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
         getEntityManager().persist(entity);
     }
 
+    /**
+     *
+     * @return
+     */
     public List<JpaAccount> findAllRegistered() {
         final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
         query.select(query.from(JpaAccount.class));
@@ -135,6 +137,13 @@ public class AccountFacade extends AbstractFacadeImpl<AbstractAccount> {
         return (JpaAccount) q.getSingleResult();
     }
 
+    /**
+     *
+     * @param name
+     * @param withEmail
+     * @return
+     * @throws NoResultException
+     */
     public List<JpaAccount> findByNameOrEmail(String name, boolean withEmail) throws NoResultException {
         ArrayList<JpaAccount> accounts = new ArrayList();
         String splidedName[] = name.split(" ");

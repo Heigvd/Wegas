@@ -3,9 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <ui:composition template="/wegas-app/view/template/app-default.xhtml">
+    <ui:composition template="wegas-app/jsf/app-default.xhtml">
 
-        <ui:define name="title">#{singleLobbyController.currentGame.name} - Join page</ui:define>
+        <ui:define name="title">#{singleLobbyController.currentGame.name} - #{singleLobbyController.currentGameModel.name} </ui:define>
 
         <ui:define name="head">
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
@@ -21,9 +21,15 @@
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-logincss", function(Y) {
                     var app = new Y.Wegas.App({
-                        currentUser: #{requestController.currentUser.id},
-                        layoutSrc: 'wegas-app/db/wegas-lobby-singlegame-layout.json',
                         dataSources: {
+                            Page: {
+                                initialRequest: "wegas-app/db/wegas-lobby-singlegame-layout.json",
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                    }, {
+                                        fn: "PageCache"
+                                    }]
+                            },
                             GameModel: {
                                 source: "rest/Public/GameModel",
                                 initialRequest: "/" +#{singleLobbyController.currentGame.gameModelId},
@@ -35,7 +41,10 @@
                                 source: "rest/Extended/User",
                                 initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
-                                        fn: "UserCache"
+                                        fn: "UserCache",
+                                        cfg: {
+                                            currentUserId: #{requestController.currentUser.id}
+                                        }
                                     }]
                             },
                             PublicGames: {
@@ -52,14 +61,10 @@
                             }
                         }
                     });
-//                    app.after("render", function() {                            // If there player is registered to a game
-//                        Y.one(".title").setContent("Joining game: #{singleLobbyController.currentGame.name}");
-//                    }, this);
-                    app.render();                                               // Launch app
+                    app.render();                                               // Render app
 
-                    Y.on("gameJoined", function(e) {                            // As soon as a game is joined
-                        Y.config.win.location.reload();
-                        //window.location = app.get("base") + "play.html?gameId=" + e.gameId;// open the game in a new tab
+                    Y.on("gameJoined", function(e) {                            // As soon as a game is joined,
+                        Y.config.win.location.reload();                         // reload the page (user will be redirected since hes registered)
                     });
                 });
             </script>

@@ -101,7 +101,7 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
         },
         addFile: function(fileName) {
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 //'Managed-Mode': 'false',
                 cfg: {
                     method: "POST",

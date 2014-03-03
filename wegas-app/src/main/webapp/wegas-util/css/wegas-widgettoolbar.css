@@ -63,9 +63,12 @@
     overflow-y: auto;
 }
 .wegas-toolbar .yui3-button {
-    margin: 1px 0.3em 0 0;
+    margin: 1px 5px 0 0;
     font-size: 12px;
     padding: .4em 0.8em .3em 0.6em;
+}
+.wegas-toolbar .yui3-button:last-child {
+    margin: 1px 0 0;
 }
 .wegas-toolbar .yui3-button .wegas-icon {
     margin: -4px 2px 0 0;

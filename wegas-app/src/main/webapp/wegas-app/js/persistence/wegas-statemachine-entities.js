@@ -396,7 +396,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     return false;
                 }
                 request = "/StateMachine/" + this.get(ID)
-                        + "/Player/" + Wegas.app.get("currentPlayer")
+                        + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
                         + "/Do/" + transition.get(ID);
                 try {
                     Wegas.Facade.VariableDescriptor.sendRequest({
@@ -442,20 +442,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /**
      * DialogueTransition Entity
      */
-    Wegas.persistence.DialogueTransition = Y.Base.create("DialogueTransition", Wegas.persistence.Transition, [], {
-        /**
-         * Builds the REST request to trigger this specifique transition
-         * @param {Integer} id The dialogue's id
-         * @return {String} an url to GET.
-         */
-        //getTriggerURL: function (id) {
-        //    return Wegas.app.get("base") + "rest/GameModel/" +
-        //    Wegas.app.get("currentGame")
-        //    + "/VariableDescriptor/StateMachine/" + id
-        //    + "/Player/" + Wegas.app.get("currentPlayer")
-        //    + "/Do/" + this.get(ID);
-        //}
-    }, {
+    Wegas.persistence.DialogueTransition = Y.Base.create("DialogueTransition", Wegas.persistence.Transition, [], {}, {
         EDITORNAME: "choice",
         ATTRS: {
             "@class": {

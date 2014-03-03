@@ -89,15 +89,14 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                 return;
             }
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                'Managed-Mode': 'false',
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         language: "JavaScript",
                         content: "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), 'nameOfCurrentEmployee').getInstance(self).setValue('" + currentRes + "');"
-                    })
+                    }
                 }
             });
         },
@@ -105,15 +104,14 @@ YUI.add('wegas-leaderway-folder', function(Y) {
             var currentPage = this.get("root").get("@pageId");
             if (currentPage || currentPage === 0) {
                 Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
-                    'Managed-Mode': 'false',
+                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: "POST",
-                        data: Y.JSON.stringify({
+                        data: {
                             "@class": "Script",
                             language: "JavaScript",
                             content: "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
-                        })
+                        }
                     }
                 });
             }
@@ -225,14 +223,14 @@ YUI.add('wegas-leaderway-folder', function(Y) {
             if (!this.currentResourceDescriptor)
                 return;
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         language: "JavaScript",
                         content: "importPackage(com.Wegas.Facade.core.script);var i, listRes, resInst;\nlistRes = VariableDescriptor.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '" + this.currentResourceDescriptor.get('name') + "'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);"
-                    })
+                    }
                 }
             });
         },
