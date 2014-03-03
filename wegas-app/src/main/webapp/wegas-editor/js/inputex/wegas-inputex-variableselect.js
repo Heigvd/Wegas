@@ -48,10 +48,12 @@ YUI.add("wegas-inputex-variableselect", function(Y) {
                 return {
                     expr: this.inputs[1].getValue()
                 };
-            } else {
+            } else if (this.inputs[0].currentEntityField) {
                 return {//save name for portability instead of id
                     name: this.inputs[0].currentEntityField.getValue()
                 };
+            } else {
+                return {};
             }
         },
         setValue: function(val, fireUpdatedEvent) {

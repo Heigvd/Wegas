@@ -91,7 +91,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 if (entity) {
                     this.highlight(entity, false);
                 }
-            })),
+            }, this)),
                     menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
 
                 switch (i.label) {                                              // @hack add icons to some buttons

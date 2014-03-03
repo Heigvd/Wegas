@@ -79,21 +79,24 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         syncUI: function() {
             this.empty();
 
-            var ret = [],
-                    rootEntities = Y.Wegas.Facade.VariableDescriptor.cache.findAll(),
+            var ret = [], rootEntities = Y.Wegas.Facade.VariableDescriptor.cache.findAll(),
                     currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.find('name', this.options.value) || rootEntities[0];
 
-            this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
+            if (currentEntity) {
+                this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
 
-            while (currentEntity.parentDescriptor) {                            // Add the current entity hierarchy
-                ret.push(this.generateSelectConfig(currentEntity.parentDescriptor,
-                        currentEntity, currentEntity.parentDescriptor.get("items")));
-                currentEntity = currentEntity.parentDescriptor;
+                while (currentEntity.parentDescriptor) {                            // Add the current entity hierarchy
+                    ret.push(this.generateSelectConfig(currentEntity.parentDescriptor,
+                            currentEntity, currentEntity.parentDescriptor.get("items")));
+                    currentEntity = currentEntity.parentDescriptor;
+                }
+                ret.push(this.generateSelectConfig(null, currentEntity, rootEntities));// Add the root context (entities that are at the root of the gameModel
+
+                Y.Array.each(ret.reverse(), this.addField, this);
+                this.currentEntityField = this.inputs[this.inputs.length - 1];
+            } else {
+                // @todo Show error message
             }
-            ret.push(this.generateSelectConfig(null, currentEntity, rootEntities));// Add the root context (entities that are at the root of the gameModel
-
-            Y.Array.each(ret.reverse(), this.addField, this);
-            this.currentEntityField = this.inputs[this.inputs.length - 1];
         },
         /**
          *
@@ -193,9 +196,11 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         syncUI: function() {
             VariableDescriptorGetter.superclass.syncUI.call(this);
 
-            if (this.currentEntity.get("items") && this.currentEntity.get("items").length > 0) {
+            if (this.currentEntity && this.currentEntity.get("items") && this.currentEntity.get("items").length > 0) {
                 this.addField(this.generateSelectConfig(null,
                         this.currentEntity, this.currentEntity.get("items")));  // Pushes the current entity methods and children to the stack
+            } else {
+                (new Y.Node(this.fieldset)).append("<em>no variable created </em>");
             }
         },
         genChoices: function(entity, items) {
