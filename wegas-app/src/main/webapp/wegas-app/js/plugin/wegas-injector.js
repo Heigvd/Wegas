@@ -68,40 +68,38 @@ YUI.add("wegas-injector", function(Y) {
                     }
                 });
                 this.instantiateGallery(gallery);
-            }, '.light-gallery', this));
+            }, '.wegas-light-gallery', this));
 
             // Load gallery on .light-picture click
             this.handlers.push(Y.one("body").delegate("click", function(e) {
                 var gallery = [], index,
                         link = e.target.get("href") || e.target.get("src");
                 e.halt(true);
-                if (link) {
-                    if (e.target.hasAttribute("data-gallery")) {                // Group same data-gallery together 
-                        Y.all("[data-gallery='" + e.target.getAttribute("data-gallery") + "']").each(function(item, i) {
-                            if (item === e.target) {
-                                index = i;
-                            }
-                            gallery.push({
-                                srcUrl: item.get("href") || item.get("src"),
-                                description: item.get("title")
-                            });
+                if (e.target.hasAttribute("data-gallery")) {                    // Group same data-gallery together 
+                    Y.all("[data-gallery='" + e.target.getAttribute("data-gallery") + "']").each(function(item, i) {
+                        if (item === e.target) {
+                            index = i;
+                        }
+                        gallery.push({
+                            srcUrl: item.get("href") || item.get("src"),
+                            description: item.get("title")
                         });
-                        this.instanciateGallery(gallery, index);
-                    } else {
-                        this.instanciateGallery([{
-                                srcUrl: link,
-                                description: e.target.get("title")
-                            }]);
-                    }
+                    });
+                    this.instanciateGallery(gallery, index);
+                } else if (link) {
+                    this.instanciateGallery([{
+                            srcUrl: link,
+                            description: e.target.get("title")
+                        }]);
                 }
-            }, '.light-picture', this));
+            }, '.wegas-light-picture', this));
         },
         /**
          * 
          * @param {Array} gallery
          * @param {number} index
          */
-        instanciateGallery: function(gallery, index) {
+        instantiateGallery: function(gallery, index) {
             Y.use("wegas-gallery", function() {                                 // Lazy load gallery
                 if (!Injector.Gallery) {                                        // Singleton pattern
                     Injector.Gallery = new Y.Wegas.Gallery({//                  // Create gallery
@@ -111,6 +109,7 @@ YUI.add("wegas-injector", function(Y) {
                     Injector.Gallery.render();                                  // and render it
                 }
                 Injector.Gallery.set("gallery", gallery);                       // Set the new set of pictures
+                Injector.Gallery.set("fullScreen", true);
                 if (index) {
                     Injector.Gallery.scrollView.pages.scrollToIndex(index);     // Scroll to current picture node
                 }
