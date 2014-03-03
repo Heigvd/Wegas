@@ -52,7 +52,6 @@ YUI.add("wegas-widget", function(Y) {
 
     Y.mix(Widget.prototype, {
         /** @lends Y.Wegas.Widget# */
-
         /**
          * @function
          * @private
