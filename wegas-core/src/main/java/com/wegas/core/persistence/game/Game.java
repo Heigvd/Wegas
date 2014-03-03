@@ -30,8 +30,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints = {
-    //    @UniqueConstraint(columnNames = {"name"}), //@UniqueConstraint(columnNames = {"token"}),
+@Table(uniqueConstraints = { //    @UniqueConstraint(columnNames = {"name"}), //@UniqueConstraint(columnNames = {"token"}),
 //    @UniqueConstraint(columnNames = {"wkey"})
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -102,12 +101,30 @@ public class Game extends NamedEntity {
     @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
     private Long gameModelId;
 
+    /**
+     *
+     */
     public enum GameAccess {
 
+        /**
+         *
+         */
         OPEN,
+        /**
+         *
+         */
         URL,
+        /**
+         *
+         */
         ENROLMENTKEY,
+        /**
+         *
+         */
         SINGLEUSAGEENROLMENTKEY,
+        /**
+         *
+         */
         CLOSE
     }
     /**
@@ -154,6 +171,9 @@ public class Game extends NamedEntity {
         this.token = token;
     }
 
+    /**
+     *
+     */
     @PrePersist
     public void prePersist() {
         this.setCreatedTime(new Date());
@@ -180,6 +200,7 @@ public class Game extends NamedEntity {
         this.setToken(other.getToken());
         //this.setKey(other.getKey());
         ListUtils.mergeLists(this.getKeys(), other.getKeys());
+        ListUtils.mergeLists(this.getAccountkeys(), other.getAccountkeys());
     }
 
     /**
@@ -315,12 +336,16 @@ public class Game extends NamedEntity {
     }
 
     /**
-     * @param creator the creator to set
+     * @param createdBy 
      */
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
             return this.getCreatedBy().getName();
@@ -373,10 +398,18 @@ public class Game extends NamedEntity {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<GameAccountKey> getAccountkeys() {
         return accountkeys;
     }
 
+    /**
+     *
+     * @param accountkeys
+     */
     public void setAccountkeys(List<GameAccountKey> accountkeys) {
         this.accountkeys = accountkeys;
     }
@@ -395,17 +428,31 @@ public class Game extends NamedEntity {
         this.description = description;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getGameModelName() {
         return this.getGameModel().getName();
     }
 
+    /**
+     *
+     */
     public void setGameModelName() {
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, String> getProperties() {
         return this.getGameModel().getProperties();
     }
 
+    /**
+     *
+     */
     public void setProperties() {
     }
 }
