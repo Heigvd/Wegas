@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <ui:composition template="/wegas-app/view/template/app-default.xhtml">
+    <ui:composition template="/wegas-app/jsf/app-default.xhtml">
 
-        <ui:define name="title">#{gameController.currentGameModel.name} - #{gameController.currentGame.name}</ui:define>
+        <ui:define name="title">#{gameController.currentGame.name} - #{gameController.currentGameModel.name}</ui:define>
 
         <ui:define name="head">
 
-            <!-- In player mode, CSS library for current game model is included directly in the model -->
+            <!-- In player mode, CSS library for current game model is included directly in the file header -->
             <style type="text/css">#{gameController.styleSheets}</style>
 
             <!-- Dev tool: style sheet reference injected directly in the game model -->
@@ -24,20 +24,52 @@
 
         <ui:define name="body">
             <script type="text/javascript">
-                YUI().use('wegas-app', 'wegas-scripteval', function(Y) {
+                YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
-                        layoutSrc: 'wegas-app/db/wegas-app-layout.json',
-                        debug: #{requestController.debugMode()},
                         currentGameModel: #{gameController.currentGameModel.id},
                         currentGame: #{gameController.currentGame.id},
                         currentTeam: #{gameController.currentPlayer.team.id},
                         currentPlayer: #{gameController.currentPlayer.id},
                         currentUser: #{requestController.currentUser.id},
-                        /**
-                         * This field is used to override Entities edition menus.
-                         * Use the target class name as the key.
-                         */
                         dataSources: {
+                            VariableDescriptor: {
+                                source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "",
+                                plugins: [{
+                                        fn: "VariableDescriptorCache"
+                                    }, {
+                                        fn: "ScriptEval"
+                                    }, {
+                                        fn: "WebSocketListener",
+                                        cfg: {
+                                            dataSource: "Pusher"
+                                        }
+                                    }]
+                            },
+                            Page: {
+                                /*
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!gameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                 */
+                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Page/",
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                /*
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                 */
+                                source: "#{gameController.currentGameModel.properties.get('pagesUri')}",
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                initialFullRequest: 'wegas-app/db/wegas-app-layout.json',
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                    }, {
+                                        fn: "PageCache"
+                                    }
+                                ]
+                            },
                             GameModel: {
                                 source: "rest/GameModel",
                                 initialRequest: "/#{gameController.currentGameModel.id}",
@@ -53,28 +85,6 @@
                                     }
                                 ]
                             },
-                            Page: {
-                                /*
-                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!gameController.currentGameModel.properties.containsKey('pagesUri')}">
-                                 */
-                                source: "rest/GameModel/#{gameController.currentGameModel.id}/Page/",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                /*
-                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.properties.containsKey('pagesUri')}">
-                                 */
-                                source: "#{gameController.currentGameModel.properties.get('pagesUri')}",
-                                        /* THIS IS NOT A COMMENT
-                                         * </ui:fragment>
-                                         */
-                                        plugins: [{
-                                        fn: "JSONSchema"
-                                    }, {
-                                        fn: "PageCache"
-                                    }
-                                ]
-                            },
                             /* THIS IS NOT A COMMENT
                              * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
                              */
@@ -86,42 +96,6 @@
                             /* THIS IS NOT A COMMENT
                              * </ui:fragment>
                              */
-                            VariableDescriptor: {
-                                //source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                /* THIS IS NOT A COMMENT
-                                 * <ui:fragment rendered="#{!gameController.currentGameModel.getProperty('allGameVariables')}">
-                                 */
-                                source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                /* THIS IS NOT A COMMENT
-                                 * <ui:fragment rendered="#{gameController.currentGameModel.getProperty('allGameVariables')}">
-                                 */
-                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
-                                        /* THIS IS NOT A COMMENT
-                                         * </ui:fragment>
-                                         */
-                                        initialRequest: "",
-                                plugins: [{
-                                        fn: "VariableDescriptorCache"
-                                    }, {
-                                        fn: "ScriptEval"
-                                    }
-                                    /* THIS IS NOT A COMMENT
-                                     * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
-                                     */
-                                    , {
-                                        fn: "WebSocketListener",
-                                        cfg: {
-                                            dataSource: "Pusher"
-                                        }
-                                    }
-                                    /* THIS IS NOT A COMMENT
-                                     * </ui:fragment>
-                                     */
-                                ]
-                            },
                             User: {
                                 source: "rest/Extended/User",
                                 initialRequest: "/" + #{requestController.currentUser.id},

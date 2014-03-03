@@ -187,7 +187,7 @@ YUI.add('wegas-plugin', function(Y) {
                 _inputex: {
                     _type: "variableselect",
                     label: "variable",
-                    className: "wegas-advanced-feature"
+                    className: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
         }

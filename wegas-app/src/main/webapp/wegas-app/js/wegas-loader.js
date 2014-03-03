@@ -54,7 +54,6 @@ YUI().use(function(Y) {
                 },
                 'wegas-websocketlistener': {
                     path: 'js/persistence/wegas-websocketlistener-min.js',
-                    requires: 'wegas-pusher-connector',
                     ws_provides: "WebSocketListener"
                 },
                 "wegas-pusher-connector": {
@@ -229,7 +228,7 @@ YUI().use(function(Y) {
                     requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
                         'scrollview-paginator', 'scrollview-scrollbars', 'wegas-gallerycss',
                         'stylesheet', 'event-resize'],
-                    ws_provides: "WegasGallery"
+                    ws_provides: "Gallery"
                 },
                 'wegas-googletranslate': {
                     path: 'js/widget/wegas-googletranslate-min.js',

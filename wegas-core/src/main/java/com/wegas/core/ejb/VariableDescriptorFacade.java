@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class VariableDescriptorFacade extends AbstractFacadeImpl<VariableDescriptor> {
+public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacade.class);
     private static final String DEFAULTVARIABLENAME = "variable";

@@ -12,94 +12,130 @@
 YUI.add("wegas-injector", function(Y) {
     "use strict";
 
-    var MATCHER = "[data-file]",
-            parseHost = function() {
-        this.get("host").get("boundingBox").all(MATCHER).each(Injector.parser);
-        this.instanciateGallery(this.get("host").get("boundingBox"));
-        this.timer = null;
-    },
-            Injector = function(cfg) {
+    var MATCHER = "[data-file]", Injector;
+
+    /**
+     * @name Y.Plugin.Injector
+     * @extends Y.Plugin.Base
+     * @constructor
+     * @description 
+     * 
+     * + light-picture class nodes : "href"|"src" attribute (url) , "title" attribute (description). <br/>
+     *  Create a gallery with all elements with the same data-gallery attribute <br/>
+     * + light-gallery class nodes : child nodes with "href"|"src" attribute (url), "title" attribute (description)
+     */
+    Injector = function() {
         Injector.superclass.constructor.apply(this, arguments);
     };
-
     Y.extend(Injector, Y.Plugin.Base, {
+        /** @lends Y.Plugin.Injector# */
         initializer: function() {
+            this.handlers = [];
+
+            // Add required events to Y.Node 
             Y.mix(Y.Node.DOM_EVENTS, {
-                DOMNodeInserted: true,
-                DOMNodeRemoved: true,
-                DOMCharacterDataModified: true
+                DOMNodeInserted: true
+                        //DOMNodeRemoved: true,
+                        //DOMCharacterDataModified: true
             });
-            this.gallery = false;
-            this.timer;
-            this.insertEvent = this.get("host").get("boundingBox").delegate("DOMNodeInserted", function(e) {
-                e.halt(true);
+
+            // data-file attribute injection
+            var bb = this.get("host").get("boundingBox");
+            this.handlers.push(bb.on("DOMNodeInserted", function(e) {
                 if (this.timer) {
                     this.timer.cancel();
                 }
-                this.timer = Y.later(100, this, parseHost);
-//                e.currentTarget.all(MATCHER).each(Injector.parser);
-//                this.instanciateGallery(e.currentTarget);
-            }, '*', this);
-            /*function(item) {
-             return (item.all(MATCHER).size() > 0);
-             }*/
+                this.timer = Y.later(100, this, function() {
+                    bb.all(MATCHER).each(Injector.parser);                      // Transform data-file attribute to src/href attribute
+                    this.timer = null;
+                });
+            }, this));
+            //this.afterHostEvent("*:render", function(e) {
+            //    e.currentTarget.get("boundingBox").all(MATCHER).each(Injector.parser);// Transform data-file attribute to src/href attribute
+            //}, this);
 
-            this.afterHostEvent("*:render", function(e) {
-                var bb = e.currentTarget.get("boundingBox");
-                bb.all(MATCHER).each(Injector.parser);
-                this.instanciateGallery(bb);
-            }, this);
-        },
-        instanciateGallery: function(element) {
-            /* Check for gallery elements and loads it*/
-            if (!this.gallery && (element.one(".light-picture") || element.one(".light-gallery"))) {
-                if (!Injector.GALLERY) {
-                    Y.use("wegas-gallery", function() {
-                        Injector.GALLERY = new Y.Wegas.WegasGallery({
-                            lightGallery: true
+            // Load gallery on .light-gallery click
+            this.handlers.push(Y.one("body").delegate("click", function(e) {
+                var link, gallery = [];
+                e.halt(true);
+                e.target.get("children").each(function() {
+                    link = this.get("href") || this.get("src");
+                    if (link) {
+                        gallery.push({
+                            srcUrl: link,
+                            description: this.get("title")
                         });
-                    });
+                    }
+                });
+                this.instantiateGallery(gallery);
+            }, '.light-gallery', this));
+
+            // Load gallery on .light-picture click
+            this.handlers.push(Y.one("body").delegate("click", function(e) {
+                var gallery = [], index,
+                        link = e.target.get("href") || e.target.get("src");
+                e.halt(true);
+                if (link) {
+                    if (e.target.hasAttribute("data-gallery")) {                // Group same data-gallery together 
+                        Y.all("[data-gallery='" + e.target.getAttribute("data-gallery") + "']").each(function(item, i) {
+                            if (item === e.target) {
+                                index = i;
+                            }
+                            gallery.push({
+                                srcUrl: item.get("href") || item.get("src"),
+                                description: item.get("title")
+                            });
+                        });
+                        this.instanciateGallery(gallery, index);
+                    } else {
+                        this.instanciateGallery([{
+                                srcUrl: link,
+                                description: e.target.get("title")
+                            }]);
+                    }
                 }
-                Injector.GALLERY_COUNTER += 1;
-                this.gallery = true;
-            }
+            }, '.light-picture', this));
+        },
+        /**
+         * 
+         * @param {Array} gallery
+         * @param {number} index
+         */
+        instanciateGallery: function(gallery, index) {
+            Y.use("wegas-gallery", function() {                                 // Lazy load gallery
+                if (!Injector.Gallery) {                                        // Singleton pattern
+                    Injector.Gallery = new Y.Wegas.Gallery({//                  // Create gallery
+                        lightGallery: true,
+                        fullScreen: true
+                    });
+                    Injector.Gallery.render();                                  // and render it
+                }
+                Injector.Gallery.set("gallery", gallery);                       // Set the new set of pictures
+                if (index) {
+                    Injector.Gallery.scrollView.pages.scrollToIndex(index);     // Scroll to current picture node
+                }
+            });
         },
         destructor: function() {
-            this.insertEvent.detach();
             if (this.timer) {
                 this.timer.cancel();
             }
-            if (this.gallery && Injector.GALLERY) {
-                Injector.GALLERY_COUNTER -= 1;
-                if (Injector.GALLERY_COUNTER === 0) {
-                    Injector.GALLERY.destroy();
-                }
-            }
+            Y.Array.each(this.handlers, function(h) {
+                h.detach();
+            });
         }
     }, {
+        /** @lends Y.Plugin.Injector */
         NAME: "Injector",
         NS: "injector",
-        GALLERY: null,
-        GALLERY_COUNTER: 0,
-        ATTRS: {},
         parser: function(element) {
-            switch (element.getDOMNode().nodeName) {
-                case "IMG":
-                    if (!element.hasAttribute("src") || !element.getAttribute("src").match("^(https?://)")) {
-                        element.setAttribute("src",
-                                Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"));
-                        element.removeAttribute("data-file");
-                    }
-                    break;
-                default:
-                    if (!element.hasAttribute("href") || !element.getAttribute("href").match("^(https?://)")) {
-                        element.setAttribute("href",
-                                Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"));
-                        element.removeAttribute("data-file");
-                    }
+            var attr = (element.get("nodeName") === "IMG") ? "src" : "href";
+
+            if (!element.hasAttribute(attr) || !element.get(attr).match("^(https?://)")) {
+                element.set(attr, Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"))
+                        .removeAttribute("data-file");
             }
         }
     });
     Y.Plugin.Injector = Injector;
-
 });

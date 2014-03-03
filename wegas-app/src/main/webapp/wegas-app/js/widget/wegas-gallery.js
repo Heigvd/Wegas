@@ -12,32 +12,25 @@
 
 YUI.add("wegas-gallery", function(Y) {
     "use strict";
-    var WegasGallery,
+    var Gallery,
             CONTENT_BOX = "contentBox",
             BOUNDING_BOX = "boundingBox";
-    /*
+
+    /**
      * ATTRS:<br/>
      * gallery: {Array} an array of picture to display, format : {srcUrl: ...[, description: ...]}
      * fullScreen : {Boolean} toggles fullScreen<br/>
      * lightGallery : {Boolean} An instance which will read DOM for "light-picture" or "light-gallery" classes<br/>
-     * <br/>
-     * *light-picture class nodes : "href"|"src" attribute (url) , "title" attribute (description). <br/>
-     *  Create a gallery with all elements with the same data-gallery attribute <br/>
-     * *light-gallery class nodes : child nodes with "href"|"src" attribute (url), "title" attribute (description)
-     */
-    /**
-     * @name Y.Wegas.WegasGallery
+     * 
+     * @name Y.Wegas.Gallery
      * @extends Y.Widget
      * @borrows Y.Wegas.Widget
      * @class class to display image in lightbox
      * @constructor
      * @description Display image in lightbox with classic lightbox functions
      */
-    WegasGallery = Y.Base.create("wegas-gallery", Y.Widget, [], {
-        /**
-         * @lends Y.Wegas.WegasGallery#
-         */
-// *** Private fields *** //
+    Gallery = Y.Base.create("wegas-gallery", Y.Widget, [], {
+        /** @lends Y.Wegas.Gallery# */
         /**
          * Content box of this widget, static
          * @field
@@ -45,55 +38,48 @@ YUI.add("wegas-gallery", function(Y) {
          */
         CONTENT_TEMPLATE: "<ul></ul>",
         /**
-         * Store reference to fullscreen node
-         * @field
-         * @private
-         */
-        FULLSCREENNODE: null,
-        /**
-         * Reference to the ScrollView widget
-         * @field
-         * @private
-         */
-        scrollView: null,
-        /**
-         * Current display mode of this widget (boolean fullscreen)
-         * @field
-         * @private
-         */
-        isFullScreen: false,
-        /**
-         * Reference to each used functions
-         * @field
-         * @private
-         */
-        handlers: null,
-        /**
-         * image loaded in the widget
-         * @field
-         * @private
-         */
-        images: null,
-        /**
          * @function
          * @private
          * @description Set variables with initials values.
          * Create a ScrollView
          */
         initializer: function() {
-            if (!this.constructor.prototype.FULLSCREENNODE) {
-                this.constructor.prototype.FULLSCREENNODE = new Y.Node.create("<div class='gallery-fullscreen'><span><span></div>");
-                this.constructor.prototype.FULLSCREENNODE.appendTo(Y.one("body"));
-                this.constructor.prototype.FULLSCREENNODE.on('contextmenu', function(e) {
-                    e.preventDefault();
-                });
-                this.constructor.prototype.FULLSCREENNODE = this.FULLSCREENNODE.get("firstChild");
+            /**
+             * Store reference to fullscreen node
+             * @field
+             * @private
+             */
+            if (!Gallery.FULLSCREENNODE) {                                 // Init singleton full screen node
+                Gallery.FULLSCREENNODE = new Y.Node.create("<div class='gallery-fullscreen'><span></span></div>");
+                Gallery.FULLSCREENNODE.appendTo(Y.one("body"));
+                //Gallery.FULLSCREENNODE.on('contextmenu', function(e) {
+                //    e.preventDefault();
+                //});
+                Gallery.FULLSCREENNODE = Gallery.FULLSCREENNODE.get("firstChild");
             }
-
+            /**
+             * image loaded in the widget
+             * @field
+             * @private
+             */
             this.images = {};
+            /**
+             * Reference to each used functions
+             * @field
+             * @private
+             */
             this.handlers = [];
+            /**
+             * Current display mode of this widget (boolean fullscreen)
+             * @field
+             * @private
+             */
             this.isFullScreen = false;
-
+            /**
+             * Reference to the ScrollView widget
+             * @field
+             * @private
+             */
             this.scrollView = new Y.ScrollView({
                 width: (parseInt(this.get("selectedWidth")) + 30),
                 srcNode: this.get(BOUNDING_BOX),
@@ -102,11 +88,6 @@ YUI.add("wegas-gallery", function(Y) {
                 bounce: 0,
                 drag: false
             });
-            if (this.get("lightGallery")) {
-                this.set("render", "body");
-                this.set("gallery", []);
-                this.render();
-            }
 
             Y.StyleSheet.register(new Y.StyleSheet(), this.get("id"));
         },
@@ -116,11 +97,11 @@ YUI.add("wegas-gallery", function(Y) {
          * @description Render DOM skeleton of this widget.
          */
         renderUI: function() {
-// LAZY init
-            this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-left'><div></div></div>");
-            this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-right'><div></div></div>");
-            this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-toggle'></div>");
-            this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-scroll-indicator'></div>");
+            // LAZY init
+            this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-left'><div></div></div>"
+                    + "<div class='gallery-mask gallery-mask-right'><div></div></div>"
+                    + "<div class='gallery-toggle'></div>"
+                    + "<div class='gallery-scroll-indicator'></div>");
             this.get(CONTENT_BOX).appendChild("<li class='img-loading'></li>");
             if (this.get("lightGallery")) {
                 this.scrollView.get(BOUNDING_BOX).addClass("wegas-lightGallery");
@@ -137,40 +118,36 @@ YUI.add("wegas-gallery", function(Y) {
          *  @returns {undefined}
          */
         syncUI: function() {
-            var galleryId,
-                    selW,
-                    selH,
-                    smaH,
-                    smaW,
-                    container,
-                    styleSheet = Y.StyleSheet(this.get("id"));
             if (!this.scrollView.get("rendered")) {
                 return;
             }
-            this.set("selectedWidth", this.get("selectedWidth"));
-            this.set("selectedHeight", this.get("selectedHeight"));
-            galleryId = "#" + this.scrollView.get("id") + " ", // prefix css with id, allow multiple instance with different style
+            var smaH, smaW, container,
                     selW = parseInt(this.get("selectedWidth")),
                     selH = this.get("selectedHeight"),
-                    smaH,
-                    smaW;
+                    galleryId = "#" + this.scrollView.get("id") + " ", // prefix css with id, allow multiple instance with different style
+                    styleSheet = Y.StyleSheet(this.get("id")),
+                    bb = this.scrollView.get(BOUNDING_BOX);
+
+            this.set("selectedWidth", this.get("selectedWidth"));
+            this.set("selectedHeight", selH);
+
             if (styleSheet) {
                 styleSheet.disable();
             }
             if (this.get("fullScreen") || this.get("lightGallery")) {
-                selH = (Y.one("body").get("winHeight") - 100);
+                selH = Y.one("body").get("winHeight") - 100;
                 selW = Y.one("body").get("winWidth") / 1.7;
                 if (!this.isFullScreen) {
                     this.isFullScreen = true;
-                    this.scrollView.get(BOUNDING_BOX).swap(this.FULLSCREENNODE);
+                    bb.swap(Gallery.FULLSCREENNODE);
                 }
             } else {
                 if (this.isFullScreen) {
                     this.isFullScreen = false;
-                    this.scrollView.get(BOUNDING_BOX).swap(this.FULLSCREENNODE);
+                    bb.swap(Gallery.FULLSCREENNODE);
                 }
             }
-            container = this.scrollView.get(BOUNDING_BOX).get("parentNode");
+            container = bb.get("parentNode");
             smaW = (parseInt(container.getComputedStyle("width")) - selW - 90) / 2;
             smaH = selH * 0.5;
             //smaW = selW * 0.6;
@@ -188,7 +165,7 @@ YUI.add("wegas-gallery", function(Y) {
             styleSheet.set(galleryId + ".wegas-gallery .gallery-selected img", {"max-width": selW + "px", "max-height": selH + "px"});
 
             styleSheet.enable();
-            this.scrollView.get(BOUNDING_BOX).setStyles({
+            bb.setStyles({
                 padding: "0 " + (smaW + 45) + "px 0 " + (smaW + 15) + "px"
             });
             this.scrollView.syncUI();
@@ -220,30 +197,33 @@ YUI.add("wegas-gallery", function(Y) {
          */
         bindUI: function() {
             /* CLICK events */
-            this.scrollView.get(BOUNDING_BOX).one(".gallery-scroll-indicator").delegate("click", function(e) {
+            var bb = this.scrollView.get(BOUNDING_BOX);
+            bb.one(".gallery-scroll-indicator").delegate("click", function(e) {
                 e.halt(true);
                 this.scrollView.pages.scrollToIndex(+e.currentTarget.getData("index"));
             }, "span", this);
-            this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-left').on("click", function(e) {
+            bb.one('.gallery-mask-left > div').on("click", function(e) {
                 e.halt(true);
                 this.prev();
             }, this);
-            this.scrollView.get(BOUNDING_BOX).one('.gallery-mask-right').on("click", function(e) {
+            bb.one('.gallery-mask-right > div').on("click", function(e) {
                 e.halt(true);
                 this.next();
             }, this);
-            this.scrollView.get(BOUNDING_BOX).one('.gallery-toggle').on("click", function(e) {
+            bb.one('.gallery-toggle').on("click", function(e) {
                 e.halt(true);
                 this.set("fullScreen", !this.get("fullScreen"));
             }, this);
-            this.handlers.push(this.get(CONTENT_BOX).delegate("click", function(e) {
-                e.halt(true);
-                this.set("fullScreen", true);
-            }, "li > *", this));
-            this.handlers.push(this.scrollView.get(BOUNDING_BOX).on("click", function(e) {
+            this.get(CONTENT_BOX).delegate("click", function(e) {
+                if (!this.get("fullScreen")) {
+                    e.halt(true);
+                    this.set("fullScreen", true);
+                }
+            }, "li > *", this);
+            bb.on("click", function(e) {
                 e.halt(true);
                 this.set("fullScreen", false);
-            }, this));
+            }, this);
             /* SYSTEM events */
             this.scrollView.after("scrollEnd", function(e) {
                 Y.later(50, this, function() {                                  // Let some time before loading next one
@@ -258,60 +238,13 @@ YUI.add("wegas-gallery", function(Y) {
             }, this);
             this.after("fullScreenChange", function(e) {
                 if (this.get("lightGallery")) {
-                    if (this.get("fullScreen")) {
-                        this.scrollView.show();
-                    } else {
-                        this.scrollView.hide();
-                    }
+                    this.scrollView.set("visible", this.get("fullScreen"));
                 } else {
                     this.syncUI();
                 }
             });
             this.handlers.push(Y.on("windowresize", Y.bind(this.windowResizeEvent, this)));
             this.after("galleryChange", this.galleryChangeEvent);
-            /* LIGHTMODE events */
-            if (this.get("lightGallery")) {
-                this.handlers.push(Y.one("body").delegate("click", function(e) {
-                    var children, gallery = [];
-                    e.halt(true);
-                    children = e.target.get("children");
-                    children.each(function() {
-                        if (this.getAttribute("href") || this.getAttribute("src")) {
-                            gallery.push({
-                                srcUrl: this.getAttribute("href") || this.getAttribute("src"),
-                                description: this.getAttribute("title")
-                            });
-                        }
-                    });
-                    this.set("fullScreen", true);
-                    this.set("gallery", gallery);
-                }, '.light-gallery', this));
-                this.handlers.push(Y.one("body").delegate("click", function(e) {
-                    var gallery = [], index;
-                    e.halt(true);
-                    if (e.target.getAttribute("href") || e.target.getAttribute("src")) {
-                        this.set("fullScreen", true);
-                        if (e.target.hasAttribute("data-gallery")) {            /* group same data-gallery together */
-                            Y.all("[data-gallery='" + e.target.getAttribute("data-gallery") + "']").each(function(item, i) {
-                                if (item === e.target) {
-                                    index = i;
-                                }
-                                gallery.push({
-                                    srcUrl: item.getAttribute("href") || item.getAttribute("src"),
-                                    description: item.getAttribute("title")
-                                });
-                            });
-                            this.set("gallery", gallery);
-                            this.scrollView.pages.scrollToIndex(index);
-                        } else {
-                            this.set("gallery", [{
-                                    srcUrl: e.target.getAttribute("href") || e.target.getAttribute("src"),
-                                    description: e.target.getAttribute("title")
-                                }]);
-                        }
-                    }
-                }, '.light-picture', this));
-            }
         },
         galleryChangeEvent: function(event) {
             if (event.newVal.length > 0) {
@@ -346,9 +279,9 @@ YUI.add("wegas-gallery", function(Y) {
             if (Y.StyleSheet(this.get("id"))) {
                 Y.StyleSheet(this.get("id")).disable();
             }
-            for (var i = 0; i < this.handlers.length; i = i + 1) {
-                this.handlers[i].detach();
-            }
+            Y.Array.each(this.handlers, function(h) {
+                h.detach();
+            });
             this.scrollView.destroy();
         },
         // *** Private Methods *** //
@@ -358,12 +291,12 @@ YUI.add("wegas-gallery", function(Y) {
          * @returns {undefined}
          */
         genScrollIndicator: function() {
-            var container = this.scrollView.get(BOUNDING_BOX).one(".gallery-scroll-indicator"), i;
+            var container = this.scrollView.get(BOUNDING_BOX).one(".gallery-scroll-indicator");
             container.empty();
             if (this.get("gallery").length > 1) {
-                for (i = 0; i < this.get("gallery").length; i += 1) {
-                    container.append("<span data-index='" + i + "'></span>");
-                }
+                container.append(Y.Array.map(this.get("gallery"), function(item, i) {
+                    return "<span data-index='" + i + "'></span>";
+                }).join(""));
                 this.setSelected(+this.scrollView.pages.get("index"));
             }
         },
@@ -404,37 +337,29 @@ YUI.add("wegas-gallery", function(Y) {
          *  existence of a next/previous picture.
          */
         setSelected: function(index) {
-            var list = this.get(CONTENT_BOX).all("li");
-            list.each(function() {
-                this.removeClass("gallery-selected");
-                this.removeClass("gallery-before-selected");
-            });
+            var bb = this.scrollView.get(BOUNDING_BOX),
+                    list = this.get(CONTENT_BOX).all("li");
+
+            index = +index;
+
+            list.removeClass("gallery-selected")
+                    .removeClass("gallery-before-selected");
+
             if (+index > 0) {
                 list.item(index - 1).addClass("gallery-before-selected");
-                this.scrollView.get(BOUNDING_BOX).one(".gallery-mask-left > div").show();
-            } else {
-                this.scrollView.get(BOUNDING_BOX).one(".gallery-mask-left > div").hide();
             }
-            if (+index === list.size() - 1) {
-                this.scrollView.get(BOUNDING_BOX).one(".gallery-mask-right > div").hide();
-            } else {
-                this.scrollView.get(BOUNDING_BOX).one(".gallery-mask-right > div").show();
-            }
-            if (list.size() > +index) {
+            bb.one(".gallery-mask-left > div").toggleView(+index > 0);
+            bb.one(".gallery-mask-right > div").toggleView(index !== list.size() - 1);
+
+            if (list.size() > index) {
                 list.item(index).addClass("gallery-selected");
             }
-            if (this.images[+index] && !this.images[+index].loaded) {
-                this.loadImage(+index);
+            if (this.images[index] && !this.images[index].loaded) {
+                this.loadImage(index);
             }
-            this.scrollView.get(BOUNDING_BOX).one(".gallery-scroll-indicator").all("span").each(function(item, id) {
-                if (+index === id) {
-                    item.addClass("gallery-current-index");
-                } else {
-                    item.removeClass("gallery-current-index");
-                }
+            bb.one(".gallery-scroll-indicator").all("span").each(function(item, i) {
+                item.toggleClass("gallery-current-index", index === i);
             });
-
-
         },
         /**
          * @function
@@ -443,29 +368,31 @@ YUI.add("wegas-gallery", function(Y) {
          * @description load selected image or display error's image if an error
          * occur.
          */
-        loadImage: function(i) {
-            var img;
-            if (this.get(CONTENT_BOX).all("li").item(i).hasChildNodes()) {
+        loadImage: function(index) {
+            var target = this.get(CONTENT_BOX).all("li").item(index),
+                    cfg = this.get("gallery")[index],
+                    img = Y.Node.create("<img src='" + cfg.srcUrl + "' />");
+
+            if (target.hasChildNodes()) {
                 return;
             }
-            img = Y.Node.create("<img src='" + this.get("gallery")[i].srcUrl + "' ></img>");
-            img.index = i;
+            img.index = index;
             img.once("error", function(e) {
                 e.target.get("parentNode").setStyles({
-                    background: "url('../../wegas-app/images/wegas-icon-error-48.png') no-repeat 50%"
+                    background: "url('wegas-app/images/wegas-icon-error-48.png') no-repeat 50%"
                 });
             });
             img.once("load", function(e) {
                 e.target.get("parentNode").removeClass("img-loading");
                 this.images[e.target.index].loaded = true;
             }, this);
-            this.get(CONTENT_BOX).all("li").item(i).appendChild(img);
-            if (this.get("gallery")[i].description) {
-                this.get(CONTENT_BOX).all("li").item(i).appendChild("<div class='gallery-text'>" + this.get("gallery")[i].description + "</div>");
+            target.appendChild(img);
+            if (cfg.description) {
+                target.appendChild("<div class='gallery-text'>" + cfg.description + "</div>");
             }
         }
     }, {
-        /** @lends Y.Wegas.WegasGallery */
+        /** @lends Y.Wegas.Gallery */
         CSS_PREFIX: "wegas-gallery",
         /**
          * @field
@@ -546,23 +473,19 @@ YUI.add("wegas-gallery", function(Y) {
 
         }
     });
-    Y.namespace("Wegas.util").WegasGallery = WegasGallery;
+    Y.namespace("Wegas.util").Gallery = Gallery;
+
     /**
-     * Editable Gallery
-     */
-    Y.Wegas.Gallery = Y.Base.create("wegas-gallery", WegasGallery, [Y.Wegas.Widget, Y.Wegas.Editable], {}, {});
-    /**
-     * @name Y.Wegas.FileExplorerGallery
-     * @extends Y.Wegas.WegasGallery
+     * @name Y.Wegas.FileLibraryGallery
+     * @extends Y.Wegas.Gallery
      * @class class to create a loader-image
      * @constructor
      * @description create a loader-image and remove them when wanted image
      *  is loaded.
      */
-    var FileExplorerGallery = Y.Base.create("wegas-gallery", WegasGallery, [], {
-        /** @lends Y.Wegas.FileExplorerGallery */
-
-// *** Private Methods *** //
+    var FileLibraryGallery = Y.Base.create("wegas-gallery", Gallery, [], {
+        /** @lends Y.Wegas.FileLibraryGallery */
+        // *** Private Methods *** //
         /**
          * @function
          * @private
@@ -599,6 +522,14 @@ YUI.add("wegas-gallery", function(Y) {
             }, this);
             this.get(CONTENT_BOX).all("li").item(i).appendChild(img);
         }
-    }, {CSS_PREFIX: "wegas-gallery"});
-    Y.namespace("Wegas.util").FileExplorerGallery = FileExplorerGallery;
+    }, {
+        CSS_PREFIX: "wegas-gallery"
+    });
+    Y.namespace("Wegas.util").FileLibraryGallery = FileLibraryGallery;
+
+    /**
+     * Editable Gallery
+     */
+    Y.Wegas.Gallery = Y.Base.create("wegas-gallery", Gallery, [Y.Wegas.Widget, Y.Wegas.Editable], {}, {});
+
 });

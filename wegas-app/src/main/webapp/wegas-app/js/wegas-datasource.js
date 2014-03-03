@@ -54,17 +54,24 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         sendInitialRequest: function(cfg) {
-            cfg = cfg || {};
-            if (this.get("initialRequest") !== undefined) {                     // Use this condition to allow empty strings (e.g. ")
-                return this.sendRequest(Y.mix(cfg, {
+            if (!Y.Lang.isUndefined(this.get("initialRequest"))) {               // Use this condition to allow empty strings (e.g. ")
+                return this.sendRequest(Y.mix(cfg || {}, {
                     request: this.get("initialRequest"),
                     cfg: {
                         initialRequest: true
                     }
                 }));
-            } else {
-                return null;
+            } else if (!Y.Lang.isUndefined(this.get("initialFullRequest"))) {
+                return this.sendRequest(Y.mix(cfg || {}, {
+                    cfg: {
+                        fullUri: Y.Wegas.app.get("base") + this.get("initialFullRequest"),
+                        initialRequest: true
+                    }
+                }));
             }
+        },
+        hasInitialRequest: function() {
+            return !Y.Lang.isUndefined(this.get("initialRequest")) || !Y.Lang.isUndefined(this.get("initialFullRequest"));
         },
         /**
          * Server requests methods
@@ -80,7 +87,7 @@ YUI.add('wegas-datasource', function(Y) {
             if (request.cfg.method && Lang.isObject(request.cfg.data)) {        // Stringify data if required
                 request.cfg.data = Y.JSON.stringify(request.cfg.data);
             }
-            return Y.Wegas.DataSource.superclass.sendRequest.call(this, request);
+            return Wegas.DataSource.superclass.sendRequest.call(this, request);
         },
     }, {
         /** @lends Y.Wegas.DataSource */
@@ -90,7 +97,8 @@ YUI.add('wegas-datasource', function(Y) {
          * @static
          */
         ATTRS: {
-            initialRequest: {}
+            initialRequest: {},
+            initialFullRequest: {}
         },
         abort: function(tId) {
             if (Y.DataSource.Local.transactions[tId]) {

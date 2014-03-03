@@ -7,7 +7,7 @@
  */
 package com.wegas.core.security.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.Role_;
@@ -26,7 +26,7 @@ import javax.persistence.criteria.Root;
  */
 @Stateless
 @LocalBean
-public class RoleFacade extends AbstractFacadeImpl<Role> {
+public class RoleFacade extends BaseFacade<Role> {
 
     /**
      *

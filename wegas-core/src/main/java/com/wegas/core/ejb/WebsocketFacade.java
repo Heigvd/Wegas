@@ -36,6 +36,15 @@ public class WebsocketFacade {
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
 
+    /**
+     *
+     * @param filter
+     * @param entityType
+     * @param entityId
+     * @param data
+     * @return
+     * @throws IOException
+     */
     public String send(String filter, String entityType, String entityId, String data) throws IOException {
         Pusher p = new Pusher();
         return Pusher.triggerPush(entityType + "-" + entityId, filter, data);

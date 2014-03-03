@@ -25,7 +25,7 @@ import javax.persistence.Query;
  */
 @Stateless
 @LocalBean
-public class TeamFacade extends AbstractFacadeImpl<Team> {
+public class TeamFacade extends BaseFacade<Team> {
 
     /**
      *

@@ -19,11 +19,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 /**
+ * This is the default implementation of the AbstractFacade pattern defined in
+ * Wegas, to be extended.
  *
  * @param <T>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements AbstractFacade<T> {
+public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFacade<T> {
 
     /**
      *
@@ -34,7 +36,7 @@ public abstract class AbstractFacadeImpl<T extends AbstractEntity> implements Ab
      *
      * @param entityClass
      */
-    public AbstractFacadeImpl(final Class<T> entityClass) {
+    public BaseFacade(final Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
