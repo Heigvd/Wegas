@@ -84,7 +84,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.showOverlay();
                 this.dataSource.sendRequest({
                     request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
-                            + "/Player/" + Y.Wegas.app.get('currentPlayer'),
+                            + "/Player/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: "POST"
                     },

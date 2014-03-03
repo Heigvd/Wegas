@@ -331,7 +331,7 @@ YUI.add('wegas-editor-action', function(Y) {
             var entity = this.get("entity"),
                     findInTeam = function(team) {
                 return Y.Array.find(team.get("players"), function(p) {
-                    return p.get("userId") === Y.Wegas.app.get("currentUser");
+                    return p.get("userId") === Y.Wegas.Facade.User.get("currentUserId");
                 });
             }, findInGame = function(game) {
                 return Y.Array.find(game.get("teams"), findInTeam);

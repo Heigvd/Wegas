@@ -30,7 +30,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.VariableDescriptor = Base.create("VariableDescriptor", persistence.Entity, [], {
         getInstance: function(player) {
-            var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.app.get('currentPlayer');
+            var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.Facade.Game.get('currentPlayerId');
             return this.get("scope").getInstance(playerId);
         },
         getLabel: function() {
@@ -176,7 +176,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.GameScope = Base.create("GameScope", persistence.Scope, [], {
         getInstance: function() {
-            return this.get("variableInstances")["" + Wegas.app.get('currentGame')];
+            return this.get("variableInstances")["" + Wegas.Facade.Game.get('currentGameId')];
         }
     }, {
         ATTRS: {
@@ -191,7 +191,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.TeamScope = Base.create("TeamScope", persistence.Scope, [], {
         getInstance: function(playerId) {
-            return this.get("variableInstances")[Wegas.app.get('currentTeam')];
+            return this.get("variableInstances")[Wegas.Facade.Game.get('currentTeamId')];
         }
     }, {
         ATTRS: {

@@ -262,7 +262,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         sendRunRequest: function(code, interpreterCfg) {
             interpreterCfg = interpreterCfg || {};
             Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/ProgGame/Run/" + Wegas.app.get('currentPlayer'),
+                request: "/ProgGame/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: "run("
@@ -400,7 +400,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         doNextLevel: function() {
             Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/ProgGame/Run/" + Wegas.app.get('currentPlayer'),
+                request: "/ProgGame/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: this.get("onWin") + ";VariableDescriptorFacade.find(gameModel, \"money\").add(self, 100);"

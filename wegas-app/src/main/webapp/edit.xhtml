@@ -45,11 +45,6 @@
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
-                        currentGameModel: #{editorGameController.currentGameModel.id},
-                        currentGame: #{editorGameController.currentGame.id},
-                        currentTeam: #{editorGameController.currentPlayer.team.id},
-                        currentPlayer: #{editorGameController.currentPlayer.id},
-                        currentUser: #{requestController.currentUser.id},
                         dataSources: {
                             VariableDescriptor: {
                                 source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
@@ -93,21 +88,32 @@
                                 source: "rest/Editor/GameModel",
                                 initialRequest: "/#{editorGameController.currentGameModel.id}",
                                 plugins: [{
-                                        fn: "GameModelCache"
+                                        fn: "GameModelCache",
+                                        cfg: {
+                                            currentGameModelId: #{editorGameController.currentGameModel.id}
+                                        }
                                     }]
                             },
                             Game: {
                                 source: "rest/Public/GameModel/#{editorGameController.currentGameModel.id}/Game",
                                 initialRequest: "/#{editorGameController.currentGame.id}",
                                 plugins: [{
-                                        fn: "GameCache"
+                                        fn: "GameCache",
+                                        cfg: {
+                                            currentGameId: #{editorGameController.currentGame.id},
+                                            currentTeamId: #{editorGameController.currentPlayer.team.id},
+                                            currentPlayerId: #{editorGameController.currentPlayer.id}
+                                        }
                                     }]
                             },
                             User: {
                                 source: "rest/Extended/User",
                                 initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
-                                        fn: "UserCache"
+                                        fn: "UserCache",
+                                        cfg: {
+                                            currentUserId: #{requestController.currentUser.id}
+                                        }
                                     }]
                             },
                             Role: {
@@ -148,15 +154,17 @@
                         }
                     });
 
-                    app.after('currentPlayerChange', function() {               // Whenever the current player id changes
+                    app.render();                                               // Render app
+
+                    Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function() {// Whenever the current player id changes
                         var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
 
-                        this.set('currentTeam', player.get("teamId"));          // Update current teamid
+                        this.set('currentTeamId', player.get("teamId"));        // Update current teamid
 
                         Y.Wegas.Facade.VariableDescriptor.set("source",
                                 //this.get("base") + "rest/EditorPrivate/" + player.get("id")
                                 this.get("base") + "rest/Private/" + player.get("id")
-                                + "/GameModel/" + this.get("currentGameModel")
+                                + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
                                 + "/VariableDescriptor");                       // Retrieve variable instances for the new player
 
                         var preview = Y.Widget.getByNode(".editor-preview");    // Show a loading overlay in the Preview tab during the request
@@ -164,7 +172,6 @@
                         Y.Wegas.Facade.VariableDescriptor.once("response", preview.hideOverlay, preview);
                     });
 
-                    app.render();                                               // Render app
 
                     /**
                      * THIS IS NOT A COMMENT !!!

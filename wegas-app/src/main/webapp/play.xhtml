@@ -26,11 +26,6 @@
             <script type="text/javascript">
                 YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
-                        currentGameModel: #{gameController.currentGameModel.id},
-                        currentGame: #{gameController.currentGame.id},
-                        currentTeam: #{gameController.currentPlayer.team.id},
-                        currentPlayer: #{gameController.currentPlayer.id},
-                        currentUser: #{requestController.currentUser.id},
                         dataSources: {
                             VariableDescriptor: {
                                 source: "rest/Private/#{gameController.currentPlayer.id}/GameModel/#{gameController.currentGameModel.id}/VariableDescriptor",
@@ -74,14 +69,22 @@
                                 source: "rest/GameModel",
                                 initialRequest: "/#{gameController.currentGameModel.id}",
                                 plugins: [{
-                                        fn: "GameModelCache"
+                                        fn: "GameModelCache",
+                                        cfg: {
+                                            currentGameModelId: #{gameController.currentGameModel.id}
+                                        }
                                     }]
                             },
                             Game: {
                                 source: "rest/GameModel/#{gameController.currentGameModel.id}/Game",
                                 initialRequest: "/#{gameController.currentGame.id}",
                                 plugins: [{
-                                        fn: "GameCache"
+                                        fn: "GameCache",
+                                        cfg: {
+                                            currentGameId: #{gameController.currentGame.id},
+                                            currentTeamId: #{gameController.currentPlayer.team.id},
+                                            currentPlayerId: #{gameController.currentPlayer.id}
+                                        }
                                     }
                                 ]
                             },
@@ -100,7 +103,10 @@
                                 source: "rest/Extended/User",
                                 initialRequest: "/" + #{requestController.currentUser.id},
                                 plugins: [{
-                                        fn: "UserCache"
+                                        fn: "UserCache",
+                                        cfg: {
+                                            currentUserId: #{requestController.currentUser.id}
+                                        }
                                     }]
                             },
                             File: {
@@ -114,7 +120,7 @@
 
                     app.after("render", function() {
                         try {
-                            #{gameController.clientScripts}                     // Add game model specific js footer
+                            #{gameController.clientScripts}                     // Run game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }

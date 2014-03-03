@@ -18,8 +18,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
      * @param {Object} config, requires applicationKey
      * @returns {Instance}
      */
-    var EVENT_PREFIX = "pusherConnector",
-            PusherDataSource = function() {
+    var PusherDataSource = function() {
         PusherDataSource.superclass.constructor.apply(this, arguments);
     };
 
@@ -51,9 +50,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
                     Y.log("Pusher daily limit", "error", "Y.Wegas.util.PusherConnector");
                 }
             });
-            this.gameChannel = this.pusher.subscribe('Game-' + Y.Wegas.app.get("currentGame"));
-            this.teamChannel = this.pusher.subscribe('Team-' + Y.Wegas.app.get("currentTeam"));
-            this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.app.get("currentPlayer"));
+            this.gameChannel = this.pusher.subscribe('Game-' + Y.Wegas.Facade.Game.get("currentGameId"));
+            this.teamChannel = this.pusher.subscribe('Team-' + Y.Wegas.Facade.Game.get("currentTeamId"));
+            this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.Facade.Game.get("currentPlayerId"));
             this.pusher.bind_all(Y.bind(this.eventReceived, this));
         },
         /**
@@ -82,11 +81,11 @@ YUI.add('wegas-pusher-connector', function(Y) {
         triggerCustomEvent: function(channel, data, event) {
             var id;
             if (channel === "Game") {
-                id = Y.Wegas.app.get("currentGame");
+                id = Y.Wegas.Facade.Game.get("currentGameId");
             } else if (channel === "Team") {
-                id = Y.Wegas.app.get("currentTeam");
+                id = Y.Wegas.Facade.Game.get("currentTeamId");
             } else {
-                id = Y.Wegas.app.get("currentPlayer");
+                id = Y.Wegas.Facade.Game.get("currentPlayerId");
             }
             this.sendRequest({
                 request: "Send/" + channel + "/" + id + "/" + event,

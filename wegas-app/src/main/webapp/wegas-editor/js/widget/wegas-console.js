@@ -34,7 +34,7 @@ YUI.add('wegas-console', function(Y) {
         executeScript: function(scriptEntity) {
             this.showOverlay();
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify(scriptEntity)

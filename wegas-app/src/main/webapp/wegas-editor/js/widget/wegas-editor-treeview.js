@@ -218,7 +218,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     return {
                         type: 'TreeNode',
                         collapsed: !expanded,
-                        selected: entity.get("id") === Wegas.app.get("currentTeam") ? 2 : 0,
+                        selected: entity.get("id") === Wegas.Facade.Game.get('currentTeamId') ? 2 : 0,
                         //selected: selected,
                         label: entity.get(NAME),
                         children: children,
@@ -231,7 +231,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 case 'Player':
                     return {
                         label: entity.get(NAME),
-                        selected: entity.get("id") === Wegas.app.get("currentPlayer") ? 2 : 0,
+                        selected: entity.get("id") === Wegas.Facade.Game.get('currentPlayerId') ? 2 : 0,
                         // selected: selected,
                         data: {
                             entity: entity
