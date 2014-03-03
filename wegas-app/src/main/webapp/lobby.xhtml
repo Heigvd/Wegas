@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <ui:composition template="/wegas-app/view/template/app-default.xhtml">
+    <ui:composition template="wegas-app/jsf/app-default.xhtml">
 
         <ui:define name="head">
             <!--<link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
@@ -16,10 +16,16 @@
             <script type="text/javascript">
                 YUI().use("wegas-app", function(Y) {
                     var app = new Y.Wegas.App({
-                        layoutSrc: 'wegas-app/db/wegas-lobby-layout.json',
-                        //debug: true,
                         currentUser: #{requestController.currentUser.id},
                         dataSources: {
+                            Page: {
+                                initialRequest: "wegas-app/db/wegas-lobby-layout.json",
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                    }, {
+                                        fn: "PageCache"
+                                    }]
+                            },
                             GameModel: {
                                 source: "rest/Public/GameModel",
                                 initialRequest: "",
@@ -43,7 +49,6 @@
                             },
                             PublicGames: {
                                 source: "rest/PublicGames",
-                                //initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
                                         fn: "GameCache"
                                     }]
@@ -64,7 +69,6 @@
                         }
                     });
 
-                    /* <![CDATA[ */
                     app.after("render", function() {
                         Y.Widget.getByNode("#centerTabView").on("selectionChange", function(e) {// On center tab change,
                             Y.Widget.getByNode("#rightTabView").destroyAll();   // empty right panel
@@ -80,7 +84,6 @@
                             gamesTab.set("selected", 2);                        // select created games tab
                         }
                     });
-                    /* ]]> */
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined,
                         window.open(app.get("base") + "play.html?gameId=" + e.gameId);// open the game in a new tab

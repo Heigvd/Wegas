@@ -10,9 +10,9 @@
     width: 100%;
     height: 100%;
 }
-.wegas-absolutelayout > div{
-    width: inherit;
-    height: inherit;
+.wegas-absolutelayout-content {
+    width: 100%;
+    height: 100%;
 }
 .wegas-absolutelayout-content:empty:before{
     content: "This element is empty. Click on 'Edit page'  and add new elements.";

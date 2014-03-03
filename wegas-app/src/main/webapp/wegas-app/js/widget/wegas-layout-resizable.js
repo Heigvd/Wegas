@@ -109,7 +109,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description return a node corresponding to the given position (top,
          * bottom, center, right or left).
          */
-        getPositionNode: function(position) {
+        getPosition: function(position) {
             var cb = this.get("contentBox");
             switch (position) {
                 case "top" :
@@ -131,21 +131,20 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description do a slide (tween) animation to hide the panel
          */
         hidePosition: function(position) {
-            var node = this.getPositionNode(position);
-            if (!!this.get(position + ".animate")) {                            // False by default
-                node.setStyle("left", "initial");                               // Reset left value
-                this.oldWidth = node.getStyle("width");
-                node.setStyle("width", "0");
-                this.syncCenterNode();
-                //this.getAnim(position).setAttrs({// and change anim width because the element may have been resized
-                //    reverse: true,
-                //    to: {
-                //        width: node.getStyle("width")
-                //    }
-                //}).run();
-            } else {
-                node.all(".yui3-tabview-panel > div").hide();// @hack
-            }
+            var node = this.getPosition(position);
+            //if (!!this.get(position + ".animate")) {                          // False by default
+            node.setStyle("left", "initial");                                   // Reset left value
+            this.oldWidth = node.getStyle("width");
+            node.setStyle("width", "0");
+            this.syncCenterNode();
+            //} else {
+            //  this.getAnim(position).setAttrs({// and change anim width because the element may have been resized
+            //    reverse: true,
+            //    to: {
+            //        width: node.getStyle("width")
+            //    }
+            //  }).run();
+            //}
         },
         /**
          * @function
@@ -154,24 +153,23 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description do a slide (tween) animation to show the panel
          */
         showPosition: function(position) {
-            var target = this.getPositionNode(position);
+            var target = this.getPosition(position);
 
-            if (!!this.get(position + ".animate")) {                            // False by default
-                //if (parseInt(target.getStyle("width"), 10) < cfg.width) {     // Only display if hidde
-                if (parseInt(target.getStyle("width"), 10) < 70) {              // Only display if hidde
-                    target.setStyle("left", "initial");                         // Reset left value since it may have been changed during resize
-                    target.setStyle("width", this.oldWidth || ((this.get(position + ".width") || 430) + "px"));
-                    this.syncCenterNode();
-                    //this.getAnim(position).set("reverse", false).run();
-                }
-            } else {
-                target.all(".yui3-tabview-panel > div").show();
+            //if (!!this.get(position + ".animate")) {                          // False by default
+            //if (parseInt(target.getStyle("width"), 10) < cfg.width) {         // Only display if hidde
+            if (parseInt(target.getStyle("width"), 10) < 70) {                  // If is hidden
+                target.setStyle("left", "initial");                             // Reset left value since it may have been changed during resize
+                target.setStyle("width", this.oldWidth || ((this.get(position + ".width") || 430) + "px"));
+                this.syncCenterNode();
             }
+            //} else {
+            //this.getAnim(position).set("reverse", false).run();
+            //}
         },
         getAnim: function(position) {
             if (!this.anims[position]) {
                 var anim = new Y.Anim({
-                    node: this.getPositionNode(position),
+                    node: this.getPosition(position),
                     from: {
                         width: 0
                     },
@@ -195,7 +193,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
          */
         renderPosition: function(position) {
             var i, cWidget,
-                    target = this.getPositionNode(position),
+                    target = this.getPosition(position),
                     cfg = this.get(position);
 
             if (cfg) {                                                  // If there is a provided configuration
@@ -239,13 +237,14 @@ YUI.add('wegas-layout-resizable', function(Y) {
          * @description refresh the style of the center node
          */
         syncCenterNode: function() {
-            var cb = this.get("contentBox"),
-                    leftNode = cb.one(".wegas-layout-left"),
-                    rightNode = cb.one(".wegas-layout-right");
+            var rightNode = this.getPosition("right");
 
-            cb.one(".wegas-layout-center").setStyles({
-                left: leftNode.getStyle("width"),
+            this.getPosition("center").setStyles({
+                left: this.getPosition("left").getStyle("width"),
                 right: rightNode.getStyle("width")
+            });
+            rightNode.setStyles({//                                             // Reset left position that may have been set by resize plugin
+                left: "auto"
             });
             Y.Wegas.app.fire("layout:resize");
         }

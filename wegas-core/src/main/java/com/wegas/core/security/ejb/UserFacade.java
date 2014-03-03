@@ -8,7 +8,7 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.NoResultException;
@@ -49,10 +49,9 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class UserFacade extends AbstractFacadeImpl<User> {
+public class UserFacade extends BaseFacade<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
-    private static final int MAXRESULT = 30;
     /**
      *
      */
@@ -95,14 +94,21 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return em;
     }
 
-    public void guestLogin() {
+    /**
+     *
+     * @return
+     */
+    public User guestLogin() {
         if (Helper.getWegasProperty("guestallowed").equals("true")) {
             User newUser = new User(new GuestJpaAccount());                     // return a Guest user
-            this.create(newUser);                                         // Persist it
+            this.create(newUser);                                               // Persist it
 
             Subject subject = SecurityUtils.getSubject();
             subject.login(new GuestToken(newUser.getMainAccount().getId()));
+
+            return newUser;
         }
+        throw new WegasException("Guset log in not allowed on this server");
     }
 
     /**
@@ -117,13 +123,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
             return accountFacade.find((Long) subject.getPrincipal()).getUser();
 
         } else {
-//            if (Helper.getWegasProperty("guestallowed").equals("true")) {
-//                userController.guestLogin();
-//                return accountFacade.find((Long) subject.getPrincipal()).getUser();
-//            } else {
-            //  @todo Throw an error, should redirect to home page
             throw new NoResultException("Unable to find user");
-            //}
 
         }
     }
@@ -147,16 +147,23 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         try {
             account.addRole(roleFacade.findByName("Public"));
         } catch (PersistenceException ex) {
-            logger.error("Unable to find Role: Public", ex);
+            //logger.error("Unable to find Role: Public", ex);
+            logger.error("Unable to find Role: Public");
         }
         try {
             account.addRole(roleFacade.findByName("Registered"));
         } catch (PersistenceException ex) {
-            logger.error("Unable to find Role: Registered", ex);
+            //logger.error("Unable to find Role: Registered", ex);
+            logger.error("Unable to find Role: Registered");
         }
         this.em.flush();
     }
 
+    /**
+     *
+     * @param user
+     * @return
+     */
     public User findOrCreate(User user) {
         try {
             AbstractAccount account = user.getMainAccount();
@@ -176,6 +183,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         return user;
     }
 
+    /**
+     *
+     * @param accounts
+     * @return
+     */
     public List<User> findOrCreate(List<AbstractAccount> accounts) {
         List<User> ret = new ArrayList<>();
         for (AbstractAccount account : accounts) {
@@ -187,7 +199,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     /**
      * Get all GameModel permissions by GameModel id
      *
-     * @param id
+     * @param instance
      * @return
      */
     public List<Map> findRolePermissionByInstance(String instance) {
@@ -228,23 +240,45 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      */
     public boolean addRolePermission(final Long roleId, final String permission) {
         final Role r = roleFacade.find(roleId);
-
         return r.addPermission(this.generatePermisssion(permission));
     }
 
+    /**
+     *
+     * @param abstractAccountId
+     * @param permission
+     * @return
+     */
     public boolean addAccountPermission(final Long abstractAccountId, final String permission) {
         return this.addAccountPermission(abstractAccountId, this.generatePermisssion(permission));
     }
 
+    /**
+     *
+     * @param abstractAccountId
+     * @param p
+     * @return
+     */
     public boolean addAccountPermission(final Long abstractAccountId, final Permission p) {
         final AbstractAccount a = accountFacade.find(abstractAccountId);
         return a.addPermission(p);
     }
 
+    /**
+     *
+     * @param a
+     * @param permission
+     * @return
+     */
     public boolean addAccountPermission(final AbstractAccount a, final String permission) {
         return a.addPermission(this.generatePermisssion(permission));
     }
 
+    /**
+     *
+     * @param permissionStr
+     * @return
+     */
     public Permission generatePermisssion(final String permissionStr) {
         final Permission p = new Permission(permissionStr);
         final String splitedPermission[] = permissionStr.split(":");
@@ -274,7 +308,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
      * Delete all permission from a role in a Game or GameModel
      *
      * @param roleId
-     * @param gameModelId
+     * @param instance
      * @return
      */
     public boolean deleteRolePermissionsByIdAndInstance(Long roleId, String instance) {
@@ -292,7 +326,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
     /**
      * Delete all role permissions by a game or gameModel id
      *
-     * @param gOrGmId
+     * @param instance
      */
     public void deleteRolePermissionsByInstance(String instance) {
         List<Role> roles = roleFacade.findAll();
@@ -314,6 +348,11 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
+    /**
+     *
+     * @param instance
+     * @return
+     */
     public List<AbstractAccount> findAccountPermissionByInstance(String instance) {
         Query findByToken = em.createNamedQuery("findUserPermissions");
         findByToken.setParameter("instance", "%:" + instance);
@@ -323,7 +362,7 @@ public class UserFacade extends AbstractFacadeImpl<User> {
 
     /**
      *
-     * @param gameOrGameModelId
+     * @param instance
      */
     public void deleteAccountPermissionByInstance(String instance) {
         Query findByToken = em.createNamedQuery("findUserPermissions");//@fixme Unable to select role with a like w/ embeddebale
@@ -336,7 +375,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         findByToken.setParameter("instance", "%:" + instance);
         List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
         for (AbstractAccount a : accounts) {
-            // em.detach(a);// TODO??
             for (Iterator<Permission> sit = a.getPermissions().iterator(); sit.hasNext();) {
                 Permission p = sit.next();
                 String splitedPermission[] = p.getValue().split(":");
@@ -346,10 +384,15 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                     }
                 }
             }
-            //em.merge(a);// TODO??
         }
     }
 
+    /**
+     *
+     * @param instance
+     * @param accountId
+     * @throws NoResultException
+     */
     public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) throws NoResultException {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
@@ -364,11 +407,17 @@ public class UserFacade extends AbstractFacadeImpl<User> {
                     }
                 }
             }
-        } catch (Exception e) {
+        }  catch (Exception e) {
             //Gotcha
         }
     }
 
+    /**
+     *
+     * @param permission
+     * @param accountId
+     * @throws NoResultException
+     */
     public void DeleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) throws NoResultException {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '" + permission + "' AND p.account.id =" + accountId);
@@ -405,6 +454,10 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
     }
 
+    /**
+     *
+     * @FIXME Should also remove players, created games and game models
+     */
     @Schedule(hour = "9", minute = "14")
     public void removeIdleGuests() {
         Query findIdleGuests = em.createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
@@ -420,14 +473,6 @@ public class UserFacade extends AbstractFacadeImpl<User> {
         }
 
         logger.info("removeIdleGuests(): " + resultList.size() + " unused guest accounts removed");
-    }
-
-    /**
-     *
-     * @param account
-     */
-    public void update(JpaAccount account) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**

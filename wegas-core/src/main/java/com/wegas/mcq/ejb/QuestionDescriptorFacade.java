@@ -7,7 +7,7 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.ejb.AbstractFacadeImpl;
+import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescriptor> {
+public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);
     @PersistenceContext(unitName = "wegasPU")
@@ -52,6 +52,10 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
     @EJB
     QuestionSingleton questionSingleton;
 
+    /**
+     *
+     * @param event
+     */
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
         logger.debug("Received DescriptorRevivedEvent event");
 
@@ -76,12 +80,23 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         super(ChoiceDescriptor.class);
     }
 
+    /**
+     *
+     * @param replyId
+     * @param r
+     * @return
+     */
     public Reply updateReply(Long replyId, Reply r) {
         final Reply oldEntity = this.em.find(Reply.class, replyId);
         oldEntity.merge(r);
         return oldEntity;
     }
 
+    /**
+     *
+     * @param instanceId
+     * @return
+     */
     public int findReplyCount(Long instanceId) {
         final Query query = em.createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
         query.setParameter("id", instanceId);
@@ -125,7 +140,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
 //        em.refresh(reply);
 //        return reply;
 //    }
-
     public Reply selectChoice(Long choiceId, Player player, Long startTime) throws WegasException {
         Reply reply = questionSingleton.createReply(choiceId, player, startTime);
 
@@ -146,7 +160,6 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
      *
      * @param choiceId
      * @param playerId
-     * @param startTime
      * @return
      * @throws WegasException
      */
@@ -154,10 +167,24 @@ public class QuestionDescriptorFacade extends AbstractFacadeImpl<ChoiceDescripto
         return this.selectChoice(choiceId, playerFacade.find(playerId), Long.valueOf(0));
     }
 
+    /**
+     *
+     * @param choiceId
+     * @param playerId
+     * @param startTime
+     * @return
+     */
     public Reply selectChoice(Long choiceId, Long playerId, Long startTime) {
         return this.selectChoice(choiceId, playerFacade.find(playerId), startTime);
     }
 
+    /**
+     *
+     * @param choiceId
+     * @param playerId
+     * @return
+     * @throws ScriptException
+     */
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) throws ScriptException {
         Reply reply = this.selectChoice(choiceId, playerFacade.find(playerId), Long.valueOf(0));
         try {

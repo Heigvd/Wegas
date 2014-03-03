@@ -197,7 +197,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                             this.renderTab(tab, question);
 
                             if (question.get("pictures").length > 0) {
-                                this.gallery = new Y.Wegas.util.FileExplorerGallery({
+                                this.gallery = new Y.Wegas.util.FileLibraryGallery({
                                     render: tab.get("panelNode").one(".description"),
                                     selectedHeight: 150,
                                     selectedWidth: 235,
@@ -346,12 +346,16 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                  */
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
-                    _type: "variableselect"
+                    _type: "variableselect",
+                    classFilter: ["NumberDescriptor"]
                 }
             },
             showUnanswered: {
                 type: "boolean",
-                value: true
+                value: true,
+                _inputex: {
+                    className: "inputEx-fieldWrapper wegas-advanced-feature"
+                }
             }
         }
     });

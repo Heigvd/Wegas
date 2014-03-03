@@ -14,9 +14,12 @@ import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -38,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class GameFacade extends AbstractFacadeImpl<Game> {
+public class GameFacade extends BaseFacade<Game> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GameFacade.class);
     /**
@@ -92,6 +95,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         this.create(gm, game);
     }
 
+    @Override
+    public void create(final Game game) {
+        this.create(game.getGameModel().getId(), game);
+    }
+
     /**
      *
      * @param gameModelId
@@ -107,14 +115,14 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @param game
      */
     public void create(final GameModel gameModel, final Game game) {
-        if (this.findByToken(game.getToken()) != null) {
-            //  || teamFacade.findByToken(game.getToken()) != null) {
+        if (game.getToken() == null) {
+            game.setToken(this.createUniqueEnrolmentkey(game));
+        } else if (this.findByToken(game.getToken()) != null) {
             throw new WegasException("This token is already in use.");
         }
 
         final User currentUser = userFacade.getCurrentUser();
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
-        game.setToken(this.createUniqueEnrolmentkey(game));
         gameModel.addGame(game);
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
 
@@ -130,6 +138,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
     }
 
+    /**
+     *
+     * @param game
+     * @return
+     */
     public String createUniqueEnrolmentkey(Game game) {
         String prefixKey = game.getName();
         boolean foundUniqueKey = false;
@@ -199,7 +212,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         }
                
         if ((this.findByToken(entity.getToken()) != null
-                && this.findByToken(entity.getToken()).getId().compareTo(entity.getId()) != 0)) {
+                && !this.findByToken(entity.getToken()).getId().equals(entity.getId()))) {
             //|| teamFacade.findByToken(entity.getToken()) != null) {
             throw new WegasException("This token is already in use.");
         }
@@ -255,9 +268,9 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     /**
-     * 
+     *
      * @param key
-     * @return 
+     * @return
      */
     public GameAccountKey findGameAccountKey(String key) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -269,11 +282,11 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     /**
-     * 
+     *
      * @param search
-     * @return 
+     * @return
      */
-    public List<Game> findGameByName(String search) {
+    public List<Game> findByName(String search) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<Game> game = cq.from(Game.class);
@@ -282,9 +295,14 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
         return (List<Game>) q.getResultList();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param orderBy
+     * @return
+     */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
-        final Query getByGameId =
-                em.createQuery("SELECT game FROM Game game "
+        final Query getByGameId = em.createQuery("SELECT game FROM Game game "
                 + "WHERE game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC");
 
         GameModel gm = new GameModel();
@@ -311,8 +329,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @return
      */
     public List<Game> findRegisteredGames(final Long userId) {
-        final Query getByGameId =
-                em.createQuery("SELECT game, p FROM Game game "
+        final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id "
                 + "AND p.user.id = :userId "
@@ -329,8 +346,7 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
      * @return
      */
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
-        final Query getByGameId =
-                em.createQuery("SELECT game, p FROM Game game "
+        final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
                 + "ORDER BY p.joinTime ASC");
@@ -358,10 +374,27 @@ public class GameFacade extends AbstractFacadeImpl<Game> {
     }
 
     /**
-     * 
+     *
+     * @param roleName
+     * @return
+     */
+    public Collection<Game> findPublicGamesByRole(String roleName) {
+        Role role = roleFacade.findByName(roleName);
+        Collection<Game> games = new ArrayList<>();
+        for (Permission permission : role.getPermissions()) {
+            if (permission.getValue().startsWith("Game:View")) {
+                Long gameId = Long.parseLong(permission.getValue().split(":g")[1]);
+                games.add(this.find(gameId));
+            }
+        }
+        return games;
+    }
+
+    /**
+     *
      * @param g
      * @param accountNumber
-     * @return 
+     * @return
      */
     public Game createGameAccount(Game g, Long accountNumber) {
         for (int i = 0; i < accountNumber; i++) {

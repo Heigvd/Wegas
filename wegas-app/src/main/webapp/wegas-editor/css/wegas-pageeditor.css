@@ -19,6 +19,9 @@
 .wegas-pageloader{
     -webkit-transition: padding-top 0.7s;
 }
+.wegas-pageeditor-designmode > .wegas-pageloader-content > .wegas-widget{
+    box-shadow: 0 0 5px black;
+}
 .wegas-pageeditor-designmode .wegas-pageloader-content{
     position: relative;
 }
@@ -239,10 +242,11 @@ body > .wegas-pageloader > .wegas-pageloader-content{
     margin-left:0px;
 }
 .wegas-page-editor .page-node > .content-header{
-    color: #D7D7D7;
+    color: #696969;
 }
 .wegas-page-editor .current-page > .content-header{
     color: inherit;
+    /*font-weight: bold;*/
 }
 .wegas-page-editor .page-node> ul.yui3-treenode-content>li>div.content-header,
 .wegas-page-editor .page-node> ul.yui3-treeleaf-content>div.content-header{
