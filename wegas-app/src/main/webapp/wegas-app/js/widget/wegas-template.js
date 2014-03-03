@@ -133,7 +133,7 @@ YUI.add("wegas-template", function(Y) {
                         value: "fraction"
                     }],
                 _inputex: {
-                    label: "Predefined template"
+                    label: "Template"
                 }
             },
             custom: {
@@ -143,7 +143,8 @@ YUI.add("wegas-template", function(Y) {
                 _inputex: {
                     label: "Custom template",
                     description: "Takes precedence over predefined templates",
-                    _type: "text"
+                    _type: "text",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
             data: {
