@@ -199,6 +199,18 @@ public class GameFacade extends BaseFacade<Game> {
 
     @Override
     public Game update(final Long entityId, final Game entity) {
+        String token = entity.getToken().toLowerCase().replace(" ", "-");
+        String s = token.substring(token.length() - 1);
+        String [] splitedToken = entity.getToken().split("-");
+        if (!s.equals("-")){
+            try {
+                Long.parseLong(splitedToken[splitedToken.length -1]);
+                throw new WegasException("You can't have a trait followed by a number (example: xx-12)");
+            }catch (NumberFormatException e){
+                //Gotcha
+            }
+        }
+               
         if ((this.findByToken(entity.getToken()) != null
                 && !this.findByToken(entity.getToken()).getId().equals(entity.getId()))) {
             //|| teamFacade.findByToken(entity.getToken()) != null) {
@@ -344,6 +356,11 @@ public class GameFacade extends BaseFacade<Game> {
         return this.findRegisterdGames(getByGameId);
     }
 
+    /**
+     * 
+     * @param q
+     * @return 
+     */
     private List<Game> findRegisterdGames(final Query q) {
         final List<Game> games = new ArrayList<>();
         for (Object ret : q.getResultList()) {                                // @hack Replace created time by player joined time
