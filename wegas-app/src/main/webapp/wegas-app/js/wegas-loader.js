@@ -48,7 +48,7 @@ YUI().use(function(Y) {
                     requires: ["datasource-io", "json"]
                 },
                 'wegas-scripteval': {
-                    path: 'js/plugin/wegas-scripteval-min.js',
+                    path: 'js/persistence/wegas-scripteval-min.js',
                     requires: "wegas-variabledescriptor-entities",
                     ws_provides: 'ScriptEval'
                 },
@@ -89,11 +89,9 @@ YUI().use(function(Y) {
                  * Widgets
                  */
                 'wegas-widget': {
-                    path: 'js/widget/wegas-widget-min.js',
                     requires: ['widget', 'widget-child', 'widget-parent', 'wegas-editable']
                 },
                 'wegas-parent': {
-                    path: 'js/widget/wegas-parent-min.js',
                     requires: 'wegas-widget'
                 },
                 'wegas-layout-panel': {
@@ -522,11 +520,6 @@ YUI().use(function(Y) {
                     path: 'js/widget/wegas-logger-min.js',
                     requires: ['console', 'console-filters'],
                     ws_provides: 'Logger'
-                },
-                'wegas-editor-buttons': {
-                    path: 'js/widget/wegas-editor-buttons-min.js',
-                    requires: ['wegas-button', 'wegas-widgetmenu'],
-                    ws_provides: ['SelectPlayerButton', 'SelectGameButton']
                 },
                 'wegas-pageeditorcss': {
                     path: "css/wegas-pageeditor-min.css",
