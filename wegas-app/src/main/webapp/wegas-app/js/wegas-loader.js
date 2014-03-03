@@ -48,13 +48,12 @@ YUI().use(function(Y) {
                     requires: ["datasource-io", "json"]
                 },
                 'wegas-scripteval': {
-                    path: 'js/plugin/wegas-scripteval-min.js',
+                    path: 'js/persistence/wegas-scripteval-min.js',
                     requires: "wegas-variabledescriptor-entities",
                     ws_provides: 'ScriptEval'
                 },
                 'wegas-websocketlistener': {
                     path: 'js/persistence/wegas-websocketlistener-min.js',
-                    requires: 'wegas-pusher-connector',
                     ws_provides: "WebSocketListener"
                 },
                 "wegas-pusher-connector": {
@@ -90,11 +89,9 @@ YUI().use(function(Y) {
                  * Widgets
                  */
                 'wegas-widget': {
-                    path: 'js/widget/wegas-widget-min.js',
                     requires: ['widget', 'widget-child', 'widget-parent', 'wegas-editable']
                 },
                 'wegas-parent': {
-                    path: 'js/widget/wegas-parent-min.js',
                     requires: 'wegas-widget'
                 },
                 'wegas-layout-panel': {
@@ -207,7 +204,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inbox': {
                     path: 'js/widget/wegas-inbox-min.js',
-                    requires: ["tabview", "wegas-inboxcss", "wegas-widgettoolbar", "wegas-jstranslator"],
+                    requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss", "wegas-widgettoolbar", "wegas-jstranslator"],
                     ws_provides: 'InboxDisplay'
                 },
                 'wegas-inboxcss': {
@@ -229,7 +226,7 @@ YUI().use(function(Y) {
                     requires: ['wegas-widget', 'wegas-imageloader', 'scrollview-base',
                         'scrollview-paginator', 'scrollview-scrollbars', 'wegas-gallerycss',
                         'stylesheet', 'event-resize'],
-                    ws_provides: "WegasGallery"
+                    ws_provides: "Gallery"
                 },
                 'wegas-googletranslate': {
                     path: 'js/widget/wegas-googletranslate-min.js',
@@ -523,11 +520,6 @@ YUI().use(function(Y) {
                     path: 'js/widget/wegas-logger-min.js',
                     requires: ['console', 'console-filters'],
                     ws_provides: 'Logger'
-                },
-                'wegas-editor-buttons': {
-                    path: 'js/widget/wegas-editor-buttons-min.js',
-                    requires: ['wegas-button', 'wegas-widgetmenu'],
-                    ws_provides: ['SelectPlayerButton', 'SelectGameButton']
                 },
                 'wegas-pageeditorcss': {
                     path: "css/wegas-pageeditor-min.css",

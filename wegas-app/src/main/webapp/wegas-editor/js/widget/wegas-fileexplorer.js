@@ -603,7 +603,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             window.open(this.getFullPath(path));
         },
         getFullPath: function(relativePath) {
-            return Wegas.app.get("base") + "rest/GameModel/" + Wegas.app.get("currentGameModel") + "/File/read" + relativePath;
+            return Wegas.app.get("base") + "rest/GameModel/" + Wegas.Facade.GameModel.get("currentGameModelId") + "/File/read" + relativePath;
         },
         isProcessing: function(node, index) {
             return node.get("loading") || (node instanceof Y.TreeNode ? node._items.some(this.isProcessing, this) : false);

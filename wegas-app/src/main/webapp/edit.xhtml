@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets" >
 
-    <ui:composition template="/wegas-app/view/template/app-default.xhtml">
+    <ui:composition template="wegas-app/jsf/app-default.xhtml">
 
         <ui:define name="title">#{editorGameController.currentGameModel.name}</ui:define>
 
@@ -24,20 +24,9 @@
                     height: 32px;
                     text-shadow: 1px 0 1px black, 0 1px 1px black;
                 }
-                /** Uservoice widget */
-                .yui3-skin-sam .uv-icon {
-                    right: 0;
-                    top: 11px !important;
-                    width: 23px;
-                    opacity: 1;
-                }
-                .yui3-skin-sam .uv-icon svg {
-                    width: 24px;
-                    height: 27px;
-                }
             </style>
 
-            <!-- In player mode, CSS library for current game model is included directly in the model -->
+            <!-- CSS library for current game model is included directly in the file -->
             <style type="text/css">#{editorGameController.styleSheets}</style>
 
             <!-- Dev tool: style sheet reference injected directly in the game model -->
@@ -46,37 +35,30 @@
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
             </ui:repeat>
 
-            <ui:insert name="editorHeader"></ui:insert>
-            
+            <ui:insert name="editorHeader"/>
+
             <!--<meta name="google-translate-customization" content="#editorGameController.currentGameModel.getProperty('googleTranslateId')" />-->
 
         </ui:define>
 
         <ui:define name="body">
             <script type="text/javascript">
-                YUI().use("wegas-app", "wegas-scripteval", function(Y) {
+                YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
-                        //layoutSrc: 'rest/GameModel/#{editorGameController.currentGameModel.id}/Page/EditorLayout',
-                        layoutSrc: 'wegas-app/db/wegas-editor-layout.json',
-                        //debug: true,
-                        currentGameModel: #{editorGameController.currentGameModel.id},
-                        currentGame: #{editorGameController.currentGame.id},
-                        currentTeam: #{editorGameController.currentPlayer.team.id},
-                        currentPlayer: #{editorGameController.currentPlayer.id},
-                        currentUser: #{requestController.currentUser.id},
                         dataSources: {
-                            GameModel: {
-                                source: "rest/Editor/GameModel",
-                                initialRequest: "/#{editorGameController.currentGameModel.id}",
+                            VariableDescriptor: {
+                                source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "",
                                 plugins: [{
-                                        fn: "GameModelCache"
-                                    }]
-                            },
-                            Game: {
-                                source: "rest/Public/GameModel/#{editorGameController.currentGameModel.id}/Game",
-                                initialRequest: "/#{editorGameController.currentGame.id}",
-                                plugins: [{
-                                        fn: "GameCache"
+                                        fn: "VariableDescriptorCache"
+                                    }, {
+                                        fn: "ScriptEval"
+                                    }, {
+                                        fn: "WebSocketListener",
+                                        cfg: {
+                                            dataSource: "Pusher"
+                                        }
                                     }]
                             },
                             Page: {
@@ -94,17 +76,44 @@
                                         /* THIS IS NOT A COMMENT
                                          * </ui:fragment>
                                          */
-                                        plugins: [{
+                                        initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
+                                //initialRequest 'EditorLayout',
+                                plugins: [{
                                         fn: "JSONSchema"
                                     }, {
                                         fn: "PageCache"
+                                    }]
+                            },
+                            GameModel: {
+                                source: "rest/Editor/GameModel",
+                                initialRequest: "/#{editorGameController.currentGameModel.id}",
+                                plugins: [{
+                                        fn: "GameModelCache",
+                                        cfg: {
+                                            currentGameModelId: #{editorGameController.currentGameModel.id}
+                                        }
+                                    }]
+                            },
+                            Game: {
+                                source: "rest/Public/GameModel/#{editorGameController.currentGameModel.id}/Game",
+                                initialRequest: "/#{editorGameController.currentGame.id}",
+                                plugins: [{
+                                        fn: "GameCache",
+                                        cfg: {
+                                            currentGameId: #{editorGameController.currentGame.id},
+                                            currentTeamId: #{editorGameController.currentPlayer.team.id},
+                                            currentPlayerId: #{editorGameController.currentPlayer.id}
+                                        }
                                     }]
                             },
                             User: {
                                 source: "rest/Extended/User",
                                 initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
-                                        fn: "UserCache"
+                                        fn: "UserCache",
+                                        cfg: {
+                                            currentUserId: #{requestController.currentUser.id}
+                                        }
                                     }]
                             },
                             Role: {
@@ -113,101 +122,61 @@
                                 plugins: [{
                                         fn: "WegasCache"
                                     }]
-                            }
-
+                            },
                             /* THIS IS NOT A COMMENT
                              * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
                              */
-                            ,
                             Pusher: {
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
                                 applicationKey: "#{editorGameController.currentGameModel.getProperty('websocket')}"
-                            }
+                            },
                             /* THIS IS NOT A COMMENT
                              * </ui:fragment>
                              */
-                            ,
-                            VariableDescriptor: {
-                                /* THIS IS NOT A COMMENT
-                                 * <ui:fragment rendered="#{!editorGameController.currentGameModel.getProperty('allGameVariables')}">
-                                 */
-                                source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                /* THIS IS NOT A COMMENT
-                                 * <ui:fragment rendered="#{editorGameController.currentGameModel.getProperty('allGameVariables')}">
-                                 */
-                                source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                initialRequest: "",
-                                plugins: [{
-                                        fn: "VariableDescriptorCache"
-                                    }, {
-                                        fn: "ScriptEval"
-                                    }
-                                    /* THIS IS NOT A COMMENT
-                                     * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
-                                     */
-                                    , {
-                                        fn: "WebSocketListener",
-                                        cfg: {
-                                            dataSource: "Pusher"
-                                        }
-                                    }
-                                    /* THIS IS NOT A COMMENT
-                                     * </ui:fragment>
-                                     */
-                                ]   
-                            },
                             File: {
                                 source: "rest/GameModel/#{editorGameController.currentGameModel.id}/File/",
                                 plugins: [{
                                         fn: "JSONSchema"
                                     }]
                             }
-
                         }
                     });
 
-                    app.after("render", function() {
+                    app.after("render", function() {                            // When the page is rendered
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
-                        Y.one(".wegas-title").setContent(gm.get("name"));
+                        Y.one(".wegas-title").setContent(gm.get("name"));       // Update the title
 
+                        Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function() {// Whenever the current player id changes
+                            var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
+
+                            this.set('currentTeamId', player.get("teamId"));        // Update current teamid
+
+                            Y.Wegas.Facade.VariableDescriptor.set("source",
+                                    //this.get("base") + "rest/EditorPrivate/" + player.get("id")
+                                    this.get("base") + "rest/Private/" + player.get("id")
+                                    + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
+                                    + "/VariableDescriptor");                       // Retrieve variable instances for the new player
+
+                            var preview = Y.Widget.getByNode(".editor-preview");    // Show a loading overlay in the Preview tab during the request
+                            preview.showOverlay();
+                            Y.Wegas.Facade.VariableDescriptor.once("response", preview.hideOverlay, preview);
+                        });
+                        
                         try {
-                #{editorGameController.getClientScripts()}          // Display game model specific js footer
+                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }
                     });
 
-                    app.after('currentPlayerChange', function(e) {              // Whenever the current player changes
-                        this.set('currentTeam',
-                                Y.Wegas.Facade.Game.cache.getPlayerById(e.newVal).get("teamId"));// Update current team
-
-                        Y.Wegas.Facade.VariableDescriptor.set("source",
-                                this.get("base") + "rest/EditorPrivate/" + e.newVal + "/GameModel/"
-                                + this.get("currentGameModel") + "/VariableDescriptor");
-
-                        var preview = Y.Widget.getByNode(".editor-preview");
-                        preview.showOverlay();
-                        Y.Wegas.Facade.VariableDescriptor.once("response", preview.hideOverlay, preview);
-
-                        //Y.Wegas.Facade.VariableDescriptor.fire("update");     // Fire an update event on the variable datasource
-                        //Y.Wegas.Facade.User.fire("update");                   // Fire an update event on the variable datasource
-                    });
-
                     app.render();                                               // Render app
-                    // Footer script (for host.html)
+
                     /**
                      * THIS IS NOT A COMMENT !!!
                      * Writen as a comment to avoid parsing problems mixing JSF/JavaScript
                      */
-                    ////<ui:insert name="editorFooter" />////
+                    ////<ui:insert name="editorFooter" />////                   // Footer script (for host.html)
                     /**
                      * END THIS IS NOT A COMMENT !!!
                      */

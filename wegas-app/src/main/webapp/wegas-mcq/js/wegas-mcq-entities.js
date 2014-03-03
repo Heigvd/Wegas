@@ -99,7 +99,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add a choice",
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add choice",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
@@ -109,7 +109,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             //event: "mouseenter",
                             children: [{
                                     type: BUTTON,
-                                    label: "Normal choice",
+                                    label: "Single result",
                                     plugins: [{
                                             fn: "AddEntityChildAction",
                                             cfg: {
@@ -118,7 +118,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                         }]
                                 }, {
                                     type: BUTTON,
-                                    label: "With multiple results",
+                                    label: "Multiple results",
                                     plugins: [{
                                             fn: "AddEntityChildAction",
                                             cfg: {
@@ -529,11 +529,15 @@ YUI.add('wegas-mcq-entities', function(Y) {
             answer: {
                 type: STRING,
                 optional: true,
-                format: HTML
+                format: HTML,
+                _inputex: {
+                    label: "Impact"
+                }
             },
             impact: {
                 _inputex: {
-                    _type: SCRIPT
+                    _type: SCRIPT,
+                    label: null
                 }
             },
             choiceDescriptorId: {

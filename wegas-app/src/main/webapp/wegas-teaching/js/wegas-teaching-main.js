@@ -186,7 +186,7 @@ YUI.add("wegas-teaching-main", function(Y) {
         },
         saveCurrentArrow: function() {
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: {
@@ -204,7 +204,7 @@ YUI.add("wegas-teaching-main", function(Y) {
         },
         saveRectangle: function(rectangle) {
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: {

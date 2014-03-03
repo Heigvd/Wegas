@@ -221,7 +221,7 @@
             }, {
                 "type": "PageLoader",
                 "pageLoaderId": "maindisplayarea",
-                "defaultPageId": 2,
+                "defaultPageId": 5,
                 "cssClass": "body game-area",
                 "plugins": [{
                         "fn": "CSSPosition",

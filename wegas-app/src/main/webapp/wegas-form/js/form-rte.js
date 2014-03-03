@@ -47,12 +47,12 @@ YUI.add('form-rte', function(Y) {
                     if (!cfg || !cfg.internal) {
                         this.get("inputNode").set("value", value);
 
-//                    if (value) {
-//                        value = value.replace(
-//                                new RegExp("data-file=\"([^\"]*)\"", "gi"),
-//                                "src=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\""
-//                                + " href=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\"");// @hack Place both href and src so it will work for both <a> and <img> elements
-//                    }
+                        //if (value) {
+                        //    value = value.replace(
+                        //            new RegExp("data-file=\"([^\"]*)\"", "gi"),
+                        //            "src=\"" + Y.Wegas.Facade.File.getPath() + "$1\""
+                        //            + " href=\"" +  Y.Wegas.Facade.File.getPath() + "$1\"");// @hack Place both href and src so it will work for both <a> and <img> elements
+                        //}
 
                         var tmceI = tinyMCE.get(this.get("inputNode").get("id"));
                         if (tmceI) {

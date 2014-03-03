@@ -26,7 +26,9 @@
 }
 .yui3-skin-sam .yui3-tab {
     margin: 0 .4em 0 0;
-    /*margin-bottom: 0px !important;*/
+}
+.yui3-skin-sam .yui3-tab:last-child {
+    margin: 0;
 }
 .yui3-skin-sam  .yui3-tab-label {
     border-top-right-radius: 5px;
@@ -39,7 +41,7 @@
     text-align:center;
 }
 /*.yui3-skin-sam .wegas-widget > div .yui3-tab-label {*/
-    /*color: #072644;*/
+/*color: #072644;*/
 /*}*/
 .yui3-skin-sam .yui3-tab-selected {
     margin-bottom: 2px ;
@@ -71,12 +73,12 @@
     margin-left: 0.25em;
 }
 .yui3-tab-remove {
-    font:bold 85% verdana;
+    font:bold 85% Verdana;
     position: absolute;
     right: 0.5em;
-    top: 0.7em;
+    top: 10px;
+    padding: 1px 3px 3px 3px;
     border:1px solid transparent;
-    padding: 0 2px 3px;
     line-height: 1em;
     color: #cccccc;
 }
@@ -96,12 +98,11 @@
     float:left;
     border: none;
     display: inline-block;
-    border-right: 1px solid lightgray;
-    width: 39.5%;
+    width: 40%;
 }
 .yui3-skin-sam .horizontal-tabview > .yui3-tabview-content > .yui3-tabview-panel {
     display:inline-block;
-    width:59.5%;
+    width:60%;
     float:left;
     background:transparent;
     height: 100%;

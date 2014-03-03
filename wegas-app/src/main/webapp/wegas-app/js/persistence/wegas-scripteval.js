@@ -55,26 +55,21 @@ YUI.add('wegas-scripteval', function(Y) {
                     cb.success(result);
                 }
             } catch (error) {
-                url = Y.Wegas.Facade.VariableDescriptor.get("source") + "/Script/Run/" + Y.Wegas.app.get('currentPlayer');
-                Y.io(url, {
-                    headers: {
-                        'Content-Type': 'application/json; charset=iso-8859-1',
-                        'Managed-Mode': 'false'
+                this.run(null, {
+                    cfg: {
+                        method: "POST",
+                        data: script,
+                        headers: {
+                            'Managed-Mode': 'false'
+                        }
                     },
-                    sync: false,
-                    method: "POST",
-                    data: Y.JSON.stringify({
-                        "@class": "Script",
-                        language: "JavaScript",
-                        content: script
-                    }),
                     on: {
-                        success: function(id, response) {
+                        success: function(response) {
                             if (cb && cb.success instanceof Function) {
                                 cb.success(Y.JSON.parse(response.responseText));
                             }
                         },
-                        failure: function(id, response) {
+                        failure: function(response) {
                             var result;
                             try {
                                 result = Y.JSON.parse(response.responseText);
@@ -88,6 +83,15 @@ YUI.add('wegas-scripteval', function(Y) {
                     }
                 });
             }
+        },
+        run: function(script, cfg) {
+            this.get("host").sendRequest(Y.mix(cfg, {
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
+                cfg: {
+                    method: "POST",
+                    data: script
+                }
+            }));
         },
         /**
          * Tries to evaluate the script locally, using variables cache

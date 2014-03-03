@@ -23,17 +23,7 @@
 #rightTabView .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label {
     padding-right: 1.4em;
 }
-/** Uservoice widget */
-.yui3-skin-sam .uv-icon {
-    right: 0;
-    top: 11px !important;
-    width: 23px;
-    opacity: 1;
-}
-.yui3-skin-sam .uv-icon svg {
-    width: 24px;
-    height: 27px;
-}
+
 /** Edit game form */
 .wegas-lobby-editgame  .wegas-form-content{
     padding-bottom: 0px !important;
@@ -97,15 +87,6 @@
     position: absolute;
     top: -19px;
     left: 175px;
-}
-.wegas-sharerole-content {
-    margin-top: 0px;
-}
-.wegas-sharerole .title {
-    font-weight: normal;
-    font-style: italic;
-    margin-bottom: 3px;
-    color: #505050;
 }
 
 
@@ -199,8 +180,10 @@
     margin: 0px 10px 10px;
 }
 .wegas-sharerole .title {
-    font-weight: bolder;
-    margin-bottom: 5px;
+    font-weight: normal;
+    font-style: italic;
+    margin-bottom: 3px;
+    color: #505050;
 }
 .wegas-link div {
     width: 100%;

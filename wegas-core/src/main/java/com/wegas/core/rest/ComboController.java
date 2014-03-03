@@ -86,20 +86,20 @@ public class ComboController {
         // Variant var = req.selectVariant(vars);
 
         final CacheControl cc = new CacheControl();
-        //cc.setMaxAge(60000);
+        cc.setMaxAge(60 * 60 * 3);
+        cc.setNoTransform(false);
         //cc.setPrivate(true);
-        //cc.setNoTransform(true);
         //cc.setMustRevalidate(false);
         //cc.setNoCache(false);
 
         //EntityTag etag = new EntityTag();
         //Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(updateTimestamp, etag);
 
-        return Response.ok(this.getCombinedFile(files, mediaType)).
-                type(mediaType).
-                cacheControl(cc).
-                expires(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 3))).
-                build();
+        return Response.ok(this.getCombinedFile(files, mediaType))
+                .type(mediaType)
+                .cacheControl(cc)
+                .expires(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 3)))
+                .build();
     }
 
     private String getCombinedFile(List<String> fileList, String mediaType) throws IOException {

@@ -62,7 +62,7 @@ YUI.add('wegas-entity', function(Y) {
                     return val * 1;
                 },
                 _inputex: {
-                    wrapperClassName: 'wegas-advanced-feature',
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     index: -2,
                     disable: true
                 }

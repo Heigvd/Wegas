@@ -41,7 +41,7 @@
                     }
                 }
                 
-                tab.witem(0).on(["treeleaf:click", "treenode:click"], function(e) {                        // Listen to click events on the first child (treeview)
+                tab.witem(0).on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
                     var entity = e.target.get("data.entity"),
                             player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
                     
@@ -55,7 +55,7 @@
                         return
                     }
 
-                    Y.Wegas.app.set('currentPlayer', player.get("id"));
+                    Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
                 });
                 
                 Y.Widget.getByNode("#centerTabView").add({                      // Add impact tab

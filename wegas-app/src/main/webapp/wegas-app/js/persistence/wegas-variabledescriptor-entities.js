@@ -18,19 +18,19 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             HTML = "html",
             Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
             IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
+                type: STRING,
+                optional: true, // The id is optional for entites that have not been persisted
+                _inputex: {
+                    _type: HIDDEN
+                }
+            };
 
     /**
      * VariableDescriptor mapper
      */
     persistence.VariableDescriptor = Base.create("VariableDescriptor", persistence.Entity, [], {
         getInstance: function(player) {
-            var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.app.get('currentPlayer');
+            var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.Facade.Game.get('currentPlayerId');
             return this.get("scope").getInstance(playerId);
         },
         getLabel: function() {
@@ -176,7 +176,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.GameScope = Base.create("GameScope", persistence.Scope, [], {
         getInstance: function() {
-            return this.get("variableInstances")["" + Wegas.app.get('currentGame')];
+            return this.get("variableInstances")["" + Wegas.Facade.Game.get('currentGameId')];
         }
     }, {
         ATTRS: {
@@ -191,7 +191,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.TeamScope = Base.create("TeamScope", persistence.Scope, [], {
         getInstance: function(playerId) {
-            return this.get("variableInstances")[Wegas.app.get('currentTeam')];
+            return this.get("variableInstances")[Wegas.Facade.Game.get('currentTeamId')];
         }
     }, {
         ATTRS: {
@@ -480,18 +480,18 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         flatten: function() {
             var acc = [],
                     doFlatten = function(items) {
-                var i, it;
-                for (i = 0; i < items.length; i += 1) {
-                    it = items[i];
-                    if (it instanceof persistence.QuestionDescriptor) {
-                        acc.push(it);
-                    } else if (it instanceof persistence.ListDescriptor) {
-                        doFlatten(it.get(ITEMS));
-                    } else {
-                        acc.push(it);
-                    }
-                }
-            };
+                        var i, it;
+                        for (i = 0; i < items.length; i += 1) {
+                            it = items[i];
+                            if (it instanceof persistence.QuestionDescriptor) {
+                                acc.push(it);
+                            } else if (it instanceof persistence.ListDescriptor) {
+                                doFlatten(it.get(ITEMS));
+                            } else {
+                                acc.push(it);
+                            }
+                        }
+                    };
             doFlatten(this.get(ITEMS));
             return acc;
 
@@ -502,15 +502,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         depthFirstSearch: function(id) {
             var needle,
                     filterFn = function(it) {
-                if (it.get("id") === +id) {
-                    needle = it;
-                    return false;
-                } else if (it instanceof persistence.ListDescriptor) {
-                    return Y.Array.every(it.get(ITEMS), filterFn);
-                } else {
-                    return true;
-                }
-            };
+                        if (it.get("id") === +id) {
+                            needle = it;
+                            return false;
+                        } else if (it instanceof persistence.ListDescriptor) {
+                            return Y.Array.every(it.get(ITEMS), filterFn);
+                        } else {
+                            return true;
+                        }
+                    };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
         }
@@ -837,6 +837,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      *
      */
     persistence.PageMeta = Base.create("wegas-pagemeta", persistence.Entity, [], {}, {
+        EDITORNAME: "Page properties",
         ATTRS: {
             name: {
                 type: STRING,

@@ -87,11 +87,11 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 } else {
                     Plugin.EditEntityAction.hideEditFormOverlay();
                 }
-            }, this), function(entity) {
-                if (entity && !entity.get("destroyed")) {
-                    entity.highlight(false);
+            }, this), Y.bind(function(entity) {
+                if (entity) {
+                    this.highlight(entity, false);
                 }
-            }),
+            }, this)),
                     menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
 
                 switch (i.label) {                                              // @hack add icons to some buttons
@@ -104,8 +104,13 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 return (!i.label || (i.label !== "New" && i.label.indexOf("Edit") < 0));
             });                                                                 // Retrieve menu and remove the first item
 
-            widget.highlight(true);
-            form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "15px");
+            this.highlight(widget, true);
+            form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "10px");
+        },
+        highlight: function(widget, val) {
+            if (!widget.get("destroyed")) {
+                widget.get("boundingBox").toggleClass("highlighted", val);
+            }
         }
     }, {
         NS: "EditWidgetAction",

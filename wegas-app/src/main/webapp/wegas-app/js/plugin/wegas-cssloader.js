@@ -37,7 +37,7 @@ YUI.add('wegas-cssloader', function(Y) {
             //}
             //
             //Wegas.Facade.GameModel.sendRequest({//                            // Load style sheets (currently done w/ jsf)
-            //    request: "/" + Wegas.app.get("currentGameModel") + "/Library/CSS?view=Export?id=" + Wegas.Helper.genId(),
+            //    request: "/" + Wegas.Facade.GameModel.get("currentGameModelId") + "/Library/CSS?view=Export?id=" + Wegas.Helper.genId(),
             //    cfg: {
             //        updateCache: false
             //    },

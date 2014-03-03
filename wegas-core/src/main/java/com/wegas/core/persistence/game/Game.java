@@ -30,9 +30,8 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints = {
-    //    @UniqueConstraint(columnNames = {"name"}), //@UniqueConstraint(columnNames = {"token"}),
-    @UniqueConstraint(columnNames = {"wkey"})
+@Table(uniqueConstraints = { //    @UniqueConstraint(columnNames = {"name"}), //@UniqueConstraint(columnNames = {"token"}),
+//    @UniqueConstraint(columnNames = {"wkey"})
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends NamedEntity {
@@ -55,6 +54,7 @@ public class Game extends NamedEntity {
      *
      */
     @NotNull
+    @Basic(optional = false)
     // @Pattern(regexp = "^\\w+$")
     private String token;
     /**
@@ -101,12 +101,30 @@ public class Game extends NamedEntity {
     @Column(name = "gamemodelid", nullable = false, insertable = false, updatable = false)
     private Long gameModelId;
 
+    /**
+     *
+     */
     public enum GameAccess {
 
+        /**
+         *
+         */
         OPEN,
+        /**
+         *
+         */
         URL,
+        /**
+         *
+         */
         ENROLMENTKEY,
+        /**
+         *
+         */
         SINGLEUSAGEENROLMENTKEY,
+        /**
+         *
+         */
         CLOSE
     }
     /**
@@ -117,17 +135,17 @@ public class Game extends NamedEntity {
     /**
      *
      */
-    @NotNull
-    @Column(name = "wkey")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
-    private String key;
+    private List<GameEnrolmentKey> keys = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
-    private List<GameEnrolmentKey> keys = new ArrayList<>();
+    private List<GameAccountKey> accountkeys = new ArrayList<>();
 
     /**
      *
@@ -153,6 +171,9 @@ public class Game extends NamedEntity {
         this.token = token;
     }
 
+    /**
+     *
+     */
     @PrePersist
     public void prePersist() {
         this.setCreatedTime(new Date());
@@ -167,15 +188,6 @@ public class Game extends NamedEntity {
      */
     @PreUpdate
     public void preUpdate() {
-        if (this.getToken() == null || this.getToken().equals("")) {
-            //this.setToken(Helper.genToken(10));
-            this.setToken(this.getName());
-        }
-        if (this.getKey() == null || this.getKey().equals("")) {
-            this.setKey(this.getName());
-        }
-        this.key = this.key.toLowerCase().replace(" ", "-");
-        this.token = this.token.toLowerCase().replace(" ", "-");
         this.setUpdatedTime(new Date());
     }
 
@@ -188,6 +200,7 @@ public class Game extends NamedEntity {
         this.setToken(other.getToken());
         //this.setKey(other.getKey());
         ListUtils.mergeLists(this.getKeys(), other.getKeys());
+        ListUtils.mergeLists(this.getAccountkeys(), other.getAccountkeys());
     }
 
     /**
@@ -323,12 +336,16 @@ public class Game extends NamedEntity {
     }
 
     /**
-     * @param creator the creator to set
+     * @param createdBy 
      */
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
             return this.getCreatedBy().getName();
@@ -382,17 +399,19 @@ public class Game extends NamedEntity {
     }
 
     /**
-     * @return the enrolmentKey
+     *
+     * @return
      */
-    public String getKey() {
-        return key;
+    public List<GameAccountKey> getAccountkeys() {
+        return accountkeys;
     }
 
     /**
-     * @param enrolmentKey the enrolmentKey to set
+     *
+     * @param accountkeys
      */
-    public void setKey(String enrolmentKey) {
-        this.key = enrolmentKey;
+    public void setAccountkeys(List<GameAccountKey> accountkeys) {
+        this.accountkeys = accountkeys;
     }
 
     /**
@@ -409,17 +428,31 @@ public class Game extends NamedEntity {
         this.description = description;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getGameModelName() {
         return this.getGameModel().getName();
     }
 
+    /**
+     *
+     */
     public void setGameModelName() {
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, String> getProperties() {
         return this.getGameModel().getProperties();
     }
 
+    /**
+     *
+     */
     public void setProperties() {
     }
 }

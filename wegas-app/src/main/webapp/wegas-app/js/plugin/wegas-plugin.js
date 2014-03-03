@@ -187,7 +187,7 @@ YUI.add('wegas-plugin', function(Y) {
                 _inputex: {
                     _type: "variableselect",
                     label: "variable",
-                    className: "wegas-advanced-feature"
+                    className: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
         }
@@ -207,12 +207,7 @@ YUI.add('wegas-plugin', function(Y) {
             var host = this.get(HOST);
             if (!host.get("disabled")) {
                 host.showOverlay();
-                Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Wegas.app.get('currentPlayer'),
-                    cfg: {
-                        method: "POST",
-                        data: Y.JSON.stringify(this.get("onClick"))
-                    },
+                Wegas.Facade.VariableDescriptor.script.run(this.get("onClick"), {
                     on: {
                         success: Y.bind(host.hideOverlay, host),
                         failure: Y.bind(host.defaultFailureHandler, host)
@@ -260,7 +255,7 @@ YUI.add('wegas-plugin', function(Y) {
             }
 
             Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.app.get('currentPlayer'),
+                request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: Y.JSON.stringify({

@@ -30,14 +30,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
             if (this.editor) {
                 this.editor.destroy();
             } else {
-                Y.once("domready", function() {
-                    this.editor.destroy();
-                }, this);
+                Y.once("domready", this.editor.destroy, this.editor);
             }
-
             RTEField.superclass.destroy.call(this);
-            //tinymce.execCommand('mceRemoveEditor', false, this.el.id);
-            //tinymce.remove("#" + this.el.id);
         },
         /**
          * Set the default values of the options
@@ -76,8 +71,6 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     autoresize_min_height: 35,
                     autoresize_max_height: 500,
                     content_css: [
-                        // "http://yui.yahooapis.com/combo?3.14.1/build/cssreset/cssreset-min.css&amp;3.14.1/build/cssfonts/cssfonts-min.css&amp;3.14.1/build/cssgrids/cssgrids-min.css",
-                        // Y.Wegas.app.get("base") + "wegas-app/css/wegas-app-min.css"
                         Y.Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
                     ],
                     style_formats: [{// Style formats
@@ -97,7 +90,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                             inline: 'span'
                         }]}, tinymce.EditorManager);
 
-                this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
+                //this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
                 this.editor.render();
 
                 //tinymce.createEditor(this.el.id, {});
@@ -107,15 +100,14 @@ YUI.add("wegas-inputex-rte", function(Y) {
         onFileBrowserClick: function(field_name, url, type, win) {
             RTEField.filePanel = new Y.Wegas.FileSelect();
 
-            RTEField.filePanel.on("*:fileSelected", function(e, path) {
+            RTEField.filePanel.after("*:fileSelected", function(e, path) {
                 e.stopImmediatePropagation();
                 e.preventDefault();
-                RTEField.filePanel.hide();
 
                 var win = RTEField.filePanel.win,
                         field_name = RTEField.filePanel.field_name,
                         targetInput = win.document.getElementById(field_name);
-                targetInput.value = Y.Plugin.CRDataSource.getFullpath(path);    // update the input field
+                targetInput.value = Y.Wegas.Facade.File.getPath() + path;        // update the input field
 
                 if (typeof (win.ImageDialog) !== "undefined") {                 // are we an image browser
                     if (win.ImageDialog.getImageData) {                         // we are, so update image dimensions...
@@ -123,12 +115,13 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     }
 
                     if (win.ImageDialog.showPreviewImage) {                     // ... and preview if necessary
-                        win.ImageDialog.showPreviewImage(Y.Plugin.CRDataSource.getFullpath(path));
+                        win.ImageDialog.showPreviewImage(Y.Wegas.Facade.File.getPath() + path);
                     }
                 }
                 if (win.Media) {                                                // If in an editor window
                     win.Media.formToData("src");                                // update the data
                 }
+                RTEField.filePanel.destroy();
             });
             RTEField.filePanel.win = win;
             RTEField.filePanel.field_name = field_name;
@@ -137,7 +130,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
         /**
          * Set the html content
          * @param {String} value The html string
-         * @param {boolean} [sendUpdatedEvt] (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
+         * @param {boolean} sendUpdatedEvt (optional) Wether this setValue should fire the 'updated' event or not (default is true, pass false to NOT send the event)
          */
         setValue: function(value, sendUpdatedEvent) {
             var tmceI = tinyMCE.get(this.el.id);
@@ -145,8 +138,8 @@ YUI.add("wegas-inputex-rte", function(Y) {
             if (value) {
                 value = value.replace(
                         new RegExp("data-file=\"([^\"]*)\"", "gi"),
-                        "src=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\""
-                        + " href=\"" + Y.Plugin.CRDataSource.getFullpath("") + "$1\"");// @hack Place both href and src so it will work for both <a> and <img> elements
+                        "src=\"" + Y.Wegas.Facade.File.getPath() + "$1\""
+                        + " href=\"" + Y.Wegas.Facade.File.getPath() + "$1\"");  // @hack Place both href and src so it will work for both <a> and <img> elements
             }
             RTEField.superclass.setValue.call(this, value, sendUpdatedEvent);
 
@@ -159,18 +152,12 @@ YUI.add("wegas-inputex-rte", function(Y) {
          * @return {String} the html string
          */
         getValue: function() {
-            //var path = Y.Plugin.CRDataSource.getFullpath("")
             tinyMCE.triggerSave();
             //return RTEField.superclass.getValue.call(this).replace(reg, "data-file=\"$3\" $1");
             return RTEField.superclass.getValue.call(this)
                     .replace(new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"), "data-file=\"$3\"")// Replace absolute path with injector style path
                     .replace(new RegExp("((src|href)=\".*/rest/GameModel/.*/File/read([^\"]*)\")", "gi"), "data-file=\"$3\"");// Replace absolute path with injector style path
-        },
-        /**
-         * @static
-         */
-        filePanel: null
+        }
     });
-
     inputEx.registerType("html", RTEField, []);                                 // Register this class as "html" type
 });
