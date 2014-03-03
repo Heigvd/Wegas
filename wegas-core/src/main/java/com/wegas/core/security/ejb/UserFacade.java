@@ -396,15 +396,19 @@ public class UserFacade extends BaseFacade<User> {
     public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) throws NoResultException {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
-        AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
-        for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
-            String p = sit.next().getValue();
-            String splitedPermission[] = p.split(":");
-            if (splitedPermission.length >= 3) {
-                if (splitedPermission[2].equals(instance)) {
-                    sit.remove();
+        try {
+            AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
+            for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
+                String p = sit.next().getValue();
+                String splitedPermission[] = p.split(":");
+                if (splitedPermission.length >= 3) {
+                    if (splitedPermission[2].equals(instance)) {
+                        sit.remove();
+                    }
                 }
             }
+        }  catch (Exception e) {
+            //Gotcha
         }
     }
 
@@ -417,16 +421,19 @@ public class UserFacade extends BaseFacade<User> {
     public void DeleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) throws NoResultException {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '" + permission + "' AND p.account.id =" + accountId);
-        AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
-        //em.detach(account);
-        for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
-            String p = sit.next().getValue();
-            String splitedPermission[] = p.split(":");
-            if (splitedPermission.length >= 3 && p.equals(permission)) {
-                sit.remove();
+        try {
+            AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
+            for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
+                String p = sit.next().getValue();
+                String splitedPermission[] = p.split(":");
+                if (splitedPermission.length >= 3 && p.equals(permission)) {
+                    sit.remove();
+                }
             }
+        } catch (NoResultException e){
+            //Gotcha
         }
-        //em.merge(account);
+
     }
 
     /**
