@@ -57,7 +57,7 @@ public class GameController extends AbstractGameController {
      * @throws IOException if the target we dispatch to do not exist
      */
     @PostConstruct
-    public void init() throws IOException {
+    public void init(){
         final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
@@ -71,15 +71,19 @@ public class GameController extends AbstractGameController {
 
             } catch (NoResultException e) {                                     // If we still have nothing
                 errorController.dispatch("You are not registered to this game.");
+                return;
             }
         }
 
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.dispatch("The game you are looking for could not be found.");
-
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
                 && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {
-            externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml");
+            try {
+                externalContext.dispatch("/wegas-app/jsf/error/accessdenied.xhtml");
+            } catch (IOException ex) {
+                
+            }
         }
     }
 
