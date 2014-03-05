@@ -872,7 +872,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-gamemodelselect': {
                     requires: ['inputex-select', 'inputex-list', "inputex-uneditable"],
-                    ix_provides: ['gamemodelselect', "enrolmentkeylist"]
+                    ix_provides: ['gamemodelselect', "enrolmentkeylist", "accountkeylist"]
                 },
                 'wegas-inputex-roleselect': {
                     requires: 'inputex-select',

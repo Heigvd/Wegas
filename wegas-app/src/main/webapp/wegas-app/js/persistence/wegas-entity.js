@@ -382,13 +382,13 @@ YUI.add('wegas-entity', function(Y) {
                             actions: [{name: 'token', action: 'show'},
                                 //{name: 'url', action: 'show'},
                                 {name: 'keys', action: 'hide'},
-                                {name: 'users', action: 'hide'}]
+                                {name: 'accountkeys', action: 'hide'}]
                         }, {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
                             actions: [{name: 'token', action: 'hide'},
                                 //{name: 'url', action: 'hide'},
                                 {name: 'keys', action: 'show'},
-                                {name: 'users', action: 'show'}]
+                                {name: 'accountkeys', action: 'show'}]
                         }]
                 }
             },
@@ -416,13 +416,13 @@ YUI.add('wegas-entity', function(Y) {
                             //"Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
                 }
             },
-            users: {
+            accountkeys: {
                 type: ARRAY,
                 value: [],
                 _inputex: {
                     label: "Option 2: Create user in advance",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature wegas-game-users',
-                    _type: "enrolmentkeylist",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-game-users',
+                    _type: "accountkeylist",
                     description: "Players can join this game the user name and password on the login page."
                 }
             },

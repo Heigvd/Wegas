@@ -82,13 +82,17 @@
     display: block;
     clear: both;
 }
-.wegas-game-keys img.inputEx-ListField-addButton,
-.wegas-game-users img.inputEx-ListField-addButton {
+.wegas-game-keys img.inputEx-ListField-addButton {
     position: absolute;
     top: -19px;
     left: 175px;
 }
 
+.wegas-game-users img.inputEx-ListField-addButton {
+    position: absolute;
+    top: -19px;
+    left: 227px;
+}
 
 /* Lobby datatables */
 .wegas-lobby-datatable .wegas-lobby-datatable-icon {
