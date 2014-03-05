@@ -260,7 +260,7 @@ YUI.add('wegas-loginwidget', function(Y) {
 
             this.guestLoginButton.on("click", Y.bind(this.loginRequest, this,
                     "/GuestLogin/"));                                           // Guest login click even
-            this.guestLoginButton.on("click", Y.bind(this.loginRequest, this,
+            this.guestTeacherLoginButton.on("click", Y.bind(this.loginRequest, this,
                     "/TeacherGuestLogin/"));                                    // Teacher guest login click event
 
             this.askPassButton.on("click", function() {                         // Password recovery click event
