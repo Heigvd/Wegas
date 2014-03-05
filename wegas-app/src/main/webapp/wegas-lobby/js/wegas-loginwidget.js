@@ -120,7 +120,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 fields: [{
                         name: "email",
                         required: true,
-                        type: "email",
+                        type: "string",
                         typeInvite: "Email",
                         className: "inputEx-Field email"
                     }, {

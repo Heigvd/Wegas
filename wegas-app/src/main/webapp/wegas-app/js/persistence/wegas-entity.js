@@ -17,12 +17,12 @@ YUI.add('wegas-entity', function(Y) {
             Wegas = Y.namespace("Wegas"), persistence = Y.namespace('Wegas.persistence'),
             Base = Y.Base, Entity,
             IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
+                type: STRING,
+                optional: true, // The id is optional for entites that have not been persisted
+                _inputex: {
+                    _type: HIDDEN
+                }
+            };
 
     /**
      * @class Entity is used to represent db objects
@@ -878,9 +878,9 @@ YUI.add('wegas-entity', function(Y) {
     });
 
     /**
-     * JpaAccount mapper
+     * GuestJpaAccount mapper
      */
-    persistence.GuestJpaAccount = Base.create("JpaAccount", persistence.Entity, [], {
+    persistence.GuestJpaAccount = Base.create("GuestJpaAccount", persistence.Entity, [], {
         getPublicName: function() {
             return "Guest";
         }
@@ -901,5 +901,16 @@ YUI.add('wegas-entity', function(Y) {
         EDITMENU: [{
                 type: "DeleteEntityButton"
             }]
+    });
+    /*
+     * GameAccount mapper
+     */
+    persistence.GameAccount = Base.create("GameAccount", persistence.JpaAccount, [], {}, {
+        ATTRS: {
+            token: {
+                value: "",
+                "transient": true
+            }
+        }
     });
 });

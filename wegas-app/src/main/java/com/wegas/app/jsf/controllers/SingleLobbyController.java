@@ -60,7 +60,6 @@ public class SingleLobbyController implements Serializable {
      *
      * @fixme rights management
      *
-     * @throws IOException if the target we dispatch to do not exist
      */
     @PostConstruct
     public void init() {
