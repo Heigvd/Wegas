@@ -81,12 +81,13 @@ public class TeamScope extends AbstractScope {
 
     /**
      *
-     * @param userId
+     * @param teamId
      * @param v
      */
     @Override
-    public void setVariableInstance(Long userId, VariableInstance v) {
-        this.teamVariableInstances.put(userId, v);
+    public void setVariableInstance(Long teamId, VariableInstance v) {
+        this.teamVariableInstances.put(teamId, v);
+        v.setTeamScopeKey(teamId);
         v.setTeamScope(this);
     }
 

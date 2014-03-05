@@ -55,6 +55,7 @@ public class GameScope extends AbstractScope {
     @Override
     public void setVariableInstance(Long key, VariableInstance v) {
         this.gameVariableInstances.put(key, v);
+        v.setGameScopeKey(key);
         v.setGameScope(this);
     }
 

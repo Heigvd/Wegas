@@ -13,7 +13,9 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
@@ -24,6 +26,7 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -229,9 +232,25 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
         trigger.setPostTriggerEvent(new Script("println('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, param);"));
         descriptorFacade.create(gameModel.getId(), trigger);
-        
+
         sf.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){println('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"));
         lookupBy(RequestFacade.class).commit();
         Assert.assertEquals(ENDVAL, ((NumberInstance) instanceFacade.find(number.getId(), player.getId())).getValue(), 0);
+    }
+
+    @Test
+    public void duplicate() throws NamingException, IOException {
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setName("trigger");
+        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setScope(new TeamScope());
+        trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
+        trigger.setPostTriggerEvent(new Script("println('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, param);"));
+        descriptorFacade.create(gameModel.getId(), trigger);
+        GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(gameModel.getId());
+        TriggerDescriptor find = (TriggerDescriptor) vdf.find(duplicateGm, "trigger");
+        Assert.assertEquals(find.getStates().size(), trigger.getStates().size());
+
     }
 }
