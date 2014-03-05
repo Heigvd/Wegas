@@ -54,7 +54,6 @@ public class GameController extends AbstractGameController {
 
     /**
      *
-     * @throws IOException if the target we dispatch to do not exist
      */
     @PostConstruct
     public void init(){

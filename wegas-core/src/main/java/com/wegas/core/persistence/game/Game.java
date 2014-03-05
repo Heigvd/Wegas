@@ -11,11 +11,13 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlID;
@@ -81,6 +83,11 @@ public class Game extends NamedEntity {
     @XmlTransient
     @JsonIgnore
     private User createdBy;
+    
+    @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @XmlTransient
+    @JsonIgnore
+    private Set<GameAccount> gameAccounts;
     /**
      *
      */

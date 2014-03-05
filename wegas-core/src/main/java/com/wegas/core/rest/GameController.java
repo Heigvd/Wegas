@@ -13,10 +13,12 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameAccountKey;
 import com.wegas.core.persistence.game.GameEnrolmentKey;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
@@ -30,6 +32,7 @@ import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -171,15 +174,22 @@ public class GameController {
      *
      * @param token
      * @return
-     * @throws Exception
      */
     @GET
     @Path("/JoinGame/{token : .*}/")
     public Object tokenJoinGame(@PathParam("token") String token) throws WegasException {
         Game game = gameFacade.findByToken(token);                              // 1st case: game token
         if (game != null) {
-            if (game.getAccess() != Game.GameAccess.ENROLMENTKEY) {             // Check game token are authorized on this game
-                return "Team token required";                                   // Return a string indicating the client it should provide an enrolment key (not an error)
+            AbstractAccount account = userFacade.getCurrentUser().getMainAccount(); 
+            if (account instanceof GameAccount) {                               //Logged in with a GameAccount
+                GameAccountKey accountKey = gameFacade.findGameAccountKey(((GameAccount) account).getEmail());
+                if (accountKey.getGame() == game && !accountKey.getUsed()) {        //Account matches currentGame and key is not used
+                    accountKey.setUsed(Boolean.TRUE);
+                }
+            } else {
+                if (game.getAccess() != Game.GameAccess.ENROLMENTKEY) {             // Check game token are authorized on this game
+                    return "Team token required";                                   // Return a string indicating the client it should provide an enrolment key (not an error)
+                }
             }
         } else {                                                                // 2nd case: single usage enrolement key
             GameEnrolmentKey gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);// Look the key up
@@ -260,7 +270,7 @@ public class GameController {
 
         return t;
     }
-    
+
     /**
      *
      * @param entityId
