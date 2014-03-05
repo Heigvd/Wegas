@@ -56,7 +56,7 @@ abstract public class AbstractScope extends AbstractEntity implements Serializab
 
     /**
      *
-     * @param userId
+     * @param key
      * @param v
      */
     abstract public void setVariableInstance(Long key, VariableInstance v);
