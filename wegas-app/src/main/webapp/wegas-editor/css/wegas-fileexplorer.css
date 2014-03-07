@@ -162,12 +162,8 @@
     padding-bottom: 0;
     max-height: 0;
 }
-.wegas-panel-fileselect .yui3-treeview-content .filter-no-match > .content-header,
-.wegas-panel-fileselect .yui3-treeview-content .filter-match .filter-no-match > div > .content-header,
-.wegas-panel-fileselect .yui3-treeview-content .filter-match .filter-no-match > .content-header{
-    max-height: 50px;
-    padding: 2px 27px 2px 2px;
-    opacity: 0.3;
+.wegas-panel-fileselect .yui3-treeview-content .filter-no-match > div > .content-header{
+    max-height: 0px;
 }
 .wegas-panel-fileselect .yui3-treeview-content .wegas-menu{
     display: none;
