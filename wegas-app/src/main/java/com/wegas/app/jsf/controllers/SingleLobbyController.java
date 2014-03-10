@@ -60,10 +60,9 @@ public class SingleLobbyController implements Serializable {
      *
      * @fixme rights management
      *
-     * @throws IOException if the target we dispatch to do not exist
      */
     @PostConstruct
-    public void init() throws IOException {
+    public void init() {
         final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 
         if (token != null) {
@@ -71,7 +70,10 @@ public class SingleLobbyController implements Serializable {
             if (currentGame != null) {                                          // 1st case: token is associated with a game
                 try {
                     playerFacade.findCurrentPlayer(currentGame);
-                    externalContext.dispatch("play.xhtml?gameId=" + currentGame.getId());// display game page
+                    try {
+                        externalContext.dispatch("play.xhtml?gameId=" + currentGame.getId());// display game page
+                    } catch (IOException ex) {
+                    }
                 } catch (PersistenceException e) {
                     // Nothing to do. stay on current page so player will choose his team
                 }

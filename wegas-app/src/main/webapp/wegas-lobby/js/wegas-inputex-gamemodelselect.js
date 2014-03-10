@@ -118,7 +118,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                     game = this.parentField.parentWidget.get("entity"),
                     //teamCount = game.get("teams").length+1,
                     teamCount = this.subFields.length + 1,
-                    prefix = game.get("name").toLowerCase().replace(" ", "-");
+                    prefix = game.get("token");
 
             for (i = 0; i < total; i += 1) {                                    // Add key fields
                 this.addElement({
@@ -130,5 +130,64 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
         }
     });
     Y.inputEx.registerType("enrolmentkeylist", EnrolmentKeyList);               // Register this class
+
+    /**
+     * @class Y.inputEx.Wegas.AccountKeyList
+     * @extends Y.inputEx.EnrolmentKeyList
+     * @constructor
+     * @param {Object} options  options object
+     * <ul>
+     *   <li></li>
+     * </ul>
+     */
+    var AccountKeyList = function(options) {
+        AccountKeyList.superclass.constructor.call(this, options);
+    };
+    Y.extend(AccountKeyList, EnrolmentKeyList, {
+        setOptions: function(options) {
+            options.elementType = options.elementType || {
+                type: "group",
+                label: "",
+                required: true,
+                fields: [{
+                        name: "@class",
+                        type: "hidden",
+                        value: "GameAccountKey"
+                    }, {
+                        name: "id",
+                        type: "hidden"
+                    }, {
+                        name: "key",
+                        type: "uneditable"
+                                //type: "string"
+                    }, {
+                        name: "used",
+                        value: false,
+                        type: "hidden"
+                    }]
+            };
+
+            AccountKeyList.superclass.setOptions.call(this, options);
+        },
+        addElement: function(value) {
+            var subfield = AccountKeyList.superclass.addElement.call(this, value),
+                    node = new Y.Node(subfield.divEl);
+
+            node.all(".inputEx-Field").each(function(n) {
+                n.setContent("<p><span style='font-weight: bold'>User :</span><span style='margin-left: 39px'>" + n.getContent() + "</span></p>\n\
+                                <p><span style='font-weight: bold'>Password :</span><span style='margin-left: 2px'>" + n.getContent() + "</span></p>");
+            });
+            (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
+            (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyles({"float": "left", "marginRight": "20px"});
+
+            if (value.used) {
+                node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens
+                //f.disable();
+                //(new Y.Node(this.subFields[i].divEl)).all("input").setStyle("textDecoration", "line-through");
+            }
+            return subfield;
+        }
+    });
+    Y.inputEx.registerType("accountkeylist", AccountKeyList);               // Register this class
 
 });

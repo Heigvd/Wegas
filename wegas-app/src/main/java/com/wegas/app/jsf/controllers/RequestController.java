@@ -10,6 +10,7 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.NoResultException;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
@@ -21,6 +22,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -48,12 +50,32 @@ public class RequestController implements Serializable {
 
     /**
      *
-     * @throws IOException if the target we dispatch to do not exist
      */
     @PostConstruct
-    public void init() throws IOException {
+    public void init() {
+        FacesContext context = FacesContext.getCurrentInstance();
         if (this.lang != null) { // If a language parameter is provided, it overrides the Accept-Language header
-            FacesContext.getCurrentInstance().getViewRoot().setLocale(new Locale(this.lang));
+            context.getViewRoot().setLocale(new Locale(this.lang));
+        }
+        try {
+            /*
+             GameAccount, be a good boy, please go to your game page. 
+             */
+            if (this.getCurrentUser().getMainAccount() instanceof GameAccount) {
+                try {
+                    HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+                    String query = (request.getServletPath() != null) ? request.getServletPath() : "";
+                    query += (request.getQueryString() != null) ? "?" + request.getQueryString() : "";
+                    String goTo = "/game.html?token=" + ((GameAccount) this.getCurrentUser().getMainAccount()).getToken();
+                    if (query == null ? goTo != null : !query.equals(goTo)) {
+                        context.getExternalContext().redirect(request.getContextPath() + goTo);
+                    }
+                } catch (IOException ex) {
+                    //page not found. 
+                }
+
+            }
+        } catch (NoResultException ex) {// no user
         }
     }
 
