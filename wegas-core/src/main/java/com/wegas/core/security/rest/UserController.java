@@ -7,15 +7,21 @@
  */
 package com.wegas.core.security.rest;
 
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.event.client.WarningEvent;
+import com.wegas.core.exception.NoResultException;
 import com.wegas.core.exception.PersistenceException;
+import com.wegas.core.exception.WegasException;
+import com.wegas.core.persistence.game.GameAccountKey;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,11 +32,14 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.SimplePrincipalCollection;
@@ -61,6 +70,11 @@ public class UserController {
      */
     @EJB
     private AccountFacade accountFacade;
+    /**
+     *
+     */
+    @EJB
+    private GameFacade gameFacade;
     /**
      *
      */
@@ -240,6 +254,7 @@ public class UserController {
      * @param password
      * @param remember
      * @param request
+     * @param response
      */
     @POST
     @Path("Authenticate")
@@ -247,15 +262,23 @@ public class UserController {
             @QueryParam("password") String password,
             @QueryParam("remember")
             @DefaultValue("false") boolean remember,
-            @Context HttpServletRequest request) {
+            @Context HttpServletRequest request, @Context HttpServletResponse response) throws ServletException, IOException {
 
         Subject subject = SecurityUtils.getSubject();
 
         //if (!currentUser.isAuthenticated()) {
         UsernamePasswordToken token = new UsernamePasswordToken(email, password);
         token.setRememberMe(remember);
-        subject.login(token);
-        //}
+        try {
+            subject.login(token);                                               // try to log in.
+        } catch (AuthenticationException aex) {
+            if (checkGameAccountKeylogin(email, password)) {                    //Login failed, maybe create a GameAccount or fail
+                GameAccountKey gameAccountKey = gameFacade.findGameAccountKey(email);
+                subject.login(token);
+            } else {
+                throw new WegasException("Email/password combination not found");
+            }
+        }
     }
 
     @POST
@@ -477,5 +500,29 @@ public class UserController {
         } else {
             SecurityUtils.getSubject().checkPermission(gPermission + entityId);
         }
+    }
+
+    private Boolean checkGameAccountKeylogin(String key, String password) {
+        if (key.equals(password)) {                                             //Be kind, email password have to be the same...
+            /*
+            if there is a GameAccountKey, use it to create a new GameAccount 
+            */
+            try {
+                GameAccountKey gameAccountKey = gameFacade.findGameAccountKey(key);
+                if (gameAccountKey.getUsed()) {
+                    return false;
+                }
+                GameAccount gameAccount = new GameAccount();
+                gameAccount.setEmail(key);
+                gameAccount.setPassword(password);
+                gameAccount.setGame(gameAccountKey.getGame());
+                gameAccountKey.setUsed(Boolean.TRUE);
+                this.signup(gameAccount);
+            } catch (SQLException | NoResultException ex) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

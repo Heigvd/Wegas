@@ -16,6 +16,7 @@ import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.util.SimpleByteSource;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  * Simple class that represents any User domain entity in any application.
@@ -26,6 +27,10 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 @Table(uniqueConstraints = {
     @UniqueConstraint(columnNames = "email")
 })
+@JsonSubTypes(value = {
+    @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
+})
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class JpaAccount extends AbstractAccount {
 
     /**

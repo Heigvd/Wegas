@@ -17,12 +17,12 @@ YUI.add('wegas-entity', function(Y) {
             Wegas = Y.namespace("Wegas"), persistence = Y.namespace('Wegas.persistence'),
             Base = Y.Base, Entity,
             IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
+                type: STRING,
+                optional: true, // The id is optional for entites that have not been persisted
+                _inputex: {
+                    _type: HIDDEN
+                }
+            };
 
     /**
      * @class Entity is used to represent db objects
@@ -382,13 +382,13 @@ YUI.add('wegas-entity', function(Y) {
                             actions: [{name: 'token', action: 'show'},
                                 //{name: 'url', action: 'show'},
                                 {name: 'keys', action: 'hide'},
-                                {name: 'users', action: 'hide'}]
+                                {name: 'accountkeys', action: 'hide'}]
                         }, {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
                             actions: [{name: 'token', action: 'hide'},
                                 //{name: 'url', action: 'hide'},
                                 {name: 'keys', action: 'show'},
-                                {name: 'users', action: 'show'}]
+                                {name: 'accountkeys', action: 'show'}]
                         }]
                 }
             },
@@ -416,13 +416,13 @@ YUI.add('wegas-entity', function(Y) {
                             //"Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
                 }
             },
-            users: {
+            accountkeys: {
                 type: ARRAY,
                 value: [],
                 _inputex: {
                     label: "Option 2: Create user in advance",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature wegas-game-users',
-                    _type: "enrolmentkeylist",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-game-users',
+                    _type: "accountkeylist",
                     description: "Players can join this game the user name and password on the login page."
                 }
             },
@@ -878,9 +878,9 @@ YUI.add('wegas-entity', function(Y) {
     });
 
     /**
-     * JpaAccount mapper
+     * GuestJpaAccount mapper
      */
-    persistence.GuestJpaAccount = Base.create("JpaAccount", persistence.Entity, [], {
+    persistence.GuestJpaAccount = Base.create("GuestJpaAccount", persistence.Entity, [], {
         getPublicName: function() {
             return "Guest";
         }
@@ -901,5 +901,16 @@ YUI.add('wegas-entity', function(Y) {
         EDITMENU: [{
                 type: "DeleteEntityButton"
             }]
+    });
+    /*
+     * GameAccount mapper
+     */
+    persistence.GameAccount = Base.create("GameAccount", persistence.JpaAccount, [], {}, {
+        ATTRS: {
+            token: {
+                value: "",
+                "transient": true
+            }
+        }
     });
 });

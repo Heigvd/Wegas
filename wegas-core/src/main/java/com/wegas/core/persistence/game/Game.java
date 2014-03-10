@@ -11,11 +11,13 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlID;
@@ -81,6 +83,11 @@ public class Game extends NamedEntity {
     @XmlTransient
     @JsonIgnore
     private User createdBy;
+    
+    @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @XmlTransient
+    @JsonIgnore
+    private Set<GameAccount> gameAccounts;
     /**
      *
      */
@@ -200,7 +207,19 @@ public class Game extends NamedEntity {
         this.setToken(other.getToken());
         //this.setKey(other.getKey());
         ListUtils.mergeLists(this.getKeys(), other.getKeys());
-        ListUtils.mergeLists(this.getAccountkeys(), other.getAccountkeys());
+        for (int i = 0; i < other.getAccountkeys().size(); i++) {               // @hack Not possible to use mergeLists.
+            boolean founded = false;                                            // Check must be on accountKey and not accountId.
+            for (int ii = 0; ii < this.getAccountkeys().size(); ii++) {
+                if (this.accountkeys.get(ii).getKey().equals(other.getAccountkeys().get(i).getKey())) {
+                    founded = true;
+                    break;
+                }
+            }
+            if (!founded) {
+                this.accountkeys.add(other.accountkeys.get(i));
+            }
+        }
+//        ListUtils.mergeLists(this.getAccountkeys(), other.getAccountkeys());
     }
 
     /**
@@ -336,7 +355,7 @@ public class Game extends NamedEntity {
     }
 
     /**
-     * @param createdBy 
+     * @param createdBy
      */
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
@@ -412,6 +431,9 @@ public class Game extends NamedEntity {
      */
     public void setAccountkeys(List<GameAccountKey> accountkeys) {
         this.accountkeys = accountkeys;
+        for (GameAccountKey k : this.accountkeys) {
+            k.setGame(this);
+        }
     }
 
     /**

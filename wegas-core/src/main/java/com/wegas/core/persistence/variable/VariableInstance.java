@@ -203,6 +203,11 @@ abstract public class VariableInstance extends AbstractEntity {
         return teamScopeKey;
     }
 
+    public void setTeamScopeKey(Long teamScopeKey) {
+        this.teamScopeKey = teamScopeKey;
+    }
+    
+
     /**
      *
      * @return
@@ -218,6 +223,14 @@ abstract public class VariableInstance extends AbstractEntity {
     @JsonIgnore
     public GameScope getGameScope() {
         return gameScope;
+    }
+
+    public void setPlayerScopeKey(Long playerScopeKey) {
+        this.playerScopeKey = playerScopeKey;
+    }
+
+    public void setGameScopeKey(Long gameScopeKey) {
+        this.gameScopeKey = gameScopeKey;
     }
 
     /**
