@@ -77,7 +77,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 cb.one(".main.left").setContent("<h1>&nbsp;</h1>You need to log in, create an account or log in as guest to play this game.");
             } else {
                 cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>\n\
-                        <p>Wegas (Web Game Authoring System) is a web engine for rapid development of simulation games.\n\
+                        <p>Wegas (Web Game Authoring System) is an engine for rapid development of simulation games.\n\
                          No programming skills are required, you can create your own scenario or adapt an existing one by \n\
                         adding elements from other simulations. Advanced users can even create their own serious game from scratch!</p><br />"
 
@@ -386,7 +386,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             });
         }
     });
-    Y.namespace('Wegas').LoginWidget = LoginWidget;
+    Wegas.LoginWidget = LoginWidget;
 
     /**
      * @Hack because "typeInvite" and password don't work (typeInvite is hidden)
@@ -406,24 +406,20 @@ YUI.add('wegas-loginwidget', function(Y) {
                 Y.one(this.el).focus();
             }, this);
         }
-
         // field not focused
         if (!divEl.hasClass("inputEx-focused")) {
-
             // show type invite if field is empty
             if (this.isEmpty()) {
                 divEl.addClass("inputEx-typeInvite");
                 Y.one(this.el).hide();
                 this._fakePass.show();
                 this.el.value = this.options.typeInvite;
-
                 // important for setValue to work with typeInvite
             } else {
                 Y.one(this.el).show();
                 this._fakePass.hide();
                 divEl.removeClass("inputEx-typeInvite");
             }
-
             // field focused : remove type invite
         } else {
             if (divEl.hasClass("inputEx-typeInvite")) {
