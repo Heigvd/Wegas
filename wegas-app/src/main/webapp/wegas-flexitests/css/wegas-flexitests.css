@@ -24,6 +24,8 @@ body > .wegas-pageloader, html{
 }
 .wegas-flexitests-controller-content{
     text-align: center;
+    width: 100%;
+    height: 100%;
 }
 .wegas-flexitests-controller-content span{
     cursor: pointer;
