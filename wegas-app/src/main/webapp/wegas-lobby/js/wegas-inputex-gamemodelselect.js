@@ -95,7 +95,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                     node = new Y.Node(subfield.divEl);
 
             node.all(".inputEx-Field").each(function(n) {
-                n.setContent("<span>" + n.getContent() + "</span>,&nbsp;");
+                n.setContent("<span class='wegas-enrolmentkey'>" + n.getContent() + "</span>,&nbsp;");
             });
             (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
             (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyle("float", "left");
@@ -170,15 +170,15 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             AccountKeyList.superclass.setOptions.call(this, options);
         },
         addElement: function(value) {
-            var subfield = AccountKeyList.superclass.addElement.call(this, value),
+            var subfield = EnrolmentKeyList.superclass.addElement.call(this, value),
                     node = new Y.Node(subfield.divEl);
 
             node.all(".inputEx-Field").each(function(n) {
-                n.setContent("<p><span style='font-weight: bold'>User :</span><span style='margin-left: 39px'>" + n.getContent() + "</span></p>\n\
-                                <p><span style='font-weight: bold'>Password :</span><span style='margin-left: 2px'>" + n.getContent() + "</span></p>");
+                n.setContent("<p class='wegas-accountkey'><span class='wegas-accountkeyUser'>User: </span><span>" + n.getContent() + "</span>\n\
+                                <span class='wegas-accountkeyPass'>Pwd: </span><span>" + n.getContent() + "</span></p>");
             });
             (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
-            (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyles({"float": "left", "marginRight": "20px"});
+            (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyles({"float": "left", "marginRight": "10px", "paddingRight": "10px"});
 
             if (value.used) {
                 node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens
