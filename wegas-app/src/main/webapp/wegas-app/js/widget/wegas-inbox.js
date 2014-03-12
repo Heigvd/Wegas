@@ -12,8 +12,31 @@
 YUI.add('wegas-inbox', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', InboxDisplay;
-
+    var CONTENTBOX = 'contentBox',
+            InboxDisplay,
+            /**
+             * define tab and content Templates, add new ones :
+             * TEMPLATES:{TEMPLATE_NAME:{tab:'template', content:'template'}}
+             *
+             * specify the one to use in "template" ATTRS
+             * !!COMPILED!! Template may be added after initialization in
+             * Y.Wegas.InboxDisplay.prototype.TEMPLATES['name'] =
+             * {tab: Y.Template.Micro.compile(tab_text_template),
+             * content: Y.Template.Micro.compile(content_text_template)}
+             */
+            TEMPLATES = {
+                inbox: {
+                    tab: "<div class=' <%=(this.get('unread') ? 'unread' : 'read')%>'><div class='left'><%= this.get('from') || '<i>No sender</i>' %> </div><div class='right'><%=this.get('subject')%></div></div>",
+                    content: "<div class='msg-header'><div class='msg-subject'>Subject: <%=this.get('subject')%></div><div class='msg-from'>From: <%= this.get('from') || '<i>No sender</i>' %></div><div class='msg-attachement'><%= (this.get('attachements') && this.get('attachements').length) ? 'Attachements: ':'' %> <% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>'><%= a %></a>;<% }); %></div></div><div class='msg-body'><%== this.get('body') %></div>"
+                },
+                /**
+                 * inbox without labels.
+                 */
+                clean: {
+                    tab: "<div class=' <%=(this.get('unread') ? 'unread' : 'read')%>'><div class='left'><%= this.get('from') || '<i>No sender</i>' %> </div><div class='right'><%=this.get('subject')%></div></div>",
+                    content: "<div class='msg-header'><div class='msg-subject'><%=this.get('subject')%></div><div class='msg-from'><%= this.get('from') || '<i>No sender</i>' %></div><div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>'><%= a %></a>;<% }); %></div></div><div class='msg-body'><%== this.get('body') %></div>"
+                }
+            };
     /**
      * @name Y.Wegas.InboxDisplay
      * @extends Y.Widget
@@ -31,6 +54,23 @@ YUI.add('wegas-inbox', function(Y) {
          *
          */
         readRequestTid: null,
+        /**
+         * Holds compiled templates. Add templates in scope variable TEMPLATES
+         */
+        TEMPLATES: (function() {
+            var i, j, ret = {};
+            for (i in TEMPLATES) {
+                if (TEMPLATES.hasOwnProperty(i)) {
+                    ret[i] = {};
+                    for (j in TEMPLATES[i]) {
+                        if (TEMPLATES[i].hasOwnProperty(j)) {
+                            ret[i][j] = Y.Template.Micro.compile(TEMPLATES[i][j]);
+                        }
+                    }
+                }
+            }
+            return ret;
+        }()),
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -49,22 +89,21 @@ YUI.add('wegas-inbox', function(Y) {
          * @description Render the TabView widget in the content box.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
-
-            this.tabView = new Y.TabView();                                     // TabView widget used to display messages
-            this.tabView.render(cb);                                            // and render it
-            this.tabView.get("boundingBox").addClass("horizontal-tabview");     // Add class to have horizontal tabview
+            var cb = this.get(CONTENTBOX),
+                    delBtn;
+            this.tabView = new Y.TabView(); // TabView widget used to display messages
+            this.tabView.render(cb); // and render it
+            this.tabView.get("boundingBox").addClass("horizontal-tabview"); // Add class to have horizontal tabview
             cb.append("<div style='clear:both'></div>");
-
             if (this.toolbar) {
-                var delBtn = new Y.Wegas.Button({
+                delBtn = new Y.Wegas.Button({
                     label: "<span class='wegas-icon wegas-icon-cancel'></span>" + this.jsTranslator.getRB().Delete
-                });                                                             // Create delete mail button
-                delBtn.on("click", function() {                                 // On delete button click
+                }); // Create delete mail button
+                delBtn.on("click", function() { // On delete button click
                     var selection = this.tabView.get("selection");
-                    if (selection && !selection.msg                             // If a valid mail tab is selected
-                            && confirm('The e-mail "' + selection.msg.get("subject") + '" will be deleted permanently. Continue?')) {// and user is sure
-                        this.deleteEmail(selection.msg);                        // destroy the message
+                    if (selection && !selection.msg // If a valid mail tab is selected
+                            && confirm('The e-mail "' + selection.msg.get("subject") + '" will be deleted permanently. Continue?')) { // and user is sure
+                        this.deleteEmail(selection.msg); // destroy the message
                     }
                 }, this);
                 this.toolbar.add(delBtn);
@@ -94,11 +133,7 @@ YUI.add('wegas-inbox', function(Y) {
          * Re-select the current selected msg;
          */
         syncUI: function() {
-            var tab, from, inboxVariable, messages,
-                    inboxDescriptor = this.get('variable.evaluated'),
-                    selection = this.tabView.get("selection"),
-                    oldMsg = selection && selection.msg;
-
+            var inboxDescriptor = this.get('variable.evaluated');
             if (!inboxDescriptor) {
                 this.tabView.add({
                     label: '',
@@ -106,54 +141,65 @@ YUI.add('wegas-inbox', function(Y) {
                 });
                 return;
             }
-            inboxVariable = inboxDescriptor.getInstance();
-
-
-            this.tabView.destroyAll();
-
-            messages = inboxVariable.get("messages");
-
-            if (messages.length === 0) {
-                this.tabView.add(new Y.Tab({
-                    label: '',
-                    content: '<center><i>You have no messages</i></center>'
-                }));
-            }
-
-            Y.Array.each(messages, function(msg) {
-                from = msg.get("from") || "<i>No sender</i>";
-                tab = new Y.Tab({
-                    label: '<div class="' + (msg.get("unread") ? "unread" : "read") + '"><div class="left">' + from + '</div>'
-                            + '<div class="right">' + msg.get("subject") + '</div></div>',
-                    content: '<div class="msg-header">'
-                            + '<div class="msg-subject">Subject: ' + msg.get("subject") + '</div>'
-                            + '<div class="msg-from">From: ' + from + '</div>'
-                            + '<div class="msg-attachement"></div>'
-                            + '</div>'
-                            + '<div class="msg-body"><center><em><i>Loading</i></em></center></div>'
-                });
-                this.tabView.add(tab);
-                tab.msg = msg;
-
-                if (oldMsg && oldMsg.get("id") === msg.get("id")) {             // If the current tab was selected before sync,
-                    tab.set("selected", 2);
+            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(inboxDescriptor.getInstance(), "Extended", {
+                on: {
+                    success: Y.bind(function(e) {
+                        this.updateTabView(e.response.entity.get("messages"));
+                    }, this)
                 }
-            }, this);
-
-            if (!this.tabView.get("selection")) {                               // Select the first tab by default
-                this.tabView.selectChild(0);
-            }
+            });
         },
         /**
          * @function
          * @private
-         * @description Destroy TabView and all functions created by this widget
+         * @description Destroy TabView and all eventHandlers created by this widget
          */
         destructor: function() {
             this.tabView.destroy();
             this.handlers.dataUpdated.detach();
         },
         // *** Private Methods *** //
+        /**
+         * Update tabView. Tab part.
+         * @private
+         * @param {Array of entity} entities
+         * @returns {undefined}
+         */
+        updateTabView: function(entities) {
+            var selection = this.tabView.get("selection"),
+                    oldMsg = selection && selection.msg;
+            this.tabView.destroyAll();
+            if (entities.length === 0) {
+                this.tabView.add(new Y.Tab({
+                    label: '',
+                    content: '<center><i>You have no messages</i></center>'
+                }));
+            }
+            Y.Array.each(entities, function(entity) {
+                var tab = new Y.Tab({
+                    label: this.TEMPLATES[this.get("template")].tab(entity),
+                    content: "<div class=\"wegas-loading-div\"><div>"
+                });
+                this.tabView.add(tab);
+                tab.msg = entity;
+                if (oldMsg && oldMsg.get("id") === entity.get("id")) { // If the current tab was selected before sync,
+                    tab.set("selected", 2);
+                }
+            }, this);
+            if (!this.tabView.get("selection")) { // Select the first tab by default
+                this.tabView.selectChild(0);
+            }
+        },
+        /**
+         * Update specified tab's content. Forward provided entity to template.
+         * @private
+         * @param {Y.Tab} tab tab to update
+         * @param {Entity} entity entity to use for content
+         * @returns {undefined}
+         */
+        updateTabContent: function(tab, entity) {
+            tab.set("content", this.TEMPLATES[this.get("template")].content(entity));
+        },
         /**
          * @function
          * @private
@@ -175,11 +221,9 @@ YUI.add('wegas-inbox', function(Y) {
          */
         onTabSelected: function(e) {
             var tab = e.newVal;
-
-            if (this.timer) {                                                   // If there is an active unread message timer,
-                this.timer.cancel();                                            // cancel it.
+            if (this.timer) { // If there is an active unread message timer,
+                this.timer.cancel(); // cancel it.
             }
-
             if (tab && tab.msg) {
                 this.dataSource.sendRequest({//                                 // Retrieve the message body from the server
                     request: "/Inbox/Message/" + tab.msg.get("id") + "?view=Extended",
@@ -188,27 +232,16 @@ YUI.add('wegas-inbox', function(Y) {
                     },
                     on: {
                         success: Y.bind(function(e) {
-                            var attachements = e.response.entity.get("attachements");
-                            if (attachements && attachements.length > 0) {      // Render attachements if any
-                                attachements = Y.Array.map(attachements, function(a) {
-                                    return "<a href='" + a + "' data-file='" + a + "'>" + a + "</a>";
-                                });
-                                this.get("panelNode").one(".msg-attachement")
-                                        .setHTML("Attachements: " + attachements.join("; "));
-                            }
-                            this.get("panelNode").one(".msg-body")
-                                    .setHTML(e.response.entity.get("body") || "<center><em><i>Empty</i></center>");
-                        }, tab)
+                            this.updateTabContent(tab, e.response.entity);
+                        }, this)
                     }
                 });
-                if (tab.msg.get("unread")) {                                    // If the message is currently unread,
+                if (tab.msg.get("unread")) { // If the message is currently unread,
                     this.timer = Y.later(this.get("setToReadAfter") * 1000, this,
-                            function(tab) {                                     // Send a request to mark it as read
+                            function(tab) { // Send a request to mark it as read
                                 Y.log("Sending message read update", "info", "InboxDisplay");
-
-                                tab.get("contentBox").one(".unread").removeClass("unread").addClass("read");// Immediately update view (before request)
-
-                                tab.msg.set("unread", false);                   // Update the message (since there wont be no sync?)
+                                tab.get("contentBox").one(".unread").removeClass("unread").addClass("read"); // Immediately update view (before request)
+                                tab.msg.set("unread", false); // Update the message (since there wont be no sync?)
                                 this.readRequestTid = this.dataSource.sendRequest({// Send reqest to mark as read
                                     request: "/Inbox/Message/Read/" + tab.msg.get("id"),
                                     cfg: {
@@ -226,7 +259,6 @@ YUI.add('wegas-inbox', function(Y) {
             }
             return null;
         }
-
     }, {
         /**
          * @lends Y.Wegas.InboxDisplay
@@ -254,6 +286,19 @@ YUI.add('wegas-inbox', function(Y) {
                     label: "variable",
                     classFilter: ["InboxDescriptor"]
                 }
+            },
+            /**
+             *
+             */
+            template: {
+                value: "inbox",
+                type: "string",
+                choices: [{
+                        value: "inbox"
+                    }, {
+                        value: "clean",
+                        label: "No headers"
+                    }]
             },
             setToReadAfter: {
                 value: 0.05,
