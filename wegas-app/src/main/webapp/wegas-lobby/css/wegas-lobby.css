@@ -272,3 +272,17 @@
     margin: 0;
     background-color: white;
 }
+
+/******************** AccountKey and EnrolementKey*****************************/
+
+.wegas-accountkey, .wegas-enrolmentkey {
+    font-size: 90%
+}
+
+.wegas-accountkeyUser, .wegas-accountkeyPass{
+    color: #505050;
+}
+
+.wegas-game-users .inputEx-ListField-childContainer>div {
+    border-right: 1px solid gray;
+}
