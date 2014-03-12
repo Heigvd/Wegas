@@ -127,10 +127,16 @@ YUI.add("wegas-injector", function(Y) {
         /** @lends Y.Plugin.Injector */
         NAME: "Injector",
         NS: "injector",
+        /**
+         * Replaces href/src attribute on given node with file repository URI
+         * if necessary.
+         * @param {Y.Node} element Node (usually img or a) to alter.
+         * @returns {undefined}
+         */
         parser: function(element) {
             var attr = (element.get("nodeName") === "IMG") ? "src" : "href";
 
-            if (!element.hasAttribute(attr) || !element.get(attr).match("^(https?://)")) {
+            if (!element.hasAttribute(attr) || !element.getAttribute(attr).match("^(https?://)")) {
                 element.set(attr, Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"))
                         .removeAttribute("data-file");
             }
