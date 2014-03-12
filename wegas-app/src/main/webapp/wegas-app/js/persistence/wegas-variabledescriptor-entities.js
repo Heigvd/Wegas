@@ -728,6 +728,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 type: ARRAY,
                 "transient": true,
                 value: []
+            },
+            unreadCount: {
+                type: NUMBER,
+                "transient": true,
+                value: 0
             }
         }
     });
