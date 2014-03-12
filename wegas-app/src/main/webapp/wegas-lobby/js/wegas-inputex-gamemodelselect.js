@@ -114,7 +114,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
          */
         onAddButton: function(e) {
             e.halt();
-            var i, total = prompt("How many keys do you want to generate?"),
+            var i, total = this.promptMessage(),
                     game = this.parentField.parentWidget.get("entity"),
                     //teamCount = game.get("teams").length+1,
                     teamCount = this.subFields.length + 1,
@@ -127,6 +127,9 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                 teamCount += 1;
             }
             this.fireUpdatedEvt();                                              // Fire updated !
+        },
+        promptMessage: function() {
+            return prompt("How many keys do you want to generate?");
         }
     });
     Y.inputEx.registerType("enrolmentkeylist", EnrolmentKeyList);               // Register this class
@@ -186,6 +189,9 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                 //(new Y.Node(this.subFields[i].divEl)).all("input").setStyle("textDecoration", "line-through");
             }
             return subfield;
+        },
+        promptMessage: function() {
+            return prompt("How many username/passwords do you want to generate?");
         }
     });
     Y.inputEx.registerType("accountkeylist", AccountKeyList);               // Register this class
