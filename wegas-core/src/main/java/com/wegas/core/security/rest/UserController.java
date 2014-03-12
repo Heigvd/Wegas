@@ -20,6 +20,7 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -117,31 +118,30 @@ public class UserController {
 
     @GET
     @Path("AutoComplete/{value}")
-    public List<Map> getAutoComplete(@PathParam("value") String value) {
-        if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
-            throw new UnauthorizedException();
-        }
-        List<Map> returnValue = new ArrayList<>();
-        for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
-            Map account = new HashMap<>();
-            returnValue.add(account);
-            if (a.getFirstname() != null && a.getLastname() != null) {
-                account.put("label", a.getFirstname() + " " + a.getLastname());
-            } else {
-                account.put("label", a.getEmail());
-            }
-            account.put("value", a.getId());
-        }
-        return returnValue;
-    }
-
-    @GET
-    @Path("AutoCompleteFull/{value}")
-    public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value) {
+    public List<JpaAccount> getAutoComplete(@PathParam("value") String value) {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
         return accountFacade.findByNameOrEmail("%" + value + "%", true);
+    }
+
+    @POST
+    @Path("AutoComplete/{value}")
+    public List<JpaAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, Object> rolesList) {
+        if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
+            throw new UnauthorizedException();
+        }
+
+        ArrayList<String> roles = (ArrayList<String>) rolesList.get("rolesList");
+
+        List<JpaAccount> returnValue = new ArrayList<>();
+        for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
+            boolean hasRole = userFacade.hasRoles(roles, new ArrayList(a.getRoles()));
+            if (hasRole) {
+                returnValue.add(a);
+            }
+        }
+        return returnValue;
     }
 
     @GET
@@ -505,8 +505,8 @@ public class UserController {
     private Boolean checkGameAccountKeylogin(String key, String password) {
         if (key.equals(password)) {                                             //Be kind, email password have to be the same...
             /*
-            if there is a GameAccountKey, use it to create a new GameAccount 
-            */
+             if there is a GameAccountKey, use it to create a new GameAccount 
+             */
             try {
                 GameAccountKey gameAccountKey = gameFacade.findGameAccountKey(key);
                 if (gameAccountKey.getUsed()) {

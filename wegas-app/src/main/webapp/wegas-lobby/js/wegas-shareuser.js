@@ -51,9 +51,9 @@ YUI.add('wegas-shareuser', function(Y) {
                 parentEl: el.one(".wegas-userlist"),
                 useButtons: true
             });
-            
+
             this.userList.currentWidget = this;
-            
+
             if (e instanceof Y.Wegas.persistence.GameModel) {
                 this.userList.targetEntityId = "gm" + e.get("id");
             } else {
@@ -81,7 +81,9 @@ YUI.add('wegas-shareuser', function(Y) {
                     resultTextLocator: 'label',
                     resultHighlighter: 'phraseMatch',
                     queryDelimiter: ',',
-                    source: Y.Wegas.app.get("base") + "rest/User/AutoComplete/{query}",
+                    source: Y.bind(function(query, callback) {
+                        this.autocompleteRequest(query, callback);
+                    }, this),
                     enableCache: false,
                     resultListLocator: Y.bind(function(responses) {
                         Y.Array.forEach(this.userList.subFields, function(user) {
@@ -101,6 +103,39 @@ YUI.add('wegas-shareuser', function(Y) {
             });
 
             this.loadPermissions();
+        },
+        autocompleteRequest: function(query, callback) {
+            var data = {
+                rolesList: this.get("roleList")
+            };
+            Y.Wegas.Facade.User.sendRequest({
+                request: "/AutoComplete/" + query,
+                cfg: {
+                    method: "POST",
+                    data: Y.JSON.stringify(data)
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        var data = e.response.results.entities, result = [], temp;
+                        Y.Array.each(data, function(r) {
+                            if ((r.get("firstname") && r.get("firstname") !== " ")) {
+                                temp = {
+                                    label: r.get("firstname") + " " + r.get("lastname")
+                                };
+                            } else {
+                                temp = {
+                                    label: r.get("email")
+                                };
+                            }
+                            temp.value = r.get("id");
+                            result.push(temp);
+                        });
+                        callback(result);
+
+                    }, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
+                }
+            });
         },
         resultListLocator: function(id, responses) {
             var i;
@@ -281,7 +316,10 @@ YUI.add('wegas-shareuser', function(Y) {
             permsList: {
                 value: []
             },
-            entity: {}
+            entity: {},
+            roleList: {
+                value: []
+            }
         }
     });
     Y.namespace('Wegas').ShareUser = ShareUser;
@@ -319,7 +357,7 @@ YUI.add('wegas-shareuser', function(Y) {
                     method: "DELETE"
                 },
                 on: {
-                    success: Y.bind(function(){
+                    success: Y.bind(function() {
                         this.currentWidget.showMessageBis("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function() {
@@ -358,7 +396,7 @@ YUI.add('wegas-shareuser', function(Y) {
                     method: "DELETE"
                 },
                 on: {
-                    success : Y.bind(function(e) {
+                    success: Y.bind(function(e) {
                         this.getParentField().currentWidget.showMessageBis("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function(e) {
@@ -374,7 +412,7 @@ YUI.add('wegas-shareuser', function(Y) {
                     method: "POST"
                 },
                 on: {
-                    success : Y.bind(function(e) {
+                    success: Y.bind(function(e) {
                         this.getParentField().currentWidget.showMessageBis("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function(e) {

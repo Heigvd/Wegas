@@ -244,7 +244,8 @@ YUI.add('wegas-entity', function(Y) {
                                         }, {
                                             rightLabel: "Start game",
                                             value: "GameModel:Instantiate"
-                                        }]
+                                        }],
+                                    roleList: ["Administrator", "Scenarist"]
                                 }]
                         }
                     }]
@@ -491,7 +492,8 @@ YUI.add('wegas-entity', function(Y) {
                                         //    label: "Token",
                                         //    value: "Game:Token"
                                         //}
-                                    ]
+                                    ],
+                                    roleList: ["Teacher", "Administrator", "Scenarist"]
                                 }]
                         }
                     }, {

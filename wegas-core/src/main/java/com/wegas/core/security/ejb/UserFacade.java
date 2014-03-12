@@ -407,7 +407,7 @@ public class UserFacade extends BaseFacade<User> {
                     }
                 }
             }
-        }  catch (Exception e) {
+        } catch (Exception e) {
             //Gotcha
         }
     }
@@ -430,7 +430,7 @@ public class UserFacade extends BaseFacade<User> {
                     sit.remove();
                 }
             }
-        } catch (NoResultException e){
+        } catch (NoResultException e) {
             //Gotcha
         }
 
@@ -482,5 +482,16 @@ public class UserFacade extends BaseFacade<User> {
      */
     public boolean matchCurrentUser(Long playerId) {
         return this.getCurrentUser().equals(playerFacade.find(playerId).getUser());
+    }
+
+    public boolean hasRoles(ArrayList<String> accountRoles, ArrayList<Role> compareRoles) {
+        for (int i = 0; i < accountRoles.size(); i++) {
+            for (int ii = 0; ii < compareRoles.size(); ii++) {
+                if (accountRoles.get(i).equals(compareRoles.get(ii).getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
