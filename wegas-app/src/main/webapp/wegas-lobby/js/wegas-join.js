@@ -397,7 +397,7 @@ YUI.add('wegas-join', function(Y) {
                         return o.firstname + " " + o.lastname;
                     },
                     resultHighlighter: 'phraseMatch',
-                    source: Y.Wegas.app.get("base") + "rest/User/AutoCompleteFull/{query}",
+                    source: Y.Wegas.app.get("base") + "rest/User/AutoComplete/{query}",
                     enableCache: true
                             //resultListLocator: Y.bind(function(responses) {           // Remove users that are already in the list
                             //    var i;
