@@ -61,6 +61,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param from
      * @param subject
      * @param body
+     * @return {
+     * @see Message} The sent message
      */
     public Message sendMessage(Player p, String from, String subject, String body) {
         return this.getInstance(p).sendMessage(from, subject, body);
@@ -75,6 +77,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param subject
      * @param body
      * @param attachements
+     * @return {@link Message} the sent message
      */
     public Message sendMessage(Player p, String from, String subject, String body, List<String> attachements) {
         return this.getInstance(p).sendMessage(from, subject, body, attachements);
@@ -87,5 +90,14 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      */
     public boolean isEmpty(Player p) {
         return this.getInstance(p).getMessages().isEmpty();
+    }
+
+    /**
+     *
+     * @param player {@link Player}
+     * @return int unread message count for given player
+     */
+    public int getUnreadCount(Player player) {
+        return this.getInstance(player).getUnreadCount();
     }
 }
