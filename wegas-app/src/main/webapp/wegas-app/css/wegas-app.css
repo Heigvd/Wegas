@@ -135,7 +135,7 @@ body h6{
 }
 
 /** Page loader styles */
-.wegas-playerview .wegas-pageloader  .wegas-pageloader {{
+.wegas-playerview .wegas-pageloader  .wegas-pageloader {
     overflow: auto;
 }
 .wegas-playerview > .wegas-pageloader-content > div {
