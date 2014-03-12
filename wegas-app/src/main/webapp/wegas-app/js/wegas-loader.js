@@ -204,7 +204,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inbox': {
                     path: 'js/widget/wegas-inbox-min.js',
-                    requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss", "wegas-widgettoolbar", "wegas-jstranslator"],
+                    requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss", "wegas-widgettoolbar", "wegas-jstranslator", "template-micro"],
                     ws_provides: 'InboxDisplay'
                 },
                 'wegas-inboxcss': {
@@ -257,7 +257,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-template': {
                     path: "js/widget/wegas-template-min.js",
-                    requires: ["template", "wegas-templatecss"],
+                    requires: ["template-micro", "wegas-templatecss"],
                     ws_provides: "Template"
                 },
                 'wegas-treeview': {

@@ -93,7 +93,7 @@ YUI.add("wegas-inputex-url", function(Y) {
 
     Y.extend(inputEx.Wegas.ImageUrlField, inputEx.Wegas.UrlField, {
         filter: function() {
-            return /image\/|application\/wfs-directory/.test(this.get("data.mimeType"));
+            return (/image\/|application\/wfs-directory/).test(this.get("data.mimeType"));
         },
         /**
          * Adds a img tag before the field to display the favicon
