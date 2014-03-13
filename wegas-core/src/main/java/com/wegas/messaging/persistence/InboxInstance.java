@@ -9,6 +9,7 @@ package com.wegas.messaging.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -34,6 +36,7 @@ public class InboxInstance extends VariableInstance {
     /**
      *
      */
+    @JsonView(Views.ExtendedI.class)
     @OneToMany(mappedBy = "inboxInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @OrderBy("sentTime, id")
     @JsonManagedReference("inbox-message")
@@ -110,6 +113,21 @@ public class InboxInstance extends VariableInstance {
         final Message msg = new Message(from, subject, body, attachements);
         this.sendMessage(msg);
         return msg;
+    }
+
+    /**
+     *
+     * @return int unread message count
+     */
+    public int getUnreadCount() {
+        int unread = 0;
+        List<Message> listMessages = this.getMessages();
+        for (Message m : listMessages) {
+            if (m.getUnread()) {
+                unread += 1;
+            }
+        }
+        return unread;
     }
 
     @Override

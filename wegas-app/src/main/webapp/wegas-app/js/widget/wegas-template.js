@@ -24,7 +24,7 @@ YUI.add("wegas-template", function(Y) {
         TITLE: "<div class='wegas-template-title'><%= this.label || '{label}'%></div>",
         FRACTION: "<div class='wegas-template-fraction'><%= (this.minValue || '{minValue}') + '/' + (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>"
     },
-    engine = new Y.Template(Y.Template.Micro),
+    engine = Y.Template.Micro,
             undefinedToEmpty = function(value) {
         return Y.Lang.isUndefined(value) ? "" : "" + value;
     };
