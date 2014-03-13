@@ -8,19 +8,20 @@
 package com.wegas.core.security.rest;
 
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.event.client.WarningEvent;
 import com.wegas.core.exception.NoResultException;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameAccountKey;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -61,6 +62,11 @@ public class UserController {
      */
     @EJB
     private UserFacade userFacade;
+    /**
+     *
+     */
+    @EJB
+    private PlayerFacade playerFacade;
     /**
      *
      */
@@ -123,6 +129,23 @@ public class UserController {
             throw new UnauthorizedException();
         }
         return accountFacade.findByNameOrEmail("%" + value + "%", true);
+    }
+
+    @GET
+    @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
+    public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
+        List<JpaAccount> accounts = this.getAutoComplete("%" + value + "%");
+        for (int i = 0; i < accounts.size(); i++) {
+            try {
+                Player p = playerFacade.findByGameIdAndUserId(gameId, accounts.get(i).getUser().getId());
+                if (accounts.get(i).getUser() == p.getUser()) {
+                    accounts.remove(i);
+                }
+            } catch (PersistenceException e) {
+                //Gotcha
+            }
+        }
+        return accounts;
     }
 
     @POST

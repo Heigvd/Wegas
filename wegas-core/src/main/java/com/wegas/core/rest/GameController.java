@@ -11,11 +11,13 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameAccountKey;
 import com.wegas.core.persistence.game.GameEnrolmentKey;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
@@ -32,7 +34,6 @@ import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -180,7 +181,7 @@ public class GameController {
     public Object tokenJoinGame(@PathParam("token") String token) throws WegasException {
         Game game = gameFacade.findByToken(token);                              // 1st case: game token
         if (game != null) {
-            AbstractAccount account = userFacade.getCurrentUser().getMainAccount(); 
+            AbstractAccount account = userFacade.getCurrentUser().getMainAccount();
             if (account instanceof GameAccount) {                               //Logged in with a GameAccount
                 GameAccountKey accountKey = gameFacade.findGameAccountKey(((GameAccount) account).getEmail());
                 if (accountKey.getGame() == game && !accountKey.getUsed()) {        //Account matches currentGame and key is not used
@@ -245,7 +246,21 @@ public class GameController {
 
         List<User> users = userFacade.findOrCreate(accounts);
         Game g = null;
+        Player p = null;
+        StringBuilder r = new StringBuilder();
+        r.append("The following users are already part of a team in the same game:");
 
+        for (User user : users) {
+            try {
+                p = playerFacade.findByGameIdAndUserId(teamFacade.find(teamId).getGame().getId(), user.getId());
+                r.append(" - ").append(user.getName()).append(";");
+            } catch (PersistenceException e) {   
+                // Gotcha
+            }
+        }
+        if (p != null) {
+            throw new WegasException(r.toString());
+        }
         for (User user : users) {
             g = gameFacade.joinTeam(teamId, user.getId()).getGame();
         }
