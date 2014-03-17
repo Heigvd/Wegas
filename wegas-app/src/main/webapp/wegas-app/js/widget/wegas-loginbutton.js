@@ -61,7 +61,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                         plugins: [{
                                 fn: "OpenUrlAction",
                                 cfg: {
-                                    url: "wegas-app/logout",
+                                    url: "logout",
                                     target: "self"
                                 }
                             }]
