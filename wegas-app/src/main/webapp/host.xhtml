@@ -12,7 +12,7 @@
         </ui:define>
 
         <ui:define name="editorFooter">
-        Y.Wegas.app.on("render", function(e) {
+        Y.Wegas.app.after("render", function(e) {
             //var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
             var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
             Y.one(".wegas-title").setContent(g.get("name"));
