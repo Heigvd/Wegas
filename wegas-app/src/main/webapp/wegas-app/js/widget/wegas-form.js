@@ -96,7 +96,7 @@ YUI.add('wegas-form', function(Y) {
                             };
                             break;
                     }
-                    this.toolbar.add(new Y.Button(b));
+                    this.toolbar.add(new Y.Wegas.Button(b));
                 },
                 /**
                  * @function
