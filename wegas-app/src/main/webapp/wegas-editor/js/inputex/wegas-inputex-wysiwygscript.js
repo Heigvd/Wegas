@@ -77,12 +77,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>",
                 tooltip: "View source"
             });
-            this.viewSrc.get("boundingBox").setStyles({
-                background: "transparent",
-                boxShadow: "none",
-                marginLeft: "16px",
-                padding: "2px"
-            });
+            this.viewSrc.get("boundingBox").addClass("inputEx-WysiwigScript-viewsrc");
 
             this.viewSrc.after("click", function() {
                 if (!this.viewSrc.get("disabled")) {

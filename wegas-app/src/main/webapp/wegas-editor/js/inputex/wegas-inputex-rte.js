@@ -30,7 +30,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
             if (this.editor) {
                 this.editor.destroy();
             } else {
-                Y.once("domready", this.editor.destroy, this.editor);
+                Y.once("domready", function () {
+                    this.editor.destroy();
+                }, this);
             }
             RTEField.superclass.destroy.call(this);
         },
