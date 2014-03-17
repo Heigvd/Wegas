@@ -191,7 +191,10 @@ public class UserFacade extends BaseFacade<User> {
     public List<User> findOrCreate(List<AbstractAccount> accounts) {
         List<User> ret = new ArrayList<>();
         for (AbstractAccount account : accounts) {
-            ret.add(this.findOrCreate(new User(account)));
+            User u = this.findOrCreate(new User(account));
+            if (!ret.contains(u)){
+                ret.add(u);
+            }
         }
         return ret;
     }
