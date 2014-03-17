@@ -178,11 +178,11 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             });
 
             tab.form.detach("destroy");
-            tab.on("destroy", function() {                                      // and destroy callback
-                EditEntityAction.currentEntity = null;
+            tab.on("destroy", function() {                                      // and destroy callback             
                 if (cancelCallback) {
-                    cancelCallback(entity);
+                    cancelCallback(EditEntityAction.currentEntity);
                 }
+                EditEntityAction.currentEntity = null;
             });
 
             //tab.form.detach("cancel");

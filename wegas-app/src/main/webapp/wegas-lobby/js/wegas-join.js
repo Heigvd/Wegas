@@ -175,22 +175,26 @@ YUI.add('wegas-join', function(Y) {
             this.showOverlay();
 
             if (this.showTeamCreation) {                                        // If entity is a game token which allows team creation,
-                Y.Wegas.Facade.Game.sendRequest({//                             // create the team
-                    request: "/" + entity.get("id") + "/CreateTeam/" + name,
-                    cfg: {
-                        method: "POST",
-                        updateCache: false
-                    },
-                    on: {
-                        success: Y.bind(function(e) {
-                            this.sendMultiJoinTeamRequest(e.response.entity.get("id"));// and then join it
-                        }, this),
-                        failure: Y.bind(function(e) {
-                            this.hideOverlay();
-                            this.showMessage("error", e.response.results.message || "Error creating team");
-                        }, this)
-                    }
-                });
+                if (this.teamId) {
+                    this.sendMultiJoinTeamRequest(this.teamId);
+                } else {
+                    Y.Wegas.Facade.Game.sendRequest({//                             // create the team
+                        request: "/" + entity.get("id") + "/CreateTeam/" + name,
+                        cfg: {
+                            method: "POST",
+                            updateCache: false
+                        },
+                        on: {
+                            success: Y.bind(function(e) {
+                                this.sendMultiJoinTeamRequest(e.response.entity.get("id"));// and then join it
+                            }, this),
+                            failure: Y.bind(function(e) {
+                                this.hideOverlay();
+                                this.showMessage("error", e.response.results.message || "Error creating team");
+                            }, this)
+                        }
+                    });
+                }
             } else if (this.showTeamEdition) {                                  // If joining
                 if (name !== entity.get("name")) {                              // If team name was edited,
                     entity.set("name", name);
@@ -282,7 +286,10 @@ YUI.add('wegas-join', function(Y) {
                 },
                 on: {
                     success: Y.bind(this.onGameJoined, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    failure: Y.bind(function(e) {
+                        this.teamId = teamId;                                   // @hack
+                        this.defaultFailureHandler(e);
+                    }, this)
                 }
             });
         },
@@ -388,7 +395,8 @@ YUI.add('wegas-join', function(Y) {
 
                 + "<div class=\"uneditable-players\"></div></div>",
         renderUI: function() {
-            var cb = this.get("contentBox"), autoCompleteCfg = {
+            var cb = this.get("contentBox"), gameId = Y.Widget.getByNode(this._parentNode).getTargetGame().get("id"),
+                autoCompleteCfg = {
                 type: "autocomplete",
                 autoComp: {
                     minQueryLength: 2,
@@ -397,20 +405,28 @@ YUI.add('wegas-join', function(Y) {
                         return o.firstname + " " + o.lastname;
                     },
                     resultHighlighter: 'phraseMatch',
-                    source: Y.Wegas.app.get("base") + "rest/User/AutoComplete/{query}",
-                    enableCache: true
-                            //resultListLocator: Y.bind(function(responses) {           // Remove users that are already in the list
-                            //    var i;
-                            //    Y.Array.each(this.userList.subFields, function(user) {
-                            //        for (i = 0; i < responses.length; i++) {
-                            //            if (user.getValue().userId === responses[i].value) {
-                            //                responses.splice(responses[i], 1);
-                            //                break;
-                            //            }
-                            //        }
-                            //    });
-                            //    return responses;
-                            //}, this)
+                    source: Y.Wegas.app.get("base") + "rest/User/AutoCompleteFull/{query}/" + gameId,
+                    enableCache: true,
+                    resultListLocator: Y.bind(function(responses) {
+                        var i;
+                        Y.Array.each(this.otherAccounts, function(account) {
+                            for (i = 0; i < responses.length; i += 1) {
+                                if (account.id === responses[i].id) {
+                                    responses.splice(i, 1);
+                                    break;
+                                }
+                            }
+                        });
+                        Y.Array.each(this.playersField.subFields, function(user) {
+                            for (i = 0; i < responses.length; i += 1) {
+                                if (user.getValue().email === responses[i].email) {
+                                    responses.splice(i, 1);
+                                    break;
+                                }
+                            }
+                        });
+                        return responses;
+                    }, this)
                 }
             };
 
