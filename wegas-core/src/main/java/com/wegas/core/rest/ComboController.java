@@ -7,12 +7,10 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
