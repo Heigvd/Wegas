@@ -20,13 +20,13 @@
 }
 
 .scrollable{
-    cursor: url(../../wegas-editor/images/openhand.cur), crosshair;
+    cursor: url(../../wegas-editor/images/openhand.png), hand;
     height: 100%;
     width: 100%;
 }
 
 .scrollable.mousedown:hover {
-    cursor: url(../../wegas-editor/images/closedhand.cur), crosshair;
+    cursor: url(../../wegas-editor/images/closedhand.png), hand;
 }
 
 .yui3-wegas-state{
@@ -37,7 +37,7 @@
     border:4px solid;
     border-radius: 20px;
     padding: 10px;
-    box-shadow: 2px 3px 5px #6D6D6D;
+    /*box-shadow: 2px 3px 5px #6D6D6D;*/
     z-index: 5;
     background-color:rgba(255,255,255,0.9);
     cursor: move;
@@ -151,7 +151,7 @@
     cursor: pointer;
 }
 .droppable-state{
-    box-shadow: 0px 0px 20px #009933;
+    box-shadow: 0px 0px 8px #072644;
 }
 .yui3-wegas-script{
     display:block;

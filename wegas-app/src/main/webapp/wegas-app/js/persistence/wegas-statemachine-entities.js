@@ -143,7 +143,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     currentStateId: {
                         type: NUMBER,
                         _inputex: {
-                            type: HIDDEN,
+                            label: "Default state id",
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                             value: 1
                         }
                     },

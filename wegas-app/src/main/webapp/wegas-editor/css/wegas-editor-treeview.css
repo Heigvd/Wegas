@@ -91,7 +91,8 @@
 .yui3-skin-sam .wegas-icon-choicedescriptor {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -850px no-repeat;
 }
-.yui3-skin-sam .wegas-icon-triggerdescriptor {
+.yui3-skin-sam .wegas-icon-triggerdescriptor, 
+.yui3-skin-sam .wegas-icon-fsmdescriptor {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -940px no-repeat;
 }
 .yui3-skin-sam .wegas-icon-inboxdescriptor {
