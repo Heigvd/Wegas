@@ -13,7 +13,6 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.jcr.content.*;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
-import com.wegas.core.rest.util.annotations.NoCache;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -206,7 +205,6 @@ public class FileController {
     @GET
     @Path("list{absoluteDirectoryPath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
-    @NoCache
     public List<AbstractContentDescriptor> listDirectory(@PathParam("gameModelId") Long gameModelId, @PathParam("absoluteDirectoryPath") String directory) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
