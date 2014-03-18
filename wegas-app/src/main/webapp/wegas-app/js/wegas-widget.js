@@ -127,7 +127,7 @@ YUI.add("wegas-widget", function(Y) {
                 return parent.get("widget"); // dependencies should (and must) be loaded by now that way we obtain the new widget
             }
             parent = this.get("parent");
-            index = parent.get("children").indexOf(this);
+            index = parent.indexOf(this);
             cfg = this.toObject();
             this.destroy();
             return parent.add(cfg, index).item(0);
